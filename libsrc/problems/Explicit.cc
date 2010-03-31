@@ -47,6 +47,8 @@ pylith::problems::Explicit::_calcRateFields(void)
   //        = (dispIncr(t+dt) - disp(t) + disp(t-dt)) / (dt*dt)
 
   const double dt = _dt;
+  const double dt2 = dt*dt;
+  const double twodt = 2.0*dt;
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
   const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();
@@ -107,8 +109,8 @@ pylith::problems::Explicit::_calcRateFields(void)
     dispTmdtSection->restrictPoint(*v_iter, &dispTmdtVertex[0],
 				   dispTmdtVertex.size());
 
-    velVertex = (dispIncrVertex + dispTVertex - dispTmdtVertex) / (2.0 * dt);
-    accVertex = (dispIncrVertex - dispTVertex + dispTmdtVertex) / (dt * dt);
+    velVertex = (dispIncrVertex + dispTVertex - dispTmdtVertex) / twodt;
+    accVertex = (dispIncrVertex - dispTVertex + dispTmdtVertex) / dt2;
     
     assert(velSection->getFiberDimension(*v_iter) == spaceDim);
     velSection->updatePoint(*v_iter, &velVertex[0]);

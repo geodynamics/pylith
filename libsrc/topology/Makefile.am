@@ -26,6 +26,7 @@ subpkginclude_HEADERS = \
 	Mesh.icc \
 	MeshOps.hh \
 	RefineUniform.hh \
+	ReverseCuthillMcKee.hh \
 	SolutionFields.hh \
 	SubMesh.hh \
 	SubMesh.icc \

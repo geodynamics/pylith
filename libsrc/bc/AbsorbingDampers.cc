@@ -273,7 +273,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   // Allocate vectors for cell values.
   _initCellVector();
   double_array dampersCell(numQuadPts*spaceDim);
-  double_array velCell(numBasis*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
@@ -294,24 +293,11 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   assert(!residualSection.isNull());
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
   
-  double_array dispTIncrCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTIncrSection = 
-    fields->get("dispIncr(t->t+dt)").section();
-  assert(!dispTIncrSection.isNull());
-  RestrictVisitor dispTIncrVisitor(*dispTIncrSection, 
-				   dispTIncrCell.size(), &dispTIncrCell[0]);
-  
-  double_array dispTCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
-  
-  double_array dispTmdtCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTmdtSection = 
-    fields->get("disp(t-dt)").section();
-  assert(!dispTmdtSection.isNull());
-  RestrictVisitor dispTmdtVisitor(*dispTmdtSection, 
-				  dispTmdtCell.size(), &dispTmdtCell[0]);
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
   
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
@@ -325,10 +311,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
 #endif
-
-  // Get parameters used in integration.
-  const double dt = _dt;
-  assert(dt > 0);
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -354,14 +336,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    dispTIncrVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-
-    dispTVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, dispTVisitor);
-
-    dispTmdtVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+    velVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, velVisitor);
 
     dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
 
@@ -375,10 +351,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for absorbing bc terms
-    velCell = (dispTCell + dispTIncrCell - dispTmdtCell) / (2.0*dt);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad];
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQuad*numBasis+iBasis];
@@ -393,8 +367,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numBasis*spaceDim*3 +
-		  numQuadPts*(1+numBasis*(1+numBasis*(3*spaceDim))));
+    PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(3*spaceDim))));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -409,8 +382,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(numBasis*spaceDim*3 + 
-			       numQuadPts*(1+numBasis*(1+numBasis*(3*spaceDim)))));
+  PetscLogFlops(cells->size()*numQuadPts*(1+numBasis*(1+numBasis*(3*spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -447,7 +419,6 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
   // Allocate vectors for cell values.
   _initCellVector();
   double_array dampersCell(numQuadPts*spaceDim);
-  double_array velCell(numBasis*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
@@ -468,24 +439,11 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
   assert(!residualSection.isNull());
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array dispTIncrCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTIncrSection = 
-    fields->get("dispIncr(t->t+dt)").section();
-  assert(!dispTIncrSection.isNull());
-  RestrictVisitor dispTIncrVisitor(*dispTIncrSection, 
-				   dispTIncrCell.size(), &dispTIncrCell[0]);
-
-  double_array dispTCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
-
-  double_array dispTmdtCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTmdtSection = 
-    fields->get("disp(t-dt)").section();
-  assert(!dispTmdtSection.isNull());
-  RestrictVisitor dispTmdtVisitor(*dispTmdtSection,
-				  dispTmdtCell.size(), &dispTmdtCell[0]);
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
@@ -499,10 +457,6 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
 #endif
-
-  // Get parameters used in integration.
-  const double dt = _dt;
-  assert(dt > 0);
 
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -528,11 +482,8 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
     _resetCellVector();
 
     // Restrict input fields to cell
-    dispTVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, dispTVisitor);
-
-    dispTmdtVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+    velVisitor.clear();
+    sieveSubMesh->restrictClosure(*c_iter, velVisitor);
 
     dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
 
@@ -546,7 +497,6 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for absorbing bc terms
-    velCell = (dispTCell + dispTIncrCell - dispTmdtCell) / (2.0*dt);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       const int iQ = iQuad * numBasis;
@@ -562,8 +512,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
       } // for
     } // for
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numBasis*spaceDim*3 +
-		  numQuadPts*(1+numBasis+numBasis*(1+spaceDim*3)));
+    PetscLogFlops(numQuadPts*(1+numBasis+numBasis*(1+spaceDim*3)));
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -577,8 +526,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
 #endif
   } // for
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(numBasis*spaceDim*3 +
-			       numQuadPts*(1+numBasis+numBasis*(1+spaceDim*3))));
+  PetscLogFlops(cells->size()*numQuadPts*(1+numBasis+numBasis*(1+spaceDim*3)));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped

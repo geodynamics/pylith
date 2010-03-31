@@ -126,6 +126,7 @@ libpylith_la_SOURCES = \
 	topology/SolutionFields.cc \
 	topology/Distributor.cc \
 	topology/RefineUniform.cc \
+	topology/ReverseCuthillMcKee.cc \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 

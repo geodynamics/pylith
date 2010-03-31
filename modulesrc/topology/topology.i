@@ -25,6 +25,7 @@
 #include "pylith/topology/Jacobian.hh"
 #include "pylith/topology/Distributor.hh"
 #include "pylith/topology/RefineUniform.hh"
+#include "pylith/topology/ReverseCuthillMcKee.hh"
 %}
 
 %include "exception.i"
@@ -60,6 +61,7 @@ import_array();
 %include "Jacobian.i"
 %include "Distributor.i"
 %include "RefineUniform.i"
+%include "ReverseCuthillMcKee.i"
 
 // Template instatiation
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;

@@ -151,7 +151,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   strainCell = 0.0;
   double_array gravVec(spaceDim);
   double_array quadPtsGlobal(numQuadPts*spaceDim);
-  double_array accCell(numBasis*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -164,24 +163,18 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array dispTIncrCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTIncrSection = 
-    fields->get("dispIncr(t->t+dt)").section();
-  assert(!dispTIncrSection.isNull());
-  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-				   dispTIncrCell.size(), &dispTIncrCell[0]);
+  double_array accCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& accSection = 
+    fields->get("acceleration(t)").section();
+  assert(!accSection.isNull());
+  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
-  double_array dispTCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
+  double_array dispCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dispSection = 
+    fields->get("disp(t)").section();
+  assert(!dispSection.isNull());
+  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
 
-  double_array dispTmdtCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTmdtSection = 
-    fields->get("disp(t-dt)").section();
-  assert(!dispTmdtSection.isNull());
-  RestrictVisitor dispTmdtVisitor(*dispTmdtSection, 
-				  dispTmdtCell.size(), &dispTmdtCell[0]);
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
   
@@ -197,11 +190,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const double gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
-
-  // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
-  assert(dt > 0);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -239,15 +227,12 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    dispTIncrVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
+    accVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, accVisitor);
     
-    dispTVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
-
-    dispTmdtVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
-
+    dispVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
@@ -283,7 +268,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     } // if
 
     // Compute action for inertial terms
-    accCell = (dispTIncrCell - dispTCell + dispTmdtCell) / dt2;
     const double wtVertex = density[0] * volume / 16.0;
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
@@ -292,7 +276,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 	      wtVertex * accCell[jBasis*spaceDim+iDim];
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(3 + numBasis*spaceDim*3 + numBasis*numBasis*spaceDim*2);
+    PetscLogFlops(3 + numBasis*numBasis*spaceDim*2);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
@@ -332,21 +316,21 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispTCell[0] + b2 * dispTCell[3] + b3 * dispTCell[6]
-        + b4 * dispTCell[9];
-    strainCell[1] = c3 * dispTCell[7] + c2 * dispTCell[4] + c4 * dispTCell[10]
-        + c1 * dispTCell[1];
-    strainCell[2] = d3 * dispTCell[8] + d2 * dispTCell[5] + d1 * dispTCell[2]
-        + d4 * dispTCell[11];
-    strainCell[3] = (c4 * dispTCell[9] + b3 * dispTCell[7] + c3 * dispTCell[6]
-        + b2 * dispTCell[4] + c2 * dispTCell[3] + b4 * dispTCell[10] + b1
-        * dispTCell[1] + c1 * dispTCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispTCell[8] + d3 * dispTCell[7] + c2 * dispTCell[5]
-        + d2 * dispTCell[4] + c1 * dispTCell[2] + c4 * dispTCell[11] + d4
-        * dispTCell[10] + d1 * dispTCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispTCell[9] + b3 * dispTCell[8] + d3 * dispTCell[6]
-        + b2 * dispTCell[5] + d2 * dispTCell[3] + b1 * dispTCell[2] + b4
-        * dispTCell[11] + d1 * dispTCell[0]) / 2.0;
+    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
+        + b4 * dispCell[9];
+    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
+        + c1 * dispCell[1];
+    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
+        + d4 * dispCell[11];
+    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
+        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
+        * dispCell[1] + c1 * dispCell[0]) / 2.0;
+    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
+        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
+        * dispCell[10] + d1 * dispCell[1]) / 2.0;
+    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
+        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
+        * dispCell[11] + d1 * dispCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -386,10 +370,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(3 + 
-			       numBasis*spaceDim*3 + 
-			       numBasis*numBasis*spaceDim*2 +
-			       196+84));
+  PetscLogFlops(cells->size()*(3 + numBasis*numBasis*spaceDim*2 + 196+84));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -445,8 +426,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
          "domain not implemented yet.");
 
   // Allocate vectors for cell values.
-  double_array dispTCell(numBasis*spaceDim);
-  double_array dispTmdtCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
   double_array gravVec(spaceDim);
@@ -466,28 +445,27 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   assert(!sieve.isNull());
 
   // Get sections
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-                 numBasis*spaceDim,
-                 &dispTCell[0]);
-  const ALE::Obj<RealSection>& dispTmdtSection =
-    fields->get("disp(t-dt)").section();
-  assert(!dispTmdtSection.isNull());
-  topology::Mesh::RestrictVisitor dispTmdtVisitor(*dispTmdtSection,
-                 numBasis*spaceDim,
-                 &dispTmdtCell[0]);
+  double_array accCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& accSection = 
+    fields->get("acceleration(t)").section();
+  assert(!accSection.isNull());
+  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
+
+  double_array dispCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dispSection = 
+    fields->get("disp(t)").section();
+  assert(!dispSection.isNull());
+  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
+
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-               &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates,
-            coordinatesCell.size(),
-            &coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -496,9 +474,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
             _normalizer->densityScale());
 
   // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
-  assert(dt > 0);
   double_array valuesIJ(numBasis);
 
   _logger->eventEnd(setupEvent);
@@ -519,20 +494,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
 
-    dispTVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
+    accVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, accVisitor);
 
-    dispTmdtVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTmdtVisitor);
+    dispVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, dispVisitor);
 #else
     coordsVisitor.clear();
     sieve->orientedConeOpt(*c_iter, coordsVisitor, numBasis, spaceDim);
 
-    dispTVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, dispTVisitor, numBasis, spaceDim);
+    accVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, accVisitor, numBasis, spaceDim);
 
-    dispTmdtVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, dispTmdtVisitor, numBasis, spaceDim);
+    dispVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, dispVisitor, numBasis, spaceDim);
 #endif
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -589,11 +564,11 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * volume / (4.0 * dt2);
-    _cellVector += wtVertex * (dispTCell - dispTmdtCell);
+    const double wtVertex = density[0] * volume / 4.0;
+    _cellVector -= wtVertex * accCell;
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(2 + numBasis*spaceDim*3);
+    PetscLogFlops(2 + numBasis*spaceDim*2);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(stressEvent);
 #endif
@@ -633,21 +608,21 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispTCell[0] + b2 * dispTCell[3] + b3 * dispTCell[6]
-        + b4 * dispTCell[9];
-    strainCell[1] = c3 * dispTCell[7] + c2 * dispTCell[4] + c4 * dispTCell[10]
-        + c1 * dispTCell[1];
-    strainCell[2] = d3 * dispTCell[8] + d2 * dispTCell[5] + d1 * dispTCell[2]
-        + d4 * dispTCell[11];
-    strainCell[3] = (c4 * dispTCell[9] + b3 * dispTCell[7] + c3 * dispTCell[6]
-        + b2 * dispTCell[4] + c2 * dispTCell[3] + b4 * dispTCell[10] + b1
-        * dispTCell[1] + c1 * dispTCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispTCell[8] + d3 * dispTCell[7] + c2 * dispTCell[5]
-        + d2 * dispTCell[4] + c1 * dispTCell[2] + c4 * dispTCell[11] + d4
-        * dispTCell[10] + d1 * dispTCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispTCell[9] + b3 * dispTCell[8] + d3 * dispTCell[6]
-        + b2 * dispTCell[5] + d2 * dispTCell[3] + b1 * dispTCell[2] + b4
-        * dispTCell[11] + d1 * dispTCell[0]) / 2.0;
+    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
+        + b4 * dispCell[9];
+    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
+        + c1 * dispCell[1];
+    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
+        + d4 * dispCell[11];
+    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
+        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
+        * dispCell[1] + c1 * dispCell[0]) / 2.0;
+    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
+        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
+        * dispCell[10] + d1 * dispCell[1]) / 2.0;
+    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
+        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
+        * dispCell[11] + d1 * dispCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -688,7 +663,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*3));
+  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*2 + 196+84));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -728,9 +703,6 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 			   "contribution to Jacobian matrix for cells with " \
 			   "different dimensions than the spatial dimension.");
 
-  // Allocate vectors for cell data.
-  double_array dispTCell(numBasis*spaceDim);
-
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -742,9 +714,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<RealSection>& dispTSection = 
+  double_array dispCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
+  assert(!dispSection.isNull());
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -756,10 +729,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", dispTSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", dispSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispTSection, *globalOrder,
+  topology::Mesh::IndicesVisitor jacobianVisitor(*dispSection, *globalOrder,
 		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 			    sieveMesh->depth())*spaceDim);
 

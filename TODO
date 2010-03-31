@@ -12,7 +12,7 @@ MAIN PRIORITIES
   + Need settings for Schur complement
 
 * Drucker-Prager elastoplastic
-  Add isJacobianSymmetric() to Integrator (default is true, need to query material model).
+  Need to link isJacobianSymmetric() in Integrator with materials.
   Need to pass hint when creating Jacobian.
 
 * Friction
