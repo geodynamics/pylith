@@ -4,6 +4,10 @@ CURRENT ISSUES/PRIORITIES
 
 MAIN PRIORITIES
 
+* Mesh reordering
+
+  Make optional in MeshImporter.py.
+
 * Better preconditioning
   + Need settings for Schur complement
 

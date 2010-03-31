@@ -37,7 +37,7 @@ class MeshImporter(MeshGenerator):
     ## Python object for managing MeshImporter facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li reorder_mesh Reorder mesh using reverse Cuthill-McKee if true.
     ##
     ## \b Facilities
     ## @li \b reader Mesh reader.
@@ -45,6 +45,9 @@ class MeshImporter(MeshGenerator):
     ## @li \b refiner Mesh refiner.
 
     import pyre.inventory
+
+    reorderMesh = pyre.inventory.bool("reorder_mesh", default=True)
+    reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     reader = pyre.inventory.facility("reader", family="mesh_io",
@@ -89,6 +92,8 @@ class MeshImporter(MeshGenerator):
     mesh = self.reader.read(self.debug, self.interpolate)
     if self.debug:
       mesh.view("Finite-element mesh.")
+
+    # :TODO: Reorder mesh
 
     # Adjust topology
     self._debug.log(resourceUsageString())
