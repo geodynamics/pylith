@@ -1514,6 +1514,16 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     } // if
     err = KSPCreate(_faultMesh->comm(), &_ksp); CHECK_PETSC_ERROR(err);
     err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
+    double rtol = 0.0;
+    double atol = 0.0;
+    double dtol = 0.0;
+    int maxIters = 0;
+    err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters); 
+    CHECK_PETSC_ERROR(err);
+    rtol = 1.0e-15;
+    atol = 1.0e-25;
+    err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);
+    CHECK_PETSC_ERROR(err);
 
     PC pc;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
@@ -1639,6 +1649,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   } // for
 
   _jacobian->assemble("final_assembly");
+
+  //_jacobian->view(); // DEBUGGING
 } // _sensitivityUpdateJacobian
 
 // ----------------------------------------------------------------------
