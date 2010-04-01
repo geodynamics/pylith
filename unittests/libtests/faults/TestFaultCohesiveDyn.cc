@@ -357,15 +357,15 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
 #endif // DEBUGGING
-        if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check solution values
@@ -408,15 +408,15 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
 #endif // DEBUGGING
         if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check slip values
@@ -480,15 +480,15 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
 #endif // DEBUGGING
         if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check solution values
@@ -531,15 +531,15 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
 #endif // DEBUGGING
         if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check slip values
