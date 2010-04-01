@@ -1,4 +1,4 @@
-cell = "hex8"
+cell = "tet4"
 dim = "3d"
 
 import numpy
