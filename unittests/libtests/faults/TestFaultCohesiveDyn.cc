@@ -358,8 +358,9 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
 #if 1 // DEBUGGING
-	std::cout << "valE: " << valE
+	std::cout << "SOLUTION valE: " << valE
 		  << ", val: " << vals[i]
+		  << ", error: " << fabs(1.0-vals[i]/valE)
 		  << std::endl;
 #endif // DEBUGGING
 	if (fabs(valE) > tolerance)
@@ -390,6 +391,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       fault._fields->get("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
+    slipSection->view("SLIP");
+
     // Get expected values
     const double* valsE = _data->slipSlipE;
     int iVertex = 0; // variable to use as index into valsE array
@@ -409,8 +412,9 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
 #if 1 // DEBUGGING
-	std::cout << "valE: " << valE
+	std::cout << "SLIP valE: " << valE
 		  << ", val: " << vals[i]
+		  << ", error: " << fabs(1.0-vals[i]/valE)
 		  << std::endl;
 #endif // DEBUGGING
         if (fabs(valE) > tolerance)
