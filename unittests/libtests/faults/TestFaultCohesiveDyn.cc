@@ -482,7 +482,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
@@ -533,7 +533,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
 	std::cout << "valE: " << valE
 		  << ", val: " << vals[i]
 		  << std::endl;
