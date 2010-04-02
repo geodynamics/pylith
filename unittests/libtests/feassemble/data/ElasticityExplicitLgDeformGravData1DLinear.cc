@@ -89,8 +89,8 @@ const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_fi
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsResidual[] = {
- -2.60726275e+11,
- -3.01765287e+11,
+ -2.60767056e+11,
+ -3.01806069e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsJacobian[] = {

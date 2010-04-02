@@ -100,10 +100,10 @@ const double pylith::feassemble::ElasticityExplicitLgDeformData3DLinear::_fieldT
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData3DLinear::_valsResidual[] = {
- -1.33662714e+10,  3.00655673e+11,  1.48220308e+11,
- -5.48903846e+10,  6.55599973e+11,  3.04460040e+11,
-  6.45906661e+10, -1.06342926e+12, -4.86427795e+11,
-  3.66800744e+09,  1.07174625e+11,  3.37464384e+10,
+ -1.33659352e+10,  3.00655421e+11,  1.48221233e+11,
+ -5.48900483e+10,  6.55599721e+11,  3.04460965e+11,
+  6.45910023e+10, -1.06342951e+12, -4.86426871e+11,
+  3.66834369e+09,  1.07174373e+11,  3.37473630e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData3DLinear::_valsJacobian[] = {

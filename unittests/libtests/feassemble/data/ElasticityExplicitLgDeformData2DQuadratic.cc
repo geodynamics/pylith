@@ -164,12 +164,12 @@ const double pylith::feassemble::ElasticityExplicitLgDeformData2DQuadratic::_fie
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DQuadratic::_valsResidual[] = {
-  3.35158253e+10,  8.10161927e+10,
- -7.94924298e+10, -4.37818288e+10,
-  2.10014068e+10,  2.15146983e+10,
-  7.31028066e+10, -6.35763747e+09,
- -5.42559207e+10, -9.94886446e+10,
-  6.13196816e+09,  4.70976886e+10,
+  3.35186619e+10,  8.10189832e+10,
+ -7.94930135e+10, -4.37826989e+10,
+  2.10035850e+10,  2.15156871e+10,
+  7.31131484e+10, -6.34970387e+09,
+ -5.42588065e+10, -9.94923096e+10,
+  6.13022939e+09,  4.70980577e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DQuadratic::_valsJacobian[] = {
