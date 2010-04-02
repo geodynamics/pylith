@@ -103,9 +103,9 @@ const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DQuadratic::
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DQuadratic::_valsResidual[] = {
- -9.62763117e+09,
- -1.03060667e+11,
- -4.49803264e+11,
+ -9.64575617e+09,
+ -1.03067542e+11,
+ -4.49853264e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformGravData1DQuadratic::_valsJacobian[] = {

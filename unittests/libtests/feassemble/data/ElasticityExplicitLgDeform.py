@@ -51,8 +51,8 @@ class ElasticityExplicit(Component):
 
     # Calculate action for inertia
     M = integrator._calculateMassMat()
-    dispResult = integrator.fieldT - integrator.fieldTmdt
-    residual = 1.0/integrator.dt**2 * numpy.dot(M, dispResult)
+    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
+    residual = -numpy.dot(M, acc)
     residual = residual.flatten()
 
     # Calculate action for elasticity
