@@ -472,6 +472,7 @@ elif dim == "3d":
     if testCase == "slip":
         slipVertex[:,2] = 0    
 
+    numpy.set_printoptions(precision=12)
     print "dispIncrE \n", dispIncrE
     print "slipVertex \n", slipVertex
 
