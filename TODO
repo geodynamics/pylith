@@ -5,10 +5,14 @@ CURRENT ISSUES/PRIORITIES
 MAIN PRIORITIES
 
 * Mesh reordering
-  debug
+  + MATT needs to include vertices in reordering.
 
 * Better preconditioning
   + Need settings for Schur complement
+
+  MATT is thinking about how to setup Schur complement settings
+  (recursive specification of field splits).
+
 
 * Drucker-Prager elastoplastic
   Need to link isJacobianSymmetric() in Integrator with materials.
@@ -19,7 +23,7 @@ MAIN PRIORITIES
   + Add stuff to manual
 
 * Optimization
-  + Reorder vertices/cells using Cuthill-McKee
+  + Reorder vertices/cells using reverse Cuthill-McKee
   + Specialized elasticity integrator objects for Tri3, Quad4, Tet4, Hex8
   + inline methods (what isn't getting inlined) -Winline
 
@@ -43,6 +47,10 @@ SECONDARY PRIORITIES
 
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
+
+* Optimization
+  + Reimplement Fields to use a single section.
+  + May be gotchas associated with Petsc Vec and scatters
 
 ----------------------------------------------------------------------
 FRICTION
