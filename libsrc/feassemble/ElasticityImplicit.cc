@@ -41,6 +41,8 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Mesh::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -160,8 +162,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array dispTCell(numBasis*spaceDim);
-  double_array dispTIncrCell(numBasis*spaceDim);
   double_array dispTpdtCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
@@ -179,30 +179,28 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
+  double_array dispTCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-					       numBasis*spaceDim, 
-					       &dispTCell[0]);
+  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
+
+  double_array dispTIncrCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
-  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-						   numBasis*spaceDim, 
-						   &dispTIncrCell[0]);
+  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+				   dispTIncrCell.size(), &dispTIncrCell[0]);
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-						   &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -211,13 +209,13 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 				    _normalizer->densityScale());
 
   _logger->eventEnd(setupEvent);
+  _logger->eventBegin(computeEvent);
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-    _logger->eventBegin(geometryEvent);
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -225,23 +223,18 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
-    _logger->eventEnd(geometryEvent);
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
-    _logger->eventEnd(stateVarsEvent);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-    _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -255,7 +248,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
-      _logger->eventBegin(computeEvent);
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
 
@@ -283,20 +275,15 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
         } // for
       } // for
       PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
-      _logger->eventEnd(computeEvent);
     } // if
 
     // residualSection->view("After gravity contribution");
     // Compute B(transpose) * sigma, first computing strains
-    _logger->eventBegin(stressEvent);
     calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
 		      numBasis, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
-    _logger->eventEnd(stressEvent);
 
-    _logger->eventBegin(computeEvent);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
-    _logger->eventEnd(computeEvent);
 
 #if 0 // DEBUGGING
     std::cout << "Updating residual for cell " << *c_iter << std::endl;
@@ -305,11 +292,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     }
 #endif
     // Assemble cell contribution into field
-    _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveMesh->updateClosure(*c_iter, residualVisitor);
-    _logger->eventEnd(updateEvent);
   } // for
+
+    _logger->eventEnd(computeEvent);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -381,8 +368,6 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     assert(0);
 
   // Allocate vector for total strain
-  double_array dispTCell(numBasis*spaceDim);
-  double_array dispTIncrCell(numBasis*spaceDim);
   double_array dispTpdtCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
@@ -398,18 +383,18 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
+  double_array dispTCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-					       numBasis*spaceDim, 
-					       &dispTCell[0]);
+  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
+
+  double_array dispTIncrCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
-  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-						   numBasis*spaceDim, 
-						   &dispTIncrCell[0]);
+  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+				   dispTIncrCell.size(), &dispTIncrCell[0]);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -433,18 +418,17 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
+  _logger->eventEnd(computeEvent);
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-    _logger->eventBegin(geometryEvent);
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -452,23 +436,18 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
-    _logger->eventEnd(geometryEvent);
 
-    // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
+    // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(*c_iter);
-    _logger->eventEnd(stateVarsEvent);
 
     // Reset element matrix to zero
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-    _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -479,7 +458,6 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     // solution increment.
     dispTpdtCell = dispTCell + dispTIncrCell;
       
-    _logger->eventBegin(computeEvent);
     // Compute strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
 		      numBasis, numQuadPts);
@@ -489,7 +467,6 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
       _material->calcDerivElastic(strainCell);
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts);
-    _logger->eventEnd(computeEvent);
 
     if (_quadrature->checkConditioning()) {
       int n = numBasis*spaceDim;
@@ -523,31 +500,27 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     } // if
 
     // Assemble cell contribution into PETSc matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    _logger->eventEnd(updateEvent);
 #if 0
-    _logger->eventBegin(computeEvent);
     // Get laplacian matrix at quadrature points for this cell
     CALL_MEMBER_FN(*this, elasticityPreconFn)(elasticConsts);
-    _logger->eventEnd(computeEvent);
 
     // Assemble cell contribution into PETSc preconditioner matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(preconMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    _logger->eventEnd(updateEvent);
 #endif
   } // for
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
+
+  _logger->eventEnd(computeEvent);
 } // integrateJacobian
 
 

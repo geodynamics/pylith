@@ -181,11 +181,11 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   } else {
       std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
       assert(0);
-      throw std::logic_error("Bad cell dimension in IntegratorElasticity.");
+      throw std::logic_error("Bad cell dimension in "
+			     "IntegratorElasticity::updateStateVars().");
   } // else
 
   // Allocate arrays for cell data.
-  double_array dispCell(numBasis*spaceDim);
   double_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
 
@@ -200,6 +200,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get fields
+  double_array dispCell(numBasis*spaceDim);
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
   const ALE::Obj<RealSection>& dispSection = disp.section();
   assert(!dispSection.isNull());
@@ -229,6 +230,9 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
 
+    // Get physical properties and state variables for cell.
+    _material->retrievePropsAndVars(*c_iter);
+
     // Restrict input fields to cell
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -243,7 +247,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
     // Update material state
     _material->updateStateVars(strainCell, *c_iter);
   } // for
-} // updateState
+} // updateStateVars
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.

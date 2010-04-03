@@ -128,6 +128,8 @@ Rewrite governing equations to include fault implementation
 
 Rewrite bulk constitutive models
 
+Need full-scale test with variation in physical properties within a material.
+
 ----------------------------------------------------------------------
 POST RELEASE 1.4
 ----------------------------------------------------------------------
