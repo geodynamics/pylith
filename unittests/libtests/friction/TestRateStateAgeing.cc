@@ -32,6 +32,42 @@ pylith::friction::TestRateStateAgeing::setUp(void)
 } // setUp
 
 // ----------------------------------------------------------------------
+// Test properties metadata.
+void
+pylith::friction::TestRateStateAgeing::testPropertiesMetadata(void)
+{ // testPropertiesMetadata
+  RateStateAgeing model;
+
+  CPPUNIT_ASSERT_EQUAL(6, model._metadata.numDBProperties());
+  const char* const* names = model._metadata.dbProperties();
+  CPPUNIT_ASSERT_EQUAL(std::string("reference-friction-coefficient"), 
+		       std::string(names[0]));
+  CPPUNIT_ASSERT_EQUAL(std::string("reference-slip-rate"), 
+		       std::string(names[1]));
+  CPPUNIT_ASSERT_EQUAL(std::string("characteristic-slip-distance"), 
+		       std::string(names[2]));
+  CPPUNIT_ASSERT_EQUAL(std::string("constitutive-parameter-a"), 
+		       std::string(names[3]));
+  CPPUNIT_ASSERT_EQUAL(std::string("constitutive-parameter-b"), 
+		       std::string(names[4]));
+  CPPUNIT_ASSERT_EQUAL(std::string("cohesion"),
+		       std::string(names[5]));
+} // testPropertiesMetadata
+
+// ----------------------------------------------------------------------
+// Test state variable metadata.
+void
+pylith::friction::TestRateStateAgeing::testStateVarsMetadata(void)
+{ // testStateVarsMetadata
+  RateStateAgeing model;
+
+  CPPUNIT_ASSERT_EQUAL(1, model._metadata.numDBStateVars());
+  const char* const* names = model._metadata.dbStateVars();
+  CPPUNIT_ASSERT_EQUAL(std::string("state-variable"), 
+		       std::string(names[0]));
+} // testStateVarsMetadata
+
+// ----------------------------------------------------------------------
 // Test hasProperty().
 void
 pylith::friction::TestRateStateAgeing::testHasProperty(void)
