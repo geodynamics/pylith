@@ -54,16 +54,16 @@ namespace pylith {
 
       // Values expected in spatial database
       const int numDBProperties = 4;
-      const char* dbProperties[] = { "static-coefficient",
-				     "dynamic-coefficient",
-				     "slip-weakening-parameter",
-				     "cohesion"
- };      
+      const char* dbProperties[4] = { "static-coefficient",
+				      "dynamic-coefficient",
+				      "slip-weakening-parameter",
+				      "cohesion",
+      };
 
       const int numDBStateVars = 2;
-      const char* dbStateVars[] = { "cumulative-slip",
-				    "previous-slip"
-};      
+      const char* dbStateVars[2] = { "cumulative-slip",
+				     "previous-slip",
+      };      
       
     } // _SlipWeakening
   } // friction

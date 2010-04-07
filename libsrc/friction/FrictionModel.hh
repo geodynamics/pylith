@@ -304,6 +304,9 @@ protected :
   int _numPropsVertex; ///< Number of properties per vertex.
   int _numVarsVertex; ///< Number of state variables per vertex.
 
+  /// Property and state variable metadata.
+  const pylith::materials::Metadata _metadata;
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
   
@@ -329,9 +332,6 @@ private :
   spatialdata::spatialdb::SpatialDB* _dbInitialState;
 
   std::string _label; ///< Label of friction model.
-
-  /// Property and state variable metadata.
-  const pylith::materials::Metadata _metadata;
 
   /** Properties for current vertex.
    *

@@ -32,14 +32,39 @@ pylith::friction::TestStaticFriction::setUp(void)
 } // setUp
 
 // ----------------------------------------------------------------------
+// Test properties metadata.
+void
+pylith::friction::TestStaticFriction::testPropertiesMetadata(void)
+{ // testPropertiesMetadata
+  StaticFriction model;
+
+  CPPUNIT_ASSERT_EQUAL(2, model._metadata.numDBProperties());
+  const char* const* names = model._metadata.dbProperties();
+  CPPUNIT_ASSERT_EQUAL(std::string("friction-coefficient"), 
+		       std::string(names[0]));
+  CPPUNIT_ASSERT_EQUAL(std::string("cohesion"),
+		       std::string(names[1]));
+} // testPropertiesMetadata
+
+// ----------------------------------------------------------------------
+// Test state variable metadata.
+void
+pylith::friction::TestStaticFriction::testStateVarsMetadata(void)
+{ // testStateVarsMetadata
+  StaticFriction model;
+
+  CPPUNIT_ASSERT_EQUAL(0, model._metadata.numDBStateVars());
+} // testStateVarsMetadata
+
+// ----------------------------------------------------------------------
 // Test hasProperty().
 void
 pylith::friction::TestStaticFriction::testHasProperty(void)
 { // testHasProperty
-  StaticFriction material;
+  StaticFriction model;
 
-  CPPUNIT_ASSERT(material.hasProperty("friction_coefficient"));
-  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
+  CPPUNIT_ASSERT(model.hasProperty("friction_coefficient"));
+  CPPUNIT_ASSERT(!model.hasProperty("aaa"));
 } // testHasProperty
 
 // ----------------------------------------------------------------------
@@ -47,9 +72,9 @@ pylith::friction::TestStaticFriction::testHasProperty(void)
 void
 pylith::friction::TestStaticFriction::testHasStateVar(void)
 { // testHasStateVar
-  StaticFriction material;
+  StaticFriction model;
 
-  CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
+  CPPUNIT_ASSERT(!model.hasStateVar("aaa"));
 } // testHasStateVar
 
 

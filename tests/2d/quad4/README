@@ -2,35 +2,27 @@
 DOMAIN
 ======================================================================
 
--400 <= x <= +400
--400 <= y <= +400
+-4000 <= x <= +4000
+-4000 <= y <= +4000
 
-Mesh is quad4 cells with nominal 100m discretization size.
+Mesh is quad4 cells with nominal 1000m discretization size.
 
-======================================================================
-AXIAL COMPRESSION
-======================================================================
 
-2-D axial compression test with linear quadrilateral cells.
+AXIAL COMPRESSION (axialdisp.cfg)
+  See axialdisp_soln.py
 
-         Uy=-1.0 m
-         ----------
-         |        |
-Ux=0.0 m |        |
-         |        |
-         |        |
-         ----------
-         Uy=+1.0 m
+SHEAR (sheardisp.cfg)
+  See sheardisp_soln.py
 
-Dirichlet boundary conditions
-  Ux(0,y) = 0.0
-  Uy(x,-400) = +1.0 m
-  Uy(x,+400) = -1.0 m
+DISLOCATION (dislocation.cfg)
+  See dislocation_soln.py
 
-Analytical solution
-  Ux(x,y) = 0
-  Uy(x,y) = -0.004 * y
+DISLOCATION2 (dislocation2.cfg)
+  See dislocation2_soln.py
 
+SMALL STRAIN RIGID BODY ROTATION (lgdeform_rigidbody.cfg)
+
+SMALL STRAIN COMPRESSION (lfdeform_traction.cfg)
 
 ======================================================================
 SHEAR
@@ -55,7 +47,7 @@ Dirichlet boundary conditions
 
 Analytical solution
   Ux(x,y) = 0
-  Uy(x,y) = -0.004 * x
+  Uy(x,y) = -0.0025 * x
 
 
 ======================================================================
