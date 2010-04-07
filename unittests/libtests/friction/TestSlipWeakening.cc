@@ -32,6 +32,40 @@ pylith::friction::TestSlipWeakening::setUp(void)
 } // setUp
 
 // ----------------------------------------------------------------------
+// Test properties metadata.
+void
+pylith::friction::TestSlipWeakening::testPropertiesMetadata(void)
+{ // testPropertiesMetadata
+  SlipWeakening model;
+
+  CPPUNIT_ASSERT_EQUAL(4, model._metadata.numDBProperties());
+  const char* const* names = model._metadata.dbProperties();
+  CPPUNIT_ASSERT_EQUAL(std::string("static-coefficient"), 
+		       std::string(names[0]));
+  CPPUNIT_ASSERT_EQUAL(std::string("dynamic-coefficient"), 
+		       std::string(names[1]));
+  CPPUNIT_ASSERT_EQUAL(std::string("slip-weakening-parameter"), 
+		       std::string(names[2]));
+  CPPUNIT_ASSERT_EQUAL(std::string("cohesion"),
+		       std::string(names[3]));
+} // testPropertiesMetadata
+
+// ----------------------------------------------------------------------
+// Test state variable metadata.
+void
+pylith::friction::TestSlipWeakening::testStateVarsMetadata(void)
+{ // testStateVarsMetadata
+  SlipWeakening model;
+
+  CPPUNIT_ASSERT_EQUAL(2, model._metadata.numDBStateVars());
+  const char* const* names = model._metadata.dbStateVars();
+  CPPUNIT_ASSERT_EQUAL(std::string("cumulative-slip"), 
+		       std::string(names[0]));
+  CPPUNIT_ASSERT_EQUAL(std::string("previous-slip"), 
+		       std::string(names[1]));
+} // testStateVarsMetadata
+
+// ----------------------------------------------------------------------
 // Test hasProperty().
 void
 pylith::friction::TestSlipWeakening::testHasProperty(void)
