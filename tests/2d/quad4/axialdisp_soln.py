@@ -14,6 +14,22 @@
 ##
 ## @brief Analytical solution to axial displacement problem.
 
+## 2-D axial compression test with linear quadrilateral cells.
+##
+##          Uy=-a
+##          ----------
+##          |        |
+## Ux=-b    |        |
+##          |        |
+##          |        |
+##          ----------
+##          Uy=+a
+## 
+## Dirichlet boundary conditions
+##   Ux(0,y) = -b
+##   Uy(x,-4000) = +a
+##   Uy(x,+4000) = -a
+
 import numpy
 
 # Physical properties

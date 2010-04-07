@@ -55,17 +55,17 @@ namespace pylith {
 
       // Values expected in spatial database
       const int numDBProperties = 6;
-      const char* dbProperties[] = {
+      const char* dbProperties[6] = {
 	"reference-friction-coefficient",
 	"reference-slip-rate",
 	"characteristic-slip-distance",
 	"constitutive-parameter-a",
 	"constitutive-parameter-b",
-	  "cohesion"
+	"cohesion",
       };
 
       const int numDBStateVars = 1;
-      const char* dbStateVars[] = {
+      const char* dbStateVars[1] = {
             "state-variable"
       };
       

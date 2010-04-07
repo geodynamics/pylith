@@ -37,6 +37,8 @@ class pylith::friction::TestStaticFriction : public TestFrictionModel
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestStaticFriction );
 
+  CPPUNIT_TEST( testPropertiesMetadata );
+  CPPUNIT_TEST( testStateVarsMetadata );
   CPPUNIT_TEST( testDBToProperties );
   CPPUNIT_TEST( testNonDimProperties );
   CPPUNIT_TEST( testDimProperties );
@@ -55,6 +57,12 @@ public :
 
   /// Setup testing data.
   void setUp(void);
+
+  /// Test properties metadata.
+  void testPropertiesMetadata(void);
+
+  /// Test state variable metadata.
+  void testStateVarsMetadata(void);
 
   /// Test hasProperty().
   void testHasProperty(void);
