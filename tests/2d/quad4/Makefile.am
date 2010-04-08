@@ -30,7 +30,6 @@ dist_noinst_PYTHON = \
 	rigidbody_gendb.py \
 	TestLgDeformTraction.py \
 	lgdeformtraction_soln.py \
-	TestFrictionQuad4.py \
 	TestFrictionCompression.py \
 	friction_compression_soln.py \
 	testpylith.py
