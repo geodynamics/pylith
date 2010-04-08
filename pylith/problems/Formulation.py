@@ -237,6 +237,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.allocate()
     for constraint in self.constraints:
       constraint.setConstraints(solution)
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.checkConstraints(solution)
+
     memoryLogger.stagePop()
 
     # This creates a global order

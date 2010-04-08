@@ -110,6 +110,13 @@ namespace pylith {
        */
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
       
+      /** Verify constraints are acceptable.
+       *
+       * @param field Solution field.
+       */
+      virtual
+      void checkConstraints(const pylith::topology::Field<pylith::topology::Mesh>& solution) const;
+      
     }; // class FaultCohesiveLagrange
 
   } // faults

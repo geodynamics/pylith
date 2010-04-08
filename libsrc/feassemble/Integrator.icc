@@ -181,6 +181,13 @@ pylith::feassemble::Integrator<quadrature_type>::adjustSolnLumped(
 			const topology::Field<topology::Mesh>& jacobian) {
 } // adjustSolnLumped
 
+// Verify constraints are acceptable.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::checkConstraints(const topology::Field<topology::Mesh>& solution) const {
+} // checkConstraints
+
 
 
 #endif

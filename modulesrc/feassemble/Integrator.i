@@ -198,6 +198,13 @@ namespace pylith {
       virtual
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const = 0;
 
+      /** Verify constraints are acceptable.
+       *
+       * @param field Solution field.
+       */
+      virtual
+      void checkConstraints(const pylith::topology::Field<pylith::topology::Mesh>& solution) const;
+
 
     }; // Integrator
 
