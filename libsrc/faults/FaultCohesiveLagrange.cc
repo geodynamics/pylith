@@ -774,7 +774,7 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field<to
     const int fiberDimN = section->getFiberDimension(v_negative);
     assert(spaceDim == fiberDimN);
     const int numConstraintsN = section->getConstraintDimension(v_negative);
-    if (fiberDimN > numConstraintsN) {
+    if (numConstraintsN > 0) {
       std::ostringstream msg;
       msg << "Vertex with label '" << v_negative << "' on negative side "
 	  << "of fault '" << label() << "' is constrained.\n"
@@ -786,7 +786,7 @@ pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field<to
     const int fiberDimP = section->getFiberDimension(v_positive);
     assert(spaceDim == fiberDimP);
     const int numConstraintsP = section->getConstraintDimension(v_positive);
-    if (fiberDimP > numConstraintsP) {
+    if (numConstraintsP > 0) {
       std::ostringstream msg;
       msg << "Vertex with label '" << v_positive << "' on positive side "
 	  << "of fault '" << label() << "' is constrained.\n"
