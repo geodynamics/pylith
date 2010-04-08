@@ -30,6 +30,9 @@ dist_noinst_PYTHON = \
 	rigidbody_gendb.py \
 	TestLgDeformTraction.py \
 	lgdeformtraction_soln.py \
+	TestFrictionQuad4.py \
+	TestFrictionCompression.py \
+	friction_compression_soln.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -42,7 +45,8 @@ dist_noinst_DATA = \
 	dislocation.cfg \
 	dislocation2.cfg \
 	lgdeformrigidbody.cfg \
-	lgdeformtraction.cfg
+	lgdeformtraction.cfg \
+	friction_compression.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
@@ -64,7 +68,10 @@ noinst_TMP = \
 	lgdeformrigidbody-elastic_t0000000.vtk \
 	lgdeformtraction_t0000000.vtk \
 	lgdeformtraction-elastic_info.vtk \
-	lgdeformtraction-elastic_t0000000.vtk
+	lgdeformtraction-elastic_t0000000.vtk \
+	friction_compression_t0000000.vtk \
+	friction_compression-elastic_info.vtk \
+	friction_compression-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
