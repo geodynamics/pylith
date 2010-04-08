@@ -64,6 +64,14 @@ nodeset 23 group edge_yneg
 nodeset 23 name "edge yneg"
 
 # ----------------------------------------------------------------------
+# Create nodeset for -y edge w/o overlap with fault
+# ----------------------------------------------------------------------
+group "edge_yneg_nofault" add node in edge_yneg
+group "edge_yneg_nofault" remove node in fault_x
+nodeset 24 group edge_yneg_nofault
+nodeset 24 name "edge yneg nofault"
+
+# ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh.exo" dimension 2 overwrite
