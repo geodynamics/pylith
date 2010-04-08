@@ -171,6 +171,13 @@ public :
   virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
+  /** Verify constraints are acceptable.
+   *
+   * @param field Solution field.
+   */
+  virtual
+  void checkConstraints(const topology::Field<topology::Mesh>& solution) const;
+
   // PROTECTED STRUCTS //////////////////////////////////////////////////
 protected :
 

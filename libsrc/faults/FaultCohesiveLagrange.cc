@@ -735,6 +735,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
     throw std::runtime_error(msg.str());
   } // if
 
+  // Check quadrature against mesh
   const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<SieveMesh::label_sequence>& cells =
       sieveMesh->getLabelStratum("material-id", id());
@@ -754,6 +755,46 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
     } // if
   } // for
 } // verifyConfiguration
+
+// ----------------------------------------------------------------------
+// Verify constraints are acceptable.
+void
+pylith::faults::FaultCohesiveLagrange::checkConstraints(const topology::Field<topology::Mesh>& solution) const
+{ // checkConstraints Check to make sure no vertices connected to the
+  // fault are constrained.
+
+  const ALE::Obj<RealSection>& section = solution.section();
+  assert(!section.isNull());
+
+  const int spaceDim = solution.mesh().dimension();
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_negative = _cohesiveVertices[iVertex].negative;    
+    const int fiberDimN = section->getFiberDimension(v_negative);
+    assert(spaceDim == fiberDimN);
+    const int numConstraintsN = section->getConstraintDimension(v_negative);
+    if (fiberDimN > numConstraintsN) {
+      std::ostringstream msg;
+      msg << "Vertex with label '" << v_negative << "' on negative side "
+	  << "of fault '" << label() << "' is constrained.\n"
+	  << "Fault vertices cannot be constrained.";
+      throw std::runtime_error(msg.str());
+    } // if
+    
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+    const int fiberDimP = section->getFiberDimension(v_positive);
+    assert(spaceDim == fiberDimP);
+    const int numConstraintsP = section->getConstraintDimension(v_positive);
+    if (fiberDimP > numConstraintsP) {
+      std::ostringstream msg;
+      msg << "Vertex with label '" << v_positive << "' on positive side "
+	  << "of fault '" << label() << "' is constrained.\n"
+	  << "Fault vertices cannot be constrained.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // for
+} // checkConstraints
 
 // ----------------------------------------------------------------------
 // Initialize auxiliary cohesive cell information.
