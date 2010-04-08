@@ -25,7 +25,7 @@
 
 #include "pylith/utils/petscfwd.h" // HOLDSA PetscMat
 
-#include <mpi.h> // USES MPI_Comm
+#include <petscmesh.hh> // USES MPI_Comm
 
 #include <string> // USES std::string
 
