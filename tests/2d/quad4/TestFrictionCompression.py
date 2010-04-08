@@ -15,7 +15,7 @@
 ## @brief Test suite for testing pylith with 2-D axial compression with friction.
 
 import numpy
-from TestFrictionQuad4 import TestFrictionQuad4
+from TestQuad4 import TestQuad4
 from friction_compression_soln import AnalyticalSoln
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
@@ -24,7 +24,7 @@ from pylith.utils.VTKDataReader import VTKDataReader
 from pylith.apps.PyLithApp import PyLithApp
 class CompressionApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="pylithapp")
+    PyLithApp.__init__(self, name="friction_compression")
     return
 
 
@@ -41,7 +41,7 @@ def run_pylith():
   return
 
 
-class TestFrictionCompression(TestFrictionQuad4):
+class TestFrictionCompression(TestQuad4):
   """
   Test suite for testing pylith with 2-D axial compression with friction.
   """
@@ -50,7 +50,7 @@ class TestFrictionCompression(TestFrictionQuad4):
     """
     Setup for test.
     """
-    TestFrictionQuad4.setUp(self)
+    TestQuad4.setUp(self)
     run_pylith()
     self.outputRoot = "friction_compression"
     if has_vtk():
