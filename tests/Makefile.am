@@ -13,7 +13,6 @@
 SUBDIRS = \
 	1d \
 	2d \
-	3dnew \
 	petsc
 
 
