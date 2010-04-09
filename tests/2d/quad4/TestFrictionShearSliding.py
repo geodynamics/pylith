@@ -127,7 +127,16 @@ class TestFrictionShearSliding(TestQuad4):
 
     strikeDir = (0.0, -1.0)
     normalDir = (-1.0, 0.0)
-    initialTraction = (0.0, -1.0e+10)
+    initialTraction = (0.0, -1.0e+6)
+
+    uy_l = 1.0
+    len = 8000.0
+    sigma_f = 0.6e+6
+    p_density = 2500.0
+    p_vs = 3000.0
+    p_mu = p_density*p_vs**2
+    D = uy_l - len * sigma_f/p_mu
+    slip = (D, 0.0)
 
     nvertices = self.faultMesh['nvertices']
 
@@ -148,11 +157,13 @@ class TestFrictionShearSliding(TestQuad4):
 
     elif name == "slip":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = slip[0]
+      field[:,1] = slip[1]
 
     elif name == "traction":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = 0.0
-      field[:,1] = -2.2e+10
+      field[:,0] = 0.6e+6
+      field[:,1] = -1.0e+6
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
