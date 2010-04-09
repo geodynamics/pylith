@@ -10,22 +10,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestFrictionCompression.py
+## @file tests/2d/quad4/TestFrictionShearStick.py
 ##
-## @brief Test suite for testing pylith with 2-D axial compression with friction.
+## @brief Test suite for testing pylith with 2-D shear stick with friction.
 
 import numpy
 from TestQuad4 import TestQuad4
-from friction_compression_soln import AnalyticalSoln
+from friction_shear_stick_soln import AnalyticalSoln
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class CompressionApp(PyLithApp):
+class ShearStickApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="friction_compression")
+    PyLithApp.__init__(self, name="friction_shear_stick")
     return
 
 
@@ -36,15 +36,15 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Run PyLith
-    app = CompressionApp()
+    app = ShearStickApp()
     app.run()
     run_pylith.done = True
   return
 
 
-class TestFrictionCompression(TestQuad4):
+class TestFrictionShearStick(TestQuad4):
   """
-  Test suite for testing pylith with 2-D axial compression with friction.
+  Test suite for testing pylith with 2-D shear stick with friction.
   """
 
   def setUp(self):
@@ -60,7 +60,7 @@ class TestFrictionCompression(TestQuad4):
                       'ncorners': 2}
 
     run_pylith()
-    self.outputRoot = "friction_compression"
+    self.outputRoot = "friction_shear_stick"
     if has_vtk():
       self.reader = VTKDataReader()
       self.soln = AnalyticalSoln()
