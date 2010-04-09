@@ -32,6 +32,9 @@ dist_noinst_PYTHON = \
 	lgdeformtraction_soln.py \
 	TestFrictionCompression.py \
 	friction_compression_soln.py \
+	friction_shear_stick_soln.py \
+	friction_shear_sliding_soln.py \
+	friction_opening_soln.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -45,7 +48,10 @@ dist_noinst_DATA = \
 	dislocation2.cfg \
 	lgdeformrigidbody.cfg \
 	lgdeformtraction.cfg \
-	friction_compression.cfg
+	friction_compression.cfg \
+	friction_shear_stick.cfg \
+	friction_shear_sliding.cfg \
+	friction_opening.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
@@ -70,7 +76,16 @@ noinst_TMP = \
 	lgdeformtraction-elastic_t0000000.vtk \
 	friction_compression_t0000000.vtk \
 	friction_compression-elastic_info.vtk \
-	friction_compression-elastic_t0000000.vtk
+	friction_compression-elastic_t0000000.vtk \
+	friction_shear_stick_t0000000.vtk \
+	friction_shear_stick-elastic_info.vtk \
+	friction_shear_stick-elastic_t0000000.vtk \
+	friction_shear_sliding_t0000000.vtk \
+	friction_shear_sliding-elastic_info.vtk \
+	friction_shear_sliding-elastic_t0000000.vtk \
+	friction_opening_t0000000.vtk \
+	friction_opening-elastic_info.vtk \
+	friction_opening-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

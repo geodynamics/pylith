@@ -25,7 +25,7 @@ p_mu = p_density*p_vs**2
 p_lambda = p_density*p_vp**2 - 2*p_mu
 
 # Uniform stress field (plane strain)
-sxx = -1.2e+10
+sxx = 0.0
 sxy = 0.0
 syy = 0.0
 szz = p_lambda/(2*p_lambda+2*p_mu)*(sxx+syy)
@@ -57,8 +57,7 @@ class AnalyticalSoln(object):
     (nlocs, dim) = locs.shape
 
     disp = numpy.zeros( (nlocs, 3), dtype=numpy.float64)
-    disp[:,0] = exx*(locs[:,0]+max(abs(locs[:,0])))
-    disp[:,1] = eyy*(locs[:,1]+max(abs(locs[:,1])))
+    disp[0:nlocs/2,0] = 4000.0
     return disp
 
 

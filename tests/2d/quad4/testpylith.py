@@ -38,8 +38,17 @@ def suite():
   #from TestLgDeformTraction import TestTraction
   #suite.addTest(unittest.makeSuite(TestTraction))
 
-  from TestFrictionCompression import TestFrictionCompression
-  suite.addTest(unittest.makeSuite(TestFrictionCompression))
+  #from TestFrictionCompression import TestFrictionCompression
+  #suite.addTest(unittest.makeSuite(TestFrictionCompression))
+  
+  #from TestFrictionShearStick import TestFrictionShearStick
+  #suite.addTest(unittest.makeSuite(TestFrictionShearStick))
+
+  #from TestFrictionShearSliding import TestFrictionShearSliding
+  #suite.addTest(unittest.makeSuite(TestFrictionShearSliding))
+
+  from TestFrictionOpening import TestFrictionOpening
+  suite.addTest(unittest.makeSuite(TestFrictionOpening))
 
   return suite
 

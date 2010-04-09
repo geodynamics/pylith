@@ -10,22 +10,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/quad4/TestFrictionCompression.py
+## @file tests/2d/quad4/TestFrictionOpening.py
 ##
-## @brief Test suite for testing pylith with 2-D axial compression with friction.
+## @brief Test suite for testing pylith with 2-D opening with friction.
 
 import numpy
 from TestQuad4 import TestQuad4
-from friction_compression_soln import AnalyticalSoln
+from friction_opening_soln import AnalyticalSoln
 from pylith.utils.VTKDataReader import has_vtk
 from pylith.utils.VTKDataReader import VTKDataReader
 from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
-class CompressionApp(PyLithApp):
+class OpeningApp(PyLithApp):
   def __init__(self):
-    PyLithApp.__init__(self, name="friction_compression")
+    PyLithApp.__init__(self, name="friction_opening")
     return
 
 
@@ -36,15 +36,15 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     # Run PyLith
-    app = CompressionApp()
+    app = OpeningApp()
     app.run()
     run_pylith.done = True
   return
 
 
-class TestFrictionCompression(TestQuad4):
+class TestFrictionOpening(TestQuad4):
   """
-  Test suite for testing pylith with 2-D axial compression with friction.
+  Test suite for testing pylith with 2-D opening with friction.
   """
 
   def setUp(self):
@@ -60,7 +60,7 @@ class TestFrictionCompression(TestQuad4):
                       'ncorners': 2}
 
     run_pylith()
-    self.outputRoot = "friction_compression"
+    self.outputRoot = "friction_opening"
     if has_vtk():
       self.reader = VTKDataReader()
       self.soln = AnalyticalSoln()
@@ -128,6 +128,7 @@ class TestFrictionCompression(TestQuad4):
     strikeDir = (0.0, -1.0)
     normalDir = (-1.0, 0.0)
     initialTraction = (0.0, -1.0e+10)
+    slip = (0.0, 4000.0)
 
     nvertices = self.faultMesh['nvertices']
 
@@ -148,11 +149,11 @@ class TestFrictionCompression(TestQuad4):
 
     elif name == "slip":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field[:,0] = slip[0]
+      field[:,1] = slip[1]
 
     elif name == "traction":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = 0.0
-      field[:,1] = -2.2e+10
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)

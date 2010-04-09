@@ -37,8 +37,8 @@ ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 
 exy = 1.0/(2*p_mu) * (sxy)
 
-#print exx,eyy,exy,ezz,szz
-#print -exx*p_lambda/(p_lambda+2*p_mu)
+print exx,eyy,exy,ezz,szz
+print -exx*p_lambda/(p_lambda+2*p_mu)
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
