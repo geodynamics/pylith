@@ -127,8 +127,8 @@ class TestFrictionOpening(TestQuad4):
 
     strikeDir = (0.0, -1.0)
     normalDir = (-1.0, 0.0)
-    initialTraction = (0.0, -1.0e+10)
-    slip = (0.0, 4000.0)
+    initialTraction = (0.0, -1.0e+6)
+    slip = (0.0, 1.0)
 
     nvertices = self.faultMesh['nvertices']
 

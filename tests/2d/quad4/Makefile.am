@@ -31,6 +31,9 @@ dist_noinst_PYTHON = \
 	TestLgDeformTraction.py \
 	lgdeformtraction_soln.py \
 	TestFrictionCompression.py \
+	TestFrictionOpening.py \
+	TestFrictionShearSliding.py \
+	TestFrictionShearStick.py \
 	friction_compression_soln.py \
 	friction_shear_stick_soln.py \
 	friction_shear_sliding_soln.py \

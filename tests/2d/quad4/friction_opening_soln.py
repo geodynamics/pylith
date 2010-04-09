@@ -57,7 +57,7 @@ class AnalyticalSoln(object):
     (nlocs, dim) = locs.shape
 
     disp = numpy.zeros( (nlocs, 3), dtype=numpy.float64)
-    disp[0:nlocs/2,0] = 4000.0
+    disp[0:nlocs/2,0] = 1.0
     return disp
 
 

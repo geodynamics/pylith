@@ -127,7 +127,7 @@ class TestFrictionCompression(TestQuad4):
 
     strikeDir = (0.0, -1.0)
     normalDir = (-1.0, 0.0)
-    initialTraction = (0.0, -1.0e+10)
+    initialTraction = (0.0, -1.0e+6)
 
     nvertices = self.faultMesh['nvertices']
 
@@ -152,7 +152,7 @@ class TestFrictionCompression(TestQuad4):
     elif name == "traction":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
       field[:,0] = 0.0
-      field[:,1] = -2.2e+10
+      field[:,1] = -2.2e+6
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)
