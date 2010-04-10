@@ -11,12 +11,17 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "Mesh.hh" // implementation of class methods
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES double_array
+
+#include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor
@@ -116,15 +121,21 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
       ++v_iter) {
     coordsSection->restrictPoint(*v_iter,
 			       &coordsVertex[0], coordsVertex.size());
-    coordsDimSection->restrictPoint(*v_iter, &coordsDimVertex[0],
-				  coordsDimVertex.size());
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      coordsDimVertex[iDim] = coordsVertex[iDim];
+
+    // Save dimensioned coordinates in coordsDimVertex
+    coordsDimVertex = coordsVertex;
 
     // Nondimensionalize original coordinates.
     normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
 
+    // Update section with nondimensional coordinates
+    assert(coordsVertex.size() == 
+	   coordsSection->getFiberDimension(*v_iter));
     coordsSection->updatePoint(*v_iter, &coordsVertex[0]);
+    
+    // Update section with dimensioned coordinates
+    assert(coordsDimVertex.size() == 
+	   coordsDimSection->getFiberDimension(*v_iter));
     coordsDimSection->updatePoint(*v_iter, &coordsDimVertex[0]);
   } // for
 } // nondimensionalize
@@ -153,16 +164,25 @@ pylith::topology::Mesh::groups(int *numNames, char ***outNames)
 int
 pylith::topology::Mesh::groupSize(const char *name)
 { // groupSize
+  if (!_mesh->hasIntSection(name)) {
+    std::ostringstream msg;
+    msg << "Cannot get size of group '" << name
+	<< "'. Group missing from mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
+
   const ALE::Obj<IntSection>&            group    = _mesh->getIntSection(name);
   const IntSection::chart_type&          chart    = group->getChart();
   IntSection::chart_type::const_iterator chartEnd = chart.end();
   int                                    size     = 0;
 
-  for(IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
-    if (group->getFiberDimension(*c_iter)) {
+  for(IntSection::chart_type::const_iterator c_iter = chart.begin();
+      c_iter != chartEnd;
+      ++c_iter) {
+    if (group->getFiberDimension(*c_iter))
       size++;
-    }
-  }
+  } // for
+
   return size;
 } // groupSize
 

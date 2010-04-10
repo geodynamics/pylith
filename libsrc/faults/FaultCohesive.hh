@@ -71,16 +71,19 @@ public :
   /** Adjust mesh topology for fault implementation.
    *
    * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
-   * not currently used in the mesh, and firstFaultCell is incremented with this
-   * point. These values are updated as new fault vertices and cells are added.
+   * not currently used in the mesh, and firstLagrangeVertex/firstFaultCell are
+   * incremented with this point. These values are updated as new fault vertices
+   * and cells are added.
    *
    * @param mesh PETSc mesh.
    * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
    * @param firstFaultCell The first point eligible to become a new fault cell
    * @param flipFault Flip fault orientation.
    */
   void adjustTopology(topology::Mesh* const mesh,
                       int *firstFaultVertex,
+                      int *firstLagrangeVertex,
                       int *firstFaultCell,
                       const bool flipFault = false);
 

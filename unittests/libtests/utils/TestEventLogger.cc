@@ -146,7 +146,7 @@ pylith::utils::TestEventLogger::testRegisterStage(void)
   logger.className("my class");
   logger.initialize();
 
-  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const char* stages[] = { "stage A1", "stage B1", "stage C1" };
   const int numStages = 3;
   int ids[numStages];
 
@@ -171,7 +171,7 @@ pylith::utils::TestEventLogger::testStageId(void)
   logger.className("my class");
   logger.initialize();
 
-  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const char* stages[] = { "stage A2", "stage B2", "stage C2" };
   const int numStages = 3;
 
   for (int i=0; i < numStages; ++i)
@@ -189,8 +189,8 @@ pylith::utils::TestEventLogger::testStageId(void)
        ++s_iter, ++i)
     CPPUNIT_ASSERT_EQUAL(s_iter->second, ids[i]);
   
-  const int idNew = logger.stageId("stage D");
-  CPPUNIT_ASSERT_EQUAL(idNew, logger.stageId("stage D"));
+  const int idNew = logger.stageId("stage D2");
+  CPPUNIT_ASSERT_EQUAL(idNew, logger.stageId("stage D2"));
 } // testStageId
 
 // ----------------------------------------------------------------------
@@ -202,7 +202,7 @@ pylith::utils::TestEventLogger::testStageLogging(void)
   logger.className("my class");
   logger.initialize();
 
-  const char* stages[] = { "stage A", "stage B", "stage C" };
+  const char* stages[] = { "stage A3", "stage B3", "stage C3" };
   const int numStages = 3;
   int ids[numStages];
 

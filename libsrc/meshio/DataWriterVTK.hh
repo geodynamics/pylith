@@ -70,6 +70,12 @@ public :
    */
   void timeConstant(const double value);
 
+  /** Set precision of floating point values in output.
+   *
+   * @param value Precision for floating point values.
+   */
+  void precision(const int value);
+
   /** Prepare file for data at a new time step.
    *
    * @param t Time stamp for new data
@@ -139,6 +145,8 @@ private :
   std::string _timeFormat; ///< C style time format for time stamp.
 
   PetscViewer _viewer; ///< Output file
+
+  int _precision; ///< Precision of floating point values in output.
 
   bool _wroteVertexHeader; ///< True if wrote header for vertex data.
   bool _wroteCellHeader; ///< True if wrote header for cell data

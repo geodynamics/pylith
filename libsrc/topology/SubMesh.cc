@@ -11,12 +11,17 @@
 //
 
 #include <portinfo>
+#include <stdexcept>
 
 #include "SubMesh.hh" // implementation of class methods
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <Selection.hh> // USES ALE::Selection
+
+#include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Default constructor
@@ -62,12 +67,14 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
   assert(!meshSieveMesh.isNull());
 
-  const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
-  if (groupField.isNull()) {
+  if (!meshSieveMesh->hasIntSection(label)) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in mesh.";
     throw std::runtime_error(msg.str());
   } // if
+
+  const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
+  assert(!groupField.isNull());
   _mesh = 
     ALE::Selection<DomainSieveMesh>::submeshV<SieveMesh>(meshSieveMesh,
 							 groupField);

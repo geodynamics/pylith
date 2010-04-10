@@ -18,6 +18,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );

@@ -39,8 +39,10 @@ public :
    * @param faultMesh Finite-element mesh of fault (output).
    * @param faultBoundary Finite-element mesh of fault boundary (output).
    * @param mesh Finite-element mesh of domain.
-   * @param faultVertices Vertices assocated with faces of cells defining 
-   *   fault surface
+   * @param groupdField Group of vertices assocated with faces of
+   *   cells defining fault surface
+   * @param flipFault Flag indicating to flip positive/negative sides
+   * of the fault.
    */
   static
   void createFault(topology::SubMesh* faultMesh,
@@ -70,6 +72,7 @@ public :
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
               int& firstFaultVertex,
+              int& firstLagrangeVertex,
               int& firstFaultCell,
               const bool constraintCell = false);
 

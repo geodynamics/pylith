@@ -3,17 +3,17 @@ Simplicial Mesh Example
 ASCII
 DATASET UNSTRUCTURED_GRID
 POINTS 1 double
--1 0.0 0.0
+-1.000000e+00 0.0 0.0
 CELLS 1 2
 1  0
 CELL_TYPES 1
 -1
 POINT_DATA 1
 VECTORS displacements double
-1.1 2.2 0.0
+1.100000e+00 2.200000e+00 0.0
 SCALARS pressure double 1
 LOOKUP_TABLE default
-2.1
+2.100000e+00
 SCALARS other double 2
 LOOKUP_TABLE default
-1.2 2.3
+1.200000e+00 2.300000e+00

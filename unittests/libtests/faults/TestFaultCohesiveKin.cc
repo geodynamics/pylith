@@ -263,10 +263,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       for (int i=0; i < fiberDimE; ++i) {
 	const int index = iVertex*spaceDim+i;
 	const double valE = valsE[index];
-	if (fabs(valE) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Integrate residual with disp (as opposed to disp increment).
@@ -294,10 +291,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       for (int i=0; i < fiberDimE; ++i) {
 	const int index = iVertex*spaceDim+i;
 	const double valE = valsE[index];
-	if (fabs(valE) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Integrate residual with disp increment.
@@ -857,13 +851,6 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   
   //mesh->debug(true); // DEBUGGING
   
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh->dimension());
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
-  
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,
 			  _data->numQuadPts, _data->numBasis, _data->cellDim,
@@ -903,8 +890,9 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
     names[i][1] = '\0';
   } // for
   
-  int firstFaultVertex = 0;
-  int firstFaultCell   = mesh->sieveMesh()->getIntSection(_data->label)->size();
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(_data->label)->size();
+  int firstFaultCell      = mesh->sieveMesh()->getIntSection(_data->label)->size();
   if (fault->useLagrangeConstraints()) {
     firstFaultCell += mesh->sieveMesh()->getIntSection(_data->label)->size();
   }
@@ -913,8 +901,15 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   fault->quadrature(_quadrature);
   
   fault->eqsrcs(const_cast<const char**>(names), nsrcs, sources, nsrcs);
-  fault->adjustTopology(mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
+  fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   
+  spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+  mesh->nondimensionalize(normalizer);
+
   const double upDir[] = { 0.0, 0.0, 1.0 };
   const double normalDir[] = { 1.0, 0.0, 0.0 };
   

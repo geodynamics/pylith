@@ -302,37 +302,55 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
                                                    const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
                                                    const ALE::Obj<ALE::Mesh>& fault)
 {
-  // Must check the orientation here
+  assert(!mesh.isNull());
+  assert(!orientation.isNull());
+  assert(!fault.isNull());
+
   typedef ALE::Selection<ALE::Mesh> selection;
-  const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve      = fault->getSieve();
-  const SieveMesh::point_type            firstFaultCell  = *fault->heightStratum(1)->begin();
-  const ALE::Obj<ALE::Mesh::label_sequence>& fFaces      = fault->heightStratum(2);
-  const int                         numFaultFaces   = fFaces->size();
-  const int                         faultDepth      = fault->depth()-1; // Depth of fault cells
-  int                               numFaultCorners = 0; // The number of vertices in a fault cell
-  int                               faultFaceSize   = 0; // The number of vertices in a face between fault cells
-  int                               faceSize        = 0; // The number of vertices in a mesh face
-  const int                         debug           = fault->debug();
-  ALE::Obj<PointSet>                     newCells        = new PointSet();
-  ALE::Obj<PointSet>                     loopCells       = new PointSet();
-  PointSet                          flippedCells;   // Incorrectly oriented fault cells
-  PointSet                          facesSeen;      // Fault faces already considered
-  PointSet                          cellsSeen;      // Fault cells already matched
-  PointArray                        faceVertices;
+
+  // Must check the orientation here
+  const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve = fault->getSieve();
+  assert(!faultSieve.isNull());
+  const SieveMesh::point_type firstFaultCell  = 
+    *fault->heightStratum(1)->begin();
+  const ALE::Obj<ALE::Mesh::label_sequence>& fFaces = fault->heightStratum(2);
+  assert(!fFaces.isNull());
+  const int numFaultFaces = fFaces->size();
+  const int faultDepth = fault->depth()-1; // Depth of fault cells
+  int numFaultCorners = 0; // The number of vertices in a fault cell
+  int faultFaceSize = 0; // The number of vertices in a face between fault cells
+  int faceSize = 0; // The number of vertices in a mesh face
+  const int debug = fault->debug();
+  ALE::Obj<PointSet> newCells = new PointSet();
+  assert(!newCells.isNull());
+  ALE::Obj<PointSet> loopCells = new PointSet();
+  assert(!loopCells.isNull());
+  PointSet flippedCells;   // Incorrectly oriented fault cells
+  PointSet facesSeen;      // Fault faces already considered
+  PointSet cellsSeen;      // Fault cells already matched
+  PointArray faceVertices;
 
   if (!fault->commRank()) {
     faceSize        = selection::numFaceVertices(mesh);
     numFaultCorners = faultSieve->nCone(firstFaultCell, faultDepth)->size();
     if (debug) std::cout << "  Fault corners " << numFaultCorners << std::endl;
-    if (dim == 0) {
-      assert(numFaultCorners == faceSize-1);
-    } else {
+    if (dim > 0) {
       assert(numFaultCorners == faceSize);
+    } else {
+      // dim is 0
+      assert(numFaultCorners == faceSize-1);
     }
     if (faultDepth == 1) {
       faultFaceSize = 1;
     } else {
-      faultFaceSize = faultSieve->nCone(*fFaces->begin(), faultDepth-1)->size();
+      if (dim > 0) {
+	assert(fFaces->size() > 0);
+	assert(faultDepth > 0);
+	faultFaceSize = faultSieve->nCone(*fFaces->begin(), faultDepth-1)->size();
+      } else {
+	// dim is 0
+	faultFaceSize = 1;
+      } // if/else
     }
   }
   if (debug) std::cout << "  Fault face size " << faultFaceSize << std::endl;

@@ -124,6 +124,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
+                                         int& firstLagrangeVertex,
                                          int& firstFaultCell,
                                          const bool constraintCell)
 { // create
@@ -188,10 +189,12 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   assert(!groupNames.isNull());
   const int numFaultVertices = fVertices->size();
   std::map<point_type,point_type> vertexRenumber;
+  std::map<point_type,point_type> vertexLagrangeRenumber;
   std::map<point_type,point_type> cellRenumber;
   if (firstFaultVertex == 0) {
-    firstFaultVertex += sieve->getBaseSize() + sieve->getCapSize();
-    firstFaultCell   += firstFaultVertex;
+    firstFaultVertex    += sieve->getBaseSize() + sieve->getCapSize();
+    firstLagrangeVertex += firstFaultVertex;
+    firstFaultCell      += firstFaultVertex;
   }
 
   for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
@@ -213,12 +216,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
-      groupField->addPoint(firstFaultVertex+numFaultVertices, 1);
+      vertexLagrangeRenumber[*v_iter] = firstLagrangeVertex;
+      groupField->addPoint(firstLagrangeVertex, 1);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
-      sieveMesh->setHeight(firstFaultVertex+numFaultVertices, 1);
-      sieveMesh->setDepth(firstFaultVertex+numFaultVertices, 0);
+      sieveMesh->setHeight(firstLagrangeVertex, 1);
+      sieveMesh->setDepth(firstLagrangeVertex, 0);
 #endif
+      ++firstLagrangeVertex;
     } // if
     logger.stagePop();
     logger.stagePush("FaultCreation");
@@ -242,9 +247,6 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
-  if (constraintCell) {
-    firstFaultVertex += numFaultVertices;
-  }
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<SieveSubMesh::label_sequence>& faces =
@@ -395,8 +397,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     if (constraintCell) {
       for (int c = 0; c < coneSize; ++c) {
         if (debug)
-	  std::cout << "    Lagrange vertex " << vertexRenumber[faceCone[c]]+numFaultVertices << std::endl;
-        sieve->addArrow(vertexRenumber[faceCone[c]]+numFaultVertices, firstFaultCell, true);
+	  std::cout << "    Lagrange vertex " << vertexLagrangeRenumber[faceCone[c]] << std::endl;
+        sieve->addArrow(vertexLagrangeRenumber[faceCone[c]], firstFaultCell, true);
       } // for
     } // if
     // TODO: Need to reform the material label when sieve is reallocated
@@ -609,8 +611,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     const ALE::Obj<Mesh::label_type>& label = sieveMesh->createLabel(labelName);
     assert(!label.isNull());
 
-    TopologyOps::computeCensoredDepth(label, sieveMesh->getSieve(),
-				      firstCohesiveCell-(constraintCell?numFaultVertices:0));
+    TopologyOps::computeCensoredDepth(label, sieveMesh->getSieve(), firstFaultVertex);
   } else {
     // Insert new shadow vertices into existing label
     const ALE::Obj<Mesh::label_type>& label = sieveMesh->getLabel(labelName);
@@ -645,7 +646,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     coordinates->addPoint(vertexRenumber[*v_iter],
 			  coordinates->getFiberDimension(*v_iter));
     if (constraintCell)
-      coordinates->addPoint(vertexRenumber[*v_iter]+numFaultVertices,
+      coordinates->addPoint(vertexLagrangeRenumber[*v_iter],
 			    coordinates->getFiberDimension(*v_iter));
   } // for
   sieveMesh->reallocate(coordinates);
@@ -657,7 +658,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     coordinates->updatePoint(vertexRenumber[*v_iter], 
 			     coordinates->restrictPoint(*v_iter));
     if (constraintCell)
-      coordinates->updatePoint(vertexRenumber[*v_iter]+numFaultVertices,
+      coordinates->updatePoint(vertexLagrangeRenumber[*v_iter],
 			       coordinates->restrictPoint(*v_iter));
   } // for
   if (debug)
@@ -800,14 +801,23 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   assert(!fCoordinates.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& vertices =
     sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
   const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
   const SieveMesh::label_sequence::iterator vEnd = vertices->end();
 
-  fCoordinates->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
-                                                             faultSieveMesh->getSieve()->getChart().max()));
+  const ALE::Obj<SieveMesh::label_sequence>& fvertices =
+    faultSieveMesh->depthStratum(0);
+  assert(!fvertices.isNull());
+  const point_type fvMin = *std::min_element(fvertices->begin(), 
+					     fvertices->end());
+  const point_type fvMax = *std::max_element(fvertices->begin(),
+					     fvertices->end());
+  
+  fCoordinates->setChart(topology::Mesh::RealSection::chart_type(fvMin, 
+								 fvMax+1));
   for (SieveMesh::label_sequence::iterator v_iter = vBegin;
-      v_iter != vEnd;
-      ++v_iter) {
+       v_iter != vEnd;
+       ++v_iter) {
     if (fRenumbering.find(*v_iter) == fRenumberingEnd)
       continue;
     fCoordinates->setFiberDimension(fRenumbering[*v_iter],
@@ -832,13 +842,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     const ALE::Obj<topology::Mesh::RealSection>& fCoordinatesDim =
       faultSieveMesh->getRealSection("coordinates_dimensioned");
     assert(!fCoordinatesDim.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator vEnd = vertices->end();
 
-    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(faultSieveMesh->heightStratum(0)->size(),
-								   faultSieveMesh->getSieve()->getChart().max()));
+    fCoordinatesDim->setChart(topology::Mesh::RealSection::chart_type(fvMin,
+								      fvMax+1));
     for (SieveMesh::label_sequence::iterator v_iter = vBegin;
 	 v_iter != vEnd;
 	 ++v_iter) {
@@ -853,9 +859,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 	++v_iter) {
       if (fRenumbering.find(*v_iter) == fRenumberingEnd)
 	continue;
-    fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
-			      coordinatesDim->restrictPoint(*v_iter));
-    }
+      fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
+				   coordinatesDim->restrictPoint(*v_iter));
+    } // for
     //faultSieveMesh->view("Parallel fault mesh");
   } // if
 

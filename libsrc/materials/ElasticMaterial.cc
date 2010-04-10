@@ -226,11 +226,6 @@ pylith::materials::ElasticMaterial::updateStateVars(
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
   assert(totalStrain.size() == numQuadPts*_tensorSize);
 
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());
-  stateVarsSection->restrictPoint(cell, &_stateVarsCell[0],
-				  _stateVarsCell.size());
-  
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateStateVars(&_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt,
 		     &_propertiesCell[iQuad*numPropsQuadPt], 
@@ -239,6 +234,8 @@ pylith::materials::ElasticMaterial::updateStateVars(
 		     &_initialStressCell[iQuad*_tensorSize], _tensorSize,
 		     &_initialStrainCell[iQuad*_tensorSize], _tensorSize);
   
+  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+  assert(!stateVarsSection.isNull());  
   stateVarsSection->updatePoint(cell, &_stateVarsCell[0]);
 } // updateStateVars
 

@@ -59,15 +59,25 @@ namespace pylith {
 
       /** Adjust mesh topology for fault implementation.
        *
+       * If firstFaultVertex == 0, then firstFaultVertex is set to the
+       * first point not currently used in the mesh, and
+       * firstLagrangeVertex/firstFaultCell are incremented with this
+       * point. These values are updated as new fault vertices and
+       * cells are added.
+       *
        * @param mesh PETSc mesh.
+       * @param firstFaultVertex The first point eligible to become a new fault vertex
+       * @param firstLagrangeVertex The first point eligible to become a new Lagrange vertex
+       * @param firstFaultCell The first point eligible to become a new fault cell
        * @param flipFault Flip fault orientation.
        */
-      %apply int *INOUT {int *firstFaultVertex, int *firstFaultCell};
+      %apply int *INOUT {int *firstFaultVertex, int *firstLagrangeVertex, int *firstFaultCell};
       void adjustTopology(pylith::topology::Mesh* const mesh,
                           int *firstFaultVertex,
+                          int *firstLagrangeVertex,
                           int *firstFaultCell,
                           const bool flipFault = false);
-      %clear int *firstFaultVertex, int *firstFaultCell;
+      %clear int *firstFaultVertex, int *firstLagrangeVertex, int *firstFaultCell;
       
       /** Cohesive cells use Lagrange multiplier constraints?
        *

@@ -82,7 +82,7 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeFormat(void)
   const char* format = "%4.1f";
   writer.timeFormat(format);
   CPPUNIT_ASSERT_EQUAL(std::string(format), writer._timeFormat);
-} // testInterpolate
+} // testTimeFormat
 
 // ----------------------------------------------------------------------
 // Test timeConstant()
@@ -94,7 +94,19 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeConstant(void)
   const double value = 4.5;
   writer.timeConstant(value);
   CPPUNIT_ASSERT_EQUAL(value, writer._timeConstant);
-} // testInterpolate
+} // testTimeConstant
+
+// ----------------------------------------------------------------------
+// Test precision()
+void
+pylith::meshio::TestDataWriterVTKMesh::testPrecision(void)
+{ // testPrecision
+  DataWriterVTK<topology::Mesh, MeshField> writer;
+
+  const int value = 4;
+  writer.precision(value);
+  CPPUNIT_ASSERT_EQUAL(value, writer._precision);
+} // testPrecision
 
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
@@ -269,14 +281,15 @@ pylith::meshio::TestDataWriterVTKMesh::_initialize(void)
 
   if (0 != _data->faultLabel) {
     faults::FaultCohesiveKin fault;
-    int firstFaultVertex = 0;
-    int firstFaultCell   = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+    int firstFaultVertex    = 0;
+    int firstLagrangeVertex = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
+    int firstFaultCell      = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
     if (fault.useLagrangeConstraints()) {
       firstFaultCell += _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
     }
     fault.label(_data->faultLabel);
     fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, &firstFaultVertex, &firstFaultCell, _flipFault);
+    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
   } // if
 } // _initialize
 

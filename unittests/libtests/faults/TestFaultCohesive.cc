@@ -21,6 +21,9 @@
 #include "pylith/utils/array.hh" // USES int_array, double_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
 #include "data/CohesiveDataTri3b.hh" // USES CohesiveDataTri3b
@@ -491,15 +494,23 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 
+  spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+  cs.setSpaceDim(mesh.dimension());
+  cs.initialize();
+  mesh.coordsys(&cs);
+  mesh.nondimensionalize(normalizer);
+  
   CPPUNIT_ASSERT(0 != fault);
-  int firstFaultVertex = 0;
-  int firstFaultCell   = mesh.sieveMesh()->getIntSection("fault")->size();
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection("fault")->size();
+  int firstFaultCell      = mesh.sieveMesh()->getIntSection("fault")->size();
   if (dynamic_cast<FaultCohesive*>(fault)->useLagrangeConstraints()) {
     firstFaultCell += mesh.sieveMesh()->getIntSection("fault")->size();
   }
   fault->id(1);
   fault->label("fault");
-  fault->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFault);
+  fault->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, flipFault);
   //mesh->view(data.filename);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
@@ -626,22 +637,24 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   iohandler.read(&mesh);
 
   CPPUNIT_ASSERT(0 != faultA);
-  int firstFaultVertex = 0;
-  int firstFaultCell   = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
+  CPPUNIT_ASSERT(0 != faultB);
+  int firstFaultVertex    = 0;
+  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
+  int firstFaultCell      = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
   if (dynamic_cast<FaultCohesive*>(faultA)->useLagrangeConstraints()) {
     firstFaultCell += mesh.sieveMesh()->getIntSection("faultA")->size();
   }
-  faultA->id(1);
-  faultA->label("faultA");
-  faultA->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFaultA);
-
-  CPPUNIT_ASSERT(0 != faultB);
   if (dynamic_cast<FaultCohesive*>(faultB)->useLagrangeConstraints()) {
     firstFaultCell += mesh.sieveMesh()->getIntSection("faultB")->size();
   }
+
+  faultA->id(1);
+  faultA->label("faultA");
+  faultA->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, flipFaultA);
+
   faultB->id(2);
   faultB->label("faultB");
-  faultB->adjustTopology(&mesh, &firstFaultVertex, &firstFaultCell, flipFaultB);
+  faultB->adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, flipFaultB);
 
   //sieveMesh->view(data.filename);
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
