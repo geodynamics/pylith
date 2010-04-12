@@ -12,9 +12,6 @@
 
 dist_noinst_DATA = \
 	slipfn.timedb \
-	bulkprops_1d.spatialdb \
-	bulkprops_2d.spatialdb \
-	bulkprops_3d.spatialdb \
 	static_friction_2d.spatialdb \
 	static_friction_3d.spatialdb \
 	line2.mesh \
