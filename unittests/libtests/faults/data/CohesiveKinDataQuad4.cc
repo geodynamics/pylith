@@ -89,9 +89,6 @@ const char* pylith::faults::CohesiveKinDataQuad4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4::_riseTimeFilename = 
   "data/quad4_risetime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataQuad4::_matPropsFilename = 
-  "data/bulkprops_2d.spatialdb";
-
 const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2,
@@ -406,7 +403,6 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   fieldIncr = const_cast<double*>(_fieldIncr);
   jacobianLumped = const_cast<double*>(_jacobianLumped);

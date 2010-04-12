@@ -107,9 +107,6 @@ const char* pylith::faults::CohesiveKinDataTri3d::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTri3d::_riseTimeFilename = 
   "data/tri3d_risetime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataTri3d::_matPropsFilename = 
-  "data/bulkprops_2d.spatialdb";
-
 const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   6.1, 8.1,
   6.2, 8.2, // 5
@@ -482,7 +479,6 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);

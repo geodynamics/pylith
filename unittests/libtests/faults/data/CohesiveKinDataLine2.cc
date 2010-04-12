@@ -66,9 +66,6 @@ const char* pylith::faults::CohesiveKinDataLine2::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataLine2::_riseTimeFilename = 
   "data/line2_risetime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataLine2::_matPropsFilename = 
-  "data/bulkprops_1d.spatialdb";
-
 // Don't expect these values to be used, so just use some values.
 const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.1,
@@ -158,7 +155,6 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   fieldIncr = const_cast<double*>(_fieldIncr);
   jacobianLumped = const_cast<double*>(_jacobianLumped);
