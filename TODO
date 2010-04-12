@@ -56,7 +56,7 @@ SECONDARY PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
-Full scale tests of sliding bar. [Surendra]
+Full scale friction tests. [Surendra]
 
   check fault output
     fault constitutive parameters
@@ -72,12 +72,6 @@ Full scale tests of sliding bar. [Surendra]
 LUMPED SOLVER
 ----------------------------------------------------------------------
 
-FaultCohesiveDyn (C++)
-  adjustSolnLumped()
-    compute Lagrange multipliers (zero increment of slip)
-    calls constrainSolnSpace()
-    adjust displacements
-
 Unit tests
 
   setting up cohesive info
@@ -90,13 +84,8 @@ Unit tests
     integrateResidualLumped()
   AbsorbingDampers
     integrateResidualLumped()
-
-
   FaultCohesiveDyn
-
     adjustSolnLumped()
-    _adjustSolnLumpedXD()
-    _constrainSolnSpaceXD()
 
 ----------------------------------------------------------------------
 TODO WELL BEFORE WORKSHOP 2010

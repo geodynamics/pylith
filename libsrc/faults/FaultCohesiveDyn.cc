@@ -531,16 +531,23 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
 
-    // Update displacement field
-    dSlipVertex *= -0.5;
-    assert(dSlipVertex.size() ==
-	   dispTIncrSection->getFiberDimension(v_negative));
-    dispTIncrSection->updateAddPoint(v_negative, &dSlipVertex[0]);
+    // Compute change in displacement field.
+    dispTIncrVertexN = 0.0;
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      for (int kDim = 0; kDim < spaceDim; ++kDim)
+        dispTIncrVertexN[iDim] += 
+	  orientationVertex[kDim*spaceDim+iDim] * dSlipVertex[kDim];
     
-    dSlipVertex *= -1.0;
-    assert(dSlipVertex.size() ==
+    // Update displacement field
+    dispTIncrVertexN *= -0.5;
+    assert(dispTIncrVertexN.size() ==
+	   dispTIncrSection->getFiberDimension(v_negative));
+    dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+    
+    dispTIncrVertexP = -dispTIncrVertexN;
+    assert(dispTIncrVertexP.size() ==
 	   dispTIncrSection->getFiberDimension(v_positive));
-    dispTIncrSection->updateAddPoint(v_positive, &dSlipVertex[0]);
+    dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
     
   } // for
 

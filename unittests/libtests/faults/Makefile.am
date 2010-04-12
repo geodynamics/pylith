@@ -47,6 +47,7 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKinSrcsHex8.cc \
 	TestFaultCohesiveDyn.cc \
 	TestFaultCohesiveDynTri3.cc \
+	TestFaultCohesiveDynTri3d.cc \
 	TestFaultCohesiveDynQuad4.cc \
 	TestFaultCohesiveDynTet4.cc \
 	TestFaultCohesiveDynHex8.cc \
@@ -79,6 +80,7 @@ noinst_HEADERS = \
 	TestFaultCohesiveKinSrcsHex8.hh \
 	TestFaultCohesiveDyn.hh \
 	TestFaultCohesiveDynTri3.hh \
+	TestFaultCohesiveDynTri3d.hh \
 	TestFaultCohesiveDynQuad4.hh \
 	TestFaultCohesiveDynTet4.hh \
 	TestFaultCohesiveDynHex8.hh 
@@ -141,6 +143,7 @@ testfaults_SOURCES += \
 	data/CohesiveKinSrcsDataHex8.cc \
 	data/CohesiveDynData.cc \
 	data/CohesiveDynDataTri3.cc \
+	data/CohesiveDynDataTri3d.cc \
 	data/CohesiveDynDataQuad4.cc \
 	data/CohesiveDynDataTet4.cc \
 	data/CohesiveDynDataHex8.cc
@@ -202,6 +205,7 @@ noinst_HEADERS += \
 	data/CohesiveKinSrcsDataHex8.hh \
 	data/CohesiveDynData.hh \
 	data/CohesiveDynDataTri3.hh \
+	data/CohesiveDynDataTri3d.hh \
 	data/CohesiveDynDataQuad4.hh \
 	data/CohesiveDynDataTet4.hh \
 	data/CohesiveDynDataHex8.hh 

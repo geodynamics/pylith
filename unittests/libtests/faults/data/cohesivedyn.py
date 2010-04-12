@@ -7,6 +7,20 @@ import numpy
 from numpy import *
 from numpy.linalg import inv
 
+numpy.set_printoptions(precision=12)
+
+# ----------------------------------------------------------------------
+def printdata(data):
+    """
+    Print data as C array.
+    """
+    (nrows, ncols) = data.shape
+    style = " %16.12f,"*ncols
+    for row in xrange(nrows):
+        print (style % tuple(data[row,:]))
+    return
+
+
 # ----------------------------------------------------------------------
 if dim == "2d":
     if cell == "tri3":
@@ -23,6 +37,10 @@ if dim == "2d":
         fieldIncr = numpy.array([[9.6, -10.6],
                                  [9.8, -10.8]])
         area = numpy.array([1.0, 1.0])
+        C = numpy.array([[0.0, -1.0, 0.0, 0.0,],
+                         [-1.0, 0.0, 0.0, 0.0,],
+                         [0.0, 0.0, 0.0, -1.0,],
+                         [0.0, 0.0, -1.0, 0.0,],]);
     
         jacobianN = numpy.array(
             [[  1.0,  5.2,  4.2,  5.3,],
@@ -65,6 +83,86 @@ if dim == "2d":
                                     [ 9.8, 10.8,],])
 
 
+    elif cell == "tri3d":
+        dlagrange1 = numpy.zeros(3)
+        Lindex = numpy.array([18, 19, 20, 21, 22, 23])
+        Iindex = numpy.array([2, 3, 4, 5, 8, 9])
+        Jindex = numpy.array([12, 13, 14, 15, 16, 17])
+        n = 24
+        m = 6
+        DOF = 2
+
+        fieldT = numpy.array([[6.8, 8.8],
+                              [6.0, 8.0],
+                              [7.2, 9.2]])
+        fieldIncr = numpy.array([[9.8, -10.8],
+                                 [9.0, -10.0],
+                                 [9.2, -10.2]])
+        area = numpy.array([2.0, 1.0, 1.0])
+        C = numpy.array([[+0.70710678118654757, -0.70710678118654757, 0.0, 0.0, 0.0, 0.0,],
+                         [-0.70710678118654757, -0.70710678118654757, 0.0, 0.0, 0.0, 0.0,],
+                         [0.0, 0.0, 0.0, -1.0, 0.0, 0.0,],
+                         [0.0, 0.0, -1.0, 0.0, 0.0, 0.0,],
+                         [0.0, 0.0, 0.0, 0.0, +1.0, 0.0,],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, -1.0,],])
+    
+        jacobianN = numpy.array(
+            [[6.0, 7.3, 6.9, 7.4, 6.7, 7.6],
+             [3.1, 5.2, 3.2, 5.2, 3.4, 5.3],
+             [3.9, 2.7, 3.8, 2.8, 0.0, 0.0],
+             [4.1, 6.6, 4.2, 6.2, 0.0, 0.0],
+             [7.9, 8.1, 0.0, 0.0, 7.4, 8.5],
+             [6.4, 3.4, 0.0, 0.0, 6.1, 3.8]])
+
+        jacobianP = numpy.array(
+            [[1.6, 4.1, 1.7, 4.2, 1.8, 4.3],
+             [4.6, 4.8, 4.7, 4.4, 4.8, 4.2],
+             [6.9, 5.3, 7.0, 5.9, 0.0, 0.0],
+             [7.2, 6.6, 7.3, 6.5, 0.0, 0.0],
+             [8.4, 7.8, 0.0, 0.0, 8.3, 7.1],
+             [6.3, 8.6, 0.0, 0.0, 4.7, 8.7]])
+
+        disp = numpy.array([[ 6.1, 8.1,],
+                            [ 6.2, 8.2,],
+                            [ 6.3, 8.3,],
+                            [ 6.4, 8.4,],
+                            [ 6.5, 8.5,],
+                            [ 6.6, 8.6,],
+                            [ 6.7, 8.7,],
+                            [ 6.9, 8.9,],
+                            [ 7.1, 9.1,],
+                            [ 6.8, 8.8,],
+                            [ 6.0, 8.0,],
+                            [ 7.2, 9.2,],])
+
+        if testCase == "slip":
+            dispIncr = numpy.array([[ 9.1, 10.1,],
+                                    [ 9.2, 10.2,],
+                                    [ 9.3, 10.3,],
+                                    [ 9.4, 10.4,],
+                                    [ 9.5, 10.5,],
+                                    [ 9.6, 10.6,],
+                                    [ 9.7, 10.7,],
+                                    [ 9.9, 10.9,],
+                                    [ 9.1, 10.1,],
+                                    [ 9.8, -10.8,],
+                                    [ 9.0, -10.0,],
+                                    [ 9.2, -10.2,],])            
+        elif testCase == "open":
+            dispIncr = numpy.array([[ 9.1, 10.1,],
+                                    [ 9.2, 10.2,],
+                                    [ 9.3, 10.3,],
+                                    [ 9.4, 10.4,],
+                                    [ 9.5, 10.5,],
+                                    [ 9.6, 10.6,],
+                                    [ 9.7, 10.7,],
+                                    [ 9.9, 10.9,],
+                                    [ 9.1, 10.1,],
+                                    [ 9.8, 10.8,],
+                                    [ 9.0, 10.0,],
+                                    [ 9.2, 10.2,],])            
+
+
     elif cell == "quad4":
         dlagrange1 = numpy.zeros(2)
         Lindex = numpy.arange(16,20)
@@ -79,6 +177,10 @@ if dim == "2d":
         fieldIncr = numpy.array([[-9.8, -10.8],
                                  [-9.0, -10.0]])
         area = numpy.array([1.0, 1.0])
+        C = numpy.array([[0.0, -1.0, 0.0, 0.0,],
+                         [-1.0, 0.0, 0.0, 0.0,],
+                         [0.0, 0.0, 0.0, -1.0,],
+                         [0.0, 0.0, -1.0, 0.0,],]);
     
         jacobianN = numpy.array(
             [[  1.0,  8.1,  8.2,  8.3,],
@@ -150,13 +252,6 @@ if dim == "2d":
     
     print "dlagrange0",dlagrange0
 
-    D = numpy.array([[ 0, -1,],
-                     [ -1, 0,],])
-    Z = numpy.zeros([2,2])
-    C1 = numpy.hstack((D, Z))
-    C2 = numpy.hstack((Z, D))
-    C = numpy.vstack((C1, C2))
-
     if testCase == "slip": 
         dLagrange = numpy.vstack((dlagrange0, dlagrange1))
         dLagrange = numpy.transpose(dLagrange)
@@ -186,14 +281,16 @@ if dim == "2d":
     dispIncrE = numpy.reshape(dispIncrE, n)
 
     dispIncrE[Lindex] = dispIncrE[Lindex] - dLagrange
-    dispIncrE[Iindex] = dispIncrE[Iindex] - 0.5*slipVertex
-    dispIncrE[Jindex] = dispIncrE[Jindex] + 0.5*slipVertex
+    dispIncrE[Iindex] = dispIncrE[Iindex] - \
+        0.5*numpy.dot(C.transpose(), slipVertex)
+    dispIncrE[Jindex] = dispIncrE[Jindex] + \
+        0.5*numpy.dot(C.transpose(), slipVertex)
 
     dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
     slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
 
-    print "dispIncrE \n", dispIncrE
-    print "slipVertex \n", slipVertex
+    print "dispIncrE\n", printdata(dispIncrE)
+    print "slipVertexE\n", printdata(slipVertex)
 
 
 # ----------------------------------------------------------------------
@@ -463,16 +560,14 @@ elif dim == "3d":
     dispIncrE = numpy.reshape(dispIncrE, n)
 
     dispIncrE[Lindex] = dispIncrE[Lindex] - dLagrange
-    dispIncrE[Iindex] = dispIncrE[Iindex] - 0.5*slipVertex
-    dispIncrE[Jindex] = dispIncrE[Jindex] + 0.5*slipVertex
+    dispIncrE[Iindex] = dispIncrE[Iindex] - \
+        0.5*numpy.dot(C.transpose(), slipVertex)
+    dispIncrE[Jindex] = dispIncrE[Jindex] + \
+        0.5*numpy.dot(C.transpose(), slipVertex)
 
     dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
     slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
 
-    if testCase == "slip":
-        slipVertex[:,2] = 0    
-
-    numpy.set_printoptions(precision=12)
-    print "dispIncrE \n", dispIncrE
-    print "slipVertex \n", slipVertex
+    print "dispIncrE\n", printdata(dispIncrE)
+    print "slipVertexE\n", printdata(slipVertex)
 
