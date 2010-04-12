@@ -1,0 +1,16 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 2
+  value-names =  traction-shear traction-normal
+  value-units =  Pa   Pa
+  num-locs = 3
+  data-dim = 2
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+ 0.0   1.0     1.0  -2.0
+ 0.0  -1.0     1.1  -2.1
+-2.0   1.0     1.2  -2.2
