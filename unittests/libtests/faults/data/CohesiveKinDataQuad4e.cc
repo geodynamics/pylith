@@ -108,9 +108,6 @@ const char* pylith::faults::CohesiveKinDataQuad4e::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4e::_riseTimeFilename = 
   "data/quad4e_risetime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataQuad4e::_matPropsFilename = 
-  "data/bulkprops_2d.spatialdb";
-
 const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   3.1, 5.1,
   3.2, 5.2,
@@ -654,7 +651,6 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);

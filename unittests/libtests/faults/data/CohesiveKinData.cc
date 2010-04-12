@@ -30,7 +30,6 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   finalSlipFilename(0),
   slipTimeFilename(0),
   riseTimeFilename(0),
-  matPropsFilename(0),
   fieldT(0),
   fieldIncr(0),
   jacobianLumped(0),
