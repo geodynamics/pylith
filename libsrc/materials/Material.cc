@@ -364,11 +364,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(totalPropsFiberDim == numQuadPts * numPropsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
 
-    // Get dimension scale information for properties.
-    double_array propertyScales(numPropsQuadPt);
-    propertyScales = 1.0;
-    _dimProperties(&propertyScales[0], propertyScales.size());
-
     // Allocate buffer for property field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -392,7 +387,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     } // if
     assert(!fieldSection.isNull());
     field->label(name);
-    field->scale(propertyScales[propOffset]);
+    field->scale(1.0);
     fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
 
     // Buffer for property at cell's quadrature points
@@ -406,11 +401,13 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       propertiesSection->restrictPoint(*c_iter, 
 				       &propertiesCell[0], propertiesCell.size());
    
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	_dimProperties(&propertiesCell[iQuad*numPropsQuadPt],
+		       numPropsQuadPt);
 	for (int i=0; i < fiberDim; ++i)
 	  fieldCell[iQuad*fiberDim+i] = 
 	    propertiesCell[iQuad*numPropsQuadPt+propOffset+i];
-
+      } // for
       fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
   } else { // field is a state variable
@@ -439,11 +436,6 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(totalVarsFiberDim == numQuadPts * numVarsQuadPt);
     const int totalFiberDim = numQuadPts * fiberDim;
 
-    // Get dimension scale information for state variables.
-    double_array stateVarScales(numVarsQuadPt);
-    stateVarScales = 1.0;
-    _dimStateVars(&stateVarScales[0], stateVarScales.size());
-
     // Allocate buffer for state variable field if necessary.
     const ALE::Obj<RealSection>& fieldSection = field->section();
     bool useCurrentField = !fieldSection.isNull();
@@ -468,7 +460,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(!fieldSection.isNull());
     fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
     field->label(name);
-    field->scale(stateVarScales[varOffset]);
+    field->scale(1.0);
 
     // Buffer for state variable at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -481,11 +473,13 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       stateVarsSection->restrictPoint(*c_iter, 
 				      &stateVarsCell[0], stateVarsCell.size());
       
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	_dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt],
+		      numVarsQuadPt);
 	for (int i=0; i < fiberDim; ++i)
 	  fieldCell[iQuad*fiberDim+i] = 
 	    stateVarsCell[iQuad*numVarsQuadPt+varOffset+i];
-      
+      } // for
       fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
   } // if/else
