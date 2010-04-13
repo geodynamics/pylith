@@ -314,45 +314,64 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     
     friction.timeStep(data.dt);
     friction.retrievePropsAndVars(vertex);
-    friction.updateStateVars(slip, slipRate, normalTraction);
+    friction.updateStateVars(slip, slipRate, normalTraction, vertex);
     
     // no outcome to test
   } // Test with friction model without state variables
 
   { // Test with friction model with state variables (slip weakening)
-    // Initialize uses static friction, so we hardwire the properties
-    // and stateVars
+    // Initialize uses static friction, so we change to slip weakening.
+    topology::Mesh mesh;
+    faults::FaultCohesiveDyn fault;
+    StaticFriction frictionDummy;
+    StaticFrictionData data;
+    _initialize(&mesh, &fault, &frictionDummy, &data);
+    
+    SlipWeakening friction;
+    spatialdata::spatialdb::SimpleDB db;
+    spatialdata::spatialdb::SimpleIOAscii dbIO;
+    dbIO.filename("data/friction_slipweakening.spatialdb");
+    db.ioHandler(&dbIO);
+    db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  
+    friction.dbProperties(&db);
+    fault.frictionModel(&friction);
+    
+    const double upDir[] = { 0.0, 0.0, 1.0 };
+    const double normalDir[] = { 1.0, 0.0, 0.0 };
+    fault.initialize(mesh, upDir, normalDir);
+    const int vertex = 2;
+
     const double slip = 0.25;
     const double slipRate = 0.64;
     const double normalTraction = -2.3;
     const double cohesion = 1000000;
     const double dt = 0.01;
 
-    const size_t numProperties = 4;
-    const double properties[4] = { 0.6, 0.5, 0.004, 1000000 };
-    const size_t numStateVars = 2;
+    const int numStateVars = 2;
     const double stateVars[2] = { 0.5, 0.1 };
-    const double stateVarsUpdated[2] = { 0.65, 0.5 };
+    const double stateVarsUpdatedE[2] = { 0.65, 0.5 };
     
-    SlipWeakening friction;
 
-    friction._propertiesVertex.resize(numProperties);
-    for (size_t i=0; i < numProperties; ++i)
-      friction._propertiesVertex[i] = properties[i];
-    friction._stateVarsVertex.resize(numStateVars);
+    // Set state variables to given values
+    CPPUNIT_ASSERT_EQUAL(numStateVars, int(friction._stateVarsVertex.size()));
     for (size_t i=0; i < numStateVars; ++i)
       friction._stateVarsVertex[i] = stateVars[i];
 
     friction.timeStep(dt);
-    friction.updateStateVars(slip, slipRate, normalTraction);
+    friction.updateStateVars(slip, slipRate, normalTraction, vertex);
     
-    CPPUNIT_ASSERT_EQUAL(numStateVars, friction._stateVarsVertex.size());
-
     const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdated[0],
-				 friction._stateVarsVertex[0], tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdated[1],
-				 friction._stateVarsVertex[1], tolerance);
+    CPPUNIT_ASSERT(0 != friction._stateVars);
+    const ALE::Obj<RealSection>& stateVarsSection = 
+      friction._stateVars->section();
+    const double* stateVarsUpdated = stateVarsSection->restrictPoint(vertex);
+    CPPUNIT_ASSERT_EQUAL(numStateVars, 
+			 stateVarsSection->getFiberDimension(vertex));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[0],
+				 stateVarsUpdated[0], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[1],
+				 stateVarsUpdated[1], tolerance);
   } // Test with friction model with state variables (slip weakening)
 
 } // testUpdateStateVars

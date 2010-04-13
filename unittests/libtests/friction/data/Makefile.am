@@ -12,7 +12,8 @@
 
 dist_noinst_DATA = \
 	tri3.mesh \
-	friction_static.spatialdb
+	friction_static.spatialdb \
+	friction_slipweakening.spatialdb
 
 noinst_TMP =
 

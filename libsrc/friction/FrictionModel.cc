@@ -641,11 +641,22 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
 void
 pylith::friction::FrictionModel::updateStateVars(const double slip,
 						 const double slipRate,
-						 const double normalTraction)
+						 const double normalTraction,
+						 const int vertex)
 { // updateStateVars
+  if (0 == _numVarsVertex)
+    return;
+
   _updateStateVars(slip, slipRate, normalTraction,
 		   &_stateVarsVertex[0], _stateVarsVertex.size(),
 		   &_propertiesVertex[0], _propertiesVertex.size());
+
+  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
+  assert(!stateVarsSection.isNull());
+  assert(_stateVarsVertex.size() == 
+	 stateVarsSection->getFiberDimension(vertex));
+  stateVarsSection->updatePoint(vertex, &_stateVarsVertex[0],
+				_stateVarsVertex.size());
 } // updateStateVars
 
 // ----------------------------------------------------------------------
