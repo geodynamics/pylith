@@ -73,6 +73,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaxwellIsotropic3D.py \
 	materials/MaxwellPlaneStrain.py \
 	materials/PowerLaw3D.py \
+	materials/DruckerPrager3D.py \
 	meshio/__init__.py \
 	meshio/CellFilter.py \
 	meshio/CellFilterAvgMesh.py \

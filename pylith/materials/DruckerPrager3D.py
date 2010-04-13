@@ -10,27 +10,28 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/PowerLaw3D.py
+## @file pylith/materials/DruckerPrager3D.py
 ##
-## @brief Python object implementing 3-D isotropic power-law
-## viscoelastic material.
+## @brief Python object implementing 3-D isotropic Drucker-Prager
+## elastoplastic material.
 ##
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
-from materials import PowerLaw3D as ModulePowerLaw3D
+from materials import DruckerPrager3D as ModuleDruckerPrager3D
 
-# PowerLaw3D class
-class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
+# DruckerPrager3D class
+class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
   """
-  Python object implementing 3-D isotropic power-law viscoelastic material.
+  Python object implementing 3-D isotropic Drucker-Prager elastoplastic
+  material.
 
   Factory: material.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="powerlaw3d"):
+  def __init__(self, name="druckerprager3d"):
     """
     Constructor.
     """
@@ -41,10 +42,9 @@ class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
             'data': []},
          'cell': \
            {'info': ["mu", "lambda", "density", 
-                     "reference_strain_rate", "reference_stress",
-                     "power_law_exponent"],
-            'data': ["total_strain", "stress", "viscous_strain"]}}
-    self._loggingPrefix = "MaPL3D "
+                     "alpha_yield", "beta", "alpha_flow"],
+            'data': ["total_strain", "stress", "plastic_strain"]}}
+    self._loggingPrefix = "MaDP3D "
     return
 
 
@@ -54,7 +54,7 @@ class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
     """
     Call constructor for module object for access to C++ object.
     """
-    ModulePowerLaw3D.__init__(self)
+    ModuleDruckerPrager3D.__init__(self)
     return
   
 
@@ -62,9 +62,9 @@ class PowerLaw3D(ElasticMaterial, ModulePowerLaw3D):
 
 def material():
   """
-  Factory associated with PowerLaw3D.
+  Factory associated with DruckerPrager3D.
   """
-  return PowerLaw3D()
+  return DruckerPrager3D()
 
 
 # End of file 
