@@ -289,14 +289,14 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
       const double slipMag = 0.0;
       const double slipRateMag = 0.0;
       const double tractionNormal = tractionTpdtVertex[0];
-      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal, v_fault);
       break;
     } // case 1
     case 2: { // case 2
       const double slipMag = fabs(slipVertex[0]);
       const double slipRateMag = fabs(slipRateVertex[0]);
       const double tractionNormal = tractionTpdtVertex[1];
-      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal, v_fault);
       break;
     } // case 2
     case 3: { // case 3
@@ -306,7 +306,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
 	sqrt(slipRateVertex[0]*slipRateVertex[0] + 
 	     slipRateVertex[1]*slipRateVertex[1]);
       const double tractionNormal = tractionTpdtVertex[2];
-      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal);
+      _friction->updateStateVars(slipMag, slipRateMag, tractionNormal, v_fault);
       break;
     } // case 3
     default:

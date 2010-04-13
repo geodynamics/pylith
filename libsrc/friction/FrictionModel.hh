@@ -186,10 +186,12 @@ public :
    * @param slip Current slip at location.
    * @param slipRate Current slip rate at location.
    * @param normalTraction Normal traction at location.
+   * @param vertex Finite-element vertex on friction interface.
    */
   void updateStateVars(const double slip,
 		       const double slipRate,
-		       const double normalTraction);
+		       const double normalTraction,
+		       const int vertex);
   
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
