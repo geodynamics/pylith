@@ -341,6 +341,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   _updateSlipRate(*fields);
   _sensitivitySetup(jacobian);
 
+  // Update time step in friction (can vary).
+  _friction->timeStep(_dt);
+
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate arrays for vertex values
@@ -625,6 +628,11 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   double_array slipTpdtVertex(spaceDim);
   double_array lagrangeTpdtVertex(spaceDim);
   double_array dLagrangeTpdtVertex(spaceDim);
+
+  _updateSlipRate(*fields);
+
+  // Update time step in friction (can vary).
+  _friction->timeStep(_dt);
 
   // Get section information
   double_array slipVertex(spaceDim);
