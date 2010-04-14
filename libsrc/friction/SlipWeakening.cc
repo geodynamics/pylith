@@ -220,7 +220,7 @@ pylith::friction::SlipWeakening::_dbToStateVars(
 // Nondimensionalize state variables.
 void
 pylith::friction::SlipWeakening::_nondimStateVars(double* const values,
-						    const int nvalues) const
+						  const int nvalues) const
 { // _nondimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
@@ -236,7 +236,7 @@ pylith::friction::SlipWeakening::_nondimStateVars(double* const values,
 // Dimensionalize state variables.
 void
 pylith::friction::SlipWeakening::_dimStateVars(double* const values,
-						      const int nvalues) const
+					       const int nvalues) const
 { // _dimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
@@ -302,7 +302,6 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
  
   stateVars[s_slipPrev] = stateVars[s_slipCum];
   stateVars[s_slipCum] += fabs(slip - slipPrev);
-  std::cout << "SLIP RATE: " << slipRate << std::endl;
  
 } // _updateStateVars
 

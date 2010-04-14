@@ -120,6 +120,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   assert(0 != _friction);
   assert(0 != _faultMesh);
   assert(0 != _fields);
+  _friction->normalizer(*_normalizer);
   _friction->initialize(*_faultMesh, _quadrature, _fields->get("area"));
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
@@ -1030,6 +1031,14 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _calcTractions(&buffer, dispT);
     return buffer;
 
+  } else if (_friction->hasProperty(name) || _friction->hasStateVar(name)) {
+    assert(0 != _fields);
+    if (!_fields->hasField("buffer (other)"))
+      _fields->add("buffer (other)", "buffer");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (other)");
+    _friction->getField(&buffer, name);
+    return buffer;
+
   } else {
     std::ostringstream msg;
     msg << "Request for unknown vertex field '" << name << "' for fault '"
@@ -1799,8 +1808,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D(
   const double dlp = dLagrangeTpdt[0];
   (*slip)[0] -= Spp * dlp;
 
-  std::cout << "Slip: (" << (*slip)[0] << ")" << std::endl;
-
   PetscLogFlops(2);
 } // _sensitivitySolveLumped1D
 
@@ -1832,8 +1839,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D(
   const double dlq = dLagrangeTpdt[1];
   (*slip)[0] -= Spp * dlp;
   (*slip)[1] -= Sqq * dlq;
-
-  std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ")" << std::endl;
 
   PetscLogFlops(7);
 } // _sensitivitySolveLumped2D
@@ -1873,8 +1878,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
   (*slip)[1] -= Sqq * dlq;
   (*slip)[2] -= Srr * dlr;
 
-  std::cout << "Slip: (" << (*slip)[0] << ", " << (*slip)[1] << ", " << (*slip)[2] << ")" << std::endl;
-
   PetscLogFlops(9);
 } // _sensitivitySolveLumped3D
 
@@ -1912,8 +1915,6 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
 { // _constrainSolnSpace2D
   assert(0 != dLagrangeTpdt);
 
-  std::cout << "Normal traction:" << tractionTpdt[1] << std::endl;
-
   const double slipMag = fabs(slip[0]);
   const double slipRateMag = fabs(slipRate[0]);
 
@@ -1922,14 +1923,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
 
   if (tractionNormal < 0 && 0.0 == slip[1]) {
     // if in compression and no opening
-    std::cout << "FAULT IN COMPRESSION" << std::endl;
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
                 tractionNormal);
-    std::cout << "frictionStress: " << frictionStress << std::endl;
     if (tractionShearMag > frictionStress || 
   (tractionShearMag < frictionStress && slipMag > 0.0)) {
       // traction is limited by friction, so have sliding
-      std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
       
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
@@ -1938,13 +1936,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
       (*dLagrangeTpdt)[1] = 0.0;
     } else {
       // else friction exceeds value necessary, so stick
-      std::cout << "STICK" << std::endl;
       // no changes to solution
     } // if/else
   } else {
     // if in tension, then traction is zero.
-    std::cout << "FAULT IN TENSION" << std::endl;
-    
     (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
     (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
   } // else
@@ -1963,8 +1958,6 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
 { // _constrainSolnSpace3D
   assert(0 != dLagrangeTpdt);
 
-  std::cout << "Normal traction:" << tractionTpdt[2] << std::endl;
-
   const double slipShearMag = sqrt(slip[0] * slip[0] +
              slip[1] * slip[1]);
   double slipRateMag = sqrt(slipRate[0]*slipRate[0] + 
@@ -1977,15 +1970,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
   
   if (tractionNormal < 0.0 && 0.0 == slip[2]) {
     // if in compression and no opening
-    std::cout << "FAULT IN COMPRESSION" << std::endl;
     const double frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
-    std::cout << "frictionStress: " << frictionStress << std::endl;
     if (tractionShearMag > frictionStress || 
   (tractionShearMag < frictionStress && slipShearMag > 0.0)) {
       // traction is limited by friction, so have sliding
-      std::cout << "LIMIT TRACTION, HAVE SLIDING" << std::endl;
-      
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
   tractionTpdt[0] / tractionShearMag;
@@ -1998,13 +1987,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       
     } else {
       // else friction exceeds value necessary, so stick
-      std::cout << "STICK" << std::endl;
       // no changes to solution
     } // if/else
   } else {
     // if in tension, then traction is zero.
-    std::cout << "FAULT IN TENSION" << std::endl;
-    
     (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
     (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
     (*dLagrangeTpdt)[2] = -tractionTpdt[2] * area;
