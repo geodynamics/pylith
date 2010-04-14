@@ -36,7 +36,8 @@ class StaticFriction(FrictionModel, ModuleStaticFriction):
     FrictionModel.__init__(self, name)
     self.availableFields = \
         {'vertex': \
-           {'info': ["friction_coefficient","cohesion"],
+           {'info': ["friction_coefficient",
+                     "cohesion"],
             'data': []},
          'cell': \
            {'info': [],

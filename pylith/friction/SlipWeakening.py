@@ -36,8 +36,12 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
     FrictionModel.__init__(self, name)
     self.availableFields = \
         {'vertex': \
-           {'info': ["static_coefficient","dynamic_coefficient","slip_weakening_parameter","cohesion"],
-            'data': []},
+           {'info': ["static_coefficient",
+                     "dynamic_coefficient",
+                     "slip_weakening_parameter",
+                     "cohesion"],
+            'data': ["cumulative_slip",
+                     "previous_slip"]},
          'cell': \
            {'info': [],
             'data': []}}

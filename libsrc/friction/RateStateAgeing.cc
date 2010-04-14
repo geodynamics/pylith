@@ -349,7 +349,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   stateVars[s_state] = thetaTpdtVertex;
 
   std::cout << "STATEVAR before: " << thetaTVertex << ", after: " << thetaTpdtVertex << std::endl;
-  std::cout << "TIME-STEP: " << dt << std::endl;
+  std::cout << "SLIP RATE: " << slipRate << std::endl;
   PetscLogFlops(6);
 } // _updateStateVars
 

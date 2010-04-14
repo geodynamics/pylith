@@ -38,6 +38,10 @@ dist_noinst_PYTHON = \
 	friction_shear_stick_soln.py \
 	friction_shear_sliding_soln.py \
 	friction_opening_soln.py \
+	slipweakening_compression_soln.py \
+	slipweakening_shear_stick_soln.py \
+	slipweakening_shear_sliding_soln.py \
+	slipweakening_opening_soln.py \
 	testpylith.py
 
 dist_noinst_DATA = \
@@ -54,7 +58,11 @@ dist_noinst_DATA = \
 	friction_compression.cfg \
 	friction_shear_stick.cfg \
 	friction_shear_sliding.cfg \
-	friction_opening.cfg
+	friction_opening.cfg \
+	slipweakening_compression.cfg \
+	slipweakening_shear_stick.cfg \
+	slipweakening_shear_sliding.cfg \
+	slipweakening_opening.cfg
 
 noinst_TMP = \
 	axial_disp.spatialdb \
@@ -88,7 +96,19 @@ noinst_TMP = \
 	friction_shear_sliding-elastic_t0000000.vtk \
 	friction_opening_t0000000.vtk \
 	friction_opening-elastic_info.vtk \
-	friction_opening-elastic_t0000000.vtk
+	friction_opening-elastic_t0000000.vtk \
+	slipweakening_compression_t0000000.vtk \
+	slipweakening_compression-elastic_info.vtk \
+	slipweakening_compression-elastic_t0000000.vtk \
+	slipweakening_shear_stick_t0000000.vtk \
+	slipweakening_shear_stick-elastic_info.vtk \
+	slipweakening_shear_stick-elastic_t0000000.vtk \
+	slipweakening_shear_sliding_t0000000.vtk \
+	slipweakening_shear_sliding-elastic_info.vtk \
+	slipweakening_shear_sliding-elastic_t0000000.vtk \
+	slipweakening_opening_t0000000.vtk \
+	slipweakening_opening-elastic_info.vtk \
+	slipweakening_opening-elastic_t0000000.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
