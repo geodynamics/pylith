@@ -103,6 +103,11 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
     if not isinstance(self.inventory.db, NullComponent):
       self.availableFields['vertex']['info'] += ["initial_traction"]
+
+    self.availableFields['vertex']['info'] += \
+        self.friction.availableFields['vertex']['info']
+    self.availableFields['vertex']['data'] += \
+        self.friction.availableFields['vertex']['data']
     return
   
 
