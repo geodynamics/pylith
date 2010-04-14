@@ -10,9 +10,11 @@ MAIN PRIORITIES
 * Better preconditioning
   + Need settings for Schur complement
 
+  We should temporarily hardwire the Schur complement settings (enable
+  with #define) and see how well it works.
+
   MATT is thinking about how to setup Schur complement settings
   (recursive specification of field splits).
-
 
 * Drucker-Prager elastoplastic
   Need to link isJacobianSymmetric() in Integrator with materials.
