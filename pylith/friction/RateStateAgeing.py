@@ -36,8 +36,13 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
     FrictionModel.__init__(self, name)
     self.availableFields = \
         {'vertex': \
-           {'info': ["reference_friction_coefficient","reference_slip_rate","characteristic_slip_distance","constitutive_parameter_a","constitutive_parameter_b","state_variable"],
-            'data': []},
+           {'info': ["reference_friction_coefficient",
+                     "reference_slip_rate",
+                     "characteristic_slip_distance",
+                     "constitutive_parameter_a",
+                     "constitutive_parameter_b",
+                     "cohesion"],
+            'data': ["state_variable"]},
          'cell': \
            {'info': [],
             'data': []}}

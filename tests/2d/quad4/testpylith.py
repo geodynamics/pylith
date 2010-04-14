@@ -50,6 +50,18 @@ def suite():
   from TestFrictionOpening import TestFrictionOpening
   suite.addTest(unittest.makeSuite(TestFrictionOpening))
 
+  from TestSlipWeakeningCompression import TestSlipWeakeningCompression
+  suite.addTest(unittest.makeSuite(TestSlipWeakeningCompression))
+  
+  from TestSlipWeakeningShearStick import TestSlipWeakeningShearStick
+  suite.addTest(unittest.makeSuite(TestSlipWeakeningShearStick))
+
+  from TestSlipWeakeningShearSliding import TestSlipWeakeningShearSliding
+  suite.addTest(unittest.makeSuite(TestSlipWeakeningShearSliding))
+
+  from TestSlipWeakeningOpening import TestSlipWeakeningOpening
+  suite.addTest(unittest.makeSuite(TestSlipWeakeningOpening))
+
   return suite
 
 
