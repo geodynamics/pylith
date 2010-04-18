@@ -211,13 +211,11 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
 
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
-  const double alphaYield =
-    2.0 * sin(frictionAngle)/(sqrt(3.0) * (3.0 - sin(frictionAngle)));
-  const double beta =
-    6.0 * cohesion *
-    cos(frictionAngle)/(sqrt(3.0) * (3.0 - sin(frictionAngle)));
-  const double alphaFlow =
-    2.0 * sin(dilatationAngle)/(sqrt(3.0) * (3.0 - sin(dilatationAngle)));
+  const double denomFriction = sqrt(3.0) * (3.0 - sin(frictionAngle));
+  const double denomDilatation = sqrt(3.0) * (3.0 - sin(dilatationAngle));
+  const double alphaYield = 2.0 * sin(frictionAngle)/denomFriction;
+  const double beta = 6.0 * cohesion * cos(frictionAngle)/denomFriction;
+  const double alphaFlow = 2.0 * sin(dilatationAngle)/denomDilatation;
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
@@ -819,41 +817,14 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 	   pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
 							       strainPPTpdt) +
 	   strainPPTpdtProd);
-    const double plasticMult = 2.0 * ae * am *
-      (3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
+    const double plasticFac = 2.0 * ae * am/
       (6.0 * alphaYield * alphaFlow * ae + am);
+    const double meanStrainFac = 3.0 * alphaYield/am;
+    const double dFac = 1.0/(sqrt(2.0) * ae);
+    const double plasticMult = plasticFac *
+      (meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
 
     // Define some constants, vectors, and matrices.
-    const double vec1[] = {strainPPTpdt[0] + ae * devStressInitial[0],
-			   strainPPTpdt[1] + ae * devStressInitial[1],
-			   strainPPTpdt[2] + ae * devStressInitial[2],
-			   strainPPTpdt[3] + ae * devStressInitial[3],
-			   strainPPTpdt[4] + ae * devStressInitial[4],
-			   strainPPTpdt[5] + ae * devStressInitial[5]};
-    const double dDdEPrime[] = {vec1[0]/d,
-				vec1[1]/d,
-				vec1[2]/d,
-				2.0 * vec1[3]/d,
-				2.0 * vec1[4]/d,
-				2.0 * vec1[5]/d};
-    const double const1 = 2.0 * ae * am/
-      (6.0 * alphaYield * alphaFlow * ae + am);
-    const double const2 = 3.0 * alphaYield/am;
-    const double const3 = 1.0/(sqrt(2.0) * ae);
-    const double dLambdadEPrime[] = {
-      const1 * (-1.5 * const2 + const3 * dDdEPrime[0]),
-      const1 * (-1.5 * const2 + const3 * dDdEPrime[1]),
-      const1 * (-1.5 * const2 + const3 * dDdEPrime[2]),
-      const1 * (                const3 * dDdEPrime[3]),
-      const1 * (                const3 * dDdEPrime[4]),
-      const1 * (                const3 * dDdEPrime[5])};
-    const double delta[6][6] = {
-      {1.0, 0.0, 0.0, 0.0, 0.0, 0.0},
-      {0.0, 1.0, 0.0, 0.0, 0.0, 0.0},
-      {0.0, 0.0, 1.0, 0.0, 0.0, 0.0},
-      {0.0, 0.0, 0.0, 1.0, 0.0, 0.0},
-      {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
-      {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}};
     const double third = 1.0/3.0;
     const double dEdEpsilon[6][6] = {
       { 2.0 * third,      -third,      -third, 0.0, 0.0, 0.0},
@@ -862,47 +833,45 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
       {         0.0,         0.0,         0.0, 1.0, 0.0, 0.0},
       {         0.0,         0.0,         0.0, 0.0, 1.0, 0.0},
       {         0.0,         0.0,         0.0, 0.0, 0.0, 1.0}};
+    const double vec1[] = {strainPPTpdt[0] + ae * devStressInitial[0],
+			   strainPPTpdt[1] + ae * devStressInitial[1],
+			   strainPPTpdt[2] + ae * devStressInitial[2],
+			   strainPPTpdt[3] + ae * devStressInitial[3],
+			   strainPPTpdt[4] + ae * devStressInitial[4],
+			   strainPPTpdt[5] + ae * devStressInitial[5]};
+    const double dDdEpsilon[] = {vec1[0]/d,
+				 vec1[1]/d,
+				 vec1[2]/d,
+				 2.0 * vec1[3]/d,
+				 2.0 * vec1[4]/d,
+				 2.0 * vec1[5]/d};
+    const double dLambdadEpsilon[] = {
+      plasticFac * (alphaYield/am + dFac * dDdEpsilon[0]),
+      plasticFac * (alphaYield/am + dFac * dDdEpsilon[1]),
+      plasticFac * (alphaYield/am + dFac * dDdEpsilon[2]),
+      plasticFac * (                dFac * dDdEpsilon[3]),
+      plasticFac * (                dFac * dDdEpsilon[4]),
+      plasticFac * (                dFac * dDdEpsilon[5])};
     
-    const double const4 = 1.0/(sqrt(2.0) *d);
-    const double const5 = plasticMult/sqrt(2.0);
-    const double const6 = -1.0/(d * d);
-    
-    const double dPressuredEpsilon[] = {
-      (third - const1 * (alphaYield/am + const3 * dDdEPrime[0]))/am,
-      (third - const1 * (alphaYield/am + const3 * dDdEPrime[1]))/am,
-      (third - const1 * (alphaYield/am + const3 * dDdEPrime[2]))/am,
-      (-const1 * const3 * dDdEPrime[3])/am,
-      (-const1 * const3 * dDdEPrime[4])/am,
-      (-const1 * const3 * dDdEPrime[5])/am};
-    
-    double dDeltaEdEPrime = 0.0;
-    double dSdEPrime[tensorSize][tensorSize];
+    const double dFac2 = 1.0/(sqrt(2.0) * d);
+    double dDeltaEdEpsilon = 0.0;
 
-    for (int iComp=0; iComp < tensorSize; ++iComp) {
-      for (int kComp=0; kComp < tensorSize; ++kComp) {
-	dDeltaEdEPrime = const4 * dLambdadEPrime[kComp] * vec1[iComp] +
-	  const5 * (const6 * dDdEPrime[kComp] * vec1[iComp] +
-		    delta[iComp][kComp]/d);
-	dSdEPrime[iComp][kComp] = (delta[iComp][kComp] - dDeltaEdEPrime)/ae;
-      } // for
-    } // for
-
-    // Matrix multiplication.
-    double sum = 0.0;
-    double pressureTerm = 0.0;
-    double elasticMatrix[tensorSize][tensorSize];
+    // Compute elasticity matrix.
     for (int iComp=0; iComp < tensorSize; ++iComp) {
       for (int jComp=0; jComp < tensorSize; ++jComp) {
-	pressureTerm = diag[iComp] * dPressuredEpsilon[jComp];
-	sum = 0.0;
-	for (int kComp=0; kComp < tensorSize; ++kComp) {
-	  sum += dSdEPrime[iComp][kComp] * dEdEpsilon[jComp][kComp];
-	} // for
-	elasticMatrix[iComp][jComp] = sum + pressureTerm;
+	int iCount = jComp + tensorSize * iComp;
+	dDeltaEdEpsilon = dFac2 * (vec1[iComp] *
+				   (dLambdadEpsilon[jComp] -
+				    plasticMult * dDdEpsilon[jComp]/d) +
+				   plasticMult * dEdEpsilon[iComp][jComp]);
+	elasticConsts[iCount] = (dEdEpsilon[iComp][jComp] -
+				 dDeltaEdEpsilon)/ae +
+	  diag[iComp] * (third * diag[jComp] -
+			 alphaFlow * dLambdadEpsilon[jComp])/am;
       } // for
     } // for
-    
-    PetscLogFlops(161 + tensorSize * tensorSize * (12 + 2 * tensorSize));
+
+    PetscLogFlops(109 + tensorSize * tensorSize * 15);
 
   } else {
     // No plastic strain.

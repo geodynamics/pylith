@@ -4403,12 +4403,16 @@ reference "eq:105"
 \end_layout
 
 \begin_layout Standard
-To compute the elastoplastic tangent matrix we proceed in a manner analogous
- to the viscoelastic case, using vector representations of the stress and
- strain tensors, and then computing the derivative of the stress vector
- with respect to the strain vector:
+To compute the elastoplastic tangent matrix we begin by writing 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:105"
+
+\end_inset
+
+ as a single equation in terms of stress and strain vectors:
 \begin_inset Formula \begin{equation}
-C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}+R_{i}\frac{\partial\phantom{}^{t+\Delta t}P}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:,\label{eq:117}\end{equation}
+^{t+\Delta t}\sigma_{i}=\frac{1}{a_{E}}\left(^{t+\Delta t}e_{i}^{\prime}-\Delta e_{i}^{P}\right)+S_{i}^{I}+\frac{R_{i}}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\Delta\theta^{P}\right)+P^{I}\label{eq:117}\end{equation}
 
 \end_inset
 
@@ -4419,36 +4423,63 @@ R_{i}=0\:;\; i=4,5,6\:.\nonumber \end{gather}
 
 \end_inset
 
-First considering the deviatoric portion, we have
+The elastoplastic tangent matrix is then given by
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}{\partial\phantom{}^{t+\Delta t}e_{l}}=\delta_{kl}\:,\label{eq:119}\end{equation}
+C_{ij}^{EP}=\frac{\partial\phantom{}^{t+\Delta t}\sigma_{i}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{a_{E}}\left(\frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)+\frac{R_{i}}{a_{m}}\left(\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\:.\label{eq:119}\end{equation}
 
 \end_inset
 
-and
-\begin_inset Formula \begin{align}
-\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}} & =\frac{1}{3}\left[\begin{array}{ccc}
-2 & -1 & -1\\
--1 & 2 & -1\\
--1 & -1 & 2\end{array}\right]\:;\; l,j=1,2,3\nonumber \\
-\frac{\partial\phantom{}^{t+\Delta t}e_{l}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}} & =\delta_{lj}\:;\;\mathrm{otherwise.}\label{eq:120}\end{align}
 
-\end_inset
+\end_layout
 
-From equation 
+\begin_layout Standard
+From 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:105"
+reference "eq:16"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:106"
 
 \end_inset
 
 , we have
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{1}{a_{E}}\left(\delta_{ik}-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\right)\:,\label{eq:121}\end{equation}
+\frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{3}\left[\begin{array}{cccccc}
+2 & -1 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0 & 0\\
+-1 & -1 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 0 & 3 & 0\\
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\:,\label{eq:120}\end{equation}
 
 \end_inset
 
-and from equation 
+and from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:15"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:106"
+
+\end_inset
+
+ we have
+\begin_inset Formula \begin{equation}
+\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{R_{j}}{3}\:.\label{eq:121}\end{equation}
+
+\end_inset
+
+From equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:116"
@@ -4457,7 +4488,7 @@ reference "eq:116"
 
  we have
 \begin_inset Formula \begin{equation}
-\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\frac{1}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\lambda}{\sqrt{2}}\left[\frac{-1}{^{t+\Delta t}d^{2}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)+\frac{\delta_{ik}}{^{t+\Delta t}d}\right]\:.\label{eq:122}\end{equation}
+\frac{\partial\Delta e_{i}^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{\sqrt{2}\,\phantom{}^{t+\Delta t}d}\left[\left(^{t+\Delta t}e_{i}^{\prime}+a_{E}S_{i}^{I}\right)\left(\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}-\frac{\lambda}{\phantom{}^{t+\Delta t}d}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)+\lambda\frac{\partial\phantom{}^{t+\Delta t}e_{i}^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right]\:.\label{eq:122}\end{equation}
 
 \end_inset
 
@@ -4467,118 +4498,38 @@ The derivative of
 
  is
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{a_{E}T_{k}^{I}+\phantom{}^{t+\Delta t}E_{k}}{\phantom{}^{t+\Delta t}d}\:,\label{eq:123}\end{equation}
+\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{a_{E}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\phantom{}^{t+\Delta t}d}\:,\label{eq:123}\end{equation}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{align}
-T_{k}^{I} & =S_{k}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{k}=\phantom{}^{t+\Delta t}e_{k}^{\prime}\:;\; k=1,2,3\nonumber \\
-T_{k}^{I} & =2S_{k}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{k}=2\phantom{}^{t+\Delta t}e_{k}^{\prime}\:;\; k=4,5,6\:.\label{eq:124}\end{align}
+T_{j}^{I} & =S_{j}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{j}=\phantom{}^{t+\Delta t}e_{j}^{\prime}\:;\; j=1,2,3\nonumber \\
+T_{j}^{I} & =2S_{j}^{I}\;\mathrm{and}\;\phantom{}^{t+\Delta t}E_{j}=2\phantom{}^{t+\Delta t}e_{j}^{\prime}\:;\; j=4,5,6\:.\label{eq:124}\end{align}
 
 \end_inset
 
-We then need to compute the derivative of 
+The derivative of 
 \begin_inset Formula $^{t+\Delta t}\lambda$
 \end_inset
 
-:
-\begin_inset Formula \begin{equation}
-\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{3\alpha_{f}}{a_{m}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}}\frac{\partial\phantom{}^{t+\Delta t}e_{m}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}\right)\:.\label{eq:125}\end{equation}
-
-\end_inset
-
-The first derivative in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:125"
-
-\end_inset
-
- is simply
-\begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}=\frac{R_{l}}{3}\:.\label{eq:126}\end{equation}
-
-\end_inset
-
-The third derivative yields the same result as equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:119"
-
-\end_inset
-
-, and the fourth is given by equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:123"
-
-\end_inset
-
-.
- The second derivative is analogous to equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:120"
-
-\end_inset
-
-:
+ is a function of derivatives already computed:
 \begin_inset Formula \begin{align}
-\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}} & =3\left[\begin{array}{ccc}
-\frac{1}{2} & -1 & -1\\
--1 & \frac{1}{2} & -1\\
--1 & -1 & \frac{1}{2}\end{array}\right]\:;\; l,m=1,2,3\nonumber \\
-\frac{\partial\phantom{}^{t+\Delta t}\epsilon_{l}}{\partial\phantom{}^{t+\Delta t}e_{m}} & =\delta_{lm}\:;\;\mathrm{otherwise.}\label{eq:127}\end{align}
+\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}} & =\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{3\alpha_{f}}{a_{m}}\frac{\partial\phantom{}^{t+\Delta t}\theta^{\prime}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\nonumber \\
+ & =\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{\alpha_{f}R_{j}}{a_{m}}+\frac{a_{E}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\sqrt{2}a_{E}\phantom{}^{t+\Delta t}d}\right)\:.\label{eq:125}\end{align}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-For the volumetric portion we use equation 
+Finally, from 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:113"
+reference "eq:108"
 
 \end_inset
 
- to obtain
+, the derivative of the volumetric plastic strain increment is:
 \begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}P}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{a_{m}}\left(\frac{R_{j}}{3}-\alpha_{g}\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\:.\label{eq:128}\end{equation}
-
-\end_inset
-
-From equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:114"
-
-\end_inset
-
-,
-\begin_inset Formula \begin{equation}
-\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{2a_{E}a_{m}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{R_{j}\alpha_{f}}{a_{m}}+\frac{1}{\sqrt{2}a_{E}}\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\right)\:.\label{eq:129}\end{equation}
-
-\end_inset
-
-From equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:111"
-
-\end_inset
-
- we have
-\begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}d}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{a_{e}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\phantom{}^{t+\Delta t}d}\:,\label{eq:130}\end{equation}
-
-\end_inset
-
-so that
-\begin_inset Formula \begin{equation}
-\frac{\partial\phantom{}^{t+\Delta t}P}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\frac{1}{a_{m}}\left[\frac{R_{j}}{3}-\frac{2a_{E}a_{m}\alpha_{g}}{6\alpha_{f}\alpha_{g}a_{E}+a_{m}}\left(\frac{R_{j}\alpha_{f}}{a_{m}}+\frac{a_{E}T_{j}^{I}+\phantom{}^{t+\Delta t}E_{j}}{\sqrt{2}a_{E}\phantom{}^{t+\Delta t}d}\right)\right]\:.\label{eq:131}\end{equation}
+\frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\alpha_{g}\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:.\label{eq:126}\end{equation}
 
 \end_inset
 
