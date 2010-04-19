@@ -851,25 +851,25 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
+      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
       const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
       const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Njp = basisDeriv[iQ+jBasis*spaceDim  ];
-	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
+	const double Nj1 = basisDeriv[iQ+jBasis*spaceDim  ];
+	const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
 	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1211 * Niq * Njp +
-	  C1112 * Nip * Njq + C1212 * Niq * Njq;
+	  C1111 * Ni1 * Nj1 + C1211 * Ni2 * Nj1 +
+	  C1112 * Ni1 * Nj2 + C1212 * Ni2 * Nj2;
 	const double ki0j1 =
-	  C1122 * Nip * Njq + C1222 * Niq * Njq +
-	  C1112 * Nip * Njp + C1212 * Niq * Njp;
+	  C1122 * Ni1 * Nj2 + C1222 * Ni2 * Nj2 +
+	  C1112 * Ni1 * Nj1 + C1212 * Ni2 * Nj1;
 	const double ki1j0 =
-	  C2211 * Niq * Njp + C1211 * Nip * Njp +
-	  C2212 * Niq * Njq + C1212 * Nip * Njq;
+	  C2211 * Ni2 * Nj1 + C1211 * Ni1 * Nj1 +
+	  C2212 * Ni2 * Nj2 + C1212 * Ni1 * Nj2;
 	const double ki1j1 =
-	  C2222 * Niq * Njq + C1222 * Nip * Njq +
-	  C2212 * Niq * Njp + C1212 * Nip * Njp;
+	  C2222 * Ni2 * Nj2 + C1222 * Ni1 * Nj2 +
+	  C2212 * Ni2 * Nj1 + C1212 * Ni1 * Nj1;
 	const int jBlock = (jBasis*spaceDim  );
 	const int jBlock1 = (jBasis*spaceDim+1);
 	_cellMatrix[iBlock +jBlock ] += ki0j0;
@@ -907,17 +907,17 @@ pylith::feassemble::IntegratorElasticity::_elasticityPrecon2D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip  = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double Niq  = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const double Ni1  = wt*basisDeriv[iQ+iBasis*spaceDim  ];
+      const double Ni2  = wt*basisDeriv[iQ+iBasis*spaceDim+1];
       const int iBlock  = (iBasis*spaceDim  ) * (numBasis*spaceDim);
       const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-        const double Njp  = basisDeriv[iQ+jBasis*spaceDim  ];
-        const double Njq  = basisDeriv[iQ+jBasis*spaceDim+1];
+        const double Nj1  = basisDeriv[iQ+jBasis*spaceDim  ];
+        const double Nj2  = basisDeriv[iQ+jBasis*spaceDim+1];
         const int jBlock  = (jBasis*spaceDim  );
         const int jBlock1 = (jBasis*spaceDim+1);
-        _cellMatrix[iBlock +jBlock ] += Nip*Njp;
-        _cellMatrix[iBlock1+jBlock1] += Niq*Njq;
+        _cellMatrix[iBlock +jBlock ] += Ni1*Nj1;
+        _cellMatrix[iBlock1+jBlock1] += Ni2*Nj2;
       } // for
     } // for
   } // for
@@ -990,49 +990,49 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double Nir = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
+      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const double Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Njp = basisDeriv[iQ+jBasis*spaceDim+0];
-	const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
-	const double Njr = basisDeriv[iQ+jBasis*spaceDim+2];
+	const double Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
+	const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
+	const double Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
 	const double ki0j0 = 
-	  C1111 * Nip * Njp + C1211 * Niq * Njp + C1311 * Nir * Njp +
-	  C1112 * Nip * Njq + C1212 * Niq * Njq + C1312 * Nir * Njq +
-	  C1113 * Nip * Njr + C1213 * Niq * Njr + C1313 * Nir * Njr;
+	  C1111 * Ni1 * Nj1 + C1211 * Ni2 * Nj1 + C1311 * Ni3 * Nj1 +
+	  C1112 * Ni1 * Nj2 + C1212 * Ni2 * Nj2 + C1312 * Ni3 * Nj2 +
+	  C1113 * Ni1 * Nj3 + C1213 * Ni2 * Nj3 + C1313 * Ni3 * Nj3;
 	const double ki0j1 =
-	  C1122 * Nip * Njq + C1222 * Niq * Njq + C1322 * Nir * Njq +
-	  C1112 * Nip * Njp + C1212 * Niq * Njp + C1312 * Nir * Njp +
-	  C1123 * Nip * Njr + C1223 * Niq * Njr + C1323 * Nir * Njr;
+	  C1122 * Ni1 * Nj2 + C1222 * Ni2 * Nj2 + C1322 * Ni3 * Nj2 +
+	  C1112 * Ni1 * Nj1 + C1212 * Ni2 * Nj1 + C1312 * Ni3 * Nj1 +
+	  C1123 * Ni1 * Nj3 + C1223 * Ni2 * Nj3 + C1323 * Ni3 * Nj3;
 	const double ki0j2 =
-	  C1133 * Nip * Njr + C1233 * Niq * Njr + C1333 * Nir * Njr +
-	  C1123 * Nip * Njq + C1223 * Niq * Njq + C1323 * Nir * Njq +
-	  C1113 * Nip * Njp + C1213 * Niq * Njp + C1313 * Nir * Njp;
+	  C1133 * Ni1 * Nj3 + C1233 * Ni2 * Nj3 + C1333 * Ni3 * Nj3 +
+	  C1123 * Ni1 * Nj2 + C1223 * Ni2 * Nj2 + C1323 * Ni3 * Nj2 +
+	  C1113 * Ni1 * Nj1 + C1213 * Ni2 * Nj1 + C1313 * Ni3 * Nj1;
 	const double ki1j0 =
-	  C2211 * Niq * Njp + C1211 * Nip * Njp + C2311 * Nir * Njp +
-	  C2212 * Niq * Njq + C1212 * Nip * Njq + C2312 * Nir * Njq +
-	  C2213 * Niq * Njr + C1213 * Nip * Njr + C2313 * Nir * Njr;
+	  C2211 * Ni2 * Nj1 + C1211 * Ni1 * Nj1 + C2311 * Ni3 * Nj1 +
+	  C2212 * Ni2 * Nj2 + C1212 * Ni1 * Nj2 + C2312 * Ni3 * Nj2 +
+	  C2213 * Ni2 * Nj3 + C1213 * Ni1 * Nj3 + C2313 * Ni3 * Nj3;
 	const double ki1j1 =
-	  C2222 * Niq * Njq + C1222 * Nip * Njq + C2322 * Nir * Njq +
-	  C2212 * Niq * Njp + C1212 * Nip * Njp + C2312 * Nir * Njp +
-	  C2223 * Niq * Njr + C1223 * Nip * Njr + C2323 * Nir * Njr;
+	  C2222 * Ni2 * Nj2 + C1222 * Ni1 * Nj2 + C2322 * Ni3 * Nj2 +
+	  C2212 * Ni2 * Nj1 + C1212 * Ni1 * Nj1 + C2312 * Ni3 * Nj1 +
+	  C2223 * Ni2 * Nj3 + C1223 * Ni1 * Nj3 + C2323 * Ni3 * Nj3;
 	const double ki1j2 =
-	  C2233 * Niq * Njr + C1233 * Nip * Njr + C2333 * Nir * Njr +
-	  C2223 * Niq * Njq + C1223 * Nip * Njq + C2323 * Nir * Njq +
-	  C2213 * Niq * Njp + C1213 * Nip * Njp + C2313 * Nir * Njp;
+	  C2233 * Ni2 * Nj3 + C1233 * Ni1 * Nj3 + C2333 * Ni3 * Nj3 +
+	  C2223 * Ni2 * Nj2 + C1223 * Ni1 * Nj2 + C2323 * Ni3 * Nj2 +
+	  C2213 * Ni2 * Nj1 + C1213 * Ni1 * Nj1 + C2313 * Ni3 * Nj1;
 	const double ki2j0 =
-	  C3311 * Nir * Njp + C2311 * Niq * Njp + C1311 * Nip * Njp +
-	  C3312 * Nir * Njq + C2312 * Niq * Njq + C1312 * Nip * Njq +
-	  C3313 * Nir * Njr + C2313 * Niq * Njr + C1313 * Nip * Njr; 
+	  C3311 * Ni3 * Nj1 + C2311 * Ni2 * Nj1 + C1311 * Ni1 * Nj1 +
+	  C3312 * Ni3 * Nj2 + C2312 * Ni2 * Nj2 + C1312 * Ni1 * Nj2 +
+	  C3313 * Ni3 * Nj3 + C2313 * Ni2 * Nj3 + C1313 * Ni1 * Nj3; 
 	const double ki2j1 =
-	  C3322 * Nir * Njq + C2322 * Niq * Njq + C1322 * Nip * Njq +
-	  C3312 * Nir * Njp + C2312 * Niq * Njp + C1312 * Nip * Njp +
-	  C3323 * Nir * Njr + C2323 * Niq * Njr + C1323 * Nip * Njr; 
+	  C3322 * Ni3 * Nj2 + C2322 * Ni2 * Nj2 + C1322 * Ni1 * Nj2 +
+	  C3312 * Ni3 * Nj1 + C2312 * Ni2 * Nj1 + C1312 * Ni1 * Nj1 +
+	  C3323 * Ni3 * Nj3 + C2323 * Ni2 * Nj3 + C1323 * Ni1 * Nj3; 
 	const double ki2j2 =
-	  C3333 * Nir * Njr + C2333 * Niq * Njr + C1333 * Nip * Njr +
-	  C3323 * Nir * Njq + C2323 * Niq * Njq + C1323 * Nip * Njq +
-	  C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
+	  C3333 * Ni3 * Nj3 + C2333 * Ni2 * Nj3 + C1333 * Ni1 * Nj3 +
+	  C3323 * Ni3 * Nj2 + C2323 * Ni2 * Nj2 + C1323 * Ni1 * Nj2 +
+	  C3313 * Ni3 * Nj1 + C2313 * Ni2 * Nj1 + C1313 * Ni1 * Nj1;
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
 	const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
@@ -1077,22 +1077,22 @@ pylith::feassemble::IntegratorElasticity::_elasticityPrecon3D(
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Nip = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double Niq = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double Nir = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
+      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const double Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-        const double Njp = basisDeriv[iQ+jBasis*spaceDim+0];
-        const double Njq = basisDeriv[iQ+jBasis*spaceDim+1];
-        const double Njr = basisDeriv[iQ+jBasis*spaceDim+2];
+        const double Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
+        const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
+        const double Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
         const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
         const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
         const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
         const int jBlock = jBasis*spaceDim;
         const int jBlock1 = jBasis*spaceDim+1;
         const int jBlock2 = jBasis*spaceDim+2;
-        _cellMatrix[iBlock +jBlock ] += Nip*Njp;
-        _cellMatrix[iBlock1+jBlock1] += Niq*Njq;
-        _cellMatrix[iBlock2+jBlock2] += Nir*Njr;
+        _cellMatrix[iBlock +jBlock ] += Ni1*Nj1;
+        _cellMatrix[iBlock1+jBlock1] += Ni2*Nj2;
+        _cellMatrix[iBlock2+jBlock2] += Ni3*Nj3;
       } // for
     } // for
   } // for
