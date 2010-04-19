@@ -688,7 +688,7 @@ viscous_strain_3
 \begin_inset Text
 
 \begin_layout Plain Layout
-Power-law
+Power-law Viscoelastic
 \end_layout
 
 \end_inset
@@ -744,8 +744,11 @@ Drucker-Prager Elastoplastic
 \begin_layout Plain Layout
 
 \family typewriter
-mu, lambda, density, friction_angle, cohesion, dilatation_angle, friction_harden
-ing, cohesion_hardening, dilatation_hardening 
+mu, lambda, density, 
+\family default
+alpha_yield,
+\family typewriter
+ beta, alpha_flow 
 \end_layout
 
 \end_inset
@@ -2369,7 +2372,7 @@ where
  The topmost equation in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:105"
+reference "eq:42"
 
 \end_inset
 
@@ -4133,7 +4136,7 @@ key "Drucker:Prager:1952"
  sometimes predicted by the associated model.
  The model is described by the following yield condition:
 \begin_inset Formula \begin{equation}
-f\left(\underline{\sigma},k\right)=\alpha_{f}I_{1}+\sqrt{J_{2}^{\prime}}-\beta\bar{c}\left(k\right)\:,\label{eq:100}\end{equation}
+f\left(\underline{\sigma},k\right)=\alpha_{f}I_{1}+\sqrt{J_{2}^{\prime}}-\beta\:,\label{eq:100}\end{equation}
 
 \end_inset
 
@@ -4145,7 +4148,7 @@ where
 
 and
 \begin_inset Formula \begin{equation}
-\beta=\frac{6\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}\:.\label{eq:102}\end{equation}
+\beta=\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}\:.\label{eq:102}\end{equation}
 
 \end_inset
 
@@ -4264,7 +4267,87 @@ Drucker-Prager Elastoplastic With No Hardening (Perfectly Plastic)
 \end_layout
 
 \begin_layout Standard
-When the yield and flow functions do not vary, we can solve for 
+When there is no hardening (perfect plasticity), the Drucker-Prager elastoplasti
+c model may be parameterized with just three parameters, in addition to
+ the normal elasticity parameters.
+ The parameters 
+\family typewriter
+friction-angle
+\family default
+, 
+\family typewriter
+cohesion
+\family default
+, and 
+\family typewriter
+dilatation-angle
+\family default
+ in
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:druckerPrager"
+
+\end_inset
+
+ refer to 
+\begin_inset Formula $\phi$
+\end_inset
+
+, 
+\begin_inset Formula $\bar{c}$
+\end_inset
+
+, and 
+\begin_inset Formula $\psi$
+\end_inset
+
+ in equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:101"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:102"
+
+\end_inset
+
+, and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:104"
+
+\end_inset
+
+, respectively.
+ These are then converted to the properties 
+\begin_inset Formula $\alpha_{f}$
+\end_inset
+
+ (alpha-yield), 
+\begin_inset Formula $\beta$
+\end_inset
+
+ (beta), and 
+\begin_inset Formula $\alpha_{g}$
+\end_inset
+
+ (alpha-flow), as shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For perfect plasticity the yield and flow functions do not vary, and we
+ can solve for 
 \begin_inset Formula $\lambda$
 \end_inset
 
@@ -4530,6 +4613,225 @@ reference "eq:108"
 , the derivative of the volumetric plastic strain increment is:
 \begin_inset Formula \begin{equation}
 \frac{\partial\Delta\theta^{P}}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}=\alpha_{g}\frac{\partial\lambda}{\partial\phantom{}^{t+\Delta t}\epsilon_{j}}\:.\label{eq:126}\end{equation}
+
+\end_inset
+
+
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:druckerPrager"
+
+\end_inset
+
+Values in spatial database used as parameters in the Drucker-Prager elastoplasti
+c model with perfect plasticity.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features>
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Name in Spatial Database
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $v_{p}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vp
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $v_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vs
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+density
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\phi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+friction-angle
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\bar{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\psi$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dilatation-angle
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
 
 \end_inset
 
