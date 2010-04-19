@@ -109,7 +109,7 @@ Mathematical notation
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="10" columns="3">
+<lyxtabular version="3" rows="11" columns="3">
 <features>
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -272,6 +272,41 @@ Second order tensor field a
 
 \begin_layout Plain Layout
 Displacement vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $d_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\vec{{d}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fault slip vector field
 \end_layout
 
 \end_inset
@@ -506,7 +541,7 @@ where
 \end_inset
 
 .
- Substituting into Equation 
+ Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eqn:momentum:index"
@@ -545,12 +580,38 @@ Because the volume
  so that we end up with
 \begin_inset Formula \begin{gather}
 \rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\\
-\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\\
-u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{gather}
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{,}\\
+u_{i}=u_{i}^{o}\text{ on }S_{u}\text{, and}\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f}.\end{gather}
 
 \end_inset
 
-Note that since both 
+We specify tractions, 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+, on surface 
+\begin_inset Formula $S_{f}$
+\end_inset
+
+, displacements, 
+\begin_inset Formula $u_{i}^{o}$
+\end_inset
+
+, on surface 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+, and slip, 
+\begin_inset Formula $d_{k}$
+\end_inset
+
+, on fault surface 
+\begin_inset Formula $S_{f}$
+\end_inset
+
+.
+ Note that since both 
 \begin_inset Formula $T_{i}$
 \end_inset
 
@@ -558,17 +619,17 @@ Note that since both
 \begin_inset Formula $u_{i}$
 \end_inset
 
- are vector quantities, there can be some spatial overlap of the conceptual
- surfaces 
+ are vector quantities, there can be some spatial overlap of the surfaces
+ 
 \begin_inset Formula $S_{T}$
 \end_inset
 
- (specified tractions) and 
+ and 
 \begin_inset Formula $S_{u}$
 \end_inset
 
- (specified displacements); however, the same degree of freedom cannot simultane
-ously have both types of boundary conditions.
+; however, the same degree of freedom cannot simultaneously have both types
+ of boundary conditions.
 \end_layout
 
 \begin_layout Subsection
@@ -590,7 +651,7 @@ Consider volume
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.\label{eqn:momentum:vec}\end{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\vec{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.\label{eqn:momentum:vec}\end{equation}
 
 \end_inset
 
@@ -609,7 +670,7 @@ where
 \end_inset
 
 .
- Substituting into Equation 
+ Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eqn:momentum:vec"
@@ -636,7 +697,7 @@ to the surface integral results in
 
 which we can rewrite as
 \begin_inset Formula \begin{equation}
-\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=0.\end{equation}
+\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=\vec{0}.\end{equation}
 
 \end_inset
 
@@ -644,16 +705,42 @@ Because the volume
 \begin_inset Formula $V$
 \end_inset
 
- is arbitrary, the integrand must be zero at every location in the volume,
- so that we end up with
+ is arbitrary, the integrand must be the zero vector at every location in
+ the volume, so that we end up with
 \begin_inset Formula \begin{gather}
-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\\
-\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{, and}\\
-\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u.}\end{gather}
+\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=\vec{0}\text{ in }V,\\
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{,}\\
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\text{ and}\\
+\bar{R}(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\end{gather}
 
 \end_inset
 
-Note that since both 
+We specify tractions, 
+\begin_inset Formula $\vec{T}$
+\end_inset
+
+, on surface 
+\begin_inset Formula $S_{f}$
+\end_inset
+
+, displacements, 
+\begin_inset Formula $\vec{u^{o}}$
+\end_inset
+
+, on surface 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+, and slip, 
+\begin_inset Formula $\vec{d}$
+\end_inset
+
+, on fault surface 
+\begin_inset Formula $S_{f}$
+\end_inset
+
+.
+ Note that since both 
 \begin_inset Formula $\overrightarrow{T}$
 \end_inset
 
@@ -661,17 +748,17 @@ Note that since both
 \begin_inset Formula $\overrightarrow{u}$
 \end_inset
 
- are vector quantities, there can be some spatial overlap of the conceptual
- surfaces 
+ are vector quantities, there can be some spatial overlap of the surfaces
+ 
 \begin_inset Formula $S_{T}$
 \end_inset
 
- (specified tractions) and 
+ and 
 \begin_inset Formula $S_{u}$
 \end_inset
 
- (specified displacements); however, the same degree of freedom cannot simultane
-ously have both types of boundary conditions.
+; however, the same degree of freedom cannot simultaneously have both types
+ of boundary conditions.
 \end_layout
 
 \begin_layout Section
@@ -688,15 +775,16 @@ We start with the wave equation (strong form),
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\sigma_{ij,j}+f_{i}=\rho\ddot{u}\text{ in }V,\\
+\sigma_{ij,j}+f_{i}=\rho\ddot{u_{i}}\text{ in }V,\\
 \sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
 u_{i}=u_{i}^{o}\text{ on }S_{u},\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\text{ and}\\
 \sigma_{ij}=\sigma_{ji}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
-We construct the weak form by multiplying the wave equation by a trial function
- and setting the integral over the domain to zero.
+We construct the weak form by computing the dot product of the wave equation
+ and a trial function and setting the integral over the domain to zero.
  The trial function is a piecewise differentiable vector field, 
 \begin_inset Formula $\phi_{i}$
 \end_inset
@@ -710,9 +798,19 @@ We construct the weak form by multiplying the wave equation by a trial function
 \end_inset
 
  Hence our weak form is
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add fault constraint
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{gather}
 \int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\\
-\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{gather}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=\vec{0}.\end{gather}
 
 \end_inset
 
@@ -735,6 +833,16 @@ Expanding the left-hand side yields
 \end_inset
 
 Substituting into the weak form gives
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add fault constraint
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{equation}
 -\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
 
@@ -773,6 +881,16 @@ which we can write as
 \end_inset
 
 Substituting into the first term gives
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add fault constraint
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{equation}
 -\int_{V}\frac{1}{2}\sigma_{ij}\left(\phi_{i,j}+\phi_{j,i}\right)\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
 
@@ -792,6 +910,16 @@ Turning our attention to the second term, we separate the integration over
 \end_inset
 
 ,
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add fault constraint
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{equation}
 -\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,\end{equation}
 
@@ -805,13 +933,191 @@ and recognize that
 \end_inset
 
 so that the equation reduces to
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add fault constraint
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
+-\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\label{eq:elasticity:integral}\end{equation}
 
 \end_inset
 
 This is the equation we want to solve.
- Discretizing into finite elements separates the integral over the domain
+ 
+\end_layout
+
+\begin_layout Section
+Solution Method for Quasi-Static Problems
+\end_layout
+
+\begin_layout Standard
+In quasi-static problems we neglect the inertial terms, so equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:elasticity:integral"
+
+\end_inset
+
+ reduces to
+\begin_inset Formula \[
+-\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV=0.\]
+
+\end_inset
+
+As a result, time-dependence only enters through the constitutive relationships
+ and the loading conditions.
+ We consider the deformation at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\sigma_{ij}(t+\Delta t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV=0.\label{eq:elasticity:integral:t+dt}\end{equation}
+
+\end_inset
+
+We solve this equation through formulation of a linear algebraic system
+ of equations, involving the residual and Jacobian.
+ The residual is simply
+\begin_inset Formula \[
+R=-\int_{V}\frac{1}{2}\sigma_{ij}(t+\Delta t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
+
+\end_inset
+
+In the finite-element discretization, the trial functions are scalar quantities,
+ i.e., the same trial function is used for each component, and we employ quadratur
+e to integrate the quantities over the domain of each finite-element cell.
+ We formulate the residual using
+\begin_inset Formula \[
+R=-\sum_{\text{vol cells}}\sum_{\text{quad pt}}\frac{1}{2}\sigma_{ij}(x_{q},t+\Delta t)(\phi_{,j}(x_{q})+\phi_{,i}(x_{q}))\: w_{q}|J_{m}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}}f_{i}(x_{q},t+\Delta t)\phi(x_{q})\, w_{q}|J_{m}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pt}}T_{i}(x_{q},t+\Delta t)\phi_{i}(x_{q})\, w_{q}|J_{m}(x_{q})|,\]
+
+\end_inset
+
+where 
+\begin_inset Formula $x_{q}$
+\end_inset
+
+ are the coordinates of the quadrature points, 
+\begin_inset Formula $w_{q}$
+\end_inset
+
+ are the weights of the quadrature points, and 
+\begin_inset Formula $|J_{m}(x_{q})|$
+\end_inset
+
+ is the determinant of the Jacobian matrix evaluated at the quadrature points
+ associated with mapping the reference cell to the actual cell.
+ The quadrature scheme for the integral over the tractions is one dimension
+ lower than the one used in integrating the terms for the volume cells.
+\end_layout
+
+\begin_layout Standard
+In order to find the Jacobian of the system, we let
+\begin_inset Formula \[
+\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).\]
+
+\end_inset
+
+Substituting into equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:elasticity:integral:t+dt"
+
+\end_inset
+
+ and isolating the term with 
+\begin_inset Formula $d\sigma_{ij}(t)$
+\end_inset
+
+, we have
+\begin_inset Formula \[
+\int_{V}\frac{1}{2}d\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
+
+\end_inset
+
+We use a linear approximation for the change in stress,
+\begin_inset Formula \[
+d\sigma_{ij}(t)=C_{ijkl}d\varepsilon_{kl}(t),\]
+
+\end_inset
+
+which leads to
+\begin_inset Formula \[
+\int_{V}\frac{1}{2}C_{ijkl}d\varepsilon(t)(\phi_{i,j}+\phi_{j,i})\: dV=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
+
+\end_inset
+
+For infinitesimal strains
+\begin_inset Formula \[
+\varepsilon_{kl}(t)=\frac{1}{2}(u_{k,l}(t)+u_{l,k}(t)).\]
+
+\end_inset
+
+We discretize the displacement field using the trial function,
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Need consistent symbols for discretization.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula \[
+u_{i}(t)=\phi_{i}u_{i}(x,t),\]
+
+\end_inset
+
+so that we have
+\begin_inset Formula \[
+\int_{V}\frac{1}{4}C_{ijkl}(\phi_{k,l}+\phi_{l,k})(\phi_{i,j}+\phi_{j,i})\ dV\ du_{i}(x,t)=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
+
+\end_inset
+
+The Jacobian of the system corresponds to the integral on the left hand
+ side,
+\begin_inset Formula \[
+J=\int_{V}\frac{1}{4}C_{ijkl}(\phi_{k,l}+\phi_{l,k})(\phi_{i,j}+\phi_{j,i})\ dV.\]
+
+\end_inset
+
+The elastic constants 
+\begin_inset Formula $C_{ijkl}$
+\end_inset
+
+ are associated with the linear perturbation in the stresses for the deformation
+ from time 
+\begin_inset Formula $t$
+\end_inset
+
+ to 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+.
+ Applying the same finite-element formulation to the Jacobian that we did
+ to the residual, the expression for the Jacobian sparse matrix is
+\begin_inset Formula \[
+J=\sum_{\text{vol cells }}\sum_{\text{quad pt}}\frac{1}{4}C_{ijkl}(\phi_{,l}(x_{q})+\phi_{,k}(x_{q}))(\phi_{,j}(x_{q})+\phi_{,i}(x_{q}))\ w_{q}|J_{m}(x_{q})|\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+OLD stuff
+\end_layout
+
+\begin_layout Standard
+Discretizing into finite elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
 \sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
