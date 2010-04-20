@@ -994,6 +994,16 @@ In the finite-element discretization, the trial functions are scalar quantities,
  i.e., the same trial function is used for each component, and we employ quadratur
 e to integrate the quantities over the domain of each finite-element cell.
  We formulate the residual using
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Need to refine the finite-element implementation stuff.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \[
 R=-\sum_{\text{vol cells}}\sum_{\text{quad pt}}\frac{1}{2}\sigma_{ij}(x_{q},t+\Delta t)(\phi_{,j}(x_{q})+\phi_{,i}(x_{q}))\: w_{q}|J_{m}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}}f_{i}(x_{q},t+\Delta t)\phi(x_{q})\, w_{q}|J_{m}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pt}}T_{i}(x_{q},t+\Delta t)\phi_{i}(x_{q})\, w_{q}|J_{m}(x_{q})|,\]
 
@@ -1104,6 +1114,16 @@ The elastic constants
 .
  Applying the same finite-element formulation to the Jacobian that we did
  to the residual, the expression for the Jacobian sparse matrix is
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Need to refint the finite-element stuff.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \[
 J=\sum_{\text{vol cells }}\sum_{\text{quad pt}}\frac{1}{4}C_{ijkl}(\phi_{,l}(x_{q})+\phi_{,k}(x_{q}))(\phi_{,j}(x_{q})+\phi_{,i}(x_{q}))\ w_{q}|J_{m}(x_{q})|\]
 
