@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -771,7 +771,7 @@ We formulate a set of algebraic equations using Galerkin's method.
 \begin_inset Formula $\vec{u}$
 \end_inset
 
-, that is a piecewise differntiable vector field and satisfies the Dirichlet
+, that is a piecewise differentiable vector field and satisfies the Dirichlet
  boundary conditions on 
 \begin_inset Formula $S_{u}$
 \end_inset
@@ -780,7 +780,7 @@ We formulate a set of algebraic equations using Galerkin's method.
 \begin_inset Formula $\vec{\phi}$
 \end_inset
 
-, that is a piecewise differentialble vector field and is zero on 
+, that is a piecewise differentiable vector field and is zero on 
 \begin_inset Formula $S_{u}$
 \end_inset
 
@@ -939,12 +939,12 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
 
 \end_inset
 
- Because the weighting function is aribtrary, this equation must hold for
+ Because the weighting function is arbitrary, this equation must hold for
  all 
 \begin_inset Formula $c^{n}$
 \end_inset
 
-, so that the quantity in parathesis is zero for each 
+, so that the quantity in parenthesis is zero for each 
 \begin_inset Formula $c^{n}$
 \end_inset
 
@@ -1475,7 +1475,7 @@ Solution Method for Dynamic Problems
 
 \begin_layout Standard
 Time-dependence enters through the constitutive relationships, loading condition
-s, and the intertial terms.
+s, and the inertial terms.
  We consider the deformation at time 
 \begin_inset Formula $t$
 \end_inset
