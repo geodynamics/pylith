@@ -518,8 +518,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
         dSlipVertex[iDim] += 
 	  orientationVertex[iDim*spaceDim+kDim] * dispRelVertex[kDim];
 
-    // Set fault opening to zero if fault is under compression.
+    // Do not allow fault interpenetration and set fault opening to
+    // zero if fault is under compression.
     const int indexN = spaceDim - 1;
+    if (dSlipVertex[indexN] < 0.0)
+      dSlipVertex[indexN] = 0.0;
     const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
       lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
     if (lagrangeTpdtNormal < 0.0)
