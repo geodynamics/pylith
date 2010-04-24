@@ -25,9 +25,9 @@ def printdata(data):
 if dim == "2d":
     if cell == "tri3":
         dlagrange1 = numpy.zeros(2)
-        Lindex = numpy.arange(12,16)
-        Iindex = numpy.arange(2,6)
-        Jindex = numpy.arange(8,12)
+        indexL = numpy.arange(12,16)
+        indexN = numpy.arange(2,6)
+        indexP = numpy.arange(8,12)
         n = 16
         m = 4
         DOF = 2
@@ -85,9 +85,9 @@ if dim == "2d":
 
     elif cell == "tri3d":
         dlagrange1 = numpy.zeros(3)
-        Lindex = numpy.array([18, 19, 20, 21, 22, 23])
-        Iindex = numpy.array([2, 3, 4, 5, 8, 9])
-        Jindex = numpy.array([12, 13, 14, 15, 16, 17])
+        indexL = numpy.array([18, 19, 20, 21, 22, 23])
+        indexN = numpy.array([2, 3, 4, 5, 8, 9])
+        indexP = numpy.array([12, 13, 14, 15, 16, 17])
         n = 24
         m = 6
         DOF = 2
@@ -165,9 +165,9 @@ if dim == "2d":
 
     elif cell == "quad4":
         dlagrange1 = numpy.zeros(2)
-        Lindex = numpy.arange(16,20)
-        Iindex = numpy.arange(4,8)
-        Jindex = numpy.arange(12,16)
+        indexL = numpy.arange(16,20)
+        indexN = numpy.arange(4,8)
+        indexP = numpy.arange(12,16)
         n = 20
         m = 4
         DOF = 2
@@ -258,32 +258,34 @@ if dim == "2d":
         dLagrange = numpy.reshape(dLagrange, m)
     elif testCase == "open":
         dLagrange = numpy.reshape(disp+dispIncr, n)
-        dLagrange = dLagrange[Lindex]
+        dLagrange = dLagrange[indexL]
 
     print "dLagrange \n", dLagrange
 
     RHS = numpy.dot(numpy.transpose(C),dLagrange)
-    duI = numpy.dot(inv(jacobianN),RHS)
-    duJ = -numpy.dot(inv(jacobianP),RHS)
+    duN = -numpy.dot(inv(jacobianN),RHS)
+    duP = numpy.dot(inv(jacobianP),RHS)
     
-    dispRel = duI - duJ
+    dispRel = duP - duN
 
     slipVertex = numpy.dot(C,dispRel)
     slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
     if testCase == "slip":
-        slipVertex[:,1] = 0    
+        slipVertex[:,1] = 0
+    mask = slipVertex[:,1] < 0.0
+    slipVertex[mask,1] = 0
     slipVertex = numpy.reshape(slipVertex, m)
 
-    print "duI \n", duI
-    print "duJ \n", duJ
+    print "duN \n", duN
+    print "duP \n", duP
 
     dispIncrE = dispIncr
     dispIncrE = numpy.reshape(dispIncrE, n)
 
-    dispIncrE[Lindex] = dispIncrE[Lindex] - dLagrange
-    dispIncrE[Iindex] = dispIncrE[Iindex] - \
+    dispIncrE[indexL] = dispIncrE[indexL] - dLagrange
+    dispIncrE[indexN] = dispIncrE[indexN] - \
         0.5*numpy.dot(C.transpose(), slipVertex)
-    dispIncrE[Jindex] = dispIncrE[Jindex] + \
+    dispIncrE[indexP] = dispIncrE[indexP] + \
         0.5*numpy.dot(C.transpose(), slipVertex)
 
     dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
@@ -298,9 +300,9 @@ elif dim == "3d":
     if cell == "tet4":
 
         dlagrange2 = numpy.zeros(3)
-        Lindex = numpy.arange(24,33)
-        Iindex = numpy.arange(3,12)
-        Jindex = numpy.arange(15,24)
+        indexL = numpy.arange(24,33)
+        indexN = numpy.arange(3,12)
+        indexP = numpy.arange(15,24)
         n = 33
         m = 9
         DOF = 3
@@ -375,9 +377,9 @@ elif dim == "3d":
 
     elif cell == "hex8":
         dlagrange2 = numpy.zeros(4)
-        Lindex = numpy.arange(48,60)
-        Iindex = numpy.arange(12,24)
-        Jindex = numpy.arange(36,48)
+        indexL = numpy.arange(48,60)
+        indexN = numpy.arange(12,24)
+        indexP = numpy.arange(36,48)
         n = 60
         m = 12
         DOF = 3
@@ -537,32 +539,34 @@ elif dim == "3d":
         dLagrange = numpy.reshape(dLagrange, m)
     elif testCase == "open":
         dLagrange = numpy.reshape(disp+dispIncr, n)
-        dLagrange = dLagrange[Lindex]
+        dLagrange = dLagrange[indexL]
 
     print "dLagrange \n", dLagrange
 
     RHS = numpy.dot(numpy.transpose(C),dLagrange)
-    duI = numpy.dot(inv(jacobianN),RHS)
-    duJ = -numpy.dot(inv(jacobianP),RHS)
+    duN = -numpy.dot(inv(jacobianN),RHS)
+    duP = numpy.dot(inv(jacobianP),RHS)
     
-    dispRel = duI - duJ
+    dispRel = duP - duN
 
     slipVertex = numpy.dot(C,dispRel)
     slipVertex = numpy.reshape(slipVertex, (m/DOF,DOF))
     if testCase == "slip":
         slipVertex[:,2] = 0    
+    mask = slipVertex[:,2] < 0.0
+    slipVertex[mask,2] = 0
     slipVertex = numpy.reshape(slipVertex, m)
 
-    print "duI \n", duI
-    print "duJ \n", duJ
+    print "duN \n", duN
+    print "duP \n", duP
 
     dispIncrE = dispIncr
     dispIncrE = numpy.reshape(dispIncrE, n)
 
-    dispIncrE[Lindex] = dispIncrE[Lindex] - dLagrange
-    dispIncrE[Iindex] = dispIncrE[Iindex] - \
+    dispIncrE[indexL] = dispIncrE[indexL] - dLagrange
+    dispIncrE[indexN] = dispIncrE[indexN] - \
         0.5*numpy.dot(C.transpose(), slipVertex)
-    dispIncrE[Jindex] = dispIncrE[Jindex] + \
+    dispIncrE[indexP] = dispIncrE[indexP] + \
         0.5*numpy.dot(C.transpose(), slipVertex)
 
     dispIncrE = numpy.reshape(dispIncrE, (n/DOF,DOF))
