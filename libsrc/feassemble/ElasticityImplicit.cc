@@ -422,7 +422,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
-  _logger->eventEnd(computeEvent);
+  _logger->eventBegin(computeEvent);
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
