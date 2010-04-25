@@ -211,13 +211,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 				    _normalizer->densityScale());
 
   _logger->eventEnd(setupEvent);
+  _logger->eventBegin(computeEvent);
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-    _logger->eventBegin(geometryEvent);
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -225,23 +225,18 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
-    _logger->eventEnd(geometryEvent);
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
-    _logger->eventEnd(stateVarsEvent);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-    _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -255,7 +250,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
-      _logger->eventBegin(computeEvent);
       const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
       assert(0 != cs);
       
@@ -284,21 +278,16 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 	} // for
       } // for
       PetscLogFlops(numQuadPts*(2+numBasis*(1+2*spaceDim)));
-      _logger->eventEnd(computeEvent);      
     } // if
 
     // Compute B(transpose) * sigma, first computing deformation
     // tensor and strains
-    _logger->eventBegin(stressEvent);
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTpdtCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
-    _logger->eventEnd(stressEvent);
 
-    _logger->eventBegin(computeEvent);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTpdtCell);
-    _logger->eventEnd(computeEvent);
 
 #if 0 // DEBUGGING
     std::cout << "Updating residual for cell " << *c_iter << std::endl;
@@ -307,11 +296,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     }
 #endif
     // Assemble cell contribution into field
-    _logger->eventBegin(updateEvent);
     residualVisitor.clear();
     sieveMesh->updateClosure(*c_iter, residualVisitor);
-    _logger->eventEnd(updateEvent);
   } // for
+  
+  _logger->eventEnd(computeEvent);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -434,13 +423,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 						&coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
+  _logger->eventBegin(computeEvent);
 
   // Loop over cells
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-    _logger->eventBegin(geometryEvent);
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
@@ -448,23 +437,18 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
-    _logger->eventEnd(geometryEvent);
 
     // Get state variables for cell.
-    _logger->eventBegin(stateVarsEvent);
     _material->retrievePropsAndVars(*c_iter);
-    _logger->eventEnd(stateVarsEvent);
 
     // Reset element matrix to zero
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    _logger->eventBegin(restrictEvent);
     dispTVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTVisitor);
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-    _logger->eventBegin(restrictEvent);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -475,7 +459,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     // solution increment.
     dispTpdtCell = dispTCell + dispTIncrCell;
       
-    _logger->eventBegin(computeEvent);
     // Compute deformation tensor, strains, and stresses
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTpdtCell,
 		     numBasis, numQuadPts, spaceDim);
@@ -490,7 +473,6 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts, stressCell,
 						dispTpdtCell);
-    _logger->eventEnd(computeEvent);
 
     if (_quadrature->checkConditioning()) {
       int n = numBasis*spaceDim;
@@ -524,14 +506,15 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     } // if
 
     // Assemble cell contribution into PETSc matrix.
-    _logger->eventBegin(updateEvent);
     jacobianVisitor.clear();
     PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-    _logger->eventEnd(updateEvent);
   } // for
+
+  _logger->eventEnd(computeEvent);
+
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
 } // integrateJacobian
