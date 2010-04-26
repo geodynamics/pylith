@@ -1,0 +1,134 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 7 km x 2 km x 6 km
+# -3.5 km <= x <= 3.5 km
+# -1 km <= y <= 1 km
+# -6 km <= z <= 0 km
+reset
+brick x 7000 y 2000 z 6000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -3000
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane yplane offset 0
+surface 7 name "fault_surface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+
+
+
+
+# ----------------------------------------------------------------------
+# Set discretization size
+# ----------------------------------------------------------------------
+volume all size 100
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+volume all scheme submap
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 volume 1 3
+block 1 name "elastic"
+
+# ----------------------------------------------------------------------
+# Create nodesets for faults
+# ----------------------------------------------------------------------
+group "fault" add node in surface fault_surface
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos" add node in surface 10
+group "face_xpos" add node in surface 17
+nodeset 20 group face_xpos
+nodeset 20 name "face xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg" add node in surface 14
+group "face_xneg" add node in surface 12
+nodeset 21 group face_xneg
+nodeset 21 name "face xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y face
+# ----------------------------------------------------------------------
+group "face_ypos" add node in surface 5
+nodeset 22 group face_ypos
+nodeset 22 name "face ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y face
+# ----------------------------------------------------------------------
+group "face_yneg" add node in surface 3
+nodeset 23 group face_yneg
+nodeset 23 name "face yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z face
+# ----------------------------------------------------------------------
+group "face_zpos" add node in surface 16
+group "face_zpos" add node in surface 9
+nodeset 24 group face_zpos
+nodeset 24 name "face zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg" add node in surface 11
+group "face_zneg" add node in surface 15
+nodeset 25 group face_zneg
+nodeset 25 name "face zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x face
+# ----------------------------------------------------------------------
+group "face_xpos_nofault" add node in face_xpos
+group "face_xpos_nofault" remove node in fault
+nodeset 26 group face_xpos_nofault
+nodeset 26 name "face xpos nofault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x face
+# ----------------------------------------------------------------------
+group "face_xneg_nofault" add node in face_xneg
+group "face_xneg_nofault" remove node in fault
+nodeset 27 group face_xneg_nofault
+nodeset 27 name "face xneg nofault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face
+# ----------------------------------------------------------------------
+group "face_zneg_nofault" add node in face_zneg
+group "face_zneg_nofault" remove node in fault
+nodeset 28 group face_zneg_nofault
+nodeset 28 name "face zneg nofault"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "/Users/surendranadhsomala/src/cig/pylith/playpen/friction/SCEC_benchmarks/SCEC2004.exo" dimension 3 overwrite
+
+
