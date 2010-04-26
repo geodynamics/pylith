@@ -1309,10 +1309,11 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     const double* areaVertex = areaSection->restrictPoint(v_fault);
     assert(0 != areaVertex);
 
-    for (int i = 0; i < fiberDim; ++i)
+    for (int i=0; i < fiberDim; ++i)
       tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
 
-    assert(tractionsVertex.size() == tractionsSection->getFiberDimension(v_fault));
+    assert(tractionsVertex.size() == 
+	   tractionsSection->getFiberDimension(v_fault));
     tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
@@ -1327,9 +1328,9 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
 // ----------------------------------------------------------------------
 // Compute initial tractions on fault surface.
 void
-pylith::faults::FaultCohesiveDyn::_calcInitialTractions(
+pylith::faults::FaultCohesiveDyn::_getInitialTractions(
     topology::Field<topology::SubMesh>* tractions)
-{ // _calcInitialTractions
+{ // _getInitialTractions
   assert(0 != tractions);
   assert(0 != _faultMesh);
   assert(0 != _fields);
@@ -1404,7 +1405,7 @@ pylith::faults::FaultCohesiveDyn::_calcInitialTractions(
   tractions->view("TRACTIONS");
 #endif
 
-} // _calcInitialTractions
+} // _getInitialTractions
 
 // ----------------------------------------------------------------------
 // Update slip rate associated with Lagrange vertex k corresponding
