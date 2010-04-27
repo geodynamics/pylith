@@ -1536,10 +1536,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   // Setup PETSc KSP linear solver.
   if (0 == _ksp) {
     PetscErrorCode err = 0;
-    if (0 != _ksp) {
-      err = KSPDestroy(_ksp); _ksp = 0;
-      CHECK_PETSC_ERROR(err);
-    } // if
     err = KSPCreate(_faultMesh->comm(), &_ksp); CHECK_PETSC_ERROR(err);
     err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
     double rtol = 0.0;
@@ -1556,10 +1552,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     PC pc;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     err = PCSetType(pc, PCJACOBI); CHECK_PETSC_ERROR(err);
-    err = KSPSetType(_ksp, KSPGMRES);
+    err = KSPSetType(_ksp, KSPGMRES); CHECK_PETSC_ERROR(err);
 
+    err = KSPAppendOptionsPrefix(_ksp, "friction_");
     err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
-    err = KSPAppendOptionsPrefix(_ksp, "friction");
   } // if
 } // _sensitivitySetup
 
@@ -1760,6 +1756,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 
   // Update section view of field.
   solution.scatterVectorToSection();
+
+  //solution.view("SENSITIVITY SOLUTION"); // DEBUGGING
 } // _sensitivitySolve
 
 // ----------------------------------------------------------------------
@@ -1929,8 +1927,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
     // if in compression and no opening
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
                 tractionNormal);
-    if (tractionShearMag > frictionStress || 
-  (tractionShearMag < frictionStress && slipMag > 0.0)) {
+    if (tractionShearMag > frictionStress) {
       // traction is limited by friction, so have sliding
       
       // Update slip based on value required to stick versus friction
@@ -1970,14 +1967,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
   const double tractionNormal = tractionTpdt[2];
   const double tractionShearMag = 
     sqrt(tractionTpdt[0] * tractionTpdt[0] +
-   tractionTpdt[1] * tractionTpdt[1]);
+	 tractionTpdt[1] * tractionTpdt[1]);
   
   if (tractionNormal < 0.0 && 0.0 == slip[2]) {
     // if in compression and no opening
     const double frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
-    if (tractionShearMag > frictionStress || 
-  (tractionShearMag < frictionStress && slipShearMag > 0.0)) {
+    if (tractionShearMag > frictionStress) {
       // traction is limited by friction, so have sliding
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
