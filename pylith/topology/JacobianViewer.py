@@ -95,14 +95,14 @@ class JacobianViewer(PetscComponent):
     return
 
 
-  def _filenameStamped(self, t):
+  def _filenameStamp(self, t):
     """
     Create filename by extracting basename and adding a time stamp.
     """
-    timeStamp = self.timeFormat % (t.value/self.jacobianTimeConstant.value)
+    timeStamp = self.timeFormat % (t/self.timeConstant.value)
     basename = self.filename
     if basename.endswith(".mat"):
-      basename = base[0:len(base)-4]
+      basename = basename[0:len(basename)-4]
     filename = basename + "_t" + timeStamp + ".mat"
     return filename
 
