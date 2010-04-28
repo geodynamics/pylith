@@ -80,8 +80,15 @@ public:
   /// Expected values for solution increment after adjustment.
   double* fieldIncrAdjusted;
 
-  int* constraintVertices; ///< Expected points for constraint vertices
-  int numConstraintVert; ///< Number of constraint vertices
+  int* verticesFault; ///< Expected points for Fault vertices
+  int* verticesLagrange; ///< Expected points for Lagrange vertices
+  int* verticesPositive; ///< Expected points for vertices on + side of fault.
+  int* verticesNegative; ///< Expected points for vertices on - side of fault.
+  int numFaultVertices; ///< Number of fault vertices
+
+  int numCohesiveCells;
+  int* cellMappingFault;
+  int* cellMappingCohesive;
   //@}
 
 };

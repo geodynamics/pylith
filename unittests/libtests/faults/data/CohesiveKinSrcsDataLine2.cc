@@ -75,7 +75,6 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_fieldT[] = {
   7.5
 };
 
-const int pylith::faults::CohesiveKinSrcsDataLine2::_numConstraintVert = 1;
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_orientation[] = {
   1.0
@@ -85,9 +84,28 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_area[] = {
   1.0
 };
 
-const int pylith::faults::CohesiveKinSrcsDataLine2::_constraintVertices[] = {
+const int pylith::faults::CohesiveKinSrcsDataLine2::_numFaultVertices = 1;
+const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesFault[] = {
+  1
+};
+const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesLagrange[] = {
   6
 };
+const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesPositive[] = {
+  5
+};
+const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesNegative[] = {
+  3
+};
+
+const int pylith::faults::CohesiveKinSrcsDataLine2::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingCohesive[] = {
+  7
+};
+
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_residualIncr[] = {
    0.0,
@@ -133,11 +151,17 @@ pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residualIncr = const_cast<double*>(_residualIncr);
   residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinSrcsDataLine2::~CohesiveKinSrcsDataLine2(void)

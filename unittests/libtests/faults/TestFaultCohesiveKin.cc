@@ -155,12 +155,43 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
-    CPPUNIT_ASSERT(renumbering.find(_data->constraintVertices[iVertex]) !=
+    CPPUNIT_ASSERT(renumbering.find(_data->verticesLagrange[iVertex]) !=
 		   renumbering.end());
-    CPPUNIT_ASSERT_EQUAL(renumbering[_data->constraintVertices[iVertex]],
+#if 0
+    CPPUNIT_ASSERT_EQUAL(renumbering[_data->verticesLagrange[iVertex]],
 			 *v_iter);
+#endif
   } // for
-  CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, iVertex);
+  CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, iVertex);
+
+  // Check cohesive vertex info
+  const int numFaultVertices = _data->numFaultVertices;
+  CPPUNIT_ASSERT_EQUAL(numFaultVertices, int(fault._cohesiveVertices.size()));
+  for (int i=0; i < numFaultVertices; ++i) {
+    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[i], 
+			 fault._cohesiveVertices[i].fault);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesLagrange[i], 
+			 fault._cohesiveVertices[i].lagrange);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesNegative[i], 
+			 fault._cohesiveVertices[i].negative);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesPositive[i], 
+			 fault._cohesiveVertices[i].positive);
+  } // for
+
+  // Check cohesive cell info
+  const int numCohesiveCells = _data->numCohesiveCells;
+  CPPUNIT_ASSERT_EQUAL(numCohesiveCells, int(fault._cohesiveToFault.size()));
+  std::map<topology::Mesh::SieveMesh::point_type,
+    topology::Mesh::SieveMesh::point_type>::iterator m_iterator = 
+    fault._cohesiveToFault.begin();
+  std::map<topology::Mesh::SieveMesh::point_type,
+    topology::Mesh::SieveMesh::point_type>::const_iterator mapEnd = 
+    fault._cohesiveToFault.end();
+  for (int i=0; i < numCohesiveCells; ++i, ++m_iterator) {
+    CPPUNIT_ASSERT(mapEnd != m_iterator);
+    CPPUNIT_ASSERT_EQUAL(_data->cellMappingFault[i], m_iterator->second);
+    CPPUNIT_ASSERT_EQUAL(_data->cellMappingCohesive[i], m_iterator->first);
+  } // for
 
   // Check orientation
   //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
@@ -791,7 +822,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
-    const SieveSubMesh::point_type meshVertex = _data->constraintVertices[iVertex];
+    const SieveSubMesh::point_type meshVertex = _data->verticesLagrange[iVertex];
     bool found = false;
     for(SieveSubMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
 	r_iter != renumbering.end();
@@ -922,6 +953,8 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSplitField(void)
 { // testSplitField
+  assert(0 != _data);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -950,18 +983,24 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
   const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  int iVertex = 0;
+  const int numFaultVertices = _data->numFaultVertices;
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     const int fiberDim = section->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    if (*v_iter == _data->constraintVertices[iVertex]) {
+    bool isLagrangeVertex = false;
+    for (int i=0; i < numFaultVertices; ++i)
+      if (*v_iter == _data->verticesLagrange[i]) {
+	isLagrangeVertex = true;
+	break;
+      } // if
+    if (isLagrangeVertex) {
       for (int fibration=0; fibration < spaceDim; ++fibration)
         CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(*v_iter, fibration));
       const int fibrationF = spaceDim;
-      CPPUNIT_ASSERT_EQUAL(spaceDim, section->getFiberDimension(*v_iter, fibrationF));
-      ++iVertex;
+      CPPUNIT_ASSERT_EQUAL(spaceDim, 
+			   section->getFiberDimension(*v_iter, fibrationF));
     } else {
       for (int fibration=0; fibration < spaceDim; ++fibration)
         CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(*v_iter, fibration));
@@ -1076,19 +1115,19 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
 // ----------------------------------------------------------------------
 // Determine if vertex is a Lagrange multiplier constraint vertex.
 bool
-pylith::faults::TestFaultCohesiveKin::_isConstraintVertex(const int vertex) const
-{ // _isConstraintVertex
+pylith::faults::TestFaultCohesiveKin::_isLagrangeVertex(const int vertex) const
+{ // _isLagrangeVertex
   assert(0 != _data);
 
-  const int numConstraintVert = _data->numConstraintVert;
+  const int numFaultVertices = _data->numFaultVertices;
   bool isFound = false;
-  for (int i=0; i < _data->numConstraintVert; ++i)
-    if (_data->constraintVertices[i] == vertex) {
+  for (int i=0; i < _data->numFaultVertices; ++i)
+    if (_data->verticesLagrange[i] == vertex) {
       isFound = true;
       break;
     } // if
   return isFound;
-} // _isConstraintVertex
+} // _isLagrangeVertex
 
 
 // End of file 

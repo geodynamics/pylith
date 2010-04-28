@@ -127,7 +127,6 @@ const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
 };
 
 
-const int pylith::faults::CohesiveKinDataQuad4e::_numConstraintVert = 3;
 
 const double pylith::faults::CohesiveKinDataQuad4e::_orientation[] = {
   0.0, -1.0,  -1.0, 0.0,
@@ -141,9 +140,28 @@ const double pylith::faults::CohesiveKinDataQuad4e::_area[] = {
   1.0,
 };
 
-const int pylith::faults::CohesiveKinDataQuad4e::_constraintVertices[] = {
-  16, 17, 18
+const int pylith::faults::CohesiveKinDataQuad4e::_numFaultVertices = 3;
+const int pylith::faults::CohesiveKinDataQuad4e::_verticesFault[] = {
+  3, 2, 4
 };
+const int pylith::faults::CohesiveKinDataQuad4e::_verticesLagrange[] = {
+  17, 16, 18
+};
+const int pylith::faults::CohesiveKinDataQuad4e::_verticesNegative[] = {
+  7, 6, 11
+};
+const int pylith::faults::CohesiveKinDataQuad4e::_verticesPositive[] = {
+  14, 13, 15
+};
+
+const int pylith::faults::CohesiveKinDataQuad4e::_numCohesiveCells = 2;
+const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingFault[] = {
+  0, 1
+};
+const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingCohesive[] = {
+  19, 20
+};
+
 
 const double pylith::faults::CohesiveKinDataQuad4e::_residual[] = {
   0.0,  0.0,
@@ -654,11 +672,17 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinDataQuad4e::~CohesiveKinDataQuad4e(void)

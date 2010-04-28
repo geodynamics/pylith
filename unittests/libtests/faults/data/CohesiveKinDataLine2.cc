@@ -91,11 +91,27 @@ const double pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
   1.0
 };
 
-const int pylith::faults::CohesiveKinDataLine2::_numConstraintVert = 1;
-const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
+const int pylith::faults::CohesiveKinDataLine2::_numFaultVertices = 1;
+const int pylith::faults::CohesiveKinDataLine2::_verticesFault[] = {
+  1
+};
+const int pylith::faults::CohesiveKinDataLine2::_verticesLagrange[] = {
   6
 };
+const int pylith::faults::CohesiveKinDataLine2::_verticesPositive[] = {
+  5
+};
+const int pylith::faults::CohesiveKinDataLine2::_verticesNegative[] = {
+  3
+};
 
+const int pylith::faults::CohesiveKinDataLine2::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinDataLine2::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinDataLine2::_cellMappingCohesive[] = {
+  7
+};
 
 
 const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
@@ -164,8 +180,14 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
   fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinDataLine2::~CohesiveKinDataLine2(void)

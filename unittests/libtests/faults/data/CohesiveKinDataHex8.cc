@@ -170,10 +170,28 @@ const double pylith::faults::CohesiveKinDataHex8::_jacobianLumped[] = {
   1.0, 1.0, 1.0, // 21
 };
 
-const int pylith::faults::CohesiveKinDataHex8::_numConstraintVert = 4;
-const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
-  18, 19, 20, 21
+const int pylith::faults::CohesiveKinDataHex8::_numFaultVertices = 4;
+const int pylith::faults::CohesiveKinDataHex8::_verticesFault[] = {
+  3, 4, 2, 1
 };
+const int pylith::faults::CohesiveKinDataHex8::_verticesLagrange[] = {
+  20, 21, 19, 18
+};
+const int pylith::faults::CohesiveKinDataHex8::_verticesNegative[] = {
+  8, 9, 7, 6
+};
+const int pylith::faults::CohesiveKinDataHex8::_verticesPositive[] = {
+  16, 17, 15, 14
+};
+
+const int pylith::faults::CohesiveKinDataHex8::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinDataHex8::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinDataHex8::_cellMappingCohesive[] = {
+  22
+};
+
 
 const double pylith::faults::CohesiveKinDataHex8::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, -1.0,    -1.0, 0.0, 0.0,
@@ -1484,8 +1502,14 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
   fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinDataHex8::~CohesiveKinDataHex8(void)

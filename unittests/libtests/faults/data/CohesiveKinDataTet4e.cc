@@ -94,7 +94,6 @@ const double pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
   4.4, 6.4, 8.4, // 17
 };
 
-const int pylith::faults::CohesiveKinDataTet4e::_numConstraintVert = 4;
 
 const double pylith::faults::CohesiveKinDataTet4e::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
@@ -110,9 +109,29 @@ const double pylith::faults::CohesiveKinDataTet4e::_area[] = {
   1.0/3.0,
 };
 
-const int pylith::faults::CohesiveKinDataTet4e::_constraintVertices[] = {
-  14, 15, 16, 17
+const int pylith::faults::CohesiveKinDataTet4e::_numFaultVertices = 4;
+const int pylith::faults::CohesiveKinDataTet4e::_verticesFault[] = {
+  3, 2, 4, 5
 };
+const int pylith::faults::CohesiveKinDataTet4e::_verticesLagrange[] = {
+  15, 14, 16, 17
+};
+const int pylith::faults::CohesiveKinDataTet4e::_verticesNegative[] = {
+  6, 5, 7, 8
+};
+const int pylith::faults::CohesiveKinDataTet4e::_verticesPositive[] = {
+  11, 10, 12, 13
+};
+
+const int pylith::faults::CohesiveKinDataTet4e::_numCohesiveCells = 2;
+const int pylith::faults::CohesiveKinDataTet4e::_cellMappingFault[] = {
+  0, 1
+};
+const int pylith::faults::CohesiveKinDataTet4e::_cellMappingCohesive[] = {
+  18, 19
+};
+
+
 
 const double pylith::faults::CohesiveKinDataTet4e::_residual[] = {
   0.0,  0.0,  0.0,
@@ -759,11 +778,17 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinDataTet4e::~CohesiveKinDataTet4e(void)

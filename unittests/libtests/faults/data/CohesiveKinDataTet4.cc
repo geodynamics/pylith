@@ -20,7 +20,7 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10, vertices are 2-9.
+ * Cells are 0-1,13, vertices are 2-9.
  *
  * 2   3,4,5  7,8,9   6
  *             10,11,12
@@ -119,10 +119,29 @@ const double pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
   1.1, 1.1, 1.1, // 12
 };
 
-const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
-const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
-  10, 11, 12
+const int pylith::faults::CohesiveKinDataTet4::_numFaultVertices = 3;
+const int pylith::faults::CohesiveKinDataTet4::_verticesFault[] = {
+  2, 1, 3
 };
+const int pylith::faults::CohesiveKinDataTet4::_verticesLagrange[] = {
+  11, 10, 12
+};
+const int pylith::faults::CohesiveKinDataTet4::_verticesNegative[] = {
+  4, 3, 5
+};
+const int pylith::faults::CohesiveKinDataTet4::_verticesPositive[] = {
+  8, 7, 9
+};
+
+const int pylith::faults::CohesiveKinDataTet4::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinDataTet4::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinDataTet4::_cellMappingCohesive[] = {
+  13
+};
+
+
 
 const double pylith::faults::CohesiveKinDataTet4::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
@@ -570,8 +589,14 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   residual = const_cast<double*>(_residual);
   jacobian = const_cast<double*>(_jacobian);
   fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
-  constraintVertices = const_cast<int*>(_constraintVertices);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinDataTet4::~CohesiveKinDataTet4(void)

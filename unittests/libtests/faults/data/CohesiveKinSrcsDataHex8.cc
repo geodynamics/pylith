@@ -124,7 +124,6 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_fieldT[] = {
   5.0, 7.0, 9.0, // 21
 };
 
-const int pylith::faults::CohesiveKinSrcsDataHex8::_numConstraintVert = 4;
 
 const double pylith::faults::CohesiveKinSrcsDataHex8::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, -1.0,    -1.0, 0.0, 0.0,
@@ -137,9 +136,28 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const int pylith::faults::CohesiveKinSrcsDataHex8::_constraintVertices[] = {
-  18, 19, 20, 21
+const int pylith::faults::CohesiveKinSrcsDataHex8::_numFaultVertices = 4;
+const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesFault[] = {
+  3, 4, 2, 1
 };
+const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesLagrange[] = {
+  20, 21, 19, 18
+};
+const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesNegative[] = {
+  8, 9, 7, 6
+};
+const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesPositive[] = {
+  16, 17, 15, 14
+};
+
+const int pylith::faults::CohesiveKinSrcsDataHex8::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingCohesive[] = {
+  22
+};
+
 
 const double pylith::faults::CohesiveKinSrcsDataHex8::_residual[] = {
   0.0, 0.0, 0.0,
@@ -1410,11 +1428,17 @@ pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinSrcsDataHex8::~CohesiveKinSrcsDataHex8(void)
