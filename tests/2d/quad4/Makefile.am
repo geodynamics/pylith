@@ -34,6 +34,10 @@ dist_noinst_PYTHON = \
 	TestFrictionOpening.py \
 	TestFrictionShearSliding.py \
 	TestFrictionShearStick.py \
+	TestSlipWeakeningCompression.py \
+	TestSlipWeakeningOpening.py \
+	TestSlipWeakeningShearSliding.py \
+	TestSlipWeakeningShearStick.py \
 	friction_compression_soln.py \
 	friction_shear_stick_soln.py \
 	friction_shear_sliding_soln.py \
