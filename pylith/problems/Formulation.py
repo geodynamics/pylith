@@ -479,7 +479,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._eventLogger.stagePop()
 
     if self.viewJacobian:
-      self.jacobianViewer.view(self.jacobian, t, self.mesh.comm())
+      from pylith.mpi.Communicator import Communicator
+      comm = Communicator(self.mesh.comm())
+      self.jacobianViewer.view(self.jacobian, t, comm)
 
     self._debug.log(resourceUsageString())
     return

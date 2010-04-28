@@ -39,6 +39,14 @@ class Jacobian(ModuleJacobian):
     return
     
 
+  def write(self, filename, comm):
+    """
+    Write Jacobian to binary file.
+    """
+    ModuleJacobian.write(self, filename, comm.handle)
+    return
+
+
   def cleanup(self):
     """
     Dellocate PETSC and local data structures.
