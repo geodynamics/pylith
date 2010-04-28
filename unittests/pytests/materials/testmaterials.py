@@ -83,6 +83,9 @@ class TestApp(Script):
     from TestPowerLaw3D import TestPowerLaw3D
     suite.addTest(unittest.makeSuite(TestPowerLaw3D))
 
+    from TestDruckerPrager3D import TestDruckerPrager3D
+    suite.addTest(unittest.makeSuite(TestDruckerPrager3D))
+
     from TestMaterial import TestMaterial
     suite.addTest(unittest.makeSuite(TestMaterial))
 
