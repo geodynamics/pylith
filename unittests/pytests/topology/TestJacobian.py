@@ -136,7 +136,7 @@ class TestJacobian(unittest.TestCase):
     from pylith.mpi.Communicator import Communicator
     comm = Communicator(self.mesh.comm())
 
-    self.jacobian.write("jacobian.mat", comm.handle)
+    self.jacobian.write("jacobian.mat", comm)
 
     # No testing of result.
     return
