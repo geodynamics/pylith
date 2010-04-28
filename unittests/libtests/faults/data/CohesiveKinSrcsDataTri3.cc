@@ -114,7 +114,6 @@ const double pylith::faults::CohesiveKinSrcsDataTri3::_fieldT[] = {
   8.8, 9.8, // 9
 };
 
-const int pylith::faults::CohesiveKinSrcsDataTri3::_numConstraintVert = 2;
 
 const double pylith::faults::CohesiveKinSrcsDataTri3::_orientation[] = {
   0.0, -1.0,  -1.0, 0.0,
@@ -126,9 +125,28 @@ const double pylith::faults::CohesiveKinSrcsDataTri3::_area[] = {
   1.0,
 };
 
-const int pylith::faults::CohesiveKinSrcsDataTri3::_constraintVertices[] = {
+const int pylith::faults::CohesiveKinSrcsDataTri3::_numFaultVertices = 2;
+const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesFault[] = {
+  1, 2
+};
+const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesLagrange[] = {
   8, 9
 };
+const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesNegative[] = {
+  3, 4
+};
+const int pylith::faults::CohesiveKinSrcsDataTri3::_verticesPositive[] = {
+  6, 7
+};
+
+const int pylith::faults::CohesiveKinSrcsDataTri3::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinSrcsDataTri3::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinSrcsDataTri3::_cellMappingCohesive[] = {
+  10
+};
+
 
 const double pylith::faults::CohesiveKinSrcsDataTri3::_residual[] = {
   0.0,  0.0,
@@ -305,11 +323,17 @@ pylith::faults::CohesiveKinSrcsDataTri3::CohesiveKinSrcsDataTri3(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinSrcsDataTri3::~CohesiveKinSrcsDataTri3(void)

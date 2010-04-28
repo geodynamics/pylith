@@ -61,11 +61,19 @@ private:
 
   static const double _orientation[]; ///< Expected values for fault orientation.
   static const double _area[]; ///< Expected values for fault area.
-  static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const double _residual[]; ///< Expected values from residual calculation.
   static const double _residualIncr[]; ///< Expected values from residual calculation with solution increment.
   static const double _jacobian[]; ///< Expected values from Jacobian calculation.
-  static const int _numConstraintVert; ///< Number of constraint vertices
+
+  static const int _verticesFault[]; ///< Expected points for Fault vertices
+  static const int _verticesLagrange[]; ///< Expected points for Lagrange vertices
+  static const int _verticesPositive[]; ///< Expected points for vertices on + side of fault.
+  static const int _verticesNegative[]; ///< Expected points for vertices on - side of fault.
+  static const int _numFaultVertices; ///< Number of fault vertices
+
+  static const int _numCohesiveCells; ///< Number of cohesive cells
+  static const int _cellMappingFault[]; ///< Fault cell
+  static const int _cellMappingCohesive[]; ///< Cohesive cell
 
 };
 

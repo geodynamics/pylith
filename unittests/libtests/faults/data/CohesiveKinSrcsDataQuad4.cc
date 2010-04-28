@@ -103,7 +103,6 @@ const double pylith::faults::CohesiveKinSrcsDataQuad4::_fieldT[] = {
 };
 
 
-const int pylith::faults::CohesiveKinSrcsDataQuad4::_numConstraintVert = 2;
 
 const double pylith::faults::CohesiveKinSrcsDataQuad4::_orientation[] = {
   0.0,  1.0,  +1.0, 0.0,
@@ -114,9 +113,28 @@ const double pylith::faults::CohesiveKinSrcsDataQuad4::_area[] = {
   1.0, 1.0,
 };
 
-const int pylith::faults::CohesiveKinSrcsDataQuad4::_constraintVertices[] = {
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_numFaultVertices = 2;
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesFault[] = {
+  1, 2
+};
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesLagrange[] = {
   10, 11
 };
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesNegative[] = {
+  4, 5
+};
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesPositive[] = {
+  8, 9
+};
+
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_numCohesiveCells = 1;
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingFault[] = {
+  0
+};
+const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingCohesive[] = {
+  12
+};
+
 
 const double pylith::faults::CohesiveKinSrcsDataQuad4::_residual[] = {
   0.0,  0.0,
@@ -367,11 +385,17 @@ pylith::faults::CohesiveKinSrcsDataQuad4::CohesiveKinSrcsDataQuad4(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  constraintVertices = const_cast<int*>(_constraintVertices);
   residual = const_cast<double*>(_residual);
   residualIncr = const_cast<double*>(_residualIncr);
   jacobian = const_cast<double*>(_jacobian);
-  numConstraintVert = _numConstraintVert;  
+  verticesFault = const_cast<int*>(_verticesFault);
+  verticesLagrange = const_cast<int*>(_verticesLagrange);
+  verticesNegative = const_cast<int*>(_verticesNegative);
+  verticesPositive = const_cast<int*>(_verticesPositive);
+  numFaultVertices = _numFaultVertices;  
+  cellMappingFault = const_cast<int*>(_cellMappingFault);
+  cellMappingCohesive = const_cast<int*>(_cellMappingCohesive);
+  numCohesiveCells = _numCohesiveCells;  
 } // constructor
 
 pylith::faults::CohesiveKinSrcsDataQuad4::~CohesiveKinSrcsDataQuad4(void)

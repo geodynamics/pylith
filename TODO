@@ -21,7 +21,6 @@ MAIN PRIORITIES
   Need to pass hint when creating Jacobian.
 
 * Friction
-  + Check output (diagnostic + simulation data)
   + Add stuff to manual
 
 * Optimization
@@ -58,16 +57,8 @@ SECONDARY PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
-Full scale friction tests. [Surendra]
-
-  check fault output
-    fault constitutive parameters
-      properties
-      initial state variables
-    initial tractions
-    state variables
-    tractions
-    slip
+TPV205
+TPV?? (rate and state)
 
 
 ----------------------------------------------------------------------
@@ -75,8 +66,6 @@ LUMPED SOLVER
 ----------------------------------------------------------------------
 
 Unit tests
-
-  setting up cohesive info
 
   ElasticityExplicit
     integrateResidualLumped()
@@ -90,7 +79,7 @@ Unit tests
     adjustSolnLumped()
 
 ----------------------------------------------------------------------
-TODO WELL BEFORE WORKSHOP 2010
+TODO BEFORE WORKSHOP 2010
 ----------------------------------------------------------------------
 
 Examples
@@ -122,7 +111,7 @@ Rewrite bulk constitutive models
 Need full-scale test with variation in physical properties within a material.
 
 ----------------------------------------------------------------------
-POST RELEASE 1.4
+CLEANUP
 ----------------------------------------------------------------------
 
 Brad
