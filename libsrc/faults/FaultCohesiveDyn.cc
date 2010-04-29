@@ -964,14 +964,16 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
-  const int slipStrLen = strlen("final_slip");
-  const int timeStrLen = strlen("slip_time");
-
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
     return slip;
+
+  } else if (0 == strcasecmp("slip_rate", name)) {
+    const topology::Field<topology::SubMesh>& slipRate =
+      _fields->get("slip rate");
+    return slipRate;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection = _fields->get(
@@ -1018,7 +1020,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.scale(1.0);
     return buffer;
 
-  } else if (0 == strncasecmp("initial_traction", name, slipStrLen)) {
+  } else if (0 == strcasecmp("initial_traction", name)) {
     assert(0 != _dbInitialTract);
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
