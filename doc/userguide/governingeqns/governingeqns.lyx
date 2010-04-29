@@ -934,23 +934,23 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
  Substituting in the expressions for the trial solution and weighting function
  yields
 \begin_inset Formula \begin{gather*}
--\int_{V}\sigma_{ij}\sum_{n}c_{i}^{n}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}\sum_{n}c_{i}^{n}N^{n}\, dS+\int_{V}f_{i}\sum_{n}c_{i}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\ dV=0,\text{ or}\\
-\sum_{n}c_{i}^{n}(-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV)=0.\end{gather*}
+-\int_{V}\sigma_{ij}\sum_{m}c_{i}^{m}N_{,j}^{m}\: dV+\int_{S_{T}}T_{i}\sum_{m}c_{i}^{m}N^{m}\, dS+\int_{V}f_{i}\sum_{m}c_{i}^{m}N^{m}\, dV-\int_{V}\rho\sum_{n}\ddot{a}_{i}^{n}N^{n}\sum_{m}c_{i}^{m}N^{m}\ dV=0,\text{ or}\\
+\sum_{m}c_{i}^{m}(-\int_{V}\sigma_{ij}N_{,j}^{m}\: dV+\int_{S_{T}}T_{i}N^{m}\, dS+\int_{V}f_{i}N^{m}\, dV-\int_{V}\rho\sum_{n}\ddot{a}_{i}^{n}N^{n}N^{m}\ dV)=0.\end{gather*}
 
 \end_inset
 
  Because the weighting function is arbitrary, this equation must hold for
  all 
-\begin_inset Formula $c^{n}$
+\begin_inset Formula $c_{i}^{n}$
 \end_inset
 
 , so that the quantity in parenthesis is zero for each 
-\begin_inset Formula $c^{n}$
+\begin_inset Formula $c_{i}^{n}$
 \end_inset
 
 
 \begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral-1}\end{equation}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=0.\label{eq:elasticity:integral-1}\end{equation}
 
 \end_inset
 
@@ -1052,14 +1052,14 @@ We solve this equation through formulation of a linear algebraic system
  of equations, involving the residual and Jacobian.
  The residual is simply
 \begin_inset Formula \[
-\vec{R}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
+R_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
 \begin_inset Formula \[
-\vec{R}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
+R_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
 
 \end_inset
 
@@ -1100,6 +1100,16 @@ reference "eq:elasticity:integral:dynamic:t"
 \end_inset
 
 , we have
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+MORE EDITING STARTING HERE
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \[
 \int_{V}\frac{1}{2}d\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
 
@@ -1490,14 +1500,14 @@ We solve this equation through formulation of a linear algebraic system
  of equations, involving the residual and Jacobian.
  The residual is simply
 \begin_inset Formula \[
-\vec{R}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\]
+R_{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\]
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
 \begin_inset Formula \[
-\vec{R}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
+R_{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},\]
 
 \end_inset
 
@@ -1517,19 +1527,7 @@ where
  associated with mapping the reference cell to the actual cell.
  The quadrature scheme for the integral over the tractions is one dimension
  lower than the one used in integrating the terms for the volume cells.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Using the central difference method to approximate the acceleration (and
+ Using the central difference method to approximate the acceleration (and
  velocity),
 \begin_inset Formula \begin{gather}
 \ddot{u}_{i}=\frac{1}{\Delta t^{2}}\left(u_{i}(t+\Delta t)-2u_{i}(t)+u_{i}(t-\Delta t)\right)\\
@@ -1537,82 +1535,46 @@ Using the central difference method to approximate the acceleration (and
 
 \end_inset
 
-we have
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}(u_{i}^{q}(t+\Delta t)-2u_{i}^{q}(t)+u_{i}^{q}(t-\Delta t))\: dV\\
--\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0.\end{multline}
-
-\end_inset
-
-For compatibility with displacement-increment forulations for nonlinear
- viscoelastic and viscoplastic rheologies, we want to solve for the increment
- in displacement from time 
-\begin_inset Formula $t$
-\end_inset
-
- to time 
+and writing the displacement at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
-, 
-\begin_inset Formula $\Delta u_{i}^{q}(t)$
+ in terms of the displacement at 
+\begin_inset Formula $t$
 \end_inset
 
-.
- Replacing 
-\begin_inset Formula $u_{i}^{q}(t+\Delta t)$
+ (for consistency with the displacement increment quasi-static formulation),
+\begin_inset Formula \begin{gather*}
+u_{i}(t+\Delta t)=u_{i}(t)+du_{i}(t),\\
+\ddot{u}_{i}=\frac{1}{\Delta t^{2}}\left(du_{i}(t)-u_{i}(t)+u_{i}(t-\Delta t)\right),\\
+\dot{u}_{i}=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right),\end{gather*}
+
 \end_inset
 
- with 
-\begin_inset Formula $u_{i}^{q}(t)+\Delta u_{i}^{q}(t)$
-\end_inset
-
-, yields
+we have
 \begin_inset Formula \[
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}(\Delta u_{i}^{q}(t)-u_{i}^{q}(t)+u_{i}^{q}(t-\Delta t))\: dV-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0.\]
+\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}da_{i}^{m}(t)N^{m}N^{n}\ dV=-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}(a_{i}^{m}(t)-a_{i}^{m}(t-\Delta t))N^{m}N^{n}\ dV.\]
 
 \end_inset
 
-consistency with solution of quasi-static problems and which we can expand
- into
-\begin_inset Formula \begin{multline}
-\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}\Delta u_{i}^{q}(t)\, dV-\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\\
-+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV+\frac{1}{2}\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\\
--\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0\end{multline}
+Thus, the Jacobian for the system is
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Add absorbing boundary and fault terms.
+\end_layout
 
 \end_inset
 
-for the 
-\begin_inset Formula $i$
-\end_inset
 
-th component associated with basis function 
-\begin_inset Formula $N^{p}$
-\end_inset
-
-.
- Isolating the term containing 
-\begin_inset Formula $u_{i}^{q}(t+\Delta t)$
-\end_inset
-
- yields
-\begin_inset Formula \begin{multline}
-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}\Delta u_{i}^{q}(t)\, dV\right)=\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)\\
--\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)-\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)\\
-+\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline}
-
-\end_inset
-
-We can rewrite the left-hand side as a matrix-vector product where the vector
- is the displacement-increment field and the element mass matrix is given
- by
-\begin_inset Formula \begin{equation}
-M_{ij}^{pq}=\delta_{ij}\int_{V^{e}}\rho N^{p}N^{q}\, dV,\end{equation}
+\begin_inset Formula \[
+J_{ij}^{pq}=\delta_{ij}\int_{_{V}}\rho N^{p}N^{q}\ dV,\]
 
 \end_inset
 
 where 
-\begin_inset Formula $M_{ij}^{pq}$
+\begin_inset Formula $J_{ij}^{pq}$
 \end_inset
 
  is a 
@@ -1644,7 +1606,6 @@ where
 \end_inset
 
  are vector space components.
- 
 \end_layout
 
 \begin_layout Section

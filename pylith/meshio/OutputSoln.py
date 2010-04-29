@@ -59,7 +59,7 @@ class OutputSoln(OutputManagerMesh):
     self.availableFields = \
         {'vertex': \
            {'info': [],
-            'data': ["displacement"]},
+            'data': ["displacement","velocity"]},
          'cell': \
            {'info': [],
             'data': []}}
