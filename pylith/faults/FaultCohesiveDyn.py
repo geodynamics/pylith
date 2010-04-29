@@ -78,6 +78,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
         {'vertex': \
            {'info': ["normal_dir"],
             'data': ["slip",
+                     "slip_rate",
                      "traction"]},
          'cell': \
            {'info': [],
