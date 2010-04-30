@@ -33,15 +33,19 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  ALE::Obj<ALE::Ordering<>::perm_type> perm = 
+    new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
   ALE::Obj<ALE::Ordering<>::perm_type> reordering = 
     new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
 
-  ALE::Ordering<>::calculateMeshReordering(sieveMesh, reordering);
+  ALE::Ordering<>::calculateMeshReordering(sieveMesh, perm, reordering);
 
-  reordering->view("REORDERING");
-  sieveMesh->view("MESH BEFORE RELABEL");
+  //perm->view("PERMUTATION");
+  //reordering->view("REORDERING");
+  //sieveMesh->view("MESH BEFORE RELABEL");
 
   sieveMesh->relabel(*reordering);
+  //sieveMesh->view("MESH AFTER RELABEL");
 
   //logger.stagePop();
 } // reorder
