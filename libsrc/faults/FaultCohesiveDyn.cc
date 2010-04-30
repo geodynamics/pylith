@@ -132,7 +132,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& slipRate = _fields->get("slip rate");
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   slipRate.cloneSection(slip);
-  slipRate.vectorFieldType(topology::FieldBase::OTHER);
+  slipRate.vectorFieldType(topology::FieldBase::VECTOR);
 
   //logger.stagePop();
 } // initialize
