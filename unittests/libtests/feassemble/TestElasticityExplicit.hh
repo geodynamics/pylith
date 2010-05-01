@@ -123,12 +123,6 @@ private :
 		   ElasticityExplicit* const integrator,
 		   topology::SolutionFields* const fields);
 
-  /** Compute lumped Jacobian matrix.
-   *
-   * @param jacobian Lumped jacobian as an array.
-   */
-  void _lumpJacobian(double_array* jacobian);
-
 }; // class TestElasticityExplicit
 
 #endif // pylith_feassemble_testelasticityexplicit_hh
