@@ -26,6 +26,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SolutionFields
 #include "pylith/materials/materialsfwd.hh" // USES ElasticMaterial
+#include "pylith/utils/arrayfwd.hh" // USES double_array
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
@@ -33,7 +34,7 @@
 namespace pylith {
   namespace feassemble {
     class TestElasticityExplicit;
-    class IntegratorData;
+    class ElasticityExplicitData;
   } // feassemble
 } // pylith
 
@@ -86,6 +87,9 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
+  /// Test integrateResidualLumped().
+  void testIntegrateResidualLumped(void);
+
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
@@ -101,7 +105,7 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  IntegratorData* _data; ///< Data for testing.
+  ElasticityExplicitData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
   Quadrature<topology::Mesh>* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
@@ -118,6 +122,12 @@ private :
   void _initialize(topology::Mesh* mesh,
 		   ElasticityExplicit* const integrator,
 		   topology::SolutionFields* const fields);
+
+  /** Compute lumped Jacobian matrix.
+   *
+   * @param jacobian Lumped jacobian as an array.
+   */
+  void _lumpJacobian(double_array* jacobian);
 
 }; // class TestElasticityExplicit
 

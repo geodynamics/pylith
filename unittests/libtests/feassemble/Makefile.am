@@ -201,6 +201,7 @@ testfeassemble_SOURCES += \
 	data/GeomDataTet3D.cc \
 	data/GeomDataHex3D.cc \
 	data/IntegratorData.cc \
+	data/ElasticityExplicitData.cc \
 	data/ElasticityExplicitData1DLinear.cc \
 	data/ElasticityExplicitData1DQuadratic.cc \
 	data/ElasticityExplicitData2DLinear.cc \
@@ -281,6 +282,7 @@ noinst_HEADERS += \
 	data/GeomDataTet3D.hh \
 	data/GeomDataHex3D.hh \
 	data/IntegratorData.hh \
+	data/ElasticityExplicitData.hh \
 	data/ElasticityExplicitData1DLinear.hh \
 	data/ElasticityExplicitData1DQuadratic.hh \
 	data/ElasticityExplicitData2DLinear.hh \
