@@ -319,8 +319,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
-  double_array valsE;
-  _lumpJacobian(&valsE);
+  const double* valsE = _data->valsJacobianLumped;
 
 #if 0 // DEBUGGING
   // TEMPORARY
@@ -515,29 +514,6 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
 
   } // for
 } // _initialize
-
-// ----------------------------------------------------------------------
-// Compute lumped Jacobian matrix.
-void
-pylith::feassemble::TestElasticityExplicit::_lumpJacobian(
-						  double_array* jacobian)
-{ // _lumpJacobian
-  assert(0 != jacobian);
-
-  const double* jacobianFull = _data->valsJacobian;
-  const int size = _data->numVertices * _data->spaceDim;
-  jacobian->resize(size);
-  const int spaceDim = _data->spaceDim;
-  const int numBasis = _data->numVertices;
-  for (int iBasis=0; iBasis < numBasis; ++iBasis)
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const int indexRow = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
-      double value = 0.0;
-      for (int jBasis=0; jBasis < numBasis; ++jBasis)
-	value += jacobianFull[indexRow + jBasis*spaceDim+iDim];
-      (*jacobian)[iBasis*spaceDim+iDim] = value;
-    } // for
-} // _lumpJacobian
 
 
 // End of file 
