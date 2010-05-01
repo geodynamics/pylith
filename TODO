@@ -38,8 +38,36 @@ MAIN PRIORITIES
   + governing equations
   + Large deformation formulation
   + Lumped solver
+  + Cleanup bulk constitutive models (consistent w/governing eqns)
 
+* Cleanup PETSc setttings in examples
+    ksp_view, monitor, converged reason
+
+* Tutorials
+  3d/hex8
+    1. Dirichlet BC (static)
+    2. Neumann BC (static)
+    3. Earthquake rupture (static)
+    4. Dirichlet BC (quasi-static)
+    5. Dirichlet + Neumann (quasi-static)
+    6. Multiple earthquake rupture + creep (quasi-static)
+    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
+    8. Add power-law rheology (quasi-static)
+    9. Replace power-law with Drucker-Prager elastoplastic
+   10. Static friction + Dirichlet BC (static)
+   11. Static friction + Dirchlet BC (quasi-static)
+   12. Rate- and state-friction + Dirichlet BC (quasi-static)??
+
+Write up description of Savage and Prescott (1978) benchmark and
+distribute to Greg Lyzenga and Jay Parker
+
+Need full-scale test with variation in physical properties within a material.
+
+----------------------------------------------------------------------
 SECONDARY PRIORITIES
+----------------------------------------------------------------------
+
+* Output to HDF5 files
 
 * Uniform global refinement for tets with faults
 
@@ -59,9 +87,13 @@ SECONDARY PRIORITIES
 FRICTION
 ----------------------------------------------------------------------
 
+TPV205-2D
+  quad4, tri3
 TPV205
-TPV?? (rate and state)
+  hex8, tet4
 
+TPV?? (rate and state)
+TPV?? Drucker-Prager
 
 ----------------------------------------------------------------------
 LUMPED SOLVER
@@ -69,8 +101,6 @@ LUMPED SOLVER
 
 Unit tests
 
-  ElasticityExplicit
-    integrateResidualLumped()
   ElasticityExplicitTet4
     integrateResidualLumped()
   ElasticityExplicitLgDeform
@@ -79,38 +109,6 @@ Unit tests
     integrateResidualLumped()
   FaultCohesiveDyn
     adjustSolnLumped()
-
-----------------------------------------------------------------------
-TODO BEFORE WORKSHOP 2010
-----------------------------------------------------------------------
-
-Examples
-  Cleanup PETSc setttings
-    ksp_view, monitor, converged reason
-
-Tutorial
-  3d/hex8
-    1. Dirichlet BC (static)
-    2. Neumann BC (static)
-    3. Earthquake rupture (static)
-    4. Dirichlet BC (quasi-static)
-    5. Dirichlet + Neumann (quasi-static)
-    6. Multiple earthquake rupture + creep (quasi-static)
-    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
-    8. Add power-law rheology (quasi-static)
-    9. Replace power-law with Drucker-Prager elastoplastic
-   10. Static friction + Dirichlet BC (static)
-   11. Static friction + Dirchlet BC (quasi-static)
-   12. Rate- and state-friction + Dirichlet BC (quasi-static)??
-
-Write up description of Savage and Prescott (1978) benchmark and
-distribute to Greg Lyzenga and Jay Parker
-
-Rewrite governing equations to include fault implementation
-
-Rewrite bulk constitutive models
-
-Need full-scale test with variation in physical properties within a material.
 
 ----------------------------------------------------------------------
 CLEANUP
@@ -329,15 +327,6 @@ KNOWN DEFICIENCIES
 MISC PRIORITIES (Brad)
 ======================================================================
 
-2. Additional unit tests
-  a. FaultCohesive
-    i. Add checking of faultMesh [not currently used]
-
-3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
-   a. Materials C++ code
-   b. Integrator C++ code
-   b. Material C++ unit tests
-
 4. OutputManager
    a. VertexFilterChangeCS
       OutputFilter for writing vertex coordinates in another 
@@ -347,26 +336,6 @@ MISC PRIORITIES (Brad)
 ======================================================================
 PLANNED RELEASES
 ======================================================================
-
-----------------------------------------------------------------------
-Release 1.5
-----------------------------------------------------------------------
-
-  1. Fault constitutive models
-
-     Static friction
-     Linear slip-weakening
-     Rate- and state-friction w/ageing law
-
-       Spontaneous (dynamic) fault rupture output
-         Slip and tractions (time histories)
-         State variables (time histories)
-         Orientation (diagnostic)
-         Properties (diagnostic)
-
-  2. Large deformations
-
-  3. Finite strain
 
 ----------------------------------------------------------------------
 Release 1.6

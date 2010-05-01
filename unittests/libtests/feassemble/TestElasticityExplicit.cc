@@ -15,7 +15,7 @@
 #include "TestElasticityExplicit.hh" // Implementation of class methods
 
 #include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
-#include "data/IntegratorData.hh" // USES IntegratorData
+#include "data/ElasticityExplicitData.hh" // USES IntegratorData
 
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
@@ -198,6 +198,46 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
+// Test integrateResidual().
+void
+pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
+{ // testIntegrateResidualLumped
+  CPPUNIT_ASSERT(0 != _data);
+
+  topology::Mesh mesh;
+  ElasticityExplicit integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const double t = 1.0;
+  integrator.integrateResidualLumped(residual, t, &fields);
+
+  const double* valsE = _data->valsResidualLumped;
+  const int sizeE = _data->spaceDim * _data->numVertices;
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+  const double* vals = residualSection->restrictSpace();
+  const int size = residualSection->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+#if 0
+  residual.view("RESIDUAL");
+  std::cout << "EXPECTED RESIDUAL" << std::endl;
+  for (int i=0; i < size; ++i)
+    std::cout << "  " << valsE[i] << std::endl;
+#endif
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+} // testIntegrateResidualLumped
+
+// ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
 pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
@@ -279,19 +319,8 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
-  const double* valsMatrixE = _data->valsJacobian;
-  const int sizeE = _data->numVertices * _data->spaceDim;
-  double_array valsE(sizeE);
-  const int spaceDim = _data->spaceDim;
-  const int numBasis = _data->numVertices;
-  for (int iBasis=0; iBasis < numBasis; ++iBasis)
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const int indexRow = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
-      double value = 0.0;
-      for (int jBasis=0; jBasis < numBasis; ++jBasis)
-	value += valsMatrixE[indexRow + jBasis*spaceDim+iDim];
-      valsE[iBasis*spaceDim+iDim] = value;
-    } // for
+  double_array valsE;
+  _lumpJacobian(&valsE);
 
 #if 0 // DEBUGGING
   // TEMPORARY
@@ -309,6 +338,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT(!jacobianSection.isNull());
   const double* vals = jacobianSection->restrictSpace();
   const int size = jacobianSection->sizeWithBC();
+  const int sizeE = _data->numVertices * _data->spaceDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   const double tolerance = 1.0e-06;
@@ -485,6 +515,29 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
 
   } // for
 } // _initialize
+
+// ----------------------------------------------------------------------
+// Compute lumped Jacobian matrix.
+void
+pylith::feassemble::TestElasticityExplicit::_lumpJacobian(
+						  double_array* jacobian)
+{ // _lumpJacobian
+  assert(0 != jacobian);
+
+  const double* jacobianFull = _data->valsJacobian;
+  const int size = _data->numVertices * _data->spaceDim;
+  jacobian->resize(size);
+  const int spaceDim = _data->spaceDim;
+  const int numBasis = _data->numVertices;
+  for (int iBasis=0; iBasis < numBasis; ++iBasis)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const int indexRow = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
+      double value = 0.0;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis)
+	value += jacobianFull[indexRow + jBasis*spaceDim+iDim];
+      (*jacobian)[iBasis*spaceDim+iDim] = value;
+    } // for
+} // _lumpJacobian
 
 
 // End of file 
