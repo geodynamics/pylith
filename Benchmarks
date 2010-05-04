@@ -51,14 +51,8 @@ SCEC Crustal Deformation benchmark
 
 #----------------------------------------------------------------------
 3D/PyLith/benchmarks/trunk/quasistatic/solvertest:
-This benchmark may need updating of PETSc settings. There is a warning about
-options that were not used:
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-Option left: name:-sub_pc_factor_shift_nonzero no value
-Option left: name:-sub_pc_factor_shift_positive_definite value: 0
-This benchmark is not described in the manual. I don't think it is really
-a benchmark.
+
+This looks like a solver peformance benchmark with multiple faults.
 
 #----------------------------------------------------------------------
 3D/PyLith/benchmarks/trunk/quasistatic/strikeslipnog:
