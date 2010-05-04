@@ -97,11 +97,9 @@ pylith::problems::SolverLumped::solve(
   const ALE::Obj<RealSection>& solutionSection = solution->section();
   assert(!solutionSection.isNull());
 	 
-  double_array jacobianVertex(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   assert(!jacobianSection.isNull());
 
-  double_array residualVertex(spaceDim);
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
   
@@ -111,17 +109,16 @@ pylith::problems::SolverLumped::solve(
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter) {
-    jacobianSection->restrictPoint(*v_iter, &jacobianVertex[0],
-				   jacobianVertex.size());
-    residualSection->restrictPoint(*v_iter, &residualVertex[0],
-				   residualVertex.size());
+    assert(spaceDim == jacobianSection->getFiberDimension(*v_iter));
+    const double* jacobianVertex = jacobianSection->restrictPoint(*v_iter);
 
-#if !defined(NDEBUG)
-    for (int i=0; i < spaceDim; ++i)
+    assert(spaceDim == residualSection->getFiberDimension(*v_iter));
+    const double* residualVertex = residualSection->restrictPoint(*v_iter);
+
+    for (int i=0; i < spaceDim; ++i) {
       assert(jacobianVertex[i] != 0.0);
-#endif
-
-    solutionVertex = residualVertex / jacobianVertex;
+      solutionVertex[i] = residualVertex[i] / jacobianVertex[i];
+    } // for
     
     assert(solutionSection->getFiberDimension(*v_iter) == spaceDim);
     solutionSection->updatePoint(*v_iter, &solutionVertex[0]);

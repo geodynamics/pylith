@@ -56,15 +56,12 @@ pylith::problems::Explicit::calcRateFields(void)
   const int spaceDim = cs->spaceDim();
   
   // Get sections.
-  double_array dispIncrVertex(spaceDim);
   const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
   assert(!dispIncrSection.isNull());
 	 
-  double_array dispTVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = _fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  double_array dispTmdtVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTmdtSection =
     _fields->get("disp(t-dt)").section();
   assert(!dispTmdtSection.isNull());
@@ -91,15 +88,21 @@ pylith::problems::Explicit::calcRateFields(void)
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
        v_iter != verticesEnd;
        ++v_iter) {
-    dispIncrSection->restrictPoint(*v_iter, &dispIncrVertex[0],
-				   dispIncrVertex.size());
-    dispTSection->restrictPoint(*v_iter, &dispTVertex[0],
-				dispTVertex.size());
-    dispTmdtSection->restrictPoint(*v_iter, &dispTmdtVertex[0],
-				   dispTmdtVertex.size());
+    assert(spaceDim == dispIncrSection->getFiberDimension(*v_iter));
+    const double* dispIncrVertex = dispIncrSection->restrictPoint(*v_iter);
 
-    velVertex = (dispIncrVertex + dispTVertex - dispTmdtVertex) / twodt;
-    accVertex = (dispIncrVertex - dispTVertex + dispTmdtVertex) / dt2;
+    assert(spaceDim == dispTSection->getFiberDimension(*v_iter));
+    const double* dispTVertex = dispTSection->restrictPoint(*v_iter);
+
+    assert(spaceDim == dispTmdtSection->getFiberDimension(*v_iter));
+    const double* dispTmdtVertex = dispTmdtSection->restrictPoint(*v_iter);
+
+    for (int i=0; i < spaceDim; ++i) {
+      velVertex[i] = 
+	(dispIncrVertex[i] + dispTVertex[i] - dispTmdtVertex[i]) / twodt;
+      accVertex[i] = 
+	(dispIncrVertex[i] - dispTVertex[i] + dispTmdtVertex[i]) / dt2;
+    } // for
     
     assert(velSection->getFiberDimension(*v_iter) == spaceDim);
     velSection->updatePoint(*v_iter, &velVertex[0]);
