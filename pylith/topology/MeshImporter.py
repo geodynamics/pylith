@@ -95,9 +95,14 @@ class MeshImporter(MeshGenerator):
 
     # Reorder mesh
     if self.reorderMesh:
+      logEvent2 = "%sreorder" % self._loggingPrefix
+      self._eventLogger.eventBegin(logEvent2)
+      self._debug.log(resourceUsageString())
+      self._info.log("Reordering cells and vertices.")
       from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
       ordering = ReverseCuthillMcKee()
       ordering.reorder(mesh)
+      self._eventLogger.eventEnd(logEvent2)
 
     # Adjust topology
     self._debug.log(resourceUsageString())
@@ -133,6 +138,15 @@ class MeshImporter(MeshGenerator):
     self.distributor = self.inventory.distributor
     self.refiner = self.inventory.refiner
     self.reorderMesh = self.inventory.reorderMesh
+    return
+  
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    MeshGenerator._setupLogging(self)
+    self._eventLogger.registerEvent("%sreorder" % self._loggingPrefix)
     return
   
 
