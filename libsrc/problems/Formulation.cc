@@ -134,6 +134,8 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
   _fields = fields;
   _t = t;
   _dt = dt;
+
+  _setupRateFields();
 } // updateSettings
 
 // ----------------------------------------------------------------------
@@ -153,6 +155,8 @@ pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* j
   _fields = fields;
   _t = t;
   _dt = dt;
+
+  _setupRateFields();
 } // updateSettings
 
 // ----------------------------------------------------------------------
@@ -169,8 +173,8 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // Compute rate fields.
-  _calcRateFields();
+  // Update rate fields (must be consistent with current solution).
+  calcRateFields();  
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");
@@ -225,8 +229,8 @@ pylith::problems::Formulation::reformResidualLumped(const PetscVec* tmpResidualV
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
-  // Compute rate fields.
-  _calcRateFields();
+  // Update rate fields (must be consistent with current solution).
+  calcRateFields();  
 
   // Set residual to zero.
   topology::Field<topology::Mesh>& residual = _fields->get("residual");

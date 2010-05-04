@@ -36,8 +36,8 @@ pylith::problems::Explicit::~Explicit(void)
 // ----------------------------------------------------------------------
 // Compute velocity and acceleration at time t.
 void
-pylith::problems::Explicit::_calcRateFields(void)
-{ // _calcRateFields
+pylith::problems::Explicit::calcRateFields(void)
+{ // calcRateFields
   assert(0 != _fields);
 
   // vel(t) = (disp(t+dt) - disp(t-dt)) / (2*dt)
@@ -55,17 +55,6 @@ pylith::problems::Explicit::_calcRateFields(void)
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
   
-  if (!_fields->hasField("velocity(t)")) {
-    _fields->add("velocity(t)", "velocity");
-    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-    velocity.cloneSection(dispIncr);
-
-    _fields->add("acceleration(t)", "acceleration");
-    topology::Field<topology::Mesh>& acceleration = 
-      _fields->get("acceleration(t)");
-    acceleration.cloneSection(dispIncr);
-  } // if
-
   // Get sections.
   double_array dispIncrVertex(spaceDim);
   const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
@@ -120,7 +109,32 @@ pylith::problems::Explicit::_calcRateFields(void)
   } // for
 
   PetscLogFlops(vertices->size() * 6*spaceDim);
-} // _calcRateFields
+} // calcRateFields
+
+// ----------------------------------------------------------------------
+// Setup rate fields.
+void
+pylith::problems::Explicit::_setupRateFields(void)
+{ // _setupRateFields
+  assert(0 != _fields);
+ 
+  topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
+
+  if (!_fields->hasField("velocity(t)")) {
+    _fields->add("velocity(t)", "velocity");
+    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
+    velocity.cloneSection(dispIncr);
+    velocity.zero();
+  } // if
+
+  if (!_fields->hasField("acceleration(t)")) {
+    _fields->add("acceleration(t)", "acceleration");
+    topology::Field<topology::Mesh>& acceleration = 
+      _fields->get("acceleration(t)");
+    acceleration.cloneSection(dispIncr);
+    acceleration.zero();
+  } // if
+} // _setupRateFields
 
 
 

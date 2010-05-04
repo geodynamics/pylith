@@ -6,9 +6,6 @@ need Cygwin binbot
 
 MAIN PRIORITIES
 
-* Mesh reordering
-  + MATT needs to include vertices in reordering.
-
 * Better preconditioning
   + Need settings for Schur complement
 
@@ -26,17 +23,19 @@ MAIN PRIORITIES
   + Add stuff to manual
 
 * Optimization
-  + Reorder vertices/cells using reverse Cuthill-McKee
   + Specialized elasticity integrator objects for Tri3, Quad4, Tet4, Hex8
   + inline methods (what isn't getting inlined) -Winline
 
 * Lumped solver
   + Need to finish unit tests
+  + Remove redundant call to calcRateFields in SolverLumped. 
+    Update velocity and slip rate fields in adjustSolnLumped().
 
 * Updates to manual
   + tutorial
   + governing equations
   + Large deformation formulation
+  + mesh reordering
   + Lumped solver
   + Cleanup bulk constitutive models (consistent w/governing eqns)
 

@@ -119,12 +119,16 @@ namespace pylith {
        */
       void reformJacobianLumped(void);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////
-    protected :
-      
-      /// Compute velocity at time t.
+      /// Compute rate fields (velocity and/or acceleration) at time t.
       virtual
-      void _calcVelocity(void) = 0;
+      void calcRateFields(void) = 0;
+
+      // PROTECTED MEMBERS //////////////////////////////////////////////
+      protected :
+
+      /// Setup rate fields.
+      virtual
+      void _setupRateFields(void) = 0;
 
     }; // Formulation
 

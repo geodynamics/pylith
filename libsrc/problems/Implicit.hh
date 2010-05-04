@@ -41,11 +41,14 @@ public :
   /// Destructor
   ~Implicit(void);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
+  /// Compute rate fields (velocity and/or acceleration) at time t.
+  void calcRateFields(void);
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /// Compute velocity at time t.
-  void _calcRateFields(void);
+  /// Setup rate fields.
+  void _setupRateFields(void);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

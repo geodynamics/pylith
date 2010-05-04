@@ -119,6 +119,9 @@ pylith::problems::SolverNonlinear::solve(
   solution->scatterVectorToSection();
 
   _logger->eventEnd(scatterEvent);
+
+  // Update rate fields to be consistent with current solution.
+  _formulation->calcRateFields();
 } // solve
 
 // ----------------------------------------------------------------------

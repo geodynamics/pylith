@@ -105,6 +105,7 @@ pylith::problems::SolverLinear::solve(
 { // solve
   assert(0 != solution);
   assert(0 != jacobian);
+  assert(0 != _formulation);
 
   const int setupEvent = _logger->eventId("SoLi setup");
   const int solveEvent = _logger->eventId("SoLi solve");
@@ -143,6 +144,9 @@ pylith::problems::SolverLinear::solve(
   solution->scatterVectorToSection();
 
   _logger->eventEnd(scatterEvent);
+
+  // Update rate fields to be consistent with current solution.
+  _formulation->calcRateFields();
 } // solve
 
 // ----------------------------------------------------------------------
