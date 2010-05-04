@@ -207,6 +207,46 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidual(void)
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
+// Test integrateResidual().
+void
+pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidualLumped(void)
+{ // testIntegrateResidualLumped
+  CPPUNIT_ASSERT(0 != _data);
+
+  topology::Mesh mesh;
+  ElasticityExplicitTet4 integrator;
+  topology::SolutionFields fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  topology::Field<topology::Mesh>& residual = fields.get("residual");
+  const double t = 1.0;
+  integrator.integrateResidualLumped(residual, t, &fields);
+
+  const double* valsE = _data->valsResidualLumped;
+  const int sizeE = _data->spaceDim * _data->numVertices;
+
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  CPPUNIT_ASSERT(!residualSection.isNull());
+  const double* vals = residualSection->restrictSpace();
+  const int size = residualSection->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+#if 1 // DEBUGGING
+  residual.view("RESIDUAL");
+  std::cout << "EXPECTED RESIDUAL" << std::endl;
+  for (int i=0; i < size; ++i)
+    std::cout << "  " << valsE[i] << std::endl;
+#endif // DEBUGGING
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+} // testIntegrateResidualLumped
+
+// ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
 pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
