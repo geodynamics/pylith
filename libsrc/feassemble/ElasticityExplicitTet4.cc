@@ -523,11 +523,11 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     _logger->eventBegin(stateVarsEvent);
 #endif
 
-    // Get density at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
-
     // Get state variables for cell.
     _material->retrievePropsAndVars(*c_iter);
+
+    // Get density at quadrature points for this cell
+    const double_array& density = _material->calcDensity();
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
@@ -634,18 +634,30 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 
     assert(_cellVector.size() == 12);
     assert(stressCell.size() == 6);
-    _cellVector[0] -= (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
-    _cellVector[1] -= (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
-    _cellVector[2] -= (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
-    _cellVector[3] -= (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
-    _cellVector[4] -= (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
-    _cellVector[5] -= (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
-    _cellVector[6] -= (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
-    _cellVector[7] -= (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
-    _cellVector[8] -= (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
-    _cellVector[9] -= (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
-    _cellVector[10] -= (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
-    _cellVector[11] -= (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
+    _cellVector[0] -= 
+      (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
+    _cellVector[1] -= 
+      (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
+    _cellVector[2] -= 
+      (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
+    _cellVector[3] -= 
+      (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
+    _cellVector[4] -= 
+      (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
+    _cellVector[5] -= 
+      (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
+    _cellVector[6] -= 
+      (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
+    _cellVector[7] -= 
+      (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
+    _cellVector[8] -= 
+      (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
+    _cellVector[9] -= 
+      (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
+    _cellVector[10] -= 
+      (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
+    _cellVector[11] -= 
+      (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(84);

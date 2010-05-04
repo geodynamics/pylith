@@ -99,9 +99,6 @@ LUMPED SOLVER
 
 Unit tests
 
-  ElasticityExplicitTet4
-    integrateResidualLumped()
-
   AbsorbingDampers
     integrateResidualLumped()
   FaultCohesiveDyn
