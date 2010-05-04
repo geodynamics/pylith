@@ -25,7 +25,7 @@ if ENABLE_TESTING
 	unittests
 
 # Full-scale tests in progress.
-#	tests
+#	tests_auto
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) examples tests doc
