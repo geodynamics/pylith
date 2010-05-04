@@ -150,12 +150,16 @@ public :
    */
   void adjustSolnLumped(void);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
+  /// Compute rate fields (velocity and/or acceleration) at time t.
+  virtual
+  void calcRateFields(void) = 0;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /// Compute velocity at time t.
+  /// Setup rate fields.
   virtual
-  void _calcRateFields(void) = 0;
+  void _setupRateFields(void) = 0;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

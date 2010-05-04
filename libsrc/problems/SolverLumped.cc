@@ -130,10 +130,16 @@ pylith::problems::SolverLumped::solve(
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(adjustEvent);
 
+  // Update rate fields to be consistent with current solution.
+  _formulation->calcRateFields();
+
   // Adjust solution to match constraints
   _formulation->adjustSolnLumped();
 
   _logger->eventEnd(adjustEvent);
+
+  // Update rate fields to be consistent with current solution.
+  _formulation->calcRateFields(); // :KLUDGE: Update only those changed in FaultCohesiveDyn
 } // solve
 
 // ----------------------------------------------------------------------

@@ -1469,7 +1469,8 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
           velocityVertexP[kDim] * +orientationVertex[iDim*spaceDim+kDim];
 
     // Update slip rate field.
-    assert(slipRateVertex.size() == slipRateSection->getFiberDimension(v_fault));
+    assert(slipRateVertex.size() == 
+	   slipRateSection->getFiberDimension(v_fault));
     slipRateSection->updatePoint(v_fault, &slipRateVertex[0]);
   } // for
 

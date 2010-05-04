@@ -31,11 +31,14 @@ namespace pylith {
       /// Destructor
       ~Explicit(void);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////
-    protected :
+      /// Compute rate fields (velocity and/or acceleration) at time t.
+      void calcRateFields(void);
 
-      /// Compute velocity at time t.
-      void _calcVelocity(void);
+      // PROTECTED MEMBERS //////////////////////////////////////////////
+      protected :
+
+      /// Setup rate fields.
+      void _setupRateFields(void);
 
     }; // Explicit
 

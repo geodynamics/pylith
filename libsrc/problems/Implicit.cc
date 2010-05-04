@@ -36,8 +36,8 @@ pylith::problems::Implicit::~Implicit(void)
 // ----------------------------------------------------------------------
 // Compute velocity at time t.
 void
-pylith::problems::Implicit::_calcRateFields(void)
-{ // _calcRateFields
+pylith::problems::Implicit::calcRateFields(void)
+{ // calcRateFields
   assert(0 != _fields);
 
   // vel(t) = (disp(t+dt) - disp(t)) / dt
@@ -49,12 +49,6 @@ pylith::problems::Implicit::_calcRateFields(void)
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
   
-  if (!_fields->hasField("velocity(t)")) {
-    _fields->add("velocity(t)", "velocity");
-    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-    velocity.cloneSection(dispIncr);
-  } // if
-
   // Get sections.
   double_array dispIncrVertex(spaceDim);
   const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
@@ -86,7 +80,23 @@ pylith::problems::Implicit::_calcRateFields(void)
   } // for
   PetscLogFlops(vertices->size() * spaceDim);
 
-} // _calcRateFields
+} // calcRateFields
 
+// ----------------------------------------------------------------------
+// Setup rate fields.
+void
+pylith::problems::Implicit::_setupRateFields(void)
+{ // _setupRateFields
+  assert(0 != _fields);
+ 
+  topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
+
+  if (!_fields->hasField("velocity(t)")) {
+    _fields->add("velocity(t)", "velocity");
+    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
+    velocity.cloneSection(dispIncr);
+    velocity.zero();
+  } // if
+} // _setupRateFields
 
 // End of file

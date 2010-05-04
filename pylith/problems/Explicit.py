@@ -162,6 +162,14 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    # Note that Formulation.poststep is primarily output, and since
+    # the velocity and acceleration at time t depends on the
+    # displacement at time t+dt, we want to output BEFORE updating the
+    # displacement fields so that the displacement, velocity, and
+    # acceleration files are all at time t.
+    Formulation.poststep(self, t, dt)
+
+    # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispT = self.fields.get("disp(t)")
     dispTmdt = self.fields.get("disp(t-dt)")
@@ -169,8 +177,6 @@ class Explicit(Formulation, ModuleExplicit):
     dispTmdt.copy(dispT)
     dispT += dispIncr
     dispIncr.zero()
-
-    Formulation.poststep(self, t, dt)
 
     self._eventLogger.eventEnd(logEvent)    
     return
