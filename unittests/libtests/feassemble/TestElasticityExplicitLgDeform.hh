@@ -33,7 +33,7 @@
 namespace pylith {
   namespace feassemble {
     class TestElasticityExplicitLgDeform;
-    class IntegratorData;
+    class ElasticityExplicitData;
   } // feassemble
 } // pylith
 
@@ -70,8 +70,14 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
+  /// Test integrateResidual().
+  void testIntegrateResidualLumped(void);
+
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
+
+  /// Test integrateJacobian().
+  void testIntegrateJacobianLumped(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);
@@ -79,7 +85,7 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  IntegratorData* _data; ///< Data for testing.
+  ElasticityExplicitData* _data; ///< Data for testing.
   materials::ElasticMaterial* _material; ///< Elastic material.
   Quadrature<topology::Mesh>* _quadrature; ///< Quadrature information.
   spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
