@@ -299,7 +299,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
 // Test integrateJacobian().
 void
 pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
-{ // testIntegrateJacobian
+{ // testIntegrateJacobianLumped
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;

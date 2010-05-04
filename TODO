@@ -3,6 +3,7 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 need Cygwin binbot
+need x86_64 binbot compatible w/libc 2.7
 
 MAIN PRIORITIES
 
@@ -23,13 +24,11 @@ MAIN PRIORITIES
   + Add stuff to manual
 
 * Optimization
-  + Specialized elasticity integrator objects for Tri3, Quad4, Tet4, Hex8
+  + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
   + inline methods (what isn't getting inlined) -Winline
 
 * Lumped solver
   + Need to finish unit tests
-  + Remove redundant call to calcRateFields in SolverLumped. 
-    Update velocity and slip rate fields in adjustSolnLumped().
 
 * Updates to manual
   + tutorial
@@ -101,8 +100,6 @@ LUMPED SOLVER
 Unit tests
 
   ElasticityExplicitTet4
-    integrateResidualLumped()
-  ElasticityExplicitLgDeform
     integrateResidualLumped()
 
   AbsorbingDampers

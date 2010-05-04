@@ -79,8 +79,9 @@ class ElasticityExplicit(Component):
     M = integrator._calculateMassMat()
     Ml = self._lumpMatrix(M, integrator.numBasis, integrator.spaceDim)
     
-    vel = (integrator.fieldT + integrator.fieldTIncr - integrator.fieldTmdt) / (2.0*integrator.dt)
-    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2)
+    acc = (integrator.fieldTIncr - 
+           integrator.fieldT + 
+           integrator.fieldTmdt) / (integrator.dt**2)
     acc = acc.flatten()
     residual = -Ml*acc - numpy.dot(K, integrator.fieldT).flatten()
     return residual.flatten()

@@ -18,6 +18,7 @@
 from pyre.components.Component import Component
 
 import numpy
+import feutils
 
 # ----------------------------------------------------------------------
 
@@ -51,11 +52,85 @@ class ElasticityExplicit(Component):
 
     # Calculate action for inertia
     M = integrator._calculateMassMat()
-    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
+    acc = (integrator.fieldTIncr - 
+           integrator.fieldT + 
+           integrator.fieldTmdt) / (integrator.dt**2) 
     residual = -numpy.dot(M, acc)
     residual = residual.flatten()
+    residual += self._elasticityResidual(integrator)
+    return residual
 
-    # Calculate action for elasticity
+
+  def calculateJacobian(self, integrator):
+    """
+    Calculate contribution to Jacobian matrix of operator for integrator.
+
+    [A] = (1/dt**2)[M]
+    """
+    M = integrator._calculateMassMat()
+
+    jacobian = 1.0/integrator.dt**2 * M
+    return jacobian
+
+
+  def calculateResidualLumped(self, integrator):
+    """
+    Calculate contribution to residual of operator for integrator.
+
+    {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
+          [K]{u(t)}
+    """
+    M = integrator._calculateMassMat()
+    Ml = self._lumpMatrix(M, integrator.numBasis, integrator.spaceDim)
+    
+    acc = (integrator.fieldTIncr - 
+           integrator.fieldT + 
+           integrator.fieldTmdt) / (integrator.dt**2)
+    acc = acc.flatten()
+    residual = -Ml*acc
+    residual.flatten()
+
+    residual += self._elasticityResidual(integrator)
+    return residual
+
+
+  def calculateJacobianLumped(self, integrator):
+    """
+    Calculate contribution to Jacobian matrix of operator for integrator.
+
+    [A] = (1/dt**2)[M]
+    """
+    M = integrator._calculateMassMat()
+    Ml = self._lumpMatrix(M, integrator.numBasis, integrator.spaceDim)
+
+    jacobian = 1.0/integrator.dt**2 * Ml
+    return jacobian.flatten()
+
+
+  def _lumpMatrix(self, matrix, numBasis, spaceDim):
+    """
+    Lump matrix.
+    """
+    (nrows,ncols) = matrix.shape
+    assert(numBasis * spaceDim == nrows)
+    assert(nrows == ncols)
+    vector = numpy.zeros( (ncols), dtype=numpy.float64)
+
+    for iBasis in xrange(numBasis):
+      for iDim in xrange(spaceDim):
+        v = 0.0
+        for jBasis in xrange(numBasis):
+          v += matrix[iBasis*spaceDim+iDim,jBasis*spaceDim+iDim]
+        vector[iBasis*spaceDim+iDim] = v
+    return vector
+
+
+  def _elasticityResidual(self, integrator):
+    """
+    Calculate action for elasticity.
+    """
+    residual = numpy.zeros( (integrator.numBasis*integrator.spaceDim),
+                            dtype=numpy.float64)
 
     # Matrix of elasticity values
     D = integrator._calculateElasticityMat()
@@ -77,20 +152,7 @@ class ElasticityExplicit(Component):
         cellR -= wt * numpy.dot(BL.transpose(), S)
       
       feutils.assembleVec(residual, cellR.flatten(), cell, integrator.spaceDim)
-
     return residual
-
-
-  def calculateJacobian(self, integrator):
-    """
-    Calculate contribution to Jacobian matrix of operator for integrator.
-
-    [A] = (1/dt**2)[M]
-    """
-    M = integrator._calculateMassMat()
-
-    jacobian = 1.0/integrator.dt**2 * M
-    return jacobian
 
 
 # FACTORY //////////////////////////////////////////////////////////////

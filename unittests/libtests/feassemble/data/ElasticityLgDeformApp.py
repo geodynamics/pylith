@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/ElasticityAppLgDeform.py
+## @file unittests/libtests/feassemble/data/ElasticityLgDeformApp.py
 
 ## @brief Python application for generating C++ data files for testing
 ## C++ elasticity integrator objects.
@@ -22,8 +22,8 @@ import feutils
 
 # ----------------------------------------------------------------------
 
-# ElasticityAppLgDeform class
-class ElasticityAppLgDeform(ElasticityApp):
+# ElasticityLgDeformApp class
+class ElasticityLgDeformApp(ElasticityApp):
   """
   Python application for generating C++ data files for testing C++
   elasticity integrator objects.
@@ -31,7 +31,7 @@ class ElasticityAppLgDeform(ElasticityApp):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="elasticityapplgdeform"):
+  def __init__(self, name="elasticitylgdeformapp"):
     """
     Constructor.
     """
@@ -340,7 +340,7 @@ class ElasticityAppLgDeform(ElasticityApp):
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
 
-  app = ElasticityAppLgDeform()
+  app = ElasticityLgDeformApp()
   app.run()
 
 
