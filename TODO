@@ -7,8 +7,6 @@ need x86_64 binbot compatible w/libc 2.7
 
 MAIN PRIORITIES
 
-* synchronization of VTK output and simulation (off by dt for explicit?)
-
 * optimize VTKDataReader() 
 
 * Better preconditioning
@@ -121,6 +119,19 @@ SECONDARY PRIORITIES
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
+
+* VTKDataReaderZip
+
+  Read VTK files from zipfile.
+
+  import zipfile
+  zip = zipfile.open("test.zip")
+  for filename in zip.namelist():
+    bytes = zip.read(filename)
+    reader.input_string = bytes
+    reader.update()
+    data = reader.get_output()
+
 
 ----------------------------------------------------------------------
 FRICTION

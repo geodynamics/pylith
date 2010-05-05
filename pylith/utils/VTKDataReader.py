@@ -37,20 +37,23 @@ class VTKDataReader(object):
   """
 
   def __init__(self):
-    return
-
-
-  def read(self, filename):
     from enthought.tvtk.api import tvtk
     reader = tvtk.UnstructuredGridReader()
-    reader.file_name = filename
     reader.read_all_scalars = True
     reader.read_all_vectors = True
     reader.read_all_tensors = True
     reader.read_all_fields = True
-    err = reader.update()
-    data = reader.get_output()
-    
+    self.reader = reader
+    return
+
+
+  def read(self, filename):
+    """
+    Read VTK file.
+    """
+    self.reader.file_name = filename
+    self.reader.update()
+    data = self.reader.get_output()
     
     data = {'vertices': self._getVertices(data),
             'cells': self._getCells(data),
