@@ -47,18 +47,65 @@ MAIN PRIORITIES
 
 * Tutorials
   3d/hex8
+    directory structure
+      + common
+      + step-01, step-02, step-03, step-04, ...
     1. Dirichlet BC (static)
+       simple shear w/axial compression (max horiz at 45 degrees)
     2. Neumann BC (static)
+       remove Dirichlet BC on two sides and replace w/tractions
     3. Earthquake rupture (static)
+       add fault slip w/greater slip at depth
     4. Dirichlet BC (quasi-static)
+       constant velocity BC
     5. Dirichlet + Neumann (quasi-static)
+       constant velocity + time-dependent traction BC
     6. Multiple earthquake rupture + creep (quasi-static)
+       fixed boundaries, w/multiple eq ruptures
     7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
+       mini savage-prescott
     8. Add power-law rheology (quasi-static)
+       nonlinear solver
     9. Replace power-law with Drucker-Prager elastoplastic
+       nonlinear solver
    10. Static friction + Dirichlet BC (static)
-   11. Static friction + Dirchlet BC (quasi-static)
-   12. Rate- and state-friction + Dirichlet BC (quasi-static)??
+       stick, simple shear w/axial compression
+   11. Static friction + Dirichlet BC (static)
+       slip, simple shear w/axial compression
+   12. Static friction + Dirichlet BC (quasi-static)
+       slip, simple shear w/axial compression
+   13. Slip-weakening friction + Dirichlet BC (quasi-static)
+       slip, simple shear w/axial compression
+   14. Rate- and state-friction + Dirichlet BC (quasi-static)
+       slip, simple shear w/axial compression
+   15. Gravity
+   16. Gravity w/prestress
+   17. Gravity w/small strain
+
+  bar_shearwave
+    * quad4
+      + kinematic [explicit NOT lumped]
+      + static friction [lumped]
+      + slip-weakening friction
+      + rate- and state- friction
+    * tri3
+    * hex8
+    * tet4
+
+Benchmarks
+  * static
+    + CVMH (big test)
+    + solvertest (for preconditioning)
+  * quasistatic
+    + scecsrustdeform
+      - strikeslipnog
+      - reversenog (not finished)
+      - reverseg (to be done)
+      - savageprescott
+  * dynamic
+    + scecdynrup
+    + performance
+      - halfspace_strikeslip (Eqsim v. PyLith)
 
 Write up description of Savage and Prescott (1978) benchmark and
 distribute to Greg Lyzenga and Jay Parker
