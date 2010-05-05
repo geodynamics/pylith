@@ -168,15 +168,28 @@ class Fault(PetscComponent, ModuleFault):
     return
 
 
-  def poststep(self, t, dt, totalTime, fields):
+  def poststep(self, t, dt, fields):
     """
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    self.updateStateVars(t, fields)
+
+    self._eventLogger.eventEnd(logEvent)
+    return
+
+
+  def writeData(self, t, fields):
+    """
+    Write data at time t.
+    """
+    logEvent = "%swrite" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
     self._info.log("Writing fault data.")
-    self.output.writeData(t+dt, fields)
+    self.output.writeData(t, fields)
 
     self._eventLogger.eventEnd(logEvent)
     return

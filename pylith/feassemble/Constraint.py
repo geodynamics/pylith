@@ -29,6 +29,7 @@ def implementsConstraint(obj):
               "useSolnIncr",
               "setField",
               "poststep",
+              "writeData",
               "finalize"]
   for attr in required:
     if not attr in available:
@@ -61,9 +62,16 @@ class Constraint(object):
     return
 
 
-  def poststep(self, t, dt, totalTime, fields):
+  def poststep(self, t, dt, fields):
     """
     Hook for doing stuff after advancing time step.
+    """
+    return
+  
+
+  def writeData(self, t, fields):
+    """
+    Write data at time t.
     """
     return
   
@@ -96,6 +104,7 @@ class Constraint(object):
               "constraints",
               "setField",
               "poststep",
+              "write",
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))

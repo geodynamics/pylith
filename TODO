@@ -92,21 +92,6 @@ MAIN PRIORITIES
     * hex8
     * tet4
 
-Benchmarks
-  * static
-    + CVMH (big test)
-    + solvertest (for preconditioning)
-  * quasistatic
-    + scecsrustdeform
-      - strikeslipnog
-      - reversenog (not finished)
-      - reverseg (to be done)
-      - savageprescott
-  * dynamic
-    + scecdynrup
-    + performance
-      - halfspace_strikeslip (Eqsim v. PyLith)
-
 Write up description of Savage and Prescott (1978) benchmark and
 distribute to Greg Lyzenga and Jay Parker
 

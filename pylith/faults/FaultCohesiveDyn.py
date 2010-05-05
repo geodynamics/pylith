@@ -143,15 +143,15 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     return
 
 
-  def poststep(self, t, dt, totalTime, fields):
+  def poststep(self, t, dt, fields):
     """
     Hook for doing stuff after advancing time step.
     """
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    Integrator.poststep(self, t, dt, totalTime, fields)
-    FaultCohesive.poststep(self, t, dt, totalTime, fields)
+    Integrator.poststep(self, t, dt, fields)
+    FaultCohesive.poststep(self, t, dt, fields)
 
     self._eventLogger.eventEnd(logEvent)
     return

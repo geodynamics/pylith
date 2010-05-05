@@ -47,7 +47,6 @@ class ExplicitLumpedTet4(ExplicitLumped):
     Constructor.
     """
     ExplicitLumped.__init__(self, name)
-    self._loggingPrefix = "TSEx "
     return
 
 
