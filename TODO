@@ -7,6 +7,10 @@ need x86_64 binbot compatible w/libc 2.7
 
 MAIN PRIORITIES
 
+* synchronization of VTK output and simulation (off by dt for explicit?)
+
+* optimize VTKDataReader() 
+
 * Better preconditioning
   + Need settings for Schur complement
 
@@ -80,6 +84,11 @@ SECONDARY PRIORITIES
 * Optimization
   + Reimplement Fields to use a single section.
   + May be gotchas associated with Petsc Vec and scatters
+
+* utilities
+  + pylith_eqsummary
+    Calculate eq statistics for given slip model (VTK output).
+    Ability to get shear modulus on both sides of the fault (use fault normal).
 
 ----------------------------------------------------------------------
 FRICTION
