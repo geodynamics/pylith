@@ -89,7 +89,7 @@ class Integrator(object):
     return
 
 
-  def poststep(self, t, dt, totalTime, fields):
+  def poststep(self, t, dt, fields):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -97,6 +97,17 @@ class Integrator(object):
     self._eventLogger.eventBegin(logEvent)
 
     self.updateStateVars(t, fields)
+
+    self._eventLogger.eventEnd(logEvent)
+    return
+
+
+  def writeData(self, t, fields):
+    """
+    Hook for writing data at time t.
+    """
+    logEvent = "%swrite" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -126,6 +137,7 @@ class Integrator(object):
               "verify",
               "init",
               "poststep",
+              "write",
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))

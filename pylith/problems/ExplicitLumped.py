@@ -18,12 +18,12 @@
 ##
 ## Factory: pde_formulation
 
-from Formulation import Formulation
+from Explicit import Explicit
 from problems import Explicit as ModuleExplicit
 from pylith.utils.profiling import resourceUsageString
 
 # ExplicitLumped class
-class ExplicitLumped(Formulation, ModuleExplicit):
+class ExplicitLumped(Explicit, ModuleExplicit):
   """
   Python ExplicitLumped object for solving equations using an explicit
   formulation.
@@ -43,7 +43,7 @@ class ExplicitLumped(Formulation, ModuleExplicit):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Formulation.Inventory):
+  class Inventory(Explicit.Inventory):
     """
     Python object for managing ExplicitLumped facilities and properties.
 
@@ -66,24 +66,15 @@ class ExplicitLumped(Formulation, ModuleExplicit):
                                      factory=SolverLumped)
     solver.meta['tip'] = "Algebraic solver."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicit"):
+  def __init__(self, name="explicitlumped"):
     """
     Constructor.
     """
-    Formulation.__init__(self, name)
-    ModuleExplicit.__init__(self)
-    self._loggingPrefix = "TSEx "
+    Explicit.__init__(self, name)
     return
-
-
-  def elasticityIntegrator(self):
-    """
-    Get integrator for elastic material.
-    """
-    from pylith.feassemble.ElasticityExplicit import ElasticityExplicit
-    return ElasticityExplicit()
 
 
   def initialize(self, dimension, normalizer):
@@ -93,7 +84,7 @@ class ExplicitLumped(Formulation, ModuleExplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
-    Formulation.initialize(self, dimension, normalizer)
+    self._initialize(dimension, normalizer)
 
     from pylith.utils.petsc import MemoryLogger
     logger = MemoryLogger.singleton()
@@ -144,75 +135,13 @@ class ExplicitLumped(Formulation, ModuleExplicit):
     return
 
 
-  def prestep(self, t, dt):
-    """
-    Hook for doing stuff before advancing time step.
-    """
-    logEvent = "%sprestep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-    
-    dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    for constraint in self.constraints:
-      constraint.setFieldIncr(t, t+dt, dispIncr)
-
-    needNewJacobian = False
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.timeStep(dt)
-      if integrator.needNewJacobian():
-        needNewJacobian = True
-    if needNewJacobian:
-      self._reformJacobian(t, dt)
-
-    self._eventLogger.eventEnd(logEvent)
-    return
-
-
-  def step(self, t, dt):
-    """
-    Advance to next time step.
-    """
-    logEvent = "%sstep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
-    self._reformResidual(t, dt)
-    
-    self._info.log("Solving equations.")
-    residual = self.fields.get("residual")
-    dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    self.solver.solve(dispIncr, self.jacobian, residual)
-
-    self._eventLogger.eventEnd(logEvent)
-    return
-
-
-  def poststep(self, t, dt):
-    """
-    Hook for doing stuff after advancing time step.
-    """
-    logEvent = "%spoststep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-    
-    dispIncr = self.fields.get("dispIncr(t->t+dt)")
-    dispT = self.fields.get("disp(t)")
-    dispTmdt = self.fields.get("disp(t-dt)")
-
-    dispTmdt.copy(dispT)
-    dispT += dispIncr
-    dispIncr.zero()
-
-    Formulation.poststep(self, t, dt)
-
-    self._eventLogger.eventEnd(logEvent)    
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
     """
     Set members based using inventory.
     """
-    Formulation._configure(self)
+    Explicit._configure(self)
     self.solver = self.inventory.solver
     return
 

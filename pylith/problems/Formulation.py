@@ -172,96 +172,14 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     self._eventLogger.eventEnd(logEvent)
     return
-  
+
 
   def initialize(self, dimension, normalizer):
     """
-    Create integrators for each element family.
+    Initialize formulation.
     """
-    logEvent = "%sinit" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
-    self.timeStep.initialize(normalizer)
-
-    numTimeSteps = self.timeStep.numTimeSteps()
-    totalTime = self.timeStep.totalTime
-
-    from pylith.topology.SolutionFields import SolutionFields
-    self.fields = SolutionFields(self.mesh)
-    self._debug.log(resourceUsageString())
-
-    self._info.log("Initializing integrators.")
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      if not self.gravityField is None:
-        integrator.gravityField(self.gravityField)
-      integrator.initialize(totalTime, numTimeSteps, normalizer)
-    ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
-    ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
-    ModuleFormulation.initialize(self)
-    self._debug.log(resourceUsageString())
-
-    self._info.log("Initializing constraints.")
-    for constraint in self.constraints:
-      constraint.initialize(totalTime, numTimeSteps, normalizer)
-    self._debug.log(resourceUsageString())
-
-    self._info.log("Setting up solution output.")
-    for output in self.output.components():
-      output.initialize(self.mesh, normalizer)
-      output.writeInfo()
-      output.open(totalTime, numTimeSteps)
-    self._debug.log(resourceUsageString())
-
-    # Setup fields
-    self._info.log("Creating solution field.")
-    from pylith.utils.petsc import MemoryLogger
-    memoryLogger = MemoryLogger.singleton()
-    memoryLogger.setDebug(0)
-    memoryLogger.stagePush("Problem")
-    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
-    self.fields.add("disp(t)", "displacement")
-    self.fields.add("residual", "residual")
-    self.fields.solutionName("dispIncr(t->t+dt)")
-
-    lengthScale = normalizer.lengthScale()
-    solution = self.fields.get("dispIncr(t->t+dt)")
-    solution.vectorFieldType(solution.VECTOR)
-    solution.scale(lengthScale.value)
-    solution.newSection(solution.VERTICES_FIELD, dimension)
-    if self.splitFields:
-      solution.splitDefault()
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
-        integrator.splitField(solution)
-    for constraint in self.constraints:
-      constraint.setConstraintSizes(solution)
-    solution.allocate()
-    for constraint in self.constraints:
-      constraint.setConstraints(solution)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.checkConstraints(solution)
-
-    memoryLogger.stagePop()
-
-    # This creates a global order
-    solution.createVector()
-    solution.createScatter()
-
-    memoryLogger.stagePush("Problem")
-    dispT = self.fields.get("disp(t)")
-    dispT.vectorFieldType(dispT.VECTOR)
-    dispT.scale(lengthScale.value)
-
-    residual = self.fields.get("residual")
-    residual.vectorFieldType(residual.VECTOR)
-    residual.scale(lengthScale.value)
-
-    memoryLogger.stagePop()
-    memoryLogger.setDebug(0)
-    self._debug.log(resourceUsageString())
-
-    self._eventLogger.eventEnd(logEvent)
-    return
-
+    raise NotImplementedError("Please implement 'initialize' in derived class.")
+  
 
   def getStartTime(self):
     """
@@ -320,15 +238,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    totalTime = self.timeStep.totalTime
-
-    self._info.log("Writing solution fields.")
-    for output in self.output.components():
-      output.writeData(t+dt, self.fields)
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.poststep(t, dt, totalTime, self.fields)
+      integrator.poststep(t, dt, self.fields)
     for constraint in self.constraints:
-      constraint.poststep(t, dt, totalTime, self.fields)
+      constraint.poststep(t, dt, self.fields)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -465,6 +378,91 @@ class Formulation(PetscComponent, ModuleFormulation):
     return
   
 
+  def _initialize(self, dimension, normalizer):
+    """
+    Create integrators for each element family.
+    """
+    self.timeStep.initialize(normalizer)
+
+    numTimeSteps = self.timeStep.numTimeSteps()
+    totalTime = self.timeStep.totalTime
+
+    from pylith.topology.SolutionFields import SolutionFields
+    self.fields = SolutionFields(self.mesh)
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Initializing integrators.")
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      if not self.gravityField is None:
+        integrator.gravityField(self.gravityField)
+      integrator.initialize(totalTime, numTimeSteps, normalizer)
+    ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
+    ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
+    ModuleFormulation.initialize(self)
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Initializing constraints.")
+    for constraint in self.constraints:
+      constraint.initialize(totalTime, numTimeSteps, normalizer)
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Setting up solution output.")
+    for output in self.output.components():
+      output.initialize(self.mesh, normalizer)
+      output.writeInfo()
+      output.open(totalTime, numTimeSteps)
+    self._debug.log(resourceUsageString())
+
+    # Setup fields
+    self._info.log("Creating solution field.")
+    from pylith.utils.petsc import MemoryLogger
+    memoryLogger = MemoryLogger.singleton()
+    memoryLogger.setDebug(0)
+    memoryLogger.stagePush("Problem")
+    self.fields.add("dispIncr(t->t+dt)", "displacement_increment")
+    self.fields.add("disp(t)", "displacement")
+    self.fields.add("residual", "residual")
+    self.fields.solutionName("dispIncr(t->t+dt)")
+
+    lengthScale = normalizer.lengthScale()
+    solution = self.fields.get("dispIncr(t->t+dt)")
+    solution.vectorFieldType(solution.VECTOR)
+    solution.scale(lengthScale.value)
+    solution.newSection(solution.VERTICES_FIELD, dimension)
+    if self.splitFields:
+      solution.splitDefault()
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        integrator.splitField(solution)
+    for constraint in self.constraints:
+      constraint.setConstraintSizes(solution)
+    solution.allocate()
+    for constraint in self.constraints:
+      constraint.setConstraints(solution)
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.checkConstraints(solution)
+
+    memoryLogger.stagePop()
+
+    # This creates a global order
+    solution.createVector()
+    solution.createScatter()
+
+    memoryLogger.stagePush("Problem")
+    dispT = self.fields.get("disp(t)")
+    dispT.vectorFieldType(dispT.VECTOR)
+    dispT.scale(lengthScale.value)
+
+    residual = self.fields.get("residual")
+    residual.vectorFieldType(residual.VECTOR)
+    residual.scale(lengthScale.value)
+
+    memoryLogger.stagePop()
+    memoryLogger.setDebug(0)
+    self._debug.log(resourceUsageString())
+
+    return
+
+
   def _reformJacobian(self, t, dt):
     """
     Reform Jacobian matrix for operator.
@@ -502,6 +500,22 @@ class Formulation(PetscComponent, ModuleFormulation):
     return
 
 
+  def _writeData(self, t):
+    """
+    Write data for time t.
+    """
+    logEvent = "%swrite" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.writeData(t, self.fields)
+    for constraint in self.constraints:
+      constraint.writeData(t, self.fields)
+
+    self._eventLogger.eventEnd(logEvent)
+    return
+
+
   def _setupLogging(self):
     """
     Setup event logging.
@@ -521,6 +535,7 @@ class Formulation(PetscComponent, ModuleFormulation):
               "prestep",
               "step",
               "poststep",
+              "write",
               "finalize"]
     for event in events:
       logger.registerEvent("%s%s" % (self._loggingPrefix, event))

@@ -107,10 +107,11 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Initialize problem for implicit time integration.
     """
-    Formulation.initialize(self, dimension, normalizer)
-
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
+
+    self._initialize(dimension, normalizer)
+
     from pylith.utils.petsc import MemoryLogger
     memoryLogger = MemoryLogger.singleton()
     memoryLogger.setDebug(0)
@@ -233,7 +234,14 @@ class Implicit(Formulation, ModuleImplicit):
     disp += dispIncr
     dispIncr.zero()
 
+    # Complete post-step processing, then write data.
     Formulation.poststep(self, t, dt)
+
+    # Write data.
+    self._info.log("Writing solution fields.")
+    for output in self.output.components():
+      output.writeData(t+dt, self.fields)
+    self._writeData(t+dt)
 
     self._stepCount += 1
     return

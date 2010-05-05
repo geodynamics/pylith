@@ -67,7 +67,7 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
-    Formulation.initialize(self, dimension, normalizer)
+    self._initialize(dimension, normalizer)
 
     from pylith.utils.petsc import MemoryLogger
     logger = MemoryLogger.singleton()
@@ -162,12 +162,14 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
-    # Note that Formulation.poststep is primarily output, and since
-    # the velocity and acceleration at time t depends on the
+    # The velocity and acceleration at time t depends on the
     # displacement at time t+dt, we want to output BEFORE updating the
     # displacement fields so that the displacement, velocity, and
     # acceleration files are all at time t.
-    Formulation.poststep(self, t, dt)
+    self._info.log("Writing solution fields.")
+    for output in self.output.components():
+      output.writeData(t, self.fields)
+    self._writeData(t)
 
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
@@ -177,6 +179,9 @@ class Explicit(Formulation, ModuleExplicit):
     dispTmdt.copy(dispT)
     dispT += dispIncr
     dispIncr.zero()
+
+    # Complete post-step processing.
+    Formulation.poststep(self, t, dt)
 
     self._eventLogger.eventEnd(logEvent)    
     return

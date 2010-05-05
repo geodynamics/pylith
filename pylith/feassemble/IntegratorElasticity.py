@@ -92,17 +92,15 @@ class IntegratorElasticity(Integrator):
     return
   
   
-  def poststep(self, t, dt, totalTime, fields):
+  def writeData(self, t, fields):
     """
-    Hook for doing stuff after advancing time step.
+    Hook for writing data at time t.
     """
-    logEvent = "%spoststep" % self._loggingPrefix
+    logEvent = "%swrite" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    Integrator.poststep(self, t, dt, totalTime, fields)
-
     self._info.log("Writing material data.")
-    self.output.writeData(t+dt, fields)
+    self.output.writeData(t, fields)
 
     self._eventLogger.eventEnd(logEvent)
     return
