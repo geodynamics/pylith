@@ -31,23 +31,28 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 
   //logger.stagePush("MeshReordering");
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  ALE::Obj<ALE::Ordering<>::perm_type> perm = 
-    new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
-  ALE::Obj<ALE::Ordering<>::perm_type> reordering = 
-    new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
+  int rank = 0;
+  MPI_Comm_rank(mesh->comm(), &rank);
 
-  ALE::Ordering<>::calculateMeshReordering(sieveMesh, perm, reordering);
+  if (0 == rank) {
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
+    assert(!sieveMesh.isNull());
+    ALE::Obj<ALE::Ordering<>::perm_type> perm = 
+      new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
+    ALE::Obj<ALE::Ordering<>::perm_type> reordering = 
+      new ALE::Ordering<>::perm_type(sieveMesh->comm(), sieveMesh->debug());
+    
+    ALE::Ordering<>::calculateMeshReordering(sieveMesh, perm, reordering);
+    
+    //perm->view("PERMUTATION");
+    //reordering->view("REORDERING");
+    //sieveMesh->view("MESH BEFORE RELABEL");
+    
+    sieveMesh->relabel(*reordering);
+    //sieveMesh->view("MESH AFTER RELABEL");
+  } // if    
 
-  //perm->view("PERMUTATION");
-  //reordering->view("REORDERING");
-  //sieveMesh->view("MESH BEFORE RELABEL");
-
-  sieveMesh->relabel(*reordering);
-  //sieveMesh->view("MESH AFTER RELABEL");
-
-  //logger.stagePop();
+    //logger.stagePop();
 } // reorder
 
 
