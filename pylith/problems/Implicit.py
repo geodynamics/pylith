@@ -237,7 +237,8 @@ class Implicit(Formulation, ModuleImplicit):
     # Complete post-step processing, then write data.
     Formulation.poststep(self, t, dt)
 
-    # Write data.
+    # Write data. Velocity at time t will be based upon displacement
+    # at time t-dt and t.
     self._info.log("Writing solution fields.")
     for output in self.output.components():
       output.writeData(t+dt, self.fields)
