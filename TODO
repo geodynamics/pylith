@@ -7,8 +7,6 @@ need x86_64 binbot compatible w/libc 2.7
 
 MAIN PRIORITIES
 
-* optimize VTKDataReader() 
-
 * Better preconditioning
   + Need settings for Schur complement
 
@@ -89,6 +87,8 @@ MAIN PRIORITIES
     * tri3
     * hex8
     * tet4
+
+  meshes
 
 Write up description of Savage and Prescott (1978) benchmark and
 distribute to Greg Lyzenga and Jay Parker
