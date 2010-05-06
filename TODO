@@ -44,8 +44,6 @@ MAIN PRIORITIES
 * Tutorials
   3d/hex8
     directory structure
-      + common
-      + step-01, step-02, step-03, step-04, ...
     1. Dirichlet BC (static)
        simple shear w/axial compression (max horiz at 45 degrees)
     2. Neumann BC (static)
