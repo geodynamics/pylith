@@ -850,6 +850,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 	++v_iter) {
       if (fRenumbering.find(*v_iter) == fRenumberingEnd)
 	continue;
+      assert(fCoordinatesDim->getFiberDimension(fRenumbering[*v_iter]) ==
+	     coordinatesDim->getFiberDimension(*v_iter));
       fCoordinatesDim->updatePoint(fRenumbering[*v_iter], 
 				   coordinatesDim->restrictPoint(*v_iter));
     } // for
