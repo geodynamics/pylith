@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.4.2
+We are pleased to announce release of PyLith version 1.5.0
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -32,6 +32,14 @@ additional constitutive models for both volume elements and cohesive
 deformations, and the generation of Green's functions to be used in
 inversions.  Many of these features should be available in early 2010.
 
+
+======================================================================
+MIGRATING FROM VERSION 1.4 TO 1.5
+======================================================================
+
+Power-law stuff
+
+many new features
 
 ======================================================================
 MIGRATING FROM VERSION 1.3 TO 1.4
