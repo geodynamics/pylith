@@ -28,7 +28,7 @@
 #define isnan std::isnan // TEMPORARY
 #define isinf std::isinf // TEMPORARY
 
-#include "../src/snes/impls/ls/ls.h"
+#include "../src/snes/impls/ls/lsimpl.h"
 
 // ----------------------------------------------------------------------
 // Constructor
