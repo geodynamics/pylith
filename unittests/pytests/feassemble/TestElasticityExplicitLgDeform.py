@@ -187,7 +187,7 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     t = 7.3
     dt = 0.1
     totalTime = 23.0
-    integrator.poststep(t, dt, totalTime, fields)
+    integrator.poststep(t, dt, fields)
 
     # No test of result
     return
@@ -286,6 +286,7 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     fields.add("disp(t+dt)", "displacement")
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
+    fields.add("acceleration(t)", "acceleration")
     fields.solutionName("disp(t+dt)")
 
     residual = fields.get("residual")
