@@ -146,7 +146,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     t = 0.50
     dt = 0.1
     totalTime = 5
-    bc.poststep(t, dt, totalTime, fields)
+    bc.poststep(t, dt, fields)
 
     # No testing of result.
     return
@@ -235,6 +235,7 @@ class TestAbsorbingDampers(unittest.TestCase):
     fields.add("dispIncr(t->t+dt)", "displacement")
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
+    fields.add("velocity(t)", "velocity")
     fields.solutionName("dispIncr(t->t+dt)")
 
     residual = fields.get("residual")

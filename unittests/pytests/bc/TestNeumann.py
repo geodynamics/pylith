@@ -145,7 +145,7 @@ class TestNeumann(unittest.TestCase):
     t = 0.50
     dt = 0.1
     totalTime = 5
-    bc.poststep(t, dt, totalTime, fields)
+    bc.poststep(t, dt, fields)
 
     # No testing of result.
     return

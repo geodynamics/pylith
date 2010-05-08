@@ -204,7 +204,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
 
     dt = 0.1
     totalTime = 5
-    fault.poststep(t, dt, totalTime, fields)
+    fault.poststep(t, dt, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
