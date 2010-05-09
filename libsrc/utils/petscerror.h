@@ -28,12 +28,12 @@
 
 #define CHECK_PETSC_ERROR(err) \
   if (err) { \
-    PetscError(__LINE__, __FUNCT__, __FILE__, __SDIR__, err, 0, " "); \
+    PetscError(PETSC_COMM_SELF, __LINE__, __FUNCT__, __FILE__, __SDIR__, err, 0, " "); \
     throw std::runtime_error("PETSc error."); }
 
 #define CHECK_PETSC_ERROR_MSG(err, msg) \
   if (err) { \
-    PetscError(__LINE__, __FUNCT__, __FILE__, __SDIR__, err, 0, " "); \
+    PetscError(PETSC_COMM_SELF, __LINE__, __FUNCT__, __FILE__, __SDIR__, err, 0, " "); \
     throw std::runtime_error(msg); }
 
 #endif // pylith_utils_petscerror_h
