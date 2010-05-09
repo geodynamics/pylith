@@ -242,7 +242,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   }
   ierr = VecNorm(g,NORM_2,gnorm);CHKERRQ(ierr);
   if (PetscIsInfOrNanReal(*gnorm))
-    SETERRQ(PETSC_ERR_FP, "User provided compute function generated a "
+    SETERRQ(PETSC_COMM_SELF,
+	    PETSC_ERR_FP, "User provided compute function generated a "
 	    "Not-a-Number");
   ierr = PetscInfo2(snes,"Initial fnorm %G gnorm %G\n",fnorm,*gnorm);CHKERRQ(ierr);
   if (.5*(*gnorm)*(*gnorm) <= .5*fnorm*fnorm + neP->alpha*initslope) {
@@ -279,7 +280,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     PetscFunctionReturn(0);
   } // if
   ierr = VecNorm(g,NORM_2,gnorm);CHKERRQ(ierr);
-  if PetscIsInfOrNanReal(*gnorm) SETERRQ(PETSC_ERR_FP,"User provided compute function generated a Not-a-Number");
+  if PetscIsInfOrNanReal(*gnorm) SETERRQ(PETSC_COMM_SELF, PETSC_ERR_FP,"User provided compute function generated a Not-a-Number");
   ierr = PetscInfo1(snes,"gnorm after quadratic fit %G\n",*gnorm);CHKERRQ(ierr);
   if (.5*(*gnorm)*(*gnorm) < .5*fnorm*fnorm + lambda*neP->alpha*initslope) { /* sufficient reduction */
     ierr = PetscInfo1(snes,"Quadratically determined step, lambda=%18.16e\n",lambda);CHKERRQ(ierr);
@@ -341,7 +342,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     } // if
     ierr = VecNorm(g,NORM_2,gnorm);CHKERRQ(ierr);
     if (PetscIsInfOrNanReal(*gnorm))
-      SETERRQ(PETSC_ERR_FP,"User provided compute function generated a "
+      SETERRQ(PETSC_COMM_SELF, 
+	      PETSC_ERR_FP,"User provided compute function generated a "
 	      "Not-a-Number");
     if (.5*(*gnorm)*(*gnorm) < .5*fnorm*fnorm + lambda*neP->alpha*initslope) {
       // is reduction enough?
@@ -374,7 +376,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
       }
       ierr = VecNormBegin(g,NORM_2,gnorm);CHKERRQ(ierr);
       if (PetscIsInfOrNanReal(*gnorm))
-	SETERRQ(PETSC_ERR_FP, "User provided compute function generated a "
+	SETERRQ(PETSC_COMM_SELF, 
+		PETSC_ERR_FP, "User provided compute function generated a "
 		"Not-a-Number");
       ierr = VecNormBegin(y,NORM_2,ynorm);CHKERRQ(ierr);
       ierr = VecNormEnd(g,NORM_2,gnorm);CHKERRQ(ierr);
@@ -397,7 +400,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   }
   ierr = VecNormBegin(g,NORM_2,gnorm);CHKERRQ(ierr);
   if (PetscIsInfOrNanReal(*gnorm))
-    SETERRQ(PETSC_ERR_FP, "User provided compute function generated a "
+    SETERRQ(PETSC_COMM_SELF,
+	    PETSC_ERR_FP, "User provided compute function generated a "
 	    "Not-a-Number");
   ierr = VecNormBegin(y,NORM_2,ynorm);CHKERRQ(ierr);
   ierr = VecNormEnd(g,NORM_2,gnorm);CHKERRQ(ierr);
