@@ -44,6 +44,8 @@
 // slight speed improvement.
 //#define PRECOMPUTE_GEOMETRY
 
+#define NO_FAULT_OPENING
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -1926,7 +1928,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
   const double tractionNormal = tractionTpdt[1];
   const double tractionShearMag = fabs(tractionTpdt[0]);
 
+#if !defined(NO_FAULT_OPENING)
   if (tractionNormal < 0 && 0.0 == slip[1]) {
+#endif
     // if in compression and no opening
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
                 tractionNormal);
@@ -1942,11 +1946,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
       // else friction exceeds value necessary, so stick
       // no changes to solution
     } // if/else
+#if !defined(NO_FAULT_OPENING)
   } else {
     // if in tension, then traction is zero.
     (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
     (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
   } // else
+#endif
 
   PetscLogFlops(8);
 } // _constrainSolnSpace2D
@@ -1972,7 +1978,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
     sqrt(tractionTpdt[0] * tractionTpdt[0] +
 	 tractionTpdt[1] * tractionTpdt[1]);
   
+#if !defined(NO_FAULT_OPENING)
   if (tractionNormal < 0.0 && 0.0 == slip[2]) {
+#endif
     // if in compression and no opening
     const double frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
@@ -1992,12 +2000,14 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       // else friction exceeds value necessary, so stick
       // no changes to solution
     } // if/else
+#if !defined(NO_FAULT_OPENING)
   } else {
     // if in tension, then traction is zero.
     (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
     (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
     (*dLagrangeTpdt)[2] = -tractionTpdt[2] * area;
   } // else
+#endif
 
   PetscLogFlops(22);
 } // _constrainSolnSpace3D

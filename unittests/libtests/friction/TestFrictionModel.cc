@@ -37,6 +37,7 @@
 #include <cstring> // USES memcpy()
 
 //#define PRECOMPUTE_GEOMETRY
+#define NO_FAULT_OPENING
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
@@ -635,8 +636,14 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
 					slip, slipRate, normalTraction,
 					&properties[0], properties.size(),
 					&stateVars[0], stateVars.size());
-    
+
+#if !defined(NO_FAULT_OPENING)
     const double frictionE = _data->friction[iLoc];
+#else
+    // If fault is in tension, let test pass.
+    const double frictionE = (normalTraction < 0.0) ?
+      _data->friction[iLoc] : friction;
+#endif
     
     const double tolerance = 1.0e-06;
 

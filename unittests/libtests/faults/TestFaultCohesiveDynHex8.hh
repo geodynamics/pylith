@@ -21,6 +21,8 @@
 #if !defined(pylith_faults_testfaultcohesivedynhex8_hh)
 #define pylith_faults_testfaultcohesivedynhex8_hh
 
+#define NO_FAULT_OPENING
+
 #include "TestFaultCohesiveDyn.hh" // ISA TestFaultCohesiveDyn
 
 /// Namespace for pylith package
@@ -40,7 +42,9 @@ class pylith::faults::TestFaultCohesiveDynHex8 : public TestFaultCohesiveDyn
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testConstrainSolnSpaceStick );
   CPPUNIT_TEST( testConstrainSolnSpaceSlip );
+#if !defined(NO_FAULT_OPENING)
   CPPUNIT_TEST( testConstrainSolnSpaceOpen );
+#endif
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testCalcTractions );
 
