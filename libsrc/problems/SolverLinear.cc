@@ -91,6 +91,26 @@ pylith::problems::SolverLinear::initialize(
     err = PCSetFromOptions(pc); CHECK_PETSC_ERROR(err);
 #if defined(FIELD_SPLIT)
     constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
+    if (residual.section()->getNumSpaces() > sieveMesh->getDimension()) {
+      KSP     *ksps;
+      Mat      A, M;
+      PetscInt num, m, n;
+
+      err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
+      // Put in PC matrix for fault
+      MatStructure flag;
+      err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
+      err = MatGetLocalSize(A, &m, &n); CHECK_PETSC_ERROR(err);
+      err = MatCreate(sieveMesh->comm(), &M); CHECK_PETSC_ERROR(err);
+      err = MatSetSizes(M, m, n, PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
+      err = MatSeqAIJSetPreallocation(M, 1, PETSC_NULL); CHECK_PETSC_ERROR(err);
+      err = MatMPIAIJSetPreallocation(M, 1, PETSC_NULL, 0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+      err = MatSetFromOptions(M); CHECK_PETSC_ERROR(err);
+      err = KSPSetOperators(ksps[num-1], A, M, flag); CHECK_PETSC_ERROR(err);
+      // Create a mapping to indices for that space (might be in FS)
+      err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+    }
 #endif
   }
 } // initialize

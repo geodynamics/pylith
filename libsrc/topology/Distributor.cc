@@ -277,10 +277,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 					newLabel);
     newLabel->symmetrize();
 #else
-    // Get remote labels
-    ALE::New::Completion<SieveMesh,SieveMesh::point_type>::scatterCones(origLabel, newLabel, sendMeshOverlap, recvMeshOverlap, renumbering);
-    // Create local label
-    newLabel->add(origLabel, newSieveMesh->getSieve(), renumbering);
+	DistributionType::distributeLabelV(newSieveMesh->getSieve(), origLabel, partition, renumbering, sendMeshOverlap, recvMeshOverlap, newLabel);
 #if 0 // DEBUGGING
     std::string serialName("Serial ");
     std::string parallelName("Parallel ");
