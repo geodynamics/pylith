@@ -6,6 +6,16 @@ need Cygwin binbot
 
 MAIN PRIORITIES
 
+* Drucker-Prager elastoplastic
+  Need to link isJacobianSymmetric() in Integrator with materials.
+  Need to pass hint when creating Jacobian.
+
+* Output
+  MATT - Will try moving std::ostringstream outside of loop
+
+* Distribute
+  MATT - needs to update calls to use new distribute
+
 * Better preconditioning
   + Need settings for Schur complement
 
@@ -14,10 +24,6 @@ MAIN PRIORITIES
 
   MATT is thinking about how to setup Schur complement settings
   (recursive specification of field splits).
-
-* Drucker-Prager elastoplastic
-  Need to link isJacobianSymmetric() in Integrator with materials.
-  Need to pass hint when creating Jacobian.
 
 * Friction
   + Add stuff to manual
@@ -50,7 +56,7 @@ MAIN PRIORITIES
     3. Earthquake rupture (static)
        add fault slip w/greater slip at depth
     4. Dirichlet BC (quasi-static)
-       constant velocity BC
+       constant velocity BC + MaxwellIsotropic3D (lower crust)
     5. Dirichlet + Neumann (quasi-static)
        constant velocity + time-dependent traction BC
     6. Multiple earthquake rupture + creep (quasi-static)
