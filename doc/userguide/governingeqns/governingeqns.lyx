@@ -1,4 +1,4 @@
-#LyX 1.6.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -59,8 +59,8 @@ Governing Equations
 \begin_layout Standard
 We present here a brief derivation of the equations for both quasi-static
  and dynamic computations.
- Since the general equations are the same (except for the absence of acceleratio
-n terms in the quasi-static case), we first derive these equations.
+ Since the general equations are the same (except for the absence of inertial
+ terms in the quasi-static case), we first derive these equations.
  We then present solution methods for each specific case.
  In all of our derivations, we use the notation described in Table 
 \begin_inset CommandInset ref
@@ -610,7 +610,7 @@ We specify tractions,
 \begin_inset Formula $S_{f}$
 \end_inset
 
-.
+ (we will consider the case of fault constitutive models in a later section).
  Note that since both 
 \begin_inset Formula $T_{i}$
 \end_inset
@@ -767,7 +767,7 @@ Finite-Element Formulation of Elasticity Equation
 
 \begin_layout Standard
 We formulate a set of algebraic equations using Galerkin's method.
- We consider a trial solution, 
+ We consider (1) a trial solution, 
 \begin_inset Formula $\vec{u}$
 \end_inset
 
@@ -776,7 +776,7 @@ We formulate a set of algebraic equations using Galerkin's method.
 \begin_inset Formula $S_{u}$
 \end_inset
 
-, and a weighting function, 
+, and (2) a weighting function, 
 \begin_inset Formula $\vec{\phi}$
 \end_inset
 
@@ -807,16 +807,6 @@ R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\text{ and}\\
 
 We construct the weak form by computing the dot product of the wave equation
  and weighting function and setting the integral over the domain to zero:
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add fault constraint
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{gather}
 \int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\\
 \int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{gather}
@@ -842,16 +832,6 @@ Expanding the left-hand side yields
 \end_inset
 
 Substituting into the weak form gives
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add fault constraint
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{equation}
 -\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
 
@@ -870,17 +850,11 @@ Turning our attention to the second term, we separate the integration over
 \begin_inset Formula $S_{u}$
 \end_inset
 
-,
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add fault constraint
-\end_layout
-
+ (we will 
+\begin_inset Formula $S_{f}$
 \end_inset
 
-
+ in section ?? [TODO]),
 \begin_inset Formula \begin{equation}
 -\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,\end{equation}
 
@@ -894,26 +868,48 @@ and recognize that
 \end_inset
 
 so that the equation reduces to
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add fault constraint
-\end_layout
+\begin_inset Formula \begin{equation}
+-\int_{V}\sigma_{ij}\phi_{i,j}\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\label{eq:elasticity:integral}\end{equation}
 
 \end_inset
 
+Now, 
+\begin_inset Formula $\sigma_{ij}\phi_{i,j}$
+\end_inset
 
+ is a scalar, so it is symmetric,
 \begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}\phi_{i,j}\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\label{eq:elasticity:integral}\end{equation}
+\sigma_{ij}\phi_{i,j}=\sigma_{ji}\phi_{j,i},\end{equation}
+
+\end_inset
+
+and we know that 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+ is symmetric, so
+\begin_inset Formula \begin{equation}
+\sigma_{ij}\phi_{i,j}=\sigma_{ij}\phi_{j,i},\end{equation}
+
+\end_inset
+
+which means
+\begin_inset Formula \begin{equation}
+\phi_{i,j}=\phi_{j,i},\end{equation}
+
+\end_inset
+
+which we can write as
+\begin_inset Formula \begin{equation}
+\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).\end{equation}
 
 \end_inset
 
 We express the trial solution and weighting function as linear combinations
  of basis functions,
 \begin_inset Formula \begin{gather*}
-u=\sum_{m}a_{i}^{m}N^{m},\\
-\phi=\sum_{n}c_{i}^{n}N^{n}.\end{gather*}
+u_{i}=\sum_{m}a_{i}^{m}N^{m},\\
+\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.\end{gather*}
 
 \end_inset
 
@@ -934,8 +930,8 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
  Substituting in the expressions for the trial solution and weighting function
  yields
 \begin_inset Formula \begin{gather*}
--\int_{V}\sigma_{ij}\sum_{m}c_{i}^{m}N_{,j}^{m}\: dV+\int_{S_{T}}T_{i}\sum_{m}c_{i}^{m}N^{m}\, dS+\int_{V}f_{i}\sum_{m}c_{i}^{m}N^{m}\, dV-\int_{V}\rho\sum_{n}\ddot{a}_{i}^{n}N^{n}\sum_{m}c_{i}^{m}N^{m}\ dV=0,\text{ or}\\
-\sum_{m}c_{i}^{m}(-\int_{V}\sigma_{ij}N_{,j}^{m}\: dV+\int_{S_{T}}T_{i}N^{m}\, dS+\int_{V}f_{i}N^{m}\, dV-\int_{V}\rho\sum_{n}\ddot{a}_{i}^{n}N^{n}N^{m}\ dV)=0.\end{gather*}
+-\int_{V}\sigma_{ij}\sum_{n}c_{i}^{n}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}\sum_{n}c_{i}^{n}N^{n}\, dS+\int_{V}f_{i}\sum_{n}c_{i}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\ dV=0,\text{ or}\\
+\sum_{n}c_{i}^{n}(-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV)=0.\end{gather*}
 
 \end_inset
 
@@ -950,7 +946,7 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
 
 
 \begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=0.\label{eq:elasticity:integral-1}\end{equation}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral-1}\end{equation}
 
 \end_inset
 
@@ -958,8 +954,28 @@ We want to solve this equation for the unknown coefficients
 \begin_inset Formula $a_{i}^{m}$
 \end_inset
 
-.
- 
+ subject to
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula \begin{gather*}
+\sigma_{ij,j}+f_{i}=\rho\ddot{u_{i}}\text{ in }V,\\
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
+u_{i}=u_{i}^{o}\text{ on }S_{u},\text{ and}\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\end{gather*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1000,16 +1016,6 @@ which we can write as
 \end_inset
 
 Substituting into the first term gives
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add fault constraint
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{equation}
 -\int_{V}\frac{1}{2}\sigma_{ij}\left(\phi_{i,j}+\phi_{j,i}\right)\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
 
@@ -1044,7 +1050,7 @@ As a result, time-dependence only enters through the constitutive relationships
 
 ,
 \begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.\label{eq:elasticity:integral:t+dt}\end{equation}
+-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.\label{eq:elasticity:integral:quasistatic}\end{equation}
 
 \end_inset
 
@@ -1059,7 +1065,7 @@ R_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\D
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
 \begin_inset Formula \[
-R_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
+R_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N_{,j}^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
 
 \end_inset
 
@@ -1091,7 +1097,7 @@ In order to find the Jacobian of the system, we let
 Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:elasticity:integral:dynamic:t"
+reference "eq:elasticity:integral:quasistatic"
 
 \end_inset
 
@@ -1106,6 +1112,12 @@ status open
 \begin_layout Plain Layout
 MORE EDITING STARTING HERE
 \end_layout
+
+\end_inset
+
+
+\begin_inset Formula \[
+\int_{V}d\sigma_{ij}(t)N_{,j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
 
 \end_inset
 
