@@ -11,7 +11,8 @@ MAIN PRIORITIES
   Need to pass hint when creating Jacobian.
 
 * Use node set names in MeshIOCubit.
-  ns_names
+  ns_names for nodesets
+  eb_names for blocks
 
 * Friction template
   viscous (velocity proportional friction)
