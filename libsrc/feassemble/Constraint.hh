@@ -53,6 +53,21 @@ public :
    */
   void normalizer(const spatialdata::units::Nondimensional& dim);
 
+  /** Set flag for setting constraints for total field solution or
+   *  incremental field solution.
+   *
+   * @param flag True if using incremental solution, false otherwise.
+   */
+  virtual
+  void useSolnIncr(const bool flag);
+
+  /** Get number of constraints per location.
+   *
+   * @returns Number of constraints per location.
+   */
+  virtual
+  int numDimConstrained(void) const = 0;
+
   /** Set number of degrees of freedom that are constrained at points in field.
    *
    * @param field Solution field
@@ -66,14 +81,6 @@ public :
    */
   virtual
   void setConstraints(const topology::Field<topology::Mesh>& field) = 0;
-
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  virtual
-  void useSolnIncr(const bool flag);
 
   /** Set values in field.
    *

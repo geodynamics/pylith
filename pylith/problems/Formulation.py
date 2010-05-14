@@ -292,6 +292,32 @@ class Formulation(PetscComponent, ModuleFormulation):
     return
 
 
+  def _setJacobianMatrixType(self):
+    """
+    Determine appropriate PETSc matrix type for Jacobian matrix.
+    """
+    # Mapping from symmetric matrix type to nonsymmetric matrix type
+    matrixMap = {'sbaij': 'baij',
+                 'seqsbaij': 'seqbaij',
+                 'mpisbaij': 'mpibaij',
+                 'unknown': 'aij'}
+    isJacobianSymmetric = True
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      if not integrator.isJacobianSymmetric():
+        isJacobianSymmetric = False
+    if not isJacobianSymmetric:
+      if self.matrixType in matrixMap.keys():
+        print "WARNING: Jacobian matrix will not be symmetric.\n" \
+              "         Switching matrix type from '%s' to '%s'." % \
+              (self.matrixType, matrixMap[self.matrixType])
+        self.matrixType = matrixMap[self.matrixType]
+    self.blockMatrixOkay = True
+    for constraint in self.constraints:
+      numDimConstrained = constraint.numDimConstrained()
+      if numDimConstrained > 0 and self.mesh.dimension() != numDimConstrained:
+        self.blockMatrixOkay = False
+    return
+
   def _setupMaterials(self, materials):
     """
     Setup materials as integrators.

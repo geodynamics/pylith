@@ -231,7 +231,7 @@ pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag)
 void
 pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
 					    double* const propValues,
-					    const double_array& dbValues) const
+					    const double_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
@@ -364,7 +364,7 @@ pylith::materials::GenMaxwellIsotropic3D::_dimProperties(double* const values,
 void
 pylith::materials::GenMaxwellIsotropic3D::_dbToStateVars(
 					double* const stateValues,
-					const double_array& dbValues) const
+					const double_array& dbValues)
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();

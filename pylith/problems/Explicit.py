@@ -92,8 +92,10 @@ class Explicit(Formulation, ModuleExplicit):
     logger.stagePop()
 
     self._info.log("Creating Jacobian matrix.")
+    self._setJacobianMatrixType()
     from pylith.topology.Jacobian import Jacobian
-    self.jacobian = Jacobian(self.fields.solution(), self.matrixType)
+    self.jacobian = Jacobian(self.fields.solution(),
+                             self.matrixType, self.blockMatrixOkay)
     self.jacobian.zero() # TEMPORARY, to get correct memory usage
     self._debug.log(resourceUsageString())
 

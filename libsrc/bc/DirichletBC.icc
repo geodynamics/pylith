@@ -24,5 +24,12 @@ pylith::bc::DirichletBC::_getNormalizer(void) const {
   return *_normalizer;
 }
 
+// Get number of constraints per location.
+inline
+int
+pylith::bc::DirichletBC::numDimConstrained(void) const {
+  return _bcDOF.size();
+}
+
 
 // End of file 

@@ -54,7 +54,7 @@ namespace pylith {
        * @param dbValues Array of database values.
        */
       void _dbToProperties(double* const propValues,
-			   const pylith::double_array& dbValues) const;
+			   const pylith::double_array& dbValues);
       
       /** Nondimensionalize properties.
        *
@@ -78,7 +78,7 @@ namespace pylith {
        * @param dbValues Array of database values.
        */
       void _dbToStateVars(double* const stateValues,
-			  const pylith::double_array& dbValues) const;
+			  const pylith::double_array& dbValues);
       
       // Note: We do not need to dimensionalize or nondimensionalize state
       // variables because there are strains, which are dimensionless.
