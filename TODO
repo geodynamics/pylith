@@ -6,10 +6,6 @@ need Cygwin binbot
 
 MAIN PRIORITIES
 
-* unittests
-  isJacobianSymmetric() (materials)
-  numDimConstrained() (DirichletBC)
-
 * Drucker-Prager elastoplastic
 
 * Use node set names in MeshIOCubit.
@@ -18,9 +14,6 @@ MAIN PRIORITIES
 
 * Friction template
   viscous (velocity proportional friction)
-
-* Output
-  MATT - Will try moving std::ostringstream outside of loop
 
 * Better preconditioning
   + Need settings for Schur complement
@@ -110,7 +103,7 @@ Need full-scale test with variation in physical properties within a material.
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
-* Output to HDF5 files
+* Output to VTK XML files w/data values as binary
 
 * Uniform global refinement for tets with faults
 

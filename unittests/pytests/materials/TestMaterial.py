@@ -116,6 +116,16 @@ class TestMaterial(unittest.TestCase):
     return
 
 
+  def testIsJacobianSymmetric(self):
+    """
+    Test isJacobianSymmetric().
+    """
+    # Default should be True.
+    self.failUnless(self.material.isJacobianSymmetric())
+
+    return
+  
+
   def test_preinitialize(self):
     """
     Test preinitialize().

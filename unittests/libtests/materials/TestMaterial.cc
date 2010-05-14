@@ -145,6 +145,20 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
 } // testNeedNewJacobian
 
 // ----------------------------------------------------------------------
+// Test isJacobianSymmetric()
+void
+pylith::materials::TestMaterial::testIsJacobianSymmetric(void)
+{ // testIsJacobianSymmetric
+  ElasticIsotropic3D material;
+
+  CPPUNIT_ASSERT_EQUAL(true, material.isJacobianSymmetric());
+
+  bool flag = false;
+  material._isJacobianSymmetric = flag;
+  CPPUNIT_ASSERT_EQUAL(flag, material.isJacobianSymmetric());
+} // testIsJacobianSymmetric
+
+// ----------------------------------------------------------------------
 // Test initialize()
 void
 pylith::materials::TestMaterial::testInitialize(void)

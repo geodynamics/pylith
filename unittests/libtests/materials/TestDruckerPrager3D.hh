@@ -109,6 +109,9 @@ public :
   /// Test hasStateVar()
   void testHasStateVar(void);
 
+  /// Test _dbToProperties() and check flag for symmetry of Jacobian.
+  void testDBToProperties(void);
+
 }; // class TestDruckerPrager3D
 
 #endif // pylith_materials_testdruckerprager3d_hh
