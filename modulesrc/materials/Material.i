@@ -120,6 +120,12 @@ namespace pylith {
       /// current state.
       void resetNeedNewJacobian(void);
       
+      /** Check whether integrator generates a symmetric Jacobian.
+       *
+       * @returns True if integrator generates symmetric Jacobian.
+       */
+      bool isJacobianSymmetric(void) const;
+
       /** Get physical property or state variable field. Data is returned
        * via the argument.
        *
@@ -151,7 +157,7 @@ namespace pylith {
        */
       virtual
       void _dbToProperties(double* const propValues,
-			   const pylith::double_array& dbValues) const = 0;
+			   const pylith::double_array& dbValues) = 0;
       
       /** Nondimensionalize properties.
        *

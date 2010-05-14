@@ -6,9 +6,11 @@ need Cygwin binbot
 
 MAIN PRIORITIES
 
+* unittests
+  isJacobianSymmetric() (materials)
+  numDimConstrained() (DirichletBC)
+
 * Drucker-Prager elastoplastic
-  Need to link isJacobianSymmetric() in Integrator with materials.
-  Need to pass hint when creating Jacobian.
 
 * Use node set names in MeshIOCubit.
   ns_names for nodesets
@@ -309,11 +311,6 @@ Brad
 RELEASE 1.5
 ----------------------------------------------------------------------
 
-1. Nondimensionalization
-
-  Ask constraints if a block matrix is okay. If okay and matrix type
-  is "unknown" (not set by user), then set block size. Do this in Python.
-
 2. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
 3. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
@@ -335,8 +332,6 @@ RELEASE 1.5
 see if this will satisfy their needs]
 
 Modularize output? [Matt]
-
-Fault friction
 
 Uniform refinement (debug, check, all cell types)
 

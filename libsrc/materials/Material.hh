@@ -150,6 +150,12 @@ public :
    */
   bool needNewJacobian(void) const;
 
+   /** Check whether material generates a symmetric Jacobian.
+    *
+    * @returns True if material generates symmetric Jacobian.
+    */
+   bool isJacobianSymmetric(void) const;
+
   /// Reset flag indicating whether Jacobian matrix must be reformed for
   /// current state.
   void resetNeedNewJacobian(void);
@@ -202,7 +208,7 @@ protected :
    */
   virtual
   void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) const = 0;
+		       const double_array& dbValues) = 0;
 
   /** Nondimensionalize properties.
    *
@@ -229,7 +235,7 @@ protected :
    */
   virtual
   void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const;
+		      const double_array& dbValues);
 
   /** Nondimensionalize state variables.
    *
@@ -267,6 +273,7 @@ protected :
   const int _dimension; ///< Spatial dimension associated with material.
   const int _tensorSize; ///< Tensor size for material.
   bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise.
+  bool _isJacobianSymmetric; ///< True if Jacobian is symmetric;
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

@@ -86,6 +86,13 @@ namespace pylith {
       virtual
       bool needNewJacobian(void) const;
       
+      /** Check whether integrator generates a symmetric Jacobian.
+       *
+       * @returns True if integrator generates symmetric Jacobian.
+       */
+      virtual
+      bool isJacobianSymmetric(void) const;
+
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.
        *
