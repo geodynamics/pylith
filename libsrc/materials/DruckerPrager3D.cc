@@ -209,7 +209,7 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  if (fabs(frictionAngle != dilatationAngle) > 1.0e-6)
+  if (fabs(frictionAngle - dilatationAngle) > 1.0e-6)
     _isJacobianSymmetric = false;
 
   const double mu = density * vs*vs;
