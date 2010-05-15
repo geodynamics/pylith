@@ -8,6 +8,13 @@ BINBOTS
 
   Add ML to petsc on all binbots (requires fortran compiler)
 
+RELEASE NOTES
+
+DOC/INSTALL
+  Update MacBookPro
+  Update linux
+  Add garuda
+
 MANUAL
 
   Governing equations [Brad]
