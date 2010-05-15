@@ -101,9 +101,6 @@ TUTORIALS/EXAMPLES
 
 CODE
 
-  * Use node set names in MeshIOCubit. [Brad]
-    ns_names for nodesets
-
   * Friction template [Brad]
     viscous (velocity proportional friction)
 
