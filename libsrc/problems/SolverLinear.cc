@@ -24,6 +24,7 @@
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #define FIELD_SPLIT
+#define NEW_FAULT_PRECONDITIONER
 
 #if defined(FIELD_SPLIT)
 #include <petscmesh_solvers.hh> // USES constructFieldSplit()
@@ -91,6 +92,7 @@ pylith::problems::SolverLinear::initialize(
     err = PCSetFromOptions(pc); CHECK_PETSC_ERROR(err);
 #if defined(FIELD_SPLIT)
     constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
+#if defined(NEW_FAULT_PRECONDITIONER)
     if (residual.section()->getNumSpaces() > sieveMesh->getDimension()) {
       KSP     *ksps;
       Mat      A, M;
@@ -110,7 +112,8 @@ pylith::problems::SolverLinear::initialize(
       err = KSPSetOperators(ksps[num-1], A, M, flag); CHECK_PETSC_ERROR(err);
       // Create a mapping to indices for that space (might be in FS)
       err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
-    }
+    } // if
+#endif
 #endif
   }
 } // initialize
