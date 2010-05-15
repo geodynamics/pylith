@@ -1,12 +1,3 @@
-## /tools/common/cubit-10.2/bin/clarox
-## Cubit Version 10.2
-## Cubit Build 24
-## Revised 12/15/2006 16:09:40 MST
-## Running 06/18/2007 10:26:50 AM
-## Command Options:
-## -warning = On
-## -information = On
-
 # ----------------------------------------------------------------------
 # Create block
 # ----------------------------------------------------------------------
@@ -26,8 +17,8 @@ delete volume 1
 # ----------------------------------------------------------------------
 
 # Create fault (yz plane) at x = 0.0
-split surface 8 across location position 0 -200 0 location position 0 200 0
-curve 21 name "fault_surface"
+split surface 7 across location position 0 -200 0 location position 0 200 0
+curve 17 name "fault_surface"
 
 # ----------------------------------------------------------------------
 # Imprint all volumes, merging surfaces
