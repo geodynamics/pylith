@@ -25,6 +25,7 @@ MANUAL
     MeshIOAscii
     MeshIOLaGriT
     MeshIOCubit
+      use_nodeset_names Flag for using nodeset names of ids.
     reorder_mesh
     distribution
       partitioner
@@ -102,7 +103,6 @@ CODE
 
   * Use node set names in MeshIOCubit. [Brad]
     ns_names for nodesets
-    eb_names for blocks
 
   * Friction template [Brad]
     viscous (velocity proportional friction)

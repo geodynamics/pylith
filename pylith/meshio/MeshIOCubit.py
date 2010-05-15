@@ -49,6 +49,9 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     filename = pyre.inventory.str("filename", default="mesh.exo")
     filename.meta['tip'] = "Name of Cubit Exodus file."
 
+    useNames = pyre.inventory.bool("use_nodeset_names", default=True)
+    useNames.meta['tip'] = "Use nodeset names instead of ids."
+
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pyre.inventory.facility("coordsys", family="coordsys",
                                        factory=CSCart)
@@ -73,7 +76,8 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     """
     MeshIOObj._configure(self)
     self.coordsys = self.inventory.coordsys
-    self.filename(self.inventory.filename)
+    ModuleMeshIOCubit.filename(self, self.inventory.filename)
+    ModuleMeshIOCubit.useNodesetNames(self, self.inventory.useNames)
     return
 
 

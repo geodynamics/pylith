@@ -44,7 +44,7 @@ nodeset 10 name "fault"
 group "face_xpos" add node in surface 20
 group "face_xpos" add node in surface 28
 nodeset 11 group face_xpos
-nodeset 11 name "face xpos"
+nodeset 11 name "face_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
@@ -52,7 +52,7 @@ nodeset 11 name "face xpos"
 group "face_xneg" add node in surface 30
 group "face_xneg" add node in surface 38
 nodeset 12 group face_xneg
-nodeset 12 name "face xneg"
+nodeset 12 name "face_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
@@ -62,7 +62,7 @@ group "face_ypos" add node in surface 27
 group "face_ypos" add node in surface 33
 group "face_ypos" add node in surface 35
 nodeset 13 group face_ypos
-nodeset 13 name "face ypos"
+nodeset 13 name "face_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
@@ -72,7 +72,7 @@ group "face_yneg" add node in surface 25
 group "face_yneg" add node in surface 31
 group "face_yneg" add node in surface 37
 nodeset 14 group face_yneg
-nodeset 14 name "face yneg"
+nodeset 14 name "face_yneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face
@@ -80,7 +80,7 @@ nodeset 14 name "face yneg"
 group "face_zneg" add node in surface 12
 group "face_zneg" add node in surface 16
 nodeset 15 group face_zneg
-nodeset 15 name "face zneg"
+nodeset 15 name "face_zneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face w/o fault
@@ -88,7 +88,7 @@ nodeset 15 name "face zneg"
 group "face_zneg_nofault" add node in face_zneg
 group "face_zneg_nofault" remove node in fault
 nodeset 16 group face_zneg_nofault
-nodeset 16 name "face zneg nofault"
+nodeset 16 name "face_zneg_nofault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +z face
@@ -96,7 +96,7 @@ nodeset 16 name "face zneg nofault"
 group "face_zpos" add node in surface 10
 group "face_zpos" add node in surface 17
 nodeset 17 group face_zpos
-nodeset 17 name "face zpos"
+nodeset 17 name "face_zpos"
 
 # ----------------------------------------------------------------------
 # Export exodus file
