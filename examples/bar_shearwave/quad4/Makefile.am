@@ -20,8 +20,15 @@ dist_noinst_DATA = \
 	matprops.spatialdb \
 	mesh_quad4_200m.jou \
 	pylithapp.cfg \
-	shearwave_slip.spatialdb \
-	shearwave_risetime.spatialdb \
-	shearwave_sliptime.spatialdb
+	kinematicfault.cfg \
+	kinematic_slip.spatialdb \
+	kinematic_risetime.spatialdb \
+	kinematic_sliptime.spatialdb \
+	dynamicfault.cfg \
+	static-stick.cfg \
+	static-sliding.cfg \
+	dynamicfault_shearwave.cfg \
+	shearwave-slipweakening.cfg \
+	shearwave-ratestateageing.cfg
 
 # End of file 
