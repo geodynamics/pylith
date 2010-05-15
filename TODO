@@ -2,52 +2,55 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-need Cygwin binbot
+BINBOTS
 
-MAIN PRIORITIES
+  need cygwin binbot
 
-* Drucker-Prager elastoplastic
+  Add ML to petsc on all binbots (requires fortran compiler)
 
-* Use node set names in MeshIOCubit.
-  ns_names for nodesets
-  eb_names for blocks
+MANUAL
 
-* Friction template
-  viscous (velocity proportional friction)
+  Governing equations [Brad]
 
-* Better preconditioning
-  + Need settings for Schur complement
+  Mesher parameters [Charles]
+    Need outline of parameters to MeshImporter like other objects
 
-  We should temporarily hardwire the Schur complement settings (enable
-  with #define) and see how well it works.
+    MeshIOAscii
+    MeshIOLaGriT
+    MeshIOCubit
+    reorder_mesh
+    distribution
+      partitioner
 
-  MATT is thinking about how to setup Schur complement settings
-  (recursive specification of field splits).
+  Small strain formulation [Brad]
 
-  Need field split working for both SolverLinear and SolverNonlinear.
+  Materials [Charles]
+    Are material models consistent with governing equations discussion?
 
-* Friction
-  + Add stuff to manual
+  Fault
+    governing equations [Brad]
+    dynamic rupture parameters [Brad]
+    fault constitutive models [Surendra]
 
-* Optimization
-  + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
-  + inline methods (what isn't getting inlined) -Winline
+  Tutorials
+    3d/hex8 [Charles]
+    bar_shearwave [Brad]
+      kinematic
+      friction
+        static (stick, sliding)
+        dynamic (static, slip-weakening, rate-and-state)
+    meshgeneration [Charles]
 
-* Lumped solver
-  + Need to finish unit tests
+  Benchmarks
+    Update performance?
+    SCEC dynamic rupture benchmarks [Surendra]        
 
-* Updates to manual
-  + tutorial
-  + governing equations
-  + Large deformation formulation
-  + mesh reordering
-  + Lumped solver
-  + Cleanup bulk constitutive models (consistent w/governing eqns)
-
-* Cleanup PETSc setttings in examples
-    ksp_view, monitor, converged reason
-
-* Tutorials
+  Extending PyLith [Brad]
+    friction
+      viscous (slip rate proportional friction)
+ 
+TUTORIALS/EXAMPLES
+  
   3d/hex8
     directory structure
     1. Dirichlet BC (static)
@@ -83,21 +86,41 @@ MAIN PRIORITIES
    17. Gravity w/small strain
 
   bar_shearwave
-    * quad4
-      + kinematic [explicit NOT lumped]
-      + static friction [lumped]
-      + slip-weakening friction
-      + rate- and state- friction
-    * tri3
-    * hex8
-    * tet4
+    Add more comments to .cfg files and redo README.
 
-  meshes
+  meshgeneration
 
-Write up description of Savage and Prescott (1978) benchmark and
-distribute to Greg Lyzenga and Jay Parker
 
-Need full-scale test with variation in physical properties within a material.
+CODE
+
+  * Use node set names in MeshIOCubit. [Brad]
+    ns_names for nodesets
+    eb_names for blocks
+
+  * Friction template [Brad]
+    viscous (velocity proportional friction)
+
+  * Better preconditioning [Matt/Brad/Charles]
+    + Need settings for Schur complement
+
+    We should temporarily hardwire the Schur complement settings (enable
+    with #define) and see how well it works.
+
+    MATT is thinking about how to setup Schur complement settings
+    (recursive specification of field splits).
+
+    Need field split working for both SolverLinear and SolverNonlinear.
+
+  * Optimization [Brad]
+    + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
+
+  * Lumped solver [Brad]
+    + Need to finish unit tests
+
+OTHER
+
+  Write up description of Savage and Prescott (1978) benchmark and
+  distribute to Greg Lyzenga and Jay Parker
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
@@ -118,13 +141,18 @@ SECONDARY PRIORITIES
 * Optimization
   + Reimplement Fields to use a single section.
   + May be gotchas associated with Petsc Vec and scatters
+  + inline methods (what isn't getting inlined) -Winline
+
+* Testing
+  + Need full-scale test with variation in physical properties
+    within a material.
 
 * utilities
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
 
-* VTKDataReaderZip
+* VTKDataReaderZip (obsolete if use VTK XML files?)
 
   Read VTK files from zipfile.
 
@@ -136,18 +164,6 @@ SECONDARY PRIORITIES
     reader.update()
     data = reader.get_output()
 
-
-----------------------------------------------------------------------
-FRICTION
-----------------------------------------------------------------------
-
-TPV205-2D
-  quad4, tri3
-TPV205
-  hex8, tet4
-
-TPV?? (rate and state)
-TPV?? Drucker-Prager
 
 ----------------------------------------------------------------------
 LUMPED SOLVER
