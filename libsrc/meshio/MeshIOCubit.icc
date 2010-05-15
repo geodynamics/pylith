@@ -28,6 +28,13 @@ pylith::meshio::MeshIOCubit::filename(void) const {
   return _filename.c_str();
 }
 
+// Set flag on whether to use nodeset ids or names.
+inline
+void
+pylith::meshio::MeshIOCubit::useNodesetNames(const bool flag) {
+  _useNodesetNames = flag;
+}
+
 #endif
 
 // End of file

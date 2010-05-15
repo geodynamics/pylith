@@ -60,6 +60,7 @@ class TestMeshIOCubit(unittest.TestCase):
     # For now, we only test reading the file.
     io = MeshIOCubit()
     io.inventory.filename = filenameIn
+    io.inventory.useNames = False
     io._configure()
     
     from spatialdata.units.Nondimensional import Nondimensional
