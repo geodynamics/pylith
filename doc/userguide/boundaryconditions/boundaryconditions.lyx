@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1821,9 +1821,8 @@ Fault interfaces are used to create dislocations (jumps in the displacement
  For fault interfaces, dislocations in 1D correspond to fault-opening (and
  closing), in 2D lateral-slip and fault opening, and in 3D lateral-slip,
  reverse-slip, and fault opening.
- The current release of PyLith only supports kinematic (prescribed) slip.
- Support for fault constitutive models for frictional interface conditions
- will be supported in a future release (December 2008).
+ PyLith supports kinematic (prescribed) slip and dynamic (spontaneous) rupture
+ simulations.
 \end_layout
 
 \begin_layout Subsection
@@ -1991,7 +1990,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/quad4cohesive.eps
+	filename figs/quad4cohesivekin.eps
 
 \end_inset
 
@@ -2009,58 +2008,6 @@ Example of cohesive cell inserted into a mesh of two quadrilateral cells.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:fault:cohesive:quad4"
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figs/quad4cohesivekin.eps
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Example of cohesive cell using Lagrange multipliers inserted into a mesh
- of two quadrilateral cells.
- The zero thickness cohesive cell (shown with dashed lines) controls slip
- on the fault.
- The Lagrange multipliers for a kinematic earthquake source are associated
- with the degrees of freedom for vertices 8 and 9.
- The constraint associated with vertex 8 controls the relative motion between
- vertices 2 and 6, and the constraint associated with vertex 9 controls
- the relative motion between vertices 3 and 7.
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:fault:cohesive:quad4:kin"
 
 \end_inset
 
@@ -2667,7 +2614,7 @@ Change in fault tractions (in fault coordinate system) in Pa
 \end_layout
 
 \begin_layout Subsubsection
-Kinematic Earthquake Rupture Parameters
+Kinematic Rupture Parameters
 \end_layout
 
 \begin_layout Standard
@@ -3750,6 +3697,22 @@ Slip initiation time (
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Dynamic Earthquake Rupture
+\end_layout
+
+\begin_layout Subsubsection
+Governing Equations
+\end_layout
+
+\begin_layout Subsubsection
+Dynamic Rupture Parameters
+\end_layout
+
+\begin_layout Subsubsection
+Fault Constitutive Models
 \end_layout
 
 \begin_layout Section
