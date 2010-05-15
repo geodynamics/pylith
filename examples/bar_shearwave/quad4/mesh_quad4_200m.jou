@@ -25,7 +25,7 @@ mesh surface all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 9 10
+block 1 surface 8 9
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
@@ -38,26 +38,27 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve 18
-nodeset 11 group face_xpos
-nodeset 11 name "face xpos"
+group "face_xpos" add node in curve 14
+nodeset 20 group face_xpos
+nodeset 20 name "face xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve 20
-nodeset 12 group face_xneg
-nodeset 12 name "face xneg"
+group "face_xneg" add node in curve 16
+nodeset 21 group face_xneg
+nodeset 21 name "face xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for all vertices but fault
 # ----------------------------------------------------------------------
 group "vertices_nofault" add node all
 group "vertices_nofault" remove node in fault
-nodeset 13 group vertices_nofault
-nodeset 13 name "vertices_nofault"
+nodeset 22 group vertices_nofault
+nodeset 22 name "vertices_nofault"
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "bar_quad4_200m.exo" dimension 2 overwrite
+
