@@ -98,6 +98,10 @@ TUTORIALS/EXAMPLES
 
   meshgeneration
 
+OTHER
+
+  Write up description of Savage and Prescott (1978) benchmark and
+  distribute to Greg Lyzenga and Jay Parker
 
 CODE
 
@@ -120,11 +124,6 @@ CODE
 
   * Lumped solver [Brad]
     + Need to finish unit tests
-
-OTHER
-
-  Write up description of Savage and Prescott (1978) benchmark and
-  distribute to Greg Lyzenga and Jay Parker
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
