@@ -1,0 +1,115 @@
+Overview
+
+  This directory contains source files for building a user defined
+  fault constitutive model component consisting of C++ code, a Python
+  module, and Python code. The example implementation provides viscous
+  (slip rate proportional) friction. State variables are used to hold
+  the slip rate. Note that state variables are not needed in this
+  case, but we use them in this example to illustrate how to use state
+  variables in a fault constitutive model.
+
+  The suggested path to customizing this component is to build and
+  install the provided ViscousFriction component and then rename/copy
+  the files and gradually adopt it to your specific needs. For more
+  complex bulk rheologies, you may want to use the SlipWeakening or
+  RateStateAgeing components provided with PyLith as templates.
+
+
+
+Requirements
+
+  In order to build the component and interface it with PyLith, you will need
+    * C++ compiler
+    * SWIG (version 1.3.33 or later)
+    * Python with header files (version 2.3 or later)
+    * autoconf tools
+
+  The C++ compiler must be compatible with the installed Python and
+  both must be compatible with the C++ compiler and Python used to
+  build PyLith. The safest way to insure compatibility is to use the
+  C++ compiler and Python provided with your operating system and
+  build PyLith from source. However, on many systems it should be
+  possible to build the component using g++ and have it work with
+  PyLith installed from a binary package.
+
+Files
+
+  Makefile.am - automake parameters for constructing a Makefile
+  ViscousFriction.cc - C++ source file implementing ViscousFriction object functions
+  ViscousFriction.hh - C++ header file with class definition for ViscousFriction
+  ViscousFriction.i - SWIG interface file for the C++ ViscousFriction object
+  README - this file
+  __init__.py - Python source file for module initialization
+  configure.ac - autoconf parameters for construction a configure script
+  m4 - directory containing autoconf macros
+  frictioncontrib.i - SWIG interface file defining the frictioncontrib Python module
+  tests - directory containing tests of the ViscousFriction object
+
+How to build/install the ViscousFriction component
+
+  1. Run "autoreconf -if" in this directory (templates/friction).
+
+  2. Run configure either from this directory or a scratch build
+  directory. Use the --prefix=DIRECTORY to indicate where the files
+  should be installed. We strongly recommend that you install the
+  component to the same location as where PyLith is installed. For
+  example, if PyLith is installed in $HOME/cig then use the
+  --prefix=$HOME/cig command line argument to configure. To build in a
+  separate directory simply invoke the configure script from the other
+  directory. For example, from $HOME/build/pylith-contrib run
+  $HOME/src/pylith/templates/friction/configure --prefix=$HOME/cig.
+
+  Configure will check for a number of files including the location of
+  PyLith C++ header files, library, and SWIG interface files. You
+  may need to define some additional command line arguments to
+  configure and/or environment variables to help configure find the
+  required files.
+
+  We run configure using on a MacBook Pro using MacPorts where we have
+  defined a number of environment variables in .bashrc for installed
+  tools.
+
+  ${HOME}/src/cig/pylith/templates/friction/configure  \
+    --prefix=${CIG_DIR}  \
+    CPPFLAGS="-I${PROJ4_INCDIR} -I${PORTS_INCDIR} -I${CIG_INCDIR}"  \
+    LDFLAGS="-L${PROJ4_LIBDIR} -L${PORTS_LIBDIR} -L${CIG_LIBDIR} -F${PORTS_DIR}/Library/Frameworks"  \
+    PYLITH_SWIG_DIR="${CIG_DIR}/share/pylith/swig" CC=gcc CXX=g++
+
+
+  3. Run "make", "make install", and "make check" from the top-level
+  build directory. This will first build the C++ library and module,
+  then install the files to the location specified by the --prefix
+  command line argument to configure, and finally run some Python
+  tests to verify that the ViscousFriction component was installed
+  correctly.
+
+Customization
+
+  This is where the fun begins. Read over the Python and C++ source
+  code to become familiar with the features implemented with the
+  ViscousFriction component. The ViscousFriction Python object
+  simply defines what fields are available for output (properties in
+  the info files and state variables stress and strain in data files
+  at a given time in a simulation. The ViscousFriction C++ object
+  does the grunt work of computing the various quantities required for
+  computing the coefficient of friction. The interface for the fault
+  constitutive models has been designed to be simple and use arrays
+  rather than complex C++ data structures. This reduces speed slightly
+  but makes it much easier to implement new constitutive models.
+
+  We recommend that you start by changing the constitutive equations,
+  followed by changing the properties and state variables.
+
+Hints
+
+  Functions in friction model routines are called for every fault
+  vertex, so efficient code is important. Having said that, get the
+  implementation correct first and then worry about speed.
+
+  The consistency checks of user input should throw exceptions with a
+  meaningful error message so that the user can fix the
+  mistake. Consistency checks in the other routines should use the
+  assert() macro so that they can be removed during compilation. To
+  remove the assert() calls during compilation configure with -DNDEBUG
+  added to the CFLAGS and CXXFLAGS environment variables.
+
