@@ -10,16 +10,16 @@
 // ======================================================================
 //
 
-// Define the materialscontrib SWIG interface module.
+// Define the frictioncontrib SWIG interface module.
 
 // Set module name
-%module materialscontrib
+%module frictioncontrib
 
 // Header files for module C++ code.
 %{
-#include "pylith/materials/materialsfwd.hh" // forward declarations
+#include "pylith/friction/frictionfwd.hh" // forward declarations
 
-#include "PlaneStrainState.hh"
+#include "ViscousFriction.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -48,9 +48,8 @@ import_array();
 
 
 // Interface files.
-%include "materials/Material.i"
-%include "materials/ElasticMaterial.i"
-%include "PlaneStrainState.i"
+%include "friction/FrictionModel.i"
+%include "ViscousFriction.i"
 
 
 // End of file

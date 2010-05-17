@@ -27,7 +27,22 @@ EXTRA_DIST = \
 	materials/tests/TestPlaneStrainState.py \
 	materials/m4/ac_pkg_swig.m4 \
 	materials/m4/cit_numpy.m4 \
-	materials/m4/cit_python.m4
+	materials/m4/cit_python.m4 \
+	friction/README \
+	friction/configure.ac \
+	friction/Makefile.am \
+	friction/ViscousFriction.hh \
+	friction/ViscousFriction.cc \
+	friction/ViscousFriction.i \
+	friction/frictioncontrib.i \
+	friction/__init__.py \
+	friction/ViscousFriction.py \
+	friction/tests/Makefile.am \
+	friction/tests/testcontrib.py \
+	friction/tests/TestViscousFriction.py \
+	friction/m4/ac_pkg_swig.m4 \
+	friction/m4/cit_numpy.m4 \
+	friction/m4/cit_python.m4
 
 
 # End of file 
