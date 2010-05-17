@@ -101,6 +101,7 @@ TUTORIALS/EXAMPLES
 
   meshgeneration
 
+
 OTHER
 
   Write up description of Savage and Prescott (1978) benchmark and
@@ -110,6 +111,7 @@ CODE
 
   * Friction template [Brad]
     viscous (velocity proportional friction)
+      Document source files.
 
   * Better preconditioning [Matt/Brad/Charles]
     + Need settings for Schur complement
