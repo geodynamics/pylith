@@ -8,7 +8,10 @@ BINBOTS
 
   Add ML to petsc on all binbots (requires fortran compiler)
 
-RELEASE NOTES
+top-level README
+  Need Charles to add some additional description
+
+release announcement
 
 DOC/INSTALL
   Update MacBookPro

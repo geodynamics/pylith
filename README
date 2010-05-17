@@ -122,6 +122,17 @@ Version 1.5.0
     hex8 cells the optimized objects provide hardwired loop bounds
     which can lead to faster performance for some compilers.
 
+  * Scientific notation for ASCII VTK files
+
+    Data values in ASCII data files are written in scientific notation
+    with user-specified precision.
+
+  * Nodeset names in CUBIT Exodus files
+
+    Use of nodeset names in CUBIT Exodus files for boundary
+    conditions. Users can specify to use nodeset names (default
+    behavior) or ids.
+
   * Bug fixes
 
     - Updating state variables did not retrieve physical properties
