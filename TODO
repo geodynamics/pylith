@@ -8,10 +8,10 @@ BINBOTS
 
   Add ML to petsc on all binbots (requires fortran compiler)
 
-top-level README
+top-level README [add fault preconditioner when done]
   Need Charles to add some additional description
 
-release announcement
+release announcement [add fault preconditioner when done]
 
 DOC/INSTALL
   Update MacBookPro
@@ -146,6 +146,8 @@ SECONDARY PRIORITIES
 
 * Optimization
   + Reimplement Fields to use a single section.
+    - SolutionFields (RealSection)
+    - UniformFields (UniformSection)?
   + May be gotchas associated with Petsc Vec and scatters
   + inline methods (what isn't getting inlined) -Winline
 

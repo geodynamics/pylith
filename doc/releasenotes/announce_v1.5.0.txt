@@ -74,8 +74,8 @@ RELEASE NOTES
 
   * Nodeset names in CUBIT Exodus files
 
-    Use of nodeset names in CUBIT Exodus files for boundary
-    conditions. Users can specify to use nodeset names (default
+    Use of nodeset names in CUBIT Exodus files for boundary conditions
+    and faults. Users can specify to use nodeset names (default
     behavior) or ids.
 
   * Bug fixes
