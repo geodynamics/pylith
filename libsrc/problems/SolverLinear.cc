@@ -23,13 +23,6 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
-//#define FIELD_SPLIT
-#define NEW_FAULT_PRECONDITIONER
-
-#if defined(FIELD_SPLIT)
-#include <petscmesh_solvers.hh> // USES constructFieldSplit()
-#endif
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
@@ -79,82 +72,11 @@ pylith::problems::SolverLinear::initialize(
   err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
   err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
 
-  const topology::Field<topology::Mesh>& residual = fields.get("residual");
-
-  // Check for fibration
-  if (residual.section()->getNumSpaces() > 0) {
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
-    PC pc;
-
+  if (formulation->splitFields()) {
+    PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
-    err = PCSetOptionsPrefix(pc, "fs_"); CHECK_PETSC_ERROR(err);
-    err = PCSetFromOptions(pc); CHECK_PETSC_ERROR(err);
-#if defined(FIELD_SPLIT)
-    constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
-#if defined(NEW_FAULT_PRECONDITIONER)
-    if (residual.section()->getNumSpaces() > sieveMesh->getDimension()) {
-      KSP     *ksps;
-      Mat      A, M;
-      PetscInt num, m, n;
-
-      err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-      // Put in PC matrix for fault
-      MatStructure flag;
-      err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-      err = MatGetLocalSize(A, &m, &n); CHECK_PETSC_ERROR(err);
-      err = MatCreate(sieveMesh->comm(), &M); CHECK_PETSC_ERROR(err);
-      err = MatSetSizes(M, m, n, PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
-      err = MatSeqAIJSetPreallocation(M, 1, PETSC_NULL); CHECK_PETSC_ERROR(err);
-      err = MatMPIAIJSetPreallocation(M, 1, PETSC_NULL, 0, PETSC_NULL); CHECK_PETSC_ERROR(err);
-      err = MatSetFromOptions(M); CHECK_PETSC_ERROR(err);
-      err = KSPSetOperators(ksps[num-1], A, M, flag); CHECK_PETSC_ERROR(err);
-      // Create a mapping to indices for that space (might be in FS)
-      err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
-    } // if
-
-    /** We have J = [A C^T]
-     *              [C   0]
-     *
-     * We want to approximate C A^(-1) C^T.
-     *
-     * Consider Lagrange vertex L that constrains the relative
-     * displacement between vertex N on the negative side of the fault
-     * and vertex P on the positive side of the fault.
-     *
-     * If we approximate A(-1) by 1/diag(A), then we can write 
-     * C A^(-1) C^T for a 2-D case as
-     *
-     * [-R00 -R01  R00 R01][Ai_nx 0      0     0    ][-R00 -R10]
-     * [-R10 -R11  R10 R11][      Ai_ny  0     0    ][-R01 -R11]
-     *                     [      0      Ai_px 0    ][ R00  R10]
-     *                     [                   Ai_py][ R01  R11]
-     *
-     * where
-     *
-     * Ai_nx is the inverse of the diag(A) for DOF x of vertex N
-     * Ai_ny is the inverse of the diag(A) for DOF y of vertex N
-     * Ai_px is the inverse of the diag(A) for DOF x of vertex P
-     * Ai_py is the inverse of the diag(A) for DOF y of vertex P
-     *
-     * If Ai_nx == Ai_ny and Ai_px == Ai_py, then the result is
-     * diagonal. Otherwise, the off-diagonal terms will be nonzero,
-     * but we expect them to be small. Since we already approximate
-     * the inverse of A by the inverse of the diagonal, we drop the
-     * off-diagonal terms of C A^(-1) C^T:
-     *
-     * Term for DOF x of vertex L is: 
-     * R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py)
-     *
-     * Term for DOF y of vertex L is: 
-     * R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py)
-     *
-     */
-
-#endif
-#endif
-  }
+    _setupFieldSplit(&pc, formulation, fields);
+  } // if
 } // initialize
 
 // ----------------------------------------------------------------------

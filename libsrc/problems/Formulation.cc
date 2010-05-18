@@ -54,6 +54,38 @@ pylith::problems::Formulation::deallocate(void)
 } // deallocate
   
 // ----------------------------------------------------------------------
+// Set flag for splitting fields.
+void
+pylith::problems::Formulation::splitFields(const bool flag)
+{ // splitFields
+  _splitFields = flag;
+} // splitFields
+
+// ----------------------------------------------------------------------
+// Get flag for splitting fields.
+bool
+pylith::problems::Formulation::splitFields(void) const
+{ // splitFields
+  return _splitFields;
+} // splitFields
+
+// ----------------------------------------------------------------------
+// Set flag for using custom fault preconditioner.
+void
+pylith::problems::Formulation::useCustomFaultPC(const bool flag)
+{ // useCustomFaultPC
+  _useCustomFaultPC = flag;
+} // useCustomFaultPC
+
+// ----------------------------------------------------------------------
+// Get flag indicating use of custom fault conditioner.
+bool
+pylith::problems::Formulation::useCustomFaultPC(void) const
+{ // useCustomFaultPC
+  return _useCustomFaultPC;
+} // useCustomFaultPC
+
+// ----------------------------------------------------------------------
 // Return the fields
 const pylith::topology::SolutionFields&
 pylith::problems::Formulation::fields(void) const
@@ -310,6 +342,18 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
+  
+#if 0
+  // Recalculate preconditioner.
+  if (_useCustomFaultPC) {
+    numIntegrators = _meshIntegrators.size();
+    for (int i=0; i < numIntegrators; ++i)
+      _meshIntegrators[i]->calcPreconditioner(pc, _jacobian, _fields);
+    numIntegrators = _submeshIntegrators.size();
+    for (int i=0; i < numIntegrators; ++i)
+      _submeshIntegrators[i]->calcPreconditioner(pc, _jacobian, _fields);
+  } // if
+#endif
 } // reformJacobian
 
 // ----------------------------------------------------------------------

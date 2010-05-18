@@ -34,6 +34,31 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
+      /** Set flag for splitting fields.
+       *
+       * @param flag True if splitting fields, false otherwise.
+       */
+      void splitFields(const bool flag);
+
+      /** Get flag for splitting fields.
+       *
+       * @returns flag True if splitting fields, false otherwise.
+       */
+      bool splitFields(void) const;
+
+      /** Set flag for using custom fault preconditioner.
+       *
+       * @param flag True if splitting fields, false otherwise.
+       */
+      void useCustomFaultPC(const bool flag);
+
+      /** Get flag indicating use of custom fault conditioner.
+       *
+       * @returns flag True if using custom fault preconditioner, 
+       * false otherwise.
+       */
+      bool useCustomFaultPC(void) const;
+
       /** Get solution fields.
        *
        * @returns solution fields.

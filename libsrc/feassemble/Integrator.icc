@@ -152,6 +152,17 @@ pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
 			      topology::SolutionFields* const fields) {
 } // integrateJacobianAssembled
 
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+template<typename quadrature_type>
+inline
+void 
+pylith::feassemble::Integrator<quadrature_type>::calcPreconditioner(
+			          PetscPC* const pc,
+				  topology::Jacobian* const jacobian,
+				  topology::SolutionFields* const fields) {
+} // calcPreconditioner
+
 // Update state variables as needed.
 template<typename quadrature_type>
 inline
