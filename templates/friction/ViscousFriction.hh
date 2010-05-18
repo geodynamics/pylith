@@ -10,31 +10,43 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/friction/ViscousFriction.hh
+/* @brief C++ ViscousFriction object that implements friction
+ * correlated with slip rate.
  *
- * @brief C++ viscous (slip rate proportional) fault constitutive
- * model.
+ * This objects demonstrates how to extend PyLith by adding fault
+ * constitutive models.
+ *
+ * Friction model in which the perturbation from the static
+ * coefficient of friction is proportional to slip rate. The physical
+ * properties are specified using cohesion, static coefficient of
+ * friction, and a reference slip rate.
+ *
+ * $\mu_f = \mu_s (1 + \dot{D} / v_0)
  */
 
 #if !defined(pylith_friction_viscousfriction_hh)
 #define pylith_friction_viscousfriction_hh
 
 // Include directives ---------------------------------------------------
-#include "FrictionModel.hh" // ISA FrictionModel
+#include "pylith/friction/FrictionModel.hh" // ISA FrictionModel
+
+// Forward declarations
+namespace contrib {
+  namespace friction {
+    class ViscousFriction;
+  } // friction
+} // pylith
 
 // ViscousFriction -------------------------------------------------------
-/** @brief C++ viscous (slip rate proportional) fault constitutive
- * model.
- *
- * Friction is equal to the cohesion plus the product of a coefficient
- * of friction (function of slip rate) and the normal traction.
- *
- * mu_f = mu_s (1 + v/v0)
- */
-
-class pylith::friction::ViscousFriction : public FrictionModel
+class contrib::friction::ViscousFriction : 
+  public pylith::friction::FrictionModel
 { // class ViscousFriction
   friend class TestViscousFriction; // unit testing
+
+  // --------------------------------------------------------------------
+  // All of these functions are required to satisfy the PyLith
+  // interface for a fault constitutive model.
+  // --------------------------------------------------------------------
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -56,7 +68,7 @@ protected :
    * @param dbValues Array of database values.
    */
   void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) const;
+		       const pylith::double_array& dbValues) const;
 
   /** Nondimensionalize properties.
    *
@@ -85,7 +97,7 @@ protected :
    * @param numStateVars Number of state variables.
    */
   void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const;
+		      const pylith::double_array& dbValues) const;
 
   /** Nondimensionalize state variables.
    *
@@ -101,7 +113,7 @@ protected :
    * @param nvalues Number of values.
    */
   void _dimStateVars(double* const values,
-			const int nvalues) const;
+		     const int nvalues) const;
 
   /** Compute friction from properties and state variables.
    *
@@ -120,6 +132,13 @@ protected :
 		       const int numProperties,
 		       const double* stateVars,
 		       const int numStateVars);
+
+  // --------------------------------------------------------------------
+  // Optional function in the PyLith interface for a fault
+  // constitutive model. Even though this function is optional, for it
+  // to be used it the interface must exactly matched the one
+  // specified in FrictionModel.
+  // --------------------------------------------------------------------
 
   /** Update state variables (for next time step).
    *
@@ -142,18 +161,19 @@ protected :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Indices for properties in section and spatial database.
+  // --------------------------------------------------------------------
+  // We use these constants for consistent access into the arrays of
+  // physical properties and state variables.
+  // --------------------------------------------------------------------
+
   static const int p_coefS;
   static const int p_v0;
   static const int p_cohesion;
-
   static const int db_coefS;
   static const int db_v0;
   static const int db_cohesion;
 
-  /// Indices for state variables in section and spatial database.
   static const int s_slipRate;
-
   static const int db_slipRate;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

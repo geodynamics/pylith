@@ -10,15 +10,22 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/friction/ViscousFriction.i
+// SWIG interface to C++ ViscousFriction object.
+
+/* This is nearly identical to the C++ ViscousFriction header
+ * file. There are a few important differences required by SWIG:
  *
- * Python interface to C++ ViscousFriction object.
+ * (1) Instead of forward declaring the ViscousFriction class, we
+ * embed the class definition within the namespace declarations.
+ *
+ * (2) We only include public members and methods and implementations
+ * of abstract methods, because this is an interface file.
  */
 
-namespace pylith {
+namespace contrib {
   namespace friction {
 
-    class ViscousFriction : public FrictionModel
+    class ViscousFriction : public pylith::friction::FrictionModel
     { // class ViscousFriction
 
       // PUBLIC METHODS /////////////////////////////////////////////////
