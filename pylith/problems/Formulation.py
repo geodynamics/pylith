@@ -58,6 +58,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## \b Properties
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements
+    ## @li \b use_custom_pc Use custom preconditioner for fault.
     ## and Lagrange multipliers for separate preconditioning.
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is
     ## reformed.
@@ -73,9 +74,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
 
-    splitFields = pyre.inventory.bool("split_fields", default=False)
-    splitFields.meta['tip'] = "Split solution fields into displacements "\
+    useSplitFields = pyre.inventory.bool("split_fields", default=False)
+    useSplitFields.meta['tip'] = "Split solution fields into displacements "\
         "and Lagrange multipliers for separate preconditioning."
+
+    useCustomFaultPC = pyre.inventory.bool("use_custom_fault_pc", default=True)
+    useCustomFaultPC.meta['tip'] = "Use custom preconditioner for fault."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
@@ -279,7 +283,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     PetscComponent._configure(self)
     self.matrixType = self.inventory.matrixType
-    self.splitFields = self.inventory.splitFields
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
@@ -289,6 +292,14 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     import journal
     self._debug = journal.debug(self.name)
+
+    if self.useCustomFaultPC and not self.inventory.useSplitFields:
+      print "WARNING: Request to use custom fault preconditioner without " \
+          "splitting fields. Setting split fields flag to 'True'."
+      self.inventory.useSplitFields = True
+
+    ModuleFormulation.splitFields(self, self.inventory.useSplitFields)
+    ModuleFormulation.useCustomFaultPC(self, self.inventory.useCustomFaultPC)
     return
 
 

@@ -122,6 +122,14 @@ CODE
 
     Need field split working for both SolverLinear and SolverNonlinear.
 
+    Preconditioner Object
+
+      Owned by formulation?
+      Solver::initialize() sets pc object in Preconditioner
+
+      use_field_split
+      use_custom_fault_pc
+
   * Optimization [Brad]
     + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
 

@@ -26,7 +26,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
 
-#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat, PetscSNES
+#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
 #include "pylith/utils/array.hh" // HASA std::vector
 
@@ -55,6 +55,30 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
+  /** Set flag for splitting fields.
+   *
+   * @param flag True if splitting fields, false otherwise.
+   */
+  void splitFields(const bool flag);
+
+  /** Get flag for splitting fields.
+   *
+   * @returns flag True if splitting fields, false otherwise.
+   */
+  bool splitFields(void) const;
+
+  /** Set flag for using custom fault preconditioner.
+   *
+   * @param flag True if splitting fields, false otherwise.
+   */
+  void useCustomFaultPC(const bool flag);
+
+  /** Get flag indicating use of custom fault conditioner.
+   *
+   * @returns flag True if using custom fault preconditioner, false otherwise.
+   */
+  bool useCustomFaultPC(void) const;
+
   /** Get solution fields.
    *
    * @returns solution fields.
@@ -167,6 +191,7 @@ protected :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
+  PetscPC* _pc; ///< Handle to PETSc preconditioner.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
@@ -177,6 +202,8 @@ protected :
   std::vector<IntegratorSubMesh*> _submeshIntegrators;
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
+  bool _splitFields; ///< True if splitting fields.
+  bool _useCustomFaultPC; ///< True if using custom fault preconditioner.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

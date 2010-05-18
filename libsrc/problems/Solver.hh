@@ -25,6 +25,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES SolutionFields
 #include "pylith/utils/utilsfwd.hh" // USES EventLogger
+#include "pylith/utils/petscfwd.h" // USES PetscPC
 
 // Solver ---------------------------------------------------------
 /** @brief Abstract C++ base class for using PETSc linear and
@@ -59,6 +60,20 @@ public :
   initialize(const topology::SolutionFields& fields,
 	     const topology::Jacobian& jacobian,
 	     Formulation* const formulation);
+
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
+
+  /** Setup preconditioner for preconditioning with split fields.8
+   *
+   * @param pc PETSc preconditioner.
+   * @param formulation Formulation of system of equations.
+   * @param fields Solution fields.
+   */
+  void
+  _setupFieldSplit(PetscPC* const pc,
+		   Formulation* const formulation,
+		   const topology::SolutionFields& fields);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :

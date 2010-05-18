@@ -154,6 +154,22 @@ public :
 				  const double t,
 				  topology::SolutionFields* const fields);
 
+  /** Compute custom fault precoditioner using Schur complement.
+   *
+   * We have J = [A C^T]
+   *             [C   0]
+   *
+   * We approximate C A^(-1) C^T.
+   *
+   * @param pc PETSc preconditioner structure.
+   * @param jacobian Sparse matrix for Jacobian of system.
+   * @param fields Solution fields
+   */
+  virtual
+  void calcPreconditioner(PetscPC* const pc,
+			  topology::Jacobian* const jacobian,
+			  topology::SolutionFields* const fields);
+
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
    *  multiplier constraints.
    *

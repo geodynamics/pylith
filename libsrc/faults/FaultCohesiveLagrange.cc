@@ -529,6 +529,56 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(
 } // integrateJacobianAssembled
 
 // ----------------------------------------------------------------------
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+void
+pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
+				   PetscPC* const pc,
+				   topology::Jacobian* const jacobian,
+				   topology::SolutionFields* const fields)
+{ // calcPreconditioner
+
+
+  /** We have J = [A C^T]
+   *              [C   0]
+   *
+   * We want to approximate C A^(-1) C^T.
+   *
+   * Consider Lagrange vertex L that constrains the relative
+   * displacement between vertex N on the negative side of the fault
+   * and vertex P on the positive side of the fault.
+   *
+   * If we approximate A(-1) by 1/diag(A), then we can write 
+   * C A^(-1) C^T for a 2-D case as
+   *
+   * [-R00 -R01  R00 R01][Ai_nx 0      0     0    ][-R00 -R10]
+   * [-R10 -R11  R10 R11][      Ai_ny  0     0    ][-R01 -R11]
+   *                     [      0      Ai_px 0    ][ R00  R10]
+   *                     [                   Ai_py][ R01  R11]
+   *
+   * where
+   *
+   * Ai_nx is the inverse of the diag(A) for DOF x of vertex N
+   * Ai_ny is the inverse of the diag(A) for DOF y of vertex N
+   * Ai_px is the inverse of the diag(A) for DOF x of vertex P
+   * Ai_py is the inverse of the diag(A) for DOF y of vertex P
+   *
+   * If Ai_nx == Ai_ny and Ai_px == Ai_py, then the result is
+   * diagonal. Otherwise, the off-diagonal terms will be nonzero,
+   * but we expect them to be small. Since we already approximate
+   * the inverse of A by the inverse of the diagonal, we drop the
+   * off-diagonal terms of C A^(-1) C^T:
+   *
+   * Term for DOF x of vertex L is: 
+   * R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py)
+   *
+   * Term for DOF y of vertex L is: 
+   * R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py)
+   *
+   */
+} // calcPreconditioner
+
+// ----------------------------------------------------------------------
 // Adjust solution from solver with lumped Jacobian to match Lagrange
 // multiplier constraints.
 void
