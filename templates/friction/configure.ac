@@ -14,7 +14,7 @@ AC_PREREQ(2.59)
 AC_INIT([frictioncontrib], [0.0.1], [cig-short@geodynamics.org])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_AUX_DIR([./aux-config])
-#AC_CONFIG_MACRO_DIR([./m4])
+AC_CONFIG_MACRO_DIR([./m4])
 AM_INIT_AUTOMAKE([foreign])
 
 # ----------------------------------------------------------------------
@@ -51,7 +51,7 @@ AC_MSG_CHECKING([for friction::StaticFriction in -lpylith])
 AC_REQUIRE_CPP
 AC_COMPILE_IFELSE(
   [AC_LANG_PROGRAM([[#include <pylith/friction/StaticFriction.hh>]],
-                   [[pylith::friction::StaticFriction material;]])],
+                   [[pylith::friction::StaticFriction model;]])],
   [AC_MSG_RESULT(yes)],
   [AC_MSG_RESULT(no)
    AC_MSG_ERROR([PyLith library not found; try LDFLAGS="-L<PyLith lib dir>"])
