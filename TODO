@@ -111,10 +111,6 @@ CODE
 
   * GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
 
-  * Friction template [Brad]
-    viscous (velocity proportional friction)
-      Document source files.
-
   * Better preconditioning [Matt/Brad/Charles]
     + Need settings for Schur complement
 
