@@ -133,8 +133,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
     } else {
       const std::string labelName = 
 	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName,
-				     0, _viewer);      
+      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName, 0, _viewer);      
       CHECK_PETSC_ERROR(err);
     } // if
     //std::cout << "Wrote elements for " << filename << std::endl;
