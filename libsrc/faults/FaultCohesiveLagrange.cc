@@ -626,10 +626,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   const PetscMat jacobianMatrix = jacobian->matrix();
   assert(0 != jacobianMatrix);
 
-  const ALE::Obj<SieveMesh::order_type>& faultGlobalOrder =
+  const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
       sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
-        solutionSection, numKSP-1);
-  assert(!faultGlobalOrder.isNull());
+        solutionSection, spaceDim);
+  assert(!lagrangeGlobalOrder.isNull());
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -692,11 +692,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #endif
 
     // Set global preconditioner index associated with Lagrange constraint vertex.
-    const int indexLprecond = faultGlobalOrder->getIndex(v_lagrange);
+    const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
     
     // Set diagonal entries in preconditioned matrix.
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      MatSetValue(precondMatrix,
+      MatSetValue(*precondMatrix,
 		  indexLprecond + iDim,
 		  indexLprecond + iDim,
 		  precondVertexL[iDim],
