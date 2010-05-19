@@ -24,9 +24,14 @@
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
-  _ksp(0)
+  _ksp(0),
+  _precondMatrix(0)
 { // constructor
 } // constructor
 
@@ -46,6 +51,11 @@ pylith::problems::SolverLinear::deallocate(void)
 
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+
+  if (0 != _precondMatrix) {
+    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -75,7 +85,7 @@ pylith::problems::SolverLinear::initialize(
   if (formulation->splitFields()) {
     PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    _setupFieldSplit(&pc, formulation, fields);
+    _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
   } // if
 } // initialize
 
@@ -112,6 +122,34 @@ pylith::problems::SolverLinear::solve(
 			  DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
   } // else
   jacobian->resetValuesChanged();
+
+  // Update KSP operators with custom preconditioner if necessary.
+  const ALE::Obj<RealSection>& solutionSection = solution->section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+      0 != _precondMatrix) {
+    
+    PetscPC pc = 0;
+    PetscKSP *ksps = 0;
+    PetscMat A = 0;
+    PetscInt num = 0;
+    
+    err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
+    assert(solutionSection->getNumSpaces() == num);
+
+    MatStructure flag;
+    err = KSPGetOperators(ksps[num-1], &A, 
+			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(ksps[num-1], A, _precondMatrix, 
+			  flag); CHECK_PETSC_ERROR(err);
+    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+  } // if
+
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
