@@ -32,6 +32,7 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
+  _pc(0),
   _isJacobianSymmetric(false)
 { // constructor
 } // constructor
@@ -51,6 +52,12 @@ pylith::problems::Formulation::deallocate(void)
   _jacobian = 0; // :TODO: Use shared pointer.
   _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
+
+  PetscErrorCode err = 0;
+  if (0 != _pc) {
+    err = PCDestroy(_pc); _pc = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -70,20 +77,20 @@ pylith::problems::Formulation::splitFields(void) const
 } // splitFields
 
 // ----------------------------------------------------------------------
-// Set flag for using custom fault preconditioner.
+// Set flag for using custom preconditioner for Lagrange constraints.
 void
-pylith::problems::Formulation::useCustomFaultPC(const bool flag)
-{ // useCustomFaultPC
-  _useCustomFaultPC = flag;
-} // useCustomFaultPC
+pylith::problems::Formulation::useCustomConstraintPC(const bool flag)
+{ // useCustomConstraintPC
+  _useCustomConstraintPC = flag;
+} // useCustomConstraintPC
 
 // ----------------------------------------------------------------------
-// Get flag indicating use of custom fault conditioner.
+// Get flag indicating use of custom conditioner for Lagrange constraints.
 bool
-pylith::problems::Formulation::useCustomFaultPC(void) const
-{ // useCustomFaultPC
-  return _useCustomFaultPC;
-} // useCustomFaultPC
+pylith::problems::Formulation::useCustomConstraintPC(void) const
+{ // useCustomConstraintPC
+  return _useCustomConstraintPC;
+} // useCustomConstraintPC
 
 // ----------------------------------------------------------------------
 // Return the fields
@@ -126,6 +133,17 @@ pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrator
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i] = integrators[i];
 } // submeshIntegrators
+
+// ----------------------------------------------------------------------
+// Set handle to preconditioner.
+void
+pylith::problems::Formulation::preconditioner(PetscPC& pc)
+{ // preconditioner
+  _pc = pc;
+
+  PetscErrorCode err = 0;
+  err = PetscObjectReference((PetscObject) _pc); CHECK_PETSC_ERROR(err);
+} // preconditioner
 
 // ----------------------------------------------------------------------
 // Initialize formulation.
@@ -342,18 +360,15 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
-  
-#if 0
-  // Recalculate preconditioner.
-  if (_useCustomFaultPC) {
+  if (0 != _pc) {
+    // Recalculate preconditioner.
     numIntegrators = _meshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _meshIntegrators[i]->calcPreconditioner(pc, _jacobian, _fields);
+      _meshIntegrators[i]->calcPreconditioner(&_pc, _jacobian, _fields);
     numIntegrators = _submeshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _submeshIntegrators[i]->calcPreconditioner(pc, _jacobian, _fields);
+      _submeshIntegrators[i]->calcPreconditioner(&_pc, _jacobian, _fields);
   } // if
-#endif
 } // reformJacobian
 
 // ----------------------------------------------------------------------

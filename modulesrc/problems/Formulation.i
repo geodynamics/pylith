@@ -46,18 +46,19 @@ namespace pylith {
        */
       bool splitFields(void) const;
 
-      /** Set flag for using custom fault preconditioner.
+      /** Set flag for using custom Lagrange constraint preconditioner.
        *
-       * @param flag True if splitting fields, false otherwise.
-       */
-      void useCustomFaultPC(const bool flag);
-
-      /** Get flag indicating use of custom fault conditioner.
-       *
-       * @returns flag True if using custom fault preconditioner, 
+       * @param flag True if using custom constraint precondition,
        * false otherwise.
        */
-      bool useCustomFaultPC(void) const;
+      void useCustomConstraintPC(const bool flag);
+
+      /** Get flag indicating use of custom Lagrange constraint conditioner.
+       *
+       * @returns flag True if using custom constraint preconditioner, 
+       * false otherwise.
+       */
+      bool useCustomConstraintPC(void) const;
 
       /** Get solution fields.
        *

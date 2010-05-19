@@ -67,17 +67,17 @@ public :
    */
   bool splitFields(void) const;
 
-  /** Set flag for using custom fault preconditioner.
+  /** Set flag for using custom preconditioner for Lagrange constraints.
    *
-   * @param flag True if splitting fields, false otherwise.
+   * @param flag True if using custom fault preconditioner, false otherwise.
    */
-  void useCustomFaultPC(const bool flag);
+  void useCustomConstraintPC(const bool flag);
 
-  /** Get flag indicating use of custom fault conditioner.
+  /** Get flag indicating use of custom conditioner for Lagrange constraints.
    *
-   * @returns flag True if using custom fault preconditioner, false otherwise.
+   * @returns True if using custom fault preconditioner, false otherwise.
    */
-  bool useCustomFaultPC(void) const;
+  bool useCustomConstraintPC(void) const;
 
   /** Get solution fields.
    *
@@ -106,6 +106,12 @@ public :
    */
   void submeshIntegrators(IntegratorSubMesh** integrators,
 			  const int numIntegrators);
+
+  /** Set handle to preconditioner.
+   *
+   * @param pc PETSc preconditioner.
+   */
+  void preconditioner(PetscPC& pc);
 
   /// Initialize formulation.
   virtual
@@ -191,7 +197,7 @@ protected :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
-  PetscPC* _pc; ///< Handle to PETSc preconditioner.
+  PetscPC _pc; ///< Handle to PETSc preconditioner.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
@@ -203,7 +209,9 @@ protected :
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
   bool _splitFields; ///< True if splitting fields.
-  bool _useCustomFaultPC; ///< True if using custom fault preconditioner.
+
+  /// True if using custom preconditioner for Lagrange constraints.
+  bool _useCustomConstraintPC;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
