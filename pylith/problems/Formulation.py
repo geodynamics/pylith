@@ -58,10 +58,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## \b Properties
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements
-    ## @li \b use_custom_pc Use custom preconditioner for fault.
-    ## and Lagrange multipliers for separate preconditioning.
+    ## @li \b use_custom_constraint_pc Use custom preconditioner for
+    ##   Lagrange constraints.
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is
-    ## reformed.
+    ##   reformed.
     ##
     ## \b Facilities
     ## @li \b time_step Time step size manager.
@@ -78,8 +78,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     useSplitFields.meta['tip'] = "Split solution fields into displacements "\
         "and Lagrange multipliers for separate preconditioning."
 
-    useCustomFaultPC = pyre.inventory.bool("use_custom_fault_pc", default=True)
-    useCustomFaultPC.meta['tip'] = "Use custom preconditioner for fault."
+    useCustomConstraintPC = pyre.inventory.bool("use_custom_constraint_pc",
+                                                default=True)
+    useCustomConstraintPC.meta['tip'] = "Use custom preconditioner for " \
+                                        "Lagrange constraints."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
@@ -293,13 +295,16 @@ class Formulation(PetscComponent, ModuleFormulation):
     import journal
     self._debug = journal.debug(self.name)
 
-    if self.useCustomFaultPC and not self.inventory.useSplitFields:
-      print "WARNING: Request to use custom fault preconditioner without " \
-          "splitting fields. Setting split fields flag to 'True'."
+    if self.inventory.useCustomConstraintPC and \
+           not self.inventory.useSplitFields:
+      print "WARNING: Request to use custom preconditioner for Lagrange " \
+            "constraints without splitting fields. " \
+            "Setting split fields flag to 'True'."
       self.inventory.useSplitFields = True
 
     ModuleFormulation.splitFields(self, self.inventory.useSplitFields)
-    ModuleFormulation.useCustomFaultPC(self, self.inventory.useCustomFaultPC)
+    ModuleFormulation.useCustomConstraintPC(self,
+                                            self.inventory.useCustomConstraintPC)
     return
 
 

@@ -453,7 +453,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  INSERT_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numVertices*(spaceDim*spaceDim*2));
+    PetscLogFlops(spaceDim*spaceDim*2);
     _logger->eventBegin(updateEvent);
 #endif
 
@@ -537,7 +537,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 				   topology::Jacobian* const jacobian,
 				   topology::SolutionFields* const fields)
 { // calcPreconditioner
-
+  assert(0 != pc);
+  assert(0 != jacobian);
+  assert(0 != fields);
+  assert(0 != _fields);
+  assert(0 != _logger);
 
   /** We have J = [A C^T]
    *              [C   0]
@@ -575,7 +579,153 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * Term for DOF y of vertex L is: 
    * R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py)
    *
+   * Translate DOF for global vertex L into DOF in split field for
+   * preconditioner.
    */
+
+  const int setupEvent = _logger->eventId("FaPr setup");
+  const int computeEvent = _logger->eventId("FaPr compute");
+  const int restrictEvent = _logger->eventId("FaPr restrict");
+  const int updateEvent = _logger->eventId("FaPr update");
+
+  _logger->eventBegin(setupEvent);
+
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = spaceDim * spaceDim;
+
+  // Allocate vectors for vertex values
+  double_array orientationVertex(orientationSize);
+  double_array jacobianVertexP(spaceDim*spaceDim);
+  double_array jacobianVertexN(spaceDim*spaceDim);
+  double_array jacobianInvVertexP(spaceDim);
+  double_array jacobianInvVertexN(spaceDim);
+  double_array precondVertexL(spaceDim);
+  int_array indicesN(spaceDim);
+  int_array indicesP(spaceDim);
+  int_array indicesRel(spaceDim);
+  for (int i=0; i < spaceDim; ++i)
+    indicesRel[i] = i;
+
+  // Get sections
+  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
+  assert(!solutionSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+      _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+        solutionSection);
+  assert(!globalOrder.isNull());
+
+  // Get Jacobian matrix
+  const PetscMat jacobianMatrix = jacobian->matrix();
+  assert(0 != jacobianMatrix);
+
+  // Get preconditioner matrix
+  PetscKSP *ksps = 0;
+  PetscMat precondMatrix = 0;
+  PetscInt numKSP = 0;
+  PetscErrorCode err = 0;
+  err = PCFieldSplitGetSubKSP(*pc, &numKSP, &ksps); CHECK_PETSC_ERROR(err);
+
+  MatStructure flag;
+  err = KSPGetOperators(ksps[numKSP-1], PETSC_NULL, 
+			&precondMatrix, &flag); CHECK_PETSC_ERROR(err);  
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(restrictEvent);
+#endif
+
+    // Get orientations at fault cell's vertices.
+    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
+				      orientationVertex.size());
+
+    // Set global order indices
+    indicesN = indicesRel + globalOrder->getIndex(v_negative);
+    indicesP = indicesRel + globalOrder->getIndex(v_positive);
+
+    err = MatGetValues(jacobianMatrix,
+		       indicesN.size(), &indicesN[0],
+		       indicesN.size(), &indicesN[0],
+		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
+    err = MatGetValues(jacobianMatrix,
+		       indicesP.size(), &indicesP[0],
+		       indicesP.size(), &indicesP[0],
+		       &jacobianVertexP[0]); CHECK_PETSC_ERROR(err);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    // Compute inverse of Jacobian diagonals
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      jacobianInvVertexN[iDim] = 1.0/jacobianVertexN[iDim*spaceDim+iDim];
+      jacobianInvVertexP[iDim] = 1.0/jacobianVertexP[iDim*spaceDim+iDim];
+    } // for
+
+    // Compute [C] [Adiag]^(-1) [C]^T
+    precondVertexL = 0.0;
+    for (int kDim=0; kDim < spaceDim; ++kDim)
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	precondVertexL[kDim] += 
+	  orientationVertex[kDim*spaceDim+iDim] * 
+	  orientationVertex[kDim*spaceDim+iDim] * 
+	  (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    // Set global index associated with Lagrange constraint vertex.
+    const int indexLglobal = globalOrder->getIndex(v_lagrange);
+    
+    // Translate global index into index in preconditioner.
+    const int indexLprecond = 0; // MATT- FIX THIS.
+    
+    // Set diagonal entries in preconditioned matrix.
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      MatSetValue(precondMatrix,
+		  indexLprecond + iDim,
+		  indexLprecond + iDim,
+		  precondVertexL[iDim],
+		  INSERT_VALUES);
+    
+#if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(spaceDim*spaceDim*4);
+    _logger->eventBegin(updateEvent);
+#endif
+
+  } // for
+
+  // Flush assembled portion.
+  MatAssemblyBegin(precondMatrix,MAT_FLUSH_ASSEMBLY);
+  MatAssemblyEnd(precondMatrix,MAT_FLUSH_ASSEMBLY);
+
+  err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  PetscLogFlops(numVertices*(spaceDim*spaceDim*4));
+  _logger->eventEnd(computeEvent);
+#endif
 } // calcPreconditioner
 
 // ----------------------------------------------------------------------
@@ -962,6 +1112,12 @@ pylith::faults::FaultCohesiveLagrange::_initializeLogger(void)
   _logger->registerEvent("FaIJ compute");
   _logger->registerEvent("FaIJ restrict");
   _logger->registerEvent("FaIJ update");
+
+  _logger->registerEvent("FaPr setup");
+  _logger->registerEvent("FaPr geometry");
+  _logger->registerEvent("FaPr compute");
+  _logger->registerEvent("FaPr restrict");
+  _logger->registerEvent("FaPr update");
 } // initializeLogger
 
 // ----------------------------------------------------------------------

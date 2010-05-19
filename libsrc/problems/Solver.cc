@@ -30,6 +30,10 @@
 #endif
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Solver::Solver(void) :
   _formulation(0),
@@ -72,30 +76,35 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 					   Formulation* const formulation,
 					   const topology::SolutionFields& fields)
 { // _setupFieldSplit
+  assert(0 != pc);
+  assert(0 != formulation);
 
   PetscErrorCode err = 0;
 
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
   const topology::Field<topology::Mesh>& solution = fields.solution();
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = 
-    fields.mesh().sieveMesh();
+  const ALE::Obj<RealSection>& solutionSection = solution.section();
+  assert(!solutionSection.isNull());
+
   err = PCSetType(*pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
   err = PCSetOptionsPrefix(*pc, "fs_"); CHECK_PETSC_ERROR(err);
   err = PCSetFromOptions(*pc); CHECK_PETSC_ERROR(err);
 
 #if defined(FIELD_SPLIT)
-  constructFieldSplit(solution.section(), 
+  constructFieldSplit(solutionSection, 
 	      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-						      solution.section()), 
+						      solutionSection), 
 		      solution.vector(), *pc);
 
-  if (formulation->useCustomFaultPC()) {
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+      formulation->useCustomConstraintPC()) {
     PetscKSP *ksps = 0;
     PetscMat A, P;
     PetscInt num, m, n;
 
     err = PCFieldSplitGetSubKSP(*pc, &num, &ksps); CHECK_PETSC_ERROR(err);
 
-    // Put in PC matrix for fault
+    // Put in PC matrix for additional space (fault).
     MatStructure flag;
     err = KSPGetOperators(ksps[num-1], &A, 
 			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
@@ -106,9 +115,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatSetSizes(P, m, n, 
 		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
 
-    // Allocate just the diagonal. This should really go in the Fault
-    // object that calculates the preconditioner since it is
-    // implementation dependent.
+    // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(P, 1, PETSC_NULL); CHECK_PETSC_ERROR(err);
     err = MatMPIAIJSetPreallocation(P, 1, PETSC_NULL, 
 				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
@@ -117,6 +124,9 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = KSPSetOperators(ksps[num-1], A, P, flag); CHECK_PETSC_ERROR(err);
     
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+
+    // Set preconditioner in formulation
+    formulation->preconditioner(*pc);
   } // if
 
 #endif
