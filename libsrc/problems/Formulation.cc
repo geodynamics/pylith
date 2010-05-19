@@ -32,7 +32,7 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
-  _pc(0),
+  _precondMatrix(0),
   _isJacobianSymmetric(false)
 { // constructor
 } // constructor
@@ -54,8 +54,8 @@ pylith::problems::Formulation::deallocate(void)
   _fields = 0; // :TODO: Use shared pointer.
 
   PetscErrorCode err = 0;
-  if (0 != _pc) {
-    err = PCDestroy(_pc); _pc = 0;
+  if (0 != _precondMatrix) {
+    err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -137,12 +137,12 @@ pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrator
 // ----------------------------------------------------------------------
 // Set handle to preconditioner.
 void
-pylith::problems::Formulation::preconditioner(PetscPC& pc)
+pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 { // preconditioner
-  _pc = pc;
+  _precondMatrix = mat;
 
   PetscErrorCode err = 0;
-  err = PetscObjectReference((PetscObject) _pc); CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) _precondMatrix); CHECK_PETSC_ERROR(err);
 } // preconditioner
 
 // ----------------------------------------------------------------------
@@ -360,14 +360,22 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
-  if (0 != _pc) {
+  if (0 != _precondMatrix) {
     // Recalculate preconditioner.
     numIntegrators = _meshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _meshIntegrators[i]->calcPreconditioner(&_pc, _jacobian, _fields);
+      _meshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+					      _jacobian, _fields);
     numIntegrators = _submeshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _submeshIntegrators[i]->calcPreconditioner(&_pc, _jacobian, _fields);
+      _submeshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+						 _jacobian, _fields);
+
+    // Flush assembled portion.
+    MatAssemblyBegin(_precondMatrix,MAT_FLUSH_ASSEMBLY);
+    MatAssemblyEnd(_precondMatrix,MAT_FLUSH_ASSEMBLY);
+    MatAssemblyBegin(_precondMatrix,MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(_precondMatrix,MAT_FINAL_ASSEMBLY);
   } // if
 } // reformJacobian
 

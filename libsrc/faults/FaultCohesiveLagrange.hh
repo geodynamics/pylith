@@ -166,7 +166,7 @@ public :
    * @param fields Solution fields
    */
   virtual
-  void calcPreconditioner(PetscPC* const pc,
+  void calcPreconditioner(PetscMat* const precondMatrix,
 			  topology::Jacobian* const jacobian,
 			  topology::SolutionFields* const fields);
 

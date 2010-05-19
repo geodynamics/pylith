@@ -158,7 +158,7 @@ template<typename quadrature_type>
 inline
 void 
 pylith::feassemble::Integrator<quadrature_type>::calcPreconditioner(
-			          PetscPC* const pc,
+			          PetscMat* const precondMatrix,
 				  topology::Jacobian* const jacobian,
 				  topology::SolutionFields* const fields) {
 } // calcPreconditioner

@@ -25,7 +25,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
 #include "pylith/utils/utilsfwd.hh" // HOLDSA EventLogger
-#include "pylith/utils/petscfwd.h" // USES PetscPC
+#include "pylith/utils/petscfwd.h" // USES PetscMat
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
@@ -237,12 +237,12 @@ public :
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param pc PETSc preconditioner structure.
+   * @param precondMatrix Custom preconditioning matrix.
    * @param jacobian Sparse matrix for Jacobian of system.
    * @param fields Solution fields
    */
   virtual
-  void calcPreconditioner(PetscPC* const pc,
+  void calcPreconditioner(PetscMat* const precondMatrix,
 			  topology::Jacobian* const jacobian,
 			  topology::SolutionFields* const fields);
 

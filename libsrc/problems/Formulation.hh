@@ -111,7 +111,7 @@ public :
    *
    * @param pc PETSc preconditioner.
    */
-  void preconditioner(PetscPC& pc);
+  void customPCMatrix(PetscMat& mat);
 
   /// Initialize formulation.
   virtual
@@ -197,7 +197,7 @@ protected :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
-  PetscPC _pc; ///< Handle to PETSc preconditioner.
+  PetscMat _precondMatrix; ///< Custom PETSc preconditioning matrix.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 

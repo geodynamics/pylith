@@ -73,10 +73,12 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 // Setup preconditioner for preconditioning with split fields.
 void
 pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
+					   PetscMat* const precondMatrix,
 					   Formulation* const formulation,
 					   const topology::SolutionFields& fields)
 { // _setupFieldSplit
   assert(0 != pc);
+  assert(0 != precondMatrix);
   assert(0 != formulation);
 
   PetscErrorCode err = 0;
@@ -96,37 +98,38 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 						      solutionSection), 
 		      solution.vector(), *pc);
 
-  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+  const int spaceDim = sieveMesh->getDimension();
+  if (solutionSection->getNumSpaces() > spaceDim &&
       formulation->useCustomConstraintPC()) {
-    PetscKSP *ksps = 0;
-    PetscMat A, P;
-    PetscInt num, m, n;
+    // Get total number of DOF associated with constraints field split
+    const ALE::Obj<RealSection>& constraintSection = 
+      solutionSection->getFibration(spaceDim);
+    assert(!constraintSection.isNull());
 
-    err = PCFieldSplitGetSubKSP(*pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-
-    // Put in PC matrix for additional space (fault).
-    MatStructure flag;
-    err = KSPGetOperators(ksps[num-1], &A, 
-			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
+    // :TODO: Is this assembled across processors?
+    const int ndof = constraintSection->size(); 
     
-    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-    err = MatGetLocalSize(A, &m, &n); CHECK_PETSC_ERROR(err);
-    err = MatCreate(sieveMesh->comm(), &P); CHECK_PETSC_ERROR(err);
-    err = MatSetSizes(P, m, n, 
-		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
+    if (0 != *precondMatrix) {
+      err = MatDestroy(*precondMatrix); *precondMatrix = 0;
+      CHECK_PETSC_ERROR(err);
+    } // if
+    PetscInt nrows = ndof;
+    PetscInt ncols = ndof;
 
+    err = MatCreate(sieveMesh->comm(), precondMatrix); CHECK_PETSC_ERROR(err);
+    err = MatSetSizes(*precondMatrix, nrows, ncols, 
+		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
+    err = MatSetType(*precondMatrix, MATSBAIJ);
+    err = MatSetFromOptions(*precondMatrix); CHECK_PETSC_ERROR(err);
+    
     // Allocate just the diagonal.
-    err = MatSeqAIJSetPreallocation(P, 1, PETSC_NULL); CHECK_PETSC_ERROR(err);
-    err = MatMPIAIJSetPreallocation(P, 1, PETSC_NULL, 
+    err = MatSeqAIJSetPreallocation(*precondMatrix, 1, 
+				    PETSC_NULL); CHECK_PETSC_ERROR(err);
+    err = MatMPIAIJSetPreallocation(*precondMatrix, 1, PETSC_NULL, 
 				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
     
-    err = MatSetFromOptions(P); CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, P, flag); CHECK_PETSC_ERROR(err);
-    
-    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
-
-    // Set preconditioner in formulation
-    formulation->preconditioner(*pc);
+    // Set preconditioning matrix in formulation
+    formulation->customPCMatrix(*precondMatrix);
   } // if
 
 #endif

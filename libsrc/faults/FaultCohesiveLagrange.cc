@@ -533,11 +533,11 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(
 // operator.
 void
 pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
-				   PetscPC* const pc,
+				   PetscMat* const precondMatrix,
 				   topology::Jacobian* const jacobian,
 				   topology::SolutionFields* const fields)
 { // calcPreconditioner
-  assert(0 != pc);
+  assert(0 != precondMatrix);
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -626,17 +626,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   const PetscMat jacobianMatrix = jacobian->matrix();
   assert(0 != jacobianMatrix);
 
-  // Get preconditioner matrix
-  PetscKSP *ksps = 0;
-  PetscMat precondMatrix = 0;
-  PetscInt numKSP = 0;
-  PetscErrorCode err = 0;
-  err = PCFieldSplitGetSubKSP(*pc, &numKSP, &ksps); CHECK_PETSC_ERROR(err);
-
-  MatStructure flag;
-  err = KSPGetOperators(ksps[numKSP-1], PETSC_NULL, 
-			&precondMatrix, &flag); CHECK_PETSC_ERROR(err);  
-
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
@@ -660,6 +649,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Set global order indices
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
+
+    PetscErrorCode err = 0;
 
     err = MatGetValues(jacobianMatrix,
 		       indicesN.size(), &indicesN[0],
@@ -698,6 +689,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Set global index associated with Lagrange constraint vertex.
     const int indexLglobal = globalOrder->getIndex(v_lagrange);
     
+#if 0
     // Translate global index into index in preconditioner.
     const int indexLprecond = 0; // MATT- FIX THIS.
     
@@ -708,6 +700,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 		  indexLprecond + iDim,
 		  precondVertexL[iDim],
 		  INSERT_VALUES);
+#endif
     
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(spaceDim*spaceDim*4);
@@ -715,12 +708,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #endif
 
   } // for
-
-  // Flush assembled portion.
-  MatAssemblyBegin(precondMatrix,MAT_FLUSH_ASSEMBLY);
-  MatAssemblyEnd(precondMatrix,MAT_FLUSH_ASSEMBLY);
-
-  err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numVertices*(spaceDim*spaceDim*4));
