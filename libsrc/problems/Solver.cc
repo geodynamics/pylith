@@ -119,7 +119,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatCreate(sieveMesh->comm(), precondMatrix); CHECK_PETSC_ERROR(err);
     err = MatSetSizes(*precondMatrix, nrows, ncols, 
 		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
-    err = MatSetType(*precondMatrix, MATSBAIJ);
+    err = MatSetType(*precondMatrix, MATAIJ);
     err = MatSetFromOptions(*precondMatrix); CHECK_PETSC_ERROR(err);
     
     // Allocate just the diagonal.
