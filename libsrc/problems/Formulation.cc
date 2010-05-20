@@ -372,10 +372,12 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 						 _jacobian, _fields);
 
     // Flush assembled portion.
-    MatAssemblyBegin(_precondMatrix,MAT_FLUSH_ASSEMBLY);
-    MatAssemblyEnd(_precondMatrix,MAT_FLUSH_ASSEMBLY);
-    MatAssemblyBegin(_precondMatrix,MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(_precondMatrix,MAT_FINAL_ASSEMBLY);
+    MatAssemblyBegin(_precondMatrix, MAT_FLUSH_ASSEMBLY);
+    MatAssemblyEnd(_precondMatrix, MAT_FLUSH_ASSEMBLY);
+    MatAssemblyBegin(_precondMatrix, MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(_precondMatrix, MAT_FINAL_ASSEMBLY);
+
+    //MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
   } // if
 } // reformJacobian
 
