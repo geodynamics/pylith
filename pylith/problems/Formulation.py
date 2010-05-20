@@ -79,7 +79,7 @@ class Formulation(PetscComponent, ModuleFormulation):
         "and Lagrange multipliers for separate preconditioning."
 
     useCustomConstraintPC = pyre.inventory.bool("use_custom_constraint_pc",
-                                                default=True)
+                                                default=False)
     useCustomConstraintPC.meta['tip'] = "Use custom preconditioner for " \
                                         "Lagrange constraints."
 
