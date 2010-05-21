@@ -2,6 +2,34 @@
 INSTRUCTIONS FOR INSTALLING PYLITH ON THE CALTECH LINUX CLUSTER PANGU
 ======================================================================
 
+Python
+  http://www.python.org/ftp/python/2.6.5/Python-2.6.5.tgz
+
+cppunit
+
+proj.4
+
+FIAT
+
+swig
+
+pythia
+
+netcdf
+
+numpy
+
+spatialdata
+
+mercurial
+
+PETSc
+
+nemesis
+
+PyLith
+
+
 I place applications that are rarely updated in $HOME/tools. For CIG
 source code, I separate the source code, build directories, and
 installed code. The source code sits in $HOME/src/cig, I build the
