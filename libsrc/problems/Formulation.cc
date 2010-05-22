@@ -53,11 +53,15 @@ pylith::problems::Formulation::deallocate(void)
   _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
 
+#if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
   if (0 != _precondMatrix) {
-    err = MatDestroy(_precondMatrix); _precondMatrix = 0;
-    CHECK_PETSC_ERROR(err);
+    err = PetscObjectDereference((PetscObject) _precondMatrix);
+    _precondMatrix = 0; CHECK_PETSC_ERROR(err);
   } // if
+#else
+  _precondMatrix = 0;
+#endif
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -141,8 +145,10 @@ pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 { // preconditioner
   _precondMatrix = mat;
 
+#if 0 // :KLUDGE: Assume solver deallocates matrix
   PetscErrorCode err = 0;
-  err = PetscObjectReference((PetscObject) _precondMatrix); CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) mat); CHECK_PETSC_ERROR(err);
+#endif
 } // preconditioner
 
 // ----------------------------------------------------------------------
