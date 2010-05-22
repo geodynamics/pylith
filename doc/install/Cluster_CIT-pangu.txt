@@ -2,6 +2,10 @@
 INSTRUCTIONS FOR INSTALLING PYLITH ON THE CALTECH LINUX CLUSTER PANGU
 ======================================================================
 
+/opt/openmpi/1.4.2/intel
+/opt/intel/Compiler/11.1/072/
+/opt/intel/Compiler/11.1/072/mkl/lib
+
 Python
   http://www.python.org/ftp/python/2.6.5/Python-2.6.5.tgz
 
@@ -28,20 +32,22 @@ numpy
   http://downloads.sourceforge.net/project/numpy/NumPy/1.4.1/numpy-1.4.1.tar.gz?use_mirror=hivelocity
 
 spatialdata
- svn co http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata-dev
-  **need python numpy module**
+  svn co http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata-dev
+  Comment out postdep_objects (bug in ifort)
 
 mercurial
   http://mercurial.selenic.com/release/mercurial-1.5.2.tar.gz
-  **need bz2 module**
 
 PETSc
+  hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
+  cd petsc-dev/config
+  hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
 
 nemesis
   svn co http://geodynamics.org/svn/cig/cs/nemesis/trunk nemesis-dev  
 
 PyLith
-
+  svn co http://geodynamics.org/svn/cig/short/3D/PyLith/trunk pylith-dev
 
 I place applications that are rarely updated in $HOME/tools. For CIG
 source code, I separate the source code, build directories, and
