@@ -78,6 +78,17 @@ RELEASE NOTES
     and faults. Users can specify to use nodeset names (default
     behavior) or ids.
 
+  * Velocity and slip rate as output fields
+
+    Velocity (domain and subdomain) and slip rate (fault) fields are
+    can be requested as output fields. The fields are computed using
+    the time-stepping algorithm and alleviates the need to compute
+    them via post-processing.
+
+  * Dimensionless values in spatial databases no longer need
+    artificial dimensions. Values without dimensions are understood by
+    the parser as dimensionless quantities.
+
   * Bug fixes
 
     - Updating state variables did not retrieve physical properties

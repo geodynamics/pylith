@@ -20,7 +20,7 @@ surface all size 200
 # ----------------------------------------------------------------------
 # Set the meshing scheme
 # ----------------------------------------------------------------------
-surface 9 10 scheme trimesh
+surface 8 9 scheme trimesh
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -30,7 +30,7 @@ mesh surface all
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
-block 1 surface 9 10
+block 1 surface 8 9
 block 1 name "elastic"
 
 # ----------------------------------------------------------------------
@@ -43,14 +43,14 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve 18
+group "face_xpos" add node in curve 14
 nodeset 11 group face_xpos
 nodeset 11 name "face xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve 20
+group "face_xneg" add node in curve 16
 nodeset 12 group face_xneg
 nodeset 12 name "face xneg"
 
@@ -66,3 +66,4 @@ nodeset 13 name "vertices_nofault"
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "bar_tri3_200m.exo" dimension 2 overwrite
+
