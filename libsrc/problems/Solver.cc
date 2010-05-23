@@ -122,11 +122,19 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatSetType(*precondMatrix, MATAIJ);
     err = MatSetFromOptions(*precondMatrix); CHECK_PETSC_ERROR(err);
     
+#if 0
     // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(*precondMatrix, 1, 
 				    PETSC_NULL); CHECK_PETSC_ERROR(err);
     err = MatMPIAIJSetPreallocation(*precondMatrix, 1, PETSC_NULL, 
 				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+#else
+    // Allocate full matrix (overestimate).
+    err = MatSeqAIJSetPreallocation(*precondMatrix, ncols, 
+				    PETSC_NULL); CHECK_PETSC_ERROR(err);
+    err = MatMPIAIJSetPreallocation(*precondMatrix, ncols, PETSC_NULL, 
+				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+#endif
     
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(*precondMatrix);
