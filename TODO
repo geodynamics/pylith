@@ -96,9 +96,6 @@ TUTORIALS/EXAMPLES
    16. Gravity w/prestress
    17. Gravity w/small strain
 
-  bar_shearwave
-    Add more comments to .cfg files and redo README.
-
   meshgeneration
 
 
