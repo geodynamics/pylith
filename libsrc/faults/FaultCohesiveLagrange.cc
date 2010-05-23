@@ -583,6 +583,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * preconditioner.
    */
 
+#if 1 // DIAGONAL PRECONDITIONER
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
   const int restrictEvent = _logger->eventId("FaPr restrict");
@@ -713,6 +714,126 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   PetscLogFlops(numVertices*(spaceDim*spaceDim*4));
   _logger->eventEnd(computeEvent);
 #endif
+
+#else // FULL PRECONDITIONER
+
+  // Simple heuristic preconditioner.
+  //
+  //      Sn Nn Sp Np
+  // P = [ 1  0  1  0] Sn
+  //     [ 0  1  0 -1] Nn
+  //     [ 1  0  1  0] Sp
+  //     [-1  0  0  1] Np
+  // Sn: shear dir, negative side of the fault
+  // Nn: normal dir, negative side of the fault
+  // Sp: shear dir, positive side of the fault
+  // Np: normal dir, positive side of the fault
+
+  const int setupEvent = _logger->eventId("FaPr setup");
+  const int computeEvent = _logger->eventId("FaPr compute");
+  const int restrictEvent = _logger->eventId("FaPr restrict");
+  const int updateEvent = _logger->eventId("FaPr update");
+
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int numBasis = _quadrature->numBasis();
+
+  // Allocate vectors for vertex values
+  double_array preconditionerCell(numBasis*spaceDim*numBasis*spaceDim);
+  int_array indicesLagrange(numBasis*spaceDim);
+
+  // Get sections
+  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
+  assert(!solutionSection.isNull());
+
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3 * numConstraintVert; // cohesive cell
+
+  // Get cohesive cells
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
+        solutionSection, spaceDim);
+  assert(!lagrangeGlobalOrder.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive =
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
+  // REPLACE THIS WITH Cell approximation of C A^(-1) C^T
+  preconditionerCell = 0.0;
+  for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const int iRow = iBasis*spaceDim + iDim;
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	//for (int jDim=0; jDim < spaceDim; ++jDim) {
+	const int jDim = iDim; {
+	  const int jCol = jBasis*spaceDim + jDim;
+	  preconditionerCell[iRow*numBasis*spaceDim+jCol] = 1.0;
+	} // for
+      } // for
+    } // for
+  } // for
+
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
+      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    // Get oriented closure
+    ncV.clear();
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
+								 *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    assert(coneSize == numCorners);
+    const Mesh::point_type *cone = ncV.getPoints();
+    assert(0 != cone);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+      // constraint vertex k
+      const int v_lagrange = cone[2*numBasis+iBasis];
+      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
+	indicesLagrange[iB+iDim] = 
+	  lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
+      } // for
+    } // for
+
+
+    MatSetValues(*precondMatrix,
+                 indicesLagrange.size(), &indicesLagrange[0],
+                 indicesLagrange.size(), &indicesLagrange[0],
+                 &preconditionerCell[0],
+                 INSERT_VALUES);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(updateEvent);
+#endif
+
+  } // for
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
+
+#endif
+
 } // calcPreconditioner
 
 // ----------------------------------------------------------------------
@@ -1022,7 +1143,6 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = mesh.sieveMesh()->getSieve();
   assert(!sieve.isNull());
-  typedef ALE::SieveAlg<SieveMesh> SieveAlg;
 
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
       (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
@@ -1184,7 +1304,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
 
   const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
   assert(!sieve.isNull());
-  typedef ALE::SieveAlg<SieveSubMesh> SieveAlg;
 
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
       ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0,
