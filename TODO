@@ -111,24 +111,15 @@ CODE
 
   * GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
 
-  * Better preconditioning [Matt/Brad/Charles]
-    + Need settings for Schur complement
+  * Better preconditioning [Matt/Brad]
 
-    We should temporarily hardwire the Schur complement settings (enable
-    with #define) and see how well it works.
-
-    MATT is thinking about how to setup Schur complement settings
-    (recursive specification of field splits).
+    Diagonal preconditioner does not work very well. It looks like the
+    preconditioner needs off-diagonal terms consistent with the
+    coupling of the Lagrange multiplier constraints (sparsity pattern
+    matches the union of the matrices associated with the fault
+    meshes).
 
     Need field split working for both SolverLinear and SolverNonlinear.
-
-    Preconditioner Object
-
-      Owned by formulation?
-      Solver::initialize() sets pc object in Preconditioner
-
-      use_field_split
-      use_custom_fault_pc
 
   * Optimization [Brad]
     + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
