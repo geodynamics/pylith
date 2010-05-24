@@ -112,7 +112,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
 
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+    err = PetscViewerSetType(_viewer, PETSCVIEWERASCII);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
     CHECK_PETSC_ERROR(err);
