@@ -605,8 +605,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   int_array indicesN(spaceDim);
   int_array indicesP(spaceDim);
   int_array indicesRel(spaceDim);
-  for (int i=0; i < spaceDim; ++i)
-    indicesRel[i] = i;
+  for (int i=0; i < spaceDim; ++i) {indicesRel[i] = i;}
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -679,18 +678,26 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     } // for
 
     // Compute [C] [Adiag]^(-1) [C]^T
+    //   C_{ij}          = orientationVertex[i*spaceDim+j]
+    //   C^T_{ij}        = orientationVertex[j*spaceDim+i]
+    //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i] (BRAD: Are you sure its not a minus sign here?)
+    //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
     for (int kDim=0; kDim < spaceDim; ++kDim)
       for (int iDim=0; iDim < spaceDim; ++iDim)
-	precondVertexL[kDim] += 
-	  orientationVertex[kDim*spaceDim+iDim] * 
-	  orientationVertex[kDim*spaceDim+iDim] * 
-	  (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+        precondVertexL[kDim] += 
+          orientationVertex[kDim*spaceDim+iDim] * 
+          orientationVertex[kDim*spaceDim+iDim] * 
+          (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
+
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      std::cout << "Vertex " << v_lagrange << " J^{-1}_{nn}["<<iDim<<"] " << jacobianInvVertexN[iDim] << " J^{-1}_{pp}["<<iDim<<"] " << jacobianInvVertexP[iDim] << " M["<<iDim<<"] " << precondVertexL[iDim] << std::endl;
+    }
 
     // Set global preconditioner index associated with Lagrange constraint vertex.
     const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
@@ -737,10 +744,19 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
   const int numBasis = _quadrature->numBasis();
+  const int orientationSize = spaceDim * spaceDim;
 
   // Allocate vectors for vertex values
   double_array preconditionerCell(numBasis*spaceDim*numBasis*spaceDim);
+  double_array orientationVertexR(orientationSize);
+  double_array orientationVertexC(orientationSize);
+  int_array indicesN(numBasis*spaceDim);
+  int_array indicesP(numBasis*spaceDim);
   int_array indicesLagrange(numBasis*spaceDim);
+  double_array jacobianVertexP(numBasis*spaceDim*numBasis*spaceDim);
+  double_array jacobianVertexN(numBasis*spaceDim*numBasis*spaceDim);
+  double_array jacobianInvVertexP(numBasis*spaceDim*numBasis*spaceDim);
+  double_array jacobianInvVertexN(numBasis*spaceDim*numBasis*spaceDim);
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -769,21 +785,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   _logger->eventBegin(computeEvent);
 #endif
 
-  // REPLACE THIS WITH Cell approximation of C A^(-1) C^T
-  preconditionerCell = 0.0;
-  for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const int iRow = iBasis*spaceDim + iDim;
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	//for (int jDim=0; jDim < spaceDim; ++jDim) {
-	const int jDim = iDim; {
-	  const int jCol = jBasis*spaceDim + jDim;
-	  preconditionerCell[iRow*numBasis*spaceDim+jCol] = 1.0;
-	} // for
-      } // for
-    } // for
-  } // for
-
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
@@ -808,19 +809,69 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
     for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
       // constraint vertex k
+      const int v_negative = cone[0*numBasis+iBasis];
+      const int v_positive = cone[1*numBasis+iBasis];
       const int v_lagrange = cone[2*numBasis+iBasis];
+
       for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
-	indicesLagrange[iB+iDim] = 
-	  lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
+        indicesN[iB+iDim]        = globalOrder->getIndex(v_negative) + iDim;
+        indicesP[iB+iDim]        = globalOrder->getIndex(v_positive) + iDim;
+        indicesLagrange[iB+iDim] = lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
       } // for
     } // for
 
+    err = MatGetValues(jacobianMatrix,
+		       indicesN.size(), &indicesN[0],
+		       indicesN.size(), &indicesN[0],
+		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
+    err = MatGetValues(jacobianMatrix,
+		       indicesP.size(), &indicesP[0],
+		       indicesP.size(), &indicesP[0],
+		       &jacobianVertexP[0]); CHECK_PETSC_ERROR(err);
+
+    // Invert jacobianVertexN and jacobianVertexP
+    // MATT: Do this with LAPACK
+
+    jacobianInvVertexN += jacobianInvVertexP;
+
+    // REPLACE THIS WITH Cell approximation of C A^(-1) C^T
+    // If iBasis = 2, we have
+    // [-C_0   0  C_0  0 ][A^{-1}_N     0   ][-C^T_0    0  ]
+    // [  0  -C_1  0  C_1][   X         0   ][   0   -C^T_1]
+    //                    [   0     A^{-1}_P][C^T_0     0  ]
+    //                    [   0        X    ][   0    C^T_1]
+    // which gives
+    // [C_0  0 ][ A^{-1}_N + A^{-1}_P][C^T_0     0  ]
+    // [ 0  C_1][     X          X   ][   0    C^T_1]
+    preconditionerCell = 0.0;
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      // BRAD: how do I get the fault vertex
+      orientationSection->restrictPoint(v_fault, &orientationVertexR[0], orientationVertexR.size());
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+        // BRAD: how do I get the fault vertex
+        orientationSection->restrictPoint(v_fault, &orientationVertexC[0], orientationVertexC.size());
+        for (int iDim=0; iDim < spaceDim; ++iDim) {
+          const int iRow = iBasis*spaceDim+iDim;
+          for (int jDim=0; jDim < spaceDim; ++jDim) {
+            const int jCol = jBasis*spaceDim+jDim;
+            for (int kDim=0; kDim < spaceDim; ++kDim) {
+              for (int lDim=0; lDim < spaceDim; ++lDim) {
+                preconditionerCell[iRow*numBasis*spaceDim+jCol] +=
+                  orientationVertexR[iDim*spaceDim+kDim]*
+                  jacobianInvVertexN[(iBasis*spaceDim+kDim)*numBasis*spaceDim + jBasis*spaceDim+lDim]*
+                  orientationVertexC[lDim*spaceDim+jDim];
+              } // for
+            } // for
+          } // for
+        } // for
+      } // for
+    } // for
 
     MatSetValues(*precondMatrix,
                  indicesLagrange.size(), &indicesLagrange[0],
                  indicesLagrange.size(), &indicesLagrange[0],
                  &preconditionerCell[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);

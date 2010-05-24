@@ -377,13 +377,11 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
       _submeshIntegrators[i]->calcPreconditioner(&_precondMatrix,
 						 _jacobian, _fields);
 
-    // Flush assembled portion.
-    MatAssemblyBegin(_precondMatrix, MAT_FLUSH_ASSEMBLY);
-    MatAssemblyEnd(_precondMatrix, MAT_FLUSH_ASSEMBLY);
     MatAssemblyBegin(_precondMatrix, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(_precondMatrix, MAT_FINAL_ASSEMBLY);
 
-    //MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+    std::cout << "Preconditioner Matrix" << std::endl;
+    MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
   } // if
 } // reformJacobian
 
