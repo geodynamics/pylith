@@ -44,6 +44,7 @@
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -758,9 +759,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   const int orientationSize = spaceDim * spaceDim;
   const int nrowsF = numBasis*spaceDim; // number of rows/cols in fault matrix
 
-  // Size of Jacobian matrix for cell
-  const int matrixSizeJ = 3*nrowsF * 3*nrowsF;
-
   // Size of fault preconditioner matrix for cell
   const int matrixSizeF = nrowsF * nrowsF;
 
@@ -778,7 +776,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
   assert(!solutionSection.isNull());
 
-  double_array orientationCell(matrixSizeF);
+  double_array orientationCell(numBasis*orientationSize);
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
@@ -815,6 +813,21 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 			  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 				    sieveMesh->depth())*spaceDim);
 
+
+
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
+      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::sieve_type>& faultSieve = faultSieveMesh->getSieve();
+  assert(!faultSieve.isNull());
+  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> fncV(*faultSieve,
+      (size_t) pow(faultSieve->getMaxConeSize(), std::max(0, faultSieveMesh->depth())));
+
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
@@ -823,22 +836,44 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
+    // Get cone for cohesive cell
+    ncV.clear();
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
+								 *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    assert(coneSize == numCorners);
+    const Mesh::point_type *cohesiveCone = ncV.getPoints();
+    assert(0 != cohesiveCone);
+
+    // Get cone for corresponding fault cell
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
+    fncV.clear();
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*faultSieve,
+								 c_fault, fncV);
+    const int coneSizeFault = fncV.getSize();
+    assert(coneSizeFault == numBasis);
+    const Mesh::point_type *faultCone = fncV.getPoints();
+    assert(0 != faultCone);
+
     jacobianCellP = 0.0;
     jacobianCellN = 0.0;
     preconditionerCell = 0.0;
 
-    // Get values in Jacobian matrix
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieveMesh->getSieve(), 
-						 *c_iter, jacobianVisitor);
-    const int* indices = jacobianVisitor.getValues();
-    const int numIndices = jacobianVisitor.getSize();
-    // indices is 3*numBasis (negative then positive then Lagrange)
-    // Get indices for dof on negative and positive sides of the fault.
-    for (int i=0; i < nrowsF; ++i) {
-      indicesN[i] = indices[i];
-      indicesP[i] = indices[nrowsF+i];
+    // Get indices
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+      // constraint vertex k
+      const int v_negative = cohesiveCone[0*numBasis+iBasis];
+      const int v_positive = cohesiveCone[1*numBasis+iBasis];
+      const int v_lagrange = cohesiveCone[2*numBasis+iBasis];
+      
+      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
+        indicesN[iB+iDim]        = globalOrder->getIndex(v_negative) + iDim;
+        indicesP[iB+iDim]        = globalOrder->getIndex(v_positive) + iDim;
+        indicesLagrange[iB+iDim] = lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
+      } // for
     } // for
+    
+    // Get values from Jacobian matrix.
     PetscErrorCode err = 0;
     err = MatGetValues(jacobianMatrix, 
 		       indicesN.size(), &indicesN[0],
@@ -855,23 +890,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Get orientation at fault vertices.
     orientationVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
- 
-    // Get indices for Lagrange dof associated with fault preconditioner.
-    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-      const int v_lagrange = 0; // MATT: REPLACE THIS. Might need to
-				// compute cone to get Lagrange
-				// vertex. If so, perhaps we should
-				// not use jacoiabVisitor for getting
-				// indices; instead use cone to set
-				// indicesN, indicesP, and
-				// indicesLagrange to avoid calling
-				// orientedClosure() twice (once with
-				// visitor and once to get the cone).
-      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
-        indicesLagrange[iB+iDim] = 
-	  lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
-      } // for
-    } // for
+
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -882,31 +901,52 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // jacobianInvCellN and jacobianInvCellP if need separate place
     // for result.
     // MATT: Do this with LAPACK
+    { // BEGIN TEMPORARY
+      jacobianInvCellN = 0.0;
+      jacobianInvCellP = 0.0;
+      // Mimic diagonal preconditioner by computing inverse of diagonal of Jacobian.
+      for (int i=0; i < nrowsF; ++i) {
+	jacobianInvCellN[i*nrowsF+i] = 1.0 / jacobianCellN[i*nrowsF+i];
+	jacobianInvCellP[i*nrowsF+i] = 1.0 / jacobianCellP[i*nrowsF+i];
+      } // for
+    } // END TEMPORARY
+
+    // Combine Jacbian inverse terms with result in jacobianInvCellN
+    jacobianInvCellN += jacobianInvCellP;
 
     for (int iLagrange=0; iLagrange < numBasis; ++iLagrange) {
-      for (int iDim=0; iDim < spaceDim; ++iDim) {
-	const int iL = iLagrange*spaceDim + iDim;
-	for (int lLagrange=0; lLagrange < numBasis; ++lLagrange) {
+      // Exploit structure of C in matrix multiplication.
+      // C_ij Ai_jk C_lk - Structure of C means j == i;
+      const int jBasis = iLagrange;
+      
+      for (int lLagrange=0; lLagrange < numBasis; ++lLagrange) {
+	// Exploit structure of C in matrix multiplication.
+	// C_ij Ai_jk C_lk - Structure of C means j == i;
+	const int kBasis = lLagrange;
+
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  const int iL = iLagrange*spaceDim + iDim;
+
 	  for (int lDim=0; lDim < spaceDim; ++lDim) {
 	    const int lL = lLagrange*spaceDim + lDim;
-	    const int jBasis = iLagrange;
+
 	    for (int jDim=0; jDim < spaceDim; ++jDim) {
-	      const int jB = iBasis*spaceDim + jDim;
-	      const int kBasis = lLagrange;
+	      const int jB = jBasis*spaceDim + jDim;
+
 	      for (int kDim=0; kDim < spaceDim; ++kDim) {
 		const int kB = kBasis*spaceDim + kDim;
+
 		preconditionerCell[iL*nrowsF+lL] += 
 		  orientationCell[iLagrange*orientationSize+iDim*spaceDim+jDim] *
-		  orientationCell[jLagrange*orientationSize+kDim*spaceDim+lDim] *
-		  (jacobianInvCellN[jB*nrowsF+kB] + 
-		   jacobianInvCellP[jB*nrowsF+kB]);
+		  jacobianInvCellN[jB*nrowsF+kB] *
+		  orientationCell[lLagrange*orientationSize+kDim*spaceDim+lDim];
+
 	      } // for
 	    } // for
 	  } // for
 	} // for
       } // for
     } // for
-
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
