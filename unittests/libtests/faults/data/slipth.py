@@ -5,8 +5,8 @@ riseTime = 1.8
 
 slipMag = (finalSlip[0]**2+finalSlip[1]**2+finalSlip[2]**2)**0.5
 
-slipTime1 = 1.5
-slipTime2 = 1.5
+slipTime1 = 2.0
+slipTime2 = 0.7
 t = 2.134
 dt = 0.01
 

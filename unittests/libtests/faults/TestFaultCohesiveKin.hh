@@ -102,7 +102,7 @@ public :
   void testIntegrateJacobianAssembled(void);
 
   /// Test integrateJacobianAssembled() with lumped Jacobian.
-  void testIntegrateJacobianAssembledLumped(void);
+  void testIntegrateJacobianLumped(void);
 
   /// Test adjustSolnLumped().
   void testAdjustSolnLumped(void);
