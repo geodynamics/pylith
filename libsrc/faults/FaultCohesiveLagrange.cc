@@ -162,10 +162,11 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field<
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveLagrange::integrateResidualAssembled(const topology::Field<
-                                                                      topology::Mesh>& residual,
-                                                                  const double t,
-                                                                  topology::SolutionFields* const fields) { // integrateResidualAssembled
+pylith::faults::FaultCohesiveLagrange::integrateResidual(
+			 const topology::Field<topology::Mesh>& residual,
+			 const double t,
+			 topology::SolutionFields* const fields)
+{ // integrateResidual
   assert(0 != fields);
   assert(0 != _fields);
   assert(0 != _logger);
@@ -320,16 +321,17 @@ pylith::faults::FaultCohesiveLagrange::integrateResidualAssembled(const topology
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
 #endif
-} // integrateResidualAssembled
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator that do not
 // require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jacobian* jacobian,
-                                                                  const double t,
-                                                                  topology::SolutionFields* const fields)
-{ // integrateJacobianAssembled
+pylith::faults::FaultCohesiveLagrange::integrateJacobian(
+				   topology::Jacobian* jacobian,
+				   const double t,
+				   topology::SolutionFields* const fields)
+{ // integrateJacobian
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -415,7 +417,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  indicesL.size(), &indicesL[0],
                  indicesP.size(), &indicesP[0],
                  &jacobianVertex[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
     // Values at negative vertex, entry L,N in Jacobian
     jacobianVertex *= -1.0;
@@ -423,7 +425,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  indicesL.size(), &indicesL[0],
                  indicesN.size(), &indicesN[0],
                  &jacobianVertex[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
     // Values associated with [C]^T
     // Transpose orientation matrix
@@ -435,7 +437,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  indicesP.size(), &indicesP[0],
                  indicesL.size(), &indicesL[0],
                  &jacobianVertex[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
     // Values at negative vertex, entry L,N in Jacobian
     jacobianVertex *= -1.0;
@@ -443,7 +445,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  indicesN.size(), &indicesN[0],
                  indicesL.size(), &indicesL[0],
                  &jacobianVertex[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
     // Values at Lagrange vertex, entry L,L in Jacobian
     jacobianVertex = 0.0;
@@ -451,7 +453,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
                  indicesL.size(), &indicesL[0],
                  indicesL.size(), &indicesL[0],
                  &jacobianVertex[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(spaceDim*spaceDim*2);
@@ -466,17 +468,17 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(topology::Jaco
 #endif
 
   _needNewJacobian = false;
-} // integrateJacobianAssembled
+} // integrateJacobian
 
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator that do not
 // require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(
+pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 	                  topology::Field<topology::Mesh>* jacobian,
 			  const double t,
 			  topology::SolutionFields* const fields)
-{ // integrateJacobianAssembled
+{ // integrateJacobian
   assert(0 != jacobian);
   assert(0 != fields);
   assert(0 != _fields);
@@ -527,7 +529,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobianAssembled(
 #endif
 
   _needNewJacobian = false;
-} // integrateJacobianAssembled
+} // integrateJacobian
 
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with

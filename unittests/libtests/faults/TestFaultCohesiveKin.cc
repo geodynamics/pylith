@@ -238,10 +238,10 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 } // testInitialize
 
 // ----------------------------------------------------------------------
-// Test integrateResidual().
+// Test integrateResidualAssembled().
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
-{ // testIntegrateResidual
+pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
+{ // testIntegrateResidualAssembled
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -274,7 +274,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   fault.timeStep(dt);
   { // Integrate residual with disp (as opposed to disp increment).
     fault.useSolnIncr(false);
-    fault.integrateResidual(residual, t, &fields);
+    fault.integrateResidualAssembled(residual, t, &fields);
 
     //residual.view("RESIDUAL"); // DEBUGGING
 
@@ -301,7 +301,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   residual.zero();
   { // Integrate residual with disp increment.
     fault.useSolnIncr(true);
-    fault.integrateResidual(residual, t, &fields);
+    fault.integrateResidualAssembled(residual, t, &fields);
 
     //residual.view("RESIDUAL"); // DEBUGGING
 
@@ -324,13 +324,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       } // for
     } // for
   } // Integrate residual with disp increment.
-} // testIntegrateResidual
+} // testIntegrateResidualAssembled
 
 // ----------------------------------------------------------------------
-// Test integrateResidualAssembled().
+// Test integrateResidual().
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
-{ // testIntegrateResidualAssembled
+pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
+{ // testIntegrateResidual
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -359,11 +359,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
   const double t = 2.134;
   const double dt = 0.01;
   fault.timeStep(dt);
+
   { // Integrate residual with disp (as opposed to disp increment).
     fault.useSolnIncr(false);
-    fault.integrateResidualAssembled(residual, t, &fields);
+    fault.integrateResidual(residual, t, &fields);
 
-    //residual.view("RESIDUAL"); // DEBUGGING
+    residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -392,9 +393,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
   residual.zero();
   { // Integrate residual with disp increment.
     fault.useSolnIncr(true);
-    fault.integrateResidualAssembled(residual, t, &fields);
+    fault.integrateResidual(residual, t, &fields);
 
-    //residual->view("RESIDUAL"); // DEBUGGING
+    residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residualIncr;
@@ -419,13 +420,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidualAssembled(void)
       } // for
     } // for
   } // Integrate residual with disp increment.
-} // testIntegrateResidualAssembled
+} // testIntegrateResidual
 
 // ----------------------------------------------------------------------
-// Test integrateJacobian().
+// Test integrateJacobianAssembled().
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
-{ // testIntegrateJacobian
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
+{ // testIntegrateJacobianAssembled
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -451,7 +452,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   topology::Jacobian jacobian(fields.solution());
 
   const double t = 2.134;
-  fault.integrateJacobian(&jacobian, t, &fields);
+  fault.integrateJacobianAssembled(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 
   jacobian.assemble("final_assembly");
@@ -499,13 +500,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
-} // testIntegrateJacobian
+} // testIntegrateJacobianAssembled
 
 // ----------------------------------------------------------------------
-// Test integrateJacobianAssembled().
+// Test integrateJacobian().
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
-{ // testIntegrateJacobianAssembled
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
+{ // testIntegrateJacobian
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -530,7 +531,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   topology::Jacobian jacobian(fields.solution());
 
   const double t = 2.134;
-  fault.integrateJacobianAssembled(&jacobian, t, &fields);
+  fault.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 
   jacobian.assemble("final_assembly");
@@ -582,13 +583,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembled(void)
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
-} // testIntegrateJacobianAssembled
+} // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
-// Test integrateJacobianAssembled() with lumped Jacobian.
+// Test integrateJacobian() with lumped Jacobian.
 void
-pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
-{ // testIntegrateJacobianAssembledLumped
+pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
+{ // testIntegrateJacobianLumped
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -601,7 +602,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
   jacobian.allocate();
 
   const double t = 2.134;
-  fault.integrateJacobianAssembled(&jacobian, t, &fields);
+  fault.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
   jacobian.complete();
 
@@ -651,7 +652,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianAssembledLumped(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianVertex[iDim],
 				   tolerance);
   } // for
-} // testIntegrateJacobianAssembledLumped
+} // testIntegrateJacobianLumped
 
 // ----------------------------------------------------------------------
 // Test adjustSolnLumped().
@@ -783,7 +784,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
   const double dt = 0.01;
   fault.useSolnIncr(false);
   fault.timeStep(dt);
-  fault.integrateResidualAssembled(residual, t, &fields);
+  fault.integrateResidual(residual, t, &fields);
   fault.updateStateVars(t, &fields);
 
   CPPUNIT_ASSERT(0 != fault._faultMesh);

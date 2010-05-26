@@ -126,6 +126,7 @@ pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
 				      topology::Jacobian* jacobian,
 				      const double t,
 				      topology::SolutionFields* const fields) {
+  _needNewJacobian = false;
 } // integrateJacobianAssembled
 
 // Integrate contributions to Jacobian matrix (A) associated with

@@ -140,15 +140,15 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
+pylith::faults::FaultCohesiveDyn::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
 			     const double t,
 			     topology::SolutionFields* const fields)
-{ // integrateResidualAssembled
+{ // integrateResidual
   assert(0 != fields);
   assert(0 != _fields);
 
-  FaultCohesiveLagrange::integrateResidualAssembled(residual, t, fields);
+  FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
   // No contribution if no initial tractions are specified.
   if (0 == _dbInitialTract)
@@ -201,7 +201,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
-} // integrateResidualAssembled
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.
