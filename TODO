@@ -35,9 +35,6 @@ MANUAL
 
   Small strain formulation [Brad]
 
-  Materials [Charles]
-    Are material models consistent with governing equations discussion?
-
   Fault
     governing equations [Brad]
     dynamic rupture parameters [Brad]
@@ -55,11 +52,17 @@ MANUAL
   Benchmarks
     Update performance?
     SCEC dynamic rupture benchmarks [Surendra]        
+    Savage-Prescott
+      change .cfg file to output velocities, update post-processing
 
   Extending PyLith [Brad]
     friction
       viscous (slip rate proportional friction)
- 
+    test with example 
+
+  Materials [Charles]
+    Are material models consistent with governing equations discussion?
+
 TUTORIALS/EXAMPLES
   
   3d/hex8
@@ -105,8 +108,6 @@ OTHER
   distribute to Greg Lyzenga and Jay Parker
 
 CODE
-
-  * GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
 
   * Better preconditioning [Matt/Brad]
 
@@ -155,6 +156,8 @@ SECONDARY PRIORITIES
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
+
+* GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
 
 * VTKDataReaderZip (obsolete if use VTK XML files?)
 
