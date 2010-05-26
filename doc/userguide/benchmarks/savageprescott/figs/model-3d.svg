@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="model-3d.svg">
   <defs
      id="defs4">
     <marker
@@ -164,7 +164,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -278,7 +278,7 @@
        style="fill:none;stroke:#0000ff;stroke-width:5;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <g
        id="g5431"
-       transform="translate(283.7037,8.1481481)">
+       transform="translate(77.29344,-500.82621)">
       <path
          transform="translate(0,308.2677)"
          id="path4031"
@@ -296,33 +296,33 @@
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="852.42719"
-       y="992.16803"
+       x="646.01691"
+       y="483.19366"
        id="text5438"><tspan
          sodipodi:role="line"
          id="tspan5440"
-         x="852.42719"
-         y="992.16803">X</tspan></text>
+         x="646.01691"
+         y="483.19366">X</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="640.77673"
-       y="988.28448"
+       x="426.67416"
+       y="502.38705"
        id="text5442"><tspan
          sodipodi:role="line"
          id="tspan5444"
-         x="640.77673"
-         y="988.28448">Y</tspan></text>
+         x="426.67416"
+         y="502.38705">Y</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="743.68933"
-       y="917.41071"
+       x="537.27905"
+       y="408.43634"
        id="text5446"><tspan
          sodipodi:role="line"
          id="tspan5448"
-         x="743.68933"
-         y="917.41071">Z</tspan></text>
+         x="537.27905"
+         y="408.43634">Z</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Mend)"
        d="m 295.72238,653.67967 c 73.50508,43.55925 73.50508,43.55925 73.50508,43.55925"
