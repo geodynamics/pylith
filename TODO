@@ -107,10 +107,9 @@ OTHER
   Write up description of Savage and Prescott (1978) benchmark and
   distribute to Greg Lyzenga and Jay Parker
 
-CODE
+    Add time step information
 
-  * Fix parallel bugs
-    + Need to limit MatGetValues to local.
+CODE
 
   * Better preconditioning [Matt/Brad]
 
