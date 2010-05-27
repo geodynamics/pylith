@@ -159,8 +159,7 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field<
 } // splitField
 
 // ----------------------------------------------------------------------
-// Integrate contribution of cohesive cells to residual term that do
-// not require assembly across cells, vertices, or processors.
+// Integrate contribution of cohesive cells to residual term.
 void
 pylith::faults::FaultCohesiveLagrange::integrateResidual(
 			 const topology::Field<topology::Mesh>& residual,
@@ -212,10 +211,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const ALE::Obj<RealSection>& slipSection = slip.section();
   assert(!slipSection.isNull());
 
-  const ALE::Obj<RealSection>& assemblyWtSection = 
-    _fields->get("assembly weight").section();
-  assert(!assemblyWtSection.isNull());
-
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
@@ -231,6 +226,12 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
   assert(!dispTIncrSection.isNull());
 
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residualSection);
+  assert(!globalOrder.isNull());
+
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
@@ -243,18 +244,16 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
 
     // Get slip at fault vertex.
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
-    // Get assembly weight for fault vertex.
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* assemblyWtVertex = 
-      assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != assemblyWtVertex);
 
     // Get orientations at fault vertex.
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
@@ -310,12 +309,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     _logger->eventBegin(updateEvent);
 #endif
 
-    // Weight assembly contributions to avoid double counting across
-    // processors
-    residualVertexN *= *assemblyWtVertex;
-    residualVertexP *= *assemblyWtVertex;
-    residualVertexL *= *assemblyWtVertex;
-
     assert(residualVertexN.size() == 
 	   residualSection->getFiberDimension(v_negative));
     residualSection->updateAddPoint(v_negative, &residualVertexN[0]);
@@ -340,8 +333,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 } // integrateResidual
 
 // ----------------------------------------------------------------------
-// Compute Jacobian matrix (A) associated with operator that do not
-// require assembly across cells, vertices, or processors.
+// Compute Jacobian matrix (A) associated with operator.
 void
 pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 				   topology::Jacobian* jacobian,
@@ -383,10 +375,6 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
   assert(!solutionSection.isNull());
 
-  const ALE::Obj<RealSection>& assemblyWtSection = 
-    _fields->get("assembly weight").section();
-  assert(!assemblyWtSection.isNull());
-
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
@@ -413,18 +401,16 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
 
     // Get orientations at fault cell's vertices.
     orientationSection->restrictPoint(v_fault, &orientationVertex[0], orientationVertex.size());
-
-    // Get assembly weight for fault vertex.
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* assemblyWtVertex = 
-      assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != assemblyWtVertex);
 
     // Set global order indices
     indicesL = indicesRel + globalOrder->getIndex(v_lagrange);
@@ -439,7 +425,6 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     // Values associated with [C]
     // Values at positive vertex, entry L,P in Jacobian
     jacobianVertex = orientationVertex;
-    jacobianVertex *= *assemblyWtVertex; // avoid double sum across processors
     MatSetValues(jacobianMatrix,
                  indicesL.size(), &indicesL[0],
                  indicesP.size(), &indicesP[0],
@@ -461,8 +446,6 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
       for (int jDim=0; jDim < spaceDim; ++jDim)
         jacobianVertex[iDim*spaceDim+jDim] = 
 	  orientationVertex[jDim*spaceDim+iDim];
-
-    jacobianVertex *= *assemblyWtVertex; // avoid double sum across processors
 
     // Values at positive vertex, entry P,L in Jacobian
     MatSetValues(jacobianMatrix,
@@ -503,8 +486,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
-// Compute Jacobian matrix (A) associated with operator that do not
-// require assembly across processors.
+// Compute Jacobian matrix (A) associated with operator.
 void
 pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 	                  topology::Field<topology::Mesh>* jacobian,
@@ -535,6 +517,12 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
 
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", jacobianSection);
+  assert(!globalOrder.isNull());
+
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
@@ -543,6 +531,10 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
 
     assert(jacobianSection->getFiberDimension(v_lagrange) == spaceDim);
 
@@ -1062,10 +1054,6 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  const ALE::Obj<RealSection>& assemblyWtSection = 
-    _fields->get("assembly weight").section();
-  assert(!assemblyWtSection.isNull());
-
   double_array jacobianVertexN(spaceDim);
   double_array jacobianVertexP(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
@@ -1092,6 +1080,12 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const ALE::Obj<RealSection>& dispTIncrAdjSection = fields->get(
     "dispIncr adjust").section();
   assert(!dispTIncrAdjSection.isNull());
+
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", jacobianSection);
+  assert(!globalOrder.isNull());
 
   adjustSolnLumped_fn_type adjustSolnLumpedFn;
   switch (spaceDim) { // switch
@@ -1126,6 +1120,10 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
@@ -1136,12 +1134,6 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
     // Get slip at fault cell's vertices.
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
-    // Get assembly weight for fault vertex.
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* assemblyWtVertex = 
-      assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != assemblyWtVertex);
 
     // Get residual at cohesive cell's vertices.
     residualSection->restrictPoint(v_negative, &residualVertexN[0],
@@ -1178,11 +1170,6 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
-
-    // Avoid double sum across processors
-    dispTIncrVertexN *= *assemblyWtVertex;
-    dispTIncrVertexP *= *assemblyWtVertex;
-    lagrangeTIncrVertex *= *assemblyWtVertex;
 
     // Adjust displacements to account for Lagrange multiplier values
     // (assumed to be zero in preliminary solve).
@@ -1646,14 +1633,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   assert(!areaSection.isNull());
   topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);
 
-  // Allocate assembly weight fild
-  _fields->add("assembly weight", "assembly_weight");
-  topology::Field<topology::SubMesh>& assemblyWt = 
-    _fields->get("assembly weight");
-  assemblyWt.cloneSection(area);
-  const ALE::Obj<RealSection>& assemblyWtSection = assemblyWt.section();
-  assert(!assemblyWtSection.isNull());
-
   double_array coordinatesCell(numBasis * spaceDim);
   const ALE::Obj<RealSection>& coordinates = faultSieveMesh->getRealSection(
     "coordinates");
@@ -1698,31 +1677,9 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
-  // Use area / areaTotal as assembly weight
-  // Copy area to assembly weight.
-  assemblyWt.copy(area);
 
   // Assemble area information
   area.complete();
-
-  // Compute assembly weight as area / areaTotal;
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* areaLocal = assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != areaLocal);
-
-    assert(1 == areaSection->getFiberDimension(v_fault));
-    const double* areaTotal = areaSection->restrictPoint(v_fault);
-    assert(0 != areaTotal);
-
-    const double wt = (*areaLocal) / (*areaTotal);
-
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    assemblyWtSection->updatePoint(v_fault, &wt);
-  } // for
 
 #if 0 // DEBUGGING
   area.view("AREA");

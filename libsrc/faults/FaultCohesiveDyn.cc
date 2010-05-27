@@ -172,9 +172,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  const ALE::Obj<RealSection>& assemblyWtSection = 
-    _fields->get("assembly weight").section();
-  assert(!assemblyWtSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    residualSection);
+  assert(!globalOrder.isNull());
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -182,6 +185,10 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
 
     // Get initial forces at fault vertex. Forces are in the global
     // coordinate system so no rotation is necessary.
@@ -193,18 +200,9 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     const double* slipVertex = slipSection->restrictPoint(v_fault);
     assert(0 != slipVertex);
     
-    // Get assembly weight for fault vertex.
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* assemblyWtVertex = 
-      assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != assemblyWtVertex);
-
     // only apply initial tractions if there is no opening
     if (0.0 == slipVertex[spaceDim-1]) {
       residualVertex = forcesInitialVertex;
-
-      // Avoid double sum across processors
-      residualVertex *= *assemblyWtVertex;
 
       assert(residualVertex.size() == 
 	     residualSection->getFiberDimension(v_positive));
@@ -668,10 +666,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
   assert(!areaSection.isNull());
 
-  const ALE::Obj<RealSection>& assemblyWtSection = 
-    _fields->get("assembly weight").section();
-  assert(!assemblyWtSection.isNull());
-
   double_array orientationVertex(orientationSize);
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
@@ -703,6 +697,13 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   double_array residualVertexP(spaceDim);
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    jacobianSection);
+  assert(!globalOrder.isNull());
 
   adjustSolnLumped_fn_type adjustSolnLumpedFn;
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
@@ -751,6 +752,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
@@ -767,12 +772,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     assert(0 != areaVertex);
     assert(1 == areaSection->getFiberDimension(v_fault));
     
-    // Get assembly weight for fault vertex.
-    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
-    const double* assemblyWtVertex = 
-      assemblyWtSection->restrictPoint(v_fault);
-    assert(0 != assemblyWtVertex);
-
     // Get fault orientation
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
 				      orientationVertex.size());
@@ -948,11 +947,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
-
-    // Avoid double sum across processors
-    dispTIncrVertexN *= *assemblyWtVertex;
-    dispTIncrVertexP *= *assemblyWtVertex;
-    lagrangeTIncrVertex *= *assemblyWtVertex;
 
     // Adjust displacements to account for Lagrange multiplier values
     // (assumed to be zero in perliminary solve).
