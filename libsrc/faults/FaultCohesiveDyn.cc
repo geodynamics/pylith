@@ -148,6 +148,9 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   assert(0 != fields);
   assert(0 != _fields);
 
+  // Initial fault tractions have been assembled, so they do not need
+  // assembling across processors.
+
   FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
   // No contribution if no initial tractions are specified.
@@ -169,6 +172,10 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
+  const ALE::Obj<RealSection>& assemblyWtSection = 
+    _fields->get("assembly weight").section();
+  assert(!assemblyWtSection.isNull());
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -186,9 +193,19 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     const double* slipVertex = slipSection->restrictPoint(v_fault);
     assert(0 != slipVertex);
     
+    // Get assembly weight for fault vertex.
+    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
+    const double* assemblyWtVertex = 
+      assemblyWtSection->restrictPoint(v_fault);
+    assert(0 != assemblyWtVertex);
+
     // only apply initial tractions if there is no opening
     if (0.0 == slipVertex[spaceDim-1]) {
       residualVertex = forcesInitialVertex;
+
+      // Avoid double sum across processors
+      residualVertex *= *assemblyWtVertex;
+
       assert(residualVertex.size() == 
 	     residualSection->getFiberDimension(v_positive));
       residualSection->updateAddPoint(v_positive, &residualVertex[0]);
@@ -651,6 +668,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
   assert(!areaSection.isNull());
 
+  const ALE::Obj<RealSection>& assemblyWtSection = 
+    _fields->get("assembly weight").section();
+  assert(!assemblyWtSection.isNull());
+
   double_array orientationVertex(orientationSize);
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
@@ -668,6 +689,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   const ALE::Obj<RealSection>& dispTIncrSection =
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
+
+  const ALE::Obj<RealSection>& dispTIncrAdjSection = fields->get(
+    "dispIncr adjust").section();
+  assert(!dispTIncrAdjSection.isNull());
 
   double_array jacobianVertexN(spaceDim);
   double_array jacobianVertexP(spaceDim);
@@ -742,6 +767,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     assert(0 != areaVertex);
     assert(1 == areaSection->getFiberDimension(v_fault));
     
+    // Get assembly weight for fault vertex.
+    assert(1 == assemblyWtSection->getFiberDimension(v_fault));
+    const double* assemblyWtVertex = 
+      assemblyWtSection->restrictPoint(v_fault);
+    assert(0 != assemblyWtVertex);
+
     // Get fault orientation
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
 				      orientationVertex.size());
@@ -918,15 +949,20 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(updateEvent);
 #endif
 
+    // Avoid double sum across processors
+    dispTIncrVertexN *= *assemblyWtVertex;
+    dispTIncrVertexP *= *assemblyWtVertex;
+    lagrangeTIncrVertex *= *assemblyWtVertex;
+
     // Adjust displacements to account for Lagrange multiplier values
     // (assumed to be zero in perliminary solve).
     assert(dispTIncrVertexN.size() == 
-	   dispTIncrSection->getFiberDimension(v_negative));
-    dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+	   dispTIncrAdjSection->getFiberDimension(v_negative));
+    dispTIncrAdjSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
 
     assert(dispTIncrVertexP.size() == 
-	   dispTIncrSection->getFiberDimension(v_positive));
-    dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
+	   dispTIncrAdjSection->getFiberDimension(v_positive));
+    dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry of 1.0.
