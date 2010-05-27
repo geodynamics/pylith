@@ -109,6 +109,9 @@ OTHER
 
 CODE
 
+  * Fix parallel bugs
+    + Need to limit MatGetValues to local.
+
   * Better preconditioning [Matt/Brad]
 
     Diagonal preconditioner does not work very well. It looks like the
