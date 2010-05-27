@@ -1,0 +1,70 @@
+\documentclass{article}[10pt]
+\usepackage{amsmath}
+
+\renewcommand{\matrix}[1]{\bar{#1}}
+\newcommand{\Adiag}{\ensuremath{A_\mathit{diag}}}
+
+% ------------------------------------------------------------------
+% Basic page layout
+\setlength{\textheight}{9.0in}
+\setlength{\textwidth}{7.0in}
+\setlength{\topmargin}{-20pt}
+\setlength{\headheight}{16pt}
+\setlength{\headsep}{4pt}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\footskip}{24pt}
+%
+\setlength{\floatsep}{12pt}
+\setlength{\textfloatsep}{12pt}
+\setlength{\intextsep}{12pt}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{6pt}
+%
+\setlength{\parindent}{0.25in}
+\setlength{\parskip}{6pt}
+%
+% ------------------------------------------------------------------
+% Font Sizes
+\usepackage{times}
+%
+% ======================================================================
+\begin{document}
+
+% ----------------------------------------------------------------------
+\section{Schur Complement Preconditioner}
+
+We have a Jacobian of the form
+\begin{equation}
+  J = \left( \begin{array}{cc}
+    A & C^T \\
+    C & 0
+  \end{array} \right).
+\end{equation}
+Using the Schur complement, we want to form the preconditioner
+\begin{equation}
+  P = \left( \begin{array}{cc}
+    A^{-1} + A^{-1} C^T (-C A^{-1} C^T)^{-1} C A^{-1} &
+    -A^{-1} C^T (-C A^{-1} C^T)^{-1} \\
+    (C A^{-1} C^T)^{-1} C A^{-1} & -(C A^{-1} C^T)^{-1}
+  \end{array} \right).
+\end{equation}
+We approximate this preconditioner by using only the diagonal terms of $A$ and $C A^{-1} C^T$:
+\begin{equation}
+  Pd = \left( \begin{array}{cc}
+    \Adiag^{-1} + \Adiag^{-1} C^T (-C \Adiag^{-1} C^T)^{-1} C \Adiag^{-1} &
+    \Adiag^{-1} C^T (C \Adiag^{-1} C^T)^{-1} \\
+    (C \Adiag^{-1} C^T)^{-1} C \Adiag^{-1} & -(C \Adiag^{-1} C^T)^{-1}
+  \end{array} \right).
+\end{equation}
+If we assume that the terms in $\Adiag$ are equal across the fault (same terms on the positive and negative sides of the fault) and independent of orientation, the preconditioner simplifies to
+\begin{equation}
+  Pd = \left( \begin{array}{cc}
+    \Adiag^{-1} - \Adiag^{-1} C^T (C C^T)^{-1} C &
+    C^T (C C^T)^{-1} \\
+    (C C^T)^{-1} C & -\Adiag (C C^T)^{-1}
+  \end{array} \right).
+\end{equation}
+
+
+% ======================================================================
+\end{document}
