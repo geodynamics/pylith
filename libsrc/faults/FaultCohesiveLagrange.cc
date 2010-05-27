@@ -37,6 +37,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <petscblaslapack.h> // USES svd and dgemm
+
 //#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
 
@@ -739,14 +741,14 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(spaceDim*spaceDim*4);
-    _logger->eventBegin(updateEvent);
+    _logger->eventEnd(updateEvent);
 #endif
 
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(numVertices*(spaceDim*spaceDim*4));
   _logger->eventEnd(computeEvent);
+  PetscLogFlops(numVertices*(spaceDim*spaceDim*4));
 #endif
 
 #else // FULL PRECONDITIONER
@@ -779,6 +781,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   const int restrictEvent = _logger->eventId("FaPr restrict");
   const int updateEvent = _logger->eventId("FaPr update");
 
+  _logger->eventBegin(setupEvent);
+
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
   const int numBasis = _quadrature->numBasis();
@@ -787,6 +791,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   // Size of fault preconditioner matrix for cell
   const int matrixSizeF = nrowsF * nrowsF;
+  PetscBLASInt workSize = 6*nrowsF;
 
   // Allocate vectors for vertex values
   double_array preconditionerCell(matrixSizeF);
@@ -797,6 +802,13 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   double_array jacobianCellN(matrixSizeF);
   double_array jacobianInvCellP(matrixSizeF);
   double_array jacobianInvCellN(matrixSizeF);
+  double_array UN(matrixSizeF);
+  double_array UP(matrixSizeF);
+  double_array VNt(matrixSizeF);
+  double_array VPt(matrixSizeF);
+  double_array singularValuesN(nrowsF);
+  double_array singularValuesP(nrowsF);
+  double_array work(workSize);
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -885,6 +897,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     jacobianCellN = 0.0;
     preconditionerCell = 0.0;
 
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(restrictEvent);
+#endif
+
     // Get indices
     for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
       // constraint vertex k
@@ -939,16 +955,86 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Invert jacobianCellN and jacobianCellP, result goes in
     // jacobianInvCellN and jacobianInvCellP if need separate place
     // for result.
-    // MATT: Do this with LAPACK
-    { // BEGIN TEMPORARY
-      jacobianInvCellN = 0.0;
-      jacobianInvCellP = 0.0;
-      // Mimic diagonal preconditioner by computing inverse of diagonal of Jacobian.
-      for (int i=0; i < nrowsF; ++i) {
-	jacobianInvCellN[i*nrowsF+i] = 1.0 / jacobianCellN[i*nrowsF+i];
-	jacobianInvCellP[i*nrowsF+i] = 1.0 / jacobianCellP[i*nrowsF+i];
-      } // for
-    } // END TEMPORARY
+    PetscBLASInt elemRows = nrowsF;
+    PetscScalar  one      = 1.0;
+    PetscBLASInt berr;
+
+#if 0
+    std::cout << "AN_cell " << *c_iter << std::endl;
+    for(int i = 0; i < nrowsF; ++i) {
+      for(int j = 0; j < nrowsF; ++j) {
+        std::cout << "  " << jacobianCellN[i*nrowsF+j];
+      }
+      std::cout << std::endl;
+    }
+#endif
+
+    // Transpose matrices so we can call LAPACK
+    for(int i = 0; i < nrowsF; ++i) {
+      for(int j = 0; j < i; ++j) {
+        PetscInt    k  = i*nrowsF+j;
+        PetscInt    kp = j*nrowsF+i;
+        PetscScalar tmp;
+        tmp               = jacobianCellN[k];
+        jacobianCellN[k]  = jacobianCellN[kp];
+        jacobianCellN[kp] = tmp;
+        tmp               = jacobianCellP[k];
+        jacobianCellP[k]  = jacobianCellP[kp];
+        jacobianCellP[kp] = tmp;
+      }
+    }
+    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellN[0], &elemRows, &singularValuesN[0], &UN[0], &elemRows, &VNt[0], &elemRows, &work[0], &workSize, &berr);
+    CHECK_PETSC_ERROR_MSG(berr, "Inversion of negative-side element matrix failed.");
+    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellP[0], &elemRows, &singularValuesP[0], &UP[0], &elemRows, &VPt[0], &elemRows, &work[0], &workSize, &berr);
+    CHECK_PETSC_ERROR_MSG(berr, "Inversion of positive-side element matrix failed.");
+
+#if 0
+    for(int i = 0; i < nrowsF; ++i) {
+      std::cout << "sigmaN["<<i<<"]: " << singularValuesN[i] << " sigmaP["<<i<<"]: " << singularValuesP[i] << std::endl;
+    }
+    std::cout << "UN_cell " << *c_iter << std::endl;
+    for(int i = 0; i < nrowsF; ++i) {
+      for(int j = 0; j < nrowsF; ++j) {
+        std::cout << "  " << UN[j*nrowsF+i];
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "VNt_cell " << *c_iter << std::endl;
+    for(int i = 0; i < nrowsF; ++i) {
+      for(int j = 0; j < nrowsF; ++j) {
+        std::cout << "  " << VNt[j*nrowsF+i];
+      }
+      std::cout << std::endl;
+    }
+#endif
+
+    // Row scale Vt by the inverse of the singular values
+    for(int i = 0; i < nrowsF; ++i) {
+      const PetscReal invN = singularValuesN[i] > 1.0e-10 ? 1.0/singularValuesN[i] : 0.0;
+      const PetscReal invP = singularValuesP[i] > 1.0e-10 ? 1.0/singularValuesP[i] : 0.0;
+
+      for(int j = 0; j < nrowsF; ++j) {
+        VNt[j*nrowsF+i] *= invN;
+        VPt[j*nrowsF+i] *= invP;
+      }
+    }
+    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UN[0], &elemRows, &VNt[0], &elemRows, &one, &jacobianInvCellN[0], &elemRows);
+    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UP[0], &elemRows, &VPt[0], &elemRows, &one, &jacobianInvCellP[0], &elemRows);
+
+    // Transpose matrices from LAPACK
+    for(int i = 0; i < nrowsF; ++i) {
+      for(int j = 0; j < i; ++j) {
+        PetscInt    k  = i*nrowsF+j;
+        PetscInt    kp = j*nrowsF+i;
+        PetscScalar tmp;
+        tmp                  = jacobianInvCellN[k];
+        jacobianInvCellN[k]  = jacobianInvCellN[kp];
+        jacobianInvCellN[kp] = tmp;
+        tmp                  = jacobianInvCellP[k];
+        jacobianInvCellP[k]  = jacobianInvCellP[kp];
+        jacobianInvCellP[kp] = tmp;
+      }
+    }
 
     // Combine Jacbian inverse terms with result in jacobianInvCellN
     jacobianInvCellN += jacobianInvCellP;
@@ -992,11 +1078,12 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventBegin(updateEvent);
 #endif
 
-    MatSetValues(*precondMatrix,
+    err = MatSetValues(*precondMatrix,
                  indicesLagrange.size(), &indicesLagrange[0],
                  indicesLagrange.size(), &indicesLagrange[0],
                  &preconditionerCell[0],
                  INSERT_VALUES);
+    CHECK_PETSC_ERROR_MSG(err, "Setting values in fault preconditioner failed.");
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
