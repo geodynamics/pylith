@@ -41,17 +41,25 @@ P[0:8,8:12] = numpy.dot(numpy.dot(-Ai, C.transpose()), CACi)
 P[8:12,0:8] = numpy.dot(CACi, numpy.dot(C, Ai))
 P[8:12,8:12] = -CACi
 
-# Compute preconditioner using diagonal approximations (but full Ai)
-Pd = numpy.zeros(J.shape)
-Pd[0:8,0:8] = Ai + numpy.dot(numpy.dot(numpy.dot(numpy.dot(Aid, C.transpose()), -CACdi), C), Aid)
-Pd[0:8,8:12] = numpy.dot(numpy.dot(-Aid, C.transpose()), CACdi)
-Pd[8:12,0:8] = numpy.dot(CACdi, numpy.dot(C, Aid))
-Pd[8:12,8:12] = -CACdi
-
+# Compute condition number
 evals, evecs = numpy.linalg.eig(numpy.dot(P, J))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
 
+# Compute preconditioner using diagonal approximations (but full Ai)
+Pd = numpy.zeros(J.shape)
+Pd[0:8,0:8] = Ai + numpy.dot(numpy.dot(numpy.dot(numpy.dot(Aid, C.transpose()), -CACdi), C), Aid)
+Pd[0:8,8:12] = numpy.dot(numpy.dot(-Aid, C.transpose()), -CACdi)
+Pd[8:12,0:8] = numpy.dot(CACdi, numpy.dot(C, Aid))
+Pd[8:12,8:12] = -CACdi
+
+# Compute condition number for diagonal approximations
 evals, evecs = numpy.linalg.eig(numpy.dot(Pd, J))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
+
+# Print preconditioner formed with diagonal approximations
+print "Pd00:", numpy.dot(numpy.dot(numpy.dot(numpy.dot(Aid, C.transpose()), -CACdi), C), Aid)
+print "Pd01:", numpy.dot(numpy.dot(-Aid, C.transpose()), -CACdi)
+print "Pd10:", numpy.dot(CACdi, numpy.dot(C, Aid))
+print "Pd11:", -CACdi
