@@ -131,10 +131,10 @@ pylith::bc::TestPointForce::testInitialize(void)
 } // testInitialize
 
 // ----------------------------------------------------------------------
-// Test integrateResidualAssembled().
+// Test integrateResidual().
 void
-pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
-{ // testIntegrateResidualAssembled
+pylith::bc::TestPointForce::testIntegrateResidual(void)
+{ // testIntegrateResidual
   topology::Mesh mesh;
   PointForce bc;
   _initialize(&mesh, &bc);
@@ -150,7 +150,7 @@ pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
   topology::SolutionFields fields(mesh);
 
   const double t = _data->tResidual;
-  bc.integrateResidualAssembled(residual, t, &fields);
+  bc.integrateResidual(residual, t, &fields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -174,7 +174,7 @@ pylith::bc::TestPointForce::testIntegrateResidualAssembled(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-} // testIntegrateResidualAssembled
+} // testIntegrateResidual
 
 // ----------------------------------------------------------------------
 // Test verifyConfiguration().
