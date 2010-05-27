@@ -62,6 +62,21 @@ namespace pylith {
 		      const double upDir[3],
 		      const double normalDir[3]);
       
+      /** Integrate contributions to residual term (r) for operator that
+       * do not require assembly across processors.
+       *
+       * Initial tractions (if specified) are already assembled and
+       * contribute to the residual like Neumann boundary conditions.
+       *
+       * @param residual Field containing values for residual
+       * @param t Current time
+       * @param fields Solution fields
+       */
+      virtual
+      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+				      const double t,
+				      pylith::topology::SolutionFields* const fields);
+
       /** Update state variables as needed.
        *
        * @param t Current time

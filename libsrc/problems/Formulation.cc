@@ -458,6 +458,16 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 void
 pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+
+  if (!_fields->hasField("dispIncr adjust")) {
+    _fields->add("dispIncr adjust", "dispIncr_adjust");
+    topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+    adjust.cloneSection(solution);
+  } // for
+  topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+  adjust.zero();
+
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
     _meshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
@@ -465,6 +475,9 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+
+  adjust.complete();
+  solution += adjust;
 } // adjustSolnLumped
 
 
