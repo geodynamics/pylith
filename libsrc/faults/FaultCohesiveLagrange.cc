@@ -1724,8 +1724,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     assemblyWtSection->updatePoint(v_fault, &wt);
   } // for
 
-  assemblyWtSection->view("ASSEMBLY WEIGHT");
-
 #if 0 // DEBUGGING
   area.view("AREA");
   //_faultMesh->getSendOverlap()->view("Send fault overlap");
