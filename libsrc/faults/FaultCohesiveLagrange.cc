@@ -575,7 +575,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   /** We have J = [A C^T]
    *              [C   0]
    *
-   * We want to approximate C A^(-1) C^T.
+   * We want to approximate -( C A^(-1) C^T)^(-1)
    *
    * Consider Lagrange vertex L that constrains the relative
    * displacement between vertex N on the negative side of the fault
@@ -603,16 +603,16 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * off-diagonal terms of C A^(-1) C^T:
    *
    * Term for DOF x of vertex L is: 
-   * R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py)
+   * -1.0 / (R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
    *
    * Term for DOF y of vertex L is: 
-   * R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py)
+   * -1.0 / (R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
    *
    * Translate DOF for global vertex L into DOF in split field for
    * preconditioner.
    */
 
-#if 0 // DIAGONAL PRECONDITIONER
+#if 1 // DIAGONAL PRECONDITIONER
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
   const int restrictEvent = _logger->eventId("FaPr restrict");
@@ -712,12 +712,17 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i] (BRAD: Are you sure its not a minus sign here?)
     //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
-    for (int kDim=0; kDim < spaceDim; ++kDim)
+    for (int kDim=0; kDim < spaceDim; ++kDim) {
+      double value = 0.0;
       for (int iDim=0; iDim < spaceDim; ++iDim)
-        precondVertexL[kDim] += 
+	value += 
           orientationVertex[kDim*spaceDim+iDim] * 
           orientationVertex[kDim*spaceDim+iDim] * 
           (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+      if (fabs(value) > 1.0e-8)
+	precondVertexL[kDim] = -1.0 / value;
+    } // for
+    
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -1078,12 +1083,25 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventBegin(updateEvent);
 #endif
 
+#if 0
     err = MatSetValues(*precondMatrix,
                  indicesLagrange.size(), &indicesLagrange[0],
                  indicesLagrange.size(), &indicesLagrange[0],
                  &preconditionerCell[0],
-                 INSERT_VALUES);
+                 ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Setting values in fault preconditioner failed.");
+#else
+    for (int iLagrange=0; iLagrange < numBasis; ++iLagrange)
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	const int iL = iLagrange*spaceDim + iDim;
+	const int indexL = indicesLagrange[iL];
+	MatSetValue(*precondMatrix,
+		    indexL, indexL,
+		    preconditionerCell[iL*nrowsF+iL],
+		    ADD_VALUES);
+      } // for
+    
+#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
