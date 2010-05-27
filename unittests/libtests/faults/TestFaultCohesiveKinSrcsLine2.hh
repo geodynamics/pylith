@@ -41,7 +41,6 @@ class pylith::faults::TestFaultCohesiveKinSrcsLine2 : public TestFaultCohesiveKi
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianAssembled );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testCalcTractionsChange );
 

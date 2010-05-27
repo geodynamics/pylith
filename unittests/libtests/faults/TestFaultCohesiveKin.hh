@@ -92,16 +92,10 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateResidualAssembled().
-  void testIntegrateResidualAssembled(void);
-
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
-  /// Test integrateJacobianAssembled().
-  void testIntegrateJacobianAssembled(void);
-
-  /// Test integrateJacobianAssembled() with lumped Jacobian.
+  /// Test integrateJacobian() with lumped Jacobian.
   void testIntegrateJacobianLumped(void);
 
   /// Test adjustSolnLumped().

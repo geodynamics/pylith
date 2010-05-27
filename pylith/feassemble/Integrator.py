@@ -28,8 +28,6 @@ def implementsIntegrator(obj):
               "useSolnIncr",
               "integrateResidual",
               "integrateJacobian",
-              "integrateResidualAssembled",
-              "integrateJacobianAssembled",
               "preinitialize",
               "verifyConfiguration",
               "initialize",
