@@ -57,9 +57,9 @@ public :
    * @param t Current time
    * @param fields Solution fields
    */
-  void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
-				  const double t,
-				  topology::SolutionFields* const fields);
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+			 const double t,
+			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
    *

@@ -38,7 +38,7 @@ class pylith::bc::TestPointForceTet4 : public TestPointForce
   CPPUNIT_TEST_SUB_SUITE( TestPointForceTet4, TestPointForce );
 
   CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testIntegrateResidualAssembled );
+  CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testVerifyConfiguration );
 
   CPPUNIT_TEST_SUITE_END();
