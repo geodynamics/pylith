@@ -67,6 +67,6 @@ print "Pd11:", -CACdi
 # Print simplified terms for preconditioner formed with diagonal approximations
 CCti = numpy.linalg.inv(numpy.dot(C, C.transpose()))
 print "Pd00:", -numpy.dot(Aid, numpy.dot(numpy.dot(C.transpose(), CCti), C))
-print "Pd01:", numpy.dot(C.transpose(), CCti)
-print "Pd10:", numpy.dot(CCti, C)
+print "Pd01:", 0.5*C.transpose()
+print "Pd10:", 0.5*C
 print "Pd11:", -CACdi
