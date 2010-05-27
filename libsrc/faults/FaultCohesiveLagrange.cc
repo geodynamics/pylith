@@ -690,7 +690,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
 
-    // Use globalOrder->isLocal(idx) to make sure indices are local.
+    // :TODO: Use globalOrder->isLocal(idx) to make sure indices are local.
 
     PetscErrorCode err = 0;
 
