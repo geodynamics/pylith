@@ -364,7 +364,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -395,7 +395,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residualIncr;
@@ -722,8 +722,11 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   } // setup disp
   jacobian.complete();
 
-  const topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
+  topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
   fault.adjustSolnLumped(&fields, jacobian);
+  const topology::Field<topology::Mesh>& dispIncrAdj = 
+    fields.get("dispIncr adjust");
+  solution += dispIncrAdj;
 
   //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
@@ -1104,6 +1107,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   fields->add("residual", "residual");
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
+  fields->add("dispIncr adjust", "displacement_adjust");
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;
