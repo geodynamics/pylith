@@ -56,14 +56,6 @@ We approximate this preconditioner by using only the diagonal terms of $A$ and $
     (C \Adiag^{-1} C^T)^{-1} C \Adiag^{-1} & -(C \Adiag^{-1} C^T)^{-1}
   \end{array} \right).
 \end{equation}
-If we assume that the terms in $\Adiag$ are equal across the fault (same terms on the positive and negative sides of the fault) and independent of orientation, the preconditioner simplifies to
-\begin{equation}
-  Pd = \left( \begin{array}{cc}
-    \Adiag^{-1} - \Adiag^{-1} C^T (C C^T)^{-1} C &
-    C^T (C C^T)^{-1} \\
-    (C C^T)^{-1} C & -\Adiag (C C^T)^{-1}
-  \end{array} \right).
-\end{equation}
 
 
 % ======================================================================
