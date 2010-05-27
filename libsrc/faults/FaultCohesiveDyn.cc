@@ -1606,8 +1606,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   const int spaceDim = _quadrature->spaceDim();
   const int subnrows = numBasis*spaceDim;
   const int submatrixSize = subnrows * subnrows;
-  const int nrows = 3*subnrows;
-  const int matrixSize = nrows * nrows;
 
   // Get solution field
   const topology::Field<topology::Mesh>& solutionDomain = fields.solution();
@@ -1626,17 +1624,16 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     cellsCohesive->end();
 
   // Visitor for Jacobian matrix associated with domain.
-  double_array jacobianDomainCell(matrixSize);
   const PetscMat jacobianDomainMatrix = jacobian.matrix();
   assert(0 != jacobianDomainMatrix);
   const ALE::Obj<SieveMesh::order_type>& globalOrderDomain =
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionDomainSection);
   assert(!globalOrderDomain.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianDomainVisitor(*solutionDomainSection,
-                                                 *globalOrderDomain,
-                           (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-                                     sieveMesh->depth())*spaceDim);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
+      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  int_array indicesGlobal(subnrows);
 
   // Get fault Sieve mesh
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -1648,7 +1645,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!solutionFaultSection.isNull());
 
   // Visitor for Jacobian matrix associated with fault.
-  double_array jacobianFaultCell(submatrixSize);
+  double_array jacobianSubCell(submatrixSize);
   assert(0 != _jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();
   assert(0 != jacobianFaultMatrix);
@@ -1661,49 +1658,50 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
                            (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
                                      faultSieveMesh->depth())*spaceDim);
 
-  const int indexOffset = (negativeSide) ? 0 : 3*submatrixSize + subnrows;
-
-  // :TODO: Use globalOrder->isLocal(idx) to make sure indices are local.
-
+  const int iCone = (negativeSide) ? 0 : 1;
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
+    // Get cone for cohesive cell
+    ncV.clear();
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
+								 *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    assert(coneSize == 3*numBasis);
+    const Mesh::point_type *cohesiveCone = ncV.getPoints();
+    assert(0 != cohesiveCone);
+
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    jacobianDomainCell = 0.0;
-    jacobianFaultCell = 0.0;
+    jacobianSubCell = 0.0;
 
-    // Get cell contribution in PETSc Matrix
-    jacobianDomainVisitor.clear();
-#if 0
+    // Get indices
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+      // negative side of the fault: iCone=0
+      // positive side of the fault: iCone=1
+      const int v_domain = cohesiveCone[iCone*numBasis+iBasis];
+      
+      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
+	if (globalOrderDomain->isLocal(v_domain))
+	  indicesGlobal[iB+iDim] = globalOrderDomain->getIndex(v_domain) + iDim;
+	else
+	  indicesGlobal[iB+iDim] = -1;
 
-    PetscErrorCode err = restrictOperator(jacobianDomainMatrix, *sieveMesh->getSieve(),
-                                              jacobianDomainVisitor, *c_iter,
-                                              &jacobianDomainCell[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-#else
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieveMesh->getSieve(), 
-						 *c_iter, 
-						 jacobianDomainVisitor);
-    const int* indices = jacobianDomainVisitor.getValues();
-    const int numIndices = jacobianDomainVisitor.getSize();
-    PetscErrorCode err = MatGetValues(jacobianDomainMatrix, 
-				      numIndices, indices,
-				      numIndices, indices,
-				      &jacobianDomainCell[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-#endif
-
-    for (int iRow=0, i=0; iRow < subnrows; ++iRow) {
-      const int indexR = indexOffset + iRow*nrows;
-      for (int iCol=0; iCol < subnrows; ++iCol, ++i)
-        jacobianFaultCell[i] = jacobianDomainCell[indexR+iCol];
+	// Set matrix diagonal entries to 1.0 (used when vertex is not local).
+	jacobianSubCell[(iB+iDim)*numBasis*spaceDim+iB+iDim] = 1.0;
+      } // for
     } // for
+    
+    PetscErrorCode err = MatGetValues(jacobianDomainMatrix, 
+				      indicesGlobal.size(), &indicesGlobal[0],
+				      indicesGlobal.size(), &indicesGlobal[0],
+				      &jacobianSubCell[0]);
+    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
 
     // Insert cell contribution into PETSc Matrix
     jacobianFaultVisitor.clear();
     err = updateOperator(jacobianFaultMatrix, *faultSieveMesh->getSieve(),
 			 jacobianFaultVisitor, c_fault,
-			 &jacobianFaultCell[0], INSERT_VALUES);
+			 &jacobianSubCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
 

@@ -610,7 +610,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * preconditioner.
    */
 
-#if 1 // DIAGONAL PRECONDITIONER
+#if 0 // DIAGONAL PRECONDITIONER
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
   const int restrictEvent = _logger->eventId("FaPr restrict");
@@ -681,8 +681,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Set global order indices
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
-
-    // :TODO: Use globalOrder->isLocal(idx) to make sure indices are local.
 
     PetscErrorCode err = 0;
 
@@ -895,9 +893,22 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       const int v_lagrange = cohesiveCone[2*numBasis+iBasis];
       
       for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
-        indicesN[iB+iDim]        = globalOrder->getIndex(v_negative) + iDim;
-        indicesP[iB+iDim]        = globalOrder->getIndex(v_positive) + iDim;
-        indicesLagrange[iB+iDim] = lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
+	if (globalOrder->isLocal(v_negative))
+	  indicesN[iB+iDim] = globalOrder->getIndex(v_negative) + iDim;
+	else
+	  indicesN[iB+iDim] = -1;
+	if (globalOrder->isLocal(v_positive))
+	  indicesP[iB+iDim] = globalOrder->getIndex(v_positive) + iDim;
+	else
+	  indicesP[iB+iDim] = -1;
+	if (globalOrder->isLocal(v_lagrange))
+	  indicesLagrange[iB+iDim] = lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
+	else
+	  indicesLagrange[iB+iDim] = -1;
+
+	// Set matrix diagonal entries to 1.0 (used when vertex is not local).
+	jacobianCellN[iB+iDim] = 1.0;
+	jacobianCellP[iB+iDim] = 1.0;
       } // for
     } // for
     
@@ -949,7 +960,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       
       for (int lLagrange=0; lLagrange < numBasis; ++lLagrange) {
 	// Exploit structure of C in matrix multiplication.
-	// C_ij Ai_jk C_lk - Structure of C means j == i;
+	// C_ij Ai_jk C_lk - Structure of C means k == l;
 	const int kBasis = lLagrange;
 
 	for (int iDim=0; iDim < spaceDim; ++iDim) {
