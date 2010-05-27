@@ -1669,6 +1669,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   const int indexOffset = (negativeSide) ? 0 : 3*submatrixSize + subnrows;
 
+  // :TODO: Use globalOrder->isLocal(idx) to make sure indices are local.
+
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
