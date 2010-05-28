@@ -62,7 +62,7 @@ namespace contrib {
 
       // Values expected in spatial database
       const int numDBProperties = 3;
-      const char* dbProperties[3] = { "viscous-coefficient",
+      const char* dbProperties[3] = { "static-coefficient",
 				      "reference-slip-rate",
 				      "cohesion",
       };
