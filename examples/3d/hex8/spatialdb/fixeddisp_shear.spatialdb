@@ -4,10 +4,6 @@
 // displacement field for Dirichlet boundary conditions associated
 // with shear in the xy plane.
 //
-// dof-0: Ux(x) = 0
-// dof-1: Uy(x) = 1.0 m * x / 3 km
-// dof-2: Uz(x) = 0
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3
