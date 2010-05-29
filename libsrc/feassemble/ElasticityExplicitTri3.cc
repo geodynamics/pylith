@@ -269,7 +269,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * area / 36.0;
+    const double wtVertex = density[0] * area / 9.0;
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
         for (int iDim = 0; iDim < spaceDim; ++iDim)
@@ -730,7 +730,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
     assert(density.size() == 1);
 
     // Compute Jacobian for inertial terms
-    const double wtVertex = density[0] * area / (36.0 * dt2);
+    const double wtVertex = density[0] * area / (9.0 * dt2);
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
 	for (int iDim=0; iDim < spaceDim; ++iDim) {

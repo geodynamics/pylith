@@ -55,11 +55,6 @@ MANUAL
     Savage-Prescott
       change .cfg file to output velocities, update post-processing
 
-  Extending PyLith [Brad]
-    friction
-      viscous (slip rate proportional friction)
-    test with example 
-
   Materials [Charles]
     Are material models consistent with governing equations discussion?
 
@@ -121,12 +116,6 @@ CODE
 
     Need field split working for both SolverLinear and SolverNonlinear.
 
-  * Optimization [Brad]
-    + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
-
-  * Lumped solver [Brad]
-    + Need to finish unit tests
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
@@ -149,6 +138,8 @@ SECONDARY PRIORITIES
     - UniformFields (UniformSection)?
   + May be gotchas associated with Petsc Vec and scatters
   + inline methods (what isn't getting inlined) -Winline
+  + Specialized elasticity integrator objects for Quad4, Hex8
+    - Add for lgdeform, implicit time integration?
 
 * Testing
   + Need full-scale test with variation in physical properties
@@ -173,12 +164,8 @@ SECONDARY PRIORITIES
     reader.update()
     data = reader.get_output()
 
-
-----------------------------------------------------------------------
-LUMPED SOLVER
-----------------------------------------------------------------------
-
-Unit tests
+* Lumped solver [Brad]
+  + Need to finish unit tests
 
   AbsorbingDampers
     integrateResidualLumped()

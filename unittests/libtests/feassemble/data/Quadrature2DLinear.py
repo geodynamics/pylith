@@ -67,7 +67,7 @@ class Quadrature2DLinear(Component):
     
     self.quadPtsRef = numpy.array( [[-1.0/3.0, -1.0/3.0]], dtype=numpy.float64)
     #self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0]], dtype=numpy.float64)
-    self.quadWts = numpy.array([0.5], dtype=numpy.float64)
+    self.quadWts = numpy.array([2.0], dtype=numpy.float64)
     self.numBasis = 3
     self.numQuadPts = 1
     self.spaceDim = 2
