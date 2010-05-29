@@ -138,7 +138,7 @@ pylith::feassemble::GeometryLine3D::jacobian(double* jacobian,
   assert(0 != det);
   assert(0 != vertices);
   assert(0 != location);
-  assert(2 == dim);
+  assert(3 == dim);
   assert(spaceDim() == dim);
 
   const double x0 = vertices[0];
