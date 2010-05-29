@@ -319,6 +319,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Compute B(transpose) * sigma, first computing strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
 		      numBasis, numQuadPts);
+
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)

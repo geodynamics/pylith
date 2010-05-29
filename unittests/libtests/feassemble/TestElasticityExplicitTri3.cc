@@ -12,13 +12,13 @@
 
 #include <portinfo>
 
-#include "TestElasticityExplicitTet4.hh" // Implementation of class methods
+#include "TestElasticityExplicitTri3.hh" // Implementation of class methods
 
-#include "pylith/feassemble/ElasticityExplicitTet4.hh" // USES ElasticityExplicitTet4
-#include "data/ElasticityExplicitData3DLinear.hh"
-#include "pylith/feassemble/GeometryTet3D.hh" // USES GeometryTet3D
+#include "pylith/feassemble/ElasticityExplicitTri3.hh" // USES ElasticityExplicitTri3
+#include "data/ElasticityExplicitData2DLinear.hh"
+#include "pylith/feassemble/GeometryTri2D.hh" // USES GeometryTri2D
 
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "pylith/materials/ElasticPlaneStrain.hh" // USES ElasticPlaneStrain
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
@@ -36,7 +36,7 @@
 #include <stdexcept> // USES std::exception
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicitTri3 );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -45,18 +45,18 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::feassemble::TestElasticityExplicitTet4::setUp(void)
+pylith::feassemble::TestElasticityExplicitTri3::setUp(void)
 { // setUp
   _quadrature = new Quadrature<topology::Mesh>();
   CPPUNIT_ASSERT(0 != _quadrature);
-  GeometryTet3D geometry;
+  GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);
 
-  _data = new ElasticityExplicitData3DLinear();
+  _data = new ElasticityExplicitData2DLinear();
   CPPUNIT_ASSERT(0 != _data);
-  _material = new materials::ElasticIsotropic3D;
+  _material = new materials::ElasticPlaneStrain;
   CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT_EQUAL(std::string("ElasticIsotropic3D"),
+  CPPUNIT_ASSERT_EQUAL(std::string("ElasticPlaneStrain"),
 		       std::string(_data->matType));
   _gravityField = 0;
 } // setUp
@@ -64,7 +64,7 @@ pylith::feassemble::TestElasticityExplicitTet4::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::feassemble::TestElasticityExplicitTet4::tearDown(void)
+pylith::feassemble::TestElasticityExplicitTri3::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
@@ -75,17 +75,17 @@ pylith::feassemble::TestElasticityExplicitTet4::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::feassemble::TestElasticityExplicitTet4::testConstructor(void)
+pylith::feassemble::TestElasticityExplicitTri3::testConstructor(void)
 { // testConstructor
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test timeStep().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testTimeStep(void)
+pylith::feassemble::TestElasticityExplicitTri3::testTimeStep(void)
 { // testTimeStep
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
 
   const double dt1 = 2.0;
   integrator.timeStep(dt1);
@@ -98,11 +98,11 @@ pylith::feassemble::TestElasticityExplicitTet4::testTimeStep(void)
 // ----------------------------------------------------------------------
 // Test material().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testMaterial(void)
+pylith::feassemble::TestElasticityExplicitTri3::testMaterial(void)
 { // testMaterial
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
 
-  materials::ElasticIsotropic3D material;
+  materials::ElasticPlaneStrain material;
   const int id = 3;
   const std::string label("my material");
   material.id(id);
@@ -119,11 +119,11 @@ pylith::feassemble::TestElasticityExplicitTet4::testMaterial(void)
 // ----------------------------------------------------------------------
 // Test needNewJacobian().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testNeedNewJacobian(void)
+pylith::feassemble::TestElasticityExplicitTri3::testNeedNewJacobian(void)
 { // testNeedNewJacobian
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
 
-  materials::ElasticIsotropic3D material;
+  materials::ElasticPlaneStrain material;
   integrator.material(&material);
   CPPUNIT_ASSERT_EQUAL(true, integrator.needNewJacobian());
   integrator._needNewJacobian = false;
@@ -133,11 +133,11 @@ pylith::feassemble::TestElasticityExplicitTet4::testNeedNewJacobian(void)
 // ----------------------------------------------------------------------
 // Test useSolnIncr().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testUseSolnIncr(void)
+pylith::feassemble::TestElasticityExplicitTri3::testUseSolnIncr(void)
 { // testUseSolnIncr
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
 
-  materials::ElasticIsotropic3D material;
+  materials::ElasticPlaneStrain material;
   integrator.material(&material);
   CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
   try {
@@ -155,12 +155,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testUseSolnIncr(void)
 // ----------------------------------------------------------------------
 // Test initialize().
 void 
-pylith::feassemble::TestElasticityExplicitTet4::testInitialize(void)
+pylith::feassemble::TestElasticityExplicitTri3::testInitialize(void)
 { // testInitialize
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -169,12 +169,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testInitialize(void)
 // ----------------------------------------------------------------------
 // Test integrateResidual().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidual(void)
+pylith::feassemble::TestElasticityExplicitTri3::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -191,7 +191,7 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidual(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
@@ -209,12 +209,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidual(void)
 // ----------------------------------------------------------------------
 // Test integrateResidual().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidualLumped(void)
+pylith::feassemble::TestElasticityExplicitTri3::testIntegrateResidualLumped(void)
 { // testIntegrateResidualLumped
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -231,7 +231,7 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidualLumped(void
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
@@ -249,12 +249,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidualLumped(void
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
+pylith::feassemble::TestElasticityExplicitTri3::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
@@ -307,12 +307,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobianLumped(void)
+pylith::feassemble::TestElasticityExplicitTri3::testIntegrateJacobianLumped(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
   integrator._needNewJacobian = true;
@@ -367,12 +367,12 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobianLumped(void
 // ----------------------------------------------------------------------
 // Test updateStateVars().
 void 
-pylith::feassemble::TestElasticityExplicitTet4::testUpdateStateVars(void)
+pylith::feassemble::TestElasticityExplicitTri3::testUpdateStateVars(void)
 { // testUpdateStateVars
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -383,10 +383,10 @@ pylith::feassemble::TestElasticityExplicitTet4::testUpdateStateVars(void)
 // ----------------------------------------------------------------------
 // Test StableTimeStep().
 void
-pylith::feassemble::TestElasticityExplicitTet4::testStableTimeStep(void)
+pylith::feassemble::TestElasticityExplicitTri3::testStableTimeStep(void)
 { // testStableTimeStep
   topology::Mesh mesh;
-  ElasticityExplicitTet4 integrator;
+  ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -397,9 +397,9 @@ pylith::feassemble::TestElasticityExplicitTet4::testStableTimeStep(void)
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
-pylith::feassemble::TestElasticityExplicitTet4::_initialize(
+pylith::feassemble::TestElasticityExplicitTri3::_initialize(
 					 topology::Mesh* mesh,
-					 ElasticityExplicitTet4* const integrator,
+					 ElasticityExplicitTri3* const integrator,
 					 topology::SolutionFields* fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);

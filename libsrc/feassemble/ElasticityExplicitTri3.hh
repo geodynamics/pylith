@@ -11,21 +11,21 @@
 //
 
 /**
- * @file libsrc/feassemble/ElasticityExplicitTet4.hh
+ * @file libsrc/feassemble/ElasticityExplicitTri3.hh
  *
  * @brief Explicit time integration of dynamic elasticity equation
- * using linear tetrahedral finite-elements.
+ * using linear triangular finite-elements.
  */
 
-#if !defined(pylith_feassemble_elasticityexplicittet4_hh)
-#define pylith_feassemble_elasticityexplicittet4_hh
+#if !defined(pylith_feassemble_elasticityexplicittri3_hh)
+#define pylith_feassemble_elasticityexplicittri3_hh
 
 // Include directives ---------------------------------------------------
 #include "IntegratorElasticity.hh" // ISA IntegratorElasticity
 
-// ElasticityExplicitTet4 ---------------------------------------------------
+// ElasticityExplicitTri3 ---------------------------------------------------
 /**@brief Explicit time integration of the dynamic elasticity equation
- * using linear tetrahedral finite-elements.
+ * using linear triangular finite-elements.
  *
  * Note: This object operates on a single finite-element family, which
  * is defined by the quadrature and a database of material property
@@ -62,18 +62,18 @@
  * See governing equations section of user manual for more
  * information.
 */
-class pylith::feassemble::ElasticityExplicitTet4 : public IntegratorElasticity
-{ // ElasticityExplicitTet4
-  friend class TestElasticityExplicitTet4; // unit testing
+class pylith::feassemble::ElasticityExplicitTri3 : public IntegratorElasticity
+{ // ElasticityExplicitTri3
+  friend class TestElasticityExplicitTri3; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ElasticityExplicitTet4(void);
+  ElasticityExplicitTri3(void);
 
   /// Destructor
-  ~ElasticityExplicitTet4(void);
+  ~ElasticityExplicitTri3(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
@@ -136,14 +136,14 @@ public :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  /** Compute volume of tetrahedral cell.
+  /** Compute area of triangular cell.
    *
    * @param coordinatesCell Coordinates of vertices of cell.
-   * @returns Volume of cell.
+   * @returns Area of cell.
    */
-  double _volume(const double_array& coordinatesCell) const;
+  double _area(const double_array& coordinatesCell) const;
 
-  /** Compute derivatives of basis functions of tetrahedral cell.
+  /** Compute derivatives of basis functions of triangular cell.
    *
    * @param coordinatesCell Coordinates of vertices of cell.
    * @returns Derivatives of basis functions.
@@ -167,14 +167,14 @@ private :
 private :
 
   /// Not implemented.
-  ElasticityExplicitTet4(const ElasticityExplicitTet4&);
+  ElasticityExplicitTri3(const ElasticityExplicitTri3&);
 
   /// Not implemented
-  const ElasticityExplicitTet4& operator=(const ElasticityExplicitTet4&);
+  const ElasticityExplicitTri3& operator=(const ElasticityExplicitTri3&);
 
-}; // ElasticityExplicitTet4
+}; // ElasticityExplicitTri3
 
-#endif // pylith_feassemble_elasticityexplicittet4_hh
+#endif // pylith_feassemble_elasticityexplicittri3_hh
 
 
 // End of file 

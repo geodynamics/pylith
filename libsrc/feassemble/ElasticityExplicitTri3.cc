@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "ElasticityExplicitTet4.hh" // implementation of class methods
+#include "ElasticityExplicitTri3.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
 
@@ -42,15 +42,15 @@ typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
 typedef pylith::topology::Mesh::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
-const int pylith::feassemble::ElasticityExplicitTet4::_spaceDim = 3;
-const int pylith::feassemble::ElasticityExplicitTet4::_cellDim = 3;
-const int pylith::feassemble::ElasticityExplicitTet4::_tensorSize = 6;
-const int pylith::feassemble::ElasticityExplicitTet4::_numBasis = 4;
-const int pylith::feassemble::ElasticityExplicitTet4::_numQuadPts = 1;
+const int pylith::feassemble::ElasticityExplicitTri3::_spaceDim = 2;
+const int pylith::feassemble::ElasticityExplicitTri3::_cellDim = 2;
+const int pylith::feassemble::ElasticityExplicitTri3::_tensorSize = 3;
+const int pylith::feassemble::ElasticityExplicitTri3::_numBasis = 3;
+const int pylith::feassemble::ElasticityExplicitTri3::_numQuadPts = 1;
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ElasticityExplicitTet4::ElasticityExplicitTet4(void) :
+pylith::feassemble::ElasticityExplicitTri3::ElasticityExplicitTri3(void) :
   _dtm1(-1.0)
 { // constructor
   _basisDerivArray.resize(_numQuadPts*_numBasis*_spaceDim);
@@ -58,7 +58,7 @@ pylith::feassemble::ElasticityExplicitTet4::ElasticityExplicitTet4(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ElasticityExplicitTet4::~ElasticityExplicitTet4(void)
+pylith::feassemble::ElasticityExplicitTri3::~ElasticityExplicitTri3(void)
 { // destructor
   deallocate();
 } // destructor
@@ -66,7 +66,7 @@ pylith::feassemble::ElasticityExplicitTet4::~ElasticityExplicitTet4(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::feassemble::ElasticityExplicitTet4::deallocate(void)
+pylith::feassemble::ElasticityExplicitTri3::deallocate(void)
 { // deallocate
   IntegratorElasticity::deallocate();
 } // deallocate
@@ -74,7 +74,7 @@ pylith::feassemble::ElasticityExplicitTet4::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
+pylith::feassemble::ElasticityExplicitTri3::timeStep(const double dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -90,7 +90,7 @@ pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
 // Set flag for setting constraints for total field solution or
 // incremental field solution.
 void
-pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
+pylith::feassemble::ElasticityExplicitTri3::useSolnIncr(const bool flag)
 { // useSolnIncr
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
@@ -101,7 +101,7 @@ pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
+pylith::feassemble::ElasticityExplicitTri3::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
 			  const double t,
 			  topology::SolutionFields* const fields)
@@ -207,8 +207,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
-    assert(volume > 0.0);
+    const double area = _area(coordinatesCell);
+    assert(area > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -261,7 +261,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
         throw std::runtime_error("Unable to get gravity vector for point.");
       _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
           gravityScale);
-      const double wtVertex = density[0] * volume / 4.0;
+      const double wtVertex = density[0] * area / 3.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
@@ -269,7 +269,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * volume / 16.0;
+    const double wtVertex = density[0] * area / 36.0;
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
         for (int iDim = 0; iDim < spaceDim; ++iDim)
@@ -285,79 +285,51 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     // Compute B(transpose) * sigma, first computing strains
     const double x0 = coordinatesCell[0];
     const double y0 = coordinatesCell[1];
-    const double z0 = coordinatesCell[2];
 
-    const double x1 = coordinatesCell[3];
-    const double y1 = coordinatesCell[4];
-    const double z1 = coordinatesCell[5];
+    const double x1 = coordinatesCell[2];
+    const double y1 = coordinatesCell[3];
 
-    const double x2 = coordinatesCell[6];
-    const double y2 = coordinatesCell[7];
-    const double z2 = coordinatesCell[8];
+    const double x2 = coordinatesCell[4];
+    const double y2 = coordinatesCell[5];
 
-    const double x3 = coordinatesCell[9];
-    const double y3 = coordinatesCell[10];
-    const double z3 = coordinatesCell[11];
+    const double scaleB = 2.0 * area;
+    const double b0 = (y1 - y2) / scaleB;
+    const double c0 = (x2 - x1) / scaleB;
 
-    const double scaleB = 6.0 * volume;
-    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
-    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
-    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+    const double b1 = (y2 - y0) / scaleB;
+    const double c1 = (x0 - x2) / scaleB;
 
-    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
-    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
-    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+    const double b2 = (y0 - y1) / scaleB;
+    const double c2 = (x1 - x0) / scaleB;
 
-    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
-    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
-    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+    assert(strainCell.size() == 3);
+    strainCell[0] = b2*dispCell[4] + b1*dispCell[2] + b0*dispCell[0];
+    
+    strainCell[1] = c2*dispCell[5] + c1*dispCell[3] + c0*dispCell[1];
 
-    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
-    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
-    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
+    strainCell[2] = (b2*dispCell[5] + c2*dispCell[4] + b1*dispCell[3] + 
+		     c1*dispCell[2] + b0*dispCell[1] + c0*dispCell[0]) / 2.0;
 
-    assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
-        + b4 * dispCell[9];
-    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
-        + c1 * dispCell[1];
-    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
-        + d4 * dispCell[11];
-    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
-        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
-        * dispCell[1] + c1 * dispCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
-        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
-        * dispCell[10] + d1 * dispCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
-        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
-        * dispCell[11] + d1 * dispCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(196);
+    PetscLogFlops(34);
     _logger->eventEnd(stressEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    assert(_cellVector.size() == 12);
-    assert(stressCell.size() == 6);
-    _cellVector[0] -= (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
-    _cellVector[1] -= (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
-    _cellVector[2] -= (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
-    _cellVector[3] -= (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
-    _cellVector[4] -= (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
-    _cellVector[5] -= (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
-    _cellVector[6] -= (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
-    _cellVector[7] -= (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
-    _cellVector[8] -= (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
-    _cellVector[9] -= (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
-    _cellVector[10] -= (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
-    _cellVector[11] -= (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
+    assert(_cellVector.size() == 6);
+    assert(stressCell.size() == 3);
+    _cellVector[0] -= (c0*stressCell[2] + b0*stressCell[0]) * area;
+    _cellVector[1] -= (b0*stressCell[2] + c0*stressCell[1]) * area;
+    _cellVector[2] -= (c1*stressCell[2] + b1*stressCell[0]) * area;
+    _cellVector[3] -= (b1*stressCell[2] + c1*stressCell[1]) * area;
+    _cellVector[4] -= (c2*stressCell[2] + b2*stressCell[0]) * area;
+    _cellVector[5] -= (b2*stressCell[2] + c2*stressCell[1]) * area;
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(84);
+    PetscLogFlops(30);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -371,7 +343,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(3 + numBasis*numBasis*spaceDim*2 + 196+84));
+  PetscLogFlops(cells->size()*(3 + numBasis*numBasis*spaceDim*2 + 34+30));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -379,13 +351,13 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
+pylith::feassemble::ElasticityExplicitTri3::integrateResidualLumped(
         const topology::Field<topology::Mesh>& residual,
         const double t,
         topology::SolutionFields* const fields)
 { // integrateResidualLumped
   /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityExplicitTet4::*elasticityResidual_fn_type)
+  typedef void (pylith::feassemble::ElasticityExplicitTri3::*elasticityResidual_fn_type)
     (const double_array&);
 
   assert(0 != _quadrature);
@@ -517,7 +489,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Compute geometry information for current cell
-    const double volume = _volume(coordinatesCell);
+    const double area = _area(coordinatesCell);
+    assert(area > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -558,7 +531,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
         throw std::runtime_error("Unable to get gravity vector for point.");
       _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
           gravityScale);
-      const double wtVertex = density[0] * volume / 4.0;
+      const double wtVertex = density[0] * area / 3.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
@@ -566,7 +539,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * volume / 4.0;
+    const double wtVertex = density[0] * area / 3.0;
     _cellVector -= wtVertex * accCell;
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -578,91 +551,50 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     // Compute B(transpose) * sigma, first computing strains
     const double x0 = coordinatesCell[0];
     const double y0 = coordinatesCell[1];
-    const double z0 = coordinatesCell[2];
 
-    const double x1 = coordinatesCell[3];
-    const double y1 = coordinatesCell[4];
-    const double z1 = coordinatesCell[5];
+    const double x1 = coordinatesCell[2];
+    const double y1 = coordinatesCell[3];
 
-    const double x2 = coordinatesCell[6];
-    const double y2 = coordinatesCell[7];
-    const double z2 = coordinatesCell[8];
+    const double x2 = coordinatesCell[4];
+    const double y2 = coordinatesCell[5];
 
-    const double x3 = coordinatesCell[9];
-    const double y3 = coordinatesCell[10];
-    const double z3 = coordinatesCell[11];
+    const double scaleB = 2.0 * area;
+    const double b0 = (y1 - y2) / scaleB;
+    const double c0 = (x2 - x1) / scaleB;
 
-    const double scaleB = 6.0 * volume;
-    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
-    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
-    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+    const double b1 = (y2 - y0) / scaleB;
+    const double c1 = (x0 - x2) / scaleB;
 
-    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
-    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
-    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+    const double b2 = (y0 - y1) / scaleB;
+    const double c2 = (x1 - x0) / scaleB;
 
-    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
-    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
-    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+    assert(strainCell.size() == 3);
+    strainCell[0] = b2*dispCell[4] + b1*dispCell[2] + b0*dispCell[0];
+    
+    strainCell[1] = c2*dispCell[5] + c1*dispCell[3] + c0*dispCell[1];
 
-    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
-    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
-    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
-
-    assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
-        + b4 * dispCell[9];
-    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
-        + c1 * dispCell[1];
-    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
-        + d4 * dispCell[11];
-    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
-        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
-        * dispCell[1] + c1 * dispCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
-        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
-        * dispCell[10] + d1 * dispCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
-        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
-        * dispCell[11] + d1 * dispCell[0]) / 2.0;
+    strainCell[2] = (b2*dispCell[5] + c2*dispCell[4] + b1*dispCell[3] + 
+		     c1*dispCell[2] + b0*dispCell[1] + c0*dispCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(196);
+    PetscLogFlops(34);
     _logger->eventEnd(stressEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    assert(_cellVector.size() == 12);
-    assert(stressCell.size() == 6);
-    _cellVector[0] -= 
-      (d1*stressCell[5]+c1*stressCell[3]+b1*stressCell[0]) * volume;
-    _cellVector[1] -= 
-      (d1*stressCell[4]+b1*stressCell[3]+c1*stressCell[1]) * volume;
-    _cellVector[2] -= 
-      (b1*stressCell[5]+c1*stressCell[4]+d1*stressCell[2]) * volume;
-    _cellVector[3] -= 
-      (d2*stressCell[5]+c2*stressCell[3]+b2*stressCell[0]) * volume;
-    _cellVector[4] -= 
-      (d2*stressCell[4]+b2*stressCell[3]+c2*stressCell[1]) * volume;
-    _cellVector[5] -= 
-      (b2*stressCell[5]+c2*stressCell[4]+d2*stressCell[2]) * volume;
-    _cellVector[6] -= 
-      (d3*stressCell[5]+c3*stressCell[3]+b3*stressCell[0]) * volume;
-    _cellVector[7] -= 
-      (d3*stressCell[4]+b3*stressCell[3]+c3*stressCell[1]) * volume;
-    _cellVector[8] -= 
-      (b3*stressCell[5]+c3*stressCell[4]+d3*stressCell[2]) * volume;
-    _cellVector[9] -= 
-      (d4*stressCell[5]+c4*stressCell[3]+b4*stressCell[0]) * volume;
-    _cellVector[10] -= 
-      (d4*stressCell[4]+b4*stressCell[3]+c4*stressCell[1]) * volume;
-    _cellVector[11] -= 
-      (b4*stressCell[5]+c4*stressCell[4]+d4*stressCell[2]) * volume;
+    assert(_cellVector.size() == 6);
+    assert(stressCell.size() == 3);
+    _cellVector[0] -= (c0*stressCell[2] + b0*stressCell[0]) * area;
+    _cellVector[1] -= (b0*stressCell[2] + c0*stressCell[1]) * area;
+    _cellVector[2] -= (c1*stressCell[2] + b1*stressCell[0]) * area;
+    _cellVector[3] -= (b1*stressCell[2] + c1*stressCell[1]) * area;
+    _cellVector[4] -= (c2*stressCell[2] + b2*stressCell[0]) * area;
+    _cellVector[5] -= (b2*stressCell[2] + c2*stressCell[1]) * area;
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(84);
+    PetscLogFlops(30);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -677,7 +609,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*2 + 196+84));
+  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*2 + 34+30));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -685,7 +617,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
+pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 					topology::Jacobian* jacobian,
 					const double t,
 					topology::SolutionFields* fields)
@@ -774,8 +706,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
     // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
-    assert(volume > 0.0);
+    const double area = _area(coordinatesCell);
+    assert(area > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -798,7 +730,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
     assert(density.size() == 1);
 
     // Compute Jacobian for inertial terms
-    const double wtVertex = density[0] * volume / (16.0 * dt2);
+    const double wtVertex = density[0] * area / (36.0 * dt2);
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
 	for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -837,7 +769,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
+pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 			    topology::Field<topology::Mesh>* jacobian,
 			    const double t,
 			    topology::SolutionFields* fields)
@@ -912,7 +844,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
+    const double area = _area(coordinatesCell);
+    assert(area > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -929,8 +862,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 
     // Compute Jacobian for inertial terms
     const double_array& density = _material->calcDensity();
-    assert(volume > 0.0);
-    _cellVector = density[0] * volume / (4.0 * dt2);
+    _cellVector = density[0] * area / (3.0 * dt2);
     
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(3);
@@ -957,40 +889,27 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
-// Compute volume of tetrahedral cell.
+// Compute area of triangular cell.
 double
-pylith::feassemble::ElasticityExplicitTet4::_volume(
+pylith::feassemble::ElasticityExplicitTri3::_area(
 			     const double_array& coordinatesCell) const
-{ // __volume
-  assert(12 == coordinatesCell.size());
+{ // __area
+  assert(6 == coordinatesCell.size());
 
   const double x0 = coordinatesCell[0];
   const double y0 = coordinatesCell[1];
-  const double z0 = coordinatesCell[2];
 
-  const double x1 = coordinatesCell[3];
-  const double y1 = coordinatesCell[4];
-  const double z1 = coordinatesCell[5];
+  const double x1 = coordinatesCell[2];
+  const double y1 = coordinatesCell[3];
 
-  const double x2 = coordinatesCell[6];
-  const double y2 = coordinatesCell[7];
-  const double z2 = coordinatesCell[8];
+  const double x2 = coordinatesCell[4];
+  const double y2 = coordinatesCell[5];
 
-  const double x3 = coordinatesCell[9];
-  const double y3 = coordinatesCell[10];
-  const double z3 = coordinatesCell[11];
+  const double area = 0.5*((x1-x0)*(y2-y0) - (x2-x0)*(y1-y0));
+  PetscLogFlops(8);
 
-  const double det = 
-    x1*(y2*z3-y3*z2)-y1*(x2*z3-x3*z2)+(x2*y3-x3*y2)*z1 - 
-    x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
-    y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
-    z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
-    
-  const double volume = det / 6.0;
-  PetscLogFlops(48);
-
-  return volume;  
-} // _volume
+  return area;  
+} // _area
 
 
 // End of file 

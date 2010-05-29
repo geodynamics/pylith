@@ -44,6 +44,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \
 	feassemble/ElasticityExplicitTet4.py \
+	feassemble/ElasticityExplicitTri3.py \
 	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
 	feassemble/ElasticityImplicitLgDeform.py \
@@ -118,6 +119,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/__init__.py \
 	problems/Explicit.py \
 	problems/ExplicitLumped.py \
+	problems/ExplicitLumpedTri3.py \
 	problems/ExplicitLumpedTet4.py \
 	problems/ExplicitLgDeform.py \
 	problems/Formulation.py \
