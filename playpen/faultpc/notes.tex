@@ -40,6 +40,50 @@ We have a Jacobian of the form
     C & 0
   \end{array} \right).
 \end{equation}
+We provide PETSc with $P$ so that it can create $P^{-1}$. Using the
+field split preconditioner, we form
+\begin{equation}
+  P = \left( \begin{array}{cc}
+    A_\mathit{ml} & 0 \\
+    0 & P_f
+  \end{array} \right),
+\end{equation}
+where we use the ML package to form $A_\mathit{ml}$ and we create a
+custom matrix for the portion of the preconditioner associated with
+the Lagrange constraints, $P_f$. Let $n$ be the number of conventional
+degrees of freedom and $l$ be the number of Lagrange constraints. This
+means $A$ and $P$ are $(n+l) \times (n+l)$, $A$ and $A_\mathit{ml}$
+are $n \times n$, $C$ is $l \times n$, and $P_f$ is $l \times l$.
+
+Using the {\tt multiplicative} field split type, PETSc will form
+$P^{-1}$ as
+\begin{equation}
+  P^{-1} = \left( \begin{array}{cc}
+    A_\mathit{ml}^{-1} & -A_\mathit{ml}^{-1} C^T \\
+    0 & C A_\mathit{ml}^{-1} C^T P_f^{-1}
+  \end{array} \right).
+\end{equation}
+
+\subsection*{QUESTIONS FOR MATT}
+We are solving $J u = b$.
+\begin{itemize}
+\item Does PETSc solve the right-preconditioned system using
+  \begin{gather}
+    (J P^{-1}) v = b \\
+    u = P^{-1} v
+  \end{gather}
+  or the left-preconditioned system using
+  \begin{gather}
+    P^{-1}(J u - b) = 0.
+  \end{gather}
+\item
+  Do we want to reduce the conditioner number (ratio of largest to
+  smallest eigenvalue) of $J P^{-1}$ or $P^{-1} J$?
+\end{itemize}
+      
+
+\subsection*{Old, wrong stuff}
+
 Using the Schur complement, we want to form the preconditioner
 \begin{equation}
   P = \left( \begin{array}{cc}

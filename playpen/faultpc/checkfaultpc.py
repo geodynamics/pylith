@@ -35,38 +35,32 @@ CACd = numpy.dot(numpy.dot(C, Aid), C.transpose())
 CACdi = 1.0 / CACd.diagonal() * numpy.identity(CACd.shape[0])
 
 # Compute preconditioner using full matrices (no approximations)
-P = numpy.zeros(J.shape)
-P[0:8,0:8] = Ai + numpy.dot(numpy.dot(numpy.dot(numpy.dot(Ai, C.transpose()), -CACi), C), Ai)
-P[0:8,8:12] = numpy.dot(numpy.dot(-Ai, C.transpose()), CACi)
-P[8:12,0:8] = numpy.dot(CACi, numpy.dot(C, Ai))
-P[8:12,8:12] = -CACi
+P = J
+Pi = numpy.linalg.inv(P)
 
 # Compute condition number
-evals, evecs = numpy.linalg.eig(numpy.dot(P, J))
+evals, evecs = numpy.linalg.eig(numpy.dot(J, Pi))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
 
-# Compute preconditioner using diagonal approximations (but full Ai)
+# Compute preconditioner using diagonal approximations (but full A)
 Pd = numpy.zeros(J.shape)
-Pd[0:8,0:8] = Ai + numpy.dot(numpy.dot(numpy.dot(numpy.dot(Aid, C.transpose()), -CACdi), C), Aid)
-Pd[0:8,8:12] = numpy.dot(numpy.dot(Aid, C.transpose()), CACdi)
-Pd[8:12,0:8] = numpy.dot(CACdi, numpy.dot(C, Aid))
-Pd[8:12,8:12] = -CACdi
+Pd[0:8,0:8] = A
+Pd[0:8,8:12] = C.transpose()
+Pd[8:12,0:8] = C
+Pd[8:12,8:12] = -1.0/(CACdi*CACdi)
+
+# Compute expected inverse of preconditioner
+Pdi = numpy.zeros(Pd.shape)
+Pdi[0:8,0:8] = Ai
+Pdi[0:8,8:12] = numpy.dot(-Ai, C.transpose())
+Pdi[8:12,0:8] = 0.0
+#Pdi[8:12,8:12] = -numpy.dot(numpy.dot(numpy.dot(C, Ai), C.transpose()), CACdi*CACdi)
+Pdi[8:12,8:12] = numpy.eye(4)
 
 # Compute condition number for diagonal approximations
-evals, evecs = numpy.linalg.eig(numpy.dot(Pd, J))
+evals, evecs = numpy.linalg.eig(numpy.dot(Pdi, J))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
 
-# Print preconditioner formed with diagonal approximations
-print "Pd00:", numpy.dot(numpy.dot(numpy.dot(numpy.dot(Aid, C.transpose()), -CACdi), C), Aid)
-print "Pd01:", numpy.dot(numpy.dot(-Aid, C.transpose()), -CACdi)
-print "Pd10:", numpy.dot(CACdi, numpy.dot(C, Aid))
-print "Pd11:", -CACdi
-
-# Print simplified terms for preconditioner formed with diagonal approximations
-CCti = numpy.linalg.inv(numpy.dot(C, C.transpose()))
-print "Pd00:", -numpy.dot(Aid, numpy.dot(numpy.dot(C.transpose(), CCti), C))
-print "Pd01:", 0.5*C.transpose()
-print "Pd10:", 0.5*C
-print "Pd11:", -CACdi
+print numpy.dot(Pdi, J)
