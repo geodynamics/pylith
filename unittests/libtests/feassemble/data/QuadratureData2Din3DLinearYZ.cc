@@ -44,20 +44,20 @@ const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_verticesRef[] = 
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_quadPtsRef[] = {
-  3.33333333e-01,  3.33333333e-01,
+ -3.33333333e-01, -3.33333333e-01,
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_quadWts[] = {
-  5.00000000e-01,
+  2.00000000e+00,
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_quadPts[] = {
-  0.00000000e+00,  6.66666667e-01,  6.66666667e-01,
+  0.00000000e+00,  3.33333333e-01,  3.33333333e-01,
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_basis[] = {
- -3.33333333e-01,  6.66666667e-01,
-  6.66666667e-01,};
+  3.33333333e-01,  3.33333333e-01,
+  3.33333333e-01,};
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_basisDerivRef[] = {
  -5.00000000e-01, -5.00000000e-01,
