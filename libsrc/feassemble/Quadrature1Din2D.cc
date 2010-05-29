@@ -21,7 +21,7 @@
 
 #include <cassert> // USES assert()
 
-#define ISOPARAMETRIC
+//#define ISOPARAMETRIC
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -81,9 +81,9 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
 	  valueBasis * coordinatesCell[iBasis*spaceDim+iDim];
     } // for
 #else
-    geometry.coordsRefToGlobal(&_quadPts[iQuadPt*spaceDim],
-			       &quadPtsRef[iQuadPt*cellDim],
-			       &coordinatesCell[0], spaceDim);
+    geometry.ptsRefToGlobal(&_quadPts[iQuadPt*spaceDim],
+			    &quadPtsRef[iQuadPt*cellDim],
+			    &coordinatesCell[0], spaceDim, 1);
 #endif
 
 #if defined(ISOPARAMETRIC)
@@ -98,7 +98,7 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
 	_jacobian[iQuadPt*spaceDim+iDim] += 
 	  deriv * coordinatesCell[iBasis*spaceDim+iDim];
     } // for
-
+    
     // Compute determinant of Jacobian at quadrature point
     // |J| = sqrt(transpose(J) J)
     double det = 0.0;
@@ -110,10 +110,11 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(const double_array& coordi
     _jacobianDet[iQuadPt] = det;
 #else
     // Compute Jacobian and determinant of Jacobian at quadrature point
-    geometry.jacobian(&_jacobian[iQuadPt*_cellDim*spaceDim],
+    geometry.jacobian(&_jacobian[iQuadPt*cellDim*spaceDim],
 		      &_jacobianDet[iQuadPt],
-		      &coordinatesCell0], &quadPtsRef[iQuadPt*cellDim], spaceDim);
-    _checkJacobianDet(_jacobianDet[iQuadPt], cell);
+		      &coordinatesCell[0], &quadPtsRef[iQuadPt*cellDim],
+		      spaceDim, 1);
+  _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 #endif
 
     // Compute inverse of Jacobian at quadrature point

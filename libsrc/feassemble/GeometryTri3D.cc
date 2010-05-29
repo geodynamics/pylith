@@ -183,28 +183,28 @@ pylith::feassemble::GeometryTri3D::jacobian(double* jacobian,
   const double y2 = vertices[7];
   const double z2 = vertices[8];
 
-  const double j0 = (x1 - x0) / 2.0;
-  const double j1 = (x2 - x0) / 2.0;
+  const double j00 = (x1 - x0) / 2.0;
+  const double j01 = (x2 - x0) / 2.0;
 
-  const double j2 = (y1 - y0) / 2.0;
-  const double j3 = (y2 - y0) / 2.0;
+  const double j10 = (y1 - y0) / 2.0;
+  const double j11 = (y2 - y0) / 2.0;
 
-  const double j4 = (z1 - z0) / 2.0;
-  const double j5 = (z2 - z0) / 2.0;
+  const double j20 = (z1 - z0) / 2.0;
+  const double j21 = (z2 - z0) / 2.0;
 
-  const double jj00 = j0*j0 + j2*j2 + j4*j4;
-  const double jj10 = j0*j1 + j2*j3 + j4*j5;
+  const double jj00 = j00*j00 + j10*j10 + j20*j20;
+  const double jj10 = j00*j01 + j10*j11 + j20*j21;
   const double jj01 = jj10;
-  const double jj11 = j1*j1 + j3*j3 + j5*j5;
+  const double jj11 = j01*j01 + j11*j11 + j21*j21;
   const double jdet = sqrt(jj00*jj11 - jj01*jj10);
 
   for (int i=0, iJ=0; i < npts; ++i) {
-    jacobian[iJ++] = j0;
-    jacobian[iJ++] = j1;
-    jacobian[iJ++] = j2;
-    jacobian[iJ++] = j3;
-    jacobian[iJ++] = j4;
-    jacobian[iJ++] = j5;
+    jacobian[iJ++] = j00;
+    jacobian[iJ++] = j01;
+    jacobian[iJ++] = j10;
+    jacobian[iJ++] = j11;
+    jacobian[iJ++] = j20;
+    jacobian[iJ++] = j21;
     det[i] = jdet;
   } // for
 
