@@ -38,6 +38,7 @@ swig_sources = \
 	IntegratorElasticity.i \
 	ElasticityImplicit.i \
 	ElasticityExplicit.i \
+	ElasticityExplicitTri3.i \
 	ElasticityExplicitTet4.i \
 	IntegratorElasticityLgDeform.i \
 	ElasticityImplicitLgDeform.i \

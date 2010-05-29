@@ -1,0 +1,54 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: input   start ] */
+b : matrix([1,y1,z1],[1,y2,z2],[1,y3,z3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+-determinant(b);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+c : matrix([x1, 1, z1],[x2,1,z2],[x3,1,z3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+-determinant(c);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+d : matrix([x0, y0,1],[x1,y1,1],[x2,y2,1]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+determinant(d);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+B : matrix([b1,0,0,b2,0,0,b3,0,0,b4,0,0],
+[0,c1,0,0,c2,0,0,c3,0,0,c4,0],
+[0,0,d1,0,0,d2,0,0,d3,0,0,d4],
+[c1,b1,0,c2,b2,0,c3,b3,0,c4,b4,0],
+[0,d1,c1,0,d2,c2,0,d3,c3,0,d4,c4],
+[d1,0,b1,d2,0,b2,d3,0,b3,d4,0,b4]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+disp : matrix([dispTCell0,dispTCell1,dispTCell2,dispTCell3,dispTCell4,dispTCell5,dispTCell6,dispTCell7,dispTCell8,dispTCell9,dispTCell10,dispTCell11]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+B . transpose(disp);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+stress : matrix([stressCell0, stressCell1, stressCell2, stressCell3, stressCell4, stressCell5]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+transpose(B) . transpose(stress);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

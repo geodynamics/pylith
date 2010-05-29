@@ -57,6 +57,7 @@ namespace pylith {
     class ElasticityExplicit;
 
     class ElasticityExplicitTet4;
+    class ElasticityExplicitTri3;
 
     class IntegratorElasticityLgDeform;
     class ElasticityImplicitLgDeform;

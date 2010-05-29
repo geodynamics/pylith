@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/ElasticityExplicitTet4.py
+## @file pylith/feassemble/ElasticityExplicitTri3.py
 ##
 ## @brief Python object for explicit time integration of dynamic
 ## elasticity equation using finite-elements.
@@ -18,10 +18,10 @@
 ## Factory: integrator
 
 from IntegratorElasticity import IntegratorElasticity
-from feassemble import ElasticityExplicitTet4 as ModuleElasticityExplicitTet4
+from feassemble import ElasticityExplicitTri3 as ModuleElasticityExplicitTri3
 
-# ElasticityExplicitTet4 class
-class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4):
+# ElasticityExplicitTri3 class
+class ElasticityExplicitTri3(IntegratorElasticity, ModuleElasticityExplicitTri3):
   """
   Python object for explicit time integration of dynamic elasticity
   equation using finite-elements.
@@ -29,12 +29,12 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="elasticityexplicittet4"):
+  def __init__(self, name="elasticityexplicittri3"):
     """
     Constructor.
     """
     IntegratorElasticity.__init__(self, name)
-    ModuleElasticityExplicitTet4.__init__(self)
+    ModuleElasticityExplicitTri3.__init__(self)
     self._loggingPrefix = "ElEx "
     return
 
@@ -47,7 +47,7 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
     self._eventLogger.eventBegin(logEvent)
 
     IntegratorElasticity.initialize(self, totalTime, numTimeSteps, normalizer)
-    ModuleElasticityExplicitTet4.initialize(self, self.mesh)
+    ModuleElasticityExplicitTri3.initialize(self, self.mesh)
     self._initializeOutput(totalTime, numTimeSteps, normalizer)
     
     self._eventLogger.eventEnd(logEvent)
@@ -58,9 +58,9 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
 
 def integrator():
   """
-  Factory associated with ElasticityExplicitTet4.
+  Factory associated with ElasticityExplicitTri3.
   """
-  return ElasticityExplicitTet4()
+  return ElasticityExplicitTri3()
 
 
 # End of file 
