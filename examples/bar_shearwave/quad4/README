@@ -8,15 +8,11 @@ Example problems
   * Kinematic fault slip (same as problem in tri3, tet4, and hex8
     subdirectories)
 
-  * Static problem with fault friction without slip
+  * Dynamic fault slip with static friction fault constitutive model
 
-  * Static problem with fault friction with slip
+  * Dynamic fault slip with linear slip-weakening fault constitutive model
 
-  * Dynamic problem with static friction fault constitutive model
-
-  * Dynamic problem with linear slip-weakening fault constitutive model
-
-  * Dynamic problem with rate- and state-friction fault constitutive model
+  * Dynamic fault slip with rate- and state-friction fault constitutive model
 
 
 Files common to all example problems
@@ -30,30 +26,22 @@ Files common to all example problems
 Files associated with the example problems:
 
   + Kinematic fault slip
-    - shearwave_kinematicslip.cfg: Parameters for simulation
+    - kinematic.cfg: Parameters for simulation
     - kinematic_risetime.spatialdb: Spatial database for slip rise time
     - kinematic_slip.spatialdb: Spatial database for final slip
     - kinematic_sliptime.spatialdb: Spatial database for slip initiation time 
 
-  + Static problem with fault friction without slip
+  + Dynamic fault slip with static friction fault constitutive model
 
-    - static_stick.cfg: Parameters for simulation
+    - dynamic.cfg: Parameters common to dynamic friction problems
+    - dynamic_staticfriction.cfg: Parameters for simulation 
 
-  + Static problem with fault friction with slip
+  + Dynamic fault slip with linear slip-weakening fault constitutive model
 
-    - static_sliding.cfg: Parameters for simulation
+    - dynamic.cfg: Parameters common to dynamic friction problems
+    - dynamic_slipweakening.cfg: Parameters for simulation 
 
-  + Dynamic problem with static friction fault constitutive model
+  + Dynamic fault slip with rate- and state-friction fault constitutive model
 
-    - dynamicfault.cfg: Parameters common to dynamic friction problems
-    - shearwave_staticfriction.cfg: Parameters for simulation 
-
-  + Dynamic problem with linear slip-weakening fault constitutive model
-
-    - dynamicfault.cfg: Parameters common to dynamic friction problems
-    - shearwave_slipweakening.cfg: Parameters for simulation 
-
-  + Dynamic problem with rate- and state-friction fault constitutive model
-
-    - dynamicfault.cfg: Parameters common to dynamic friction problems
-    - shearwave_ratestateageing.cfg: Parameters for simulation 
+    - dynamic.cfg: Parameters common to dynamic friction problems
+    - dynamic_ratestateageing.cfg: Parameters for simulation 
