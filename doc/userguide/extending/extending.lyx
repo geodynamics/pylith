@@ -68,7 +68,13 @@ One of the powerful features of using the Pyre framework in PyLith is the
  you set the spatial database to UniformDB, SimpleDB, or SCECCVMH you are
  switching between different compatible components for a spatial database
  facility.
- In this section we provide examples of how to extend PyLith for components
+ Modifying the governing equations to include other physical processes requires
+ changing the data structures associated with the solution and altering
+ the PyLith code.
+\end_layout
+
+\begin_layout Standard
+In this section we provide examples of how to extend PyLith for components
  that users will most likely want to replace with their own custom versions.
  You will need a familiarity with Python, Makefiles, and C++ to write your
  own components.
