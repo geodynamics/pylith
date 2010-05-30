@@ -2,45 +2,68 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-need Cygwin binbot
+BINBOTS
 
-MAIN PRIORITIES
+  need cygwin binbot
 
-* Better preconditioning
-  + Need settings for Schur complement
+  Add ML to petsc on all binbots (requires fortran compiler)
 
-  We should temporarily hardwire the Schur complement settings (enable
-  with #define) and see how well it works.
+top-level README [add fault preconditioner when done]
+  Need Charles to add some additional description
 
-  MATT is thinking about how to setup Schur complement settings
-  (recursive specification of field splits).
+release announcement [add fault preconditioner when done]
 
-* Drucker-Prager elastoplastic
-  Need to link isJacobianSymmetric() in Integrator with materials.
-  Need to pass hint when creating Jacobian.
+DOC/INSTALL
+  Update MacBookPro
+    development, easy to switch among different versions of MPI and
+    test compatibility of newer versions of various package
+  Update linux
+  Add garuda, pangu
+    Clusters - dependencies and multiple versions of PyLith
+      (development and stable)
 
-* Friction
-  + Add stuff to manual
+MANUAL
 
-* Optimization
-  + Specialized elasticity integrator objects for Tri3, Quad4, Hex8
-  + inline methods (what isn't getting inlined) -Winline
+  Governing equations [Brad]
 
-* Lumped solver
-  + Need to finish unit tests
+  Mesher parameters [Charles]
+    Need outline of parameters to MeshImporter like other objects
 
-* Updates to manual
-  + tutorial
-  + governing equations
-  + Large deformation formulation
-  + mesh reordering
-  + Lumped solver
-  + Cleanup bulk constitutive models (consistent w/governing eqns)
+    MeshIOAscii
+    MeshIOLaGriT
+    MeshIOCubit
+      use_nodeset_names Flag for using nodeset names of ids.
+    reorder_mesh
+    distribution
+      partitioner
 
-* Cleanup PETSc setttings in examples
-    ksp_view, monitor, converged reason
+  Small strain formulation [Brad]
 
-* Tutorials
+  Fault
+    governing equations [Brad]
+    dynamic rupture parameters [Brad]
+    fault constitutive models [Surendra]
+
+  Tutorials
+    3d/hex8 [Charles]
+    bar_shearwave [Brad]
+      kinematic
+      friction
+        static (stick, sliding)
+        dynamic (static, slip-weakening, rate-and-state)
+    meshgeneration [Charles]
+
+  Benchmarks
+    Update performance?
+    SCEC dynamic rupture benchmarks [Surendra]        
+    Savage-Prescott
+      change .cfg file to output velocities, update post-processing
+
+  Materials [Charles]
+    Are material models consistent with governing equations discussion?
+
+TUTORIALS/EXAMPLES
+  
   3d/hex8
     directory structure
     1. Dirichlet BC (static)
@@ -50,7 +73,7 @@ MAIN PRIORITIES
     3. Earthquake rupture (static)
        add fault slip w/greater slip at depth
     4. Dirichlet BC (quasi-static)
-       constant velocity BC
+       constant velocity BC + MaxwellIsotropic3D (lower crust)
     5. Dirichlet + Neumann (quasi-static)
        constant velocity + time-dependent traction BC
     6. Multiple earthquake rupture + creep (quasi-static)
@@ -75,28 +98,33 @@ MAIN PRIORITIES
    16. Gravity w/prestress
    17. Gravity w/small strain
 
-  bar_shearwave
-    * quad4
-      + kinematic [explicit NOT lumped]
-      + static friction [lumped]
-      + slip-weakening friction
-      + rate- and state- friction
-    * tri3
-    * hex8
-    * tet4
+  meshgeneration
 
-  meshes
 
-Write up description of Savage and Prescott (1978) benchmark and
-distribute to Greg Lyzenga and Jay Parker
+OTHER
 
-Need full-scale test with variation in physical properties within a material.
+  Write up description of Savage and Prescott (1978) benchmark and
+  distribute to Greg Lyzenga and Jay Parker
+
+    Add time step information
+
+CODE
+
+  * Better preconditioning [Matt/Brad]
+
+    Diagonal preconditioner does not work very well. It looks like the
+    preconditioner needs off-diagonal terms consistent with the
+    coupling of the Lagrange multiplier constraints (sparsity pattern
+    matches the union of the matrices associated with the fault
+    meshes).
+
+    Need field split working for both SolverLinear and SolverNonlinear.
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
-* Output to HDF5 files
+* Output to VTK XML files w/data values as binary
 
 * Uniform global refinement for tets with faults
 
@@ -110,14 +138,25 @@ SECONDARY PRIORITIES
 
 * Optimization
   + Reimplement Fields to use a single section.
+    - SolutionFields (RealSection)
+    - UniformFields (UniformSection)?
   + May be gotchas associated with Petsc Vec and scatters
+  + inline methods (what isn't getting inlined) -Winline
+  + Specialized elasticity integrator objects for Quad4, Hex8
+    - Add for lgdeform, implicit time integration?
+
+* Testing
+  + Need full-scale test with variation in physical properties
+    within a material.
 
 * utilities
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
 
-* VTKDataReaderZip
+* GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
+
+* VTKDataReaderZip (obsolete if use VTK XML files?)
 
   Read VTK files from zipfile.
 
@@ -129,29 +168,16 @@ SECONDARY PRIORITIES
     reader.update()
     data = reader.get_output()
 
-
-----------------------------------------------------------------------
-FRICTION
-----------------------------------------------------------------------
-
-TPV205-2D
-  quad4, tri3
-TPV205
-  hex8, tet4
-
-TPV?? (rate and state)
-TPV?? Drucker-Prager
-
-----------------------------------------------------------------------
-LUMPED SOLVER
-----------------------------------------------------------------------
-
-Unit tests
+* Lumped solver [Brad]
+  + Need to finish unit tests
 
   AbsorbingDampers
     integrateResidualLumped()
   FaultCohesiveDyn
     adjustSolnLumped()
+
+  Make fault nucleation (initial tractions) modular (allow space/time
+  variation).
 
 ----------------------------------------------------------------------
 CLEANUP
@@ -297,11 +323,6 @@ Brad
 RELEASE 1.5
 ----------------------------------------------------------------------
 
-1. Nondimensionalization
-
-  Ask constraints if a block matrix is okay. If okay and matrix type
-  is "unknown" (not set by user), then set block size. Do this in Python.
-
 2. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
 
 3. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
@@ -323,8 +344,6 @@ RELEASE 1.5
 see if this will satisfy their needs]
 
 Modularize output? [Matt]
-
-Fault friction
 
 Uniform refinement (debug, check, all cell types)
 

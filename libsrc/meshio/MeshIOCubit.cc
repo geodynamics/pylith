@@ -31,7 +31,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
-  _filename("")
+  _filename(""),
+  _useNodesetNames(true)
 { // constructor
 } // constructor
 
@@ -291,6 +292,32 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
   bool ok = ns_prop1->get(&ids[0], counts);
   delete[] counts; counts = 0;
       
+  string_vector groupNames(numGroups);
+  if (_useNodesetNames) {
+    NcVar* ns_names = ncfile.get_var("ns_names");
+    if (0 == ns_names) 
+      throw std::runtime_error("Could not get variable 'ns_names'.");
+    long* counts = ns_names->edges();
+    if (ns_names->num_dims() != 2)
+      throw std::runtime_error("Expected variable 'ns_names' to have "
+			       "2 dimensions.");
+    const int bufferSize = counts[1];
+    char* buffer = (bufferSize > 0) ? new char[bufferSize] : 0;
+    for (int i=0; i < numGroups; ++i) {
+      ns_names->set_cur(i);
+      bool ok = ns_names->get(buffer, 1, bufferSize, 0, 0, 0);
+      if (!ok) {
+	std::ostringstream msg;
+	msg << "Could not read name of nodeset " << ids[i] << ".";
+	throw std::runtime_error(msg.str());
+      } // if
+      groupNames[i] = buffer;
+      std::cout << "GROUP: '" << groupNames[i] << "'." << std::endl;
+    } // for
+    delete[] buffer; buffer = 0;
+    delete[] counts; counts = 0;
+  } // if
+
   for (int iGroup=0; iGroup < numGroups; ++iGroup) {
     std::valarray<int> points;
 	
@@ -314,9 +341,13 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
     points -= 1; // use zero index
 
     GroupPtType type = VERTEX;
-    std::ostringstream name;
-    name << ids[iGroup];
-    _setGroup(name.str().c_str(), type, points);
+    if (_useNodesetNames)
+      _setGroup(groupNames[iGroup], type, points);
+    else {
+      std::ostringstream name;
+      name << ids[iGroup];
+      _setGroup(name.str().c_str(), type, points);
+    } // if/else
   } // for  
 } // _readGroups
 

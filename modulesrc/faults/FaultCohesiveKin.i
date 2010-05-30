@@ -74,9 +74,9 @@ namespace pylith {
        * @param t Current time
        * @param fields Solution fields
        */
-      void integrateResidualAssembled(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				      const double t,
-				      pylith::topology::SolutionFields* const fields);
+      void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
+			     const double t,
+			     pylith::topology::SolutionFields* const fields);
 
       /** Get vertex field associated with integrator.
        *

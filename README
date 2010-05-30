@@ -33,18 +33,134 @@ files, as well as in the User Manual on the web page.
 PyLith is under active development and we expect a number of additions
 and improvements in the near future. Likely enhancements will include
 additional constitutive models for both volume elements and cohesive
-(fault) elements, implementation of finite-strain and large
-deformations, and the generation of Green's functions to be used in
-inversions.  Many of these features should be available in early 2010.
+(fault) elements and the generation of Green's functions to be used in
+inversions.
+
+======================================================================
+TIPS
+======================================================================
+
+  * For most crustal deformation problems, we recommend using the
+    Additive Schwartz preconditioner via the following PETSc
+    settings:
+
+      - Command line arguments
+
+        --petsc.pc_type=asm
+        --petsc.ksp_max_it=100
+        --petsc.ksp_gmres_restart=50
+        --petsc.ksp_rtol=1.0e-08
+
+      - pylithapp.cfg (or your other favorite .cfg file)
+
+        [pylithapp.petsc]
+        pc_type = asm
+        ksp_max_it = 200
+        ksp_gmres_restart = 50
+        ksp_rtol = 1.0e-08
+
+  * If the solve takes more than a few hundred iterations for a
+    large problem (use the --petsc.ksp_monitor=1 and
+    --petsc.ksp_view=1 to see diagnostic information for the
+    solver), this is an indication that something is wrong. Either
+    the preconditioner is inappropriate for the type of problem you
+    are solving or there is an error in the problem setup.
 
 
 ======================================================================
 MIGRATING FROM VERSION 1.4 TO 1.5
 ======================================================================
 
-Power-law stuff
+Two changes to the code require updating old parameters settings for use
+with version 1.5.
 
-many new features
+(1) Recent releases of CUBIT include nodeset names in the Exodus file
+and PyLith now uses them to associate vertices with boundary
+conditions and faults. Use the netcdf utility ncdump to examine the
+contents of the Exodus (.exo) file to see it it includes the variable
+ns_names. If it does use nodeset names rather than nodeset ids for
+boundary condition label properties. If your Exodus file does not
+contain nodeset names, then set the MeshIOCubit property
+use_nodeset_names to False to continue to use nodeset id values for
+boundary condition labels.
+
+(2) The power-law constitutive parameters have been changed in order
+to facilitate nondimensionalization. [CHARLES ADD SOME FURTHER
+EXPLANATION]
+
+----------------------------------------------------------------------
+Version 1.5.0
+----------------------------------------------------------------------
+
+  * Fault constitutive models
+
+    Added fault friction interface conditions with static
+    friction, linear slip-weakening friction, and rate- and
+    state-friction with the ageing law. The implementation can be used
+    in static, quasi-static, or dynamic problems.
+
+  * Drucker-Prager elastoplastic bulk rheology
+
+    Added a Drucker-Prager elastoplastic bulk rheology. [NEED SOME
+    WORDS FROM CHARLES]
+
+  * Finite-deformation formulation
+
+    Added a finite-deformation (rigid body motion and small strains)
+    implementation of elasticity with stress calculated using the
+    Second Piola Kirchhoff stress tensor and strains calculated using
+    the Green-Lagrange strain tensor.
+
+  * Lumped Jacobian for explicit-time stepping
+
+    Added the option to lump cell Jacobian matrices to form a diagonal
+    system Jacobian matrix for explicit time stepping. This decouples
+    all degrees of freedom and permits use of a fast, trivial, direct
+    solver.
+
+  * Optimized elasticity objects
+
+    Added optimized elasticity objects for the most popular cell types
+    and basis functions (linear polynomials). For tri3 and tet4 cells
+    with one quadrature point, the optimized implementations do not
+    use mapped cells to reduce the number of operations. For quad4 and
+    hex8 cells the optimized objects provide hardwired loop bounds
+    which can lead to faster performance for some compilers.
+
+  * Scientific notation for ASCII VTK files
+
+    Data values in ASCII data files are written in scientific notation
+    with user-specified precision.
+
+  * Nodeset names in CUBIT Exodus files
+
+    Use of nodeset names in CUBIT Exodus files for boundary conditions
+    and faults. Users can specify to use nodeset names (default
+    behavior) or ids.
+
+  * Velocity and slip rate as output fields
+
+    Velocity (domain and subdomain) and slip rate (fault) fields are
+    can be requested as output fields. The fields are computed using
+    the time-stepping algorithm and alleviates the need to compute
+    them via post-processing.
+
+  * Dimensionless values in spatial databases no longer need
+    artificial dimensions. Values without dimensions are understood by
+    the parser as dimensionless quantities.
+
+  * Bug fixes
+
+    - Updating state variables did not retrieve physical properties
+      for cell. Last physical properties retrieved were used. Physical
+      properties are now retrieved when updating state variables.
+
+    - Fixed incorrect dimensioning of physical properties and state
+      variables for the power-law rheology in output.
+
+    - Fixed memory bug for a fault in a 1-D mesh when constructing the
+      cohesive cells.
+
 
 ======================================================================
 MIGRATING FROM VERSION 1.3 TO 1.4
@@ -102,66 +218,6 @@ requires adjusting input parameters from those used with PyLith
 1.2. The time stepping is specified under the time-stepping
 formulation rather than the problem (i.e., one level deeper).
 
-======================================================================
-MIGRATING FROM VERSION 1.1 TO 1.2
-======================================================================
-
-There are two new features in PyLith version 1.2 that require users to
-adjust input parameters from those used with PyLith 1.1. A dynamic
-array of kinematic rupture replaces a single kinematic rupture on a
-fault. Additionally, the default slip time function is now a
-step-function. This eliminates the need to specify a peak slip rate
-for quasi-static simulations. When using PyLith version 1.2 with a
-problem previously setup for PyLith 1.1, look for warnings about
-unknown components and settings in the screen output at the beginning
-of a run.
-
-======================================================================
-MIGRATING FROM VERSION 1.0 TO 1.1
-======================================================================
-
-There are two new features in PyLith version 1.1 that require users to
-adjust input parameters from those used with PyLith 1.0. The
-elimination of containers in favor of the dynamic arrays of components
-present in the latest version of Pyre requires switching from setting
-the container to specifying the array of components on the command
-line or .cfg file. Additionally, the new implementation of output
-requires a completely new set of parameters. When using PyLith version
-1.1 with a problem previously setup for PyLith 1.0, look for warnings
-about unknown components and settings in the output at the beginning
-of a run.
-
-======================================================================
-TIPS
-======================================================================
-
-  * For most crustal deformation problems, we recommend using the
-    Additive Schwartz preconditioner via the following PETSc
-    settings:
-
-      - Command line arguments
-
-        --petsc.pc_type=asm
-        --petsc.ksp_max_it=100
-        --petsc.ksp_gmres_restart=50
-        --petsc.ksp_rtol=1.0e-08
-
-      - pylithapp.cfg (or your other favorite .cfg file)
-
-        [pylithapp.petsc]
-        pc_type = asm
-        ksp_max_it = 200
-        ksp_gmres_restart = 50
-        ksp_rtol = 1.0e-08
-
-  * If the solve takes more than a few hundred iterations for a
-    large problem (use the --petsc.ksp_monitor=1 and
-    --petsc.ksp_view=1 to see diagnostic information for the
-    solver), this is an indication that something is wrong. Either
-    the preconditioner is inappropriate for the type of problem you
-    are solving or there is an error in the problem setup.
-
-
 ----------------------------------------------------------------------
 Version 1.3.1
 ----------------------------------------------------------------------
@@ -207,6 +263,20 @@ Version 1.3.0
       viscoelastic and generalized Maxwell viscoelastic materials (mu
       and lambda were switched).
 
+======================================================================
+MIGRATING FROM VERSION 1.1 TO 1.2
+======================================================================
+
+There are two new features in PyLith version 1.2 that require users to
+adjust input parameters from those used with PyLith 1.1. A dynamic
+array of kinematic rupture replaces a single kinematic rupture on a
+fault. Additionally, the default slip time function is now a
+step-function. This eliminates the need to specify a peak slip rate
+for quasi-static simulations. When using PyLith version 1.2 with a
+problem previously setup for PyLith 1.1, look for warnings about
+unknown components and settings in the screen output at the beginning
+of a run.
+
 ----------------------------------------------------------------------
 Version 1.2.0
 ----------------------------------------------------------------------
@@ -216,7 +286,7 @@ Version 1.2.0
     The previous implementation of Sieve provided a very generalized
     implementation of data structures and operations for
     finite-element meshes. Switching to a more rigid implementation in
-    the new implementation strealined the data structures, resulting
+    the new implementation streamlined the data structures, resulting
     in a significant reduction in the memory use for storing the
     mesh. This leads to an overall reduction in memory use of 25-30%
     in many cases.
@@ -253,6 +323,21 @@ Version 1.2.0
 
   * Fixed Makefile.am files to not delete source files during "make
     clean" when building in the source tree.
+
+======================================================================
+MIGRATING FROM VERSION 1.0 TO 1.1
+======================================================================
+
+There are two new features in PyLith version 1.1 that require users to
+adjust input parameters from those used with PyLith 1.0. The
+elimination of containers in favor of the dynamic arrays of components
+present in the latest version of Pyre requires switching from setting
+the container to specifying the array of components on the command
+line or .cfg file. Additionally, the new implementation of output
+requires a completely new set of parameters. When using PyLith version
+1.1 with a problem previously setup for PyLith 1.0, look for warnings
+about unknown components and settings in the output at the beginning
+of a run.
 
 ----------------------------------------------------------------------
 Version 1.1.2

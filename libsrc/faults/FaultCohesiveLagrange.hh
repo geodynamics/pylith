@@ -117,42 +117,56 @@ public :
   void splitField(topology::Field<topology::Mesh>* field);
 
   /** Integrate contributions to residual term (r) for operator that
-   * do not require assembly across cells, vertices, or processors.
+   * require assembly processors.
    *
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
    */
   virtual
-  void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
 				  const double t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator that do not require assembly across cells, vertices, or
-   * processors.
+   * operator that require assembly across processors.
    *
    * @param jacobian Sparse matrix
    * @param t Current time
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobianAssembled(topology::Jacobian* jacobian,
+  void integrateJacobian(topology::Jacobian* jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator that do not require assembly across cells, vertices, or
-   * processors.
+   * operator that require assembly processors.
    *
    * @param jacobian Diagonal Jacobian matrix as a field.
    * @param t Current time
    * @param fields Solution fields
    */
   virtual
-  void integrateJacobianAssembled(topology::Field<topology::Mesh>* jacobian,
+  void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
 				  const double t,
 				  topology::SolutionFields* const fields);
+
+  /** Compute custom fault precoditioner using Schur complement.
+   *
+   * We have J = [A C^T]
+   *             [C   0]
+   *
+   * We approximate C A^(-1) C^T.
+   *
+   * @param pc PETSc preconditioner structure.
+   * @param jacobian Sparse matrix for Jacobian of system.
+   * @param fields Solution fields
+   */
+  virtual
+  void calcPreconditioner(PetscMat* const precondMatrix,
+			  topology::Jacobian* const jacobian,
+			  topology::SolutionFields* const fields);
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
    *  multiplier constraints.

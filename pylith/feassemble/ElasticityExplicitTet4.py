@@ -29,7 +29,7 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="elasticityexplicit"):
+  def __init__(self, name="elasticityexplicittet4"):
     """
     Constructor.
     """

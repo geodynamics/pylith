@@ -70,17 +70,6 @@ pylith::feassemble::Integrator<quadrature_type>::integrateResidual(
 			     topology::SolutionFields* const fields) {
 } // integrateResidual
 
-// Integrate contributions to residual term (r) for operator that
-// do not require assembly over cells, vertices, or processors.
-template<typename quadrature_type>
-inline
-void
-pylith::feassemble::Integrator<quadrature_type>::integrateResidualAssembled(
-			     const topology::Field<topology::Mesh>& residual,
-			     const double t,
-			     topology::SolutionFields* const fields) {
-} // integrateResidualAssembled
-
 // Integrate contributions to residual term (r) for operator.
 template<typename quadrature_type>
 inline
@@ -91,18 +80,6 @@ pylith::feassemble::Integrator<quadrature_type>::integrateResidualLumped(
            topology::SolutionFields* const fields) {
   integrateResidual(residual, t, fields);
 } // integrateResidual
-
-// Integrate contributions to residual term (r) for operator that
-// do not require assembly over cells, vertices, or processors.
-template<typename quadrature_type>
-inline
-void
-pylith::feassemble::Integrator<quadrature_type>::integrateResidualLumpedAssembled(
-           const topology::Field<topology::Mesh>& residual,
-           const double t,
-           topology::SolutionFields* const fields) {
-  integrateResidualAssembled(residual, t, fields);
-} // integrateResidualAssembled
 
 // Integrate contributions to Jacobian matrix (A) associated with
 // operator.
@@ -117,18 +94,6 @@ pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
 } // integrateJacobian
 
 // Integrate contributions to Jacobian matrix (A) associated with
-// operator that do not require assembly over cells, vertices, or
-// processors
-template<typename quadrature_type>
-inline
-void
-pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
-				      topology::Jacobian* jacobian,
-				      const double t,
-				      topology::SolutionFields* const fields) {
-} // integrateJacobianAssembled
-
-// Integrate contributions to Jacobian matrix (A) associated with
 // operator.
 template<typename quadrature_type>
 inline
@@ -141,16 +106,15 @@ pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
 } // integrateJacobian
 
 // Integrate contributions to Jacobian matrix (A) associated with
-// operator that do not require assembly over cells, vertices, or
-// processors
+// operator.
 template<typename quadrature_type>
 inline
-void
-pylith::feassemble::Integrator<quadrature_type>::integrateJacobianAssembled(
-			      topology::Field<topology::Mesh>* jacobian,
-			      const double t,
-			      topology::SolutionFields* const fields) {
-} // integrateJacobianAssembled
+void 
+pylith::feassemble::Integrator<quadrature_type>::calcPreconditioner(
+			          PetscMat* const precondMatrix,
+				  topology::Jacobian* const jacobian,
+				  topology::SolutionFields* const fields) {
+} // calcPreconditioner
 
 // Update state variables as needed.
 template<typename quadrature_type>

@@ -158,19 +158,17 @@ pylith::feassemble::GeometryTri2D::jacobian(double* jacobian,
   const double y2 = vertices[5];
 
 
-  const double j1 = (x1 - x0) / 2.0;
-  const double j2 = (x2 - x0) / 2.0;
-  const double j3 = (y1 - y0) / 2.0;
-  const double j4 = (y2 - y0) / 2.0;
-  const double jdet = 
-    jacobian[0]*jacobian[3] - 
-    jacobian[1]*jacobian[2];
+  const double j00 = (x1 - x0) / 2.0;
+  const double j01 = (x2 - x0) / 2.0;
+  const double j10 = (y1 - y0) / 2.0;
+  const double j11 = (y2 - y0) / 2.0;
+  const double jdet = j00*j11 - j10*j01;
 
   for (int i=0, iJ=0; i < npts; ++i) {
-    jacobian[iJ++] = j1;
-    jacobian[iJ++] = j2;
-    jacobian[iJ++] = j3;
-    jacobian[iJ++] = j4;
+    jacobian[iJ++] = j00;
+    jacobian[iJ++] = j01;
+    jacobian[iJ++] = j10;
+    jacobian[iJ++] = j11;
     det[i] = jdet;
   } // for
 

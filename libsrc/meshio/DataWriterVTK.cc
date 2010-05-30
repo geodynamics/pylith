@@ -112,7 +112,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
 
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+    err = PetscViewerSetType(_viewer, PETSCVIEWERASCII);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
     CHECK_PETSC_ERROR(err);
@@ -121,7 +121,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     
-    err = VTKViewer::writeHeader(_viewer);
+    err = VTKViewer::writeHeader(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote header for " << filename << std::endl;
     err = VTKViewer::writeVertices(sieveMesh, _viewer);
@@ -133,8 +133,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
     } else {
       const std::string labelName = 
 	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName,
-				     0, _viewer);      
+      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName, 0, _viewer);      
       CHECK_PETSC_ERROR(err);
     } // if
     //std::cout << "Wrote elements for " << filename << std::endl;

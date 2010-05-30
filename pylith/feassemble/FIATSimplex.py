@@ -185,8 +185,8 @@ class FIATSimplex(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
-      raise ValueError("Could not set shape of cell for '%s' in spatial " \
-                       "dimension '%s'." % (self.name, spaceDim))
+      raise ValueError("Could not set shape '%s' of cell for '%s' in spatial " \
+                       "dimension '%s'." % (name, self.name, spaceDim))
     return
   
 

@@ -20,7 +20,7 @@ from pylith.materials.ElasticMaterial import ElasticMaterial
 
 # Import the SWIG module PlanseStrainState object and rename it
 # ModulePlaneStrainState so that it doesn't clash with the local
-# Python class with the same name.
+# Python class of the same name.
 from materialscontrib import PlaneStrainState as ModulePlaneStrainState
 
 # PlaneStrainState class

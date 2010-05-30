@@ -286,7 +286,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 
   double friction = 0.0;
   double mu_f = 0.0;
-  if (normalTraction < 0.0) {
+  if (normalTraction <= 0.0) {
     // if fault is in compression
     // Using Regularized Rate and State equation
     const double f0 = properties[p_coef];
@@ -350,8 +350,6 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   stateVars[s_state] = thetaTpdtVertex;
 
-  std::cout << "STATEVAR before: " << thetaTVertex << ", after: " << thetaTpdtVertex << std::endl;
-  std::cout << "SLIP RATE: " << slipRate << std::endl;
   PetscLogFlops(6);
 } // _updateStateVars
 

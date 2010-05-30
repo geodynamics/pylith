@@ -62,7 +62,7 @@ const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_quadPt
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_quadWts[] = {
-  5.00000000e-01,
+  2.00000000e+00,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_basis[] = {
@@ -94,42 +94,42 @@ const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_fieldT
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_valsResidual[] = {
- -1.30908158e+11,  1.45826462e+11,
-  4.13431858e+10, -1.44671497e+11,
-  8.95625655e+10, -1.15576609e+09,
+ -5.23632630e+11,  5.83305846e+11,
+  1.65372743e+11, -5.78685990e+11,
+  3.58250262e+11, -4.62306437e+09,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_valsJacobian[] = {
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  3.81944444e+05,  0.00000000e+00,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
-  0.00000000e+00,  3.81944444e+05,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  1.52777778e+06,  0.00000000e+00,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
+  0.00000000e+00,  1.52777778e+06,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_valsResidualLumped[] = {
- -1.30907928e+11,  1.45826729e+11,
-  4.13428421e+10, -1.44672491e+11,
-  8.95626801e+10, -1.15504040e+09,
+ -5.23631714e+11,  5.83306915e+11,
+  1.65371368e+11, -5.78689962e+11,
+  3.58250720e+11, -4.62016160e+09,
 };
 
 const double pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::_valsJacobianLumped[] = {
-  1.14583333e+06,  1.14583333e+06,
-  1.14583333e+06,  1.14583333e+06,
-  1.14583333e+06,  1.14583333e+06,
+  4.58333333e+06,  4.58333333e+06,
+  4.58333333e+06,  4.58333333e+06,
+  4.58333333e+06,  4.58333333e+06,
 };
 
 pylith::feassemble::ElasticityExplicitLgDeformData2DLinear::ElasticityExplicitLgDeformData2DLinear(void)

@@ -50,7 +50,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) c
   if (!sieveMesh->hasIntSection(_label)) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
-	<< " for boundary condition.";
+	<< "' for boundary condition.";
     throw std::runtime_error(msg.str());
   } // if
 } // verifyConfiguration

@@ -26,7 +26,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field, SolutionFields
 
-#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat, PetscSNES
+#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
 #include "pylith/utils/array.hh" // HASA std::vector
 
@@ -55,6 +55,30 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
+  /** Set flag for splitting fields.
+   *
+   * @param flag True if splitting fields, false otherwise.
+   */
+  void splitFields(const bool flag);
+
+  /** Get flag for splitting fields.
+   *
+   * @returns flag True if splitting fields, false otherwise.
+   */
+  bool splitFields(void) const;
+
+  /** Set flag for using custom preconditioner for Lagrange constraints.
+   *
+   * @param flag True if using custom fault preconditioner, false otherwise.
+   */
+  void useCustomConstraintPC(const bool flag);
+
+  /** Get flag indicating use of custom conditioner for Lagrange constraints.
+   *
+   * @returns True if using custom fault preconditioner, false otherwise.
+   */
+  bool useCustomConstraintPC(void) const;
+
   /** Get solution fields.
    *
    * @returns solution fields.
@@ -82,6 +106,12 @@ public :
    */
   void submeshIntegrators(IntegratorSubMesh** integrators,
 			  const int numIntegrators);
+
+  /** Set handle to preconditioner.
+   *
+   * @param pc PETSc preconditioner.
+   */
+  void customPCMatrix(PetscMat& mat);
 
   /// Initialize formulation.
   virtual
@@ -167,6 +197,7 @@ protected :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
+  PetscMat _precondMatrix; ///< Custom PETSc preconditioning matrix.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 
@@ -177,6 +208,10 @@ protected :
   std::vector<IntegratorSubMesh*> _submeshIntegrators;
 
   bool _isJacobianSymmetric; ///< Is system Jacobian symmetric?
+  bool _splitFields; ///< True if splitting fields.
+
+  /// True if using custom preconditioner for Lagrange constraints.
+  bool _useCustomConstraintPC;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

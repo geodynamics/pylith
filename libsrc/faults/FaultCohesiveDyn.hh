@@ -77,19 +77,19 @@ public :
 		  const double normalDir[3]);
 
   /** Integrate contributions to residual term (r) for operator that
-   * do not require assembly across cells, vertices, or processors.
+   * do not require assembly across processors.
    *
-   * Initial tractions (if specified) contribute to the residual like
-   * Neumann boundary conditions.
+   * Initial tractions (if specified) are already assembled and
+   * contribute to the residual like Neumann boundary conditions.
    *
    * @param residual Field containing values for residual
    * @param t Current time
    * @param fields Solution fields
    */
   virtual
-  void integrateResidualAssembled(const topology::Field<topology::Mesh>& residual,
-				  const double t,
-				  topology::SolutionFields* const fields);
+  void integrateResidual(const topology::Field<topology::Mesh>& residual,
+			 const double t,
+			 topology::SolutionFields* const fields);
 
   /** Update state variables as needed.
    *

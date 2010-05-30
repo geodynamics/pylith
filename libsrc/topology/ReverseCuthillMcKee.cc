@@ -52,7 +52,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     //sieveMesh->view("MESH AFTER RELABEL");
   } // if    
 
-    //logger.stagePop();
+  //logger.stagePop();
 } // reorder
 
 

@@ -1,0 +1,27 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: input   start ] */
+B : matrix([b0,0,b1,0,b2,0],
+[0,c0,0,c1,0,c2],
+[c0,b0,c1,b1,c2,b2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+disp : matrix([dispCell0,dispCell1,dispCell2,dispCell3,dispCell4,dispCell5]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+B . transpose(disp);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+stress : matrix([stressCell0, stressCell1, stressCell2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+transpose(B) . transpose(stress);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

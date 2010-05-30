@@ -41,11 +41,11 @@ const int pylith::faults::CohesiveKinSrcsDataTet4::_numBasis = 3;
 const int pylith::faults::CohesiveKinSrcsDataTet4::_numQuadPts = 1;
 
 const double pylith::faults::CohesiveKinSrcsDataTet4::_quadPts[] = {
-  3.33333333e-01,  3.33333333e-01,
+  -3.33333333e-01,  -3.33333333e-01,
 };
 
 const double pylith::faults::CohesiveKinSrcsDataTet4::_quadWts[] = {
-  5.00000000e-01,
+  2.0,
 };
 
 const double pylith::faults::CohesiveKinSrcsDataTet4::_basis[] = {
@@ -136,9 +136,9 @@ const double pylith::faults::CohesiveKinSrcsDataTet4::_residual[] = {
  -9.7, -7.7, -8.7, // 7
  -9.9, -7.9, -8.9, // 4
  -9.1, -7.1, -8.1, // 5
- -0.4, -0.4, -0.4, // 10
- -0.5, -0.5, -0.5, // 11
-  0.4,  0.4,  0.4, // 12
+ -0.4+1.82575588523+0.91680340354, -0.4+-0.55566483464+-0.27902712282, -0.4+0.07938069066+0.03986101755, // 10
+ -0.5+1.69682900001+0.62551316338, -0.5+-0.56560966667+-0.20850438779, -0.5+0.14140241667+0.05212609695, // 11
+  0.4+1.51709826228+0.34903622931,  0.4+-0.54615537442+-0.12565304255,  0.4+0.18205179147+0.04188434752, // 12
 };
 
 const double pylith::faults::CohesiveKinSrcsDataTet4::_residualIncr[] = {
@@ -150,9 +150,9 @@ const double pylith::faults::CohesiveKinSrcsDataTet4::_residualIncr[] = {
  -9.7, -7.7, -8.7, // 7
  -9.9, -7.9, -8.9, // 4
  -9.1, -7.1, -8.1, // 5
- -0.4, -0.4, -0.4, // 10
- -0.5, -0.5, -0.5, // 11
-  0.4,  0.4,  0.4, // 12
+ -0.4+1.82575588523+0.91680340354, -0.4+-0.55566483464+-0.27902712282, -0.4+0.07938069066+0.03986101755, // 10
+ -0.5+1.69682900001+0.62551316338, -0.5+-0.56560966667+-0.20850438779, -0.5+0.14140241667+0.05212609695, // 11
+  0.4+1.51709826228+0.34903622931,  0.4+-0.54615537442+-0.12565304255,  0.4+0.18205179147+0.04188434752, // 12
 };
 
 const double pylith::faults::CohesiveKinSrcsDataTet4::_jacobian[] = {

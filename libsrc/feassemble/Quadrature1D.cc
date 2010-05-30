@@ -21,7 +21,7 @@
 
 #include <cassert> // USES assert()
 
-#define ISOPARAMETRIC
+//#define ISOPARAMETRIC
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -76,8 +76,8 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinate
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
       _quadPts[iQuadPt] += basis[iQ+iBasis]*coordinatesCell[iBasis];
 #else
-    geometry.coordsRefToGlobal(&_quadPts[iQuadPt], &quadPtsRef[iQuadPt],
-			       &coordinatesCell[0], spaceDim);
+    geometry.ptsRefToGlobal(&_quadPts[iQuadPt], &quadPtsRef[iQuadPt],
+			    &coordinatesCell[0], spaceDim, 1);
 #endif
 
 #if defined(ISOPARAMETRIC)
@@ -93,9 +93,8 @@ pylith::feassemble::Quadrature1D::computeGeometry(const double_array& coordinate
     _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
 #else
     // Compute Jacobian and determinant of Jacobian at quadrature point
-    assert(0 != _geometry);
-    geometry->jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
-		       &coordinatesCell[0], &quadPtsRef[iQuadPt], spaceDim);
+    geometry.jacobian(&_jacobian[iQuadPt], &_jacobianDet[iQuadPt],
+		      &coordinatesCell[0], &quadPtsRef[iQuadPt], spaceDim, 1);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
 #endif
     

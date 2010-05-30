@@ -142,15 +142,18 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
+pylith::faults::FaultCohesiveDyn::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
 			     const double t,
 			     topology::SolutionFields* const fields)
-{ // integrateResidualAssembled
+{ // integrateResidual
   assert(0 != fields);
   assert(0 != _fields);
 
-  FaultCohesiveLagrange::integrateResidualAssembled(residual, t, fields);
+  // Initial fault tractions have been assembled, so they do not need
+  // assembling across processors.
+
+  FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
   // No contribution if no initial tractions are specified.
   if (0 == _dbInitialTract)
@@ -171,12 +174,23 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    residualSection);
+  assert(!globalOrder.isNull());
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
 
     // Get initial forces at fault vertex. Forces are in the global
     // coordinate system so no rotation is necessary.
@@ -191,6 +205,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
     // only apply initial tractions if there is no opening
     if (0.0 == slipVertex[spaceDim-1]) {
       residualVertex = forcesInitialVertex;
+
       assert(residualVertex.size() == 
 	     residualSection->getFiberDimension(v_positive));
       residualSection->updateAddPoint(v_positive, &residualVertex[0]);
@@ -203,7 +218,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidualAssembled(
   } // for
 
   PetscLogFlops(numVertices*spaceDim);
-} // integrateResidualAssembled
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Update state variables as needed.
@@ -671,6 +686,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
 
+  const ALE::Obj<RealSection>& dispTIncrAdjSection = fields->get(
+    "dispIncr adjust").section();
+  assert(!dispTIncrAdjSection.isNull());
+
   double_array jacobianVertexN(spaceDim);
   double_array jacobianVertexP(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
@@ -680,6 +699,13 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   double_array residualVertexP(spaceDim);
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
+
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    jacobianSection);
+  assert(!globalOrder.isNull());
 
   adjustSolnLumped_fn_type adjustSolnLumpedFn;
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
@@ -727,6 +753,10 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
@@ -923,12 +953,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     // Adjust displacements to account for Lagrange multiplier values
     // (assumed to be zero in perliminary solve).
     assert(dispTIncrVertexN.size() == 
-	   dispTIncrSection->getFiberDimension(v_negative));
-    dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+	   dispTIncrAdjSection->getFiberDimension(v_negative));
+    dispTIncrAdjSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
 
     assert(dispTIncrVertexP.size() == 
-	   dispTIncrSection->getFiberDimension(v_positive));
-    dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
+	   dispTIncrAdjSection->getFiberDimension(v_positive));
+    dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry of 1.0.
@@ -1578,8 +1608,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   const int spaceDim = _quadrature->spaceDim();
   const int subnrows = numBasis*spaceDim;
   const int submatrixSize = subnrows * subnrows;
-  const int nrows = 3*subnrows;
-  const int matrixSize = nrows * nrows;
 
   // Get solution field
   const topology::Field<topology::Mesh>& solutionDomain = fields.solution();
@@ -1598,17 +1626,16 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     cellsCohesive->end();
 
   // Visitor for Jacobian matrix associated with domain.
-  double_array jacobianDomainCell(matrixSize);
   const PetscMat jacobianDomainMatrix = jacobian.matrix();
   assert(0 != jacobianDomainMatrix);
   const ALE::Obj<SieveMesh::order_type>& globalOrderDomain =
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionDomainSection);
   assert(!globalOrderDomain.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianDomainVisitor(*solutionDomainSection,
-                                                 *globalOrderDomain,
-                           (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-                                     sieveMesh->depth())*spaceDim);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
+      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  int_array indicesGlobal(subnrows);
 
   // Get fault Sieve mesh
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -1620,7 +1647,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!solutionFaultSection.isNull());
 
   // Visitor for Jacobian matrix associated with fault.
-  double_array jacobianFaultCell(submatrixSize);
+  double_array jacobianSubCell(submatrixSize);
   assert(0 != _jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();
   assert(0 != jacobianFaultMatrix);
@@ -1633,47 +1660,50 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
                            (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
                                      faultSieveMesh->depth())*spaceDim);
 
-  const int indexOffset = (negativeSide) ? 0 : 3*submatrixSize + subnrows;
-
+  const int iCone = (negativeSide) ? 0 : 1;
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
+    // Get cone for cohesive cell
+    ncV.clear();
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
+								 *c_iter, ncV);
+    const int coneSize = ncV.getSize();
+    assert(coneSize == 3*numBasis);
+    const Mesh::point_type *cohesiveCone = ncV.getPoints();
+    assert(0 != cohesiveCone);
+
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    jacobianDomainCell = 0.0;
-    jacobianFaultCell = 0.0;
+    jacobianSubCell = 0.0;
 
-    // Get cell contribution in PETSc Matrix
-    jacobianDomainVisitor.clear();
-#if 0
+    // Get indices
+    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
+      // negative side of the fault: iCone=0
+      // positive side of the fault: iCone=1
+      const int v_domain = cohesiveCone[iCone*numBasis+iBasis];
+      
+      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
+	if (globalOrderDomain->isLocal(v_domain))
+	  indicesGlobal[iB+iDim] = globalOrderDomain->getIndex(v_domain) + iDim;
+	else
+	  indicesGlobal[iB+iDim] = -1;
 
-    PetscErrorCode err = restrictOperator(jacobianDomainMatrix, *sieveMesh->getSieve(),
-                                              jacobianDomainVisitor, *c_iter,
-                                              &jacobianDomainCell[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-#else
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieveMesh->getSieve(), 
-						 *c_iter, 
-						 jacobianDomainVisitor);
-    const int* indices = jacobianDomainVisitor.getValues();
-    const int numIndices = jacobianDomainVisitor.getSize();
-    PetscErrorCode err = MatGetValues(jacobianDomainMatrix, 
-				      numIndices, indices,
-				      numIndices, indices,
-				      &jacobianDomainCell[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-#endif
-
-    for (int iRow=0, i=0; iRow < subnrows; ++iRow) {
-      const int indexR = indexOffset + iRow*nrows;
-      for (int iCol=0; iCol < subnrows; ++iCol, ++i)
-        jacobianFaultCell[i] = jacobianDomainCell[indexR+iCol];
+	// Set matrix diagonal entries to 1.0 (used when vertex is not local).
+	jacobianSubCell[(iB+iDim)*numBasis*spaceDim+iB+iDim] = 1.0;
+      } // for
     } // for
+    
+    PetscErrorCode err = MatGetValues(jacobianDomainMatrix, 
+				      indicesGlobal.size(), &indicesGlobal[0],
+				      indicesGlobal.size(), &indicesGlobal[0],
+				      &jacobianSubCell[0]);
+    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
 
     // Insert cell contribution into PETSc Matrix
     jacobianFaultVisitor.clear();
     err = updateOperator(jacobianFaultMatrix, *faultSieveMesh->getSieve(),
 			 jacobianFaultVisitor, c_fault,
-			 &jacobianFaultCell[0], INSERT_VALUES);
+			 &jacobianSubCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
 

@@ -10,7 +10,9 @@ The problem can be run by entering
 
   pylith
 
-in any of the subdirectories.
+in the tri3, tet4, or hex8 subdirectories. The quad4 subdirectory also
+contains some additional dynamic examples, so the problem is run by
+entering "pylith shearwave_kinematicslip.cfg".
 
 
 Subdirectories
@@ -20,8 +22,10 @@ Subdirectories
   - tet4: Mesh with tetrahedral cells
   - quad4: Mesh with quadrilateral cells
 
-Each of the subdirectories contains the files listed below (along with
-other files for the mesh).
+Each of the tri3, tet4, and hex8 subdirectories contains the files
+listed below (along with other files for the mesh). The files in the
+quad4 subdirectory are named differently (see the README in the quad4
+subdirectory for more information).
 
   - pylithapp.cfg: Parameter settings for the shear wave dislocation problem
   - matprops.spatialdb: Material database of physical properties
@@ -30,4 +34,3 @@ other files for the mesh).
     peak slip rate
   - shearwave_sliptime.spatialdb: Spatial database with values for the
     slip initiation time
-

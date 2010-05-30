@@ -58,9 +58,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## \b Properties
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements
-    ## and Lagrange multipliers for separate preconditioning.
+    ## @li \b use_custom_constraint_pc Use custom preconditioner for
+    ##   Lagrange constraints.
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is
-    ## reformed.
+    ##   reformed.
     ##
     ## \b Facilities
     ## @li \b time_step Time step size manager.
@@ -73,9 +74,14 @@ class Formulation(PetscComponent, ModuleFormulation):
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
 
-    splitFields = pyre.inventory.bool("split_fields", default=False)
-    splitFields.meta['tip'] = "Split solution fields into displacements "\
+    useSplitFields = pyre.inventory.bool("split_fields", default=False)
+    useSplitFields.meta['tip'] = "Split solution fields into displacements "\
         "and Lagrange multipliers for separate preconditioning."
+
+    useCustomConstraintPC = pyre.inventory.bool("use_custom_constraint_pc",
+                                                default=False)
+    useCustomConstraintPC.meta['tip'] = "Use custom preconditioner for " \
+                                        "Lagrange constraints."
 
     viewJacobian = pyre.inventory.bool("view_jacobian", default=False)
     viewJacobian.meta['tip'] = "Write Jacobian matrix to binary file."
@@ -279,7 +285,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     PetscComponent._configure(self)
     self.matrixType = self.inventory.matrixType
-    self.splitFields = self.inventory.splitFields
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
     self.output = self.inventory.output
@@ -289,8 +294,45 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     import journal
     self._debug = journal.debug(self.name)
+
+    if self.inventory.useCustomConstraintPC and \
+           not self.inventory.useSplitFields:
+      print "WARNING: Request to use custom preconditioner for Lagrange " \
+            "constraints without splitting fields. " \
+            "Setting split fields flag to 'True'."
+      self.inventory.useSplitFields = True
+
+    ModuleFormulation.splitFields(self, self.inventory.useSplitFields)
+    ModuleFormulation.useCustomConstraintPC(self,
+                                            self.inventory.useCustomConstraintPC)
     return
 
+
+  def _setJacobianMatrixType(self):
+    """
+    Determine appropriate PETSc matrix type for Jacobian matrix.
+    """
+    # Mapping from symmetric matrix type to nonsymmetric matrix type
+    matrixMap = {'sbaij': 'baij',
+                 'seqsbaij': 'seqbaij',
+                 'mpisbaij': 'mpibaij',
+                 'unknown': 'aij'}
+    isJacobianSymmetric = True
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      if not integrator.isJacobianSymmetric():
+        isJacobianSymmetric = False
+    if not isJacobianSymmetric:
+      if self.matrixType in matrixMap.keys():
+        print "WARNING: Jacobian matrix will not be symmetric.\n" \
+              "         Switching matrix type from '%s' to '%s'." % \
+              (self.matrixType, matrixMap[self.matrixType])
+        self.matrixType = matrixMap[self.matrixType]
+    self.blockMatrixOkay = True
+    for constraint in self.constraints:
+      numDimConstrained = constraint.numDimConstrained()
+      if numDimConstrained > 0 and self.mesh.dimension() != numDimConstrained:
+        self.blockMatrixOkay = False
+    return
 
   def _setupMaterials(self, materials):
     """

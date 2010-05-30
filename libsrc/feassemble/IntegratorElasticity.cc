@@ -121,6 +121,7 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
 
   // Initialize material.
   _material->initialize(mesh, _quadrature);
+  _isJacobianSymmetric = _material->isJacobianSymmetric();
 
   // Allocate vectors and matrices for cell values.
   _initCellVector();

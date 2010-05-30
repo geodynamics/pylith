@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -90,7 +90,7 @@ reference "cha:Installation-and-Getting"
 \color none
  For more complex tutorials, you will also need either CUBIT 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -223,158 +223,40 @@ filename "3dtet4/3dtet4.lyx"
 \end_layout
 
 \begin_layout Section
-Additional Examples
+Shear Wave in a Bar
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-examples
-\family default
- directory also contains other examples which are not described in this
- chapter.
- The files associated with these examples contain comments to explain the
- problems they solve.
- Once you understand the examples described in detail in the previous sections
- of this chapter, you should have little trouble understanding these additional
- ones.
- Currently, these problems are very simple cases of using dynamic time stepping
- with absorbing boundaries to simulate shear wave propagation in a 2D or
- 3D bar.
- More complex examples of wave propagation problems will be included in
- future releases.
- 
+This suite of examples focuses on the dynamics of a shear wave propagating
+ down an 8 km long bar with a 400 m wide cross-section.
+ Motion is limited to shear deformation by fixing the longitudinal degree
+ of freedom.
+ For each cell type (tri3, quad4, tet4, and hex8) we generate a shear wave
+ using a kinematic fault rupture with simultaneous slip over the fault surface,
+ which we place at the center of the bar.
+ The discretization size is 200 m in all cases.
+ The slip time histories follows the integral of Brune's far-field time
+ function with slip initiating at 0.1 s, a left-lateral final slip of 1.0
+ m, and a rise time of 2.0 s.
+ The shear wave speed in the bar is 1.0 km/s, so the shear wave reaches each
+ end of the bar at 4.1 s.
+ Absorbing boundaries on the ends of the bar prevent significant reflections.
+ The bar comes to a rest with a static offset.
 \end_layout
 
 \begin_layout Standard
 \noindent
 \align center
-\begin_inset Float table
-placement H
+\begin_inset Float figure
 wide false
 sideways false
 status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="2">
-<features>
-<column alignment="left" valignment="top" width="1.75in">
-<column alignment="left" valignment="top" width="4in">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Directory
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Description
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-bar_shearwave/tri3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Wave propagation in a 2D bar discretized with triangular cells
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-bar_shearwave/quad4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Wave propagation in a 2D bar discretized with quadrilateral cells
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-bar_shearwave/tet4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Wave propagation in a 3D bar discretized with tetrahedral cells
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-bar_shearwave/hex8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Wave propagation in a 3D bar discretized with hexahedral cells
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
+\begin_inset Graphics
+	filename figs/bar.eps
+	lyxscale 50
 
 \end_inset
 
@@ -385,14 +267,12 @@ Wave propagation in a 3D bar discretized with hexahedral cells
 \begin_inset Caption
 
 \begin_layout Plain Layout
+Domain for shear wave propagation in a 8.0 km bar with 400 m cross-section.
+ We generate a shear wave via slip on a fault located in the middle of the
+ bar while limiting deformation to the transverse direction.
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:additional:examples"
-
-\end_inset
-
-Additional examples distributed with the PyLith source code.
-\end_layout
+name "fig:shearwave:domain"
 
 \end_inset
 
@@ -402,6 +282,96 @@ Additional examples distributed with the PyLith source code.
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the bar discretized with quad4 cells we also consider the fault subjected
+ to frictional sliding controlled by static friction, linear slip-weakening
+ friction, and rate- and state-friction.
+ We use initial tractions applied to the fault to drive the dislocation
+ and generate the shear wave.
+ Because the fault tractions are constant in time, they continue to drive
+ the motion even after the shear wave reaches the absorbing boundary, leading
+ to a steady state solution with uniform shear deformation in the bar and
+ a constant slip rate on the fault.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "shearwave/tri3.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "shearwave/tet4.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "shearwave/hex8.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "shearwave/quad4.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Additional Examples
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+examples
+\family default
+ directory also contains an example of using PyLith to compute Green's functions
+ associated with slip at points on a fault surface in the 
+\family typewriter
+greensfns
+\family default
+ directory.
+ The files associated with this example contain comments to explain how
+ the simulation is setup.
+ Once you understand the examples described in detail in the previous sections
+ of this chapter, you should have little trouble understanding this additional
+ one.
+\end_layout
+
+\begin_layout Standard
+The CIG subversion software repository 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks/trunk
+\end_layout
+
+\end_inset
+
+ contains input files for a number of community benchmarks.
+ Most of the benchmarks include complete sets of PyLith input files.
+ Some of the dynamic benchmarks do not include the mesh files because they
+ are so large; instead they include the CUBIT journal files that can be
+ used to generate the meshes.
 \end_layout
 
 \end_body

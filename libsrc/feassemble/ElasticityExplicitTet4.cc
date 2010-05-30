@@ -249,7 +249,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
       quadPtsGlobal = 0.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
-          quadPtsGlobal[iDim] += 0.25 * coordinatesCell[iBasis*spaceDim+iDim];
+          quadPtsGlobal[iDim] += 
+	    coordinatesCell[iBasis*spaceDim+iDim] / numBasis;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
@@ -545,7 +546,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
       quadPtsGlobal = 0.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
-          quadPtsGlobal[iDim] += 0.25 * coordinatesCell[iBasis*spaceDim+iDim];
+          quadPtsGlobal[iDim] += 
+	    coordinatesCell[iBasis*spaceDim+iDim] / numBasis;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 

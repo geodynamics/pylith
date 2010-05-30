@@ -54,11 +54,11 @@ const double pylith::feassemble::QuadratureData3DLinear::_quadWts[] = {
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_quadPts[] = {
-  8.25000000e-01,  2.25000000e-01,  4.50000000e-01,
+  5.75000000e-01, -2.75000000e-01,  2.00000000e-01,
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_basis[] = {
- -2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
+  2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
   2.50000000e-01,};
 
 const double pylith::feassemble::QuadratureData3DLinear::_basisDerivRef[] = {

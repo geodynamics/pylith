@@ -57,6 +57,12 @@ public :
    */
   const char* filename(void) const;
 
+  /** Set flag on whether to use nodeset ids or names.
+   *
+   * @param flag True to use node set names.
+   */
+  void useNodesetNames(const bool flag);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -136,6 +142,7 @@ private :
 private :
 
   std::string _filename; ///< Name of file
+  bool _useNodesetNames; ///< True to use node set names instead of ids.
 
 }; // MeshIOCubit
 
