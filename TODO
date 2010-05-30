@@ -15,8 +15,12 @@ release announcement [add fault preconditioner when done]
 
 DOC/INSTALL
   Update MacBookPro
+    development, easy to switch among different versions of MPI and
+    test compatibility of newer versions of various package
   Update linux
-  Add garuda
+  Add garuda, pangu
+    Clusters - dependencies and multiple versions of PyLith
+      (development and stable)
 
 MANUAL
 
@@ -171,6 +175,9 @@ SECONDARY PRIORITIES
     integrateResidualLumped()
   FaultCohesiveDyn
     adjustSolnLumped()
+
+  Make fault nucleation (initial tractions) modular (allow space/time
+  variation).
 
 ----------------------------------------------------------------------
 CLEANUP
