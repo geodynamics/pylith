@@ -42,11 +42,11 @@ const int pylith::faults::CohesiveDynDataTet4::_numBasis = 3;
 const int pylith::faults::CohesiveDynDataTet4::_numQuadPts = 1;
 
 const double pylith::faults::CohesiveDynDataTet4::_quadPts[] = {
-  3.33333333e-01,  3.33333333e-01,
+  -3.33333333e-01,  -3.33333333e-01,
 };
 
 const double pylith::faults::CohesiveDynDataTet4::_quadWts[] = {
-  5.00000000e-01,
+  2.0,
 };
 
 const double pylith::faults::CohesiveDynDataTet4::_basis[] = {

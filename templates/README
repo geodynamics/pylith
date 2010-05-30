@@ -1,3 +1,6 @@
 This directory contains templates for extending the functionality of
-PyLith. This includes creating user-defined bulk constitutive models
-(see the materials directory).
+PyLith.
+
+Directories
+  * friction - fault constitutive models
+  * materials - bulk constitutive models

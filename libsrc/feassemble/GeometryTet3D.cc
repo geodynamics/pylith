@@ -225,6 +225,9 @@ pylith::feassemble::GeometryTet3D::jacobian(double* jacobian,
     jacobian[iJ++] = j3;
     jacobian[iJ++] = j4;
     jacobian[iJ++] = j5;
+    jacobian[iJ++] = j6;
+    jacobian[iJ++] = j7;
+    jacobian[iJ++] = j8;
     det[i] = jdet;
   } // for
 

@@ -38,6 +38,7 @@ class pylith::bc::TestDirichletBCTet4 : public TestDirichletBC
   CPPUNIT_TEST_SUB_SUITE( TestDirichletBCTet4, TestDirichletBC );
 
   CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testNumDimConstrained );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );

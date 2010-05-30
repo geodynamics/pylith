@@ -26,11 +26,12 @@ delete volume 1
 # ----------------------------------------------------------------------
 
 # Create fault (yz plane) at x = 0.0
-split surface 8 across location position 0 -200 0 location position 0 200 0
-curve 21 name "fault_surface"
+split surface 7 across location position 0 -200 0 location position 0 200 0
+curve 17 name "fault_surface"
 
 # ----------------------------------------------------------------------
 # Imprint all volumes, merging surfaces
 # ----------------------------------------------------------------------
 imprint all
 merge all
+

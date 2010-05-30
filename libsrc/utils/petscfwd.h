@@ -38,6 +38,9 @@ typedef struct _p_KSP* PetscKSP;
 /// forward declaration for PETSc SNES
 typedef struct _p_SNES* PetscSNES;
 
+/// forward declaration for PETSc PC
+typedef struct _p_PC* PetscPC;
+
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
 

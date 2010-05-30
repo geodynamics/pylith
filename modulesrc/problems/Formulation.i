@@ -34,6 +34,32 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
+      /** Set flag for splitting fields.
+       *
+       * @param flag True if splitting fields, false otherwise.
+       */
+      void splitFields(const bool flag);
+
+      /** Get flag for splitting fields.
+       *
+       * @returns flag True if splitting fields, false otherwise.
+       */
+      bool splitFields(void) const;
+
+      /** Set flag for using custom Lagrange constraint preconditioner.
+       *
+       * @param flag True if using custom constraint precondition,
+       * false otherwise.
+       */
+      void useCustomConstraintPC(const bool flag);
+
+      /** Get flag indicating use of custom Lagrange constraint conditioner.
+       *
+       * @returns flag True if using custom constraint preconditioner, 
+       * false otherwise.
+       */
+      bool useCustomConstraintPC(void) const;
+
       /** Get solution fields.
        *
        * @returns solution fields.

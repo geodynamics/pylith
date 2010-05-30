@@ -211,5 +211,17 @@ pylith::materials::TestDruckerPrager3D::testHasStateVar(void)
   CPPUNIT_ASSERT(material.hasStateVar("plastic_strain"));
 } // testHasStateVar
 
+// ----------------------------------------------------------------------
+// Test _dbToProperties().
+void
+pylith::materials::TestDruckerPrager3D::testDBToProperties(void)
+{ // testDBToProperties
+  CPPUNIT_ASSERT(0 != _material);
+  
+  TestMaterial::testDBToProperties();
+
+  CPPUNIT_ASSERT_EQUAL(false, _material->isJacobianSymmetric());
+} // testDBToProperties
+
 
 // End of file 

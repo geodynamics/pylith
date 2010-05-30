@@ -181,7 +181,7 @@ pylith::materials::DruckerPrager3D::useElasticBehavior(const bool flag)
 void
 pylith::materials::DruckerPrager3D::_dbToProperties(
 				double* const propValues,
-				const double_array& dbValues) const
+				const double_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
@@ -208,6 +208,9 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
 	<< "dilatationAngle: " << dilatationAngle << "\n";
     throw std::runtime_error(msg.str());
   } // if
+
+  if (fabs(frictionAngle - dilatationAngle) > 1.0e-6)
+    _isJacobianSymmetric = false;
 
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
@@ -293,7 +296,7 @@ pylith::materials::DruckerPrager3D::_dimProperties(double* const values,
 void
 pylith::materials::DruckerPrager3D::_dbToStateVars(
 				double* const stateValues,
-				const double_array& dbValues) const
+				const double_array& dbValues)
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();

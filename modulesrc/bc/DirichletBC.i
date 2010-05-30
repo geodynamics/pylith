@@ -36,6 +36,12 @@ namespace pylith {
       virtual
       void deallocate(void);
   
+      /** Get number of constraints per location.
+       *
+       * @returns Number of constraints per location.
+       */
+      int numDimConstrained(void) const;
+
       /** Initialize boundary condition.
        *
        * @param mesh PETSc mesh

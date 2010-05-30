@@ -16,6 +16,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -70,10 +71,9 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 } // initialize
 
 // ----------------------------------------------------------------------
-// Integrate contributions to residual term (r) for operator that
-// do not require assembly over cells, vertices, or processors.
+// Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::PointForce::integrateResidualAssembled(
+pylith::bc::PointForce::integrateResidual(
 			   const topology::Field<topology::Mesh>& residual,
 			   const double t,
 			   topology::SolutionFields* const fields)
@@ -96,6 +96,14 @@ pylith::bc::PointForce::integrateResidualAssembled(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
+  // Get global order
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+        residualSection);
+  assert(!globalOrder.isNull());
+
   double_array valuesVertex(numBCDOF);
   const ALE::Obj<RealSection>& valueSection = 
     _parameters->get("value").section();
@@ -103,6 +111,11 @@ pylith::bc::PointForce::integrateResidualAssembled(
   
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label.
+
+    // Contribute to residual if point is local.
+    if (!globalOrder->isLocal(p_bc))
+      continue;
+
     residualVertex *= 0.0; // Reset residual contribution to zero.
     
     valueSection->restrictPoint(p_bc, &valuesVertex[0], valuesVertex.size());

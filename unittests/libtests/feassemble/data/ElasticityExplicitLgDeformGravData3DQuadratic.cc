@@ -511,7 +511,7 @@ const double pylith::feassemble::ElasticityExplicitLgDeformGravData3DQuadratic::
 
 const double pylith::feassemble::ElasticityExplicitLgDeformGravData3DQuadratic::_valsJacobianLumped[] = {
   2.57903646e+06,  2.57903646e+06,  2.57903646e+06,
-  2.40117187e+06,  2.40117187e+06,  2.40117187e+06,
+  2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
   2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
   2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
   1.20947917e+07,  1.20947917e+07,  1.20947917e+07,

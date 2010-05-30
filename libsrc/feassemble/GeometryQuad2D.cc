@@ -194,16 +194,16 @@ pylith::feassemble::GeometryQuad2D::jacobian(double* jacobian,
     const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
     assert(0 <= p0 && p0 <= 1.0);
     assert(0 <= p1 && p1 <= 1.0);
-    const double j0 = (f_1 + f_01 * p1) / 2.0; 
-    const double j1 = (f_3 + f_01 * p0) / 2.0; 
-    const double j2 = (g_1 + g_01 * p1) / 2.0;
-    const double j3 = (g_3 + g_01 * p0) / 2.0; 
+    const double j00 = (f_1 + f_01 * p1) / 2.0; 
+    const double j01 = (f_3 + f_01 * p0) / 2.0; 
+    const double j10 = (g_1 + g_01 * p1) / 2.0;
+    const double j11 = (g_3 + g_01 * p0) / 2.0; 
 
-    jacobian[iJ++] = j0;
-    jacobian[iJ++] = j1;
-    jacobian[iJ++] = j2;
-    jacobian[iJ++] = j3;
-    det[i] = j0*j3 - j1*j2;
+    jacobian[iJ++] = j00;
+    jacobian[iJ++] = j01;
+    jacobian[iJ++] = j10;
+    jacobian[iJ++] = j11;
+    det[i] = j00*j11 - j01*j10;
   } // for
 
   PetscLogFlops(10 + npts*19);

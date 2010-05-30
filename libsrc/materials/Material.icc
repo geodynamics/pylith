@@ -100,11 +100,18 @@ pylith::materials::Material::resetNeedNewJacobian(void) {
   _needNewJacobian = false;
 } // resetNeedNewJacobian
 
+// Check whether material generates a symmetric Jacobian.
+inline
+bool
+pylith::materials::Material::isJacobianSymmetric(void) const {
+  return _isJacobianSymmetric;
+} // isJacobianSymmetric
+
 // Compute initial state variables from values in spatial database.
 inline
 void
 pylith::materials::Material::_dbToStateVars(double* const stateValues,
-					    const double_array& dbValues) const
+					    const double_array& dbValues)
 {}
 
 // Nondimensionalize state variables.

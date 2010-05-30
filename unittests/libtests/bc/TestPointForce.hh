@@ -64,8 +64,8 @@ public :
   /// Test initialize().
   void testInitialize(void);
 
-  /// Test integrateResidualAssembled().
-  void testIntegrateResidualAssembled(void);
+  /// Test integrateResidual().
+  void testIntegrateResidual(void);
 
   /// Test verifyConfiguration().
   void testVerifyConfiguration(void);

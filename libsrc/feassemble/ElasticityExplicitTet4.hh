@@ -143,7 +143,7 @@ private :
    */
   double _volume(const double_array& coordinatesCell) const;
 
-  /** Compute volume of tetrahedral cell.
+  /** Compute derivatives of basis functions of tetrahedral cell.
    *
    * @param coordinatesCell Coordinates of vertices of cell.
    * @returns Derivatives of basis functions.

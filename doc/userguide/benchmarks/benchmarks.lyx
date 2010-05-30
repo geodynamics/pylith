@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -141,6 +141,10 @@ filename "savageprescott/savageprescott.lyx"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+ADD SCEC DYNAMIC RUPTURE BENCHMARKS
 \end_layout
 
 \end_body

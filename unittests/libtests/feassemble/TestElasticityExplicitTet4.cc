@@ -231,7 +231,7 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateResidualLumped(void
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)

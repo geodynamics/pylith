@@ -39,10 +39,8 @@ class pylith::faults::TestFaultCohesiveKinTet4 : public TestFaultCohesiveKin
 
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateResidualAssembled );
   CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianAssembled );
-  CPPUNIT_TEST( testIntegrateJacobianAssembledLumped );
+  CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testAdjustSolnLumped );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testCalcTractionsChange );

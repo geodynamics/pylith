@@ -103,7 +103,7 @@ pylith::materials::ElasticStress1D::~ElasticStress1D(void)
 void
 pylith::materials::ElasticStress1D::_dbToProperties(
 					    double* const propValues,
-					    const double_array& dbValues) const
+					    const double_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();

@@ -60,6 +60,9 @@ public :
   /// Test initialize().
   void testInitialize(void);
 
+  /// Test numDimConstrained().
+  void testNumDimConstrained(void);
+
   /// Test setConstraintSizes().
   void testSetConstraintSizes(void);
 

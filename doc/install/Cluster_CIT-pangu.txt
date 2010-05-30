@@ -2,6 +2,53 @@
 INSTRUCTIONS FOR INSTALLING PYLITH ON THE CALTECH LINUX CLUSTER PANGU
 ======================================================================
 
+/opt/openmpi/1.4.2/intel
+/opt/intel/Compiler/11.1/072/
+/opt/intel/Compiler/11.1/072/mkl/lib
+
+Python
+  http://www.python.org/ftp/python/2.6.5/Python-2.6.5.tgz
+
+cppunit
+  http://downloads.sourceforge.net/cppunit/cppunit-1.12.1.tar.gz
+
+proj.4
+  http://download.osgeo.org/proj/proj-4.7.0.tar.gz
+  http://download.osgeo.org/proj/proj-datumgrid-1.5.zip
+
+FIAT
+  http://www.fenics.org/pub/software/fiat/FIAT-0.3.5.tar.gz
+
+swig
+  http://downloads.sourceforge.net/project/swig/swig/swig-1.3.40/swig-1.3.40.tar.gz?use_mirror=voxel
+
+pythia
+  svn co http://geodynamics.org/svn/cig/cs/pythia/trunk pythia
+
+netcdf
+  http://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-4.1.1.tar.gz
+
+numpy
+  http://downloads.sourceforge.net/project/numpy/NumPy/1.4.1/numpy-1.4.1.tar.gz?use_mirror=hivelocity
+
+spatialdata
+  svn co http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata-dev
+  Comment out postdep_objects (bug in ifort)
+
+mercurial
+  http://mercurial.selenic.com/release/mercurial-1.5.2.tar.gz
+
+PETSc
+  hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
+  cd petsc-dev/config
+  hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
+
+nemesis
+  svn co http://geodynamics.org/svn/cig/cs/nemesis/trunk nemesis-dev  
+
+PyLith
+  svn co http://geodynamics.org/svn/cig/short/3D/PyLith/trunk pylith-dev
+
 I place applications that are rarely updated in $HOME/tools. For CIG
 source code, I separate the source code, build directories, and
 installed code. The source code sits in $HOME/src/cig, I build the

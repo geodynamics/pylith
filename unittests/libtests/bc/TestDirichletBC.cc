@@ -120,6 +120,19 @@ pylith::bc::TestDirichletBC::testInitialize(void)
 } // testInitialize
 
 // ----------------------------------------------------------------------
+// Test numDimConstrained().
+void
+pylith::bc::TestDirichletBC::testNumDimConstrained(void)
+{ // testNumDimConstrained
+  topology::Mesh mesh;
+  DirichletBC bc;
+  _initialize(&mesh, &bc);
+  CPPUNIT_ASSERT(0 != _data);
+
+  CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, bc.numDimConstrained());
+} // testNumDimConstrained
+
+// ----------------------------------------------------------------------
 // Test setConstraintSizes().
 void
 pylith::bc::TestDirichletBC::testSetConstraintSizes(void)

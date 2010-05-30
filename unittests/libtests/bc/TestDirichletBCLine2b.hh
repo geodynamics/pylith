@@ -36,10 +36,13 @@ class pylith::bc::TestDirichletBCLine2b : public TestDirichletBC
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUB_SUITE( TestDirichletBCLine2b, TestDirichletBC );
+
   CPPUNIT_TEST( testInitialize );
+  CPPUNIT_TEST( testNumDimConstrained );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

@@ -118,6 +118,7 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
 { // _testRead
   MeshIOCubit iohandler;
   iohandler.filename(filename);
+  iohandler.useNodesetNames(false);
 
   // Read mesh
   topology::Mesh mesh;

@@ -44,20 +44,20 @@ const double pylith::feassemble::QuadratureData2DLinear::_verticesRef[] = {
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_quadPtsRef[] = {
-  3.33333333e-01,  3.33333333e-01,
+ -3.33333333e-01, -3.33333333e-01,
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_quadWts[] = {
-  5.00000000e-01,
+  2.00000000e+00,
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_quadPts[] = {
- -5.33333333e-01,  3.33333333e-01,
+ -1.66666667e-01, -3.33333333e-02,
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_basis[] = {
- -3.33333333e-01,  6.66666667e-01,
-  6.66666667e-01,};
+  3.33333333e-01,  3.33333333e-01,
+  3.33333333e-01,};
 
 const double pylith::feassemble::QuadratureData2DLinear::_basisDerivRef[] = {
  -5.00000000e-01, -5.00000000e-01,

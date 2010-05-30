@@ -23,16 +23,15 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
-#define FIELD_SPLIT
-
-#if defined(FIELD_SPLIT)
-#include <petscmesh_solvers.hh> // USES constructFieldSplit()
-#endif
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
-  _ksp(0)
+  _ksp(0),
+  _precondMatrix(0)
 { // constructor
 } // constructor
 
@@ -52,6 +51,11 @@ pylith::problems::SolverLinear::deallocate(void)
 
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+
+  if (0 != _precondMatrix) {
+    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -78,21 +82,11 @@ pylith::problems::SolverLinear::initialize(
   err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
   err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
 
-  const topology::Field<topology::Mesh>& residual = fields.get("residual");
-
-  // Check for fibration
-  if (residual.section()->getNumSpaces() > 0) {
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
-    PC pc;
-
+  if (formulation->splitFields()) {
+    PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    err = PCSetType(pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
-    err = PCSetOptionsPrefix(pc, "fs_"); CHECK_PETSC_ERROR(err);
-    err = PCSetFromOptions(pc); CHECK_PETSC_ERROR(err);
-#if defined(FIELD_SPLIT)
-    constructFieldSplit(residual.section(), sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residual.section()), residual.vector(), pc);
-#endif
-  }
+    _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
+  } // if
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -128,6 +122,34 @@ pylith::problems::SolverLinear::solve(
 			  DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
   } // else
   jacobian->resetValuesChanged();
+
+  // Update KSP operators with custom preconditioner if necessary.
+  const ALE::Obj<RealSection>& solutionSection = solution->section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+      0 != _precondMatrix) {
+    
+    PetscPC pc = 0;
+    PetscKSP *ksps = 0;
+    PetscMat A = 0;
+    PetscInt num = 0;
+    
+    err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
+    assert(solutionSection->getNumSpaces() == num);
+
+    MatStructure flag;
+    err = KSPGetOperators(ksps[num-1], &A, 
+			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(ksps[num-1], A, _precondMatrix, 
+			  flag); CHECK_PETSC_ERROR(err);
+    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+  } // if
+
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();

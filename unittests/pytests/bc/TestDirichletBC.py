@@ -80,6 +80,17 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_numDimConstrained(self):
+    """
+    Test numDimConstrained().
+    """
+
+    (mesh, bc, field) = self._initialize()
+
+    self.assertEqual(1, bc.numDimConstrained())
+    return
+
+
   def test_setConstraintSizes(self):
     """
     Test setConstraintSizes().

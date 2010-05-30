@@ -71,7 +71,7 @@ protected :
    * @param dbValues Array of database values.
    */
   void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) const;
+		       const double_array& dbValues);
 
   /** Nondimensionalize properties.
    *
@@ -95,7 +95,7 @@ protected :
    * @param dbValues Array of database values.
    */
   void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const;
+		      const double_array& dbValues);
 
   /** Nondimensionalize state variables..
    *

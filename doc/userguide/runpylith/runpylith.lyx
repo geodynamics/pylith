@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -810,6 +810,20 @@ Mesh Information (
 mesher
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+ADD STUFF HERE 
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+ADD STUFF HERE ABOUT reorder_mesh AND OTHER MESH GENERATOR SETTINGS
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1726,7 +1740,7 @@ PETSc options that often result in improved performance in quasi-static
 <lyxtabular version="3" rows="9" columns="3">
 <features>
 <column alignment="left" valignment="top" width="2in">
-<column alignment="center" valignment="middle" width="0.6in">
+<column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
@@ -1807,7 +1821,7 @@ sub_pc_factor_shift_
 \begin_inset Newline newline
 \end_inset
 
-positive_definite
+type
 \end_layout
 
 \end_inset
@@ -1817,43 +1831,8 @@ positive_definite
 
 \begin_layout Plain Layout
 
-\shape italic
-0
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Turn off positive definite shifting.
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-sub_pc_factor_shift_
-\begin_inset Newline newline
-\end_inset
-
+\emph on
 nonzero
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-n/a
 \end_layout
 
 \end_inset
@@ -1970,6 +1949,37 @@ Convergence tolerance for relative decrease in residual norm.
 \begin_inset Text
 
 \begin_layout Plain Layout
+ksp_atol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+1.0e-15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Convergence tolerance for absolute value in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 
 \family typewriter
 ksp_converged_reason
@@ -2060,7 +2070,15 @@ formulation
  Implicit time stepping should be used for quasi-static problems, whereas
  explicit time stepping should be used for dynamic problems which include
  inertial terms.
- An example of setting the formulation facility to the implicit time stepping
+ Two options for explicit time-stepping are available: using a full, consistent
+ Jacobian matrix and a lumped Jacobian matrix.
+ In the lumped Jacobian formulation, the Jacobian is a diagonal matrix and
+ stored as a vector, and PyLith employs an optimized built-in solver rather
+ than a PETSc solver.
+\end_layout
+
+\begin_layout Standard
+An example of setting the formulation facility to the implicit time stepping
  component is:
 \end_layout
 
@@ -2083,6 +2101,19 @@ An example of setting the formulation facility to the explicit time stepping
 
 \begin_layout LyX-Code
 formulation = pylith.problems.Explicit
+\end_layout
+
+\begin_layout Standard
+An example of setting the formulation facility to the lumped explicit time
+ stepping component is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+formulation = pylith.problems.ExplicitLumped
 \end_layout
 
 \begin_layout Subsection
@@ -2127,9 +2158,10 @@ view_jacobian Flag to indicate if system Jacobian (sparse matrix) should
 \end_layout
 
 \begin_layout Description
-split_fields Split solution field into a displacement portion (field 0)
- and a Lagrange multiplier portion (field 1) to permit application of sophistica
-ted PETSc preconditions (default is false; for expert users only).
+split_fields Split solution field into a displacement portion (fields 0..ndim-1)
+ and a Lagrange multiplier portion (field ndim) to permit application of
+ sophisticated PETSc preconditioners (default is false; for expert users
+ only).
 \end_layout
 
 \begin_layout Standard

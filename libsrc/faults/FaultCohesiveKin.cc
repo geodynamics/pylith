@@ -113,10 +113,11 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology::Field<
-                                                                      topology::Mesh>& residual,
-                                                                  const double t,
-                                                                  topology::SolutionFields* const fields) { // integrateResidualAssembled
+pylith::faults::FaultCohesiveKin::integrateResidual(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields)
+{ // integrateResidual
   assert(0 != fields);
   assert(0 != _fields);
   assert(0 != _logger);
@@ -137,9 +138,9 @@ pylith::faults::FaultCohesiveKin::integrateResidualAssembled(const topology::Fie
 
   _logger->eventEnd(setupEvent);
 
-  FaultCohesiveLagrange::integrateResidualAssembled(residual, t, fields);
+  FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
-} // integrateResidualAssembled
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.

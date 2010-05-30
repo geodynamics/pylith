@@ -32,6 +32,7 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
+  _precondMatrix(0),
   _isJacobianSymmetric(false)
 { // constructor
 } // constructor
@@ -51,8 +52,50 @@ pylith::problems::Formulation::deallocate(void)
   _jacobian = 0; // :TODO: Use shared pointer.
   _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
+
+#if 0   // :KLUDGE: Assume Solver deallocates matrix.
+  PetscErrorCode err = 0;
+  if (0 != _precondMatrix) {
+    err = PetscObjectDereference((PetscObject) _precondMatrix);
+    _precondMatrix = 0; CHECK_PETSC_ERROR(err);
+  } // if
+#else
+  _precondMatrix = 0;
+#endif
 } // deallocate
   
+// ----------------------------------------------------------------------
+// Set flag for splitting fields.
+void
+pylith::problems::Formulation::splitFields(const bool flag)
+{ // splitFields
+  _splitFields = flag;
+} // splitFields
+
+// ----------------------------------------------------------------------
+// Get flag for splitting fields.
+bool
+pylith::problems::Formulation::splitFields(void) const
+{ // splitFields
+  return _splitFields;
+} // splitFields
+
+// ----------------------------------------------------------------------
+// Set flag for using custom preconditioner for Lagrange constraints.
+void
+pylith::problems::Formulation::useCustomConstraintPC(const bool flag)
+{ // useCustomConstraintPC
+  _useCustomConstraintPC = flag;
+} // useCustomConstraintPC
+
+// ----------------------------------------------------------------------
+// Get flag indicating use of custom conditioner for Lagrange constraints.
+bool
+pylith::problems::Formulation::useCustomConstraintPC(void) const
+{ // useCustomConstraintPC
+  return _useCustomConstraintPC;
+} // useCustomConstraintPC
+
 // ----------------------------------------------------------------------
 // Return the fields
 const pylith::topology::SolutionFields&
@@ -94,6 +137,19 @@ pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrator
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i] = integrators[i];
 } // submeshIntegrators
+
+// ----------------------------------------------------------------------
+// Set handle to preconditioner.
+void
+pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
+{ // preconditioner
+  _precondMatrix = mat;
+
+#if 0 // :KLUDGE: Assume solver deallocates matrix
+  PetscErrorCode err = 0;
+  err = PetscObjectReference((PetscObject) mat); CHECK_PETSC_ERROR(err);
+#endif
+} // preconditioner
 
 // ----------------------------------------------------------------------
 // Initialize formulation.
@@ -196,14 +252,6 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   // Assemble residual.
   residual.complete();
 
-  // Add in contributions that do not require assembly.
-  numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateResidualAssembled(residual, _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateResidualAssembled(residual, _t, _fields);
-
   // Update PETSc view of residual
   if (0 != tmpResidualVec)
     residual.scatterSectionToVector(*tmpResidualVec);
@@ -252,14 +300,6 @@ pylith::problems::Formulation::reformResidualLumped(const PetscVec* tmpResidualV
   // Assemble residual.
   residual.complete();
 
-  // Add in contributions that do not require assembly.
-  numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateResidualLumpedAssembled(residual, _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateResidualLumpedAssembled(residual, _t, _fields);
-
   // Update PETSc view of residual
   if (0 != tmpResidualVec)
     residual.scatterSectionToVector(*tmpResidualVec);
@@ -288,19 +328,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Set jacobian to zero.
   _jacobian->zero();
 
-  // Add in contributions that do not require assembly.
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobianAssembled(_jacobian, _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobianAssembled(_jacobian, _t, _fields);
-
-  // Flush assembled portion.
-  _jacobian->assemble("flush_assembly");
-
   // Add in contributions that require assembly.
-  numIntegrators = _meshIntegrators.size();
+  int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
     _meshIntegrators[i]->integrateJacobian(_jacobian, _t, _fields);
   numIntegrators = _submeshIntegrators.size();
@@ -310,6 +339,23 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
+  if (0 != _precondMatrix) {
+    // Recalculate preconditioner.
+    numIntegrators = _meshIntegrators.size();
+    for (int i=0; i < numIntegrators; ++i)
+      _meshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+					      _jacobian, _fields);
+    numIntegrators = _submeshIntegrators.size();
+    for (int i=0; i < numIntegrators; ++i)
+      _submeshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+						 _jacobian, _fields);
+
+    MatAssemblyBegin(_precondMatrix, MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(_precondMatrix, MAT_FINAL_ASSEMBLY);
+
+    std::cout << "Preconditioner Matrix" << std::endl;
+    MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+  } // if
 } // reformJacobian
 
 // ----------------------------------------------------------------------
@@ -333,16 +379,6 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   
   // Assemble jacbian.
   _jacobianLumped->complete();
-
-  // Add in contributions that do not require assembly.
-  numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->integrateJacobianAssembled(_jacobianLumped, 
-						    _t, _fields);
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->integrateJacobianAssembled(_jacobianLumped,
-						       _t, _fields);
 
 } // reformJacobian
 
@@ -385,6 +421,16 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 void
 pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+
+  if (!_fields->hasField("dispIncr adjust")) {
+    _fields->add("dispIncr adjust", "dispIncr_adjust");
+    topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+    adjust.cloneSection(solution);
+  } // for
+  topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+  adjust.zero();
+
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
     _meshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
@@ -392,6 +438,9 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+
+  adjust.complete();
+  solution += adjust;
 } // adjustSolnLumped
 
 

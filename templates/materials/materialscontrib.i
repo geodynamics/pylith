@@ -10,7 +10,7 @@
 // ======================================================================
 //
 
-// Define the spatialdatacontrib SWIG interface module.
+// Define the materialscontrib SWIG interface module.
 
 // Set module name
 %module materialscontrib

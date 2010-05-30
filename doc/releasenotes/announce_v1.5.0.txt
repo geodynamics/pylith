@@ -7,17 +7,19 @@ viscoelastic problems in tectonic deformation.
 This release adds several new features to PyLith, including (1) fault
 friction with several widely-used fault constitutive models, (2) an
 optimized solver for explicit time-stepping with a lumped Jacobian
-sparse matrix, (3) Total Langrangian formulation for large
-deformations, (4) use of scientific notation in VTK output files with
-user-specified precision, (5) ??, (6) ??, and (7) ??. We encourage all
-users of previous PyLith releases to switch to this latest release.
+sparse matrix, (3) a total Langrangian formulation for rigid-body
+motion and small strains, (4) use of scientific notation in VTK output
+files with user-specified precision, and (5) use of nodeset names in
+CUBIT Exodus files. We encourage all users of previous PyLith releases
+to switch to this latest release.
 
 We strongly recommend all users of previous PyLith releases to switch
-to this latest release. Switching from v1.4.0 or v1.4.1 to v1.4.2 only
-requires changes to parameter files when using adaptive time stepping
-with a non-default stability factor (see the release notes below for
-details). See the README file for changes required to switch to the
-v1.4.x release series from previous versions.
+to this latest release. In addition to adding features this release
+also fixes a number of bugs (see top-level README file). Switching
+from v1.5.0 only requires changes to parameter files when using CUBIT
+meshes or the power-law rheology. See the README file for changes
+required to switch to the v1.5.x release series from previous
+versions.
 
 You can download the source code and binaries from
 
@@ -30,8 +32,73 @@ directory.
 
 RELEASE NOTES
 
- *
+  * Fault constitutive models
 
- * Bug fixes
+    Added fault friction interface conditions with static
+    friction, linear slip-weakening friction, and rate- and
+    state-friction with the ageing law. The implementation can be used
+    in static, quasi-static, or dynamic problems.
 
-  - 
+  * Drucker-Prager elastoplastic bulk rheology
+
+    Added a Drucker-Prager elastoplastic bulk rheology. [NEED SOME
+    WORDS FROM CHARLES]
+
+  * Finite-deformation formulation
+
+    Added a finite-deformation (rigid body motion and small strains)
+    implementation of elasticity with stress calculated using the
+    Second Piola Kirchhoff stress tensor and strains calculated using
+    the Green-Lagrange strain tensor.
+
+  * Lumped Jacobian for explicit-time stepping
+
+    Added the option to lump cell Jacobian matrices to form a diagonal
+    system Jacobian matrix for explicit time stepping. This decouples
+    all degrees of freedom and permits use of a fast, trivial, direct
+    solver.
+
+  * Optimized elasticity objects
+
+    Added optimized elasticity objects for the most popular cell types
+    and basis functions (linear polynomials). For tri3 and tet4 cells
+    with one quadrature point, the optimized implementations do not
+    use mapped cells to reduce the number of operations. For quad4 and
+    hex8 cells the optimized objects provide hardwired loop bounds
+    which can lead to faster performance for some compilers.
+
+  * Scientific notation for ASCII VTK files
+
+    Data values in ASCII data files are written in scientific notation
+    with user-specified precision.
+
+  * Nodeset names in CUBIT Exodus files
+
+    Use of nodeset names in CUBIT Exodus files for boundary conditions
+    and faults. Users can specify to use nodeset names (default
+    behavior) or ids.
+
+  * Velocity and slip rate as output fields
+
+    Velocity (domain and subdomain) and slip rate (fault) fields are
+    can be requested as output fields. The fields are computed using
+    the time-stepping algorithm and alleviates the need to compute
+    them via post-processing.
+
+  * Dimensionless values in spatial databases no longer need
+    artificial dimensions. Values without dimensions are understood by
+    the parser as dimensionless quantities.
+
+  * Bug fixes
+
+    - Updating state variables did not retrieve physical properties
+      for cell. Last physical properties retrieved were used. Physical
+      properties are now retrieved when updating state variables.
+
+    - Fixed incorrect dimensioning of physical properties and state
+      variables for the power-law rheology in output.
+
+    - Fixed memory bug for a fault in a 1-D mesh when constructing the
+      cohesive cells.
+
+
