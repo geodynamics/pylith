@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -143,9 +143,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/quad4_mesh.jpg
+	filename figs/quad4mesh.jpg
 	lyxscale 50
-	scale 45
+	scale 50
 
 \end_inset
 
@@ -261,7 +261,7 @@ status open
 
 \begin_layout Plain Layout
 Displacement field in the bar at 3.0 s.
- Deformation has been exaggerated by a factor of 200.
+ Deformation has been exaggerated by a factor of 800.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:kinematic"
@@ -369,10 +369,10 @@ reference "fig:shearwave:quad4:staticfriction"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of ?? m/s, a uniform
- shear strain of ?? in the bar with uniform, constant velocities in the
- y-direction of +?? m/s and -?? m/s on the -x and +x sides of the fault,
- respectively.
+ The steady-state solution is a constant slip rate of 0.08 m/s and shear
+ traction of 6.0 MPa on the fault surface, a uniform shear strain of 2e-5
+ in the bar with uniform, constant velocities in the y-direction of +0.04
+ m/s and -0.04 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -399,8 +399,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field in the bar at 3.0 s.
- Deformation has been exaggerated by a factor of 200.
+Velocity field in the bar at 3.0 s for the static friction fault constitutive
+ model.
+ Deformation has been exaggerated by a factor of 800.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:staticfriction"
@@ -492,10 +493,10 @@ reference "fig:shearwave:quad4:slipweakening"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of ?? m/s, a uniform
- shear strain of ?? in the bar with uniform, constant velocities in the
- y-direction of +?? m/s and -?? m/s on the -x and +x sides of the fault,
- respectively.
+ The steady-state solution is a constant slip rate of 0.88 m/s and shear
+ traction of 5.0 MPa on the fault surface, a uniform shear strain of 2.2e-4
+ in the bar with uniform, constant velocities in the y-direction of +0.44
+ m/s and -0.44 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -522,8 +523,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field in the bar at 3.0 s.
- Deformation has been exaggerated by a factor of 200.
+Velocity field in the bar at 3.0 s for the slip-weakening friction fault
+ constitutive model.
+ Deformation has been exaggerated by a factor of 800.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:slipweakening"
@@ -597,10 +599,10 @@ reference "fig:shearwave:quad4:ratestateageing"
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of ?? m/s, a uniform
- shear strain of ?? in the bar with uniform, constant velocities in the
- y-direction of +?? m/s and -?? m/s on the -x and +x sides of the fault,
- respectively.
+ The steady-state solution is a constant slip rate of 0.572 m/s and shear
+ traction of 5.385 MPa on the fault surface, a uniform shear strain of 1.43e-4
+ in the bar with uniform, constant velocities in the y-direction of +0.286
+ m/s and -0.286 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -627,8 +629,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field in the bar at 3.0 s.
- Deformation has been exaggerated by a factor of 200.
+Velocity field in the bar at 3.0 s for the rate- and state-friction fault
+ constitutive model.
+ Deformation has been exaggerated by a factor of 800.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:quad4:ratestateageing"

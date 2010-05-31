@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -143,9 +143,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/tri3_mesh.jpg
+	filename figs/tri3mesh.jpg
 	lyxscale 50
-	scale 45
+	scale 50
 
 \end_inset
 
@@ -299,7 +299,7 @@ status open
 
 \begin_layout Plain Layout
 Displacement field in the bar at 3.0 s.
- Deformation has been exaggerated by a factor of 200.
+ Deformation has been exaggerated by a factor of 800.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:shearwave:tri3:deform"
