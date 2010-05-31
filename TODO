@@ -46,11 +46,6 @@ MANUAL
 
   Tutorials
     3d/hex8 [Charles]
-    bar_shearwave [Brad]
-      kinematic
-      friction
-        static (stick, sliding)
-        dynamic (static, slip-weakening, rate-and-state)
     meshgeneration [Charles]
 
   Benchmarks
