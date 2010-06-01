@@ -312,7 +312,7 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
 	throw std::runtime_error(msg.str());
       } // if
       groupNames[i] = buffer;
-      std::cout << "GROUP: '" << groupNames[i] << "'." << std::endl;
+      //std::cout << "GROUP: '" << groupNames[i] << "'." << std::endl;
     } // for
     delete[] buffer; buffer = 0;
     delete[] counts; counts = 0;

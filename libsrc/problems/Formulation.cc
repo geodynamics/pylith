@@ -353,8 +353,10 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
     MatAssemblyBegin(_precondMatrix, MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(_precondMatrix, MAT_FINAL_ASSEMBLY);
 
+#if 0 // debugging
     std::cout << "Preconditioner Matrix" << std::endl;
     MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+#endif
   } // if
 } // reformJacobian
 
