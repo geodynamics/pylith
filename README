@@ -79,9 +79,14 @@ contain nodeset names, then set the MeshIOCubit property
 use_nodeset_names to False to continue to use nodeset id values for
 boundary condition labels.
 
-(2) The power-law constitutive parameters have been changed in order
-to facilitate nondimensionalization. [CHARLES ADD SOME FURTHER
-EXPLANATION]
+(2) The power-law constitutive parameters have been changed so that the
+parameter units are no longer dependent on the power-law exponent. This
+is a more logical implementation and allows (among other things) users to
+vary power-law parameters using a spatial database. Previously, it was not
+possible to vary power-law parameters unless everything used the same
+power-law exponent. The new implementation uses reference-strain-rate,
+reference-stress, and power-law-exponent to describe the material. This is
+described in the 'Material Models' section of the manual.
 
 ----------------------------------------------------------------------
 Version 1.5.0
