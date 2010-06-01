@@ -46,21 +46,13 @@ print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
 # Compute preconditioner using diagonal approximations (but full A)
 Pd = numpy.zeros(J.shape)
 Pd[0:8,0:8] = A
-Pd[0:8,8:12] = C.transpose()
-Pd[8:12,0:8] = C
-Pd[8:12,8:12] = -1.0/(CACdi*CACdi)
+Pd[0:8,8:12] = 0.0
+Pd[8:12,0:8] = 0.0
+Pd[8:12,8:12] = -CACd
 
-# Compute expected inverse of preconditioner
-Pdi = numpy.zeros(Pd.shape)
-Pdi[0:8,0:8] = Ai
-Pdi[0:8,8:12] = numpy.dot(-Ai, C.transpose())
-Pdi[8:12,0:8] = 0.0
-#Pdi[8:12,8:12] = -numpy.dot(numpy.dot(numpy.dot(C, Ai), C.transpose()), CACdi*CACdi)
-Pdi[8:12,8:12] = numpy.eye(4)
+Pdi = numpy.linalg.inv(Pd)
 
 # Compute condition number for diagonal approximations
 evals, evecs = numpy.linalg.eig(numpy.dot(Pdi, J))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
-
-print numpy.dot(Pdi, J)
