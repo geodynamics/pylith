@@ -26,6 +26,13 @@ MANUAL
 
   Governing equations [Brad]
 
+  Small strain formulation [Brad]
+
+  Fault
+    governing equations [Brad]
+    dynamic rupture parameters [Brad]
+    fault constitutive models [Surendra]
+
   Mesher parameters [Charles]
     Need outline of parameters to MeshImporter like other objects
 
@@ -36,13 +43,6 @@ MANUAL
     reorder_mesh
     distribution
       partitioner
-
-  Small strain formulation [Brad]
-
-  Fault
-    governing equations [Brad]
-    dynamic rupture parameters [Brad]
-    fault constitutive models [Surendra]
 
   Tutorials
     3d/hex8 [Charles]
