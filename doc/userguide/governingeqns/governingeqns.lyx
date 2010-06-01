@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -724,7 +724,7 @@ Because the volume
 \rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=\vec{0}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{,}\\
 \overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\text{ and}\\
-\underbar{R}\cdot(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f}.\end{gather}
+\underbar{R}\cdot(\vec{u^{+}}-\vec{u^{-}})=\vec{d}\text{ on }S_{f}.\end{gather}
 
 \end_inset
 
@@ -737,7 +737,7 @@ We specify tractions,
 \end_inset
 
 , displacements, 
-\begin_inset Formula $\vec{u^{o}}$
+\begin_inset Formula $\overrightarrow{u^{o}}$
 \end_inset
 
 , on surface 
@@ -752,9 +752,16 @@ We specify tractions,
 \begin_inset Formula $S_{f}$
 \end_inset
 
- (we will consider the case of fault constitutive models in section ??).
+ (we will consider the case of fault constitutive models in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault"
+
+\end_inset
+
+).
  The rotation matrix 
-\begin_inset Formula $\bar{R}$
+\begin_inset Formula $\underline{R}$
 \end_inset
 
  transforms vectors from the global coordinate system to the fault coordinate
@@ -982,8 +989,8 @@ We start with the wave equation (strong form),
 \begin_inset Formula \begin{gather}
 \nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
-\overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\\
-\underbar{R}\cdot(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f}\\
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\\
+\underbar{R}\cdot(\overrightarrow{u^{+}}-\overrightarrow{u^{-}})=\vec{d}\text{ on }S_{f}\\
 \underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{gather}
 
 \end_inset
@@ -1009,7 +1016,6 @@ We construct the weak form by multiplying the wave equation by a weighting
 
 \end_inset
 
-
  Consider the divergence theorem applied to the dot product of the stress
  tensor and the trial function, 
 \begin_inset Formula $\underline{\sigma}\cdot\overrightarrow{\phi}$
@@ -1029,17 +1035,15 @@ Expanding the left-hand side yields
 
 
 \begin_inset Formula \begin{equation}
-\int_{V}{(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}}_{ij,j}\: dV=-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS.\end{equation}
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV=-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS.\end{equation}
 
 \end_inset
-
 
 Substituting into the weak form gives
 \begin_inset Formula \begin{equation}
 -\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
-
 
 We separate the integration over 
 \begin_inset Formula $S$
@@ -1075,8 +1079,8 @@ so that the equation reduces to
 We express the trial solution and weighting function as linear combinations
  of basis functions,
 \begin_inset Formula \begin{gather}
-\vec{u}=\sum_{m}\vec{a}^{m}N^{m},\\
-\vec{\phi}=\sum_{n}\vec{c}^{n}N^{n}.\end{gather}
+\vec{u}=\sum_{m}\overrightarrow{a^{m}}N^{m},\\
+\vec{\phi}=\sum_{n}\overrightarrow{c^{n}}N^{n}.\end{gather}
 
 \end_inset
 
@@ -1096,25 +1100,25 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
 .
  Substituting in the expressions for the trial solution and weighting function
  yields
-\begin_inset Formula \begin{gather}
--\int_{V}\underline{\sigma}:\sum_{n}\vec{c}^{n}\nabla N_{,}^{n}\, dV+\int_{S_{T}}\vec{T}\cdot\sum_{n}\vec{c}^{n}N^{n}\, dS+\int_{V}\vec{f}\cdot\sum_{n}\vec{c}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}a^{m}}{\partial t^{2}}N^{m}\cdot\sum_{n}\vec{c}^{n}N^{n}\ dV=0.\end{gather}
+\begin_inset Formula \begin{multline}
+-\int_{V}\underline{\sigma}:\sum_{n}\overrightarrow{c^{n}}\nabla N_{,}^{n}\, dV+\int_{S_{T}}\vec{T}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\, dS+\int_{V}\vec{f}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\, dV\\
+-\int_{V}\rho\sum_{m}\frac{\partial^{2}\overrightarrow{a^{m}}}{\partial t^{2}}N^{m}\cdot\sum_{n}\overrightarrow{c^{n}}N^{n}\ dV=0.\end{multline}
 
 \end_inset
 
-
  Because the weighting function is arbitrary, this equation must hold for
  all 
-\begin_inset Formula $\vec{c}^{n}$
+\begin_inset Formula $\overrightarrow{c^{n}}$
 \end_inset
 
 , so that
 \begin_inset Formula \begin{equation}
--\int_{V}\underline{\sigma}:\nabla N^{n}\, dV+\int_{S_{T}}\vec{T}N^{n}\, dS+\int_{V}\vec{f}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}\vec{a}^{m}}{\partial t^{2}}N^{m}N^{n}\, dV=\vec{0}.\end{equation}
+-\int_{V}\underline{\sigma}:\nabla N^{n}\, dV+\int_{S_{T}}\vec{T}N^{n}\, dS+\int_{V}\vec{f}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}\overrightarrow{a^{m}}}{\partial t^{2}}N^{m}N^{n}\, dV=\vec{0}.\end{equation}
 
 \end_inset
 
 We want to solve this equation for the unknown coefficients 
-\begin_inset Formula $\vec{a}^{m}$
+\begin_inset Formula $\overrightarrow{a^{m}}$
 \end_inset
 
  subject to
@@ -1131,8 +1135,8 @@ We want to solve this equation for the unknown coefficients
 \noun off
 \color none
 \begin_inset Formula \begin{gather}
-\vec{u}=\vec{u}^{o}\text{ on }S_{u},\text{ and}\\
-\underline{R}(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f},\end{gather}
+\vec{u}=u^{o}\overrightarrow{}\text{ on }S_{u},\text{ and}\\
+\underline{R}(\overrightarrow{u^{+}}-\overrightarrow{u^{-}})=\vec{d}\text{ on }S_{f},\end{gather}
 
 \end_inset
 
@@ -1149,13 +1153,13 @@ For brevity we outline the solution method for quasi-static problems using
  In quasi-static problems we neglect the inertial terms, so equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:elasticity:integral:discretized:vector:notation"
+reference "eq:elasticity:integral:discretized"
 
 \end_inset
 
  reduces to
-\begin_inset Formula \[
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV=\vec{0}.\]
+\begin_inset Formula \begin{equation}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV=\vec{0}.\end{equation}
 
 \end_inset
 
@@ -1186,16 +1190,16 @@ We solve this equation through formulation of a linear algebraic system
 
 ).
  The residual is simply
-\begin_inset Formula \[
-r_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
+\begin_inset Formula \begin{equation}
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\end{equation}
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
-\begin_inset Formula \begin{multline*}
+\begin_inset Formula \begin{multline}
 r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N_{,j}^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
-+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\end{multline*}
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\end{multline}
 
 \end_inset
 
@@ -1235,8 +1239,8 @@ where
 
 \begin_layout Standard
 In order to find the Jacobian of the system, we let
-\begin_inset Formula \[
-\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).\]
+\begin_inset Formula \begin{equation}
+\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).\end{equation}
 
 \end_inset
 
@@ -1244,8 +1248,8 @@ Isolating the term associated with the increment in stresses yields
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-\int_{V}d\sigma_{ij}(t)N_{j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV\]
+\begin_inset Formula \begin{equation}
+\int_{V}d\sigma_{ij}(t)N_{j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV\end{equation}
 
 \end_inset
 
@@ -1257,9 +1261,9 @@ mal strains,
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-d\sigma_{ij}(t)=C_{ijkl}d\varepsilon_{kl}(t)\\
-d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(du_{k.l}(t)+du_{l,k}(t))\\
-d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(\sum_{m}da_{k,l}^{m}N^{m}+\sum_{m}da_{l,k}^{m}N^{m})\end{gather}
+d\sigma_{ij}(t)=C_{ijkl}(t)d\varepsilon_{kl}(t)\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(t)(du_{k.l}(t)+du_{l,k}(t))\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(t)(\sum_{m}da_{k,l}^{m}(t)N^{m}+\sum_{m}da_{l,k}^{m}(t)N^{m})\end{gather}
 
 \end_inset
 
@@ -1299,8 +1303,8 @@ In terms of the basis functions, we have
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-\sum_{n}c_{i}^{n}N_{,j}^{n}=\frac{1}{2}(\sum_{n}c_{i}^{n}N_{,j}^{n}+\sum_{n}c_{j}^{n}N_{,i}^{n}).\]
+\begin_inset Formula \begin{equation}
+\sum_{n}c_{i}^{n}N_{,j}^{n}=\frac{1}{2}(\sum_{n}c_{i}^{n}N_{,j}^{n}+\sum_{n}c_{j}^{n}N_{,i}^{n}).\end{equation}
 
 \end_inset
 
@@ -1310,15 +1314,15 @@ Combining these expressions for the increment in stresses and making use
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-A_{ij}^{mn}=\int_{V}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}+N_{l,k}^{m})(N_{i,j}^{n}+N_{j,i}^{n})\ dV.\]
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}+N_{l,k}^{m})(N_{i,j}^{n}+N_{j,i}^{n})\ dV.\end{equation}
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integral with a sum over the cells and quadrature points,
-\begin_inset Formula \[
-A_{ij}^{mn}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}(x_{q})+N_{l,k}^{m}(x_{q}))(N_{i,j}^{n}(x_{q})+N_{j,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).\]
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}(x_{q})+N_{l,k}^{m}(x_{q}))(N_{i,j}^{n}(x_{q})+N_{j,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).\end{equation}
 
 \end_inset
 
@@ -1359,16 +1363,16 @@ We solve this equation through formulation of a linear algebraic system
 
 ).
  The residual is simply
-\begin_inset Formula \[
-r_{i}^{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\]
+\begin_inset Formula \begin{equation}
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\end{equation}
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
-\begin_inset Formula \begin{multline*}
+\begin_inset Formula \begin{multline}
 r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
-+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},\end{multline*}
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},\end{multline}
 
 \end_inset
 
@@ -1392,7 +1396,7 @@ where
 \end_layout
 
 \begin_layout Standard
-We find the system Jacobian matrix making use of the temporal discretization
+We find the system Jacobian matrix by making use of the temporal discretization
  and isolating the term for the increment in the displacment field at time
  
 \begin_inset Formula $t$
@@ -1402,8 +1406,8 @@ We find the system Jacobian matrix making use of the temporal discretization
  Using the central difference method to approximate the acceleration (and
  velocity),
 \begin_inset Formula \begin{gather}
-\ddot{u}_{i}=\frac{1}{\Delta t^{2}}\left(u_{i}(t+\Delta t)-2u_{i}(t)+u_{i}(t-\Delta t)\right)\\
-\dot{u}_{i}=\frac{1}{2\Delta t}\left(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)\right)\end{gather}
+\ddot{u}_{i}(t)=\frac{1}{\Delta t^{2}}\left(u_{i}(t+\Delta t)-2u_{i}(t)+u_{i}(t-\Delta t)\right)\\
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)\right)\end{gather}
 
 \end_inset
 
@@ -1419,19 +1423,27 @@ and writing the displacement at time
 \begin_inset Formula \begin{gather}
 u_{i}(t+\Delta t)=u_{i}(t)+du_{i}(t),\\
 \ddot{u}_{i}(t)=\frac{1}{\Delta t^{2}}\left(du_{i}(t)-u_{i}(t)+u_{i}(t-\Delta t)\right),\\
-\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right),\end{gather}
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right).\end{gather}
 
 \end_inset
 
-we have
-\begin_inset Formula \[
-\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}da_{i}^{m}(t)N^{m}N^{n}\ dV=-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}(a_{i}^{m}(t)-a_{i}^{m}(t-\Delta t))N^{m}N^{n}\ dV.\]
+Substituting into equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:elasticity:integral:dynamic:t"
+
+\end_inset
+
+ yields
+\begin_inset Formula \begin{multline}
+\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}da_{i}^{m}(t)N^{m}N^{n}\ dV=-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV\\
+-\frac{1}{\Delta t^{2}}\int_{V}\rho\sum_{m}(a_{i}^{m}(t)-a_{i}^{m}(t-\Delta t))N^{m}N^{n}\ dV.\end{multline}
 
 \end_inset
 
 Thus, the Jacobian for the system is
-\begin_inset Formula \[
-A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\int_{V}\rho N^{m}N^{n}\ dV,\]
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\int_{V}\rho N^{m}N^{n}\ dV,\end{equation}
 
 \end_inset
 
@@ -1440,8 +1452,8 @@ and using numerical quadrature in the finite-element discretization to replace
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),\]
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),\end{equation}
 
 \end_inset
 
