@@ -157,7 +157,7 @@ Index notation
 \begin_inset Text
 
 \begin_layout Plain Layout
-Vector notation
+Vector Notation
 \end_layout
 
 \end_inset
@@ -610,7 +610,20 @@ We specify tractions,
 \begin_inset Formula $S_{f}$
 \end_inset
 
- (we will consider the case of fault constitutive models in a later section).
+ (we will consider the case of fault constitutive models in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault"
+
+\end_inset
+
+).
+ The rotation matrix 
+\begin_inset Formula $R_{ki}$
+\end_inset
+
+ transforms vectors from the global coordinate system to the fault coordinate
+ system.
  Note that since both 
 \begin_inset Formula $T_{i}$
 \end_inset
@@ -711,7 +724,7 @@ Because the volume
 \rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=\vec{0}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{,}\\
 \overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u},\text{ and}\\
-\bar{R}(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\end{gather}
+\underbar{R}\cdot(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f}.\end{gather}
 
 \end_inset
 
@@ -739,7 +752,13 @@ We specify tractions,
 \begin_inset Formula $S_{f}$
 \end_inset
 
-.
+ (we will consider the case of fault constitutive models in section ??).
+ The rotation matrix 
+\begin_inset Formula $\bar{R}$
+\end_inset
+
+ transforms vectors from the global coordinate system to the fault coordinate
+ system.
  Note that since both 
 \begin_inset Formula $\overrightarrow{T}$
 \end_inset
@@ -850,11 +869,18 @@ Turning our attention to the second term, we separate the integration over
 \begin_inset Formula $S_{u}$
 \end_inset
 
- (we will 
+ (we will consider tractions over the fault surface, 
 \begin_inset Formula $S_{f}$
 \end_inset
 
- in section ?? [TODO]),
+, associated with the fault constitutive model in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault"
+
+\end_inset
+
+),
 \begin_inset Formula \begin{equation}
 -\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,\end{equation}
 
@@ -873,43 +899,11 @@ so that the equation reduces to
 
 \end_inset
 
-Now, 
-\begin_inset Formula $\sigma_{ij}\phi_{i,j}$
-\end_inset
-
- is a scalar, so it is symmetric,
-\begin_inset Formula \begin{equation}
-\sigma_{ij}\phi_{i,j}=\sigma_{ji}\phi_{j,i},\end{equation}
-
-\end_inset
-
-and we know that 
-\begin_inset Formula $\sigma_{ij}$
-\end_inset
-
- is symmetric, so
-\begin_inset Formula \begin{equation}
-\sigma_{ij}\phi_{i,j}=\sigma_{ij}\phi_{j,i},\end{equation}
-
-\end_inset
-
-which means
-\begin_inset Formula \begin{equation}
-\phi_{i,j}=\phi_{j,i},\end{equation}
-
-\end_inset
-
-which we can write as
-\begin_inset Formula \begin{equation}
-\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).\end{equation}
-
-\end_inset
-
 We express the trial solution and weighting function as linear combinations
  of basis functions,
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula \begin{gather}
 u_{i}=\sum_{m}a_{i}^{m}N^{m},\\
-\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.\end{gather*}
+\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.\end{gather}
 
 \end_inset
 
@@ -929,9 +923,9 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
 .
  Substituting in the expressions for the trial solution and weighting function
  yields
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula \begin{gather}
 -\int_{V}\sigma_{ij}\sum_{n}c_{i}^{n}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}\sum_{n}c_{i}^{n}N^{n}\, dS+\int_{V}f_{i}\sum_{n}c_{i}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\ dV=0,\text{ or}\\
-\sum_{n}c_{i}^{n}(-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV)=0.\end{gather*}
+\sum_{n}c_{i}^{n}(-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV)=0.\end{gather}
 
 \end_inset
 
@@ -946,7 +940,7 @@ Note that because the trial solution satisfies the Dirichlet boundary condition,
 
 
 \begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral-1}\end{equation}
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}N^{m}N^{n}\ dV=\vec{0}.\label{eq:elasticity:integral:discretized}\end{equation}
 
 \end_inset
 
@@ -967,321 +961,9 @@ We want to solve this equation for the unknown coefficients
 \bar no
 \noun off
 \color none
-\begin_inset Formula \begin{gather*}
-\sigma_{ij,j}+f_{i}=\rho\ddot{u_{i}}\text{ in }V,\\
-\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
-u_{i}=u_{i}^{o}\text{ on }S_{u},\text{ and}\\
-R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\end{gather*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Old
-\end_layout
-
-\begin_layout Standard
-Now, 
-\begin_inset Formula $\sigma_{ij}\phi_{i,j}$
-\end_inset
-
- is a scalar, so it is symmetric,
-\begin_inset Formula \begin{equation}
-\sigma_{ij}\phi_{i,j}=\sigma_{ji}\phi_{j,i},\end{equation}
-
-\end_inset
-
-and we know that 
-\begin_inset Formula $\sigma_{ij}$
-\end_inset
-
- is symmetric, so
-\begin_inset Formula \begin{equation}
-\sigma_{ij}\phi_{i,j}=\sigma_{ij}\phi_{j,i},\end{equation}
-
-\end_inset
-
-which means
-\begin_inset Formula \begin{equation}
-\phi_{i,j}=\phi_{j,i},\end{equation}
-
-\end_inset
-
-which we can write as
-\begin_inset Formula \begin{equation}
-\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).\end{equation}
-
-\end_inset
-
-Substituting into the first term gives
-\begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\sigma_{ij}\left(\phi_{i,j}+\phi_{j,i}\right)\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Solution Method for Quasi-Static Problems
-\end_layout
-
-\begin_layout Standard
-In quasi-static problems we neglect the inertial terms, so equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:elasticity:integral-1"
-
-\end_inset
-
- reduces to
-\begin_inset Formula \[
--\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV=\vec{0}.\]
-
-\end_inset
-
-As a result, time-dependence only enters through the constitutive relationships
- and the loading conditions.
- We consider the deformation at time 
-\begin_inset Formula $t+\Delta t$
-\end_inset
-
-,
-\begin_inset Formula \begin{equation}
--\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.\label{eq:elasticity:integral:quasistatic}\end{equation}
-
-\end_inset
-
-We solve this equation through formulation of a linear algebraic system
- of equations, involving the residual and Jacobian.
- The residual is simply
-\begin_inset Formula \[
-R_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
-
-\end_inset
-
-We employ numerical quadrature in the finite-element discretization and
- replace the integrals with sums over the cells and quadrature points,
-\begin_inset Formula \[
-R_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N_{,j}^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\]
-
-\end_inset
-
-where 
-\begin_inset Formula $x_{q}$
-\end_inset
-
- are the coordinates of the quadrature points, 
-\begin_inset Formula $w_{q}$
-\end_inset
-
- are the weights of the quadrature points, and 
-\begin_inset Formula $|J_{cell}(x_{q})|$
-\end_inset
-
- is the determinant of the Jacobian matrix evaluated at the quadrature points
- associated with mapping the reference cell to the actual cell.
- The quadrature scheme for the integral over the tractions is one dimension
- lower than the one used in integrating the terms for the volume cells.
-\end_layout
-
-\begin_layout Standard
-In order to find the Jacobian of the system, we let
-\begin_inset Formula \[
-\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).\]
-
-\end_inset
-
-Substituting into equation 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:elasticity:integral:quasistatic"
-
-\end_inset
-
- and isolating the term with 
-\begin_inset Formula $d\sigma_{ij}(t)$
-\end_inset
-
-, we have
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-MORE EDITING STARTING HERE
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula \[
-\int_{V}d\sigma_{ij}(t)N_{,j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-\int_{V}\frac{1}{2}d\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
-
-\end_inset
-
-We use a linear approximation for the change in stress,
-\begin_inset Formula \[
-d\sigma_{ij}(t)=C_{ijkl}d\varepsilon_{kl}(t),\]
-
-\end_inset
-
-which leads to
-\begin_inset Formula \[
-\int_{V}\frac{1}{2}C_{ijkl}d\varepsilon(t)(\phi_{i,j}+\phi_{j,i})\: dV=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
-
-\end_inset
-
-For infinitesimal strains
-\begin_inset Formula \[
-\varepsilon_{kl}(t)=\frac{1}{2}(u_{k,l}(t)+u_{l,k}(t)).\]
-
-\end_inset
-
-We discretize the displacement field using the trial function,
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Need consistent symbols for discretization.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula \[
-u_{i}(t)=\phi_{i}u_{i}(x,t),\]
-
-\end_inset
-
-so that we have
-\begin_inset Formula \[
-\int_{V}\frac{1}{4}C_{ijkl}(\phi_{k,l}+\phi_{l,k})(\phi_{i,j}+\phi_{j,i})\ dV\ du_{i}(x,t)=-\int_{V}\frac{1}{2}\sigma_{ij}(t)(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}(t+\Delta t)\phi_{i}\, dS+\int_{V}f_{i}(t+\Delta t)\phi_{i}\, dV.\]
-
-\end_inset
-
-The Jacobian of the system corresponds to the integral on the left hand
- side,
-\begin_inset Formula \[
-J=\int_{V}\frac{1}{4}C_{ijkl}(\phi_{k,l}+\phi_{l,k})(\phi_{i,j}+\phi_{j,i})\ dV.\]
-
-\end_inset
-
-The elastic constants 
-\begin_inset Formula $C_{ijkl}$
-\end_inset
-
- are associated with the linear perturbation in the stresses for the deformation
- from time 
-\begin_inset Formula $t$
-\end_inset
-
- to 
-\begin_inset Formula $t+\Delta t$
-\end_inset
-
-.
- Applying the same finite-element formulation to the Jacobian that we did
- to the residual, the expression for the Jacobian sparse matrix is
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Need to refint the finite-element stuff.
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula \[
-J=\sum_{\text{vol cells }}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(\phi_{,l}(x_{q})+\phi_{,k}(x_{q}))(\phi_{,j}(x_{q})+\phi_{,i}(x_{q}))\ w_{q}|J_{m}(x_{q})|\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-OLD stuff
-\end_layout
-
-\begin_layout Standard
-Discretizing into finite elements separates the integral over the domain
- and boundaries into a sum of integrals over elements and element boundaries,
-\begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
-
-\end_inset
-
-Within an element we represent the fields as a linear combination of a set
- of basis functions and the values of the fields at vertices of the element,
-\begin_inset Formula \begin{equation}
-a_{i}=N^{m}a_{i}^{m},\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $N^{m}$
-\end_inset
-
- is the 
-\begin_inset Formula $m$
-\end_inset
-
-th basis function for an element and 
-\begin_inset Formula $a_{i}^{m}$
-\end_inset
-
- is the field at vertex 
-\begin_inset Formula $m$
-\end_inset
-
-.
- Rewriting the trial functions and displacement field in terms of the basis
- functions gives
 \begin_inset Formula \begin{gather}
-\phi_{i}=N^{m},\text{ and}\\
-u_{i}=N^{m}u_{i}^{m}.\end{gather}
-
-\end_inset
-
-We force the weak form to hold for each component in the vector space.
- Substituting into the integral equation, for basis function 
-\begin_inset Formula $N^{p}$
-\end_inset
-
- and component 
-\begin_inset Formula $i$
-\end_inset
-
-, we have
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{multline}
-
-\end_inset
-
-For the specific case of a linearly elastic material, 
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=C_{ijkl}\epsilon_{kl},\end{equation}
-
-\end_inset
-
-and for infinitesimal strains, 
-\begin_inset Formula \begin{equation}
-\epsilon_{ij}=\frac{1}{2}\left(u_{i,j}+u_{j,i}\right),\end{equation}
-
-\end_inset
-
-so in this case our integral equation becomes 
-\begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}\left(N_{,k}^{q}u_{l}^{q}+N_{,l}^{q}u_{k}^{q}\right)\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{equation}
+u_{i}=u_{i}^{o}\text{ on }S_{u},\text{ and}\\
+R_{ki}(u_{i}^{+}-u_{i}^{-})=d_{k}\text{ on }S_{f},\end{gather}
 
 \end_inset
 
@@ -1301,13 +983,14 @@ We start with the wave equation (strong form),
 \nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
 \overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\\
+\underbar{R}\cdot(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f}\\
 \underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
-We construct the weak form by multiplying the wave equation by a trial function
- and setting the integral over the domain to zero.
- The trial function is a piecewise differential vector field, 
+We construct the weak form by multiplying the wave equation by a weighting
+ function and setting the integral over the domain to zero.
+ The weighting function is a piecewise differential vector field, 
 \begin_inset Formula $\overrightarrow{\phi}$
 \end_inset
 
@@ -1325,6 +1008,7 @@ We construct the weak form by multiplying the wave equation by a trial function
 \int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\: dV=0.\end{gather}
 
 \end_inset
+
 
  Consider the divergence theorem applied to the dot product of the stress
  tensor and the trial function, 
@@ -1349,52 +1033,15 @@ Expanding the left-hand side yields
 
 \end_inset
 
+
 Substituting into the weak form gives
 \begin_inset Formula \begin{equation}
--\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
 
-Now, 
-\begin_inset Formula $\underline{\sigma}:\nabla\overrightarrow{\phi}$
-\end_inset
 
- is a scalar, so it is symmetric,
-\begin_inset Formula \begin{equation}
-{\underline{\sigma}:\nabla\overrightarrow{\phi}=(\underline{\sigma}:\nabla\overrightarrow{\phi})}^{T}=\underline{\sigma}^{T}:\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
-
-\end_inset
-
-and we know that 
-\begin_inset Formula $\underline{\sigma}$
-\end_inset
-
- is symmetric, so
-\begin_inset Formula \begin{equation}
-\underline{\sigma}:\nabla\overrightarrow{\phi}=\underline{\sigma}:\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
-
-\end_inset
-
-which means
-\begin_inset Formula \begin{equation}
-\nabla\overrightarrow{\phi}=\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
-
-\end_inset
-
-which we can write as
-\begin_inset Formula \begin{equation}
-\nabla\overrightarrow{\phi}=\frac{1}{2}(\nabla+\nabla^{T})\overrightarrow{\phi}.\end{equation}
-
-\end_inset
-
-Substituting into the first term gives
-\begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
-
-\end_inset
-
-Turning our attention to the second term, we separate the integration over
- 
+We separate the integration over 
 \begin_inset Formula $S$
 \end_inset
 
@@ -1408,8 +1055,7 @@ Turning our attention to the second term, we separate the integration over
 
 ,
 \begin_inset Formula \begin{multline}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV\\
--\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0,\end{multline}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0,\end{multline}
 
 \end_inset
 
@@ -1422,69 +1068,257 @@ and recognize that
 
 so that the equation reduces to
 \begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
 
-This is the equation we want to solve.
- Discretizing into finite elements separates the integral over the domain
- and boundaries into a sum of integrals over elements and element boundaries,
-\begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\end{equation}
+We express the trial solution and weighting function as linear combinations
+ of basis functions,
+\begin_inset Formula \begin{gather}
+\vec{u}=\sum_{m}\vec{a}^{m}N^{m},\\
+\vec{\phi}=\sum_{n}\vec{c}^{n}N^{n}.\end{gather}
 
 \end_inset
 
-Within an element we represent the fields as a linear combination of a set
- of basis functions and the values of the fields at vertices of the element,
+Note that because the trial solution satisfies the Dirichlet boundary condition,
+ the number of basis functions for 
+\begin_inset Formula $\vec{u}$
+\end_inset
+
+ is generally greater than the number of basis functions for 
+\begin_inset Formula $\vec{\phi}$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $m>n$
+\end_inset
+
+.
+ Substituting in the expressions for the trial solution and weighting function
+ yields
+\begin_inset Formula \begin{gather}
+-\int_{V}\underline{\sigma}:\sum_{n}\vec{c}^{n}\nabla N_{,}^{n}\, dV+\int_{S_{T}}\vec{T}\cdot\sum_{n}\vec{c}^{n}N^{n}\, dS+\int_{V}\vec{f}\cdot\sum_{n}\vec{c}^{n}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}a^{m}}{\partial t^{2}}N^{m}\cdot\sum_{n}\vec{c}^{n}N^{n}\ dV=0.\end{gather}
+
+\end_inset
+
+
+ Because the weighting function is arbitrary, this equation must hold for
+ all 
+\begin_inset Formula $\vec{c}^{n}$
+\end_inset
+
+, so that
 \begin_inset Formula \begin{equation}
-\overrightarrow{a}=\underline{N}\cdot\overrightarrow{a^{e}},\end{equation}
+-\int_{V}\underline{\sigma}:\nabla N^{n}\, dV+\int_{S_{T}}\vec{T}N^{n}\, dS+\int_{V}\vec{f}N^{n}\, dV-\int_{V}\rho\sum_{m}\frac{\partial^{2}\vec{a}^{m}}{\partial t^{2}}N^{m}N^{n}\, dV=\vec{0}.\end{equation}
+
+\end_inset
+
+We want to solve this equation for the unknown coefficients 
+\begin_inset Formula $\vec{a}^{m}$
+\end_inset
+
+ subject to
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula \begin{gather}
+\vec{u}=\vec{u}^{o}\text{ on }S_{u},\text{ and}\\
+\underline{R}(\vec{u}^{+}-\vec{u}^{-})=\vec{d}\text{ on }S_{f},\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Solution Method for Quasi-Static Problems
+\end_layout
+
+\begin_layout Standard
+For brevity we outline the solution method for quasi-static problems using
+ only index notation.
+ In quasi-static problems we neglect the inertial terms, so equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:elasticity:integral:discretized:vector:notation"
+
+\end_inset
+
+ reduces to
+\begin_inset Formula \[
+-\int_{V}\sigma_{ij}N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}N^{n}\, dS+\int_{V}f_{i}N^{n}\, dV=\vec{0}.\]
+
+\end_inset
+
+As a result, time-dependence only enters through the constitutive relationships
+ and the loading conditions.
+ We considers deformation at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV=\vec{0}.\label{eq:elasticity:integral:quasistatic}\end{equation}
+
+\end_inset
+
+We solve this equation through formulation of a linear algebraic system
+ of equations (
+\begin_inset Formula $Au=b$
+\end_inset
+
+), involving the residual (
+\begin_inset Formula $r=b-Au$
+\end_inset
+
+) and Jacobian (
+\begin_inset Formula $A$
+\end_inset
+
+).
+ The residual is simply
+\begin_inset Formula \[
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t+\Delta t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV.\]
+
+\end_inset
+
+We employ numerical quadrature in the finite-element discretization and
+ replace the integrals with sums over the cells and quadrature points,
+\begin_inset Formula \begin{multline*}
+r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t+\Delta t)N_{,j}^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t+\Delta t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|,\end{multline*}
 
 \end_inset
 
 where 
-\begin_inset Formula $\underline{N}$
+\begin_inset Formula $r_{i}^{n}$
 \end_inset
 
- are the basis functions for an element and 
-\begin_inset Formula $\overrightarrow{a^{e}}$
+ is an 
+\begin_inset Formula $nd$
 \end_inset
 
- is the field at an element's vertices.
- Rewriting the trial functions and displacement field in terms of the basis
- functions gives
+ vector (
+\begin_inset Formula $d$
+\end_inset
+
+ is the dimension of the vector space) and 
+\begin_inset Formula $i$
+\end_inset
+
+ is a vector space component, 
+\begin_inset Formula $x_{q}$
+\end_inset
+
+ are the coordinates of the quadrature points, 
+\begin_inset Formula $w_{q}$
+\end_inset
+
+ are the weights of the quadrature points, and 
+\begin_inset Formula $|J_{cell}(x_{q})|$
+\end_inset
+
+ is the determinant of the Jacobian matrix evaluated at the quadrature points
+ associated with mapping the reference cell to the actual cell.
+ The quadrature scheme for the integral over the tractions is one dimension
+ lower than the one used in integrating the terms for the volume cells.
+\end_layout
+
+\begin_layout Standard
+In order to find the Jacobian of the system, we let
+\begin_inset Formula \[
+\sigma_{ij}(t+\Delta t)=\sigma_{ij}(t)+d\sigma_{ij}(t).\]
+
+\end_inset
+
+Isolating the term associated with the increment in stresses yields
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+\int_{V}d\sigma_{ij}(t)N_{j}^{n}\ dV=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t+\Delta t)N^{n}\, dS+\int_{V}f_{i}(t+\Delta t)N^{n}\, dV\]
+
+\end_inset
+
+We associate the term on the left-hand-side with the action of the system
+ Jacobian on the increment of the displacement field.
+ We approximate the increment in stresses using linear elasticity and infinitesi
+mal strains,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+d\sigma_{ij}(t)=C_{ijkl}d\varepsilon_{kl}(t)\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(du_{k.l}(t)+du_{l,k}(t))\\
+d\sigma_{ij}(t)=\frac{1}{2}C_{ijkl}(\sum_{m}da_{k,l}^{m}N^{m}+\sum_{m}da_{l,k}^{m}N^{m})\end{gather}
+
+\end_inset
+
+Now, 
+\begin_inset Formula $d\sigma_{ij}\phi_{i,j}$
+\end_inset
+
+ is a scalar, so it is symmetric,
 \begin_inset Formula \begin{equation}
-\overrightarrow{\phi}=\overrightarrow{N},\text{ and}\end{equation}
+d\sigma_{ij}\phi_{i,j}=d\sigma_{ji}\phi_{j,i},\end{equation}
 
 \end_inset
 
+and we know that 
+\begin_inset Formula $d\sigma_{ij}$
+\end_inset
 
+ is symmetric, so
 \begin_inset Formula \begin{equation}
-\overrightarrow{u}=\underline{N}\cdot\overrightarrow{u^{e}}.\end{equation}
+d\sigma_{ij}\phi_{i,j}=d\sigma_{ij}\phi_{j,i},\end{equation}
 
 \end_inset
 
-Substituting into the integral equation yields
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\overrightarrow{f^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\overrightarrow{T^{e}}_{}\, dS)=0\end{multline}
-
-\end_inset
-
-For the specific case of a linearly elastic material
+which means
 \begin_inset Formula \begin{equation}
-\underline{\sigma}=\underline{C}\cdot\underline{\varepsilon},\end{equation}
+\phi_{i,j}=\phi_{j,i},\end{equation}
 
 \end_inset
 
-and for infinitesimal strains
+which we can write as
 \begin_inset Formula \begin{equation}
-\underline{\varepsilon}=\frac{1}{2}(\nabla+\nabla^{T})\overrightarrow{u},\end{equation}
+\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).\end{equation}
 
 \end_inset
 
-so in this case our integral equation becomes
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(\nabla+\nabla^{T})\underline{N}:C\cdot(\nabla+\nabla^{T})\underline{N}\cdot\overrightarrow{u^{e}})\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{f^{e}}\, dV\\
--\int_{S_{T}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{T^{e}}\, dS)=0.\end{multline}
+In terms of the basis functions, we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+\sum_{n}c_{i}^{n}N_{,j}^{n}=\frac{1}{2}(\sum_{n}c_{i}^{n}N_{,j}^{n}+\sum_{n}c_{j}^{n}N_{,i}^{n}).\]
+
+\end_inset
+
+Combining these expressions for the increment in stresses and making use
+ of the symmetry of the weighting functions, we find the system Jacobian
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+A_{ij}^{mn}=\int_{V}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}+N_{l,k}^{m})(N_{i,j}^{n}+N_{j,i}^{n})\ dV.\]
+
+\end_inset
+
+We employ numerical quadrature in the finite-element discretization and
+ replace the integral with a sum over the cells and quadrature points,
+\begin_inset Formula \[
+A_{ij}^{mn}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}(x_{q})+N_{l,k}^{m}(x_{q}))(N_{i,j}^{n}(x_{q})+N_{j,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).\]
 
 \end_inset
 
@@ -1496,8 +1330,10 @@ Solution Method for Dynamic Problems
 \end_layout
 
 \begin_layout Standard
-Time-dependence enters through the constitutive relationships, loading condition
-s, and the inertial terms.
+For brevity we outline the solution method for quasi-static problems using
+ only index notation.
+ Time-dependence enters through the constitutive relationships, loading
+ conditions, and the inertial terms.
  We consider the deformation at time 
 \begin_inset Formula $t$
 \end_inset
@@ -1509,17 +1345,30 @@ s, and the inertial terms.
 \end_inset
 
 We solve this equation through formulation of a linear algebraic system
- of equations, involving the residual and Jacobian.
+ of equations (
+\begin_inset Formula $Au=b$
+\end_inset
+
+), involving the residual (
+\begin_inset Formula $r=b-Au$
+\end_inset
+
+) and Jacobian (
+\begin_inset Formula $A$
+\end_inset
+
+).
  The residual is simply
 \begin_inset Formula \[
-R_{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\]
+r_{i}^{n}=-\int_{V}\sigma_{ij}(t)N_{,j}^{n}\: dV+\int_{S_{T}}T_{i}(t)N^{n}\, dS+\int_{V}f_{i}(t)N^{n}\, dV-\int_{V}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ dV.\]
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integrals with sums over the cells and quadrature points,
-\begin_inset Formula \[
-R_{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|+\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},\]
+\begin_inset Formula \begin{multline*}
+r_{i}^{n}=-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\sigma_{ij}(x_{q},t)N^{n}(x_{q})\: w_{q}|J_{cell}(x_{q})|+\sum_{\text{vol cells}}\sum_{\text{quad pt}s}f_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|\\
++\sum_{\text{tract cells}}\sum_{\text{quad pts}}T_{i}(x_{q},t)N^{n}(x_{q})\, w_{q}|J_{cell}(x_{q})|-\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho\sum_{m}\ddot{a}_{i}^{m}(t)N^{m}N^{n}\ w_{q|J_{cell}(x_{q})},\end{multline*}
 
 \end_inset
 
@@ -1539,6 +1388,17 @@ where
  associated with mapping the reference cell to the actual cell.
  The quadrature scheme for the integral over the tractions is one dimension
  lower than the one used in integrating the terms for the volume cells.
+ 
+\end_layout
+
+\begin_layout Standard
+We find the system Jacobian matrix making use of the temporal discretization
+ and isolating the term for the increment in the displacment field at time
+ 
+\begin_inset Formula $t$
+\end_inset
+
+.
  Using the central difference method to approximate the acceleration (and
  velocity),
 \begin_inset Formula \begin{gather}
@@ -1556,10 +1416,10 @@ and writing the displacement at time
 \end_inset
 
  (for consistency with the displacement increment quasi-static formulation),
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula \begin{gather}
 u_{i}(t+\Delta t)=u_{i}(t)+du_{i}(t),\\
-\ddot{u}_{i}=\frac{1}{\Delta t^{2}}\left(du_{i}(t)-u_{i}(t)+u_{i}(t-\Delta t)\right),\\
-\dot{u}_{i}=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right),\end{gather*}
+\ddot{u}_{i}(t)=\frac{1}{\Delta t^{2}}\left(du_{i}(t)-u_{i}(t)+u_{i}(t-\Delta t)\right),\\
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}\left(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t)\right),\end{gather}
 
 \end_inset
 
@@ -1570,43 +1430,43 @@ we have
 \end_inset
 
 Thus, the Jacobian for the system is
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add absorbing boundary and fault terms.
-\end_layout
+\begin_inset Formula \[
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\int_{V}\rho N^{m}N^{n}\ dV,\]
 
 \end_inset
 
+and using numerical quadrature in the finite-element discretization to replace
+ the integrals with sums over the cells and quadrature points,
+\end_layout
 
+\begin_layout Standard
 \begin_inset Formula \[
-J_{ij}^{pq}=\delta_{ij}\int_{_{V}}\rho N^{p}N^{q}\ dV,\]
+A_{ij}^{nm}=\delta_{ij}\frac{1}{\Delta t^{2}}\sum_{\text{vol cells}}\sum_{\text{quad pts}}\rho(x_{q})N^{m}(x_{q})N^{n}(x_{q}),\]
 
 \end_inset
 
 where 
-\begin_inset Formula $J_{ij}^{pq}$
+\begin_inset Formula $A_{ij}^{mn}$
 \end_inset
 
  is a 
-\begin_inset Formula $pn$
+\begin_inset Formula $nd$
 \end_inset
 
  by 
-\begin_inset Formula $qn$
+\begin_inset Formula $md$
 \end_inset
 
  matrix (
-\begin_inset Formula $n$
+\begin_inset Formula $d$
 \end_inset
 
  is the dimension of the vector space), 
-\begin_inset Formula $p$
+\begin_inset Formula $m$
 \end_inset
 
  and 
-\begin_inset Formula $q$
+\begin_inset Formula $n$
 \end_inset
 
  refer to the basis functions and 
@@ -1618,244 +1478,21 @@ where
 \end_inset
 
  are vector space components.
-\end_layout
-
-\begin_layout Section
-Solution Method for Quasi-Static Problems
-\end_layout
-
-\begin_layout Standard
-For quasi-static problems, time-dependence only enters through the constitutive
- relationships and the loading conditions.
- We consider a general class of quasi-static viscoelastic models under the
- assumption of infinitesimal strain, and the methods we derive are also
- appropriate for viscoplastic behavior.
- The stresses are considered to be a function of the total strains and possibly
- of other variables as well:
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=h_{ij}\left(\epsilon_{ij},q_{k}\right)+\sigma_{ij}^{0}.\end{equation}
-
-\end_inset
-
-The strains are given by 
-\begin_inset Formula $\varepsilon_{ij}$
-\end_inset
-
-, while the 
-\begin_inset Formula $q_{k}$
-\end_inset
-
- represent additional variables upon which the stress depends.
- These additional variables follow the evolution equations
-\begin_inset Formula \begin{equation}
-q_{k}=r_{k}\left(\epsilon_{ij},q_{k}\right),\end{equation}
-
-\end_inset
-
-with the initial conditions 
-\begin_inset Formula $q_{k}\left(t_{0}\right)=q_{k}^{0}$
-\end_inset
-
-.
- The 
-\begin_inset Formula $\sigma_{ij}^{0}$
-\end_inset
-
- are the initial stresses in the material.
- The strain tensor is given by
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-\varepsilon_{ij}=\frac{1}{2}\left(u_{i,j}+u_{j,i}\right).\end{equation}
-
-\end_inset
-
-The stress can be either a linear or nonlinear function of strain and the
- additional variables, and in some cases the additional variables are not
- needed.
- In linear elastic behavior in the absence of initial stresses, for example,
- the stress is linearly dependent on the strain and there are no additional
- variables.
-\end_layout
-
-\begin_layout Standard
-For quasi-static problems, there are no acceleration or momentum terms,
- and the equation of interest simplifies to
-\begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=\overrightarrow{0}.\end{equation}
-
-\end_inset
-
-The first term in this equation represents the internal forces within an
- element, the second term represents the contribution from externally-applied
- body forces, and the third term represents the contribution from externally-app
-lied tractions.
-\end_layout
-
-\begin_layout Standard
-We define the tangent constitutive operator as
-\begin_inset Formula \begin{equation}
-C_{ijkl}=\frac{\partial\sigma_{ij}}{\partial\epsilon_{kl}},\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $\sigma_{ij}$
-\end_inset
-
- and 
-\begin_inset Formula $\epsilon_{kl}$
-\end_inset
-
- are the stresses and strains at any given time step.
- For an elastic problem in which the stress is linearly dependent on the
- strain, this allows the stress-strain relationship to be written
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=C_{ijkl}\epsilon_{kl}+\sigma_{ij}^{0},\end{equation}
-
-\end_inset
-
-and we then obtain
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV)\overrightarrow{U}=\\
-\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{multline}
-
-\end_inset
-
-where 
-\begin_inset Formula $\overrightarrow{u}$
-\end_inset
-
- is the global displacement vector for all nodes in the finite element mesh.
- This leads to the global matrix problem
-\begin_inset Formula \begin{equation}
-\underline{K}\overrightarrow{u}=\overrightarrow{B}_{b}+\overrightarrow{B}_{t}-\overrightarrow{B}_{i},\end{equation}
-
-\end_inset
-
-or
-\begin_inset Formula \begin{equation}
-\underline{K}\overrightarrow{u}=\overrightarrow{B}_{ext}-\overrightarrow{B}_{i}.\end{equation}
-
-\end_inset
-
-The matrix 
-\begin_inset Formula $\underline{K}$
-\end_inset
-
- is the global stiffness matrix, and the vectors 
-\begin_inset Formula $\overrightarrow{B}\hphantom{}_{b}$
-\end_inset
-
-, 
-\begin_inset Formula $\overrightarrow{B}\hphantom{}_{t}$
-\end_inset
-
-, and 
-\begin_inset Formula $\overrightarrow{B}\hphantom{}_{i}$
-\end_inset
-
- represent the nodal force contributions from body forces, surface tractions,
- and initial stresses, respectively.
- The forces due to body forces and surface tractions represent the externally
- applied forces, given by 
-\begin_inset Formula $\overrightarrow{B}\hphantom{}_{ext}$
-\end_inset
-
-.
- This linear, sparse system may be solved by a number of available methods.
-\end_layout
-
-\begin_layout Standard
-We are interested in computing the solution at time 
-\begin_inset Formula $t+\Delta t$
-\end_inset
-
-, given the solution at time 
-\begin_inset Formula $t$
-\end_inset
-
-.
- An equilibrium solution will balance the internal forces
-\begin_inset Formula \begin{equation}
-\overrightarrow{B}\hphantom{}_{int}=\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV)\label{eq:qs-internal-force}\end{equation}
-
-\end_inset
-
-with the external forces for any given time:
-\begin_inset Formula \begin{equation}
-\overrightarrow{F}(t+\Delta t)=\overrightarrow{B}_{ext}(t+\Delta t)-\overrightarrow{B}_{int}(t+\Delta t)=\overrightarrow{0}.\label{eq:qs-force-balance}\end{equation}
-
-\end_inset
-
-Note that the internal forces include the effects of initial stresses.
- Iterative methods such as Newton-Raphson may be used to solve Equation
- 
+ We consider the contributions associated with the fault in section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:qs-force-balance"
+reference "sec:fault"
 
 \end_inset
 
- for the unknown internal forces at time 
-\begin_inset Formula $t+\Delta t$
+ and with absorbing boundaries is section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:absorbing:boundaries"
+
 \end_inset
 
 .
- Since the internal forces at time 
-\begin_inset Formula $t$
-\end_inset
-
- are known, we have
-\begin_inset Formula \begin{equation}
-\overrightarrow{B}_{int}(t+\Delta t)=\overrightarrow{B}_{int}(t)+\Delta\overrightarrow{B}_{int}(t),\end{equation}
-
-\end_inset
-
-where 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\noun off
-\color none
-
-\begin_inset Formula $\Delta\overrightarrow{B}_{int}(t)$
-\end_inset
-
- is the increment in nodal point forces corresponding to the increment in
- element displacements and stresses.
- This vector may be approximated as
-\begin_inset Formula \begin{equation}
-\Delta\overrightarrow{B}_{int}(t)\approx\underline{K}(t+\Delta t)\Delta\overrightarrow{u}(t),\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $\Delta\overrightarrow{u}$
-\end_inset
-
- is a vector of displacement increments and
-\begin_inset Formula \begin{equation}
-\underline{K}(t+\Delta t)=-\frac{\partial\overrightarrow{F}(t+\Delta t)}{\partial\overrightarrow{u}(t+\Delta t)}=\frac{\partial\overrightarrow{B}_{int}(t+\Delta t)}{\partial\overrightarrow{u}(t+\Delta t)}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}^{t+\Delta t}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV).\end{equation}
-
-\end_inset
-
-Note that for a linear problem, the stiffness matrix remains constant, and
- no iterations are necessary.
- For a nonlinear problem, we begin the iterations using the stiffness matrix
- at time 
-\begin_inset Formula $t$
-\end_inset
-
-, and recompute at specified iterations using the current estimates of stress,
- strain, and other state variables.
 \end_layout
 
 \end_body
