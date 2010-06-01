@@ -669,6 +669,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
@@ -678,15 +682,23 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 				      orientationVertex.size());
 
     // Set global order indices
-    indicesN = indicesRel + globalOrder->getIndex(v_negative);
-    indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    if (globalOrder->isLocal(v_negative))
+      indicesN = indicesRel + globalOrder->getIndex(v_negative);
+    else
+      indicesN = -1;
+    if (globalOrder->isLocal(v_positive))
+      indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    else
+      indicesP = -1;
 
     PetscErrorCode err = 0;
 
+    jacobianVertexN = 1.0;
     err = MatGetValues(jacobianMatrix,
 		       indicesN.size(), &indicesN[0],
 		       indicesN.size(), &indicesN[0],
 		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
+    jacobianVertexP = 1.0;
     err = MatGetValues(jacobianMatrix,
 		       indicesP.size(), &indicesP[0],
 		       indicesP.size(), &indicesP[0],
