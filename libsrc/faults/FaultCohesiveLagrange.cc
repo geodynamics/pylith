@@ -603,13 +603,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * off-diagonal terms of C A^(-1) C^T:
    *
    * Term for DOF x of vertex L is: 
-   * -1.0 / (R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
+   * -(R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
    *
    * Term for DOF y of vertex L is: 
-   * -1.0 / (R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
-   *
-   * Translate DOF for global vertex L into DOF in split field for
-   * preconditioner.
+   * -(R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
    */
 
 #if 1 // DIAGONAL PRECONDITIONER
@@ -713,14 +710,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
     for (int kDim=0; kDim < spaceDim; ++kDim) {
-      double value = 0.0;
       for (int iDim=0; iDim < spaceDim; ++iDim)
-	value -= 
+	precondVertexL[kDim] -= 
           orientationVertex[kDim*spaceDim+iDim] * 
           orientationVertex[kDim*spaceDim+iDim] * 
           (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
-      if (fabs(value) > 1.0e-8)
-	precondVertexL[kDim] = 1.0 / value;
     } // for
     
 
@@ -728,10 +722,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
-
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      std::cout << "Vertex " << v_lagrange << " J^{-1}_{nn}["<<iDim<<"] " << jacobianInvVertexN[iDim] << " J^{-1}_{pp}["<<iDim<<"] " << jacobianInvVertexP[iDim] << " M["<<iDim<<"] " << precondVertexL[iDim] << std::endl;
-    }
 
     // Set global preconditioner index associated with Lagrange constraint vertex.
     const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
@@ -758,7 +748,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
 #else // FULL PRECONDITIONER
 
-  // Compute -( [C] [A]^(-1) [C]^T )^-1 for cell.
+  // Compute -( [C] [A]^(-1) [C]^T ) for cell.
   //
   // numBasis = number of corners in fault cell
   // spaceDim = spatial dimension
@@ -800,7 +790,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   // Allocate vectors for vertex values
   double_array preconditionerCell(matrixSizeF);
-  double_array preconditionerInvCell(matrixSizeF);
   int_array indicesN(nrowsF);
   int_array indicesP(nrowsF);
   int_array indicesLagrange(nrowsF);
@@ -901,7 +890,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
     jacobianCellP = 0.0;
     jacobianCellN = 0.0;
-    preconditionerInvCell = 0.0;
     preconditionerCell = 0.0;
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -1068,7 +1056,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 	      for (int kDim=0; kDim < spaceDim; ++kDim) {
 		const int kB = kBasis*spaceDim + kDim;
 
-		preconditionerInvCell[iL*nrowsF+lL] -= 
+		preconditionerCell[iL*nrowsF+lL] -= 
 		  orientationCell[iLagrange*orientationSize+iDim*spaceDim+jDim] *
 		  jacobianInvCellN[jB*nrowsF+kB] *
 		  orientationCell[lLagrange*orientationSize+kDim*spaceDim+lDim];
@@ -1080,76 +1068,15 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       } // for
     } // for
 
-#if 1
+#if 0
     std::cout << "1/P_cell " << *c_iter << std::endl;
     for(int i = 0; i < nrowsF; ++i) {
       for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << preconditionerInvCell[i*nrowsF+j];
+        std::cout << "  " << preconditionerCell[i*nrowsF+j];
       }
       std::cout << std::endl;
     }
 #endif
-
-    // Invert (C Ai C^T)
-
-    // Transpose matrices so we can call LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp               = preconditionerInvCell[k];
-        preconditionerInvCell[k]  = preconditionerInvCell[kp];
-        preconditionerInvCell[kp] = tmp;
-      }
-    }
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &preconditionerInvCell[0], &elemRows, &singularValuesN[0], &UN[0], &elemRows, &VNt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of preconditioner element matrix failed.");
-
-#if 1
-    for(int i = 0; i < nrowsF; ++i) {
-      std::cout << "sigmaN["<<i<<"]: " << singularValuesN[i] << " sigmaP["<<i<<"]: " << singularValuesP[i] << std::endl;
-    }
-    std::cout << "UN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << UN[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-    std::cout << "VNt_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << VNt[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-#endif
-
-    // Row scale Vt by the inverse of the singular values
-    for(int i = 0; i < nrowsF; ++i) {
-      const PetscReal invN = singularValuesN[i] > 1.0e-10 ? 1.0/singularValuesN[i] : 0.0;
-      const PetscReal invP = singularValuesP[i] > 1.0e-10 ? 1.0/singularValuesP[i] : 0.0;
-
-      for(int j = 0; j < nrowsF; ++j) {
-        VNt[j*nrowsF+i] *= invN;
-        VPt[j*nrowsF+i] *= invP;
-      }
-    }
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UN[0], &elemRows, &VNt[0], &elemRows, &one, &preconditionerCell[0], &elemRows);
-
-    // Transpose matrices from LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp                  = preconditionerCell[k];
-        preconditionerCell[k]  = preconditionerCell[kp];
-        preconditionerCell[kp] = tmp;
-      }
-    }
-
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
