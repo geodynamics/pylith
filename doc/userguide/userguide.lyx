@@ -671,5 +671,21 @@ Quarterly of Applied Mathematics
 , 157–165.
 \end_layout
 
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "18"
+key "Bathe:1995"
+
+\end_inset
+
+Bathe, K.-J.
+ (1995), 
+\shape italic
+Finite-Element Procedures
+\shape default
+, Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
+\end_layout
+
 \end_body
 \end_document
