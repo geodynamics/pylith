@@ -1467,6 +1467,12 @@ wave_period = 1.0*s
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:petsc:options"
+
+\end_inset
+
 PETSc Settings (
 \family typewriter
 petsc
@@ -1475,7 +1481,8 @@ petsc
 \end_layout
 
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations.
+PyLith relies on PETSc for the linear algebra computations, including linear
+ Krylov subspace solvers and nonlinear solvers.
  PETSc options can be set in 
 \family typewriter
 .cfg
@@ -1493,6 +1500,16 @@ PyLith relies on PETSc for the linear algebra computations.
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:petsc:options:defaults"
+
+\end_inset
+
+.
+ PETSc options are used to control the selection and settings for the solvers
+ underlying the SolverLinear and SolverNonlinear objects discussed in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:solvers"
 
 \end_inset
 
@@ -2110,14 +2127,27 @@ formulation
  facility to the general-problem.
  The formulation specifies the time-stepping formulation to integrate the
  elasticity equation.
- Implicit time stepping should be used for quasi-static problems, whereas
- explicit time stepping should be used for dynamic problems which include
+ Implicit time stepping is used for quasi-static problems and neglects interial
+ terms (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:elasticity:integral:quasistatic"
+
+\end_inset
+
+), whereas explicit time stepping is used for dynamic problems and includes
  inertial terms.
- Two options for explicit time-stepping are available: using a full, consistent
- Jacobian matrix and a lumped Jacobian matrix.
+ There are two general options for explicit time-stepping: using a full,
+ consistent Jacobian matrix and a lumped Jacobian matrix.
  In the lumped Jacobian formulation, the Jacobian is a diagonal matrix and
  stored as a vector, and PyLith employs an optimized built-in solver rather
  than a PETSc solver.
+ PyLith automatically switches to using the optimized built-in when the
+ lumped formulation is chosen.
+ PyLith also provides two optimized time-stepping options, one for single
+ point quadrature in linear triangular cells and one for single point quadrature
+ in linear tetrahedral cells.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2159,6 +2189,33 @@ An example of setting the formulation facility to the lumped explicit time
 formulation = pylith.problems.ExplicitLumped
 \end_layout
 
+\begin_layout Standard
+An example of setting the formulation facility to the lumped explicit time
+ stepping component optimized for linear triangular cells with one point
+ quadrature is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+formulation = pylith.problems.ExplicitLumpedTri3
+\end_layout
+
+\begin_layout Standard
+An example of setting the formulation facility to the lumped explicit time
+ stepping component optimized for linear tetrehedral cells is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+formulation = pylith.problems.ExplicitLumpedTet4
+\end_layout
+
 \begin_layout Subsection
 Time-Stepping Formulation
 \end_layout
@@ -2174,7 +2231,7 @@ time_step Time step size specification (default is uniform time step).
 \end_layout
 
 \begin_layout Description
-solver Type of solver to use (default is linear).
+solver Type of solver to use (default is SolverLinear).
 \end_layout
 
 \begin_layout Description
@@ -2238,6 +2295,48 @@ matrix_type = sbaij ; Nonsymmetric sparse matrix is aij
 
 \begin_layout LyX-Code
 view_jacobian = false
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:solvers"
+
+\end_inset
+
+Solvers
+\end_layout
+
+\begin_layout Standard
+PyLith supports three types of solvers.
+ The linear solver, SolverLinear, corresponds to the PETSc KSP solver and
+ is used in linear problems with linear elastic and viscoelastic bulk constituti
+ve models and kinematic fault ruptures.
+ The nonlinear solver, SolverNonlinear, corresponds to the PETSc SNES solver
+ and is used in nonlinear problems with nonlinear viscoelastic or elastoplastic
+ bulk constitutive models or dynamic fault ruptures.
+ The lumped solver (SolverLumped) is a specialized solver used with the
+ lumped system Jacobian matrix.
+ The options for the PETSc KSP and SNES solvers are set via the top-level
+ PETSc options (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+ and the PETSc documentation 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.mcs.anl.gov/petsc/petsc-as/documentation/index.html
+\end_layout
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
