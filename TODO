@@ -24,25 +24,10 @@ DOC/INSTALL
 
 MANUAL
 
-  Governing equations [Brad]
-
-  Small strain formulation [Brad]
-
   Fault
     governing equations [Brad]
     dynamic rupture parameters [Brad]
     fault constitutive models [Surendra]
-
-  Mesher parameters [Charles]
-    Need outline of parameters to MeshImporter like other objects
-
-    MeshIOAscii
-    MeshIOLaGriT
-    MeshIOCubit
-      use_nodeset_names Flag for using nodeset names of ids.
-    reorder_mesh
-    distribution
-      partitioner
 
   Tutorials
     3d/hex8 [Charles]
@@ -50,12 +35,11 @@ MANUAL
 
   Benchmarks
     Update performance?
-    SCEC dynamic rupture benchmarks [Surendra]        
-    Savage-Prescott
-      change .cfg file to output velocities, update post-processing
 
   Materials [Charles]
     Are material models consistent with governing equations discussion?
+
+  Update description of properties and components in appendix.
 
 TUTORIALS/EXAMPLES
   
@@ -102,6 +86,9 @@ OTHER
   distribute to Greg Lyzenga and Jay Parker
 
     Add time step information
+
+  Savage-Prescott
+    change .cfg file to output velocities, update post-processing
 
 CODE
 
