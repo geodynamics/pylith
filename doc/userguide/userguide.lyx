@@ -1,14 +1,14 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
-\usepackage{hyperref}
+%\usepackage{hyperref}
 
-\let\myUrl\url
-\renewcommand{\url}[1]{(\myUrl{#1})}
-\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
+%\let\myUrl\url
+%\renewcommand{\url}[1]{(\myUrl{#1})}
+%\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
 \use_default_options false
 \language english
@@ -23,9 +23,19 @@
 \font_tt_scale 100
 
 \graphics default
+\float_placement tbph
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry true
 \use_amsmath 1

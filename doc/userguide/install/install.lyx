@@ -21,7 +21,16 @@
 \graphics default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -70,7 +79,7 @@ Installation of PyLith on a desktop or laptop machine is, in most cases,
  Help is available from both a CIG mailing list and CIG Roundup Bug Tracking
  System 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -202,7 +211,7 @@ $ cd pylith
 \begin_layout Enumerate
 Download the Linux tarball from the PyLith web page 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 

@@ -813,20 +813,6 @@ mesher
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-ADD STUFF HERE ABOUT reorder_mesh AND OTHER MESH GENERATOR SETTINGS
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Geometrical and topological information for the finite element mesh may
  be provided by exporting an EXODUS format file from CUBIT, by exporting
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
@@ -982,82 +968,19 @@ status open
 \end_inset
 
 
-\begin_inset space ~
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.5in}
+\end_layout
+
 \end_inset
 
 
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
 \begin_inset Graphics
 	filename figs/quad4.eps
 
@@ -1112,82 +1035,19 @@ status open
 \end_inset
 
 
-\begin_inset space ~
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.5in}
+\end_layout
+
 \end_inset
 
 
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
 \begin_inset Graphics
 	filename figs/hex8.eps
 
@@ -1221,6 +1081,191 @@ name "fig:3D-linear-elements"
 
 \end_layout
 
+\begin_layout Subsubsection
+Mesh Importer
+\end_layout
+
+\begin_layout Standard
+The default mesher component is MeshImporter, which provides the capabilities
+ of reading the mesh from files.
+ The MeshImporter has several properties and components:
+\end_layout
+
+\begin_layout Description
+reorder_mesh Reorder the vertices and cells using the reverse Cuthill-McKee
+ algorithm (default is False).
+\end_layout
+
+\begin_layout Description
+reader Reader for a given type of mesh (default is MeshIOAscii).
+\end_layout
+
+\begin_layout Description
+distributor Handles distribution of the mesh among processors.
+\end_layout
+
+\begin_layout Standard
+Reordering the mesh so that vertices and cells connected topologically also
+ reside close together in memory improves overall performance and can improve
+ solver performance as well.
+\end_layout
+
+\begin_layout Quote
+
+\color red
+Note:
+\color inherit
+ The coordinate system associated with the mesh must be a Cartesian coordinate
+ system.
+ This includes generic Cartesian coordinate systems as well as geographic
+ projections.
+\end_layout
+
+\begin_layout Subsubsection
+MeshIOAscii
+\end_layout
+
+\begin_layout Standard
+The MeshIOAscii object is intended for reading small, simple ASCII files
+ containing a mesh constructed by hand.
+ We use this file format extensively in the examples.
+ Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:MeshIOAscii"
+
+\end_inset
+
+ describes the format of the files.
+ The properties and components of the MeshIOAscii object include:
+\end_layout
+
+\begin_layout Description
+filename Name of the mesh file.
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with the mesh.
+\end_layout
+
+\begin_layout Subsubsection
+MeshIOCubit
+\end_layout
+
+\begin_layout Standard
+The MeshIOCubit object reads the NetCDF Exodus II files output from CUBIT.
+ Beginning with CUBIT 11.0, the names of the nodesets are included in the
+ Exodus II files and PyLith can use these nodeset names or revert to using
+ the nodeset ids.
+ The properties and components associated withthe MeshIOCubit object are:
+\end_layout
+
+\begin_layout Description
+filename Name of the Exodus II file.
+\end_layout
+
+\begin_layout Description
+use_nodeset_names Identify nodesets by name rather than id (default is True).
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with the mesh.
+\end_layout
+
+\begin_layout Subsubsection
+MeshIOLagrit
+\end_layout
+
+\begin_layout Standard
+The MeshIOLagrit object is used to read ASCII and binary GMV and PSET files
+ output from LaGriT.
+ PyLith will automatically detect whether the files are ASCII or binary.
+ We attempt to provide support for experimental 64-bit versions of LaGriT
+ via flags indicating whether the Fortran code is using 32-bit or 64-bit
+ integers.
+ The MeshIOLagrit properties and components are:
+\end_layout
+
+\begin_layout Description
+filename_gmv Name of GMV file.
+\end_layout
+
+\begin_layout Description
+filename_pset Name of the PSET file.
+\end_layout
+
+\begin_layout Description
+flip_endian Flip the endian of values when reading binary files (default
+ is False).
+\end_layout
+
+\begin_layout Description
+io_int32 Flag indicating that PSET files use 32-bit integers (default is
+ True).
+\end_layout
+
+\begin_layout Description
+record_header_32bt Flag indicating Fortran record header is 32-bit (default
+ is True)
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with mesh.
+\end_layout
+
+\begin_layout Subsubsection
+Distributor
+\end_layout
+
+\begin_layout Standard
+The distributor users a partitioner to compute which cells should be placed
+ on each processor, computes the overlap among the processors, and then
+ distributes the mesh among the processors.
+ The properties and components of the Distributor include:
+\end_layout
+
+\begin_layout Description
+partitioner Choice of partitioner (
+\begin_inset Quotes eld
+\end_inset
+
+parmetis
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+chaco
+\begin_inset Quotes erd
+\end_inset
+
+, default is 
+\begin_inset Quotes eld
+\end_inset
+
+chaco
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+writer_paritition Flag indicating that the partition information should
+ be written to a file (default is False).
+\end_layout
+
+\begin_layout Description
+data_writer Writer for partition information (default is DataWriterVTKMesh
+ for VTK output).
+\end_layout
+
+\begin_layout Standard
+ParMetis is not included in the PyLith binaries due to licensing issues.
+\end_layout
+
 \begin_layout Subsection
 Problem Specification (
 \family typewriter
@@ -1244,11 +1289,8 @@ TimeDependent
 \end_layout
 
 \begin_layout Description
-normalizer Scales used to nondimensionalize the problem (default is 
-\family typewriter
-NondimElasticQuasistatic
-\family default
-).
+normalizer Scales used to nondimensionalize the problem (default is NondimElasti
+cQuasistatic).
 \end_layout
 
 \begin_layout Description
@@ -1875,6 +1917,7 @@ ksp_max_it
 
 \begin_layout Plain Layout
 Maximum number of iterations.
+ Depends on problem size.
 \end_layout
 
 \end_inset
