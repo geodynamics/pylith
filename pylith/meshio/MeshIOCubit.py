@@ -40,6 +40,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     ##
     ## \b Properties
     ## @li \b filename Name of Cubit Exodus file.
+    ## @li \b use_nodeset_names Ues nodeset names instead of ids.
     ##
     ## \b Facilities
     ## @li coordsys Coordinate system associated with mesh.
