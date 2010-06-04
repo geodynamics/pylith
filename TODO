@@ -36,11 +36,6 @@ MANUAL
   Benchmarks
     Update performance?
 
-  Materials [Charles]
-    Are material models consistent with governing equations discussion?
-
-  Update description of properties and components in appendix.
-
 TUTORIALS/EXAMPLES
   
   3d/hex8
@@ -160,6 +155,12 @@ SECONDARY PRIORITIES
 
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
+
+* Lumped elasticity formulation for large deformations
+
+* Manual
+
+  Are material models consistent with governing equations discussion?
 
 ----------------------------------------------------------------------
 CLEANUP
