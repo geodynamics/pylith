@@ -697,5 +697,27 @@ Finite-Element Procedures
 , Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
 \end_layout
 
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "19"
+key "Liu:etal:2006"
+
+\end_inset
+
+Liu, P., R.J.
+ Archuleta, S.H.
+ Hartzell (2006).
+ Prediction of broadband ground-motion time histories: Hybrid low/high-frequency
+ method with correlated random source parameters, 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 96, 2118-2130.
+\end_layout
+
 \end_body
 \end_document

@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2171,18 +2171,17 @@ output Manager for output of diagnostic and data fields for the fault.
 \end_layout
 
 \begin_layout Standard
-By default the output manager outputs both diagnostic information (fault
- normal direction, final slip, and slip initiation time) and the slip at
- each time step.
- Table 
+By default the output manager outputs both diagnostic information (e.g., fault
+ normal direction) and the slip at each time step.
+ Tables 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:fault:kin:output"
 
 \end_inset
 
- lists the fields available for output for a fault with kinematic (prescribed)
- earthquake rupture.
+ and ?? list the fields available for output for a fault with kinematic
+ (prescribed) earthquake rupture and a fault with dynamic rupture, respectively.
  The fault coordinate system is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2264,8 +2263,8 @@ Kinematic Earthquake Rupture
 \end_layout
 
 \begin_layout Standard
-Kinematic earthquake ruptures specify the slip as a function of time on
- the fault surface.
+Kinematic earthquake ruptures use the FaultCohesiveKin object to specify
+ the slip as a function of time on the fault surface.
  Slip may evolve simultaneously over the fault surface instantaneously in
  a single time step (as is usually done in quasi-static simulations) or
  propagate over the fault surface over hundreds and up to thousands of time
@@ -2281,16 +2280,21 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  of decoupling the motion of the two sides of the fault surface.
  In order to impose the desired relative motion, we must adjust the governing
  equations.
- PyLith employs Lagrange multiplier constraints to do this.
- Typically, the additional degrees of freedom associated with the Lagrange
- multipliers result in a complex implementation.
+ PyLith employs Lagrange multiplier constraints to enforce the constraint
+ of the relative motion in the strong sense.
+ That is, we enforce the slip across the fault at each degree of freedom.
+\end_layout
+
+\begin_layout Standard
+In conventional implementations the additional degrees of freedom associated
+ with the Lagrange multipliers results in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
- provides for an easy implementation; we simply add the additional degrees
+ provides for a simple formulation; we simply add the additional degrees
  of freedom associated with the Lagrange multipliers to the cohesive cells
  as shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:fault:cohesive:quad4:kin"
+reference "fig:fault:cohesive:quad4"
 
 \end_inset
 
@@ -2300,43 +2304,95 @@ reference "fig:fault:cohesive:quad4:kin"
  Furthermore, the Lagrange multiplier constraints correspond to forces required
  to impose the relative motions, so they are related to the change in stress
  on the fault surface associated with fault slip.
- If we write the governing equations in the form
+ If we write the algebraic system of equations we are solving in the form
 \begin_inset Formula \begin{equation}
 \underline{A}\overrightarrow{u}=\overrightarrow{b}\,,\end{equation}
 
 \end_inset
 
-then inserting the Lagrange multiplier constraints results in
+then including the Lagrange multiplier constraints results in
 \begin_inset Formula \begin{equation}
 \left[\begin{array}{cc}
 \underline{A} & \underline{C}^{T}\\
 \underline{C} & 0\end{array}\right]\left[\begin{array}{c}
 \overrightarrow{u}\\
-\overrightarrow{L}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{l}\end{array}\right]=\left[\begin{array}{c}
 \overrightarrow{b}\\
-\overrightarrow{D}\end{array}\right]\,,\end{equation}
+\overrightarrow{d}\end{array}\right]\,,\label{eq:fault:cohesive:lagrange}\end{equation}
 
 \end_inset
 
 where 
+\begin_inset Formula $\overrightarrow{l}$
+\end_inset
+
+ is the vector of Lagrange multipliers and 
 \begin_inset Formula $\underline{C}$
 \end_inset
 
  is a matrix of direction cosines relating the relative motion across the
  fault to the vector of fault slip, 
-\begin_inset Formula $\overrightarrow{D}$
+\begin_inset Formula $\overrightarrow{d}$
 \end_inset
 
-, and 
-\begin_inset Formula $\overrightarrow{L}$
-\end_inset
-
- is the vector of Lagrange multipliers.
+.
  Note that by using the direction cosines to relate the relative motion
  across the fault, the slip vector and Lagrange multipliers (forces required
  to impose the slip) are in the local fault coordinate system (lateral motion,
  reverse motion, and fault opening).
  
+\end_layout
+
+\begin_layout Paragraph
+Nondiagonal A
+\end_layout
+
+\begin_layout Standard
+The Lagrange multipliers contribute to both the system Jacobian matrix and
+ the residual.
+ Because we enforce the constraints in a strong sense, the terms do not
+ involve integrals over the fault surface.
+ The additional terms in the residual are
+\begin_inset Formula \begin{gather}
+r_{i}^{n}=-C_{ji}^{pn}l_{j}^{p},\\
+r_{i}^{p}=d_{i}^{p}-C_{ij}^{pn}u_{j}^{n},\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $n$
+\end_inset
+
+ denotes a conventional degree of freedom and 
+\begin_inset Formula $p$
+\end_inset
+
+ denotes a degree of freedom associated with a Lagrange multiplier.
+ The additional terms in the system Jacobian matrix are simply the direction
+ cosines,
+\begin_inset Formula \begin{gather}
+J_{ij}^{np}=C_{ji}^{pn},\\
+J_{ij}^{pn}=C_{ij}^{pn}.\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Diagonal A
+\end_layout
+
+\begin_layout Standard
+When we use a lumped system Jacobian matrix, we cannot lump the terms associated
+ with the Lagrange multipliers.
+ Instead, we ignore the formulate the Jacobian ignoring the contributions
+ from the Lagrange multipliers, and then adjust the solution after the solve
+ to account for their presence.
+\end_layout
+
+\begin_layout Standard
+ADD STUFF HERE
 \end_layout
 
 \begin_layout Subsubsection
@@ -2372,7 +2428,7 @@ FaultCohesiveKin
 \end_layout
 
 \begin_layout LyX-Code
-eq_srcs = [earthquake,creep] ; Array of kinematic earthquake ruptures
+eq_srcs = [earthquake,creep]
 \end_layout
 
 \begin_layout Standard
@@ -2797,7 +2853,7 @@ This slip function prescribes a step in slip at a given time at a point:
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
 D(t)=\left\{ \begin{array}{cc}
-0 & t<t_{r}\\
+0 & 0\leq t<t_{r}\\
 D_{final} & t\ge t_{r}\end{array}\right.\,,\end{gather}
 
 \end_inset
@@ -3114,7 +3170,7 @@ This slip function prescribes a constant slip rate for the evolution of
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
 D(t)=\left\{ \begin{array}{cc}
-0 & t<t_{r}\\
+0 & 0\leq t<t_{r}\\
 V(t-t_{r}) & t\ge t_{r}\end{array}\right.\,,\end{gather}
 
 \end_inset
@@ -3438,9 +3494,9 @@ key "Brune:1970"
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
 D(t)=\left\{ \begin{array}{cc}
-0 & t<t_{r}\\
-D_{final}(1-e^{-(t-t_{r})/t_{0}}(1+(t-t_{r})/t_{0})) & t\ge t_{r}\end{array}\right.\,,\\
-t_{0}=D/D_{final}eV_{max}\,,\end{gather}
+0 & 0\leq t<t_{r}\\
+D_{final}\left(1-exp\left(-\frac{t-t_{r}}{t_{0}}\right)\left(1+\frac{t-t_{r}}{t_{0}}\right)\right) & t\ge t_{r}\end{array}\right.\,,\\
+t_{0}=0.6195t_{\mathit{rise}}\,,\end{gather}
 
 \end_inset
 
@@ -3462,10 +3518,10 @@ where
 
  is the slip initiation time (time when rupture reaches the location), and
  
-\begin_inset Formula $V_{max}$
+\begin_inset Formula $t_{\mathit{rise}}$
 \end_inset
 
- is the peak slip rate.
+ is the rise time.
 \end_layout
 
 \begin_layout Description
@@ -3485,8 +3541,8 @@ slip_time Spatial database of slip initiation times (
 \end_layout
 
 \begin_layout Description
-slip_rate Spatial database for peak slip rate (
-\begin_inset Formula $V_{max}$
+rise_time Spatial database for rise time (
+\begin_inset Formula $t_{\mathit{rise}}$
 \end_inset
 
 ).
@@ -3517,7 +3573,7 @@ slip.iohandler.filename = finalslip.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-slip_rate.iohandler.filename = sliprate.spatialdb
+rise_time.iohandler.filename = risetime.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -3716,7 +3772,7 @@ Amount of fault opening in meters.
 \begin_layout Plain Layout
 
 \family typewriter
-slip_rate
+rise_time
 \end_layout
 
 \end_inset
@@ -3727,7 +3783,7 @@ slip_rate
 \begin_layout Plain Layout
 
 \family typewriter
-slip_rate
+rise_time
 \end_layout
 
 \end_inset
@@ -3736,11 +3792,446 @@ slip_rate
 \begin_inset Text
 
 \begin_layout Plain Layout
-Peak slip rate (
-\begin_inset Formula $V_{max})$
+
+\family typewriter
+Rise time 
+\family default
+(
+\begin_inset Formula $t_{r})$
 \end_inset
 
- in meters per second.
+ in seconds.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip initiation time (
+\begin_inset Formula $t_{t})$
+\end_inset
+
+ in meters.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Liu-Cosine Slip Time Function
+\end_layout
+
+\begin_layout Standard
+This slip time function, proposed by Liu, Archuleta, and Hartzell for use
+ in ground-motion modeling
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Liu:etal:2006"
+
+\end_inset
+
+, combines several cosine and sine functions together to create a slip time
+ history with a sharp rise and gradual termination with a finite duration
+ of slip.
+ The evolution of slip at a point follows: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+D(t)=\left\{ \begin{array}{cc}
+D_{\mathit{final}}C_{n}\left(0.7t-0.7\frac{t_{1}}{\pi}\sin\frac{\pi t}{t_{1}}-1.2\frac{t_{1}}{\pi}\left(\cos\frac{\pi t}{2t_{1}}-1\right)\right) & 0\leq t<t_{1}\\
+D_{\mathit{final}}C_{n}\left(1.0t-0.7\frac{t1}{\pi}\sin\frac{\pi t}{t_{1}}+0.3\frac{t2}{\pi}\sin\frac{\pi(t-t1)}{t_{2}}+\frac{1.2}{\pi}t_{1}-0.3t_{1}\right) & t_{1}\leq t<2t_{1}\\
+D_{\mathit{final}}C_{n}\left(0.7-0.7\cos\frac{\pi t}{t_{1}}+0.6\sin\frac{\pi t}{2t_{1}}\right) & 2t_{1}\leq t\leq t_{0}\end{array}\right.\,,\\
+C_{n}=\frac{\pi}{1.4\pi t_{1}+1.2t_{1}+0.3\pi t_{2}},\\
+t_{0}=1.525t_{\mathit{rise}},\\
+t_{1}=0.13t_{0},\\
+t_{2}=t_{0}-t_{1},\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $D(t)$
+\end_inset
+
+ is slip at time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $D_{final}$
+\end_inset
+
+ is the final slip at the location, 
+\begin_inset Formula $t_{r}$
+\end_inset
+
+ is the slip initiation time (time when rupture reaches the location), and
+ 
+\begin_inset Formula $t_{\mathit{rise}}$
+\end_inset
+
+ is the rise time.
+\end_layout
+
+\begin_layout Description
+slip Spatial database of final slip distribution (
+\begin_inset Formula $D_{final})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+slip_time Spatial database of slip initiation times (
+\begin_inset Formula $t_{r}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+rise_time Spatial database for rise time (
+\begin_inset Formula $t_{\mathit{rise}}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the slip time function use the same parameters
+ for the slip time function as the Brune slip time function shown in Table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Brune-slip-db-params"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Time-History Slip Time Function
+\end_layout
+
+\begin_layout Standard
+This slip time function reads the slip time function from a data file, so
+ it can have an arbitrary shape.
+ The slip and slip initiation times are specified using spatial databases,
+ so the slip time function, in general, will use a normalized amplitude.
+\end_layout
+
+\begin_layout Description
+slip Spatial database of final slip distribution (
+\begin_inset Formula $D_{final})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+slip_time Spatial database of slip initiation times (
+\begin_inset Formula $t_{r}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+time_history Temporal database for slip evolution.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.ruptures]
+\end_layout
+
+\begin_layout LyX-Code
+slip_function = pylith.faults.TimeHistorySlipFn
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+slip.iohandler.filename = finalslip.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = sliptime.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+time_history.iohandler.filename = myfunction.timedb
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the slip time function specify the spatial
+ variation in the parameters for the slip time function, as shown in Table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Brune-slip-db-params-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Brune-slip-db-params-2"
+
+\end_inset
+
+Values in spatial database used as parameters in the Brune slip time function.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features>
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+left-lateral-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of left-lateral final slip in meters.
+ Use negative values for right-lateral slip.
+ Applies to faults in 2D and 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+reverse-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of reverse slip in meters.
+ Use negative values for normal slip.
+ Applies to faults in 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fault-opening
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Amount of fault opening in meters.
+ Negative values imply penetration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+rise_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+rise_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Rise time 
+\family default
+(
+\begin_inset Formula $t_{r})$
+\end_inset
+
+ in seconds.
 \end_layout
 
 \end_inset
@@ -3799,16 +4290,1074 @@ Slip initiation time (
 Dynamic Earthquake Rupture
 \end_layout
 
+\begin_layout Standard
+Dynamic fault interfaces use the FaultCohesive Dyn object to specify a fault
+ constitutive model to govern the fault tractions (friction) and the resulting
+ slip.
+ When friction is large enough such that there is no sliding on the fault,
+ the fault is locked (slip is zero) and the Lagrange multipliers assume
+ their values just as they do in kinematic ruptures.
+ In this case, the Lagrange multipliers correspond to the forces necessary
+ to keep the slip zero.
+ When the driving foces exceed those allowed by friction, we reduce the
+ values of the Lagrange multipliers to those consistent with friction from
+ the fault constitutitive model.
+ When we reduce the Lagrange multipliers, we must increment the slip accordingly
+ to maintain consistency in the algebraic system of equations.
+\end_layout
+
 \begin_layout Subsubsection
 Governing Equations
+\end_layout
+
+\begin_layout Standard
+The algebraic systems of equations for dynamic earthquake rupture are the
+ same as those for kinematic rupture
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{cc}
+\underline{A} & \underline{C}^{T}\\
+\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
+\overrightarrow{u}\\
+\overrightarrow{l}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{b}\\
+\overrightarrow{d}\end{array}\right].\end{equation}
+
+\end_inset
+
+Enforcing the limits imposed on the Lagrange multipliers by the fault constituti
+ve model requires determining the increment in slip for an increment in
+ the Lagrange multipliers.
+ The increment in the Lagrange multipliers is the difference between the
+ value computed for the current slip (either zero or the slip at the previous
+ time step) and the value computed from the fault constitutive model.
+ Starting from our system of algebraic equations,
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}u_{j}^{m}+C_{ji}^{pn}l_{j}=b_{i}^{n},\end{equation}
+
+\end_inset
+
+we compute the sensitivity for the given loading and boundary conditions,
+\begin_inset Formula \begin{equation}
+A_{ij}^{nm}\partial u_{j}^{m}=-C_{ji}^{pn}\partial l_{j}.\end{equation}
+
+\end_inset
+
+Computing the increment in the slip requires computing the increment in
+ the displacements.
+ Solving this equation rigorously would require inverting the system Jacobian,
+ which we do not want to do unless it is diagonal (as it is in the case
+ of the lumped formulations).
+ 
+\end_layout
+
+\begin_layout Paragraph
+Nondiagonal A
+\end_layout
+
+\begin_layout Standard
+In general A is a sparse matrix with off-diagonal terms of the form
+\begin_inset Formula \begin{equation}
+A=\left(\begin{array}{ccc}
+A_{0} & A_{1} & A_{2}\\
+A_{3} & A^{-} & 0\\
+A_{4} & 0 & A^{+}\end{array}\right),\end{equation}
+
+\end_inset
+
+where the degrees of freedom on either side of the fault are uncoupled.
+ We formulate two small linear systems involving just the degrees of freedom
+ associated with vertices on either the positive or negative sides of the
+ fault,
+\begin_inset Formula \begin{gather}
+A_{ij}^{nm-}\partial u_{j}^{m}=-C_{ij}^{pn}\partial l_{j},\\
+A_{ij}^{nm+}\partial u_{j}^{m}=C_{ij}^{pn}\partial l_{j},\end{gather}
+
+\end_inset
+
+where we have explicitly differentiated between the signs of the terms in
+ 
+\begin_inset Formula $C$
+\end_inset
+
+ for the positive and negative sides of the fault.
+ After solving these two linear systems of equations, we compute the increment
+ in slip using
+\begin_inset Formula \begin{equation}
+\partial d_{i}^{p}=C_{ij}^{pn}\partial u_{j}^{n}.\end{equation}
+
+\end_inset
+
+ The solution of these two linear systems gives the increment in slip assuming
+ all the degrees of freedom except those immediately adjacent to the fault
+ remain fixed.
+ In real appications where the deformation associated with fault slip is
+ localized around the fault, this provides good enough approximations so
+ that the nonlinear solver converges quickly.
+ In problems where deformation associated with slip on the fault is not
+ localized (as in the case in some of the example problems), the increment
+ in slip computed by solving these two linear systems is not a good approximatio
+n and the nonlinear solve requires a large number of iterations.
+\end_layout
+
+\begin_layout Paragraph
+Diagonal A
+\end_layout
+
+\begin_layout Standard
+With a lumped Jacobian matrix, we can solve for the increment in slip directly,
+\begin_inset Formula \begin{equation}
+\partial d_{i}^{p}=-C_{ij}^{pn}(A_{jk}^{nm})^{-1}C_{lk}^{pm}\partial l_{l}^{p}.\end{equation}
+
+\end_inset
+
+By not allowing the fault interface to overlap with the absorbing boundary,
+ the terms in A for a given vertex are identical and the expression on the
+ right-hand side reduces to
+\begin_inset Formula \begin{equation}
+\partial d_{i}^{p}=-\left(\frac{1}{A^{+}}+\frac{1}{A^{-}}\right)\partial l_{i}^{p}.\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
 Dynamic Rupture Parameters
 \end_layout
 
+\begin_layout Standard
+The components of the FaultCohesiveDyn object include
+\end_layout
+
+\begin_layout Description
+db_initial_tractions Spatial database specifying the initial tractions on
+ the fault surface.
+\end_layout
+
+\begin_layout Description
+friction Fault constitutive model.
+\end_layout
+
+\begin_layout Standard
+An example of specifying the dynamic earthquake rupture properties and component
+s in a 
+\family typewriter
+.cfg
+\family default
+ file:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_tractions = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial_tractions.iohandler.filename = tractions.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+friction = pylith.friction.StaticFriction
+\end_layout
+
+\begin_layout LyX-Code
+friction.db_properties = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+friction.db_properties.iohandler.filename = friction.spatialdb
+\end_layout
+
 \begin_layout Subsubsection
 Fault Constitutive Models
+\end_layout
+
+\begin_layout Standard
+PyLith provides three fault constitutive models.
+ Future releases may contain additional models and a template is provided
+ for you to construct your own fault constitutive models (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Extending:FaultConstitutiveModels"
+
+\end_inset
+
+).
+ The fault constitutive model implementations are independent of dimension
+ and work in both 2-D and 3-D.
+ In solving the governing equations, PyLith will use a scalar representation
+ of the shear traction in 2-D and a vector representation of the shear traction
+ in 3-D, with the shear traction resolved in the direction of current slip.
+ The fault constitutive models contain a common set of properties and components
+:
+\end_layout
+
+\begin_layout Description
+label Name of the friction model.
+\end_layout
+
+\begin_layout Description
+db_properties Spatial database of the friction model parameters (default
+ is SimpleDB).
+\end_layout
+
+\begin_layout Description
+db_initial_state Spatial database for initial state variables (default is
+ none).
+\end_layout
+
+\begin_layout Paragraph
+Static Friction
+\end_layout
+
+\begin_layout Standard
+The static friction model produces shear tractions proportional to the fault
+ normal traction plus a cohesive stress,
+\begin_inset Formula \begin{equation}
+T_{f}=\begin{cases}
+T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
+0 & T_{n}>0\end{cases}.\end{equation}
+
+\end_inset
+
+The spatial database file for the static friction model properties specifies
+ the spatial variation of the parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:static:friction:properties"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:static:friction:properties"
+
+\end_inset
+
+Values in the spatial database for constant friction parameters.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features>
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+friction-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coefficient of friction, 
+\begin_inset Formula $\mu_{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Slip-Weakening Friction
+\end_layout
+
+\begin_layout Standard
+The linear slip-weakening friction model produces shear tractions equal
+ to the cohesive stress plus a contribution proportional to the fault normal
+ traction that decreases from a static value to a dynamic value as slip
+ progresses,
+\begin_inset Formula \begin{equation}
+T_{f}=\begin{cases}
+T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{d}{d_{0}})T_{n} & d\leq d_{0}\text{ and }T\leq0\\
+T_{c}-\mu_{d}T_{n} & d>d_{0}\text{ and }T\leq0\\
+0 & T_{n}>0\end{cases}\end{equation}
+
+\end_inset
+
+The spatial database files for the slip-weakening friction model properties
+ and state variables specify the spatial variation of the fault constitutive
+ model parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:slip:weakening:properties:statevars"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:slip:weakening:properties:statevars"
+
+\end_inset
+
+Values in spatial databases for slip-weakening friction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features>
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+static-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static coefficient of friction, 
+\begin_inset Formula $\mu_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+dynamic-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dynamic coefficient of friction, 
+\begin_inset Formula $\mu_{d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+slip-weakening-parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip-weakening parameter, 
+\begin_inset Formula $d_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cumulative-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cumulative slip, 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+previous-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip at previous time step, 
+\begin_inset Formula $d(t-\Delta t)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Rate- and State-Friction with Ageing Law
+\end_layout
+
+\begin_layout Standard
+The Dietrich-Ruina rate and state friction model produces shear tractions
+ equal to the cohesive stress plus a contribution proportional to the fault
+ normal traction that depends on a state variable,
+\begin_inset Formula \begin{gather}
+T_{f}=\begin{cases}
+T_{c}-\mu_{f}T_{n} & T\leq0\\
+0 & T_{n}>0\end{cases}\\
+\mu_{f}=a\sinh^{-1}\left(\frac{1}{2}\frac{V}{V_{0}}\exp\left(\mu_{0}+\frac{b}{a}\log\left(\frac{V_{0}\theta}{L}\right)\right)\right)\\
+\frac{d\theta}{dt}=1-\frac{V\theta}{L}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $V$
+\end_inset
+
+ is slip rate, 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+ are coefficients, 
+\begin_inset Formula $L$
+\end_inset
+
+ is the characteristic slip distance, 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is a state variable.
+ We have used the regularization of the coefficient of friction proposed
+ by ?? to permit zero slip rate.
+ Following ??, we integrate the evolution equation for the state variable
+ keeping slip rate constant to get
+\begin_inset Formula \[
+\theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V\Delta t}{L}\right)+\frac{L}{V}\left(1-\exp\left(-\frac{V\theta}{L}\right)\right).\]
+
+\end_inset
+
+As the slip rate approaches zero, the first exponential term approaches
+ 1.
+ Using the first three terms of the Taylor series expansion of the second
+ exponential yields
+\begin_inset Formula \[
+\theta(t+\Delta t)=\begin{cases}
+\theta(t)\exp\left(-\frac{V\Delta t}{L}\right)+\Delta t-\frac{1}{2}\frac{V\Delta t^{2}}{L} & \frac{V\Delta t}{L}<0.00001\\
+\theta(t)\exp\left(-\frac{V\Delta t}{L}\right)+\frac{L}{V}\left(1-\exp\left(-\frac{V\theta}{L}\right)\right) & \frac{V\Delta t}{L}\ge0.00001\end{cases}.\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the rate and state friction model properties
+ and state variables specify the spatial variation of the fault constitutive
+ model parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:rate:state:ageing:properties:statevars"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:rate:state:ageing:properties:statevars"
+
+\end_inset
+
+Values in spatial databases for slip-weakening friction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="3">
+<features>
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+reference-friction-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Steady-state coefficient of friction at slip rate 
+\begin_inset Formula $V_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $\mu_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+reference-slip-rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Reference slip rate, 
+\begin_inset Formula $V_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+characteristic-slip-distance
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip-weakening parameter, 
+\begin_inset Formula $L$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+constitutive-parameter-a
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cofficient for the ?? term, 
+\begin_inset Formula $a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+constitutive-parameter-b
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Coefficient for the ?? term, 
+\begin_inset Formula $b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+state-variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+State variable, 
+\begin_inset Formula $\theta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -3830,13 +5379,13 @@ reference "cha:Governing-Equations"
 
 \end_inset
 
-, the contribution of body forces to the global force vector is given by
+, the body forces contribute to the residual,
 \begin_inset Formula \begin{equation}
-\overrightarrow{B}\phantom{}_{b}=\sum_{elements}\int_{V^{e}}N^{P}f_{i}\: dV.\end{equation}
+r_{i}^{n}=\int_{V}f_{i}N^{n}\: dV.\end{equation}
 
 \end_inset
 
-The body force per unit volume, 
+For gravitational body forces the body force per unit volume, 
 \begin_inset Formula $f_{i}$
 \end_inset
 
