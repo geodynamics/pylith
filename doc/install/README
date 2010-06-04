@@ -32,15 +32,17 @@ INSTRUCTIONS FOR VARIOUS PLATFORMS
 ======================================================================
 
 We recommend setting up your source, build, and install directories as
-in the Cluster_CIT-garuda and Cluster_CIT-pangu examples. These are
-setup for relatively stable installations, whereas most of the other
-examples are setup for development work and testing with multiple
-versions of packages. As a result they are unnecessarily complex for
-most users. The other examples do provide a list of packages that can
-be installed via a package manager on Linux and Darwin systems.
+in the Linux_ubuntu-AMD64_Aagaard.txt, Cluster_CIT-garuda, and
+Cluster_CIT-pangu examples. These are setup for relatively stable
+installations, whereas most of the other examples are setup for
+development work and testing with multiple versions of packages. As a
+result they are unnecessarily complex for most users. The other
+examples do provide details for other systems that you may find
+helpful.
 
 FILE                             PLATFORM
 
+Linux_ubuntu-AMD64_Aagaard.txt   x86_64 desktop (gcc compilers)
 Cluster_CIT-garuda.txt           Intel cluster (Intel compilers)
 Cluster_CIT-pangu.txt            Intel cluster (Intel compilers)
 MacBookPro_Aagaard.txt           Intel Mac (Apple gcc 4.2), MacPorts
