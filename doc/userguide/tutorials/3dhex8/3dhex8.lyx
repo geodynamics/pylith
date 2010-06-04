@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -64,6 +64,10 @@ PyLith features discussed in this tutorial:
 \end_layout
 
 \begin_layout Itemize
+Static solution
+\end_layout
+
+\begin_layout Itemize
 Quasi-static solution
 \end_layout
 
@@ -72,11 +76,11 @@ CUBIT mesh format
 \end_layout
 
 \begin_layout Itemize
-Gravitational body forces
+Trilinear hexahedral cells
 \end_layout
 
 \begin_layout Itemize
-Initial stresses
+VTK output
 \end_layout
 
 \begin_layout Itemize
@@ -84,7 +88,27 @@ Dirichlet displacement and velocity boundary conditions
 \end_layout
 
 \begin_layout Itemize
-Multiple kinematic fault ruptures
+Neumann traction boundary conditions and time-varying tractions
+\end_layout
+
+\begin_layout Itemize
+ZeroDispDB spatial database
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+UniformDB spatial database
+\end_layout
+
+\begin_layout Itemize
+Static fault rupture
+\end_layout
+
+\begin_layout Itemize
+Specifying more than one material
 \end_layout
 
 \begin_layout Itemize
@@ -96,23 +120,39 @@ Maxwell linear viscoelastic material
 \end_layout
 
 \begin_layout Itemize
-Specifying more than one material
+Multiple kinematic fault ruptures
 \end_layout
 
 \begin_layout Itemize
-VTK output
+Power-law viscoelastic material
 \end_layout
 
 \begin_layout Itemize
-Trilinear hexahedral cells
+Drucker-Prager elastoplastic material
 \end_layout
 
 \begin_layout Itemize
-SimpleDB spatial database
+Static fault friction
 \end_layout
 
 \begin_layout Itemize
-ZeroDispDB spatial database
+Slip-weakening fault friction
+\end_layout
+
+\begin_layout Itemize
+Rate-and-state fault friction
+\end_layout
+
+\begin_layout Itemize
+Gravitational body forces
+\end_layout
+
+\begin_layout Itemize
+Initial stresses
+\end_layout
+
+\begin_layout Itemize
+Finite strain
 \end_layout
 
 \begin_layout Subsection
@@ -120,10 +160,10 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This tutorial is a simple 3D example of a quasi-static finite element problem.
- It is a mesh composed of 144 trilinear hexahedra subject to displacement
- boundary conditions.
- This example demonstrates the usage of the CUBIT mesh generation package
+This tutorial is meant to demonstrate most of the important features of
+ PyLith as a quasi-static finite element code, using a sequence of example
+ problems.
+ All problems use the same 3D hexahedral mesh generated using the CUBIT
  
 \begin_inset Flex URL
 status collapsed
@@ -135,12 +175,23 @@ cubit.sandia.gov
 
 \end_inset
 
- to create a mesh, as well as describing how to use a CUBIT-generated mesh
- in PyLith.
- In this tutorial, we will walk through the steps necessary to construct,
- run, and view several problems that use the same mesh.
+ mesh generation package.
+ Each example builds on the previous examples, as new features are demonstrated.
+ We will walk through the steps necessary to construct, run, and view several
+ problems that use the same mesh.
  In addition to this manual, each of the files for the example problems
  includes extensive comments.
+ We start with the generation of the mesh, which is composed of 144 trilinear
+ hexahedra.
+ The tutorial demonstrates the usage of the CUBIT mesh generation package
+ to create a mesh, as well as describing how to use a CUBIT-generated mesh
+ in PyLith.
+ Following the discussion of how to generate the mesh, there is a discussion
+ of the pylithapp.cfg file, which contains information common to all the
+ simulations.
+ The tutorial is then subdivided into four sections, each pertaining to
+ a particular set of PyLith features.
+ It is suggested that users go through each of these sections in order.
 \end_layout
 
 \begin_layout Subsection
@@ -161,7 +212,7 @@ reference "fig:3dhex8-mesh"
  package for this example.
  For this simple example, we provide documented journal files in 
 \family typewriter
-examples/3d/hex8.
+examples/3d/hex8/mesh.
 
 \family default
  Investigation of these journal files should provide some insight into how
@@ -277,7 +328,7 @@ ncdump box_hex8_1000m.exo
 \end_layout
 
 \begin_layout Standard
-This mesh may then be used for the examples described below.
+This mesh may then be used for the examples described later in the tutorial.
 \end_layout
 
 \begin_layout Standard
@@ -362,12 +413,12 @@ reader = pylith.meshio.MeshIOCubit
 \end_layout
 
 \begin_layout LyX-Code
-filename = box_hex8_1000m.exo
+filename = mesh/box_hex8_1000m.exo
 \end_layout
 
 \begin_layout Standard
-This example differs from most other examples, because we specify two material
- groups:
+This example differs from some earlier examples, because we specify two
+ material groups:
 \end_layout
 
 \begin_layout LyX-Code
@@ -375,11 +426,7 @@ This example differs from most other examples, because we specify two material
 \end_layout
 
 \begin_layout LyX-Code
-materials = [elastic,viscoelastic]
-\end_layout
-
-\begin_layout LyX-Code
-materials.viscoelastic = pylith.materials.MaxwellIsotropic3D
+materials = [upper_crust,lower_crust]
 \end_layout
 
 \begin_layout LyX-Code
@@ -387,11 +434,11 @@ materials.viscoelastic = pylith.materials.MaxwellIsotropic3D
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.elastic]
+[pylithapp.timedependent.materials.upper_crust]
 \end_layout
 
 \begin_layout LyX-Code
-label = Elastic material
+label = Upper crust material
 \end_layout
 
 \begin_layout LyX-Code
@@ -399,7 +446,7 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_elastic.spatialdb
+db.iohandler.filename = spatialdb/mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -415,11 +462,11 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.timedependent.materials.viscoelastic]
+[pylithapp.timedependent.materials.lower_crust]
 \end_layout
 
 \begin_layout LyX-Code
-label = Viscoelastic material
+label = Lower crust material
 \end_layout
 
 \begin_layout LyX-Code
@@ -427,7 +474,7 @@ id = 2
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_viscoelastic.spatialdb
+db.iohandler.filename = spatialdb/mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -448,23 +495,53 @@ reference "fig:3dhex8-mesh"
 \end_inset
 
 .
- Because the two materials have different physical properties, we use a
- different spatial database for each material.
+ The usage of two material groups allows us to specify different material
+ types or material variations for the upper crust and lower crust, if desired.
+ For now, we retain the default 
+\family typewriter
+ElasticIsotropic3D
+\family default
+ material type for both materials.
+ This behavior will be overriden by example-specific 
+\family typewriter
+.cfg
+\family default
+ files for some of the examples.
  Although the material groups are specified in 
 \family typewriter
 pylithapp.cfg
 \family default
 , the physical properties for the material models are given in 
 \family typewriter
-mat_elastic.spatialdb
-\family default
-, and 
-\family typewriter
-mat_viscoelastic.spatialdb
+spatialdb/mat_elastic.spatialdb
 \family default
 .
- For this example, values describing the physical properties are given at
- a single point, resulting in uniform properties within each material.
+ This spatial database provides values at a single point, resulting in uniform
+ properties within the material.
+\end_layout
+
+\begin_layout Subsection
+Example Problems
+\end_layout
+
+\begin_layout Standard
+The example problems are divided into categories that roughly correspond
+ to simple static problems, quasi-static problems, problems involving fault
+ friction, and problems where gravity is used.
+ For the most part, each successive example involves just adding or changing
+ a few parameters from the previous example.
+ For this reason, it is advisable to go through each example in order, starting
+ with the simplest (static problems).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "static/static.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
