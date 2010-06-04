@@ -44,6 +44,10 @@ RELEASE NOTES
     Added a Drucker-Prager elastoplastic bulk rheology. [NEED SOME
     WORDS FROM CHARLES]
 
+  * Plane strain Maxwell viscoelastic bulk rheology
+
+    Linear Maxwell viscoelastic rheology for plane strain problems.
+
   * Finite-deformation formulation
 
     Added a finite-deformation (rigid body motion and small strains)
