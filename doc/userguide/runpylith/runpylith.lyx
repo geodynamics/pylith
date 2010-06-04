@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -224,7 +224,7 @@ Units
 
 \begin_layout Standard
 All dimensional parameters require units.
- The units are specified using Python and Fortran syntax, so square meters
+ The units are specified using Python and FORTRAN syntax, so square meters
  is m**2.
  Whitespace is not allowed in the string, for units and dimensioned quantities
  are multiplied by the units string; for example, two meters per second
@@ -1157,7 +1157,7 @@ The MeshIOCubit object reads the NetCDF Exodus II files output from CUBIT.
  Beginning with CUBIT 11.0, the names of the nodesets are included in the
  Exodus II files and PyLith can use these nodeset names or revert to using
  the nodeset ids.
- The properties and components associated withthe MeshIOCubit object are:
+ The properties and components associated with the MeshIOCubit object are:
 \end_layout
 
 \begin_layout Description
@@ -1181,7 +1181,7 @@ The MeshIOLagrit object is used to read ASCII and binary GMV and PSET files
  output from LaGriT.
  PyLith will automatically detect whether the files are ASCII or binary.
  We attempt to provide support for experimental 64-bit versions of LaGriT
- via flags indicating whether the Fortran code is using 32-bit or 64-bit
+ via flags indicating whether the FORTRAN code is using 32-bit or 64-bit
  integers.
  The MeshIOLagrit properties and components are:
 \end_layout
@@ -1205,7 +1205,7 @@ io_int32 Flag indicating that PSET files use 32-bit integers (default is
 \end_layout
 
 \begin_layout Description
-record_header_32bt Flag indicating Fortran record header is 32-bit (default
+record_header_32bt Flag indicating FORTRAN record header is 32-bit (default
  is True)
 \end_layout
 
@@ -1253,8 +1253,8 @@ chaco
 \end_layout
 
 \begin_layout Description
-writer_paritition Flag indicating that the partition information should
- be written to a file (default is False).
+writer_partition Flag indicating that the partition information should be
+ written to a file (default is False).
 \end_layout
 
 \begin_layout Description
@@ -2127,27 +2127,67 @@ formulation
  facility to the general-problem.
  The formulation specifies the time-stepping formulation to integrate the
  elasticity equation.
- Implicit time stepping is used for quasi-static problems and neglects interial
- terms (see Section 
+ PyLith provides several alternative formulations, each specific to a different
+ type of problem.
+ Future versions of PyLith will likely include support for additional formulatio
+ns, such as large deformations with a lumped Jacobian matrix.
+\end_layout
+
+\begin_layout Description
+Implicit Implicit time stepping for static and quasi-static problems with
+ infinitesimal strains.
+ The implicit formulation neglects inertial terms (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:elasticity:integral:quasistatic"
 
 \end_inset
 
-), whereas explicit time stepping is used for dynamic problems and includes
- inertial terms.
- There are two general options for explicit time-stepping: using a full,
- consistent Jacobian matrix and a lumped Jacobian matrix.
- In the lumped Jacobian formulation, the Jacobian is a diagonal matrix and
- stored as a vector, and PyLith employs an optimized built-in solver rather
- than a PETSc solver.
- PyLith automatically switches to using the optimized built-in when the
- lumped formulation is chosen.
- PyLith also provides two optimized time-stepping options, one for single
- point quadrature in linear triangular cells and one for single point quadrature
- in linear tetrahedral cells.
+).
  
+\end_layout
+
+\begin_layout Description
+ImplicitLgDeform Implicit time stepping for static and quasi-static problems
+ including the effects of rigid body motion and small strains.
+ This formulation requires the use of the nonlinear solver, which is selected
+ automatically.
+\end_layout
+
+\begin_layout Description
+Explicit Explicit time stepping for dynamic problems with infinitesimal
+ strains.
+ This formulation uses consistent mass and damping matrices for the system
+ Jacobian matrix.
+\end_layout
+
+\begin_layout Description
+ExplicitLgDeform Explicit time stepping for dynamic problems including the
+ effects of rigid body motion and small strains.
+ This formulation requires the use of the nonlinear solver, which is selected
+ automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.
+ The cell matrices are lumped before assembly, permitting use of a vector
+ for the diagonal system Jacobian matrix.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumpedTri3 Optimized elasticity formulation for linear triangular
+ cells with one point quadrature for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
+ cells with one point quadrature for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.The built-in lumped solver is selected
+ automatically.
 \end_layout
 
 \begin_layout Standard
@@ -2164,56 +2204,7 @@ formulation = pylith.problems.Implicit
 \end_layout
 
 \begin_layout Standard
-An example of setting the formulation facility to the explicit time stepping
- component is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.Explicit
-\end_layout
-
-\begin_layout Standard
-An example of setting the formulation facility to the lumped explicit time
- stepping component is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.ExplicitLumped
-\end_layout
-
-\begin_layout Standard
-An example of setting the formulation facility to the lumped explicit time
- stepping component optimized for linear triangular cells with one point
- quadrature is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.ExplicitLumpedTri3
-\end_layout
-
-\begin_layout Standard
-An example of setting the formulation facility to the lumped explicit time
- stepping component optimized for linear tetrehedral cells is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.ExplicitLumpedTet4
+The formulation can be set to the other formulations in a similar fashion.
 \end_layout
 
 \begin_layout Subsection
@@ -2290,7 +2281,7 @@ output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
-matrix_type = sbaij ; Nonsymmetric sparse matrix is aij
+matrix_type = sbaij ; Non-symmetric sparse matrix is aij
 \end_layout
 
 \begin_layout LyX-Code
@@ -3206,7 +3197,7 @@ The time history database specifies the temporal variation in the amplitude
  history may be shifted with a spatial variation in the onset time and scaled
  with a spatial variation in the amplitude.
  The time history database uses a simple ASCII file which is simpler than
- the one used by the SimpleDB spatial databse.
+ the one used by the SimpleDB spatial database.
  The file format is described in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
