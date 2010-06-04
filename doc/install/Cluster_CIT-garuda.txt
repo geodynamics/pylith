@@ -1,6 +1,6 @@
 ======================================================================
-INSTRUCTIONS FOR INSTALLING PYLITH ON AN INTEL CLUSTER
-======================================================================
+INSTRUCTIONS FOR INSTALLING PYLITH ON THE CALTECH LINUX CLUSTER GARUDA
+ ======================================================================
 
 These installation instructions assume suitable C/C++ and Fortran
 compilers have been installed along with MPI. MPI on clusters is often
@@ -216,6 +216,8 @@ Install directorires
   Check out spatialdata from the publicly accessible CIG SVN repository.
     cd $HOME/src
     svn co http://geodynamics.org/svn/cig/cs/spatialdata-0.1/trunk spatialdata-dev
+    cd spatialdata-dev
+    autoreconf -if
 
   Run configure in the build dir.
     cd $HOME/scratch/build/$TOOLS_FORMAT/spatialdata-dev
@@ -274,6 +276,8 @@ Install directorires
   Check out nemesis from the publicly accessible CIG SVN repository.
     cd $HOME/src
     svn co http://geodynamics.org/svn/cig/cs/nemesis/trunk nemesis-dev
+    cd nemesis-dev
+    autoreconf -if
 
   Run configure in the build dir.
     cd $HOME/scratch/build/$TOOLS_FORMAT/nemesis-dev
@@ -297,6 +301,8 @@ Install directorires
     Check out PyLith from the publicly accessible CIG SVN repository.
     cd $HOME/src
     svn co http://geodynamics.org/svn/cig/short/3D/PyLith/trunk pylith-dev
+    cd pylith-dev
+    autoreconf -if
 
   Run configure in the build dir.
     cd $HOME/scratch/build/$TOOLS_FORMAT/pylith-dev
