@@ -13,21 +13,9 @@ top-level README [add fault preconditioner when done]
 
 release announcement [add fault preconditioner when done]
 
-DOC/INSTALL
-  Update MacBookPro
-    development, easy to switch among different versions of MPI and
-    test compatibility of newer versions of various package
-  Update linux
-  Add garuda, pangu
-    Clusters - dependencies and multiple versions of PyLith
-      (development and stable)
-
 MANUAL
 
-  Fault
-    governing equations [Brad]
-    dynamic rupture parameters [Brad]
-    fault constitutive models [Surendra]
+  adjustSolnLumped stuff
 
   Tutorials
     3d/hex8 [Charles]
