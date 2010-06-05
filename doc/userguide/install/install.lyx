@@ -800,24 +800,22 @@ reference "sec:Pyre-Configuration"
 \end_inset
 
 ).
- We strongly recommend downloading the latest PyLith and PETSc source code
- directly from the source code repositories, instead of using the source
- packages; see Section 
+ Downloading the latest PyLith and PETSc source code directly from the source
+ code repositories, instead of using the source packages (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Software-Repository"
 
 \end_inset
 
- later in this chapter.
- Note that this requires additional tools; see Section 
+ later in this chapter) requires additional tools (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Additional-Tools"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Subsection
@@ -950,8 +948,7 @@ petsc-dev
 \begin_layout LyX-Code
 
 \size small
-http://geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.t
-gz
+http://geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1.5.0.tgz
 \end_layout
 
 \begin_layout Standard
