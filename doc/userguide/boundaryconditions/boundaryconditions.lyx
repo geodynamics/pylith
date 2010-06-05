@@ -2330,8 +2330,12 @@ where
 \begin_inset Formula $\underline{C}$
 \end_inset
 
- is a matrix of direction cosines relating the relative motion across the
- fault to the vector of fault slip, 
+ is composed of rotation submatrices, 
+\begin_inset Formula $\underline{R}$
+\end_inset
+
+, associated with the direction cosines relating the relative displacements
+ across the fault to the vector of fault slip, 
 \begin_inset Formula $\overrightarrow{d}$
 \end_inset
 
@@ -2364,7 +2368,7 @@ where
 \end_inset
 
  denotes a conventional degree of freedom and 
-\begin_inset Formula $p$
+\begin_inset Formula $k$
 \end_inset
 
  denotes a degree of freedom associated with a Lagrange multiplier.
@@ -4332,13 +4336,13 @@ ve model requires determining the increment in slip for an increment in
  time step) and the value computed from the fault constitutive model.
  Starting from our system of algebraic equations,
 \begin_inset Formula \begin{equation}
-A_{ij}^{nm}u_{j}^{m}+C_{ji}^{pn}l_{j}=b_{i}^{n},\end{equation}
+A_{ij}^{nm}u_{j}^{m}+C_{ji}^{pn}l_{j}^{p}=b_{i}^{n},\end{equation}
 
 \end_inset
 
 we compute the sensitivity for the given loading and boundary conditions,
 \begin_inset Formula \begin{equation}
-A_{ij}^{nm}\partial u_{j}^{m}=-C_{ji}^{pn}\partial l_{j}.\end{equation}
+A_{ij}^{nm}\partial u_{j}^{m}=-C_{ji}^{pn}\partial l_{j}^{p}.\end{equation}
 
 \end_inset
 
@@ -4359,8 +4363,8 @@ In general A is a sparse matrix with off-diagonal terms of the form
 \begin_inset Formula \begin{equation}
 A=\left(\begin{array}{ccc}
 A_{0} & A_{1} & A_{2}\\
-A_{3} & A^{-} & 0\\
-A_{4} & 0 & A^{+}\end{array}\right),\end{equation}
+A_{3} & A_{n-} & 0\\
+A_{4} & 0 & A_{n+}\end{array}\right),\end{equation}
 
 \end_inset
 
@@ -4369,21 +4373,36 @@ where the degrees of freedom on either side of the fault are uncoupled.
  associated with vertices on either the positive or negative sides of the
  fault,
 \begin_inset Formula \begin{gather}
-A_{ij}^{nm-}\partial u_{j}^{m}=-C_{ij}^{pn}\partial l_{j},\\
-A_{ij}^{nm+}\partial u_{j}^{m}=C_{ij}^{pn}\partial l_{j},\end{gather}
+A_{ij}^{nm-}\partial u_{j}^{m-}=-R_{ij}^{pn}\partial l_{j}^{p},\\
+A_{ij}^{nm+}\partial u_{j}^{m+}=R_{ij}^{pn}\partial l_{j}^{p},\end{gather}
 
 \end_inset
 
-where we have explicitly differentiated between the signs of the terms in
- 
-\begin_inset Formula $C$
+where we have replace 
+\begin_inset Formula $\underline{C}$
 \end_inset
 
- for the positive and negative sides of the fault.
+ with 
+\begin_inset Formula $\underline{R}$
+\end_inset
+
+ to denote the explicit inclusion of the signs for the terms in 
+\begin_inset Formula $\underline{C}$
+\end_inset
+
+ associated with the positive (
+\begin_inset Formula $n^{+}$
+\end_inset
+
+) and negative (
+\begin_inset Formula $n^{-}$
+\end_inset
+
+) sides of the fault.
  After solving these two linear systems of equations, we compute the increment
  in slip using
 \begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=C_{ij}^{pn}\partial u_{j}^{n}.\end{equation}
+\partial d_{i}^{p}=R_{ij}^{pn}(\partial u_{j}^{n+}-\partial u_{j}^{n+}).\end{equation}
 
 \end_inset
 
@@ -4411,10 +4430,14 @@ With a lumped Jacobian matrix, we can solve for the increment in slip directly,
 \end_inset
 
 By not allowing the fault interface to overlap with the absorbing boundary,
- the terms in A for a given vertex are identical and the expression on the
- right-hand side reduces to
+ the terms in 
+\begin_inset Formula $A$
+\end_inset
+
+ for a given vertex are identical and the expression on the right-hand side
+ reduces to
 \begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=-\left(\frac{1}{A^{+}}+\frac{1}{A^{-}}\right)\partial l_{i}^{p}.\end{equation}
+\partial d_{i}^{p}=-\left(\frac{1}{A^{n+}}+\frac{1}{A^{n-}}\right)\partial l_{i}^{p}.\end{equation}
 
 \end_inset
 
