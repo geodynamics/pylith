@@ -47,7 +47,7 @@ pylith::faults::BruneSlipFn::_slipFn(const double t,
   double slip = 0.0;
   if (t > 0.0) {
     assert(riseTime > 0.0);
-    const double tau = 0.6195*riseTime;
+    const double tau = 0.21081916*riseTime;
     slip = finalSlip * (1.0 - exp(-t/tau) * (1.0 + t/tau));
   } // if
   return slip;
