@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2393,10 +2393,126 @@ When we use a lumped system Jacobian matrix, we cannot lump the terms associated
  Instead, we ignore the formulate the Jacobian ignoring the contributions
  from the Lagrange multipliers, and then adjust the solution after the solve
  to account for their presence.
-\end_layout
+ With the addition of the Lagrange multipliers the general expression for
+ the residual at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
 
-\begin_layout Standard
-ADD STUFF HERE
+ is
+\begin_inset Formula \begin{equation}
+r_{i}^{n}(t+\Delta t)=A_{ij}^{nm}(u_{i}^{n}(t)+du_{i}^{n}(t))+C_{ki}^{pn}(l_{k}^{p}(t)+dl_{k}^{p}(t)),\end{equation}
+
+\end_inset
+
+where we have written the displacements and Lagrange multipliers at time
+ 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ in terms of the values at time 
+\begin_inset Formula $t$
+\end_inset
+
+ and the increment from time 
+\begin_inset Formula $t$
+\end_inset
+
+ to 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+.
+ When we formulate the residual, the values 
+\begin_inset Formula $du_{i}^{n}$
+\end_inset
+
+(t) and 
+\begin_inset Formula $dl_{k}^{p}(t)$
+\end_inset
+
+ are unknown and assumed to be zero.
+ So our task is to determine 
+\begin_inset Formula $du_{i}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $dl_{k}^{p}$
+\end_inset
+
+ by setting the actual residual to be zero; thus, we have
+\begin_inset Formula \begin{gather}
+A_{ij}^{nm}(u_{i}^{n}(t)+du_{i}^{n}(t))+C_{ki}^{pn}(l_{k}^{p}(t)+dl_{k}^{p}(t))=0\text{ subject to}\\
+C_{ij}^{pn}(u_{i}^{n}(t)+du_{i}^{n}(t))=d_{i}^{p}.\end{gather}
+
+\end_inset
+
+Making use of the residual computed with 
+\begin_inset Formula $du_{i}^{n}(t)=0$
+\end_inset
+
+ and 
+\begin_inset Formula $dl_{k}^{p}(t)=0$
+\end_inset
+
+, we have
+\begin_inset Formula \begin{gather}
+r_{i}^{n}+A_{ij}^{nm}du_{i}^{n}+C_{ki}^{pn}dl_{k}^{p}=0\text{ subject to}\\
+C_{ij}^{pn}(u_{i}^{n}(t)+du_{i}^{n}(t))=d_{i}^{p}.\end{gather}
+
+\end_inset
+
+Explicitly writing the equations for the vertices on the negative and positive
+ sides of the fault yields
+\begin_inset Formula \begin{gather}
+r_{i}^{n-}+A_{ij}^{nm-}du_{i}^{n-}+R_{ki}^{pn}dl_{k}^{p}=0,\\
+r_{i}^{n+}+A_{ij}^{nm+}du_{i}^{n+}+R_{ki}^{pn}dl_{k}^{p}=0,\\
+R_{ij}^{pn}(u_{i}^{n+}+du_{i}^{n+}-u_{i}^{n-}-du_{i}^{n-})=d_{i}^{p}.\end{gather}
+
+\end_inset
+
+Solving the first two equations for 
+\begin_inset Formula $du_{i}^{n-}$
+\end_inset
+
+ and 
+\begin_inset Formula $du_{i}^{n+}$
+\end_inset
+
+ and combining them with the third equation leads to
+\begin_inset Formula \begin{multline}
+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}+(A_{ij}^{nm+})^{-1}\right)R_{ki}^{pn}dl_{k}^{p}=d_{i}^{p}-R_{ij}^{pn}(u_{i}^{n+}-u_{i}^{n-})\\
++R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right).\end{multline}
+
+\end_inset
+
+We do not allow overlap between the fault interface and the absorbing boundary,
+ so A_{ij}^{nm} is the same for all components at a vertex.
+ As a result the matrix on the left hand side simplifies to
+\begin_inset Formula \[
+S_{ik}^{pn}=\delta_{ik}\left(\frac{1}{A^{nm+}}+\frac{1}{A^{nm-}}\right),\]
+
+\end_inset
+
+and
+\begin_inset Formula \[
+dl_{k}^{p}=(S_{ik}^{pn})^{-1}\left(d_{i}^{p}-R_{ij}^{pn}(u_{i}^{n+}-u_{i}^{n-})+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right)\right).\]
+
+\end_inset
+
+Now that we know the value of the increment in the Lagrange multiplier from
+ time t to time t+
+\backslash
+Delta t, we can correct the determine the correct value for the displacement
+ increment from time t to t+
+\backslash
+Delta t using
+\begin_inset Formula \begin{gather*}
+\Delta du_{i}^{n-}=-(A_{ij}^{nm-})^{-1}C_{ki}^{pn}dl_{k}^{p}\text{ and}\\
+\Delta du_{i}^{n+}=-(A_{ij}^{nm+})^{-1}C_{ki}^{pn}dl_{k}^{p}.\end{gather*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
