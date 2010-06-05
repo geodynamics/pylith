@@ -16,6 +16,7 @@ release announcement [add fault preconditioner when done]
 MANUAL
 
   adjustSolnLumped stuff
+    check indexing
 
   Tutorials
     3d/hex8 [Charles]
