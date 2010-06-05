@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1518,7 +1518,8 @@ In some crustal deformation problems sufficient deformation may occur that
  of gravitational body forces and deformation on the overburden pressure.
  In such cases we want to account for both rigid body motion and small strains.
  The elasticity formulation in PyLith for small strains uses the Green-Lagrange
- strain tensor and the Second Piola-Kirchhoff stress tensor 
+ strain tensor and the Second Piola-Kirchhoff stress tensor as is based
+ on the one presented by Bathe 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bathe:1995"
