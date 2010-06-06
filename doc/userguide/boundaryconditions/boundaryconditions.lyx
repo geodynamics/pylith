@@ -4428,7 +4428,7 @@ Dynamic Earthquake Rupture
 \end_layout
 
 \begin_layout Standard
-Dynamic fault interfaces use the FaultCohesive Dyn object to specify a fault
+Dynamic fault interfaces use the FaultCohesiveDyn object to specify a fault
  constitutive model to govern the fault tractions (friction) and the resulting
  slip.
  When friction is large enough such that there is no sliding on the fault,
@@ -4839,6 +4839,8 @@ reference "tab:slip:weakening:properties:statevars"
 \end_inset
 
 .
+ As long as the fault is locked, the initial state variables are zero, so
+ specifying the initial state variables for slip-weakening friction is rate.
 \end_layout
 
 \begin_layout Standard
@@ -5133,9 +5135,9 @@ The Dietrich-Ruina rate and state friction model produces shear tractions
  normal traction that depends on a state variable,
 \begin_inset Formula \begin{gather}
 T_{f}=\begin{cases}
-T_{c}-\mu_{f}T_{n} & T\leq0\\
+T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 0 & T_{n}>0\end{cases}\\
-\mu_{f}=a\sinh^{-1}\left(\frac{1}{2}\frac{V}{V_{0}}\exp\left(\mu_{0}+\frac{b}{a}\log\left(\frac{V_{0}\theta}{L}\right)\right)\right)\\
+\mu_{f}=a\sinh^{-1}\left(\frac{1}{2}\frac{V}{V_{0}}\exp\left(\frac{1}{a}\left(\mu_{0}+b\ln\left(\frac{V_{0}\theta}{L}\right)\right)\right)\right)\\
 \frac{d\theta}{dt}=1-\frac{V\theta}{L}\end{gather}
 
 \end_inset
@@ -5162,11 +5164,30 @@ where
 
  is a state variable.
  We have used the regularization of the coefficient of friction proposed
- by ?? to permit zero slip rate.
- Following ??, we integrate the evolution equation for the state variable
- keeping slip rate constant to get
-\begin_inset Formula \[
-\theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V\Delta t}{L}\right)+\frac{L}{V}\left(1-\exp\left(-\frac{V\theta}{L}\right)\right).\]
+ by Ben-Zion and Rice 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BenZion:Rice:1997"
+
+\end_inset
+
+ to permit zero slip rate.
+ Following Kaneko 
+\shape italic
+et al.
+
+\shape default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kaneko:etal:2008"
+
+\end_inset
+
+, we integrate the evolution equation for the state variable keeping slip
+ rate constant to get
+\begin_inset Formula \begin{equation}
+\theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right).\end{equation}
 
 \end_inset
 
@@ -5174,10 +5195,10 @@ As the slip rate approaches zero, the first exponential term approaches
  1.
  Using the first three terms of the Taylor series expansion of the second
  exponential yields
-\begin_inset Formula \[
+\begin_inset Formula \begin{equation}
 \theta(t+\Delta t)=\begin{cases}
-\theta(t)\exp\left(-\frac{V\Delta t}{L}\right)+\Delta t-\frac{1}{2}\frac{V\Delta t^{2}}{L} & \frac{V\Delta t}{L}<0.00001\\
-\theta(t)\exp\left(-\frac{V\Delta t}{L}\right)+\frac{L}{V}\left(1-\exp\left(-\frac{V\theta}{L}\right)\right) & \frac{V\Delta t}{L}\ge0.00001\end{cases}.\]
+\theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\Delta t-\frac{1}{2}\frac{V(t)\Delta t^{2}}{L} & \frac{V(t)\Delta t}{L}<0.00001\\
+\theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right) & \frac{V(t)\Delta t}{L}\ge0.00001\end{cases}.\end{equation}
 
 \end_inset
 
@@ -5395,7 +5416,11 @@ constitutive-parameter-a
 \begin_inset Text
 
 \begin_layout Plain Layout
-Cofficient for the ?? term, 
+Coefficient for the 
+\begin_inset Formula $\ln$
+\end_inset
+
+ slip rate term, 
 \begin_inset Formula $a$
 \end_inset
 
@@ -5428,7 +5453,11 @@ constitutive-parameter-b
 \begin_inset Text
 
 \begin_layout Plain Layout
-Coefficient for the ?? term, 
+Coefficient for the 
+\begin_inset Formula $\ln$
+\end_inset
+
+ state variable term, 
 \begin_inset Formula $b$
 \end_inset
 

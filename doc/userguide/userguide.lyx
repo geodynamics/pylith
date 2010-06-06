@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -707,9 +707,9 @@ key "Liu:etal:2006"
 
 Liu, P., R.J.
  Archuleta, S.H.
- Hartzell (2006).
- Prediction of broadband ground-motion time histories: Hybrid low/high-frequency
- method with correlated random source parameters, 
+ Hartzell (2006), Prediction of broadband ground-motion time histories:
+ Hybrid low/high-frequency method with correlated random source parameters,
+ 
 \shape italic
 Bull.
  Seismol.
@@ -717,6 +717,41 @@ Bull.
  Am.
 \shape default
 , 96, 2118-2130.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "20"
+key "BenZion:Rice:1997"
+
+\end_inset
+
+Ben-Zion, Y.
+ and J.R.
+ Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
+ solid, J.
+ Geophys.
+ Res., 102, 17,771–17,784.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "21"
+key "Kaneko:etal:2008"
+
+\end_inset
+
+> Kaneko, Y., N.
+ Lapusta, and J.-P.
+ Ampuero (2008), Spectral element modeling of spontaneous earthquake rupture
+ on rate and state faults: Effect of velocity-strengthening friction at
+ shallow depths, 
+\shape italic
+Journal of Geophysical Research
+\shape default
+, 113, B09317, doi:10.1029/2007JB005553.
 \end_layout
 
 \end_body
