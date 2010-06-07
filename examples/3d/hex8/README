@@ -66,14 +66,12 @@ spatialdb/mat_elastic.spatialdb - Spatial database defining elastic
 material properties for all examples.
 
 spatialdb/mat_genmaxwell.spatialdb - Spatial database defining
-generalized Maxwell viscoelastic material properties. This spatial database
-is not used by any examples, but could easily be exchanged for the material
-models being used in one of the other examples (an 'exercise for the
-reader').
+generalized Maxwell viscoelastic material properties for examples step15,
+step16, and step17.
 
 spatialdb/mat_maxwell.spatialdb - Spatial database defining Maxwell
 viscoelastic material properties for examples step04, step05, step06,
-step07, step15, step16, and step17.
+and step07.
 
 spatialdb/mat_powerlaw.spatialdb - Spatial database defining power-law
 viscoelastic material properties for example step08.
