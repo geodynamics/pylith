@@ -407,5 +407,385 @@ name "fig:step01-displ"
 
 \end_layout
 
+\begin_layout Subsubsection
+Step02 - Dirichlet and Neumann Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+The step02.cfg file describes a problem with Dirichlet (displacement) boundary
+ conditions corresponding to zero x and y-displacements applied on the negative
+ x-face and Neumann (traction) boundary conditions corresponding to normal
+ compression and horizontal shear applied on the positive x-face.
+ The bottom (minimum z) boundary is held fixed in the z-direction.
+ The problem is similar to example step01, except that 1 MPa of normal compressi
+on and 1 MPa of shear (in a left-lateral sense) are applied on the positive
+ x-face, and the negative x-face is pinned in both the x and y-directions.
+\end_layout
+
+\begin_layout Standard
+For the boundary conditions, we must first change the boundary condition
+ type for the positive x-face from the default Dirichlet to Neumann:
+\end_layout
+
+\begin_layout LyX-Code
+# +x face -- first change bc type to Neumann
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc]
+\end_layout
+
+\begin_layout LyX-Code
+x_pos = pylith.bc.Neumann 
+\end_layout
+
+\begin_layout Standard
+We use a 
+\family typewriter
+SimpleDB
+\family default
+ to describe the traction boundary conditions.
+ When applying traction boundary conditions over a surface, it is also necessary
+ to specify integration information for the surface.
+ Since this is a three-dimensional problem, the dimension of the surface
+ is 2.
+ Since the cells being used are trilinear hexahedra, the cell type is 
+\family typewriter
+FIATLagrange
+\family default
+ and we use an integration order of 2.
+ A lower integration order would not provide sufficient accuracy while a
+ higher integration order would offer no benefit (while requiring more computati
+on time and storage):
+\end_layout
+
+\begin_layout LyX-Code
+# +x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_pos]
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xpos
+\end_layout
+
+\begin_layout LyX-Code
+db_initial = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Neumann BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.iohandler.filename = spatialdb/tractions_axial_shear.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# We must specify quadrature information for the cell faces.
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 2
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.quad_order = 2 
+\end_layout
+
+\begin_layout Standard
+The boundary conditions on the negative x-face are simpler than they were
+ in example step01 (zero displacements in the x and y-directions), so we
+ can use the default 
+\family typewriter
+ZeroDispBC
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+# -x face
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.bc.x_neg]
+\end_layout
+
+\begin_layout LyX-Code
+bc_dof = [0, 1] 
+\end_layout
+
+\begin_layout LyX-Code
+label = face_xneg
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on -x 
+\end_layout
+
+\begin_layout Standard
+The boundary conditions on the negative z-face are supplied in the same
+ manner as for example step01.
+ When we have run the simulation, the output VTK files will be contained
+ in examples/3d/hex8/step02, and the results may be visualized using a tool
+ such as ParaView or mayavi2.
+ Results using ParaView are shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step02-displ"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/step02-displ.jpg
+	width 10cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for example step02 visualized using ParaView.
+ The mesh has been distorted by the computed displacements (magnified by
+ 500), and the vectors show the computed displacements.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step02-displ"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Step03 - Dirichlet Boundary Conditions with Kinematic Fault Slip
+\end_layout
+
+\begin_layout Standard
+The step03.cfg file describes a problem with Dirichlet (displacement) boundary
+ conditions corresponding to zero x and y-displacements applied on the negative
+ and positive x-faces and a vertical fault with a combination of left-lateral
+ and updip motion.
+ The left-lateral component of fault slip has a constant value of 2 m in
+ the upper crust, and then decreases linearly to zero at the base of the
+ model.
+ The reverse slip component has a value of 0.25 m at the surface, and then
+ decreases linearly to zero at 2 km depth.
+\end_layout
+
+\begin_layout Standard
+Due to the simplicity of the boundary conditions, we are able to use the
+ default 
+\family typewriter
+ZeroDispBC
+\family default
+ for the positive and negative x-faces, as well as the negative z-face.
+ To use a fault, we must first define a fault interface.
+ We do this by providing an array containing a single interface:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+# Set interfaces to an array of 1 fault: 'fault'.
+\end_layout
+
+\begin_layout LyX-Code
+interfaces = [fault] 
+\end_layout
+
+\begin_layout Standard
+For this example we specify the fault slip, so we set the interface type
+ to 
+\family typewriter
+FaultCohesiveKin
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+# Set the type of fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces]
+\end_layout
+
+\begin_layout LyX-Code
+fault = pylith.faults.FaultCohesiveKin 
+\end_layout
+
+\begin_layout Standard
+We must then identify the nodeset corresponding to the fault, and provide
+ integration information for the fault surface:
+\end_layout
+
+\begin_layout LyX-Code
+# Set the parameters for the fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+# The label corresponds to the name of the nodeset in CUBIT.
+\end_layout
+
+\begin_layout LyX-Code
+label = fault
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# We must define the quadrature information for fault cells.
+\end_layout
+
+\begin_layout LyX-Code
+# The fault cells are 2D (surface).
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 2 
+\end_layout
+
+\begin_layout Standard
+Finally, we use one 
+\family typewriter
+SimpleDB
+\family default
+ to define the spatial variation of fault slip, and another SimpleDB to
+ define the time at which slip begins (the start time is 0.0 since this is
+ a static problem):
+\end_layout
+
+\begin_layout LyX-Code
+# The slip time and final slip are defined in spatial databases.
+ [pylithapp.timedependent.interfaces.fault.eq_srcs.rupture.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+slip.iohandler.filename = spatialdb/finalslip.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = spatialdb/sliptime.spatialdb 
+\end_layout
+
+\begin_layout Standard
+Since the problem now contains a fault, we can request that fault infomation
+ is also output:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for VTK fault output.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.output]
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = step03/step03-fault.vtk 
+\end_layout
+
+\begin_layout Standard
+This will result in two extra files being produced.
+ The first file (step03-fault_info.vtk) contains information such as the
+ normal directions to the fault surface, the applied fault slip, and the
+ fault slip times.
+ The second file (step03-fault_t0000000.vtk) contains the cumulative fault
+ slip for the time step and the change in tractions on the fault surface
+ due to the slip.
+ When we have run the simulation, the output VTK files will be contained
+ in examples/3d/hex8/step03, and the results may be visualized using a tool
+ such as ParaView or mayavi2.
+ Results using ParaView are shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step03-displ"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/step03-displ.jpg
+	width 10cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Displacement field for example step03 visualized using ParaView.
+ The mesh has been distorted by the computed displacements (magnified by
+ 500), and the vectors show the computed displacements.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step03-displ"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

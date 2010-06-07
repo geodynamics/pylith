@@ -108,6 +108,10 @@ Static fault rupture
 \end_layout
 
 \begin_layout Itemize
+Multiple kinematic fault ruptures
+\end_layout
+
+\begin_layout Itemize
 Specifying more than one material
 \end_layout
 
@@ -120,7 +124,7 @@ Maxwell linear viscoelastic material
 \end_layout
 
 \begin_layout Itemize
-Multiple kinematic fault ruptures
+Generalized Maxwell linear viscoelastic material
 \end_layout
 
 \begin_layout Itemize
@@ -382,7 +386,7 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the example problems share additional information.
+In addition to the mesh, the example problems share other information.
  As in previous examples, we place this information in 
 \family typewriter
 pylithapp.cfg
