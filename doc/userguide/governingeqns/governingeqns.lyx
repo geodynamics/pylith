@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1315,14 +1315,14 @@ Combining these expressions for the increment in stresses and making use
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}+N_{l,k}^{m})(N_{i,j}^{n}+N_{j,i}^{n})\ dV.\end{equation}
+A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{,l}^{m}+N_{,k}^{m})(N_{,j}^{n}+N_{,i}^{n})\ dV.\end{equation}
 
 \end_inset
 
 We employ numerical quadrature in the finite-element discretization and
  replace the integral with a sum over the cells and quadrature points,
 \begin_inset Formula \begin{equation}
-A_{ij}^{nm}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{k,l}^{m}(x_{q})+N_{l,k}^{m}(x_{q}))(N_{i,j}^{n}(x_{q})+N_{j,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).\end{equation}
+A_{ij}^{nm}=\sum_{\text{vol cells}}\sum_{\text{quad pts}}\frac{1}{4}C_{ijkl}(N_{,l}^{m}(x_{q})+N_{,k}^{m}(x_{q}))(N_{,j}^{n}(x_{q})+N_{,i}^{n}(x_{q}))w_{q}|J_{cell}(x_{q}).\end{equation}
 
 \end_inset
 
