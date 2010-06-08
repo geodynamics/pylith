@@ -290,12 +290,10 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
-		tests_auto/3dnew/hex8/Makefile
 		tests_auto/petsc/Makefile
 		tests/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
-		playpen/closure/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
