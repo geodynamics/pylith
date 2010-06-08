@@ -165,9 +165,12 @@ Step01 - Pure Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The step01.cfg file describes a problem with pure Dirichlet (displacement)
- boundary conditions corresponding to compression in the x-direction and
- shear in the y-direction.
+The 
+\family typewriter
+step01.cfg
+\family default
+ file describes a problem with pure Dirichlet (displacement) boundary conditions
+ corresponding to compression in the x-direction and shear in the y-direction.
  The bottom (minimum z) boundary is held fixed in the z-direction.
  On the positive and negative x-faces, compressional displacements of 1
  m are applied in the x-direction and shear displacements yielding a left-latera
@@ -229,7 +232,7 @@ label = face_zpos
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = step01/step01-groundsurf.vtk
+writer.filename = output/step01-groundsurf.vtk
 \end_layout
 
 \begin_layout Standard
@@ -238,7 +241,7 @@ For the boundary conditions, we must describe which degrees of freedom are
 \family typewriter
 bc_dof
 \family default
-), we must provide a label that describes which Cubit nodeset to which to
+), we must provide a label that describes the Cubit nodeset to which to
  apply the BC, and we must specify what type of spatial database is being
  used to describe the boundary conditions.
  For the x-faces, we use a 
@@ -351,13 +354,17 @@ db_initial.label = Dirichlet BC on -z
 When we have run the simulation, the output VTK files will be contained
  in 
 \family typewriter
-examples/3d/hex8/step01
+examples/3d/hex8/output
 \family default
-, and the results may be visualized using a tool such as ParaView or mayavi2.
+ (all with a prefix of 
+\family typewriter
+step01
+\family default
+), and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step04-displ-t200"
+reference "fig:step01-displ"
 
 \end_inset
 
@@ -415,10 +422,14 @@ Step02 - Dirichlet and Neumann Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The step02.cfg file describes a problem with Dirichlet (displacement) boundary
- conditions corresponding to zero x and y-displacements applied on the negative
- x-face and Neumann (traction) boundary conditions corresponding to normal
- compression and horizontal shear applied on the positive x-face.
+The 
+\family typewriter
+step02.cfg
+\family default
+ file describes a problem with Dirichlet (displacement) boundary conditions
+ corresponding to zero x and y-displacements applied on the negative x-face
+ and Neumann (traction) boundary conditions corresponding to normal compression
+ and horizontal shear applied on the positive x-face.
  The bottom (minimum z) boundary is held fixed in the z-direction.
  The problem is similar to example step01, except that 1 MPa of normal compressi
 on and 1 MPa of shear (in a left-lateral sense) are applied on the positive
@@ -542,13 +553,17 @@ The boundary conditions on the negative z-face are supplied in the same
  When we have run the simulation, the output VTK files will be contained
  in 
 \family typewriter
-examples/3d/hex8/step02
+examples/3d/hex8/output
 \family default
-, and the results may be visualized using a tool such as ParaView or mayavi2.
+ (all with a prefix of 
+\family typewriter
+step02
+\family default
+), and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step05-displ-t40"
+reference "fig:step02-displ"
 
 \end_inset
 
@@ -600,9 +615,13 @@ Step03 - Dirichlet Boundary Conditions with Kinematic Fault Slip
 \end_layout
 
 \begin_layout Standard
-The step03.cfg file describes a problem with Dirichlet (displacement) boundary
- conditions corresponding to zero x and y-displacements applied on the negative
- and positive x-faces and a vertical fault with a combination of left-lateral
+The 
+\family typewriter
+step03.cfg
+\family default
+ file describes a problem with Dirichlet (displacement) boundary conditions
+ corresponding to zero x and y-displacements applied on the negative and
+ positive x-faces and a vertical fault with a combination of left-lateral
  and updip motion.
  The left-lateral component of fault slip has a constant value of 2 m in
  the upper crust, and then decreases linearly to zero at the base of the
@@ -710,8 +729,8 @@ SimpleDB
 \family typewriter
 SimpleDB
 \family default
- to define the time at which slip begins (the start time is 0.0 since this
- is a static problem):
+ to define the spatial variation in slip initiation times (the start time
+ is 0.0 everywhere since this is a static problem):
 \end_layout
 
 \begin_layout LyX-Code
@@ -741,7 +760,7 @@ Since the problem now contains a fault, we can request that fault infomation
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = step03/step03-fault.vtk 
+writer.filename = output/step03-fault.vtk 
 \end_layout
 
 \begin_layout Standard
@@ -761,13 +780,17 @@ step03-fault_t0000000.vtk
  When we have run the simulation, the output VTK files will be contained
  in 
 \family typewriter
-examples/3d/hex8/step03
+examples/3d/hex8/output
 \family default
-, and the results may be visualized using a tool such as ParaView or mayavi2.
+ (all with a prefix of 
+\family typewriter
+step03
+\family default
+), and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step06-displ-t300"
+reference "fig:step03-displ"
 
 \end_inset
 

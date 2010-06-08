@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2645,6 +2645,13 @@ reference "eq:62"
 
 \begin_layout Subsubsection
 Power-Law Maxwell Viscoelastic Material
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Power-Law-Maxwell-Viscoelastic"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3009,8 +3016,14 @@ powerlaw_gendb.py
 .
  The user then specifies either a reference stress or a reference strain
  rate, and a database suitable for PyLith is generated.
- This utility is described more fully in the Appendix.
- ***Maybe describe in Tutorials instead?***
+ This utility is described more fully in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Tutorial-Step08-Power-law"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
