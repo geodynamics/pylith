@@ -29,29 +29,30 @@ dist_noinst_DATA = \
 	step14.cfg \
 	step15.cfg \
 	step16.cfg \
-	step17.cfg 
+	step17.cfg \
+	mesh/geometry.jou \
+	mesh/mesh_hex8_1000m.jou \
+	mesh/box_hex8_1000m.exo \
+	spatialdb/finalslip_rupture.spatialdb \
+	spatialdb/finalslip.spatialdb \
+	spatialdb/fixeddisp_axial_shear.spatialdb \
+	spatialdb/initial_stress.spatialdb \
+	spatialdb/mat_druckerprager.spatialdb \
+	spatialdb/mat_elastic.spatialdb \
+	spatialdb/mat_genmaxwell.spatialdb \
+	spatialdb/mat_maxwell.spatialdb \
+	spatialdb/mat_powerlaw.spatialdb \
+	spatialdb/sliprate_creep.spatialdb \
+	spatialdb/sliptime.spatialdb \
+	spatialdb/tractions_axial_shear.spatialdb \
+	spatialdb/powerlaw/powerlaw_gendb.cfg \
+	spatialdb/powerlaw/powerlaw_params.spatialdb \
+	spatialdb/powerlaw/powerlaw_points.txt \
+	spatialdb/powerlaw/temperature.spatialdb
 
 
 SUBDIRS = \
-	mesh \
-	spatialdb \
-	step01 \
-	step02 \
-	step03 \
-	step04 \
-	step05 \
-	step06 \
-	step07 \
-	step08 \
-	step09 \
-	step10 \
-	step11 \
-	step12 \
-	step13 \
-	step14 \
-	step15 \
-	step16 \
-	step17
+	output
 
 
 # End of file 
