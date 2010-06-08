@@ -105,10 +105,10 @@ pylith::problems::Explicit::calcRateFields(void)
     } // for
     
     assert(velSection->getFiberDimension(*v_iter) == spaceDim);
-    velSection->updatePoint(*v_iter, &velVertex[0]);
+    velSection->updatePointAll(*v_iter, &velVertex[0]);
 
     assert(accSection->getFiberDimension(*v_iter) == spaceDim);
-    accSection->updatePoint(*v_iter, &accVertex[0]);
+    accSection->updatePointAll(*v_iter, &accVertex[0]);
   } // for
 
   PetscLogFlops(vertices->size() * 6*spaceDim);
