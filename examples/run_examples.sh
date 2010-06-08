@@ -20,8 +20,6 @@ run_examples() {
 run_examples2() {
   commoncfg=$1
   cd ${examples_dir}/$dir
-  rm *.vtk
-  if [ -d output ]; then rm output/*.vtk; fi
   for example in $examples; do
     echo "RUNNING $dir/$example"
     pylith $commoncfg $example
@@ -62,7 +60,7 @@ run_examples
 
 # 3d/hex8
 dir="3d/hex8"
-examples="step01 step02 step03 step04 step05 step06 step07 step08 step09 step10 step11 step12 step13 step14 step15 step16 step17"
+examples="step01.cfg step02.cfg step03.cfg step04.cfg step05.cfg step06.cfg step07.cfg step08.cfg step09.cfg step10.cfg step11.cfg step12.cfg step13.cfg step14.cfg step15.cfg step16.cfg step17.cfg"
 run_examples
 
 # ----------------------------------------------------------------------
