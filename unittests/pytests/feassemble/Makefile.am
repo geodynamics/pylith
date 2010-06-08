@@ -27,7 +27,9 @@ noinst_PYTHON = \
 	TestMeshQuadrature.py \
 	TestSubMeshQuadrature.py \
 	TestElasticityExplicit.py \
-	TestElasticityImplicit.py
+	TestElasticityImplicit.py \
+	TestElasticityExplicitLgDeform.py \
+	TestElasticityImplicitLgDeform.py
 
 
 # End of file 

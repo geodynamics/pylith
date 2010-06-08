@@ -28,7 +28,7 @@ testfriction_SOURCES = \
 	TestRateStateAgeing.cc
 
 
-noinst_HEADERS = 
+noinst_HEADERS = \
 	TestFrictionModel.hh \
 	TestStaticFriction.hh \
 	TestSlipWeakening.hh \

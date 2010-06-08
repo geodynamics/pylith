@@ -30,7 +30,8 @@ dist_noinst_DATA = \
 	extensionforce_force.spatialdb \
 	dislocation.cfg \
 	finalslip.spatialdb \
-	sliptime.spatialdb
+	sliptime.spatialdb \
+	lgdeformtranslation.cfg
 
 noinst_TMP = \
 	extensiondisp_t0000000.vtk \

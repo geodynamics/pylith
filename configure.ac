@@ -293,6 +293,8 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/3dnew/hex8/Makefile
 		tests_auto/petsc/Makefile
 		tests/Makefile
+		tests/3d/Makefile
+		tests/3d/matprops/Makefile
 		playpen/closure/Makefile
                 doc/Makefile
 		doc/developer/Makefile
@@ -307,6 +309,7 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/Makefile
 		examples/3d/tet4/Makefile
 		examples/3d/hex8/Makefile
+		examples/3d/hex8/output/Makefile
 		examples/bar_shearwave/hex8/Makefile
 		examples/bar_shearwave/hex8/output/Makefile
 		examples/bar_shearwave/quad4/Makefile

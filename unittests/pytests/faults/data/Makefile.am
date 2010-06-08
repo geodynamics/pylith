@@ -17,7 +17,8 @@ dist_noinst_DATA = \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \
 	tri3_initialtractions.spatialdb \
-	tri3_staticfriction.spatialdb
+	tri3_staticfriction.spatialdb \
+	slipfn.timedb
 
 noinst_TMP =
 
