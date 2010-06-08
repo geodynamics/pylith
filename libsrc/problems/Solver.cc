@@ -102,19 +102,17 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   if (solutionSection->getNumSpaces() > spaceDim &&
       formulation->useCustomConstraintPC()) {
     // Get total number of DOF associated with constraints field split
-    const ALE::Obj<RealSection>& constraintSection = 
-      solutionSection->getFibration(spaceDim);
-    assert(!constraintSection.isNull());
+    const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
+                                              solutionSection, spaceDim);
+    assert(!lagrangeGlobalOrder.isNull());
 
-    // :TODO: Is this assembled across processors?
-    const int ndof = constraintSection->size(); 
-    
     if (0 != *precondMatrix) {
       err = MatDestroy(*precondMatrix); *precondMatrix = 0;
       CHECK_PETSC_ERROR(err);
     } // if
-    PetscInt nrows = ndof;
-    PetscInt ncols = ndof;
+    PetscInt nrows = lagrangeGlobalOrder->getLocalSize();
+    PetscInt ncols = nrows;
 
     err = MatCreate(sieveMesh->comm(), precondMatrix); CHECK_PETSC_ERROR(err);
     err = MatSetSizes(*precondMatrix, nrows, ncols, 
