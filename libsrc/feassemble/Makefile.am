@@ -66,6 +66,14 @@ subpkginclude_HEADERS = \
 
 noinst_HEADERS =
 
+dist_noinst_DATA = \
+	jacobian2d_lgdeform.wxm \
+	jacobian2d_nonsymm_lgdeform.wxm \
+	jacobian3d_lgdeform.wxm \
+	jacobian3d_nonsymm_lgdeform.wxm \
+	tri3_elasticity.wxm \
+	tet4_elasticity.wxm
+
 # export
 clean-local: clean-subpkgincludeHEADERS
 BUILT_SOURCES = export-subpkgincludeHEADERS

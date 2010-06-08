@@ -5,7 +5,7 @@
 
 examples_dir=`pwd`
 
-# Run specified list of examples
+# Run specified list of examples (single .cfg file)
 run_examples() {
   cd ${examples_dir}/$dir
   rm *.vtk
@@ -13,6 +13,18 @@ run_examples() {
   for example in $examples; do
     echo "RUNNING $dir/$example"
     pylith $example
+  done
+}
+
+# Run specified list of examples (additional common .cfg files)
+run_examples2() {
+  commoncfg=$1
+  cd ${examples_dir}/$dir
+  rm *.vtk
+  if [ -d output ]; then rm output/*.vtk; fi
+  for example in $examples; do
+    echo "RUNNING $dir/$example"
+    pylith $commoncfg $example
   done
 }
 
@@ -50,7 +62,7 @@ run_examples
 
 # 3d/hex8
 dir="3d/hex8"
-examples="shearxy.cfg dislocation.cfg gravity.cfg gravity_istress.cfg savageprescott.cfg"
+examples="step01 step02 step03 step04 step05 step06 step07 step08 step09 step10 step11 step12 step13 step14 step15 step16 step17"
 run_examples
 
 # ----------------------------------------------------------------------
@@ -61,8 +73,10 @@ run_examples
 
 # bar_shearwave/quad4
 dir="bar_shearwave/quad4"
-examples="pylithapp.cfg"
+examples="kinematic.cfg"
 run_examples
+examples="dynamic_staticfriction.cfg dynamic_slipweakening.cfg dynamic_ratestateageing.cfg"
+run_examples2 "dynamic.cfg"
 
 # bar_shearwave/tet4
 dir="bar_shearwave/tet4"

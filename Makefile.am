@@ -26,7 +26,10 @@ if ENABLE_TESTING
 	tests_auto
 endif
 
-DIST_SUBDIRS = $(SUBDIRS) examples tests_auto tests doc
+DIST_SUBDIRS = $(SUBDIRS) \
+	examples \
+	tests \
+	doc
 
 if ENABLE_DOCUMENTATION
   SUBDIRS += doc

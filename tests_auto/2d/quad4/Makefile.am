@@ -23,6 +23,7 @@ dist_noinst_PYTHON = \
 	sheardisp_soln.py \
 	sheardisp_gendb.py \
 	TestDislocation.py \
+	TestDislocation2.py \
 	dislocation_soln.py \
 	dislocation2_soln.py \
 	TestLgDeformRigidBody.py \
