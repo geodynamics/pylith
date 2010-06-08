@@ -548,7 +548,7 @@ examples/3d/hex8/step02
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step02-displ"
+reference "fig:step05-displ-t40"
 
 \end_inset
 
@@ -697,13 +697,21 @@ quadrature.cell.dimension = 2
 \end_layout
 
 \begin_layout Standard
-Finally, we use one 
+We retain the default 
+\family typewriter
+StepSlipFn
+\family default
+ since we want static fault slip.
+ Finally, we use one 
 \family typewriter
 SimpleDB
 \family default
- to define the spatial variation of fault slip, and another SimpleDB to
- define the time at which slip begins (the start time is 0.0 since this is
- a static problem):
+ to define the spatial variation of fault slip, and another 
+\family typewriter
+SimpleDB
+\family default
+ to define the time at which slip begins (the start time is 0.0 since this
+ is a static problem):
 \end_layout
 
 \begin_layout LyX-Code
@@ -738,12 +746,18 @@ writer.filename = step03/step03-fault.vtk
 
 \begin_layout Standard
 This will result in two extra files being produced.
- The first file (step03-fault_info.vtk) contains information such as the
- normal directions to the fault surface, the applied fault slip, and the
- fault slip times.
- The second file (step03-fault_t0000000.vtk) contains the cumulative fault
- slip for the time step and the change in tractions on the fault surface
- due to the slip.
+ The first file (
+\family typewriter
+step03-fault_info.vtk
+\family default
+) contains information such as the normal directions to the fault surface,
+ the applied fault slip, and the fault slip times.
+ The second file (
+\family typewriter
+step03-fault_t0000000.vtk
+\family default
+) contains the cumulative fault slip for the time step and the change in
+ tractions on the fault surface due to the slip.
  When we have run the simulation, the output VTK files will be contained
  in 
 \family typewriter
@@ -753,7 +767,7 @@ examples/3d/hex8/step03
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step03-displ"
+reference "fig:step06-displ-t300"
 
 \end_inset
 

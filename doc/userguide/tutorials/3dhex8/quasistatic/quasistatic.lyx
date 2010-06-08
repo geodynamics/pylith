@@ -631,14 +631,30 @@ Step05 - Time-varying Dirichlet and Neumann Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The step02.cfg file describes a problem with Dirichlet (displacement) boundary
- conditions corresponding to zero x and y-displacements applied on the negative
- x-face and Neumann (traction) boundary conditions corresponding to normal
- compression and horizontal shear applied on the positive x-face.
- The bottom (minimum z) boundary is held fixed in the z-direction.
- The problem is similar to example step01, except that 1 MPa of normal compressi
-on and 1 MPa of shear (in a left-lateral sense) are applied on the positive
- x-face, and the negative x-face is pinned in both the x and y-directions.
+The 
+\family typewriter
+step05.cfg
+\family default
+ file describes a problem with time-varying Dirichlet and Neumann boundary
+ conditions.
+ The example is similar to example step04, with a few important differences:
+\end_layout
+
+\begin_layout Itemize
+The Dirichlet boundary conditions on the negative x-face include an initial
+ displacement (applied in the elastic solution), as well as a constant velocity.
+\end_layout
+
+\begin_layout Itemize
+Neumann (traction) boundary conditions are applied in the negative x-direction
+ on the positive x-face, giving a compressive stress.
+ An initial traction is applied in the elastic solution, and then at t =
+ 100 years it begins decreasing linearly until it reaches zero at the end
+ of the simulation (t = 200 years).
+\end_layout
+
+\begin_layout Standard
+We again use a Maxwell viscoelastic material for the lower crust.
 \end_layout
 
 \begin_layout Standard
@@ -659,27 +675,15 @@ x_pos = pylith.bc.Neumann
 \end_layout
 
 \begin_layout Standard
-We use a 
+We provide quadrature information for this face as we did for example step02.
+ We then use a 
 \family typewriter
-SimpleDB
+UniformDB
 \family default
- to describe the traction boundary conditions.
- When applying traction boundary conditions over a surface, it is also necessary
- to specify integration information for the surface.
- Since this is a three-dimensional problem, the dimension of the surface
- is 2.
- Since the cells being used are trilinear hexahedra, the cell type is 
-\family typewriter
-FIATLagrange
-\family default
- and we use an integration order of 2.
- A lower integration order would not provide sufficient accuracy while a
- higher integration order would offer no benefit (while requiring more computati
-on time and storage):
-\end_layout
-
-\begin_layout LyX-Code
-# +x face
+ for both the initial tractions as well as the traction rates.
+ We provide a start time of 100 years for the traction rates, and use a
+ rate of 0.01 MPa/year, so that by the end of 200 years we have completely
+ cancelled the initial traction of -1 MPa:
 \end_layout
 
 \begin_layout LyX-Code
@@ -687,11 +691,11 @@ on time and storage):
 \end_layout
 
 \begin_layout LyX-Code
-label = face_xpos
+# Fist specify a UniformDB for the initial tractions, along with the values.
 \end_layout
 
 \begin_layout LyX-Code
-db_initial = spatialdata.spatialdb.SimpleDB
+db_initial = spatialdata.spatialdb.UniformDB
 \end_layout
 
 \begin_layout LyX-Code
@@ -699,37 +703,38 @@ db_initial.label = Neumann BC on +x
 \end_layout
 
 \begin_layout LyX-Code
-db_initial.iohandler.filename = spatialdb/tractions_axial_shear.spatialdb
+db_initial.values = [traction-shear-horiz,traction-shear-vert,traction-normal]
 \end_layout
 
 \begin_layout LyX-Code
-
+db_initial.data = [0.0*MPa,0.0*MPa,-1.0*MPa]
 \end_layout
 
 \begin_layout LyX-Code
-# We must specify quadrature information for the cell faces.
+# Provide information on traction rates.
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell = pylith.feassemble.FIATLagrange
+db_rate = spatialdata.spatialdb.UniformDB
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.dimension = 2
+db_rate.label = Neumann rate BC on +x
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.quad_order = 2 
+db_rate.values = [traction-rate-shear-horiz,traction-rate-shear-vert,traction-rat
+e-normal,rate-start-time]
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.data = [0.0*MPa/year,0.0*MPa/year,0.01*MPa/year,100.0*year]
 \end_layout
 
 \begin_layout Standard
-The boundary conditions on the negative x-face are simpler than they were
- in example step01 (zero displacements in the x and y-directions), so we
- can use the default 
-\family typewriter
-ZeroDispBC
-\family default
-:
+The boundary conditions on the negative x-face are analogous, but we are
+ instead using Dirichlet boundary conditions, and the initial displacement
+ is in the same direction as the applied velocities:
 \end_layout
 
 \begin_layout LyX-Code
@@ -741,7 +746,7 @@ ZeroDispBC
 \end_layout
 
 \begin_layout LyX-Code
-bc_dof = [0, 1] 
+bc_dof = [0, 1]
 \end_layout
 
 \begin_layout LyX-Code
@@ -749,19 +754,58 @@ label = face_xneg
 \end_layout
 
 \begin_layout LyX-Code
-db_initial.label = Dirichlet BC on -x 
+# Initial displacements.
+\end_layout
+
+\begin_layout LyX-Code
+db_initial = spatialdata.spatialdb.UniformDB
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.label = Dirichlet BC on -x
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.values = [displacement-x,displacement-y]
+\end_layout
+
+\begin_layout LyX-Code
+db_initial.data = [0.0*cm,-0.5*cm]
+\end_layout
+
+\begin_layout LyX-Code
+# Velocities.
+\end_layout
+
+\begin_layout LyX-Code
+db_rate = spatialdata.spatialdb.UniformDB
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.label = Dirichlet rate BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.data = [0.0*cm/year,-1.0*cm/year,0.0*year]
 \end_layout
 
 \begin_layout Standard
 The boundary conditions on the negative z-face are supplied in the same
- manner as for example step01.
+ manner as for example step04.
  When we have run the simulation, the output VTK files will be contained
- in examples/3d/hex8/step02, and the results may be visualized using a tool
- such as ParaView or mayavi2.
+ in 
+\family typewriter
+examples/3d/hex8/step05
+\family default
+, and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step02-displ"
+reference "fig:step05-displ-t40"
 
 \end_inset
 
@@ -773,7 +817,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step02-displ.jpg
+	filename figs/step05-displ-t40.jpg
 	width 10cm
 
 \end_inset
@@ -782,12 +826,12 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step02 visualized using ParaView.
+Displacement field for example step05 visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:step02-displ"
+name "fig:step05-displ-t40"
 
 \end_inset
 
@@ -809,19 +853,32 @@ name "fig:step02-displ"
 \end_layout
 
 \begin_layout Subsubsection
-Step03 - Dirichlet Boundary Conditions with Kinematic Fault Slip
+Step06 - Dirichlet Boundary Conditions with Time-Dependent Kinematic Fault
+ Slip
 \end_layout
 
 \begin_layout Standard
-The step03.cfg file describes a problem with Dirichlet (displacement) boundary
- conditions corresponding to zero x and y-displacements applied on the negative
- and positive x-faces and a vertical fault with a combination of left-lateral
- and updip motion.
- The left-lateral component of fault slip has a constant value of 2 m in
- the upper crust, and then decreases linearly to zero at the base of the
- model.
- The reverse slip component has a value of 0.25 m at the surface, and then
- decreases linearly to zero at 2 km depth.
+The 
+\family typewriter
+step06.cfg
+\family default
+ file describes a problem with Dirichlet (displacement) boundary conditions
+ corresponding to zero x and y-displacements applied on the negative and
+ positive x-faces and a vertical fault that includes multiple earthquake
+ ruptures as well as steady fault creep.
+ The upper (locked) portion of the fault has 4 m of left-lateral slip every
+ 200 years, while the lower (creeping) portion of the fault slips at a steady
+ rate of 2 cm/year.
+ The problem bears some similarity to the strike-slip fault model of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Savage:Prescott:1978"
+
+\end_inset
+
+, except that the fault creep extends through the viscoelastic portion of
+ the domain, and the far-field displacement boundary conditions are held
+ fixed.
 \end_layout
 
 \begin_layout Standard
@@ -831,50 +888,11 @@ Due to the simplicity of the boundary conditions, we are able to use the
 ZeroDispBC
 \family default
  for the positive and negative x-faces, as well as the negative z-face.
- To use a fault, we must first define a fault interface.
- We do this by providing an array containing a single interface:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-# Set interfaces to an array of 1 fault: 'fault'.
-\end_layout
-
-\begin_layout LyX-Code
-interfaces = [fault] 
-\end_layout
-
-\begin_layout Standard
-For this example we specify the fault slip, so we set the interface type
- to 
-\family typewriter
-FaultCohesiveKin
-\family default
-:
-\end_layout
-
-\begin_layout LyX-Code
-# Set the type of fault interface condition.
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.interfaces]
-\end_layout
-
-\begin_layout LyX-Code
-fault = pylith.faults.FaultCohesiveKin 
-\end_layout
-
-\begin_layout Standard
-We must then identify the nodeset corresponding to the fault, and provide
- integration information for the fault surface:
-\end_layout
-
-\begin_layout LyX-Code
-# Set the parameters for the fault interface condition.
+ As for example step03, we define a fault interface, we identify the nodeset
+ corresponding to the fault, and we provide quadrature information for the
+ fault.
+ We then define an array of earthquake sources and provide an origin time
+ for each:
 \end_layout
 
 \begin_layout LyX-Code
@@ -882,88 +900,179 @@ We must then identify the nodeset corresponding to the fault, and provide
 \end_layout
 
 \begin_layout LyX-Code
-# The label corresponds to the name of the nodeset in CUBIT.
+# Set earthquake sources to an array consisting of creep and 3 ruptures.
 \end_layout
 
 \begin_layout LyX-Code
-label = fault
+eq_srcs = [creep,one,two,three]
 \end_layout
 
 \begin_layout LyX-Code
-
+eq_srcs.creep.origin_time = 00.0*year
 \end_layout
 
 \begin_layout LyX-Code
-# We must define the quadrature information for fault cells.
+eq_srcs.one.origin_time = 200.0*year
 \end_layout
 
 \begin_layout LyX-Code
-# The fault cells are 2D (surface).
+eq_srcs.two.origin_time = 400.0*year
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell = pylith.feassemble.FIATLagrange
-\end_layout
-
-\begin_layout LyX-Code
-quadrature.cell.dimension = 2 
+eq_srcs.three.origin_time = 600.0*year
 \end_layout
 
 \begin_layout Standard
-Finally, we use one 
+Note that the creep begins at t = 0 years, while the ruptures (
+\family typewriter
+one
+\family default
+, 
+\family typewriter
+two
+\family default
+, 
+\family typewriter
+three
+\family default
+) occur at regular intervals of 200 years.
+ We retain the default 
+\family typewriter
+StepSlipFn
+\family default
+ for the ruptures.
+ Each of the ruptures has the same amount of slip, and slip occurs simultaneousl
+y for the entire rupture region, so we can use the same 
 \family typewriter
 SimpleDB
 \family default
- to define the spatial variation of fault slip, and another SimpleDB to
- define the time at which slip begins (the start time is 0.0 since this is
- a static problem):
+ files providing slip and slip time for each rupture:
 \end_layout
 
 \begin_layout LyX-Code
-# The slip time and final slip are defined in spatial databases.
- [pylithapp.timedependent.interfaces.fault.eq_srcs.rupture.slip_function]
+# Define slip and origin time for first rupture.
 \end_layout
 
 \begin_layout LyX-Code
-slip.iohandler.filename = spatialdb/finalslip.spatialdb
+[pylithapp.timedependent.interfaces.fault.eq_srcs.one.slip_function]
 \end_layout
 
 \begin_layout LyX-Code
-slip_time.iohandler.filename = spatialdb/sliptime.spatialdb 
+slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Define slip and origin time for second rupture.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault.eq_srcs.two.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Define slip and origin time for third rupture.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault.eq_srcs.three.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
 \end_layout
 
 \begin_layout Standard
-Since the problem now contains a fault, we can request that fault infomation
- is also output:
+For the creep source, we change the slip function to 
+\family typewriter
+ConstRateSlipFn
+\family default
+, and we use a 
+\family typewriter
+SimpleDB
+\family default
+ for both the slip time and the slip rate:
 \end_layout
 
 \begin_layout LyX-Code
-# Give basename for VTK fault output.
+# Define slip rate and origin time for fault creep.
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.interfaces.fault.output]
+[pylithapp.timedependent.interfaces.fault.eq_srcs.creep]
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = step03/step03-fault.vtk 
+slip_function = pylith.faults.ConstRateSlipFn
+\end_layout
+
+\begin_layout LyX-Code
+slip_function.slip_rate.iohandler.filename = spatialdb/sliprate_creep.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+slip_function.slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
 \end_layout
 
 \begin_layout Standard
-This will result in two extra files being produced.
- The first file (step03-fault_info.vtk) contains information such as the
- normal directions to the fault surface, the applied fault slip, and the
- fault slip times.
- The second file (step03-fault_t0000000.vtk) contains the cumulative fault
- slip for the time step and the change in tractions on the fault surface
- due to the slip.
+Since there are multiple earthquake sources of different types, there are
+ a number of additional fault information fields available for output.
+ We therefore request that these additional fields be output to the fault
+ information file:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+output.vertex_info_fields = [normal_dir,strike_dir,dip_dir,final_slip_creep,final
+_slip_one,final_slip_two,final_slip_three,slip_time_creep,slip_time_one,slip_tim
+e_two,slip_time_three]
+\end_layout
+
+\begin_layout Standard
+This additional information will be contained in file 
+\family typewriter
+step06-fault_info.vtk
+\family default
+.
+ It will contain final slip information for each earthquake source along
+ with origin time information.
  When we have run the simulation, the output VTK files will be contained
- in examples/3d/hex8/step03, and the results may be visualized using a tool
- such as ParaView or mayavi2.
+ in 
+\family typewriter
+examples/3d/hex8/step06
+\family default
+, and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step03-displ"
+reference "fig:step06-displ-t300"
 
 \end_inset
 
@@ -975,7 +1084,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step03-displ.jpg
+	filename figs/step06-displ-t300.jpg
 	width 10cm
 
 \end_inset
@@ -984,12 +1093,13 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step03 visualized using ParaView.
+Displacement field for example step06 visualized using ParaView at t = 300
+ years.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:step03-displ"
+name "fig:step06-displ-t300"
 
 \end_inset
 
