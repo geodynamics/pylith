@@ -116,6 +116,10 @@ Specifying more than one material
 \end_layout
 
 \begin_layout Itemize
+Nonlinear solver
+\end_layout
+
+\begin_layout Itemize
 Linearly elastic isotropic material
 \end_layout
 
@@ -133,6 +137,10 @@ Power-law viscoelastic material
 
 \begin_layout Itemize
 Drucker-Prager elastoplastic material
+\end_layout
+
+\begin_layout Itemize
+Adaptive time stepping
 \end_layout
 
 \begin_layout Itemize
@@ -191,11 +199,19 @@ cubit.sandia.gov
  to create a mesh, as well as describing how to use a CUBIT-generated mesh
  in PyLith.
  Following the discussion of how to generate the mesh, there is a discussion
- of the pylithapp.cfg file, which contains information common to all the
- simulations.
+ of the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file, which contains information common to all the simulations.
  The tutorial is then subdivided into four sections, each pertaining to
  a particular set of PyLith features.
  It is suggested that users go through each of these sections in order.
+ All of the files to run the examples are contained in the directory 
+\family typewriter
+examples/3d/hex8
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -542,6 +558,13 @@ The example problems are divided into categories that roughly correspond
 \begin_inset CommandInset include
 LatexCommand include
 filename "static/static.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand include
+filename "quasistatic/quasistatic.lyx"
 
 \end_inset
 

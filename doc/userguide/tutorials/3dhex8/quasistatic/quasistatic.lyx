@@ -52,11 +52,11 @@
 \begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
-name "sec:Tutorial-3d-hex8-static"
+name "sec:Tutorial-3d-hex8-quasistatic"
 
 \end_inset
 
-Tutorial Using Hexahedral Mesh Created by CUBIT - Static Examples
+Tutorial Using Hexahedral Mesh Created by CUBIT - Quasi-static Examples
 \end_layout
 
 \begin_layout Standard
@@ -64,19 +64,23 @@ PyLith features discussed in this tutorial:
 \end_layout
 
 \begin_layout Itemize
-Static solution
+Quasi-static solution
 \end_layout
 
 \begin_layout Itemize
-VTK output
+Formatting timestamps of VTK output files
 \end_layout
 
 \begin_layout Itemize
-Dirichlet displacement boundary conditions
+Output of velocity field
 \end_layout
 
 \begin_layout Itemize
-Neumann traction boundary conditions
+Dirichlet displacement and velocity boundary conditions
+\end_layout
+
+\begin_layout Itemize
+Neumann traction boundary conditions and time-varying tractions
 \end_layout
 
 \begin_layout Itemize
@@ -92,7 +96,11 @@ UniformDB spatial database
 \end_layout
 
 \begin_layout Itemize
-Static fault rupture
+Quasi-static fault rupture and fault creep
+\end_layout
+
+\begin_layout Itemize
+Multiple kinematic fault ruptures
 \end_layout
 
 \begin_layout Itemize
@@ -100,7 +108,27 @@ Specifying more than one material
 \end_layout
 
 \begin_layout Itemize
+Nonlinear solver
+\end_layout
+
+\begin_layout Itemize
 Linearly elastic isotropic material
+\end_layout
+
+\begin_layout Itemize
+Maxwell linear viscoelastic material
+\end_layout
+
+\begin_layout Itemize
+Power-law viscoelastic material
+\end_layout
+
+\begin_layout Itemize
+Drucker-Prager elastoplastic material
+\end_layout
+
+\begin_layout Itemize
+Adaptive time stepping
 \end_layout
 
 \begin_layout Subsubsection
@@ -108,11 +136,12 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This set of examples describe the simplest class of problems for PyLith.
- The problems are all purely elastic, and there is no time-dependence.
- This set of elastostatic examples primarily demonstrates the application
- of different types of boundary conditions in PyLith, as well as demonstrating
- the use of a kinematic fault for a static problem.
+This set of examples describes a set of quasi-static problems for PyLith.
+ These quasi-static problems primarily demonstrate the usage of time-dependent
+ boundary conditions and fault slip, as well as different rheologies.
+ Some of the examples also demonstrate the usage of the nonlinear solver,
+ which is required by the nonlinear rheologies (power-law viscoelastic and
+ Drucker-Prager elastoplastic).
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
@@ -123,15 +152,27 @@ examples/3d/hex8
 \family default
  files are 
 \family typewriter
-step01.cfg
+step04.cfg
 \family default
 , 
 \family typewriter
-step02.cfg
+step05.cfg
+\family default
+, 
+\family typewriter
+step06.cfg
+\family default
+, 
+\family typewriter
+step07.cfg
+\family default
+, 
+\family typewriter
+step08.cfg
 \family default
 , and 
 \family typewriter
-step03.cfg
+step09.cfg
 \family default
 .
  Each example may be run as follows:
@@ -161,91 +202,164 @@ stepxx.cfg
 \end_layout
 
 \begin_layout Subsubsection
-Step01 - Pure Dirichlet Boundary Conditions
+Step04 - Pure Dirichlet Velocity Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The step01.cfg file describes a problem with pure Dirichlet (displacement)
- boundary conditions corresponding to compression in the x-direction and
- shear in the y-direction.
+The step04.cfg file describes a problem with x-displacements fixed at zero
+ on the positive and negative x-faces while velocity boundary conditions
+ are applied in the y-directions on the same faces, yielding a left-lateral
+ sense of movement.
  The bottom (minimum z) boundary is held fixed in the z-direction.
- On the positive and negative x-faces, compressional displacements of 1
- m are applied in the x-direction and shear displacements yielding a left-latera
-l sense of shear are applied in the y-direction.
- In this example and in subsequent examples we would like to output a subset
- of the displacement solution corresponding to the ground surface.
- To do this, we first set the output to an array of two output managers
- as follows:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.implicit]
-\end_layout
-
-\begin_layout LyX-Code
-# Set the output to an array of 2 output managers.
-\end_layout
-
-\begin_layout LyX-Code
-# We will output the solution over the domain and the ground surface.
-\end_layout
-
-\begin_layout LyX-Code
-output = [domain,subdomain]
-\end_layout
-
-\begin_layout Standard
-We then define the subdomain output manager to correspond to a subset of
- the solution:
-\end_layout
-
-\begin_layout LyX-Code
-# Set subdomain component to OutputSolnSubset (boundary of the domain).
-\end_layout
-
-\begin_layout LyX-Code
-output.subdomain = pylith.meshio.OutputSolnSubset
-\end_layout
-
-\begin_layout Standard
-Later (in the output section at the end of the file), we specify the nodeset
- that corresponds to the desired output:
-\end_layout
-
-\begin_layout LyX-Code
-# Give basename for VTK domain output of solution over ground surface.
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.problem.formulation.output.subdomain]
-\end_layout
-
-\begin_layout LyX-Code
-# Name of nodeset for ground surface.
-\end_layout
-
-\begin_layout LyX-Code
-label = face_zpos
-\end_layout
-
-\begin_layout LyX-Code
-writer.filename = step01/step01-groundsurf.vtk
-\end_layout
-
-\begin_layout Standard
-For the boundary conditions, we must describe which degrees of freedom are
- being constrained (
+ We also use a Maxwell viscoelastic material for the lower crust, and the
+ simulation is run for 200 years using a constant time step size of 20 years.
+ The default time stepping behavior is 
 \family typewriter
-bc_dof
+TimeStepUniform
 \family default
-), we must provide a label that describes which Cubit nodeset to which to
- apply the BC, and we must specify what type of spatial database is being
- used to describe the boundary conditions.
- For the x-faces, we use a 
+.
+ We retain that behavior for this problem and provide the total simulation
+ time and the time step size:
+\end_layout
+
+\begin_layout LyX-Code
+# Change the total simulation time to 200 years, and use a constant time
+\end_layout
+
+\begin_layout LyX-Code
+# step size of 20 years.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.implicit.time_step]
+\end_layout
+
+\begin_layout LyX-Code
+total_time = 200.0*year
+\end_layout
+
+\begin_layout LyX-Code
+dt = 20.0*year 
+\end_layout
+
+\begin_layout Standard
+We than change the material type of the lower crust, provide a spatial database
+ from which to obtain the material properties (using the default 
 \family typewriter
 SimpleDB
 \family default
- to provide the displacements on the x-faces:
+), and request additional output information for the material:
+\end_layout
+
+\begin_layout LyX-Code
+# Change material type of lower crust to Maxwell viscoelastic.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+materials.lower_crust = pylith.materials.MaxwellIsotropic3D
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Provide a spatial database from which to obtain property values.
+\end_layout
+
+\begin_layout LyX-Code
+# Since there are additional properties and state variables for the Maxwell
+\end_layout
+
+\begin_layout LyX-Code
+# model, we explicitly request that they be output.
+ Properties are named in
+\end_layout
+
+\begin_layout LyX-Code
+# cell_info_fields and state variables are named in cell_data_fields.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.lower_crust]
+\end_layout
+
+\begin_layout LyX-Code
+db_properties.iohandler.filename = spatialdb/mat_maxwell.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+output.cell_info_fields = [density,mu,lambda,maxwell_time]
+\end_layout
+
+\begin_layout LyX-Code
+output.cell_data_fields = [total_strain,stress,viscous_strain]
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+Note that the default 
+\family typewriter
+output.cell_info_fields
+\family default
+ are those corresponding to an elastic material (
+\family typewriter
+density
+\family default
+, 
+\family typewriter
+mu
+\family default
+, 
+\family typewriter
+lambda
+\family default
+), and the default 
+\family typewriter
+output.cell_data_fields
+\family default
+ are 
+\family typewriter
+total_strain
+\family default
+ and 
+\family typewriter
+stress
+\family default
+.
+ For materials other than elastic, there are generally additional material
+ properties and state variables, and the appropriate additional fields must
+ be specifically requested for each material type.
+\end_layout
+
+\begin_layout Standard
+This example has no displacements in the elastic solution (t = 0), so we
+ retain the default 
+\family typewriter
+ZeroDispDB
+\family default
+ for all instances of 
+\family typewriter
+db_initial
+\family default
+.
+ To apply the velocity boundary conditions, we must specify 
+\family typewriter
+db_rate
+\family default
+, which is zero by default.
+ We use a 
+\family typewriter
+UniformDB
+\family default
+ to assign the velocities:
 \end_layout
 
 \begin_layout LyX-Code
@@ -265,15 +379,23 @@ label = face_xpos
 \end_layout
 
 \begin_layout LyX-Code
-db_initial = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
 db_initial.label = Dirichlet BC on +x
 \end_layout
 
 \begin_layout LyX-Code
-db_initial.iohandler.filename = spatialdb/fixeddisp_axial_shear.spatialdb
+db_rate = spatialdata.spatialdb.UniformDB
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.label = Dirichlet rate BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.data = [0.0*cm/year,1.0*cm/year,0.0*year]
 \end_layout
 
 \begin_layout LyX-Code
@@ -297,61 +419,154 @@ label = face_xneg
 \end_layout
 
 \begin_layout LyX-Code
-db_initial = spatialdata.spatialdb.SimpleDB
-\end_layout
-
-\begin_layout LyX-Code
 db_initial.label = Dirichlet BC on -x
 \end_layout
 
 \begin_layout LyX-Code
-db_initial.iohandler.filename = spatialdb/fixeddisp_axial_shear.spatialdb
+db_rate = spatialdata.spatialdb.UniformDB
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.label = Dirichlet rate BC on +x
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
+\end_layout
+
+\begin_layout LyX-Code
+db_rate.data = [0.0*cm/year,-1.0*cm/year,0.0*year]
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Standard
-For a 
+Note that 
 \family typewriter
-SimpleDB
+db_rate
 \family default
-, we must provide a filename.
- The default spatial database for 
-\family typewriter
-db_initial
-\family default
- is 
-\family typewriter
-ZeroDispBC
-\family default
-, which automatically applies zero displacements to all vertices in the
- nodeset, and no filename is required (or needed).
- This is what we use for the bottom of the mesh:
-\end_layout
-
-\begin_layout LyX-Code
-# -z face
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent.bc.z_neg]
-\end_layout
-
-\begin_layout LyX-Code
-bc_dof = [2]
-\end_layout
-
-\begin_layout LyX-Code
-label = face_zneg
-\end_layout
-
-\begin_layout LyX-Code
-db_initial.label = Dirichlet BC on -z
+ requires a start time, which allows the condition to be applied at any
+ time during the simulation.
+ For this example, we start the velocity boundary conditions at t = 0.
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output VTK files will be contained
+Finally, we must provide information on VTK output.
+ This is slightly more complicated than the static case, because we must
+ decide the frequency with which output occurs for each output type.
+ We also assign a more user-friendly format to the output file time stamp,
+ and we request that the time stamp is in units of 1 year (rather than the
+ default value of seconds):
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for VTK domain output of solution over domain.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.domain]
+\end_layout
+
+\begin_layout LyX-Code
+# We specify that output occurs in terms of a given time frequency, and
+\end_layout
+
+\begin_layout LyX-Code
+# ask for output every 40 years.
+ The time stamps of the output files are
+\end_layout
+
+\begin_layout LyX-Code
+# in years (rather than the default of seconds), and we give a format for
+\end_layout
+
+\begin_layout LyX-Code
+# the time stamp.
+\end_layout
+
+\begin_layout LyX-Code
+output_freq = time_step
+\end_layout
+
+\begin_layout LyX-Code
+time_step = 40.0*year
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = step04/step04.vtk
+\end_layout
+
+\begin_layout LyX-Code
+writer.time_format = %04.0f
+\end_layout
+
+\begin_layout LyX-Code
+writer.time_constant = 1.0*year
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for VTK domain output of solution over ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.subdomain]
+\end_layout
+
+\begin_layout LyX-Code
+# Name of nodeset for ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+label = face_zpos
+\end_layout
+
+\begin_layout LyX-Code
+# We keep the default output frequency behavior (skip every n steps), and
+\end_layout
+
+\begin_layout LyX-Code
+# ask to skip 0 steps between output, so that we get output every time step.
+\end_layout
+
+\begin_layout LyX-Code
+skip = 0
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = step04/step04-groundsurf.vtk
+\end_layout
+
+\begin_layout LyX-Code
+writer.time_format = %04.0f
+\end_layout
+
+\begin_layout LyX-Code
+writer.time_constant = 1.0*year
+\end_layout
+
+\begin_layout Standard
+We provide similar output information for the two materials (
+\family typewriter
+upper_crust
+\family default
+ and 
+\family typewriter
+lower_crust
+\family default
+).
+ Note that for the domain output, we requested output in terms of a given
+ time frequency, while for the subdomain we requested output in terms of
+ number of time steps.
+ When we have run the simulation, the output VTK files will be contained
  in 
 \family typewriter
-examples/3d/hex8/step01
+examples/3d/hex8/step04
 \family default
 , and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
@@ -372,7 +587,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/step01-displ.jpg
+	filename figs/step04-displ-t200.jpg
 	width 10cm
 
 \end_inset
@@ -384,12 +599,13 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step01 visualized using ParaView.
+Displacement field for example step04 at t = 200 years visualized using
+ ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:step01-displ"
+name "fig:step04-displ-t200"
 
 \end_inset
 
@@ -411,7 +627,7 @@ name "fig:step01-displ"
 \end_layout
 
 \begin_layout Subsubsection
-Step02 - Dirichlet and Neumann Boundary Conditions
+Step05 - Time-varying Dirichlet and Neumann Boundary Conditions
 \end_layout
 
 \begin_layout Standard
@@ -540,11 +756,8 @@ db_initial.label = Dirichlet BC on -x
 The boundary conditions on the negative z-face are supplied in the same
  manner as for example step01.
  When we have run the simulation, the output VTK files will be contained
- in 
-\family typewriter
-examples/3d/hex8/step02
-\family default
-, and the results may be visualized using a tool such as ParaView or mayavi2.
+ in examples/3d/hex8/step02, and the results may be visualized using a tool
+ such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -745,11 +958,8 @@ This will result in two extra files being produced.
  slip for the time step and the change in tractions on the fault surface
  due to the slip.
  When we have run the simulation, the output VTK files will be contained
- in 
-\family typewriter
-examples/3d/hex8/step03
-\family default
-, and the results may be visualized using a tool such as ParaView or mayavi2.
+ in examples/3d/hex8/step03, and the results may be visualized using a tool
+ such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
