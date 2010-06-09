@@ -101,8 +101,10 @@ Version 1.5.0
 
   * Drucker-Prager elastoplastic bulk rheology
 
-    Added a Drucker-Prager elastoplastic bulk rheology. [NEED SOME
-    WORDS FROM CHARLES]
+    Added a Drucker-Prager elastoplastic bulk rheology. This is a perfect
+    plasticity implementation (no hardening). This is a nonlinear
+    constitutive model, so the nonlinear solver is required when this
+    rheology is used. Refer to the 'Material Models' section of the manual.
 
   * Plane strain Maxwell viscoelastic bulk rheology
 
