@@ -1024,7 +1024,7 @@ void
 pylith::topology::TestFieldMesh::testSplitDefault(void)
 { // testSplitDefault
   const int spaceDim = _TestFieldMesh::cellDim;
-  const int numFibrations = spaceDim + 1;
+  const int numFibrations = spaceDim;
   const int nconstraints[4] = { 1, 2, 0, 1 };
   const int constraints[4] = {
     1,     // 0
@@ -1111,7 +1111,7 @@ void
 pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 { // testCloneSectionSplit
   const int spaceDim = _TestFieldMesh::cellDim;
-  const int numFibrations = spaceDim + 1;
+  const int numFibrations = spaceDim;
   const int nconstraints[4] = { 1, 2, 0, 1 };
   const int constraints[4] = {
     1,     // 0
