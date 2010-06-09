@@ -84,15 +84,7 @@ Neumann traction boundary conditions and time-varying tractions
 \end_layout
 
 \begin_layout Itemize
-ZeroDispDB spatial database
-\end_layout
-
-\begin_layout Itemize
-SimpleDB spatial database
-\end_layout
-
-\begin_layout Itemize
-UniformDB spatial database
+CompositeDB spatial database
 \end_layout
 
 \begin_layout Itemize
@@ -109,10 +101,6 @@ Specifying more than one material
 
 \begin_layout Itemize
 Nonlinear solver
-\end_layout
-
-\begin_layout Itemize
-Linearly elastic isotropic material
 \end_layout
 
 \begin_layout Itemize
@@ -1524,7 +1512,7 @@ The
 \family typewriter
 step08.cfg
 \family default
- file describes a problem that is identical to example step06, except the
+ file describes a problem that is identical to example step07, except the
  the lower crust is composed of power-law viscoelastic material.
  Since the material behavior is now nonlinear, we must use the nonlinear
  solver:
@@ -1666,127 +1654,184 @@ powerlaw_gendb.py
  In practice, the user can provide any desired thermal model to provide
  the spatial database for the temperature.
  In this example, a simple 1D (vertically-varying) distribution was used.
+ The utility code can be used by simply executing it from the 
+\family typewriter
+examples/3d/hex8/spatialdb/powerlaw
+\family default
+ directory:
+\end_layout
+
+\begin_layout LyX-Code
+powerlaw_gendb.py
 \end_layout
 
 \begin_layout Standard
-The fault definition information is identical to example step06.
- In previous examples, we have just used the default output for the domain
- and subdomain (ground surface), which just provides the displacements.
- In many cases, it is also useful to provide the velocities.
- PyLith is able to provide this information, approximating the velocities
- for the current time step as the difference between the current displacements
- and the displacements from the previous time step, divided by the time
- step size.
- We can obtain this information by explicitly requesting it in 
+This will cause the code to automatically read the parameters in powerlaw_gendb.c
+fg, and the file 
 \family typewriter
-vertex_data_fields
+examples/3d/hex8/spatialdb/mat_powerlaw.spatialdb
+\family default
+ will be created.
+\end_layout
+
+\begin_layout Standard
+We first change the material type of the lower crust to 
+\family typewriter
+PowerLaw3D
 \family default
 :
 \end_layout
 
 \begin_layout LyX-Code
-# Give basename for VTK domain output of solution over domain.
+# Change material type of lower crust to power-law viscoelastic.
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.formulation.output.domain]
+[pylithapp.timedependent]
 \end_layout
 
 \begin_layout LyX-Code
-# We specify that output occurs in terms of a given time frequency, and
+materials.lower_crust = pylith.materials.PowerLaw3D
+\end_layout
+
+\begin_layout Standard
+In many cases, it is useful to obtain the material properties from two different
+ sources.
+ For example, the elastic properties may come from a seismic velocity model
+ while the viscous properties may be derived from a thermal model.
+ In such a case we can use a 
+\family typewriter
+CompositeDB
+\family default
+, which allows a different spatial database to be used for a subset of the
+ properties.
+ We do this as follows:
 \end_layout
 
 \begin_layout LyX-Code
-# ask for output every 50 years.
- The time stamps of the output files are
+# Provide a spatial database from which to obtain property values.
 \end_layout
 
 \begin_layout LyX-Code
-# in years (rather than the default of seconds), and we give a format for
+# In this case, we prefer to obtain the power-law properties from one
 \end_layout
 
 \begin_layout LyX-Code
-# the time stamp.
+# database and the elastic properties from another database, so we use
 \end_layout
 
 \begin_layout LyX-Code
-# We also request velocity output in addition to displacements.
+# a CompositeDB.
+ Each part of the CompositeDB is a SimpleDB.
 \end_layout
 
 \begin_layout LyX-Code
-vertex_data_fields = [displacement,velocity]
+[pylithapp.timedependent.materials.lower_crust]
 \end_layout
 
 \begin_layout LyX-Code
-output_freq = time_step
+db_properties = spatialdata.spatialdb.CompositeDB
 \end_layout
 
 \begin_layout LyX-Code
-time_step = 50.0*year
+db_properties.db_A = spatialdata.spatialdb.SimpleDB
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = output/step07.vtk
+db_properties.db_B = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout Standard
+Each subset of properties comes from a 
+\family typewriter
+SimpleDB
+\family default
+, so we must first define the properties that come from each spatial database
+ and then provide the database filename:
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_format = %04.0f
+# Provide the values to be obtained from each database and the database
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_constant = 1.0*year
+# name.
 \end_layout
 
 \begin_layout LyX-Code
-
+[pylithapp.timedependent.materials.lower_crust.db_properties]
 \end_layout
 
 \begin_layout LyX-Code
-# Give basename for VTK domain output of solution over ground surface.
+values_A = [density,vs,vp]   ; Elastic properties.
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.formulation.output.subdomain]
+db_A.label = Elastic properties
 \end_layout
 
 \begin_layout LyX-Code
-# Name of nodeset for ground surface.
+db_A.iohandler.filename = spatialdb/mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-label = face_zpos
+values_B = [reference-stress,reference-strain-rate,power-law-exponent] 
+  ; Power-law properties.
 \end_layout
 
 \begin_layout LyX-Code
-# We also request velocity output in addition to displacements.
+db_B.label = Power-law properties
 \end_layout
 
 \begin_layout LyX-Code
-vertex_data_fields = [displacement,velocity]
+db_B.iohandler.filename = spatialdb/mat_powerlaw.spatialdb
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+PowerLaw3D
+\family default
+ material has additional properties and state variables with respect to
+ the default 
+\family typewriter
+ElasticIsotropic3D
+\family default
+ material, so we request that these properties be written to the 
+\family typewriter
+lower_crust
+\family default
+ material files:
 \end_layout
 
 \begin_layout LyX-Code
-# We keep the default output frequency behavior (skip every n steps), and
+# Since there are additional properties and state variables for the
 \end_layout
 
 \begin_layout LyX-Code
-# ask to skip 0 steps between output, so that we get output every time step.
+# power-law model, we explicitly request that they be output.
+ Properties are
 \end_layout
 
 \begin_layout LyX-Code
-skip = 0
+# named in cell_info_fields and state variables are named in
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = output/step07-groundsurf.vtk
+# cell_data_fields.
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_format = %04.0f
+[pylithapp.timedependent.materials.lower_crust]
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_constant = 1.0*year
+output.cell_info_fields = [density,mu,lambda,reference_strain_rate,reference_stre
+ss,power_law_exponent]
+\end_layout
+
+\begin_layout LyX-Code
+output.cell_data_fields = [total_strain,stress,viscous_strain]
 \end_layout
 
 \begin_layout Standard
@@ -1797,13 +1842,13 @@ examples/3d/hex8/output
 \family default
  (all with a prefix of 
 \family typewriter
-step07
+step08
 \family default
 ), and the results may be visualized using a tool such as ParaView or mayavi2.
  Results using ParaView are shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:step07-displ-vel-t300-1"
+reference "fig:step08-strain-displ-t150"
 
 \end_inset
 
@@ -1815,7 +1860,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename /Users/charlesw/geoframe/cig/short/3D/PyLith/trunk/doc/userguide/tutorials/3dhex8/quasistatic/figs/step07-displ-vel-t300.jpg
+	filename figs/step08-strain-displ-t150.jpg
 	width 10cm
 
 \end_inset
@@ -1824,13 +1869,295 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field (color contours) and velocity field (vectors) for example
- step07 at t = 300 years visualized using ParaView.
- The mesh has been distorted by the computed displacements (magnified by
- 500), and the vectors show the computed velocities.
+The XY-component of strain (color contours) and displacement field (vectors)
+ for example step08 at t = 150 years visualized using ParaView.
+ For this visualization, we loaded both the 
+\family typewriter
+step08-lower_crust_txxxx.vtk
+\family default
+ and 
+\family typewriter
+step08-upper_crust_txxxx.vtk
+\family default
+ files to contour the strain field, and superimposed on it the displacement
+ field vectors from 
+\family typewriter
+step08_txxxx.vtk
+\family default
+.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:step07-displ-vel-t300-1"
+name "fig:step08-strain-displ-t150"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Step09 - Dirichlet Velocity Boundary Conditions with Time-Dependent Kinematic
+ Fault Slip and Drucker-Prager Elastoplastic Rheology
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+step09.cfg
+\family default
+ file describes a problem that is nearly identical to example step08, except
+ the the lower crust is composed of Drucker-Prager elastoplastic material.
+ As for example step08, the material behavior is nonlinear so we again use
+ the nonlinear solver.
+ Since the material is elastoplastic, there is no inherent time-dependence,
+ which means that there is no stable time step size for the material.
+ Depending on the loading conditions, this may make it difficult to obtain
+ convergence.
+ To avoid this, we set the maximum time step size to 5 years rather than
+ the value of 10 years used in example step08:
+\end_layout
+
+\begin_layout LyX-Code
+# Change the total simulation time to 700 years, and set the maximum time
+\end_layout
+
+\begin_layout LyX-Code
+# step size to 5 years.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.implicit.time_step]
+\end_layout
+
+\begin_layout LyX-Code
+total_time = 700.0*year
+\end_layout
+
+\begin_layout LyX-Code
+max_dt = 5.0*year
+\end_layout
+
+\begin_layout LyX-Code
+stability_factor = 1.0 ; use time step equal to stable value from materials
+\end_layout
+
+\begin_layout LyX-Code
+# For this problem we set adapt_skip to zero so that the time step size
+ is
+\end_layout
+
+\begin_layout LyX-Code
+# readjusted every time step.
+\end_layout
+
+\begin_layout LyX-Code
+adapt_skip = 0
+\end_layout
+
+\begin_layout Standard
+We change the material type of the lower crust to 
+\family typewriter
+DruckerPrager3D
+\family default
+, and we again use a 
+\family typewriter
+CompositeDB
+\family default
+ to assign the material properties:
+\end_layout
+
+\begin_layout LyX-Code
+# Change material type of lower crust to Drucker-Prager.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+materials.lower_crust = pylith.materials.DruckerPrager3D
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Provide a spatial database from which to obtain property values.
+\end_layout
+
+\begin_layout LyX-Code
+# In this case, we prefer to obtain the Drucker-Prager properties from one
+\end_layout
+
+\begin_layout LyX-Code
+# database and the elastic properties from another database, so we use
+\end_layout
+
+\begin_layout LyX-Code
+# a CompositeDB.
+ Each part of the CompositeDB is a SimpleDB.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.lower_crust]
+\end_layout
+
+\begin_layout LyX-Code
+db_properties = spatialdata.spatialdb.CompositeDB
+\end_layout
+
+\begin_layout LyX-Code
+db_properties.db_A = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+db_properties.db_B = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout Standard
+As for the step08 example, we first define the properties that come from
+ each spatial database and then provide the database filename:
+\end_layout
+
+\begin_layout LyX-Code
+# Provide the values to be obtained from each database and the database
+\end_layout
+
+\begin_layout LyX-Code
+# name.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.lower_crust.db_properties]
+\end_layout
+
+\begin_layout LyX-Code
+values_A = [density,vs,vp]   ; Elastic properties.
+\end_layout
+
+\begin_layout LyX-Code
+db_A.label = Elastic properties
+\end_layout
+
+\begin_layout LyX-Code
+db_A.iohandler.filename = spatialdb/mat_elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+values_B = [friction-angle,cohesion,dilatation-angle]   ; Drucker-Prager
+ properties.
+\end_layout
+
+\begin_layout LyX-Code
+db_B.label = Drucker-Prager properties
+\end_layout
+
+\begin_layout LyX-Code
+db_B.iohandler.filename = spatialdb/mat_druckerprager.spatialdb
+\end_layout
+
+\begin_layout Standard
+We also request output of the properties and state variables that are unique
+ to the 
+\family typewriter
+DruckerPrager3D
+\family default
+ material:
+\end_layout
+
+\begin_layout LyX-Code
+# Since there are additional properties and state variables for the
+\end_layout
+
+\begin_layout LyX-Code
+# Drucker-Prager model, we explicitly request that they be output.
+\end_layout
+
+\begin_layout LyX-Code
+# Properties are named in cell_info_fields and state variables are named
+ in
+\end_layout
+
+\begin_layout LyX-Code
+# cell_data_fields.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.lower_crust]
+\end_layout
+
+\begin_layout LyX-Code
+output.cell_info_fields = [density,mu,lambda,alpha_yield,beta,alpha_flow]
+\end_layout
+
+\begin_layout LyX-Code
+output.cell_data_fields = [total_strain,stress,plastic_strain]
+\end_layout
+
+\begin_layout Standard
+When we have run the simulation, the output VTK files will be contained
+ in 
+\family typewriter
+examples/3d/hex8/output
+\family default
+ (all with a prefix of 
+\family typewriter
+step09
+\family default
+), and the results may be visualized using a tool such as ParaView or mayavi2.
+ Results using ParaView are shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:step09-strain-displ-t150"
+
+\end_inset
+
+.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/charlesw/geoframe/cig/short/3D/PyLith/trunk/doc/userguide/tutorials/3dhex8/quasistatic/figs/step08-strain-displ-t150.jpg
+	width 10cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The XY-component of strain (color contours) and displacement field (vectors)
+ for example step09 at t = 150 years visualized using ParaView.
+ For this visualization, we loaded both the 
+\family typewriter
+step09-lower_crust_txxxx.vtk
+\family default
+ and 
+\family typewriter
+step09-upper_crust_txxxx.vtk
+\family default
+ files to contour the strain field, and superimposed on it the displacement
+ field vectors from 
+\family typewriter
+step09_txxxx.vtk
+\family default
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:step09-strain-displ-t150"
 
 \end_inset
 
