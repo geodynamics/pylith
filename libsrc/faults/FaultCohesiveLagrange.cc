@@ -1665,6 +1665,59 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
   } // for
   PetscLogFlops(count * orientationSize * 4);
 
+  if (1 == cohesiveDim && vertices->size() > 0) {
+    // Default sense of positive slip is left-lateral and
+    // fault-opening.
+    // 
+    // If fault is dipping, then we use the up-dir to make sure the
+    // sense of positive slip is reverse and fault-opening.
+    //
+    // Check orientation of first vertex, (1) if dot product of the
+    // normal-dir with preferred up-dir is positive, then we want dot
+    // product of shear-dir and preferred up-dir to be positive and
+    // (2) if the dot product of the normal-dir with preferred up-dir
+    // is negative, then we want the dot product of the shear-dir and
+    // preferred up-dir to be negative.
+    //
+    // When we flip the shear direction, we create a left-handed
+    // coordinate system, but it gives the correct sense of slip. In
+    // reality the shear/normal directions that are used are the
+    // opposite of what we would want, but we cannot flip the fault
+    // normal direction because it is tied to how the cohesive cells
+    // are created.
+    assert(vertices->size() > 0);
+    orientationSection->restrictPoint(*vertices->begin(),
+      &orientationVertex[0], orientationVertex.size());
+
+    assert(2 == spaceDim);
+    const double* shearDirVertex = &orientationVertex[0];
+    const double* normalDirVertex = &orientationVertex[2];
+    const double shearDirDot = 
+      upDir[0] * shearDirVertex[0] + upDir[1] * shearDirVertex[1];
+    const double normalDirDot = 
+      upDir[0] * normalDirVertex[0] + upDir[1] * normalDirVertex[1];
+
+    const int ishear = 0;
+    const int inormal = 2;
+    if (normalDirDot * shearDirDot < 0.0) {
+      // Flip shear direction
+      for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
+	   v_iter != verticesEnd;
+	   ++v_iter) {
+        orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
+					  orientationVertex.size());
+        assert(4 == orientationSection->getFiberDimension(*v_iter));
+        for (int iDim = 0; iDim < 2; ++iDim) // flip shear
+          orientationVertex[ishear + iDim] *= -1.0;
+	
+        // Update orientation
+        orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+      } // for
+      PetscLogFlops(3 + count * 2);
+    } // if
+  } // if
+
+
   if (2 == cohesiveDim && vertices->size() > 0) {
     // Check orientation of first vertex, if dot product of fault
     // normal with preferred normal is negative, flip up/down dip
