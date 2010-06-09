@@ -6,9 +6,9 @@ BINBOTS
 
   need cygwin binbot
 
-  need Darwin 10.6 binary
+  Add ML to petsc on Darwin and cygwin binbots (requires fortran compiler)
 
-  Add ML to petsc on all binbots (requires fortran compiler)
+  need Darwin 10.6 binary
 
 top-level README [add fault preconditioner when done]
 release announcement [add fault preconditioner when done]
@@ -67,9 +67,6 @@ OTHER
   distribute to Greg Lyzenga and Jay Parker
 
     Add time step information
-
-  Savage-Prescott
-    change .cfg file to output velocities, update post-processing
 
 CODE
 

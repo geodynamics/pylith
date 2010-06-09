@@ -148,6 +148,10 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field<
   const int spaceDim = field->mesh().dimension();
   const int fibrationLagrange = spaceDim;
 
+  // Add space for Lagrange multipliers if it does not yet exist.
+  if (spaceDim == section->getNumSpaces())
+    section->addSpace();
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
