@@ -751,7 +751,6 @@ pylith::topology::Field<mesh_type>::splitDefault(void)
   const int spaceDim = _mesh.dimension();
   for (int iDim=0; iDim < spaceDim; ++iDim)
     _section->addSpace(); // displacements
-  //_section->addSpace(); // Lagrange multipliers
 
   const chart_type& chart = _section->getChart();
 
