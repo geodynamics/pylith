@@ -6,6 +6,8 @@ BINBOTS
 
   need cygwin binbot
 
+  need Darwin 10.6 binary
+
   Add ML to petsc on all binbots (requires fortran compiler)
 
 top-level README [add fault preconditioner when done]
@@ -24,6 +26,8 @@ MANUAL
 
 TUTORIALS/EXAMPLES
   
+  fault cohesive dyn - friction sensitivity solve has own KSP/SNES parameters
+
   3d/hex8
     directory structure
     1. Dirichlet BC (static)
@@ -57,8 +61,6 @@ TUTORIALS/EXAMPLES
    15. Gravity
    16. Gravity w/prestress
    17. Gravity w/small strain
-
-  meshgeneration
 
 
 OTHER
