@@ -4539,7 +4539,7 @@ where we have replace
 
 \end_inset
 
- The solution of these two linear systems gives the increment in slip assuming
+The solution of these two linear systems gives the increment in slip assuming
  all the degrees of freedom except those immediately adjacent to the fault
  remain fixed.
  In real appications where the deformation associated with fault slip is
@@ -4549,6 +4549,42 @@ where we have replace
  localized (as in the case in some of the example problems), the increment
  in slip computed by solving these two linear systems is not a good approximatio
 n and the nonlinear solve requires a large number of iterations.
+\end_layout
+
+\begin_layout Standard
+We use the PETSc Krylov subspace solver (KSP) to solve these two linear
+ systems.
+ The PETSc settings for the KSP object are set in the same manner as the
+ main solver, except we use the prefix friction_ in all of the settings
+ related to the KSP solver for these two linear systems.
+ For example, to use the recommended additive Schwarz preconditioner in
+ the friction sensitivity solves, the settings in a .cfg file are:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+friction_pc_type = asm
+\end_layout
+
+\begin_layout Standard
+See the examples in Sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-3d-hex8-quasistatic"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:tutorial:shearwave:quad4"
+
+\end_inset
+
+ for details.
 \end_layout
 
 \begin_layout Paragraph
@@ -4625,6 +4661,289 @@ friction.db_properties = spatialdata.spatialdb.SimpleDB
 
 \begin_layout LyX-Code
 friction.db_properties.iohandler.filename = friction.spatialdb
+\end_layout
+
+\begin_layout Standard
+The initial tractions are specified using the same fault coordinate system
+ as the slip directions in the kinematic ruptures.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fault:cohesive:dyn:initial:tractions"
+
+\end_inset
+
+ gives the values in the spatial database for initial tractions.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fault:cohesive:dyn:initial:tractions"
+
+\end_inset
+
+Values in spatial databases for initial tractions.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features>
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Dimension
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-shear
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Left-lateral shear traction (including dipping faults)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-shear-leftlateral
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Left-lateral shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-shear-updip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Reverse shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -4755,6 +5074,8 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 friction-coefficient
 \end_layout
 
@@ -4823,8 +5144,8 @@ The linear slip-weakening friction model produces shear tractions equal
  progresses,
 \begin_inset Formula \begin{equation}
 T_{f}=\begin{cases}
-T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{d}{d_{0}})T_{n} & d\leq d_{0}\text{ and }T\leq0\\
-T_{c}-\mu_{d}T_{n} & d>d_{0}\text{ and }T\leq0\\
+T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{d}{d_{0}})T_{n} & d\leq d_{0}\text{ and }T_{n}\leq0\\
+T_{c}-\mu_{d}T_{n} & d>d_{0}\text{ and }T_{n}\leq0\\
 0 & T_{n}>0\end{cases}\end{equation}
 
 \end_inset
@@ -4929,6 +5250,8 @@ db_properties
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 static-coefficient
 \end_layout
 
@@ -4962,6 +5285,8 @@ Static coefficient of friction,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 dynamic-coefficient
 \end_layout
 
@@ -4995,6 +5320,8 @@ Dynamic coefficient of friction,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 slip-weakening-parameter
 \end_layout
 
@@ -5028,6 +5355,8 @@ Slip-weakening parameter,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 cohesion
 \end_layout
 
@@ -5061,6 +5390,8 @@ db_initial_state
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 cumulative-slip
 \end_layout
 
@@ -5094,6 +5425,8 @@ Cumulative slip,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 previous-slip
 \end_layout
 
@@ -5304,6 +5637,8 @@ db_properties
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 reference-friction-coefficient
 \end_layout
 
@@ -5341,6 +5676,8 @@ Steady-state coefficient of friction at slip rate
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 reference-slip-rate
 \end_layout
 
@@ -5374,6 +5711,8 @@ Reference slip rate,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 characteristic-slip-distance
 \end_layout
 
@@ -5407,6 +5746,8 @@ Slip-weakening parameter,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 constitutive-parameter-a
 \end_layout
 
@@ -5444,6 +5785,8 @@ Coefficient for the
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 constitutive-parameter-b
 \end_layout
 
@@ -5481,6 +5824,8 @@ Coefficient for the
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 cohesion
 \end_layout
 
@@ -5514,6 +5859,8 @@ db_initial_state
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 state-variable
 \end_layout
 

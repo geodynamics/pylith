@@ -11,22 +11,20 @@ BINBOTS
   Add ML to petsc on all binbots (requires fortran compiler)
 
 top-level README [add fault preconditioner when done]
-  Need Charles to add some additional description
-
 release announcement [add fault preconditioner when done]
 
 MANUAL
 
   Tutorials
     3d/hex8 [Charles]
-    meshgeneration [Charles]
 
   Benchmarks
     Update performance?
 
 TUTORIALS/EXAMPLES
   
-  fault cohesive dyn - friction sensitivity solve has own KSP/SNES parameters
+   fault cohesive dyn - Nondiagonal A, correct cross-reference for 3d/hex8/friction?
+   is reverse motion positive or negative in 2-D and 3-D?
 
   3d/hex8
     directory structure
