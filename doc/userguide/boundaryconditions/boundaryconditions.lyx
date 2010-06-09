@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4573,7 +4573,7 @@ friction_pc_type = asm
 See the examples in Sections 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Tutorial-3d-hex8-quasistatic"
+reference "sec:Tutorial-3d-hex8-friction"
 
 \end_inset
 
