@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -60,7 +60,7 @@ Tutorial Using Hexahedral Mesh Created by CUBIT
 \end_layout
 
 \begin_layout Standard
-PyLith features discussed in this tutorial:
+PyLith features discussed in this set of tutorials:
 \end_layout
 
 \begin_layout Itemize
@@ -564,7 +564,7 @@ filename "quasistatic/quasistatic.lyx"
 
 
 \begin_inset CommandInset include
-LatexCommand include
+LatexCommand input
 filename "friction/friction.lyx"
 
 \end_inset
