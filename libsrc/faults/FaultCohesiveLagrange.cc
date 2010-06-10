@@ -233,7 +233,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residualSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    residualSection);
   assert(!globalOrder.isNull());
 
   _logger->eventEnd(setupEvent);
@@ -420,6 +421,8 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     indicesL = indicesRel + globalOrder->getIndex(v_lagrange);
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    assert(0 == solutionSection->getConstraintDimension(v_negative));
+    assert(0 == solutionSection->getConstraintDimension(v_positive));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -467,6 +470,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
                  ADD_VALUES);
 
     // Values at Lagrange vertex, entry L,L in Jacobian
+    // We must have entries on the diagonal.
     jacobianVertex = 0.0;
     MatSetValues(jacobianMatrix,
                  indicesL.size(), &indicesL[0],
@@ -487,6 +491,12 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   _needNewJacobian = false;
+
+#if 0 // DEBUGGING
+  sieveMesh->getSendOverlap()->view("Send domain overlap");
+  sieveMesh->getRecvOverlap()->view("Receive domain overlap");
+#endif
+
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -1863,8 +1873,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
 #if 0 // DEBUGGING
   area.view("AREA");
-  //_faultMesh->getSendOverlap()->view("Send fault overlap");
-  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
+  faultSieveMesh->getSendOverlap()->view("Send fault overlap");
+  faultSieveMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 } // _calcArea
 
