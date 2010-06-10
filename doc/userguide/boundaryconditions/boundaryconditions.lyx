@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4526,7 +4526,7 @@ where we have replace
  After solving these two linear systems of equations, we compute the increment
  in slip using
 \begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=R_{ij}^{pn}(\partial u_{j}^{n+}-\partial u_{j}^{n+}).\end{equation}
+\partial d_{i}^{p}=R_{ij}^{pn}(\partial u_{j}^{n+}-\partial u_{j}^{n-}).\end{equation}
 
 \end_inset
 
