@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -567,7 +567,7 @@ friction = pylith.friction.RateStateAgeing
 \begin_layout Standard
 and use a UniformDB to set the static friction parameters.
  We use a reference coefficient of friction of 0.6, reference slip rate of
- 1.0e-6 m/s, characterisitc slip distance of 0.037 m, coefficients a and b
+ 1.0e-6 m/s, characteristic slip distance of 0.037 m, coefficients a and b
  of 0.0125 and 0.0172, and no cohesion (0 MPa).
  The parameters specific to this example are in dynamic_
 \family typewriter

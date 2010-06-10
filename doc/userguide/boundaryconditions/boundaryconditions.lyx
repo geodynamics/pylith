@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2146,20 +2146,16 @@ name Name or label for the fault.
 \end_layout
 
 \begin_layout Description
-up_dir Up-dir or up direction (only used in 3D simulations).
+up_dir Up-dir or up direction (used in 2D and 3D simulations).
+ In 2D the default in-plane slip is left-lateral, so we use the up-direction
+ to resolve the ambiguity in specifying reverse slip.
+ In 3D the up-direction is used to resolve the ambiguity in the along-strike
+ and dip-dir directions.
+ If the fault plane is horizontal, then the up-dir corresponds to the reverse-mo
+tion on the +z side of the fault.
  The only requirement for this direction is that it not be collinear with
  the fault normal direction.
- The default value of [0, 0, 1] can be used as long as the fault normal
- does not coincide with this direction.
-\end_layout
-
-\begin_layout Description
-normal_dir General preferred direction for the fault normal (only used in
- 3D simulations).
- This direction is used to resolve the ambiguity as to which side of the
- fault to choose for the fault normal.
- This direction should point from the footwall to the hanging wall.
- The default value is [1, 0, 0].
+ The default value of [0, 0, 1] is appropriate for most 3D problems.
 \end_layout
 
 \begin_layout Description
@@ -2237,10 +2233,6 @@ up_dir = [0, 0, 1] ; default
 \end_layout
 
 \begin_layout LyX-Code
-normal_dir = [1, 0, 0] ; default
-\end_layout
-
-\begin_layout LyX-Code
 quadrature.cell = pylith.feassemble.FIATLagrange
 \end_layout
 
@@ -2250,8 +2242,7 @@ quadrature.cell.dimension = 2
 
 \begin_layout Standard
 The group of vertices has the label ``fault A.'' We replicate the default
- values for the fault ``up'' direction, and the desired general direction
- for the fault normal.
+ values for the fault ``up'' direction.
  These settings apply to a 2D fault surface embedded within a 3D mesh, so
  we use 2D Lagrange reference cells.
  The spatial database for elastic properties is used to determine the approximat
@@ -2348,7 +2339,7 @@ where
 \end_layout
 
 \begin_layout Paragraph
-Nondiagonal A
+Non-diagonal A
 \end_layout
 
 \begin_layout Standard
@@ -4436,9 +4427,9 @@ Dynamic fault interfaces use the FaultCohesiveDyn object to specify a fault
  their values just as they do in kinematic ruptures.
  In this case, the Lagrange multipliers correspond to the forces necessary
  to keep the slip zero.
- When the driving foces exceed those allowed by friction, we reduce the
+ When the driving forces exceed those allowed by friction, we reduce the
  values of the Lagrange multipliers to those consistent with friction from
- the fault constitutitive model.
+ the fault constitutive model.
  When we reduce the Lagrange multipliers, we must increment the slip accordingly
  to maintain consistency in the algebraic system of equations.
 \end_layout
@@ -4488,7 +4479,7 @@ Computing the increment in the slip requires computing the increment in
 \end_layout
 
 \begin_layout Paragraph
-Nondiagonal A
+Non-diagonal A
 \end_layout
 
 \begin_layout Standard
@@ -4542,7 +4533,7 @@ where we have replace
 The solution of these two linear systems gives the increment in slip assuming
  all the degrees of freedom except those immediately adjacent to the fault
  remain fixed.
- In real appications where the deformation associated with fault slip is
+ In real applications where the deformation associated with fault slip is
  localized around the fault, this provides good enough approximations so
  that the nonlinear solver converges quickly.
  In problems where deformation associated with slip on the fault is not
@@ -4804,7 +4795,7 @@ traction-shear
 \begin_inset Text
 
 \begin_layout Plain Layout
-Left-lateral shear traction (including dipping faults)
+Left-lateral shear traction (reverse shear for dipping faults)
 \end_layout
 
 \end_inset

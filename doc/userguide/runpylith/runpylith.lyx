@@ -1263,7 +1263,7 @@ data_writer Writer for partition information (default is DataWriterVTKMesh
 \end_layout
 
 \begin_layout Standard
-ParMetis is not included in the PyLith binaries due to licensing issues.
+ParMETIS is not included in the PyLith binaries due to licensing issues.
 \end_layout
 
 \begin_layout Subsection

@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -175,8 +175,8 @@ Simulation Parameters
 
 \begin_layout Standard
 The simulation parameters match those in the tri3 and tet4 examples.
- As in the tet4 example, we both the longiudinal degree of freedom and the
- out-of-plane tranverse degree of freedom.
+ As in the tet4 example, we both the longitudinal degree of freedom and
+ the out-of-plane transverse degree of freedom.
  Using eight-point quadrature permits use of a time step of 1/20 s, which
  is slightly larger than the time step of 1/30 s used in the tri3 and tet4
  simulations.
