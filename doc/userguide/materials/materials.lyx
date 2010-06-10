@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1997,6 +1997,13 @@ Second order tensor field a
 
 \begin_layout Subsection
 Formulation for Generalized Maxwell Models
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Formulation-for-Gen-Max"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
