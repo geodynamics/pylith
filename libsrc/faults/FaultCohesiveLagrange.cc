@@ -1715,10 +1715,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
       } // for
       PetscLogFlops(3 + count * 2);
     } // if
-  } // if
 
-
-  if (2 == cohesiveDim && vertices->size() > 0) {
+  } else if (2 == cohesiveDim && vertices->size() > 0) {
     // Check orientation of first vertex, if dot product of fault
     // normal with preferred normal is negative, flip up/down dip
     // direction.
@@ -1740,14 +1738,21 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
       &orientationVertex[0], orientationVertex.size());
 
     assert(3 == spaceDim);
-    double_array normalDirVertex(&orientationVertex[6], 3);
-    const double normalDot = normalDir[0] * normalDirVertex[0] + normalDir[1]
-        * normalDirVertex[1] + normalDir[2] * normalDirVertex[2];
+    const double* dipDirVertex = &orientationVertex[3];
+    const double* normalDirVertex = &orientationVertex[6];
+    const double dipDirDot = 
+      upDir[0]*dipDirVertex[0] + 
+      upDir[1]*dipDirVertex[1] + 
+      upDir[2]*dipDirVertex[2];
+    const double normalDirDot = 
+      upDir[0]*normalDirVertex[0] +
+      upDir[1]*normalDirVertex[1] +
+      upDir[2]*normalDirVertex[2];
 
     const int istrike = 0;
     const int idip = 3;
     const int inormal = 6;
-    if (normalDot < 0.0) {
+    if (dipDirDot * normalDirDot < 0.0) {
       // Flip dip direction
       for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
           != verticesEnd; ++v_iter) {
