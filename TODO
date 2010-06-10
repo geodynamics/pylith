@@ -53,22 +53,13 @@ TUTORIALS/EXAMPLES
    17. Gravity w/small strain
 
 
-OTHER
-
-  Write up description of Savage and Prescott (1978) benchmark and
-  distribute to Greg Lyzenga and Jay Parker
-
-    Add time step information
-
-CODE
-
-  * Better preconditioning [Matt/Brad]
-
-    Need field split working for both SolverLinear and SolverNonlinear.
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
+
+* Better preconditioning [Matt/Brad]
+
+  Need field split working for both SolverLinear and SolverNonlinear.
 
 * Output to VTK XML files w/data values as binary
 
