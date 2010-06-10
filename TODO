@@ -23,9 +23,6 @@ MANUAL
 
 TUTORIALS/EXAMPLES
   
-   fault cohesive dyn - Nondiagonal A, correct cross-reference for 3d/hex8/friction?
-   is reverse motion positive or negative in 2-D and 3-D?
-
   3d/hex8
     directory structure
     1. Dirichlet BC (static)
@@ -71,12 +68,6 @@ OTHER
 CODE
 
   * Better preconditioning [Matt/Brad]
-
-    Diagonal preconditioner does not work very well. It looks like the
-    preconditioner needs off-diagonal terms consistent with the
-    coupling of the Lagrange multiplier constraints (sparsity pattern
-    matches the union of the matrices associated with the fault
-    meshes).
 
     Need field split working for both SolverLinear and SolverNonlinear.
 

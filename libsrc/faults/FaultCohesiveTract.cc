@@ -62,11 +62,9 @@ void pylith::faults::FaultCohesiveTract::dbInitial(spatialdata::spatialdb::Spati
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
-					     const double upDir[3],
-					     const double normalDir[3])
+					     const double upDir[3])
 { // initialize
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _quadrature);
 
   delete _faultMesh; _faultMesh = new topology::SubMesh();
@@ -82,7 +80,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   _quadrature->initializeGeometry();
 
   // Compute orientation at quadrature points in fault mesh.
-  _calcOrientation(upDir, normalDir);
+  _calcOrientation(upDir);
 
   // Get initial tractions using a spatial database.
   _getInitialTractions();
@@ -189,8 +187,7 @@ pylith::faults::FaultCohesiveTract::cellField(
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
-pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3],
-						   const double normalDir[3])
+pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
 { // _calcOrientation
   assert(0 != _fields);
   assert(0 != _quadrature);

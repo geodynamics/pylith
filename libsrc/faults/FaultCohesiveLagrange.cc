@@ -75,11 +75,9 @@ pylith::faults::FaultCohesiveLagrange::deallocate(void)
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
-					     const double upDir[3],
-					     const double normalDir[3])
+					     const double upDir[3])
 { // initialize
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
 
@@ -125,7 +123,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 #endif
 
   // Compute orientation at vertices in fault mesh.
-  _calcOrientation(upDir, normalDir);
+  _calcOrientation(upDir);
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
@@ -1531,11 +1529,9 @@ pylith::faults::FaultCohesiveLagrange::_initializeLogger(void)
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
-pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
-						   const double normalDir[3])
+pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
 { // _calcOrientation
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _faultMesh);
   assert(0 != _fields);
 
