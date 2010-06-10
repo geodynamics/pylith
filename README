@@ -66,7 +66,7 @@ TIPS
 MIGRATING FROM VERSION 1.4 TO 1.5
 ======================================================================
 
-Two changes to the code require updating old parameters settings for use
+Three changes to the code require updating old parameters settings for use
 with version 1.5.
 
 (1) Recent releases of CUBIT include nodeset names in the Exodus file
@@ -87,6 +87,15 @@ possible to vary power-law parameters unless everything used the same
 power-law exponent. The new implementation uses reference-strain-rate,
 reference-stress, and power-law-exponent to describe the material. This is
 described in the 'Material Models' section of the manual.
+
+(3) The fault property 'normal_dir' is obsolete. Only the property
+'up_dir' is required to enforce positive slip is left-lateral,
+reverse, and fault-opening for dipping faults in 2-D and horizontal
+fault surfaces in 3-D. Previously, in 2-D positive slip was always
+left-lateral, but now the up-direction is used to enforce positive
+slip is reverse motion for dipping faults. For horizontal fault
+surfaces in 3-D a normal of (0,0,1) is assumed in determining the
+up-dip direction.
 
 ----------------------------------------------------------------------
 Version 1.5.0
