@@ -41,15 +41,11 @@ namespace pylith {
        * @param mesh Finite-element mesh.
        * @param upDir Direction perpendicular to along-strike direction that is 
        *   not collinear with fault normal (usually "up" direction but could 
-       *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
-       * @param normalDir General preferred direction for fault normal
-       *   (used to pick which of two possible normal directions for
-       *   interface; only applies to fault surfaces in a 3-D domain).
+       *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
        */
       virtual
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3],
-		      const double normalDir[3]);
+		      const double upDir[3]);
       
       /** Split solution field for separate preconditioning.
        *

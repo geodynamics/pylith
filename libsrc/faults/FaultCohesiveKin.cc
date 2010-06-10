@@ -91,15 +91,13 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
-					     const double upDir[3],
-					     const double normalDir[3])
+					     const double upDir[3])
 { // initialize
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
 
-  FaultCohesiveLagrange::initialize(mesh, upDir, normalDir);
+  FaultCohesiveLagrange::initialize(mesh, upDir);
 
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {

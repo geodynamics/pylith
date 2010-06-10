@@ -1,6 +1,6 @@
 cell = "hex8"
 dim = "3d"
-testCase = "open"
+testCase = "slip"
 
 import numpy
 
@@ -516,7 +516,7 @@ elif dim == "3d":
     print "dlagrange1",dlagrange1
 
     D = numpy.array([[ 0, -1, 0,],
-                     [ 0, 0, -1,],
+                     [ 0, 0, +1,],
                      [ -1, 0, 0,],])
 
     Z = numpy.zeros([3,3])
