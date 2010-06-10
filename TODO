@@ -6,12 +6,7 @@ BINBOTS
 
   need cygwin binbot
 
-  Add ML to petsc on Darwin and cygwin binbots (requires fortran compiler)
-
   need Darwin 10.6 binary
-
-top-level README [add fault preconditioner when done]
-release announcement [add fault preconditioner when done]
 
 MANUAL
 

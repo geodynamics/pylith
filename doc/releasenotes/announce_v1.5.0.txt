@@ -15,11 +15,9 @@ to switch to this latest release.
 
 We strongly recommend all users of previous PyLith releases to switch
 to this latest release. In addition to adding features this release
-also fixes a number of bugs (see top-level README file). Switching
-from v1.5.0 only requires changes to parameter files when using CUBIT
-meshes or the power-law rheology. See the README file for changes
-required to switch to the v1.5.x release series from previous
-versions.
+also fixes a number of bugs (see top-level README file). See the
+README file for changes required to switch to the v1.5.x release
+series from previous versions.
 
 You can download the source code and binaries from
 
