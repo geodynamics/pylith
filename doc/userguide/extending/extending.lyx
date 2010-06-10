@@ -357,7 +357,7 @@ TestUniformVelModel.py
  errors and create C++ tests as well as the Python tests included here.
  In our rather simple example, we simply test the overall functionality
  of the component.
- For examples of thorough testing, see the spatialdatabase and PyLith source
+ For examples of thorough testing, see the spatialdata and PyLith source
  code.
 \end_layout
 
@@ -477,7 +477,7 @@ In contrast to our previous example of creating a customized spatial database,
 
 \begin_layout Standard
 The properties and state variables used in the bulk constitutive model are
- set using arguments to the constuctor of the C++ 
+ set using arguments to the constructor of the C++ 
 \family typewriter
 ElasticMaterial
 \family default
@@ -757,7 +757,7 @@ PyLith includes a two of the most widely used fault constitutive models,
  In this example, we demonstrate how to extend PyLith by adding your own
  fault constitutive model.
  We implement a linear viscous fault constitutive model wherein the perturbation
- in the coeficient of friction is linearly proportional to the slip rate.
+ in the coefficient of friction is linearly proportional to the slip rate.
  This constitutive model, 
 \family typewriter
 ViscousFriction
@@ -792,7 +792,7 @@ Similar to our previous example of creating a customized bulk constitutive
 
 \begin_layout Standard
 The properties and state variables used in the fault constitutive model
- are set using arguments to the constuctor of the C++ 
+ are set using arguments to the constructor of the C++ 
 \family typewriter
 FrictionModel
 \family default
