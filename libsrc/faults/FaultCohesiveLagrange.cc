@@ -1717,10 +1717,12 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
     // normal with preferred normal is negative, flip up/down dip
     // direction.
     //
-    // If the user gives the correct normal direction (points from
-    // footwall to ahanging wall), we should end up with
-    // left-lateral-slip, reverse-slip, and fault-opening for positive
-    // slip values.
+    // Check orientation of first vertex, (1) if dot product of the
+    // normal-dir with preferred up-dir is positive, then we want dot
+    // product of shear-dir and preferred up-dir to be positive and
+    // (2) if the dot product of the normal-dir with preferred up-dir
+    // is negative, then we want the dot product of the shear-dir and
+    // preferred up-dir to be negative.
     //
     // When we flip the up/down dip direction, we create a left-handed
     // strike/dip/normal coordinate system, but it gives the correct
@@ -1748,16 +1750,21 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
     const int istrike = 0;
     const int idip = 3;
     const int inormal = 6;
-    if (dipDirDot * normalDirDot < 0.0) {
+    if (dipDirDot * normalDirDot < 0.0 ||
+	fabs(normalDirVertex[2] + 1.0) < 0.001) {
+      // if fault normal is (0,0,+-1) then up-dir dictates reverse
+      // motion for case with normal (0,0,1), so we reverse the dip-dir
+      // if we have (0,0,-1).
+
       // Flip dip direction
       for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-          != verticesEnd; ++v_iter) {
+	     != verticesEnd; ++v_iter) {
         orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-          orientationVertex.size());
+					  orientationVertex.size());
         assert(9 == orientationSection->getFiberDimension(*v_iter));
         for (int iDim = 0; iDim < 3; ++iDim) // flip dip
           orientationVertex[idip + iDim] *= -1.0;
-
+	
         // Update direction
         orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
       } // for
