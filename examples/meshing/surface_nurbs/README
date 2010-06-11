@@ -1,0 +1,7 @@
+These examples demonstrate how to create NURBS surfaces in CUBIT. 
+
+contours - Example of creating a nonplanar fault surface using surface
+           contours.
+
+dem - Example of creating a topographic surface using a grid of spline
+      curves.
