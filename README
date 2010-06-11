@@ -27,9 +27,8 @@ files, as well as in the User Manual on the web page.
 
 PyLith is under active development and we expect a number of additions
 and improvements in the near future. Likely enhancements will include
-additional constitutive models for both volume elements and cohesive
-(fault) elements and the generation of Green's functions to be used in
-inversions.
+additional bulk and fault constitutive models and the generation of
+Green's functions to be used in inversions.
 
 ======================================================================
 TIPS
@@ -42,24 +41,24 @@ TIPS
       - Command line arguments
 
         --petsc.pc_type=asm
-        --petsc.ksp_max_it=100
-        --petsc.ksp_gmres_restart=50
+        --petsc.ksp_max_it=400
+        --petsc.ksp_gmres_restart=100
         --petsc.ksp_rtol=1.0e-08
 
       - pylithapp.cfg (or your other favorite .cfg file)
 
         [pylithapp.petsc]
         pc_type = asm
-        ksp_max_it = 200
-        ksp_gmres_restart = 50
+        ksp_max_it = 400
+        ksp_gmres_restart = 100
         ksp_rtol = 1.0e-08
 
-  * If the solve takes more than a few hundred iterations for a
-    large problem (use the --petsc.ksp_monitor=1 and
-    --petsc.ksp_view=1 to see diagnostic information for the
-    solver), this is an indication that something is wrong. Either
-    the preconditioner is inappropriate for the type of problem you
-    are solving or there is an error in the problem setup.
+  * If the solve takes more than a few hundred iterations for a large
+    problem (use the --petsc.ksp_monitor=1 and --petsc.ksp_view=1 to
+    see diagnostic information for the solver), this is usually an
+    indication that something is wrong. Either the preconditioner is
+    inappropriate for the type of problem you are solving or there is
+    an error in the problem setup.
 
 
 ======================================================================
@@ -71,10 +70,10 @@ with version 1.5.
 
 (1) Recent releases of CUBIT include nodeset names in the Exodus file
 and PyLith now uses them to associate vertices with boundary
-conditions and faults. Use the netcdf utility ncdump to examine the
+conditions and faults. Use the NetCDF utility ncdump to examine the
 contents of the Exodus (.exo) file to see it it includes the variable
-ns_names. If it does use nodeset names rather than nodeset ids for
-boundary condition label properties. If your Exodus file does not
+ns_names. If it does, then use nodeset names rather than nodeset ids
+for boundary condition label properties. If your Exodus file does not
 contain nodeset names, then set the MeshIOCubit property
 use_nodeset_names to False to continue to use nodeset id values for
 boundary condition labels.
@@ -89,13 +88,13 @@ reference-stress, and power-law-exponent to describe the material. This is
 described in the 'Material Models' section of the manual.
 
 (3) The fault property 'normal_dir' is obsolete. Only the property
-'up_dir' is required to enforce positive slip is left-lateral,
+'up_dir' is required to enforce that positive slip is left-lateral,
 reverse, and fault-opening for dipping faults in 2-D and horizontal
 fault surfaces in 3-D. Previously, in 2-D positive slip was always
 left-lateral, but now the up-direction is used to enforce positive
-slip is reverse motion for dipping faults. For horizontal fault
-surfaces in 3-D a normal of (0,0,1) is assumed in determining the
-up-dip direction.
+slip corresponds to reverse motion for dipping faults. For horizontal
+fault surfaces in 3-D a normal of (0,0,1) is assumed in determining
+the up-dip direction.
 
 ----------------------------------------------------------------------
 Version 1.5.0
@@ -103,17 +102,18 @@ Version 1.5.0
 
   * Fault constitutive models
 
-    Added fault friction interface conditions with static
-    friction, linear slip-weakening friction, and rate- and
-    state-friction with the ageing law. The implementation can be used
-    in static, quasi-static, or dynamic problems.
+    Added fault friction interface conditions with static friction,
+    linear slip-weakening friction, and rate- and state-friction with
+    the ageing law. The implementation can be used in static,
+    quasi-static, and dynamic problems.
 
   * Drucker-Prager elastoplastic bulk rheology
 
-    Added a Drucker-Prager elastoplastic bulk rheology. This is a perfect
-    plasticity implementation (no hardening). This is a nonlinear
-    constitutive model, so the nonlinear solver is required when this
-    rheology is used. Refer to the 'Material Models' section of the manual.
+    Added a Drucker-Prager elastoplastic bulk rheology. This is a
+    perfect plasticity implementation (no hardening). This is a
+    nonlinear constitutive model, so the nonlinear solver is required
+    when this rheology is used. Refer to the 'Material Models' section
+    of the manual.
 
   * Plane strain Maxwell viscoelastic bulk rheology
 
@@ -138,9 +138,8 @@ Version 1.5.0
     Added optimized elasticity objects for the most popular cell types
     and basis functions (linear polynomials). For tri3 and tet4 cells
     with one quadrature point, the optimized implementations do not
-    use mapped cells to reduce the number of operations. For quad4 and
-    hex8 cells the optimized objects provide hardwired loop bounds
-    which can lead to faster performance for some compilers.
+    use reference (mapped) cells in order to reduce the number of
+    operations. 
 
   * Scientific notation for ASCII VTK files
 
