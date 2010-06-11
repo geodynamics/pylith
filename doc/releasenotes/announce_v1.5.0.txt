@@ -5,21 +5,19 @@ code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
 This release adds several new features to PyLith, including (1) fault
-friction with several widely-used fault constitutive models, (2) an
+friction with a few widely-used fault constitutive models, (2) an
 optimized solver for explicit time-stepping with a lumped Jacobian
-sparse matrix, (3) a total Langrangian formulation for rigid-body
-motion and small strains, (4) use of scientific notation in VTK output
-files with user-specified precision, and (5) use of nodeset names in
-CUBIT Exodus files. We encourage all users of previous PyLith releases
-to switch to this latest release.
+matrix, (3) a total Langrangian formulation for rigid-body motion and
+small strains, (4) use of scientific notation in VTK output files with
+user-specified precision, and (5) use of nodeset names in CUBIT Exodus
+files. We encourage all users of previous PyLith releases to switch to
+this latest release.
 
 We strongly recommend all users of previous PyLith releases to switch
 to this latest release. In addition to adding features this release
-also fixes a number of bugs (see top-level README file). Switching
-from v1.5.0 only requires changes to parameter files when using CUBIT
-meshes or the power-law rheology. See the README file for changes
-required to switch to the v1.5.x release series from previous
-versions.
+also fixes a number of bugs (see top-level README file). See the
+README file for changes required to switch to the v1.5.x release
+series from previous versions.
 
 You can download the source code and binaries from
 
@@ -37,18 +35,25 @@ RELEASE NOTES
     Added fault friction interface conditions with static
     friction, linear slip-weakening friction, and rate- and
     state-friction with the ageing law. The implementation can be used
-    in static, quasi-static, or dynamic problems.
+    in static, quasi-static, and dynamic problems.
 
   * Drucker-Prager elastoplastic bulk rheology
 
-    Added a Drucker-Prager elastoplastic bulk rheology. [NEED SOME
-    WORDS FROM CHARLES]
+    Added a Drucker-Prager elastoplastic bulk rheology. This is a
+    perfect plasticity implementation (no hardening). This is a
+    nonlinear constitutive model, so the nonlinear solver is required
+    when this rheology is used. Refer to the 'Material Models' section
+    of the manual.
+
+ * Plane strain Maxwell viscoelastic bulk rheology
+
+    Linear Maxwell viscoelastic rheology for plane strain problems.
 
   * Finite-deformation formulation
 
     Added a finite-deformation (rigid body motion and small strains)
     implementation of elasticity with stress calculated using the
-    Second Piola Kirchhoff stress tensor and strains calculated using
+    Second Piola-Kirchhoff stress tensor and strains calculated using
     the Green-Lagrange strain tensor.
 
   * Lumped Jacobian for explicit-time stepping
@@ -63,9 +68,7 @@ RELEASE NOTES
     Added optimized elasticity objects for the most popular cell types
     and basis functions (linear polynomials). For tri3 and tet4 cells
     with one quadrature point, the optimized implementations do not
-    use mapped cells to reduce the number of operations. For quad4 and
-    hex8 cells the optimized objects provide hardwired loop bounds
-    which can lead to faster performance for some compilers.
+    use mapped cells to reduce the number of operations. 
 
   * Scientific notation for ASCII VTK files
 
@@ -100,5 +103,3 @@ RELEASE NOTES
 
     - Fixed memory bug for a fault in a 1-D mesh when constructing the
       cohesive cells.
-
-

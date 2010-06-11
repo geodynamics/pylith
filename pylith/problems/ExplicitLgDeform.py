@@ -28,6 +28,30 @@ class ExplicitLgDeform(Explicit):
   Factory: pde_formulation.
   """
 
+  class Inventory(Explicit.Inventory):
+    """
+    Python object for managing ImplicitLgDeform facilities and properties.
+
+    Provide appropriate solver for small strains as the default.
+    """
+
+    ## @class Inventory
+    ## Python object for managing ExplicitLumped facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b solver Algebraic solver.
+
+    import pyre.inventory
+
+    from SolverNonlinear import SolverNonlinear
+    solver = pyre.inventory.facility("solver", family="solver",
+                                     factory=SolverNonlinear)
+    solver.meta['tip'] = "Algebraic solver."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="explicitlgdeform"):
@@ -53,6 +77,7 @@ class ExplicitLgDeform(Explicit):
     Set members based using inventory.
     """
     Explicit._configure(self)
+    self.solver = self.inventory.solver
     return
 
 

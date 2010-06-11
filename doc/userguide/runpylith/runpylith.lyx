@@ -224,7 +224,7 @@ Units
 
 \begin_layout Standard
 All dimensional parameters require units.
- The units are specified using Python and Fortran syntax, so square meters
+ The units are specified using Python and FORTRAN syntax, so square meters
  is m**2.
  Whitespace is not allowed in the string, for units and dimensioned quantities
  are multiplied by the units string; for example, two meters per second
@@ -813,20 +813,6 @@ mesher
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-ADD STUFF HERE ABOUT reorder_mesh AND OTHER MESH GENERATOR SETTINGS
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Geometrical and topological information for the finite element mesh may
  be provided by exporting an EXODUS format file from CUBIT, by exporting
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
@@ -982,82 +968,19 @@ status open
 \end_inset
 
 
-\begin_inset space ~
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.5in}
+\end_layout
+
 \end_inset
 
 
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
 \begin_inset Graphics
 	filename figs/quad4.eps
 
@@ -1112,82 +1035,19 @@ status open
 \end_inset
 
 
-\begin_inset space ~
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.5in}
+\end_layout
+
 \end_inset
 
 
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset space ~
-\end_inset
-
- 
 \begin_inset Graphics
 	filename figs/hex8.eps
 
@@ -1221,6 +1081,203 @@ name "fig:3D-linear-elements"
 
 \end_layout
 
+\begin_layout Subsubsection
+Mesh Importer
+\end_layout
+
+\begin_layout Standard
+The default mesher component is MeshImporter, which provides the capabilities
+ of reading the mesh from files.
+ The MeshImporter has several properties and facilities:
+\end_layout
+
+\begin_layout Description
+reorder_mesh Reorder the vertices and cells using the reverse Cuthill-McKee
+ algorithm (default is False).
+\end_layout
+
+\begin_layout Description
+reader Reader for a given type of mesh (default is MeshIOAscii).
+\end_layout
+
+\begin_layout Description
+distributor Handles distribution of the mesh among processors.
+\end_layout
+
+\begin_layout Standard
+Reordering the mesh so that vertices and cells connected topologically also
+ reside close together in memory improves overall performance and can improve
+ solver performance as well.
+\end_layout
+
+\begin_layout Quote
+
+\color red
+Note:
+\color inherit
+ The coordinate system associated with the mesh must be a Cartesian coordinate
+ system.
+ This includes generic Cartesian coordinate systems as well as geographic
+ projections.
+\end_layout
+
+\begin_layout Subsubsection
+MeshIOAscii
+\end_layout
+
+\begin_layout Standard
+The MeshIOAscii object is intended for reading small, simple ASCII files
+ containing a mesh constructed by hand.
+ We use this file format extensively in the examples.
+ Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:MeshIOAscii"
+
+\end_inset
+
+ describes the format of the files.
+ The properties and facilities of the MeshIOAscii object include:
+\end_layout
+
+\begin_layout Description
+filename Name of the mesh file.
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with the mesh.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MeshIOCubit"
+
+\end_inset
+
+MeshIOCubit
+\end_layout
+
+\begin_layout Standard
+The MeshIOCubit object reads the NetCDF Exodus II files output from CUBIT.
+ Beginning with CUBIT 11.0, the names of the nodesets are included in the
+ Exodus II files and PyLith can use these nodeset names or revert to using
+ the nodeset ids.
+ The properties and facilities associated with the MeshIOCubit object are:
+\end_layout
+
+\begin_layout Description
+filename Name of the Exodus II file.
+\end_layout
+
+\begin_layout Description
+use_nodeset_names Identify nodesets by name rather than id (default is True).
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with the mesh.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MeshIOLagrit"
+
+\end_inset
+
+MeshIOLagrit
+\end_layout
+
+\begin_layout Standard
+The MeshIOLagrit object is used to read ASCII and binary GMV and PSET files
+ output from LaGriT.
+ PyLith will automatically detect whether the files are ASCII or binary.
+ We attempt to provide support for experimental 64-bit versions of LaGriT
+ via flags indicating whether the FORTRAN code is using 32-bit or 64-bit
+ integers.
+ The MeshIOLagrit properties and facilities are:
+\end_layout
+
+\begin_layout Description
+filename_gmv Name of GMV file.
+\end_layout
+
+\begin_layout Description
+filename_pset Name of the PSET file.
+\end_layout
+
+\begin_layout Description
+flip_endian Flip the endian of values when reading binary files (default
+ is False).
+\end_layout
+
+\begin_layout Description
+io_int32 Flag indicating that PSET files use 32-bit integers (default is
+ True).
+\end_layout
+
+\begin_layout Description
+record_header_32bt Flag indicating FORTRAN record header is 32-bit (default
+ is True)
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with mesh.
+\end_layout
+
+\begin_layout Subsubsection
+Distributor
+\end_layout
+
+\begin_layout Standard
+The distributor users a partitioner to compute which cells should be placed
+ on each processor, computes the overlap among the processors, and then
+ distributes the mesh among the processors.
+ The properties and facilities of the Distributor include:
+\end_layout
+
+\begin_layout Description
+partitioner Choice of partitioner (
+\begin_inset Quotes eld
+\end_inset
+
+parmetis
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+chaco
+\begin_inset Quotes erd
+\end_inset
+
+, default is 
+\begin_inset Quotes eld
+\end_inset
+
+chaco
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Description
+writer_partition Flag indicating that the partition information should be
+ written to a file (default is False).
+\end_layout
+
+\begin_layout Description
+data_writer Writer for partition information (default is DataWriterVTKMesh
+ for VTK output).
+\end_layout
+
+\begin_layout Standard
+ParMETIS is not included in the PyLith binaries due to licensing issues.
+\end_layout
+
 \begin_layout Subsection
 Problem Specification (
 \family typewriter
@@ -1240,15 +1297,12 @@ TimeDependent
  for use in static, quasi-static, and dynamic simulations.
  Future releases may contain multiple types of problems, for example, computing
  Green's functions, as additional applications are developed.
- The general components are:
+ The general facilities include:
 \end_layout
 
 \begin_layout Description
-normalizer Scales used to nondimensionalize the problem (default is 
-\family typewriter
-NondimElasticQuasistatic
-\family default
-).
+normalizer Scales used to nondimensionalize the problem (default is NondimElasti
+cQuasistatic).
 \end_layout
 
 \begin_layout Description
@@ -1425,6 +1479,12 @@ wave_period = 1.0*s
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:petsc:options"
+
+\end_inset
+
 PETSc Settings (
 \family typewriter
 petsc
@@ -1433,7 +1493,8 @@ petsc
 \end_layout
 
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations.
+PyLith relies on PETSc for the linear algebra computations, including linear
+ Krylov subspace solvers and nonlinear solvers.
  PETSc options can be set in 
 \family typewriter
 .cfg
@@ -1455,8 +1516,18 @@ reference "tab:petsc:options:defaults"
 \end_inset
 
 .
+ PETSc options are used to control the selection and settings for the solvers
+ underlying the SolverLinear and SolverNonlinear objects discussed in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:solvers"
+
+\end_inset
+
+.
  In many quasi-static or dynamic elasticity simulations, runtime can be
- reduced by replacing the Jacobi preconditioner with Additive Schwartz with
+ reduced by replacing the Jacobi preconditioner with additive Schwarz with
  Gram-Schmidt orthogonalization (see Table
 \begin_inset space ~
 \end_inset
@@ -1817,11 +1888,7 @@ Additive Schwarz method.
 \begin_layout Plain Layout
 
 \family typewriter
-sub_pc_factor_shift_
-\begin_inset Newline newline
-\end_inset
-
-type
+sub_pc_factor_shift_type
 \end_layout
 
 \end_inset
@@ -1875,6 +1942,7 @@ ksp_max_it
 
 \begin_layout Plain Layout
 Maximum number of iterations.
+ Depends on problem size.
 \end_layout
 
 \end_inset
@@ -2067,14 +2135,67 @@ formulation
  facility to the general-problem.
  The formulation specifies the time-stepping formulation to integrate the
  elasticity equation.
- Implicit time stepping should be used for quasi-static problems, whereas
- explicit time stepping should be used for dynamic problems which include
- inertial terms.
- Two options for explicit time-stepping are available: using a full, consistent
- Jacobian matrix and a lumped Jacobian matrix.
- In the lumped Jacobian formulation, the Jacobian is a diagonal matrix and
- stored as a vector, and PyLith employs an optimized built-in solver rather
- than a PETSc solver.
+ PyLith provides several alternative formulations, each specific to a different
+ type of problem.
+ Future versions of PyLith will likely include support for additional formulatio
+ns, such as large deformations with a lumped Jacobian matrix.
+\end_layout
+
+\begin_layout Description
+Implicit Implicit time stepping for static and quasi-static problems with
+ infinitesimal strains.
+ The implicit formulation neglects inertial terms (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:elasticity:integral:quasistatic"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Description
+ImplicitLgDeform Implicit time stepping for static and quasi-static problems
+ including the effects of rigid body motion and small strains.
+ This formulation requires the use of the nonlinear solver, which is selected
+ automatically.
+\end_layout
+
+\begin_layout Description
+Explicit Explicit time stepping for dynamic problems with infinitesimal
+ strains.
+ This formulation uses consistent mass and damping matrices for the system
+ Jacobian matrix.
+\end_layout
+
+\begin_layout Description
+ExplicitLgDeform Explicit time stepping for dynamic problems including the
+ effects of rigid body motion and small strains.
+ This formulation requires the use of the nonlinear solver, which is selected
+ automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.
+ The cell matrices are lumped before assembly, permitting use of a vector
+ for the diagonal system Jacobian matrix.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumpedTri3 Optimized elasticity formulation for linear triangular
+ cells with one point quadrature for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
+ cells with one point quadrature for dynamic problems with infinitesimal
+ strains and lumped system Jacobian.The built-in lumped solver is selected
+ automatically.
 \end_layout
 
 \begin_layout Standard
@@ -2091,29 +2212,7 @@ formulation = pylith.problems.Implicit
 \end_layout
 
 \begin_layout Standard
-An example of setting the formulation facility to the explicit time stepping
- component is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.Explicit
-\end_layout
-
-\begin_layout Standard
-An example of setting the formulation facility to the lumped explicit time
- stepping component is:
-\end_layout
-
-\begin_layout LyX-Code
-[pylithapp.timedependent]
-\end_layout
-
-\begin_layout LyX-Code
-formulation = pylith.problems.ExplicitLumped
+The formulation can be set to the other formulations in a similar fashion.
 \end_layout
 
 \begin_layout Subsection
@@ -2131,7 +2230,7 @@ time_step Time step size specification (default is uniform time step).
 \end_layout
 
 \begin_layout Description
-solver Type of solver to use (default is linear).
+solver Type of solver to use (default is SolverLinear).
 \end_layout
 
 \begin_layout Description
@@ -2190,11 +2289,53 @@ output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
-matrix_type = sbaij ; Nonsymmetric sparse matrix is aij
+matrix_type = sbaij ; Non-symmetric sparse matrix is aij
 \end_layout
 
 \begin_layout LyX-Code
 view_jacobian = false
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:solvers"
+
+\end_inset
+
+Solvers
+\end_layout
+
+\begin_layout Standard
+PyLith supports three types of solvers.
+ The linear solver, SolverLinear, corresponds to the PETSc KSP solver and
+ is used in linear problems with linear elastic and viscoelastic bulk constituti
+ve models and kinematic fault ruptures.
+ The nonlinear solver, SolverNonlinear, corresponds to the PETSc SNES solver
+ and is used in nonlinear problems with nonlinear viscoelastic or elastoplastic
+ bulk constitutive models or dynamic fault ruptures.
+ The lumped solver (SolverLumped) is a specialized solver used with the
+ lumped system Jacobian matrix.
+ The options for the PETSc KSP and SNES solvers are set via the top-level
+ PETSc options (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+ and the PETSc documentation 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+www.mcs.anl.gov/petsc/petsc-as/documentation/index.html
+\end_layout
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
@@ -3064,7 +3205,7 @@ The time history database specifies the temporal variation in the amplitude
  history may be shifted with a spatial variation in the onset time and scaled
  with a spatial variation in the amplitude.
  The time history database uses a simple ASCII file which is simpler than
- the one used by the SimpleDB spatial databse.
+ the one used by the SimpleDB spatial database.
  The file format is described in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3122,10 +3263,18 @@ For materials, the ``label'' is a string used only for error messages.
  material model and quadrature rule.
  For boundary conditions, the ``label'' is a string used to associate groups
  of vertices (psets in LaGriT and nodesets in CUBIT) with a boundary condition.
- Note that some mesh generators use strings (LaGriT) to identify groups
- of nodes while others use integers (CUBIT Exodus files).
- Although CUBIT permits associated strings with nodesets, they are not included
- in the Exodus files, so we must rely on the nodeset ID.
+ Some mesh generators use strings (LaGriT) to identify groups of nodes while
+ others (CUBIT) use strings and integers.
+ The default behavior in PyLith is to use strings to identify groups for
+ both LaGriT and CUBIT meshes, but the behavior for CUBIT meshes can be
+ changed to use the nodeset id (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:MeshIOCubit"
+
+\end_inset
+
+).
  PyLith 1.0 had an ``id'' for boundary conditions, but we removed it from
  subsequent releases because it was not used.
  For faults the ``label'' is used in the same manner as the ``label'' for
@@ -3465,7 +3614,8 @@ Merge materials using the same material model.
 The rate of convergence in quasi-static (implicit) problems can sometimes
  be improved by renumbering the vertices in the finite-element mesh to reduce
  the bandwidth of the sparse matrix.
- LaGriT contains routines to do this, but CUBIT does not.
+ PyLith can use the reverse Cuthill-McKee algorithm to reorder the vertices
+ and cells.
 \end_layout
 
 \begin_layout Itemize

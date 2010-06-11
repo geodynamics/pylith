@@ -17,7 +17,9 @@ consistent suite of packages very easy. On Darwin systems, the package
 managers do a poor job of maintaining compatibility across
 packages. For example, some Fink packages use Apple gcc while others
 use Fink gcc (these two versions of gcc are not necessarily
-compatible).
+compatible). On Darwin systems, we recommend using MacPorts as your
+package manager. It builds everything from source and generally does a
+better job of maintaining consistency than Fink.
 
 The particular versions of several packages used in the installation
 instructions vary depending on how when the package was installed and
@@ -29,14 +31,21 @@ problems.
 INSTRUCTIONS FOR VARIOUS PLATFORMS
 ======================================================================
 
-In cases where there are multiple instructions for a given platform,
-simply pick the procedure with which you are most comfortable. The
-*.sh files contain the commands to set the environment variables
-within a bash shell for the corresponding platform.
+We recommend setting up your source, build, and install directories as
+in the Linux_ubuntu-AMD64_Aagaard.txt, Cluster_CIT-garuda, and
+Cluster_CIT-pangu examples. These are setup for relatively stable
+installations, whereas most of the other examples are setup for
+development work and testing with multiple versions of packages. As a
+result they are unnecessarily complex for most users. The other
+examples do provide details for other systems that you may find
+helpful.
 
 FILE                             PLATFORM
 
-MacBookPro_Aagaard.txt           Intel Mac (Apple gcc 4.0)
+Linux_ubuntu-AMD64_Aagaard.txt   x86_64 desktop (gcc compilers)
+Cluster_CIT-garuda.txt           Intel cluster (Intel compilers)
+Cluster_CIT-pangu.txt            Intel cluster (Intel compilers)
+MacBookPro_Aagaard.txt           Intel Mac (Apple gcc 4.2), MacPorts
 Linux_Fedora8-AMD64_Aagaard.txt  x86_64 machine running Fedora 8 (gcc 4.1.2)
 Cluster_Rocks-4.3-AMD64.txt      x86_64 cluster running Rocks 4.3 (gcc 3.4)
 
@@ -45,12 +54,13 @@ BUILDING IN A SEPARATE DIRECTORY FROM THE SOURCE TREE
 ======================================================================
 
 Software packages that conform to the GNU build system and use a
-configure script can be built in a different directory from the source
-tree. A notable exception to this is MPICH2, which in most cases must
-be built in the source tree. Building in a directory separate from the
-source tree makes it easy to create builds for different compilers,
-optimization levels, etc. To build in a separate directory, simply run
-the configure script from the directory you wish to use as the
-top-level build directory. Run "make", etc. in the build directory. In
-cases where you need to generate the configure script via autoreconf,
-run "autoreconf -if" in the top-level source directory.
+configure script can usually be built in a different directory from
+the source tree. A notable exception to this is MPICH2, which in most
+cases must be built in the source tree. Building in a directory
+separate from the source tree makes it easy to create builds for
+different compilers, optimization levels, etc. To build in a separate
+directory, simply run the configure script from the directory you wish
+to use as the top-level build directory. Run "make", etc. in the build
+directory. In cases where you need to generate the configure script
+via autoreconf, run "autoreconf -if" in the top-level source
+directory.

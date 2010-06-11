@@ -57,7 +57,7 @@ class TimeHistorySlipFn(SlipTimeFn, ModuleTimeHistorySlipFn):
   dbTimeHistory = pyre.inventory.facility("time_history",
                                           family="temporal_database",
                                           factory=TimeHistory)
-  dbTimeHistory.meta['tip'] = "Spatial database of rise time (t95)."
+  dbTimeHistory.meta['tip'] = "Temporal database for slip evolution."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

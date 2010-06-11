@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -21,7 +21,16 @@
 \graphics default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -70,7 +79,7 @@ Installation of PyLith on a desktop or laptop machine is, in most cases,
  Help is available from both a CIG mailing list and CIG Roundup Bug Tracking
  System 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -161,8 +170,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Power PC and Intel),
- and Windows from the PyLith web page 
+Binary executables are available for Linux, Mac OS X (Intel 10.5 and Intel
+ 10.6), and Windows from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -202,7 +211,7 @@ $ cd pylith
 \begin_layout Enumerate
 Download the Linux tarball from the PyLith web page 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -273,7 +282,7 @@ $ cd pylith
 
 \end_deeper
 \begin_layout Enumerate
-Download the Darwin tarball from the PyLith web page 
+Download the appropriate Darwin tarball from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -284,7 +293,8 @@ geodynamics.org/cig/software/packages/short/pylith/
 
 \end_inset
 
- and save it to the desired location, e.g., 
+ based on your operating system and save it to the desired location, e.g.,
+ 
 \family typewriter
 $HOME/pylith
 \family default
@@ -293,12 +303,12 @@ $HOME/pylith
 
 \begin_layout Enumerate
 Unpack the tarball.
- For the PowerPC architecture,
+ For 10.5.x operating system,
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.5.0-darwin-powerpc.tgz
+$ tar -xzf pylith-1.5.0-darwin-i386.tgz
 \end_layout
 
 \end_deeper
@@ -425,7 +435,7 @@ A C compiler
 \end_layout
 
 \begin_layout Itemize
-A Fortran compiler (optional)
+A FORTRAN compiler (optional)
 \end_layout
 
 \begin_layout Itemize
@@ -481,17 +491,17 @@ developer.apple.com
 \end_inset
 
 .
- (Note that Xcode does not include a Fortran compiler.)
+ (Note that Xcode does not include a FORTRAN compiler.)
 \end_layout
 
 \begin_layout Subsubsection
-Fortran Compiler (optional)
+FORTRAN Compiler (optional)
 \end_layout
 
 \begin_layout Standard
-To build PETSc, you need either a Fortran-77 or Fortran-9x compiler.
- There are several free Fortran compilers available.
- GCC 4 contains a Fortran-95 compiler called 
+To build PETSc, you need either a FORTRAN-77 or FORTRAN-9x compiler.
+ There are several free FORTRAN compilers available.
+ GCC 4 contains a FORTRAN-95 compiler called 
 \family typewriter
 gfortran
 \family default
@@ -517,7 +527,7 @@ g95
  projects offer pre-built binaries for a variety of systems, including Mac
  OS X.
  A number of optional PETSc packages that provide additional preconditioners
- and solvers require a Fortran compiler.
+ and solvers require a FORTRAN compiler.
 \end_layout
 
 \begin_layout Subsubsection
@@ -791,24 +801,22 @@ reference "sec:Pyre-Configuration"
 \end_inset
 
 ).
- We strongly recommend downloading the latest PyLith and PETSc source code
- directly from the source code repositories, instead of using the source
- packages; see Section 
+ Downloading the latest PyLith and PETSc source code directly from the source
+ code repositories, instead of using the source packages (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Software-Repository"
 
 \end_inset
 
- later in this chapter.
- Note that this requires additional tools; see Section 
+ later in this chapter) requires additional tools (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Additional-Tools"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Subsection
@@ -941,8 +949,7 @@ petsc-dev
 \begin_layout LyX-Code
 
 \size small
-http://geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1_1_0.t
-gz
+http://geodynamics.org/cig/software/packages/short/pylith/petsc-dev-pylith-1.5.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -1217,7 +1224,7 @@ $ ./config/configure.py
 
 \begin_layout Standard
 In our next example, we configure PETSc on a Mac OS X machine.
- We have installed Apple's Xcode and the G95 Fortran compiler.
+ We have installed Apple's Xcode and the G95 FORTRAN compiler.
  However, we don't have anything else preinstalled, so we instruct PETSc
  to download almost everything else, including MPICH.
  Intentionally, we don't specify anything about BLAS/LAPACK: PETSc automatically
@@ -1808,7 +1815,7 @@ unzip
 \end_layout
 
 \begin_layout LyX-Code
-$ cd proj-4.6.1/nad$ unzip proj-datumgrid-1.5.zip
+$ cd proj-4.7.0/nad$ unzip proj-datumgrid-1.5.zip
 \end_layout
 
 \begin_layout Standard
@@ -2220,7 +2227,7 @@ tar
 \end_layout
 
 \begin_layout LyX-Code
-$ tar xzf spatialdata-0.5.2.tgz
+$ tar xzf spatialdata-0.6.0.tgz
 \end_layout
 
 \begin_layout Standard
@@ -2228,7 +2235,7 @@ If you don't have GNU Tar, try the following command instead:
 \end_layout
 
 \begin_layout LyX-Code
-$ gunzip -c spatialdata-0.5.2.tgz | tar xf -
+$ gunzip -c spatialdata-0.6.0.tgz | tar xf -
 \end_layout
 
 \begin_layout Subsubsection

@@ -339,8 +339,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     fault.frictionModel(&friction);
     
     const double upDir[] = { 0.0, 0.0, 1.0 };
-    const double normalDir[] = { 1.0, 0.0, 0.0 };
-    fault.initialize(mesh, upDir, normalDir);
+    fault.initialize(mesh, upDir);
     const int vertex = 2;
 
     const double slip = 0.25;
@@ -789,8 +788,7 @@ pylith::friction::TestFrictionModel::_initialize(
   fault->frictionModel(friction);
   
   const double upDir[] = { 0.0, 0.0, 1.0 };
-  const double normalDir[] = { 1.0, 0.0, 0.0 };
-  fault->initialize(*mesh, upDir, normalDir);
+  fault->initialize(*mesh, upDir);
 } // _initialize
 
 

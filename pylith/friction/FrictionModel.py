@@ -58,7 +58,7 @@ class FrictionModel(PetscComponent):
     import pyre.inventory
 
     label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Name of material."
+    label.meta['tip'] = "Name of the friction model."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     dbProperties = pyre.inventory.facility("db_properties",

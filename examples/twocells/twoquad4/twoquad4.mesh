@@ -97,6 +97,19 @@ mesh = {
   }
 
   // This group of vertices may be used to specify boundary conditions.
+  // This group does not contain any vertices on the fault.
+  // There are 3 vertices corresponding to indices 0, 4.
+  group = {
+    name = y_neg_nofault
+    type = vertices
+    count = 2
+    indices = {
+      0
+      4
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
   // There are 2 vertices corresponding to indices 0 and 1.
   group = {
     name = x_neg

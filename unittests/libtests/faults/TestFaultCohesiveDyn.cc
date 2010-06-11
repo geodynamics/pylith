@@ -736,9 +736,8 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(
   mesh->nondimensionalize(normalizer);
   
   const double upDir[] = { 0.0, 0.0, 1.0 };
-  const double normalDir[] = { 1.0, 0.0, 0.0 };
   
-  fault->initialize(*mesh, upDir, normalDir);
+  fault->initialize(*mesh, upDir);
   
   // Setup fields
   fields->add("disp(t)", "displacement");

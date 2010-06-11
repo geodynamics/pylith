@@ -742,7 +742,7 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
-// Setup split field with all entries set to a default space of 0.
+// Setup split field with all one space per spatial dimension.
 template<typename mesh_type>
 void 
 pylith::topology::Field<mesh_type>::splitDefault(void)
@@ -751,7 +751,6 @@ pylith::topology::Field<mesh_type>::splitDefault(void)
   const int spaceDim = _mesh.dimension();
   for (int iDim=0; iDim < spaceDim; ++iDim)
     _section->addSpace(); // displacements
-  _section->addSpace(); // Lagrange multipliers
 
   const chart_type& chart = _section->getChart();
 

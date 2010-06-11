@@ -55,10 +55,7 @@ class Fault(PetscComponent, ModuleFault):
   @li \b name Name of fault
   @li \b up_dir Up-dip or up direction
     (perpendicular to along-strike and not collinear with fault normal;
-    only applies to fault surfaces in a 3-D domain).
-  @li \b normal_dir General preferred direction for fault normal
-    (used to pick which of two possible normal directions for
-    interface; only applies to fault surfaces in a 3-D domain).
+    applies to fault surfaces in 2-D and 3-D).
   
   \b Facilities
   @li \b quadrature Quadrature object for numerical integration
@@ -81,14 +78,8 @@ class Fault(PetscComponent, ModuleFault):
                               validator=validateDir)
   upDir.meta['tip'] = "Up-dip or up direction " \
       "(perpendicular to along-strike and not collinear " \
-      "with fault normal; only applies to fault surface " \
-      "in a 3-D domain)."
-  
-  normalDir = pyre.inventory.list("normal_dir", default=[1, 0, 0],
-                                  validator=validateDir)
-  normalDir.meta['tip'] = "General preferred direction for fault normal " \
-      "(used to pick which of two possible normal directions for " \
-      "interface; only applies to fault surfaces in a 3-D domain)."
+      "with fault normal; applies to fault surfaces " \
+      "in 2-D and 3-D)."
   
   from pylith.feassemble.Quadrature import SubMeshQuadrature
   faultQuadrature = pyre.inventory.facility("quadrature", factory=SubMeshQuadrature)
@@ -157,7 +148,7 @@ class Fault(PetscComponent, ModuleFault):
 
     self.faultQuadrature.initialize()
     ModuleFault.initialize(self, 
-                           self.mesh, self.upDir, self.normalDir)
+                           self.mesh, self.upDir)
 
     if None != self.output:
       self.output.initialize(normalizer, self.faultQuadrature)
@@ -235,7 +226,6 @@ class Fault(PetscComponent, ModuleFault):
     PetscComponent._configure(self)
     self.faultQuadrature = self.inventory.faultQuadrature
     self.upDir = map(float, self.inventory.upDir)
-    self.normalDir = map(float, self.inventory.normalDir)
     ModuleFault.id(self, self.inventory.matId)
     ModuleFault.label(self, self.inventory.faultLabel)
     self.perfLogger = self.inventory.perfLogger

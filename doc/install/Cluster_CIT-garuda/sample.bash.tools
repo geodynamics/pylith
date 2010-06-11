@@ -44,7 +44,7 @@ export PETSC_DIR=/home/baagaard/src/petsc-dev
 export PETSC_ARCH=${TOOLS_FORMAT}_opt
 
 # PyLith development version
-export PYLITHDEV_DIR=/home/baagaard/pylith-dev/${TOOLS_FORMAT}
-export LD_LIBRARY_PATH=${PYLITHDEV_DIR}/lib:${LD_LIBRARY_PATH}
-export PYTHONPATH=${PYLITHDEV_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
-PATH=${PYLITHDEV_DIR}/bin:${PATH}
+export PYLITH_DIR=/home/baagaard/pylith-dev/${TOOLS_FORMAT}
+export LD_LIBRARY_PATH=${PYLITH_DIR}/lib:${LD_LIBRARY_PATH}
+export PYTHONPATH=${PYLITH_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
+PATH=${PYLITH_DIR}/bin:${PATH}

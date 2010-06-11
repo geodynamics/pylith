@@ -99,7 +99,7 @@ mesh = {
   // This group of vertices may be used to specify boundary conditions.
   // There are 2 vertices corresponding to indices 2, 4.
   group = {
-    name = edge 1
+    name = edge 2
     type = vertices
     count = 2
     indices = {

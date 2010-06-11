@@ -367,7 +367,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 
   jacobian.assemble("final_assembly");
 
-  // MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
+  //MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const double* valsE = _data->jacobian;
   const int nrowsE = dispSection->sizeWithBC();
@@ -924,9 +924,8 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
   mesh->nondimensionalize(normalizer);
 
   const double upDir[] = { 0.0, 0.0, 1.0 };
-  const double normalDir[] = { 1.0, 0.0, 0.0 };
   
-  fault->initialize(*mesh, upDir, normalDir); 
+  fault->initialize(*mesh, upDir); 
   
   delete[] sources; sources = 0;
   for (int i=0; i < nsrcs; ++i)
