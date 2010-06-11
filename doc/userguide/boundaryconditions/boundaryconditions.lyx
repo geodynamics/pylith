@@ -6008,7 +6008,7 @@ gravity_dir = [0, -1, 0]
 An example problem using gravity is described in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:Tutorial-3d-hex8"
+reference "sec:Tutorial-3d-hex8-gravity"
 
 \end_inset
 

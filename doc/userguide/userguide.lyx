@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -743,7 +743,7 @@ key "Kaneko:etal:2008"
 
 \end_inset
 
-> Kaneko, Y., N.
+Kaneko, Y., N.
  Lapusta, and J.-P.
  Ampuero (2008), Spectral element modeling of spontaneous earthquake rupture
  on rate and state faults: Effect of velocity-strengthening friction at

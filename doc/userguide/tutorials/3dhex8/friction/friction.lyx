@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -380,6 +380,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step10-fault-traction-slip.jpg
 	width 10cm
@@ -537,6 +538,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step11-fault-traction-slip.jpg
 	width 10cm
@@ -767,6 +769,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step12-displ-t200.jpg
 	width 10cm
@@ -887,8 +890,11 @@ friction.db_properties.label = Slip weakening
 \end_layout
 
 \begin_layout LyX-Code
-friction.db_properties.values = [static-coefficient,dynamic-coefficient,slip-weake
-ning-parameter,cohesion]
+friction.db_properties.values = [static-coefficient,dynamic-coefficient,
+\begin_inset Newline newline
+\end_inset
+
+slip-weakening-parameter,cohesion]
 \end_layout
 
 \begin_layout LyX-Code
@@ -923,6 +929,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step13-displ-t200.jpg
 	width 10cm
@@ -1053,8 +1060,12 @@ friction.db_properties.label = Rate Stete Ageing
 
 \begin_layout LyX-Code
 friction.db_properties.values = [reference-friction-coefficient,reference-slip-rat
-e,characteristic-slip-distance,constitutive-parameter-a,constitutive-parameter-b
-,cohesion]
+e,
+\begin_inset Newline newline
+\end_inset
+
+characteristic-slip-distance,constitutive-parameter-a,constitutive-parameter-b,c
+ohesion]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1117,6 +1128,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step14-displ-t200.jpg
 	width 10cm

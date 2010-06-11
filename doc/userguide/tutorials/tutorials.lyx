@@ -208,14 +208,14 @@ filename "twotet4-geoproj/twotet4-geoproj.lyx"
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "3dhex8/3dhex8.lyx"
+filename "3dtet4/3dtet4.lyx"
 
 \end_inset
 
 
 \begin_inset CommandInset include
 LatexCommand input
-filename "3dtet4/3dtet4.lyx"
+filename "3dhex8/3dhex8.lyx"
 
 \end_inset
 
