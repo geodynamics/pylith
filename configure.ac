@@ -292,8 +292,12 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/quad4/Makefile
 		tests_auto/petsc/Makefile
 		tests/Makefile
+		tests/2d/Makefile
+		tests/2d/maxwell/Makefile
+		tests/2d/slipdir/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
+		tests/3d/slipdir/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
@@ -325,6 +329,13 @@ AC_CONFIG_FILES([Makefile
 		examples/twocells/twotet4/Makefile
 		examples/twocells/twotet4-geoproj/Makefile
 		examples/twocells/twotri3/Makefile
+		examples/meshing/Makefile
+		examples/meshing/surface_nurbs/Makefile
+		examples/meshing/surface_nurbs/contours/Makefile
+		examples/meshing/surface_nurbs/contours/journal/Makefile
+		examples/meshing/surface_nurbs/dem/Makefile
+		examples/meshing/surface_nurbs/dem/ulines/Makefile
+		examples/meshing/surface_nurbs/dem/vlines/Makefile
 		templates/Makefile
 		share/Makefile
 		])
