@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -573,6 +573,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step04-displ-t200.jpg
 	width 10cm
@@ -711,7 +712,11 @@ db_rate.label = Neumann rate BC on +x
 
 \begin_layout LyX-Code
 db_rate.values = [traction-rate-shear-horiz,traction-rate-shear-vert,traction-rat
-e-normal,rate-start-time]
+e-normal,
+\begin_inset Newline newline
+\end_inset
+
+rate-start-time]
 \end_layout
 
 \begin_layout LyX-Code
@@ -807,6 +812,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step05-displ-t40.jpg
 	width 10cm
@@ -1131,9 +1137,15 @@ origin_time
 \end_layout
 
 \begin_layout LyX-Code
-output.vertex_info_fields = [normal_dir,strike_dir,dip_dir,final_slip_creep,final
-_slip_one,final_slip_two,final_slip_three,slip_time_creep,slip_time_one,slip_tim
-e_two,slip_time_three]
+output.vertex_info_fields = [normal_dir,strike_dir,dip_dir,final_slip_creep,
+\begin_inset Newline newline
+\end_inset
+
+final_slip_one,final_slip_two,final_slip_three,slip_time_creep,slip_time_one,
+\begin_inset Newline newline
+\end_inset
+
+slip_time_two,slip_time_three]
 \end_layout
 
 \begin_layout Standard
@@ -1168,6 +1180,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step06-displ-t300.jpg
 	width 10cm
@@ -1462,6 +1475,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step07-displ-vel-t300.jpg
 	width 10cm
@@ -1667,7 +1681,11 @@ powerlaw_gendb.py
 
 \begin_layout Standard
 This will cause the code to automatically read the parameters in powerlaw_gendb.c
-fg, and the file 
+fg, and the file
+\begin_inset Newline newline
+\end_inset
+
+ 
 \family typewriter
 examples/3d/hex8/spatialdb/mat_powerlaw.spatialdb
 \family default
@@ -1827,7 +1845,11 @@ lower_crust
 
 \begin_layout LyX-Code
 output.cell_info_fields = [density,mu,lambda,reference_strain_rate,reference_stre
-ss,power_law_exponent]
+ss,
+\begin_inset Newline newline
+\end_inset
+
+power_law_exponent]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1859,6 +1881,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step08-strain-displ-t150.jpg
 	width 10cm
@@ -2129,8 +2152,9 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
-	filename /Users/charlesw/geoframe/cig/short/3D/PyLith/trunk/doc/userguide/tutorials/3dhex8/quasistatic/figs/step08-strain-displ-t150.jpg
+	filename figs/step08-strain-displ-t150.jpg
 	width 10cm
 
 \end_inset

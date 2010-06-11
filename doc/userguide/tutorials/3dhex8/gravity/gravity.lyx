@@ -1,4 +1,4 @@
-#LyX 1.6.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -299,6 +299,9 @@ output.cell_info_fields = [density,mu,lambda,shear_ratio,maxwell_time]
 
 \begin_layout LyX-Code
 output.cell_data_fields = [total_strain,stress,viscous_strain_1,viscous_strain_2,
+\begin_inset Newline newline
+\end_inset
+
 viscous_strain_3]
 \end_layout
 
@@ -336,6 +339,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step15-displ-t200.jpg
 	width 10cm
@@ -512,6 +516,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step16-stress_xx-t200.jpg
 	width 10cm
@@ -655,6 +660,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/step17-displ-t200.jpg
 	width 10cm
