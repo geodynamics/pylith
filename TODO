@@ -2,57 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-BINBOTS
-
-  need cygwin binbot
-
-  need Darwin 10.6 binary
-
-MANUAL
-
-  Tutorials
-    3d/hex8 [Charles]
-
-  Benchmarks
-    Update performance?
-
-TUTORIALS/EXAMPLES
-  
-  3d/hex8
-    directory structure
-    1. Dirichlet BC (static)
-       simple shear w/axial compression (max horiz at 45 degrees)
-    2. Neumann BC (static)
-       remove Dirichlet BC on two sides and replace w/tractions
-    3. Earthquake rupture (static)
-       add fault slip w/greater slip at depth
-    4. Dirichlet BC (quasi-static)
-       constant velocity BC + MaxwellIsotropic3D (lower crust)
-    5. Dirichlet + Neumann (quasi-static)
-       constant velocity + time-dependent traction BC
-    6. Multiple earthquake rupture + creep (quasi-static)
-       fixed boundaries, w/multiple eq ruptures
-    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
-       mini savage-prescott
-    8. Add power-law rheology (quasi-static)
-       nonlinear solver
-    9. Replace power-law with Drucker-Prager elastoplastic
-       nonlinear solver
-   10. Static friction + Dirichlet BC (static)
-       stick, simple shear w/axial compression
-   11. Static friction + Dirichlet BC (static)
-       slip, simple shear w/axial compression
-   12. Static friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   13. Slip-weakening friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   14. Rate- and state-friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   15. Gravity
-   16. Gravity w/prestress
-   17. Gravity w/small strain
-
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
@@ -61,7 +10,7 @@ SECONDARY PRIORITIES
 
   Need field split working for both SolverLinear and SolverNonlinear.
 
-* Output to VTK XML files w/data values as binary
+* Output to HDF5 files.
 
 * Uniform global refinement for tets with faults
 
