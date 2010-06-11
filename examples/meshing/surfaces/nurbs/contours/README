@@ -1,40 +1,43 @@
-This is a very simple example showing how to create a NURBS surface from a
-set of contours using Cubit. The simplest way to create a surface from a
-set of contours is to use them to create a skin surface (see Cubit
-documentation). Note that this example is pertinent to a set of
-semi-parallel truncated contours. The example is a set of contours defining
-the subduction interface for the Hikurangi subduction zone, New Zealand,
-rotated so the subduction zone is oriented approximately N-S.
-There are essentially three steps to creating the NURBS surface:
+This is a very simple example showing how to create a NURBS surface
+from a set of contours using Cubit. The simplest way to create a
+surface from a set of contours is to use them to create a skin surface
+(see Cubit documentation). Note that this example is pertinent to a
+set of semi-parallel truncated contours. The example is a set of
+contours defining the subduction interface for the Hikurangi
+subduction zone, New Zealand, rotated so the subduction zone is
+oriented approximately N-S.  There are essentially three steps to
+creating the NURBS surface:
 
-1. The first step is probably not needed in many cases. In the original
-data file (hikurangi_shiftrot.txt) many of the interal contours are
-truncated, segmented, or incomplete. A Python script (fill_contours.py)
-has been provided to fill in the missing contour sections, assuming that
-the first and last contours are complete. The parameters to control this
-script are in the file 'fill_contours.cfg'. Once the parameters have been
-set, the script can be run by simply typing:
+1. The first step is probably not needed in many cases. In the
+original data file (hikurangi_shiftrot.txt) many of the internal
+contours are truncated, segmented, or incomplete. A Python script
+(fill_contours.py) has been provided to fill in the missing contour
+sections, assuming that the first and last contours are complete. The
+parameters to control this script are in the file
+'fill_contours.cfg'. Once the parameters have been set, the script can
+be run by simply typing:
 
 ./fill_contours.py
 
-This will create a new file named 'hikurangi_shiftrot_fill.txt'. Note that
-this script is very unsophisticated and relies on the contours having an
-approximate N-S orientation.
+This will create a new file named 'hikurangi_shiftrot_fill.txt'. Note
+that this script is very unsophisticated and relies on the contours
+having an approximate N-S orientation.
 
 2.  Once we have a complete set of contours, we can convert them to
 spline curve definitions that may be used by Cubit. A Python script
-(cont2lines.py) has been provided to do this, and the parameters are set
-in the file 'cont2lines.cfg'. Once the Python script is run, it will create
-a separate spline curve Cubit command for each contour in the journal
-directory. It will also create a main Cubit journal file
+(cont2lines.py) has been provided to do this, and the parameters are
+set in the file 'cont2lines.cfg'. Once the Python script is run, it
+will create a separate spline curve Cubit command for each contour in
+the journal directory. It will also create a main Cubit journal file
 (hikurangi_mksurf.jou) that will playback all the journal files in the
-journal directory and then create a skin surface using Cubit (see Cubit
-documentation).
+journal directory and then create a skin surface using Cubit (see
+Cubit documentation).
 
-3.  We then just need to start Cubit and playback the hikurangi_mksurf.jou
-file to create an ACIS NURBS surface (hikurangi_sub_geom.sab).
+3.  We then just need to start Cubit and playback the
+hikurangi_mksurf.jou file to create an ACIS NURBS surface
+(hikurangi_sub_geom.sab).
 
-Once the NURBS surface has been created, it may be used in future Cubit
-sessions by importing it:
+Once the NURBS surface has been created, it may be used in future
+Cubit sessions by importing it:
 
 import acis 'hikurangi_sub_geom.sab'
