@@ -1,4 +1,4 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1088,7 +1088,7 @@ Mesh Importer
 \begin_layout Standard
 The default mesher component is MeshImporter, which provides the capabilities
  of reading the mesh from files.
- The MeshImporter has several properties and components:
+ The MeshImporter has several properties and facilities:
 \end_layout
 
 \begin_layout Description
@@ -1137,7 +1137,7 @@ reference "sec:MeshIOAscii"
 \end_inset
 
  describes the format of the files.
- The properties and components of the MeshIOAscii object include:
+ The properties and facilities of the MeshIOAscii object include:
 \end_layout
 
 \begin_layout Description
@@ -1149,6 +1149,12 @@ coordsys Coordinate system associated with the mesh.
 \end_layout
 
 \begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MeshIOCubit"
+
+\end_inset
+
 MeshIOCubit
 \end_layout
 
@@ -1157,7 +1163,7 @@ The MeshIOCubit object reads the NetCDF Exodus II files output from CUBIT.
  Beginning with CUBIT 11.0, the names of the nodesets are included in the
  Exodus II files and PyLith can use these nodeset names or revert to using
  the nodeset ids.
- The properties and components associated with the MeshIOCubit object are:
+ The properties and facilities associated with the MeshIOCubit object are:
 \end_layout
 
 \begin_layout Description
@@ -1173,6 +1179,12 @@ coordsys Coordinate system associated with the mesh.
 \end_layout
 
 \begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MeshIOLagrit"
+
+\end_inset
+
 MeshIOLagrit
 \end_layout
 
@@ -1183,7 +1195,7 @@ The MeshIOLagrit object is used to read ASCII and binary GMV and PSET files
  We attempt to provide support for experimental 64-bit versions of LaGriT
  via flags indicating whether the FORTRAN code is using 32-bit or 64-bit
  integers.
- The MeshIOLagrit properties and components are:
+ The MeshIOLagrit properties and facilities are:
 \end_layout
 
 \begin_layout Description
@@ -1221,7 +1233,7 @@ Distributor
 The distributor users a partitioner to compute which cells should be placed
  on each processor, computes the overlap among the processors, and then
  distributes the mesh among the processors.
- The properties and components of the Distributor include:
+ The properties and facilities of the Distributor include:
 \end_layout
 
 \begin_layout Description
@@ -1285,7 +1297,7 @@ TimeDependent
  for use in static, quasi-static, and dynamic simulations.
  Future releases may contain multiple types of problems, for example, computing
  Green's functions, as additional applications are developed.
- The general components are:
+ The general facilities include:
 \end_layout
 
 \begin_layout Description
@@ -1515,7 +1527,7 @@ reference "sec:solvers"
 
 .
  In many quasi-static or dynamic elasticity simulations, runtime can be
- reduced by replacing the Jacobi preconditioner with Additive Schwartz with
+ reduced by replacing the Jacobi preconditioner with additive Schwarz with
  Gram-Schmidt orthogonalization (see Table
 \begin_inset space ~
 \end_inset
@@ -1876,11 +1888,7 @@ Additive Schwarz method.
 \begin_layout Plain Layout
 
 \family typewriter
-sub_pc_factor_shift_
-\begin_inset Newline newline
-\end_inset
-
-type
+sub_pc_factor_shift_type
 \end_layout
 
 \end_inset
@@ -3255,10 +3263,18 @@ For materials, the ``label'' is a string used only for error messages.
  material model and quadrature rule.
  For boundary conditions, the ``label'' is a string used to associate groups
  of vertices (psets in LaGriT and nodesets in CUBIT) with a boundary condition.
- Note that some mesh generators use strings (LaGriT) to identify groups
- of nodes while others use integers (CUBIT Exodus files).
- Although CUBIT permits associated strings with nodesets, they are not included
- in the Exodus files, so we must rely on the nodeset ID.
+ Some mesh generators use strings (LaGriT) to identify groups of nodes while
+ others (CUBIT) use strings and integers.
+ The default behavior in PyLith is to use strings to identify groups for
+ both LaGriT and CUBIT meshes, but the behavior for CUBIT meshes can be
+ changed to use the nodeset id (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:MeshIOCubit"
+
+\end_inset
+
+).
  PyLith 1.0 had an ``id'' for boundary conditions, but we removed it from
  subsequent releases because it was not used.
  For faults the ``label'' is used in the same manner as the ``label'' for
@@ -3598,7 +3614,8 @@ Merge materials using the same material model.
 The rate of convergence in quasi-static (implicit) problems can sometimes
  be improved by renumbering the vertices in the finite-element mesh to reduce
  the bandwidth of the sparse matrix.
- LaGriT contains routines to do this, but CUBIT does not.
+ PyLith can use the reverse Cuthill-McKee algorithm to reorder the vertices
+ and cells.
 \end_layout
 
 \begin_layout Itemize
