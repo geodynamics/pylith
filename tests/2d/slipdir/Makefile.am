@@ -10,18 +10,23 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	journal
-
-
-dist_noinst_DATA = \
-	README \
-	cont2lines.cfg \
-	cont2lines.py \
-	fill_contours.cfg \
-	fill_contours.py \
-	hikurangi_shiftrot.txt
-
+dist_noinst_DATA =\
+	fault_x.cfg \
+	fault_x.exo \
+	fault_x.jou \
+	fault_xy1.cfg \
+	fault_xy1.exo \
+	fault_xy1.jou \
+	fault_xy2.cfg \
+	fault_xy2.exo \
+	fault_xy2.jou \
+	fault_y.cfg \
+	fault_y.exo \
+	fault_y.jou \
+	matprops.spatialdb \
+	pylithapp.cfg \
+	slip.spatialdb \
+	sliptime.spatialdb
 
 
 # End of file 

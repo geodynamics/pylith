@@ -10,18 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	journal
-
-
 dist_noinst_DATA = \
 	README \
-	cont2lines.cfg \
-	cont2lines.py \
-	fill_contours.cfg \
-	fill_contours.py \
-	hikurangi_shiftrot.txt
-
+	axialdisp2d.cfg \
+	axialdisp3d.cfg \
+	planestrain2d.cfg \
+	planestrain3d.cfg \
+	pylithapp.cfg \
+	sheardisp2d.cfg \
+	sheardisp3d.cfg \
+	twohex8.mesh \
+	twoquad4.mesh
 
 
 # End of file 

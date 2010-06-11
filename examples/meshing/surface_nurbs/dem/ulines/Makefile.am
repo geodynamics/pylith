@@ -10,18 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	journal
-
-
-dist_noinst_DATA = \
-	README \
-	cont2lines.cfg \
-	cont2lines.py \
-	fill_contours.cfg \
-	fill_contours.py \
-	hikurangi_shiftrot.txt
-
+SUBDIRS =
 
 
 # End of file 

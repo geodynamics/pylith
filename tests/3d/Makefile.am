@@ -10,6 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = matprops
+SUBDIRS = \
+	matprops \
+	slipdir
 
 # End of file 
