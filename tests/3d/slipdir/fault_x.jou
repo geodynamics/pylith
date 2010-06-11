@@ -1,0 +1,38 @@
+# Create mesh with +x fault normal.
+
+reset
+
+brick x 200 y 200 z 200
+move volume 1 x 0 y 0 z 100
+
+create surface extended from surface 6
+move surface 7 x -100 y 0 z 0
+webcut volume 1 with plane surface 7
+delete surface 7
+
+imprint all
+merge all
+
+volume all size 50
+volume all scheme tetmesh
+mesh volume all
+
+# Create blocks and nodesets
+
+block 1 volume all
+
+group "fault" add node in surface 8
+nodeset 10 group fault
+nodeset 10 name "fault"
+
+group "boundary_nofault" add node in surface 10
+group "boundary_nofault" add node in surface 17
+group "boundary_nofault" add node in surface 6
+group "boundary_nofault" add node in surface 14
+group "boundary_nofault" add node in surface 12
+group "boundary_nofault" add node in surface 4
+group "boundary_nofault" remove node in group fault
+nodeset 1 group boundary_nofault
+nodeset 1 name "boundary_nofault"
+
+export mesh "fault_x.exo" dimension 3 overwrite

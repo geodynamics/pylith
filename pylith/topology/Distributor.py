@@ -28,7 +28,7 @@ class Distributor(PetscComponent, ModuleDistributor):
 
   \b Properties
   @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}.
-  @li \b debug Write partition information to file.
+  @li \b writePartition Write partition information to file.
   
   \b Facilities
   @li \b writer Data writer for for partition information.
@@ -45,8 +45,8 @@ class Distributor(PetscComponent, ModuleDistributor):
                                                                     "parmetis"]))
   partitioner.meta['tip'] = "Name of mesh partitioner."
   
-  debug = pyre.inventory.bool("debug", default=False)
-  debug.meta['tip'] = "Write partition information to file."
+  writePartition = pyre.inventory.bool("write_partition", default=False)
+  writePartition.meta['tip'] = "Write partition information to file."
   
   from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
   dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTKMesh,
@@ -76,7 +76,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
 
-    if self.debug:
+    if self.writePartition:
       self.dataWriter.initialize(normalizer)
       ModuleDistributor.write(self.dataWriter, newMesh)
 
@@ -92,7 +92,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     """
     PetscComponent._configure(self)
     self.partitioner = self.inventory.partitioner
-    self.debug = self.inventory.debug
+    self.writePartition = self.inventory.writePartition
     self.dataWriter = self.inventory.dataWriter
     return
 

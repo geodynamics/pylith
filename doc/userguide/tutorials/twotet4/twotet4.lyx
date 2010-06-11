@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -304,7 +304,7 @@ status open
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
 	lyxscale 50
-	scale 45
+	scale 33
 
 \end_inset
 
@@ -488,7 +488,7 @@ status open
 \begin_inset Graphics
 	filename figs/dislocation.jpg
 	lyxscale 50
-	scale 45
+	scale 33
 
 \end_inset
 

@@ -331,7 +331,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.inventory.matId = 10
     fault.inventory.faultLabel = "fault"
     fault.inventory.upDir = [0, 0, 1]
-    fault.inventory.normalDir = [1, 0, 0]
     fault.inventory.faultQuadrature = quadrature
     fault._configure()
     eqsrc = fault.eqsrcs.components()[0]

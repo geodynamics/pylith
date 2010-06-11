@@ -12,10 +12,10 @@
 
 TESTS = testpetsc.py
 
-check_SCRIPTS = testpetsc.py
+dist_check_SCRIPTS = testpetsc.py
 
 dist_noinst_PYTHON = \
-	TestPetscApp.py
+	TestPetscApp.py 
 
 noinst_DATA = 
 

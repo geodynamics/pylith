@@ -142,7 +142,7 @@ contrib::materials::PlaneStrainState::~PlaneStrainState(void)
 void
 contrib::materials::PlaneStrainState::_dbToProperties(
 				double* const propValues,
-                                const pylith::double_array& dbValues) const
+                                const pylith::double_array& dbValues)
 { // _dbToProperties
   // Check consistency of arguments
   assert(0 != propValues);

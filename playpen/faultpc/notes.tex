@@ -40,6 +40,29 @@ We have a Jacobian of the form
     C & 0
   \end{array} \right).
 \end{equation}
+We use the Schur complement of block A to examine the form of $J^{-1}$,
+\begin{equation}
+  J^{-1} = \left( \begin{array}{cc}
+    A^{-1}+A^{-1} C^{T}(-C A^{-1} C^{T})^{-1} C A^{-1} & 
+    -A^{-1}C^{T}(-C A^{-1} C^{T})^{-1} \\
+    -(-C A^{-1} C^{T})^{-1} C A^{-1} & -(C A^{-1} C^T)^{-1}
+  \end{array} \right),
+\end{equation}
+A suitable block diagonal $P^{-1}$ is
+\begin{equation}
+  P^{-1} = \left( \begin{array}{cc}
+    A^{-1} & 0 \\
+    0 & -(C A^{-1} C^T)^{-1}
+  \end{array} \right),
+\end{equation}
+which leads to
+\begin{equation}
+  P = \left( \begin{array}{cc}
+    A & 0 \\
+    0 & C A^{-1} C^T
+  \end{array} \right).
+\end{equation}
+
 We provide PETSc with $P$ so that it can create $P^{-1}$. Using the
 field split preconditioner, we form
 \begin{equation}
@@ -54,52 +77,19 @@ the Lagrange constraints, $P_f$. Let $n$ be the number of conventional
 degrees of freedom and $l$ be the number of Lagrange constraints. This
 means $A$ and $P$ are $(n+l) \times (n+l)$, $A$ and $A_\mathit{ml}$
 are $n \times n$, $C$ is $l \times n$, and $P_f$ is $l \times l$.
-
+We let $P_f$ be the the diagonal approximation of $C A^{-1} C^T$,
+\begin{equation}
+  P_f = \text{diagonal}(C A_\mathit{diag}^{-1} C^T).
+\end{equation}
 Using the {\tt multiplicative} field split type, PETSc will form
 $P^{-1}$ as
 \begin{equation}
   P^{-1} = \left( \begin{array}{cc}
-    A_\mathit{ml}^{-1} & -A_\mathit{ml}^{-1} C^T \\
-    0 & C A_\mathit{ml}^{-1} C^T P_f^{-1}
+    A_\mathit{ml}^{-1} & -A_\mathit{ml}^{-1} C^T ?? \\
+    0 & P_f^{-1}
   \end{array} \right).
 \end{equation}
 
-\subsection*{QUESTIONS FOR MATT}
-We are solving $J u = b$.
-\begin{itemize}
-\item Does PETSc solve the right-preconditioned system using
-  \begin{gather}
-    (J P^{-1}) v = b \\
-    u = P^{-1} v
-  \end{gather}
-  or the left-preconditioned system using
-  \begin{gather}
-    P^{-1}(J u - b) = 0.
-  \end{gather}
-\item
-  Do we want to reduce the conditioner number (ratio of largest to
-  smallest eigenvalue) of $J P^{-1}$ or $P^{-1} J$?
-\end{itemize}
-      
-
-\subsection*{Old, wrong stuff}
-
-Using the Schur complement, we want to form the preconditioner
-\begin{equation}
-  P = \left( \begin{array}{cc}
-    A^{-1} + A^{-1} C^T (-C A^{-1} C^T)^{-1} C A^{-1} &
-    -A^{-1} C^T (-C A^{-1} C^T)^{-1} \\
-    (C A^{-1} C^T)^{-1} C A^{-1} & -(C A^{-1} C^T)^{-1}
-  \end{array} \right).
-\end{equation}
-We approximate this preconditioner by using only the diagonal terms of $A$ and $C A^{-1} C^T$:
-\begin{equation}
-  Pd = \left( \begin{array}{cc}
-    \Adiag^{-1} + \Adiag^{-1} C^T (-C \Adiag^{-1} C^T)^{-1} C \Adiag^{-1} &
-    \Adiag^{-1} C^T (C \Adiag^{-1} C^T)^{-1} \\
-    (C \Adiag^{-1} C^T)^{-1} C \Adiag^{-1} & -(C \Adiag^{-1} C^T)^{-1}
-  \end{array} \right).
-\end{equation}
 
 
 % ======================================================================

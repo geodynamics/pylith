@@ -76,7 +76,7 @@ pylith::problems::Implicit::calcRateFields(void)
     velVertex = dispIncrVertex / dt;
     
     assert(velSection->getFiberDimension(*v_iter) == spaceDim);
-    velSection->updatePoint(*v_iter, &velVertex[0]);
+    velSection->updatePointAll(*v_iter, &velVertex[0]);
   } // for
   PetscLogFlops(vertices->size() * spaceDim);
 

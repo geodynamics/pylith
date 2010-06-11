@@ -2,129 +2,15 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-BINBOTS
-
-  need cygwin binbot
-
-  Add ML to petsc on all binbots (requires fortran compiler)
-
-top-level README [add fault preconditioner when done]
-  Need Charles to add some additional description
-
-release announcement [add fault preconditioner when done]
-
-DOC/INSTALL
-  Update MacBookPro
-    development, easy to switch among different versions of MPI and
-    test compatibility of newer versions of various package
-  Update linux
-  Add garuda, pangu
-    Clusters - dependencies and multiple versions of PyLith
-      (development and stable)
-
-MANUAL
-
-  Governing equations [Brad]
-
-  Mesher parameters [Charles]
-    Need outline of parameters to MeshImporter like other objects
-
-    MeshIOAscii
-    MeshIOLaGriT
-    MeshIOCubit
-      use_nodeset_names Flag for using nodeset names of ids.
-    reorder_mesh
-    distribution
-      partitioner
-
-  Small strain formulation [Brad]
-
-  Fault
-    governing equations [Brad]
-    dynamic rupture parameters [Brad]
-    fault constitutive models [Surendra]
-
-  Tutorials
-    3d/hex8 [Charles]
-    bar_shearwave [Brad]
-      kinematic
-      friction
-        static (stick, sliding)
-        dynamic (static, slip-weakening, rate-and-state)
-    meshgeneration [Charles]
-
-  Benchmarks
-    Update performance?
-    SCEC dynamic rupture benchmarks [Surendra]        
-    Savage-Prescott
-      change .cfg file to output velocities, update post-processing
-
-  Materials [Charles]
-    Are material models consistent with governing equations discussion?
-
-TUTORIALS/EXAMPLES
-  
-  3d/hex8
-    directory structure
-    1. Dirichlet BC (static)
-       simple shear w/axial compression (max horiz at 45 degrees)
-    2. Neumann BC (static)
-       remove Dirichlet BC on two sides and replace w/tractions
-    3. Earthquake rupture (static)
-       add fault slip w/greater slip at depth
-    4. Dirichlet BC (quasi-static)
-       constant velocity BC + MaxwellIsotropic3D (lower crust)
-    5. Dirichlet + Neumann (quasi-static)
-       constant velocity + time-dependent traction BC
-    6. Multiple earthquake rupture + creep (quasi-static)
-       fixed boundaries, w/multiple eq ruptures
-    7. Earthquake rupture + creep + Dirichlet BC (quasi-static)
-       mini savage-prescott
-    8. Add power-law rheology (quasi-static)
-       nonlinear solver
-    9. Replace power-law with Drucker-Prager elastoplastic
-       nonlinear solver
-   10. Static friction + Dirichlet BC (static)
-       stick, simple shear w/axial compression
-   11. Static friction + Dirichlet BC (static)
-       slip, simple shear w/axial compression
-   12. Static friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   13. Slip-weakening friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   14. Rate- and state-friction + Dirichlet BC (quasi-static)
-       slip, simple shear w/axial compression
-   15. Gravity
-   16. Gravity w/prestress
-   17. Gravity w/small strain
-
-  meshgeneration
-
-
-OTHER
-
-  Write up description of Savage and Prescott (1978) benchmark and
-  distribute to Greg Lyzenga and Jay Parker
-
-    Add time step information
-
-CODE
-
-  * Better preconditioning [Matt/Brad]
-
-    Diagonal preconditioner does not work very well. It looks like the
-    preconditioner needs off-diagonal terms consistent with the
-    coupling of the Lagrange multiplier constraints (sparsity pattern
-    matches the union of the matrices associated with the fault
-    meshes).
-
-    Need field split working for both SolverLinear and SolverNonlinear.
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
-* Output to VTK XML files w/data values as binary
+* Better preconditioning [Matt/Brad]
+
+  Need field split working for both SolverLinear and SolverNonlinear.
+
+* Output to HDF5 files.
 
 * Uniform global refinement for tets with faults
 
@@ -178,6 +64,12 @@ SECONDARY PRIORITIES
 
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
+
+* Lumped elasticity formulation for large deformations
+
+* Manual
+
+  Are material models consistent with governing equations discussion?
 
 ----------------------------------------------------------------------
 CLEANUP

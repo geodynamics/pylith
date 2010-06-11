@@ -226,7 +226,7 @@ elif test == "tet4" or test == "hex8":
         Cpz = 0.0
         Cqx = 0.0
         Cqy = 0.0
-        Cqz = -1.0
+        Cqz = +1.0
         Crx = -1.0
         Cry = 0.0
         Crz = 0.0
@@ -239,13 +239,13 @@ elif test == "tet4" or test == "hex8":
             
             # vertex i: 6
             Aix = 1.5; Aiy = 1.5; Aiz = 1.5
-            rix = -9.4; riy = -5.4; riz = -7.4
+            rix = -9.4; riy = -5.4; riz = +7.4
             uix = 4.5; uiy = 6.5; uiz = 8.5
             duix = 3.5; duiy = 4.5; duiz = 5.5
             
             # vertex j: 14
             Ajx = 1.3; Ajy = 1.3; Ajz = 1.3
-            rjx = +9.4; rjy = +5.4; rjz = +7.4
+            rjx = +9.4; rjy = +5.4; rjz = -7.4
             ujx = 5.3; ujy = 7.3; ujz = 9.3
             dujx = 3.3; dujy = 4.3; dujz = 5.3
             
@@ -257,13 +257,13 @@ elif test == "tet4" or test == "hex8":
             
             # vertex i: 7
             Aix = 1.6; Aiy = 1.6; Aiz = 1.6
-            rix = -9.6; riy = -5.6; riz = -7.6
+            rix = -9.6; riy = -5.6; riz = +7.6
             uix = 4.6; uiy = 6.6; uiz = 8.6
             duix = 3.6; duiy = 4.6; duiz = 5.6
             
             # vertex j: 15
             Ajx = 1.5; Ajy = 1.5; Ajz = 1.5
-            rjx = +9.6; rjy = +5.6; rjz = +7.6
+            rjx = +9.6; rjy = +5.6; rjz = -7.6
             ujx = 5.5; ujy = 7.5; ujz = 9.5
             dujx = 3.5; dujy = 4.5; dujz = 5.5
             
@@ -275,13 +275,13 @@ elif test == "tet4" or test == "hex8":
             
             # vertex i: 8
             Aix = 1.7; Aiy = 1.7; Aiz = 1.7
-            rix = -9.8; riy = -5.8; riz = -7.8
+            rix = -9.8; riy = -5.8; riz = +7.8
             uix = 4.7; uiy = 6.7; uiz = 8.7
             duix = 3.7; duiy = 4.7; duiz = 5.7
             
             # vertex j: 16
             Ajx = 1.7; Ajy = 1.7; Ajz = 1.7
-            rjx = +9.8; rjy = +5.8; rjz = +7.8
+            rjx = +9.8; rjy = +5.8; rjz = -7.8
             ujx = 5.7; ujy = 7.7; ujz = 9.7
             dujx = 3.7; dujy = 4.7; dujz = 5.7
             
@@ -293,13 +293,13 @@ elif test == "tet4" or test == "hex8":
             
             # vertex i: 9
             Aix = 1.8; Aiy = 1.8; Aiz = 1.8
-            rix = -9.0; riy = -5.0; riz = -7.0
+            rix = -9.0; riy = -5.0; riz = +7.0
             uix = 4.8; uiy = 6.8; uiz = 8.8
             duix = 3.8; duiy = 4.8; duiz = 5.8
             
             # vertex j: 17
             Ajx = 1.9; Ajy = 1.9; Ajz = 1.9
-            rjx = +9.0; rjy = +5.0; rjz = +7.0
+            rjx = +9.0; rjy = +5.0; rjz = -7.0
             ujx = 5.9; ujy = 7.9; ujz = 9.9
             dujx = 3.9; dujy = 4.9; dujz = 5.9
             

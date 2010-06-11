@@ -24,6 +24,7 @@ swig_sources = \
 	StepSlipFn.i \
 	BruneSlipFn.i \
 	LiuCosSlipFn.i \
+	TimeHistorySlipFn.i \
 	EqKinSrc.i \
 	Fault.i \
 	FaultCohesive.i \

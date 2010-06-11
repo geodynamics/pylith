@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -509,7 +509,7 @@ www-unix.mcs.anl.gov/petsc/petsc-as
 \end_layout
 
 \begin_layout Standard
-PETSc includes interfaces for Fortran 77/90, C, C++, and Python for nearly
+PETSc includes interfaces for FORTRAN 77/90, C, C++, and Python for nearly
  all of the routines, and PETSc can be installed on most Unix systems.
  PETSc can be built with user-supplied, highly optimized linear algebra
  routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving

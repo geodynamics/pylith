@@ -75,11 +75,9 @@ pylith::faults::FaultCohesiveLagrange::deallocate(void)
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
-					     const double upDir[3],
-					     const double normalDir[3])
+					     const double upDir[3])
 { // initialize
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
 
@@ -125,7 +123,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 #endif
 
   // Compute orientation at vertices in fault mesh.
-  _calcOrientation(upDir, normalDir);
+  _calcOrientation(upDir);
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
@@ -147,6 +145,10 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field<
 
   const int spaceDim = field->mesh().dimension();
   const int fibrationLagrange = spaceDim;
+
+  // Add space for Lagrange multipliers if it does not yet exist.
+  if (spaceDim == section->getNumSpaces())
+    section->addSpace();
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -231,7 +233,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", residualSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    residualSection);
   assert(!globalOrder.isNull());
 
   _logger->eventEnd(setupEvent);
@@ -418,6 +421,8 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     indicesL = indicesRel + globalOrder->getIndex(v_lagrange);
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    assert(0 == solutionSection->getConstraintDimension(v_negative));
+    assert(0 == solutionSection->getConstraintDimension(v_positive));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -465,6 +470,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
                  ADD_VALUES);
 
     // Values at Lagrange vertex, entry L,L in Jacobian
+    // We must have entries on the diagonal.
     jacobianVertex = 0.0;
     MatSetValues(jacobianMatrix,
                  indicesL.size(), &indicesL[0],
@@ -485,6 +491,12 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   _needNewJacobian = false;
+
+#if 0 // DEBUGGING
+  sieveMesh->getSendOverlap()->view("Send domain overlap");
+  sieveMesh->getRecvOverlap()->view("Receive domain overlap");
+#endif
+
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -603,13 +615,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * off-diagonal terms of C A^(-1) C^T:
    *
    * Term for DOF x of vertex L is: 
-   * -1.0 / (R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
+   * -(R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
    *
    * Term for DOF y of vertex L is: 
-   * -1.0 / (R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
-   *
-   * Translate DOF for global vertex L into DOF in split field for
-   * preconditioner.
+   * -(R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
    */
 
 #if 1 // DIAGONAL PRECONDITIONER
@@ -672,6 +681,10 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
@@ -681,15 +694,23 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 				      orientationVertex.size());
 
     // Set global order indices
-    indicesN = indicesRel + globalOrder->getIndex(v_negative);
-    indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    if (globalOrder->isLocal(v_negative))
+      indicesN = indicesRel + globalOrder->getIndex(v_negative);
+    else
+      indicesN = -1;
+    if (globalOrder->isLocal(v_positive))
+      indicesP = indicesRel + globalOrder->getIndex(v_positive);
+    else
+      indicesP = -1;
 
     PetscErrorCode err = 0;
 
+    jacobianVertexN = 1.0;
     err = MatGetValues(jacobianMatrix,
 		       indicesN.size(), &indicesN[0],
 		       indicesN.size(), &indicesN[0],
 		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
+    jacobianVertexP = 1.0;
     err = MatGetValues(jacobianMatrix,
 		       indicesP.size(), &indicesP[0],
 		       indicesP.size(), &indicesP[0],
@@ -713,14 +734,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
     for (int kDim=0; kDim < spaceDim; ++kDim) {
-      double value = 0.0;
       for (int iDim=0; iDim < spaceDim; ++iDim)
-	value -= 
+	precondVertexL[kDim] -= 
           orientationVertex[kDim*spaceDim+iDim] * 
           orientationVertex[kDim*spaceDim+iDim] * 
           (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
-      if (fabs(value) > 1.0e-8)
-	precondVertexL[kDim] = 1.0 / value;
     } // for
     
 
@@ -728,10 +746,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
-
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      std::cout << "Vertex " << v_lagrange << " J^{-1}_{nn}["<<iDim<<"] " << jacobianInvVertexN[iDim] << " J^{-1}_{pp}["<<iDim<<"] " << jacobianInvVertexP[iDim] << " M["<<iDim<<"] " << precondVertexL[iDim] << std::endl;
-    }
 
     // Set global preconditioner index associated with Lagrange constraint vertex.
     const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
@@ -758,7 +772,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
 #else // FULL PRECONDITIONER
 
-  // Compute -( [C] [A]^(-1) [C]^T )^-1 for cell.
+  // Compute -( [C] [A]^(-1) [C]^T ) for cell.
   //
   // numBasis = number of corners in fault cell
   // spaceDim = spatial dimension
@@ -800,7 +814,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   // Allocate vectors for vertex values
   double_array preconditionerCell(matrixSizeF);
-  double_array preconditionerInvCell(matrixSizeF);
   int_array indicesN(nrowsF);
   int_array indicesP(nrowsF);
   int_array indicesLagrange(nrowsF);
@@ -901,7 +914,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
     jacobianCellP = 0.0;
     jacobianCellN = 0.0;
-    preconditionerInvCell = 0.0;
     preconditionerCell = 0.0;
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -1068,7 +1080,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 	      for (int kDim=0; kDim < spaceDim; ++kDim) {
 		const int kB = kBasis*spaceDim + kDim;
 
-		preconditionerInvCell[iL*nrowsF+lL] -= 
+		preconditionerCell[iL*nrowsF+lL] -= 
 		  orientationCell[iLagrange*orientationSize+iDim*spaceDim+jDim] *
 		  jacobianInvCellN[jB*nrowsF+kB] *
 		  orientationCell[lLagrange*orientationSize+kDim*spaceDim+lDim];
@@ -1080,76 +1092,15 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       } // for
     } // for
 
-#if 1
+#if 0
     std::cout << "1/P_cell " << *c_iter << std::endl;
     for(int i = 0; i < nrowsF; ++i) {
       for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << preconditionerInvCell[i*nrowsF+j];
+        std::cout << "  " << preconditionerCell[i*nrowsF+j];
       }
       std::cout << std::endl;
     }
 #endif
-
-    // Invert (C Ai C^T)
-
-    // Transpose matrices so we can call LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp               = preconditionerInvCell[k];
-        preconditionerInvCell[k]  = preconditionerInvCell[kp];
-        preconditionerInvCell[kp] = tmp;
-      }
-    }
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &preconditionerInvCell[0], &elemRows, &singularValuesN[0], &UN[0], &elemRows, &VNt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of preconditioner element matrix failed.");
-
-#if 1
-    for(int i = 0; i < nrowsF; ++i) {
-      std::cout << "sigmaN["<<i<<"]: " << singularValuesN[i] << " sigmaP["<<i<<"]: " << singularValuesP[i] << std::endl;
-    }
-    std::cout << "UN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << UN[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-    std::cout << "VNt_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << VNt[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-#endif
-
-    // Row scale Vt by the inverse of the singular values
-    for(int i = 0; i < nrowsF; ++i) {
-      const PetscReal invN = singularValuesN[i] > 1.0e-10 ? 1.0/singularValuesN[i] : 0.0;
-      const PetscReal invP = singularValuesP[i] > 1.0e-10 ? 1.0/singularValuesP[i] : 0.0;
-
-      for(int j = 0; j < nrowsF; ++j) {
-        VNt[j*nrowsF+i] *= invN;
-        VPt[j*nrowsF+i] *= invP;
-      }
-    }
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UN[0], &elemRows, &VNt[0], &elemRows, &one, &preconditionerCell[0], &elemRows);
-
-    // Transpose matrices from LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp                  = preconditionerCell[k];
-        preconditionerCell[k]  = preconditionerCell[kp];
-        preconditionerCell[kp] = tmp;
-      }
-    }
-
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -1588,11 +1539,9 @@ pylith::faults::FaultCohesiveLagrange::_initializeLogger(void)
 // ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
-pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
-						   const double normalDir[3])
+pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
 { // _calcOrientation
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _faultMesh);
   assert(0 != _fields);
 
@@ -1722,15 +1671,68 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
   } // for
   PetscLogFlops(count * orientationSize * 4);
 
-  if (2 == cohesiveDim && vertices->size() > 0) {
+  if (1 == cohesiveDim && vertices->size() > 0) {
+    // Default sense of positive slip is left-lateral and
+    // fault-opening.
+    // 
+    // If fault is dipping, then we use the up-dir to make sure the
+    // sense of positive slip is reverse and fault-opening.
+    //
+    // Check orientation of first vertex, (1) if dot product of the
+    // normal-dir with preferred up-dir is positive, then we want dot
+    // product of shear-dir and preferred up-dir to be positive and
+    // (2) if the dot product of the normal-dir with preferred up-dir
+    // is negative, then we want the dot product of the shear-dir and
+    // preferred up-dir to be negative.
+    //
+    // When we flip the shear direction, we create a left-handed
+    // coordinate system, but it gives the correct sense of slip. In
+    // reality the shear/normal directions that are used are the
+    // opposite of what we would want, but we cannot flip the fault
+    // normal direction because it is tied to how the cohesive cells
+    // are created.
+    assert(vertices->size() > 0);
+    orientationSection->restrictPoint(*vertices->begin(),
+      &orientationVertex[0], orientationVertex.size());
+
+    assert(2 == spaceDim);
+    const double* shearDirVertex = &orientationVertex[0];
+    const double* normalDirVertex = &orientationVertex[2];
+    const double shearDirDot = 
+      upDir[0] * shearDirVertex[0] + upDir[1] * shearDirVertex[1];
+    const double normalDirDot = 
+      upDir[0] * normalDirVertex[0] + upDir[1] * normalDirVertex[1];
+
+    const int ishear = 0;
+    const int inormal = 2;
+    if (normalDirDot * shearDirDot < 0.0) {
+      // Flip shear direction
+      for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
+	   v_iter != verticesEnd;
+	   ++v_iter) {
+        orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
+					  orientationVertex.size());
+        assert(4 == orientationSection->getFiberDimension(*v_iter));
+        for (int iDim = 0; iDim < 2; ++iDim) // flip shear
+          orientationVertex[ishear + iDim] *= -1.0;
+	
+        // Update orientation
+        orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+      } // for
+      PetscLogFlops(3 + count * 2);
+    } // if
+
+  } else if (2 == cohesiveDim && vertices->size() > 0) {
     // Check orientation of first vertex, if dot product of fault
     // normal with preferred normal is negative, flip up/down dip
     // direction.
     //
-    // If the user gives the correct normal direction (points from
-    // footwall to ahanging wall), we should end up with
-    // left-lateral-slip, reverse-slip, and fault-opening for positive
-    // slip values.
+    // Check orientation of first vertex, (1) if dot product of the
+    // normal-dir with preferred up-dir is positive, then we want dot
+    // product of shear-dir and preferred up-dir to be positive and
+    // (2) if the dot product of the normal-dir with preferred up-dir
+    // is negative, then we want the dot product of the shear-dir and
+    // preferred up-dir to be negative.
     //
     // When we flip the up/down dip direction, we create a left-handed
     // strike/dip/normal coordinate system, but it gives the correct
@@ -1744,23 +1746,35 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3],
       &orientationVertex[0], orientationVertex.size());
 
     assert(3 == spaceDim);
-    double_array normalDirVertex(&orientationVertex[6], 3);
-    const double normalDot = normalDir[0] * normalDirVertex[0] + normalDir[1]
-        * normalDirVertex[1] + normalDir[2] * normalDirVertex[2];
+    const double* dipDirVertex = &orientationVertex[3];
+    const double* normalDirVertex = &orientationVertex[6];
+    const double dipDirDot = 
+      upDir[0]*dipDirVertex[0] + 
+      upDir[1]*dipDirVertex[1] + 
+      upDir[2]*dipDirVertex[2];
+    const double normalDirDot = 
+      upDir[0]*normalDirVertex[0] +
+      upDir[1]*normalDirVertex[1] +
+      upDir[2]*normalDirVertex[2];
 
     const int istrike = 0;
     const int idip = 3;
     const int inormal = 6;
-    if (normalDot < 0.0) {
+    if (dipDirDot * normalDirDot < 0.0 ||
+	fabs(normalDirVertex[2] + 1.0) < 0.001) {
+      // if fault normal is (0,0,+-1) then up-dir dictates reverse
+      // motion for case with normal (0,0,1), so we reverse the dip-dir
+      // if we have (0,0,-1).
+
       // Flip dip direction
       for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-          != verticesEnd; ++v_iter) {
+	     != verticesEnd; ++v_iter) {
         orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-          orientationVertex.size());
+					  orientationVertex.size());
         assert(9 == orientationSection->getFiberDimension(*v_iter));
         for (int iDim = 0; iDim < 3; ++iDim) // flip dip
           orientationVertex[idip + iDim] *= -1.0;
-
+	
         // Update direction
         orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
       } // for
@@ -1859,8 +1873,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
 #if 0 // DEBUGGING
   area.view("AREA");
-  //_faultMesh->getSendOverlap()->view("Send fault overlap");
-  //_faultMesh->getRecvOverlap()->view("Receive fault overlap");
+  faultSieveMesh->getSendOverlap()->view("Send fault overlap");
+  faultSieveMesh->getRecvOverlap()->view("Receive fault overlap");
 #endif
 } // _calcArea
 

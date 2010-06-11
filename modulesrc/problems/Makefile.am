@@ -24,7 +24,8 @@ swig_sources = \
 	Implicit.i \
 	Solver.i \
 	SolverLinear.i \
-	SolverNonlinear.i
+	SolverNonlinear.i \
+	SolverLumped.i
 
 
 swig_generated = \

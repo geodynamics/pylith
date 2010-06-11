@@ -56,6 +56,7 @@ testfaults_SOURCES = \
 
 noinst_HEADERS = \
 	TestBruneSlipFn.hh \
+	TestLiuCosSlipFn.hh \
 	TestTimeHistorySlipFn.hh \
 	TestConstRateSlipFn.hh \
 	TestStepSlipFn.hh \

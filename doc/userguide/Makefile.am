@@ -15,6 +15,6 @@ dist_noinst_DATA =
 default: userguide.pdf
 
 userguide.pdf:
-	lyx -e pdflatex userguide.lyx
+	lyx -e pdf userguide.lyx
 
 # End of file 

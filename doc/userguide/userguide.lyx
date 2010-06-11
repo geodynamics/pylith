@@ -1,14 +1,14 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
-\usepackage{hyperref}
+%\usepackage{hyperref}
 
-\let\myUrl\url
-\renewcommand{\url}[1]{(\myUrl{#1})}
-\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
+%\let\myUrl\url
+%\renewcommand{\url}[1]{(\myUrl{#1})}
+%\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
 \use_default_options false
 \language english
@@ -23,9 +23,19 @@
 \font_tt_scale 100
 
 \graphics default
+\float_placement tbph
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -669,6 +679,100 @@ Quarterly of Applied Mathematics
 10
 \shape default
 , 157–165.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "18"
+key "Bathe:1995"
+
+\end_inset
+
+Bathe, K.-J.
+ (1995), 
+\shape italic
+Finite-Element Procedures
+\shape default
+, Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "19"
+key "Liu:etal:2006"
+
+\end_inset
+
+Liu, P., R.J.
+ Archuleta, S.H.
+ Hartzell (2006), Prediction of broadband ground-motion time histories:
+ Hybrid low/high-frequency method with correlated random source parameters,
+ 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 96, 2118-2130.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "20"
+key "BenZion:Rice:1997"
+
+\end_inset
+
+Ben-Zion, Y.
+ and J.R.
+ Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
+ solid, J.
+ Geophys.
+ Res., 102, 17,771–17,784.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "21"
+key "Kaneko:etal:2008"
+
+\end_inset
+
+Kaneko, Y., N.
+ Lapusta, and J.-P.
+ Ampuero (2008), Spectral element modeling of spontaneous earthquake rupture
+ on rate and state faults: Effect of velocity-strengthening friction at
+ shallow depths, 
+\shape italic
+Journal of Geophysical Research
+\shape default
+, 113, B09317, doi:10.1029/2007JB005553.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "22"
+key "McGarr:1988"
+
+\end_inset
+
+McGarr, A.
+ (1988), On the state of lithospheric stress in the absence of applied tectonic
+ forces, 
+\shape italic
+Journal of Geophysical Research
+\shape default
+, 
+\shape italic
+93
+\shape default
+, 13,609-13,617.
 \end_layout
 
 \end_body

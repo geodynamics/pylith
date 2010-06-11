@@ -4,6 +4,15 @@
 // properties for a Generalized Maxwell viscoelastic material. In
 // this case, the material properties are uniform.
 //
+// The first viscosity corresponds to a Maxwell time of 10 years, the
+// second corresponds to a Maxwell time of 100 years, and the third
+// corresponds to a Maxwell time of 1000 years. The shear ratio is set so
+// that the first two models are weighted by 0.4 and the third is weighted
+// by 0.2. Since these add up to 1.0, the material is still a fluid. If
+// the sum of the shear ratios was less than one, the remainder goes into a
+// spring in parallel with the Maxwell models (and the material is thus a
+// solid).
+//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 9 // number of material property values
@@ -30,4 +39,4 @@ SimpleDB {
 // (10) viscosity 1 (Pa-s)
 // (11) viscosity 2 (Pa-S)
 // (12) viscosity 3 (Pa-s)
-0.0  0.0  0.0   2700.0  1054.09255338946   1825.741858350554    0.5  0.5  0.0  1.0e19  1.0e18  1.0e20
+0.0  0.0  0.0   2500.0  3000.0  5291.502622129181  0.4  0.4  0.2  7.10046e18 7.10046e19 7.10046e20

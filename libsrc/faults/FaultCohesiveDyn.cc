@@ -105,15 +105,13 @@ pylith::faults::FaultCohesiveDyn::frictionModel(friction::FrictionModel* const m
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
-					      const double upDir[3],
-					      const double normalDir[3])
+					      const double upDir[3])
 { // initialize
   assert(0 != upDir);
-  assert(0 != normalDir);
   assert(0 != _quadrature);
   assert(0 != _normalizer);
 
-  FaultCohesiveLagrange::initialize(mesh, upDir, normalDir);
+  FaultCohesiveLagrange::initialize(mesh, upDir);
 
   // Get initial tractions using a spatial database.
   _setupInitialTractions();

@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -110,7 +110,21 @@ Implicit pylith.problems.Implicit
 \begin_inset Newline newline
 \end_inset
 
-Implicit time stepping for static and quasi-static simulations.
+Implicit time stepping for static and quasi-static simulations with infinitesima
+l strains.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ImplicitLgDeform pylith.problems.ImplicitLgDeform
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Implicit time stepping for static and quasi-static simulations including
+ the effects of rigid body motion and small strains.
 \end_layout
 
 \begin_layout Description
@@ -122,7 +136,59 @@ Explicit pylith.problems.Explicit
 \begin_inset Newline newline
 \end_inset
 
-Explicit time stepping for dynamic simulations.
+Explicit time stepping for dynamic simulations with infinitesimal strains.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ExplicitLgDeform pylith.problems.ExplicitLgDeform
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Explicit time stepping for dynamic simulations including the effects of
+ rigid body motion and small strains.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ExplicitLumped pylith.problems.ExplicitLumped
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Explicit time stepping for dynamic simulations with a lumped system Jacobian
+ matrix.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ExplicitLumpedTri3 pylith.problems.ExplicitLumpedTri3
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Optimized elasticity formulation for linear triangular cells and one quadrature
+ point for explicit time stepping in dynamic simulations.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ExplicitLumpedTet4 pylith.problems.ExplicitLumpedTet4
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Optimized elasticity formulation for linear tetrahedral cells and one quadrature
+ point for explicit time stepping in dynamic simulations.
 \end_layout
 
 \begin_layout Description
@@ -147,6 +213,18 @@ SolverNonlinear pylith.problems.SolverNonlinear
 \end_inset
 
 Nonlinear PETSc solver (SNES).
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SolverLumped pylith.problems.SolverLumped
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Built-in simple, optimized solver for solving systems with a lumped Jacobian.
 \end_layout
 
 \begin_layout Description
@@ -200,6 +278,18 @@ NullComponent pylith.utils.NullComponent
 \end_inset
 
 Null component used to set a facility to an empty value.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+EventLogger pylith.utils.EventLogger
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+PETSc event logger.
 \end_layout
 
 \begin_layout Description
@@ -361,6 +451,18 @@ Linear Maxwell viscoelastic bulk constitutive model.
 \begin_layout Description
 
 \family typewriter
+MaxwellPlaneStrain pylith.materials.MaxwellPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear Maxwell viscoelastic bulk constitutive model for plane strain problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 GenMaxwellIsotropic3D pylith.materials.GenMaxwellIsotropic3D
 \family default
 
@@ -380,6 +482,18 @@ PowerLaw3D pylith.materials.PowerLaw3D
 \end_inset
 
 Power-law viscoelastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DruckerPrage3D pylith.materials.DruckerPrager3D
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Drucker-Prager elastoplastic bulk constitutive model.
 \end_layout
 
 \begin_layout Description
@@ -492,6 +606,18 @@ Fault surface with kinematic (prescribed) slip implemented using cohesive
 \begin_layout Description
 
 \family typewriter
+FaultCohesiveDyn pylith.faults.FaultCohesive
+\family default
+Dyn
+\begin_inset Newline newline
+\end_inset
+
+Fault surface with dynamic (friction) slip implemented using cohesive elements.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 EqKinSrc pylith.faults.EqKinSrc
 \family default
 
@@ -562,6 +688,46 @@ Slip-time function composed of three sine/cosine functions.
  Similar to Brune's far-field time function but with more abrupt termination
  of slip.
  
+\end_layout
+
+\begin_layout Subsection
+Friction components
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+StaticFriction pylith.friction.StaticFriction
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Static friction fault constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+SlipWeakening pylith.friction.SlipWeakening
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear slip-weakening friction fault constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+RateStateAgeing pylith.friction.RateStateAgeing
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Dieterich-Ruina rate and state friction with ageing law state variable evolution.
 \end_layout
 
 \begin_layout Subsection
@@ -718,6 +884,18 @@ OutputFaultKin pylith.meshio.OutputFaultKin
 \end_inset
 
 Output manager for fault with kinematic (prescribed) earthquake ruptures.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+OutputFaultDyn pylith.meshio.OutputFaultDyn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for fault with dynamic (friction) earthquake ruptures.
 \end_layout
 
 \begin_layout Description
