@@ -1,9 +1,11 @@
 This is a very simple example showing how to create a NURBS surface from a
-set of contours using Cubit. Note that this example is pertinent to a set
-of semi-parallel truncated contours. The example is a set of contours
-defining the subduction interface for the Hikurangi subduction zone,
-New Zealand. There are essentially three steps to creating the NURBS
-surface:
+set of contours using Cubit. The simplest way to create a surface from a
+set of contours is to use them to create a skin surface (see Cubit
+documentation). Note that this example is pertinent to a set of
+semi-parallel truncated contours. The example is a set of contours defining
+the subduction interface for the Hikurangi subduction zone, New Zealand,
+rotated so the subduction zone is oriented approximately N-S.
+There are essentially three steps to creating the NURBS surface:
 
 1. The first step is probably not needed in many cases. In the original
 data file (hikurangi_shiftrot.txt) many of the interal contours are
@@ -15,7 +17,9 @@ set, the script can be run by simply typing:
 
 ./fill_contours.py
 
-This will create a new file named 'hikurangi_shiftrot_fill.txt'.
+This will create a new file named 'hikurangi_shiftrot_fill.txt'. Note that
+this script is very unsophisticated and relies on the contours having an
+approximate N-S orientation.
 
 2.  Once we have a complete set of contours, we can convert them to
 spline curve definitions that may be used by Cubit. A Python script
