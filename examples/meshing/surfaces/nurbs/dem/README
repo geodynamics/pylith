@@ -1,25 +1,23 @@
-This is a very simple example showing how to create a NURBS surface
-using Cubit, given a set of regularly-spaced data, such as might be
-obtained from a DEM. With this sort of input, the best way to create
-the surface is probably as a net surface (see Cubit
-documentation). This requires either a mapped mesh or a set of
+This is a simple example showing how to create a NURBS surface using
+Cubit, given a set of regularly-spaced data, such as might be obtained
+from a DEM. We create the surface as a net surface (see Cubit
+documentation); this requires either a mapped mesh or a set of
 intersecting lines (u-lines and v-lines). In either case, the
 intersecting lines must for a logically structured quadrilateral
-mesh. A Python script (dem2lines.py) is provided to create the
-mesh. The script also performs the additional task of resampling the
-original data outside a specified region for which full resolution is
-desired. This is useful because using a full-resolution surface for
+mesh. The Python script, dem2lines.py, creates the lines and resamples
+the original data outside a specified region for which full resolution
+is desired. This is useful because using a full-resolution surface for
 the entire region can be quite memory intensive.
 
 The steps for creating the NURBS surface are as follows:
 
-1.  The starting point is a very coarse DEM in ASCII format of
-Mt. Ruapehu volcano in New Zealand. Note that the DEM must be in ASCII
-format and it must be ordered in either rows or columns. The DEM used
-in this example was produced using the GMT grd2xyz utility.
+1.  We start with a very coarse DEM of Mt. Ruapehu volcano in New
+Zealand in ASCII format. Note that the DEM must be in ASCII format and
+it must be ordered in either rows or columns. The DEM used in this
+example was produced using the GMT grd2xyz utility.
 
 2.  The parameters for the Python script are contained in the file
-dem2lines.cfg. In this file you must specify the name of the input
+dem2lines.cfg. In this file we specify the name of the input
 file, the name of an output VTK file (for viewing the resampled DEM
 using a package such as ParaView), and prefixes for the output u-lines
 and v-lines.  The x_min, x_max, etc. values indicate the region over
@@ -27,7 +25,7 @@ which full resolution is desired. Outside this region, resampling
 occurs at skip_interval, 2*skip_interval, etc. until the edge of the
 DEM is reached.
 
-3.  Once the parameters have been set, you can run the script like:
+3.  Once the parameters have been set, run the script:
 
 ./dem2lines.py
 
