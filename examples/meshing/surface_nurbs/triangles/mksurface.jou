@@ -1,0 +1,26 @@
+reset
+# This is a simple Cubit journal file that creates a NURBS surface from a
+# triangulated surface. To do this, you must first import the triangulated
+# surface, create a mapped mesh on the surface, and then use the mapped
+# mesh to create a net surface. The resulting surface may then be exported
+# to an ACIS file.
+
+# Import the Facets file.
+import facets "ruapehu-nzmg-1km.fac" feature_angle 100 spline merge stitch
+
+# Create a mapped mesh, using a size of 4 km.
+surface 1 size 4000.0
+mesh surface 1
+
+# Smooth the mesh.
+set debug 91 on
+surface 1 smooth scheme condition number
+smooth surface 1
+
+# Create a net surface from the mapped mesh.
+create surface net from mapped surface 1 heal
+
+# Export the surface in binary ACIS format.
+set geometry engine acis
+export acis "ruapehu-nzmg-1km.sab" surface 2 binary overwrite
+

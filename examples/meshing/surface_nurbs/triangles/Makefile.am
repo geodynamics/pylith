@@ -10,14 +10,11 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	contours \
-	dem \
-	triangles
-
-
 dist_noinst_DATA = \
-	README
+	README \
+	mkfacets.sh \
+	mksurface.jou
+
 
 
 # End of file 
