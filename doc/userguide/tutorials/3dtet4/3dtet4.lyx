@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -384,7 +384,7 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \end_layout
 
 \begin_layout Standard
-Since these examples use LaGriT format, we set the importer to 
+Since these examples use a mesh from LaGriT, we set the importer to 
 \family typewriter
 MeshIO
 \family default

@@ -202,7 +202,7 @@ output
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:tet4:deform"
 
 \end_inset
