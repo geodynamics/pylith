@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -120,8 +120,6 @@ reference "fig:shearwave:quad4:mesh"
 \end_inset
 
 ).
- This mesh could be generated via a simple script, but it is even easier
- to generate this mesh using CUBIT.
  We provide documented CUBIT journal files in 
 \family typewriter
 examples/bar_shearwave/quad4.
@@ -228,7 +226,7 @@ kinematic
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:quad4:kinematic"
 
 \end_inset
@@ -289,6 +287,15 @@ Dynamic Fault
 In this set of examples we replace the kinematic fault interface with the
  dynamic fault interface, resulting in fault slip controlled by a fault-constitu
 tive model.
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Fault-Constitutive-Models"
+
+\end_inset
+
+ for detailed information about the fault constitutive models available
+ in PyLith.
  Because this is a dynamic simulation we want the generated shear wave to
  continue to be absorbed at the ends of the bar, so we drive the fault by
  imposing initial tractions directly on the fault surface rather than through
@@ -319,7 +326,7 @@ Dynamic Fault with Static Friction
 
 \begin_layout Standard
 The parameters specific to this example are related to the use of the static
- friction fault constitutive model (see Section ??).
+ friction fault constitutive model.
  We set the fault constitutive model via
 \end_layout
 
@@ -334,9 +341,9 @@ friction = pylith.friction.StaticFriction
 \begin_layout Standard
 and use a UniformDB to set the static friction parameters.
  We use a coefficient of friction of 0.6 and no cohesion (0 MPa).
- The parameters specific to this example are in dynamic_
+ The parameters specific to this example are in 
 \family typewriter
-staticfriction.cfg
+dynamic_staticfriction.cfg
 \family default
 , so we run the problem via:
 \end_layout
@@ -363,16 +370,16 @@ staticfriction
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:quad4:staticfriction"
 
 \end_inset
 
 , which was generated using ParaView.
- The steady-state solution is a constant slip rate of 0.08 m/s and shear
- traction of 6.0 MPa on the fault surface, a uniform shear strain of 2e-5
- in the bar with uniform, constant velocities in the y-direction of +0.04
- m/s and -0.04 m/s on the -x and +x sides of the fault, respectively.
+ The steady-state solution is a constant slip rate of 0.08 m/s, a shear traction
+ of 6.0 MPa on the fault surface, and a uniform shear strain of 2e-5 in the
+ bar with uniform, constant velocities in the y-direction of +0.04 m/s and
+ -0.04 m/s on the -x and +x sides of the fault, respectively.
 \end_layout
 
 \begin_layout Standard
@@ -466,9 +473,9 @@ vertex_data_fields = [slip,traction,cumulative_slip,previous_slip]
 \end_layout
 
 \begin_layout Standard
-The parameters specific to this example are in dynamic_
+The parameters specific to this example are in 
 \family typewriter
-slipweakening.cfg
+dynamic_slipweakening.cfg
 \family default
 , so we run the problem via:
 \end_layout
@@ -490,7 +497,7 @@ slipweakening
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:quad4:slipweakening"
 
 \end_inset
@@ -572,9 +579,9 @@ and use a UniformDB to set the static friction parameters.
  We use a reference coefficient of friction of 0.6, reference slip rate of
  1.0e-6 m/s, characteristic slip distance of 0.037 m, coefficients a and b
  of 0.0125 and 0.0172, and no cohesion (0 MPa).
- The parameters specific to this example are in dynamic_
+ The parameters specific to this example are in 
 \family typewriter
-ratestateageing.cfg
+dynamic_ratestateageing.cfg
 \family default
 , so we run the problem via:
 \end_layout
@@ -596,7 +603,7 @@ ratestateageing
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:quad4:ratestateageing"
 
 \end_inset

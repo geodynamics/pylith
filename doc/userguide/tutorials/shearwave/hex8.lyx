@@ -175,8 +175,8 @@ Simulation Parameters
 
 \begin_layout Standard
 The simulation parameters match those in the tri3 and tet4 examples.
- As in the tet4 example, we both the longitudinal degree of freedom and
- the out-of-plane transverse degree of freedom.
+ As in the tet4 example, we fix both the longitudinal degree of freedom
+ and the out-of-plane transverse degree of freedom.
  Using eight-point quadrature permits use of a time step of 1/20 s, which
  is slightly larger than the time step of 1/30 s used in the tri3 and tet4
  simulations.
@@ -202,7 +202,7 @@ output
  If the problem ran correctly, you should be able to generate a figure such
  as Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:shearwave:hex8:deform"
 
 \end_inset

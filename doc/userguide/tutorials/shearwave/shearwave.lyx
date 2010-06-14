@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -62,9 +62,9 @@ This suite of examples focuses on the dynamics of a shear wave propagating
  using a kinematic fault rupture with simultaneous slip over the fault surface,
  which we place at the center of the bar.
  The discretization size is 200 m in all cases.
- The slip time histories follows the integral of Brune's far-field time
- function with slip initiating at 0.1 s, a left-lateral final slip of 1.0
- m, and a rise time of 2.0 s.
+ The slip time histories follow the integral of Brune's far-field time function
+ with slip initiating at 0.1 s, a left-lateral final slip of 1.0 m, and a
+ rise time of 2.0 s.
  The shear wave speed in the bar is 1.0 km/s, so the shear wave reaches each
  end of the bar at 4.1 s.
  Absorbing boundaries on the ends of the bar prevent significant reflections.
