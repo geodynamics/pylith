@@ -143,9 +143,9 @@ pylith::friction::RateStateAgeing::_dbToProperties(
   const double b = dbValues[db_b];
   const double cohesion = dbValues[db_cohesion];
  
-  if (frictionCoef <= 0.0) {
+  if (frictionCoef < 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for reference coefficient "
+    msg << "Spatial database returned negative value for reference coefficient "
 	<< "of Rate and State friction Ageing Law.\n"
 	<< "reference coefficient of friction: " << frictionCoef << "\n";
     throw std::runtime_error(msg.str());
