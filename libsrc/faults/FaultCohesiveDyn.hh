@@ -125,16 +125,6 @@ public :
   vertexField(const char* name,
 	      const topology::SolutionFields* fields =0);
 
-  /** Get cell field associated with integrator.
-   *
-   * @param name Name of cell field.
-   * @param fields Solution fields.
-   * @returns Cell field.
-   */
-  const topology::Field<topology::SubMesh>&
-  cellField(const char* name,
-	    const topology::SolutionFields* fields =0);
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
