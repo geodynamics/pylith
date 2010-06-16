@@ -122,6 +122,19 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _quadrature->computeGeometry(*_faultMesh, cells);
 #endif
 
+  _fields->add("distribution", "distribution", pylith::topology::FieldBase::CELLS_FIELD, 1);
+  topology::Field<topology::SubMesh>& dist = _fields->get("distribution");
+  dist.allocate();
+  const ALE::Obj<RealSection>& distSection = dist.section();
+  assert(!distSection.isNull());
+  const double rank = (double) distSection->commRank();
+
+  // Loop over cells in fault mesh, compute area
+  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
+      != cellsEnd; ++c_iter) {
+    distSection->updatePoint(*c_iter, &rank);
+  }
+
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir);
 
@@ -2202,6 +2215,29 @@ pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped3D(
 
   PetscLogFlops(72);
 } // _adjustSoln3D
+
+// ----------------------------------------------------------------------
+// Get cell field associated with integrator.
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
+                                                 const topology::SolutionFields* fields)
+{ // cellField
+  if (0 == strcasecmp("distribution", name)) {
+    const topology::Field<topology::SubMesh>& dist = _fields->get("distribution");
+    return dist;
+  }
+  // Should not reach this point if requested field was found
+  std::ostringstream msg;
+  msg << "Request for unknown cell field '" << name << "' for fault '"
+      << label() << ".";
+  throw std::runtime_error(msg.str());
+
+  // Satisfy return values
+  assert(0 != _fields);
+  const topology::Field<topology::SubMesh>& buffer = _fields->get(
+    "buffer (vector)");
+  return buffer;
+} // cellField
 
 
 // End of file 
