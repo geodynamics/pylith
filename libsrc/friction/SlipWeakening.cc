@@ -133,17 +133,17 @@ pylith::friction::SlipWeakening::_dbToProperties(
   const double db_do = dbValues[db_d0];
   const double db_c = dbValues[db_cohesion];
 
-  if (db_static <= 0.0) {
+  if (db_static < 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for static coefficient "
+    msg << "Spatial database returned negative value for static coefficient "
 	<< "of friction.\n"
 	<< "static coefficient of friction: " << db_static << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_dynamic <= 0.0) {
+  if (db_dynamic < 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for dynamic coefficient "
+    msg << "Spatial database returned negative value for dynamic coefficient "
 	<< "of friction.\n"
 	<< "dynamic coefficient of friction: " << db_dynamic << "\n";
     throw std::runtime_error(msg.str());

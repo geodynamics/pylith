@@ -107,10 +107,12 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
     new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
 
   std::map<edge_type, point_type> edge2vertex;
-    
+   
+#if 0 // DON'T KNOW NEW INTERFACE 
   newSieveMesh->setSieve(newSieve);
   ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), * newSieveMesh,
 					   edge2vertex);
+#endif
 
   // Fix material ids
   const int numCells = sieveMesh->heightStratum(0)->size();
