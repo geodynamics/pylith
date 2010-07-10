@@ -65,6 +65,9 @@ class TestApp(Script):
     from TestRateStateAgeing import TestRateStateAgeing
     suite.addTest(unittest.makeSuite(TestRateStateAgeing))
 
+    from TestTimeWeakening import TestTimeWeakening
+    suite.addTest(unittest.makeSuite(TestTimeWeakening))
+
     from TestFrictionModel import TestFrictionModel
     suite.addTest(unittest.makeSuite(TestFrictionModel))
 
