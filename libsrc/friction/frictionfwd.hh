@@ -32,6 +32,8 @@ namespace pylith {
     
     class RateStateAgeing;
 
+    class TimeWeakening;
+
   } // friction
 } // pylith
 
