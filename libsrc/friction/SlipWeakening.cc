@@ -298,11 +298,16 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double slipPrev = stateVars[s_slipPrev];
- 
-  stateVars[s_slipPrev] = stateVars[s_slipCum];
-  stateVars[s_slipCum] += fabs(slip - slipPrev);
- 
+  if (slipRate != 0.0) {
+    const double slipPrev = stateVars[s_slipPrev];
+
+    stateVars[s_slipPrev] = stateVars[s_slipCum];
+    stateVars[s_slipCum] += fabs(slip - slipPrev);
+  } else {
+    // Sliding has stopped, so reset state variables.
+    stateVars[s_slipPrev] = slip;
+    stateVars[s_slipCum] = 0.0;
+  } // else
 } // _updateStateVars
 
 
