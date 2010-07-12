@@ -12,7 +12,7 @@
 
 /** @file libsrc/friction/TimeWeakening.hh
  *
- * @brief C++ slip weakening fault constitutive model.
+ * @brief C++ time weakening fault constitutive model.
  */
 
 #if !defined(pylith_friction_timeweakening_hh)
@@ -22,10 +22,10 @@
 #include "FrictionModel.hh" // ISA FrictionModel
 
 // TimeWeakening -------------------------------------------------------
-/** @brief C++ slip weakening fault constitutive model.
+/** @brief C++ time weakening fault constitutive model.
  *
- * Friction is equal to the product of a coefficient of friction (function
- * of slip path length) and the normal traction.
+ * Friction is equal to the product of a coefficient of friction
+ * (function of time since slipping started) and the normal traction.
  */
 
 class pylith::friction::TimeWeakening : public FrictionModel
