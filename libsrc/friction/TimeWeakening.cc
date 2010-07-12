@@ -48,7 +48,7 @@ namespace pylith {
 
       // State Variables.
       const pylith::materials::Metadata::ParamDescription stateVars[] = {
-	{ "Elapsed_time", 1, pylith::topology::FieldBase::SCALAR },
+	{ "elapsed_time", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
@@ -60,7 +60,7 @@ namespace pylith {
       };
 
       const int numDBStateVars = 1;
-      const char* dbStateVars[1] = { "Elapsed-time",
+      const char* dbStateVars[1] = { "elapsed-time",
       };      
       
     } // _TimeWeakening
@@ -259,7 +259,7 @@ pylith::friction::TimeWeakening::_calcFriction(const double slip,
   if (normalTraction <= 0.0) {
     // if fault is in compression
     if (stateVars[s_time] < properties[p_Tc]) {
-	// if/else linear slip-weakening form of mu_f 
+	// if/else linear time-weakening form of mu_f 
 	mu_f = properties[p_coefS] -
 	  (properties[p_coefS] - properties[p_coefD]) * 
 	  stateVars[s_time] / properties[p_Tc];
@@ -288,9 +288,13 @@ pylith::friction::TimeWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  const double dt = _dt;
+  if (slipRate != 0.0) {
+    const double dt = _dt;
 
-  stateVars[s_time] += dt;
+    stateVars[s_time] += dt;
+  } else {
+    stateVars[s_time] = 0.0;
+  } // else
  
 } // _updateStateVars
 

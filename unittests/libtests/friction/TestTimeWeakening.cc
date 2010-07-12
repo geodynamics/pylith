@@ -59,7 +59,7 @@ pylith::friction::TestTimeWeakening::testStateVarsMetadata(void)
 
   CPPUNIT_ASSERT_EQUAL(1, model._metadata.numDBStateVars());
   const char* const* names = model._metadata.dbStateVars();
-  CPPUNIT_ASSERT_EQUAL(std::string("Elapsed-time"), 
+  CPPUNIT_ASSERT_EQUAL(std::string("elapsed-time"), 
 		       std::string(names[0]));
 } // testStateVarsMetadata
 
@@ -83,7 +83,7 @@ pylith::friction::TestTimeWeakening::testHasStateVar(void)
 { // testHasStateVar
   TimeWeakening material;
 
-  CPPUNIT_ASSERT(material.hasStateVar("Elapsed_time"));
+  CPPUNIT_ASSERT(material.hasStateVar("elapsed_time"));
   CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
 } // testHasStateVar
 
