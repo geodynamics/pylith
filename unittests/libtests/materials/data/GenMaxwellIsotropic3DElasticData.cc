@@ -64,12 +64,12 @@ const char* pylith::materials::GenMaxwellIsotropic3DElasticData::_dbPropertyValu
 "density",
 "vs",
 "vp",
-"shear_ratio_1",
-"shear_ratio_2",
-"shear_ratio_3",
-"viscosity_1",
-"viscosity_2",
-"viscosity_3",
+"shear-ratio-1",
+"shear-ratio-2",
+"shear-ratio-3",
+"viscosity-1",
+"viscosity-2",
+"viscosity-3",
 };
 
 const char* pylith::materials::GenMaxwellIsotropic3DElasticData::_dbStateVarValues[] = {

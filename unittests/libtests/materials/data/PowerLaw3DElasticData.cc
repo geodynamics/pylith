@@ -59,9 +59,9 @@ const char* pylith::materials::PowerLaw3DElasticData::_dbPropertyValues[] = {
 "density",
 "vs",
 "vp",
-"reference_strain_rate",
-"reference_stress",
-"power_law_exponent",
+"reference-strain-rate",
+"reference-stress",
+"power-law-exponent",
 };
 
 const char* pylith::materials::PowerLaw3DElasticData::_dbStateVarValues[] = {
