@@ -50,12 +50,12 @@ const int pylith::friction::TimeWeakeningData::_numStateVarValues[] = {
 const char* pylith::friction::TimeWeakeningData::_dbPropertyValues[] = {
   "static-coefficient",
   "dynamic-coefficient",
-  "time-weakeneing-parameter",
+  "time-weakening-parameter",
   "cohesion",
 };
 
 const char* pylith::friction::TimeWeakeningData::_dbStateVarValues[] = {
-  "Elapsed-slip",
+  "elapsed-time",
 };
 
 const double pylith::friction::TimeWeakeningData::_dbProperties[] = {

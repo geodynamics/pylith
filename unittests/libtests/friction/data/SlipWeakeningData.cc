@@ -51,7 +51,7 @@ const int pylith::friction::SlipWeakeningData::_numStateVarValues[] = {
 const char* pylith::friction::SlipWeakeningData::_dbPropertyValues[] = {
   "static-coefficient",
   "dynamic-coefficient",
-  "slip-weakeneing-parameter",
+  "slip-weakening-parameter",
   "cohesion",
 };
 
