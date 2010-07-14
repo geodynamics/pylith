@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -56,7 +56,7 @@ name "sec:Tutorial-3d-hex8-gravity"
 
 \end_inset
 
-Tutorial Using Hexahedral Mesh Created by CUBIT - Gravity Examples
+Gravitational Body Force Examples
 \end_layout
 
 \begin_layout Standard
@@ -86,8 +86,7 @@ Overview
 \begin_layout Standard
 This set of examples describes a set of problems for PyLith involving gravitatio
 nal body forces.
- All of the examples are quasi-static and all of them run for a time period
- of 200 years.
+ All of the examples are quasi-static and run for a time period of 200 years.
  These examples also demonstrate the use of a generalized Maxwell viscoelastic
  material, which is used for the lower crust in all examples.
  The final example (step17) demonstrates the usage of a finite strain formulatio
@@ -117,7 +116,7 @@ step17.cfg
 \end_layout
 
 \begin_layout LyX-Code
-pylith stepxx.cfg
+pylith stepXX.cfg
 \end_layout
 
 \begin_layout Standard
@@ -128,7 +127,7 @@ pylithapp.cfg
 , and then override or augment them with the additional parameters in the
  
 \family typewriter
-stepxx.cfg
+stepXX.cfg
 \family default
  file.
  Each 
@@ -148,13 +147,12 @@ The
 \family typewriter
 step15.cfg
 \family default
- file describes a problem with extremely simple Dirichlet boundary conditions.
+ file defines a problem with extremely simple Dirichlet boundary conditions.
  On the positive and negative x-faces, the positive and negative y-faces,
  and the negative z-face, the displacements normal to the face are set to
  zero.
- We then apply gravitational body forces.
- Since all the material in the example has the same density, for the elastic
- solution, the resultant stresses should be:
+ Because all of the materials in the example have the same density, the
+ elastic solution for loading via gravitational body forces is
 \begin_inset Formula \begin{equation}
 \sigma_{zz}=\rho gh;\:\sigma_{xx}=\sigma_{yy}=\frac{\nu\rho gh}{1-\nu}\:.\label{eq:1-1}\end{equation}
 
@@ -237,7 +235,7 @@ stability_factor = 1.0 ; use time step equal to stable value from materials
 \end_layout
 
 \begin_layout Standard
-We use a generalized Maxwell model for the lower crust (see 
+We use a generalized Maxwell model for the lower crust (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Formulation-for-Gen-Max"
@@ -321,8 +319,8 @@ examples/3d/hex8/output
 \family typewriter
 step15
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step15-displ-t200"
@@ -389,7 +387,7 @@ The
 \family typewriter
 step16.cfg
 \family default
- file describes a problem that is identical to example step15, except that
+ file defines a problem that is identical to example step15, except that
  initial stresses are used to prevent the initial large displacements due
  to 'turning on' gravity.
  Since all normal stress components are given an initial stress of 
@@ -397,7 +395,8 @@ step16.cfg
 \end_inset
 
 , the initial stress state is lithostatic, which is an appropriate condition
- for many tectonic problems in the absence of tectonic stresses (e.g., 
+ for many tectonic problems in the absence of tectonic stresses (e.g., McGarr
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "McGarr:1988"
@@ -411,10 +410,9 @@ key "McGarr:1988"
 \end_layout
 
 \begin_layout Standard
-We set the gravity field, as for example step15, and we again use adaptive
- time stepping and use a generalized Maxwell rheology for the lower crust.
- We then must provide values for the initial stress for both the upper and
- lower crust.
+We set the gravity field, as in example step15, and we again use adaptive
+ time stepping with a generalized Maxwell rheology for the lower crust.
+ We provide values for the initial stress for both the upper and lower crust.
  Since the materials have the same density, we are able to use the same
  
 \family typewriter
@@ -498,8 +496,8 @@ examples/3d/hex8/output
 \family typewriter
 step16
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step16-stress_xx-t200"
@@ -567,8 +565,8 @@ The
 \family typewriter
 step17.cfg
 \family default
- file describes a problem that is identical to example step15, except that
- we now use a small strain formulation (see 
+ file defines a problem that is identical to example step15, except that
+ we now use a small strain formulation (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Small-Strain-Formulation"
@@ -576,22 +574,22 @@ reference "sec:Small-Strain-Formulation"
 \end_inset
 
 ).
- All of the problems up to this point have assumed infinitesimal (linear)
- strain, meaning that the change in shape of the domain during deformation
- is not taken into account.
+ All of the problems up to this point have assumed infinitesimal strain,
+ meaning that the change in shape of the domain during deformation is not
+ taken into account.
  In many problems it is important to consider the change in shape of the
  domain.
  This is particularly important in many problems involving gravitational
  body forces, since a change in shape of the domain results in a different
- system of forces.
+ stress field.
  By examining the stress and deformation fields for this example in comparison
  with those of example step15, we can see what effect the infinitesimal
  strain approximation has on our solution.
 \end_layout
 
 \begin_layout Standard
-We set the gravity field, as for example step15, and we again use adaptive
- time stepping and use a generalized Maxwell rheology for the lower crust.
+We set the gravity field, as in example step15 and again use adaptive time
+ stepping withs a generalized Maxwell rheology for the lower crust.
  The only change is that we change the problem formulation from the default
  
 \family typewriter
@@ -642,8 +640,8 @@ examples/3d/hex8/output
 \family typewriter
 step17
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step17-disp-t200"

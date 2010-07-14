@@ -53,6 +53,10 @@ class OutputFaultDyn(OutputManagerSubMesh):
                                                   "traction"])
   vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
+  cellInfoFields = pyre.inventory.list("cell_info_fields",
+                                       default=["distribution"])
+  cellInfoFields.meta['tip'] = "Names of cell info fields to output."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -73,6 +77,7 @@ class OutputFaultDyn(OutputManagerSubMesh):
     OutputManagerSubMesh._configure(self)
     self.vertexInfoFields = self.inventory.vertexInfoFields
     self.vertexDataFields = self.inventory.vertexDataFields
+    self.cellInfoFields   = self.inventory.cellInfoFields
     return
 
 

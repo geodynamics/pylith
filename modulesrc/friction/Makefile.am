@@ -22,7 +22,8 @@ swig_sources = \
 	FrictionModel.i \
 	StaticFriction.i \
 	SlipWeakening.i \
-	RateStateAgeing.i
+	RateStateAgeing.i \
+	TimeWeakening.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)
 swiginclude_HEADERS = \

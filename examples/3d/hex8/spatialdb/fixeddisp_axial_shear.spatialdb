@@ -4,7 +4,7 @@
 // displacement field for Dirichlet boundary conditions associated
 // with shear in the xy plane and axial displacements on -x and +x.
 //
-// dof-0: Ux(x) = 0
+// dof-0: Ux(x) = -1.0 m * x / 3 km
 // dof-1: Uy(x) = 1.0 m * x / 3 km
 // dof-2: Uz(x) = 0
 //

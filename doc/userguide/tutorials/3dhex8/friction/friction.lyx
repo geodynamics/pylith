@@ -1,4 +1,4 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -56,7 +56,7 @@ name "sec:Tutorial-3d-hex8-friction"
 
 \end_inset
 
-Tutorial Using Hexahedral Mesh Created by CUBIT - Fault Friction Examples
+Fault Friction Examples
 \end_layout
 
 \begin_layout Standard
@@ -86,16 +86,21 @@ Overview
 \begin_layout Standard
 This set of examples provides an introduction to using fault friction in
  static and quasi-static problems with PyLith.
+ Dynamic problems with fault friction are discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:tutorial:shearwave:quad4"
+
+\end_inset
+
+.
  The boundary conditions are all either static or quasi-static Dirichlet
  conditions, and only elastic materials are used.
- Thus, the only aspects that were not covered in previous examples involve
- the use of fault friction.
- Note that in all the fault friction examples we apply axial (x) displacements
- on both the positive and negative x-faces to maintain a compressive normal
- stress on the fault.
+ In all the fault friction examples we apply axial (x) displacements on
+ both the positive and negative x-faces to maintain a compressive normal
+ tractions on the fault.
  Otherwise, there would be no frictional resistance.
- All of the fault friction models are nonlinear, and they therefore require
- the usage of the nonlinear solver.
+ Fault friction generates nonlinear behavior, so we use the nonlinear solver.
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
@@ -129,7 +134,7 @@ step14.cfg
 \end_layout
 
 \begin_layout LyX-Code
-pylith stepxx.cfg
+pylith stepXX.cfg
 \end_layout
 
 \begin_layout Standard
@@ -140,7 +145,7 @@ pylithapp.cfg
 , and then override or augment them with the additional parameters in the
  
 \family typewriter
-stepxx.cfg
+stepXX.cfg
 \family default
  file.
  Each 
@@ -160,11 +165,10 @@ The
 \family typewriter
 step10.cfg
 \family default
- file describes a problem that is identical to example step01, except for
+ file defines a problem that is identical to example step01, except for
  the presence of a vertical fault with static friction.
  In this case, the applied displacements are insufficient to cause the fault
- to slip, so the solution should be identical to the results of example
- step01.
+ to slip, so the solution is identical to that in example step01.
  As in previous examples involving faults, we must first provide an array
  defining the fault interfaces:
 \end_layout
@@ -211,7 +215,7 @@ FaultCohesiveKin
 \family typewriter
 FaultCohesiveDyn
 \family default
-, and we must also define the friction model to use:
+ and we set the friction model to use:
 \end_layout
 
 \begin_layout LyX-Code
@@ -248,7 +252,7 @@ The
 StaticFriction
 \family default
  model requires values for the coefficient of friction and the cohesion
- (see 
+ (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Fault-Constitutive-Models"
@@ -362,8 +366,8 @@ examples/3d/hex8/output
 \family typewriter
 step10
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step10-fault-traction-slip"
@@ -396,8 +400,7 @@ status open
 \begin_layout Plain Layout
 Magnitude of tractions on the fault for example step10 visualized using
  ParaView.
- Vectors of fault slip are also plotted; however, since slip does not occur
- for this example they do not appear.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:step10-fault-traction-slip"
@@ -422,12 +425,7 @@ Step11 - Static Friction (Slip) with Static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-step11.cfg
-\family default
- file describes a problem that is nearly identical to example step10, except
- that for this example we apply twice as much shear displacement, which
+In step11 we apply twice as much shear displacement as in step10, which
  is sufficient to induce slip on the fault.
  All other settings are identical.
  To change the amount of shear displacement, we change the spatial database
@@ -520,8 +518,8 @@ examples/3d/hex8/output
 \family typewriter
 step11
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step11-fault-traction-slip"
@@ -555,8 +553,11 @@ status open
 Magnitude of tractions on the fault for example step10 visualized using
  ParaView.
  Vectors of fault slip are also plotted.
- Note that to get the proper slip orientation it is necessary to use the
- Calculator in ParaView.
+ Note that PyLith outputs slip in the fault coordinate system, so we transform
+ them to the global coordinate system using the Calculator in ParaView.
+ A more general approach involves outputing the fault coordinate system
+ information and using these fields in the Calculator.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:step11-fault-traction-slip"
@@ -751,8 +752,8 @@ examples/3d/hex8/output
 \family typewriter
 step12
 \family default
-), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step12-displ-t200"
@@ -811,12 +812,8 @@ Step13 - Slip-weakening Friction with Quasi-static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-step13.cfg
-\family default
- file describes a problem that is identical to example step12, except that
- we use a slip-weakening friction model rather than a static friction model.
+In this example we replace the static friction fault constitutive model
+ in step12 with a slip-weakening friction fault constitutive model.
  Fault friction is overcome at about t = 80 years, the fault slips in each
  subsequent time step.
  We again use a constant time step size of 5 years and apply the same intial
@@ -842,7 +839,7 @@ friction = pylith.friction.SlipWeakening
 \begin_layout Standard
 The slip-weakening constitutive model requires a static coefficient of friction,
  a dynamic coefficient of friction, a slip weakening parameter, and a cohesion
- (see 
+ (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Fault-Constitutive-Models"
@@ -911,8 +908,8 @@ examples/3d/hex8/output
 \family typewriter
 step1
 \family default
-3), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+3).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step13-displ-t200"
@@ -971,13 +968,8 @@ Step14 - Rate-and-state Friction with Quasi-static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-step14.cfg
-\family default
- file describes a problem that is identical to example step13, except that
- we use a rate-and-state friction model with an aging law instead of a slip-weak
-ening friction model.
+In step14 we use a rate-and-state friction model with an ageing law instead
+ of a slip-weakening friction model.
  Slip begins to occur at about t = 45 years, and continues in each subsequent
  time step.
  We again use a constant time step size of 5 years and apply the same intial
@@ -1110,8 +1102,8 @@ examples/3d/hex8/output
 \family typewriter
 step1
 \family default
-4), and the results may be visualized using a tool such as ParaView or mayavi2.
- Results using ParaView are shown in 
+4).
+ Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:step14-displ-t200"

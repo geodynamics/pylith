@@ -2,17 +2,18 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-----------------------------------------------------------------------
-SECONDARY PRIORITIES
-----------------------------------------------------------------------
-
-* Better preconditioning [Matt/Brad]
-
-  Need field split working for both SolverLinear and SolverNonlinear.
+* Uniform global refinement for tets with faults
 
 * Output to HDF5 files.
 
-* Uniform global refinement for tets with faults
+* Reformulate solves in terms of Schur complement
+
+  + adjustSolnLumped()
+    Compute Lagrange multipliers then displacements
+  + form C as sparse matrix, use PETSc operations for computation
+    (will work parallel)
+  + Refactor friction sensitivity solve, fault preconditioner, and
+    adjustSolnLumped()
 
 * Cleanup
   + memory model
@@ -31,9 +32,22 @@ SECONDARY PRIORITIES
   + Specialized elasticity integrator objects for Quad4, Hex8
     - Add for lgdeform, implicit time integration?
 
-* Testing
-  + Need full-scale test with variation in physical properties
-    within a material.
+* Lumped elasticity formulation for large deformations
+
+----------------------------------------------------------------------
+SECONDARY PRIORITIES
+----------------------------------------------------------------------
+
+* Combined kinematic and dynamic fault implementation
+
+  FaultCohesiveKinDyn
+
+  Kinematic slip in confined space/time region, otherwise governed by
+  fault constitutive model.
+
+* Better preconditioning [Matt/Brad]
+
+  Need field split working for both SolverLinear and SolverNonlinear.
 
 * utilities
   + pylith_eqsummary
@@ -41,18 +55,6 @@ SECONDARY PRIORITIES
     Ability to get shear modulus on both sides of the fault (use fault normal).
 
 * GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
-
-* VTKDataReaderZip (obsolete if use VTK XML files?)
-
-  Read VTK files from zipfile.
-
-  import zipfile
-  zip = zipfile.open("test.zip")
-  for filename in zip.namelist():
-    bytes = zip.read(filename)
-    reader.input_string = bytes
-    reader.update()
-    data = reader.get_output()
 
 * Lumped solver [Brad]
   + Need to finish unit tests
@@ -64,8 +66,6 @@ SECONDARY PRIORITIES
 
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
-
-* Lumped elasticity formulation for large deformations
 
 * Manual
 
@@ -111,9 +111,6 @@ Brad
       meshio C++, SWIG
       problems C++, SWIG
       topology C++, SWIG
-
-1. Savage-Presscott benchmark
-    Tet mesh
 
 2. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
@@ -215,8 +212,6 @@ Brad
 RELEASE 1.5
 ----------------------------------------------------------------------
 
-2. 2-D Plane strain Maxwell viscoelastic rheology [Charles]
-
 3. 2-D Plane strain Generalized Maxwell viscoelastic rheology [Charles]
 
 4. 2-D Power-law rheology [Charles]
@@ -234,11 +229,6 @@ RELEASE 1.5
 
 7. Body forces? [Charles is going to discuss this with Brad Hager to
 see if this will satisfy their needs]
-
-Modularize output? [Matt]
-
-Uniform refinement (debug, check, all cell types)
-
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -309,11 +299,7 @@ Release 1.6
      Interpolate solution to desired location
      Solution field (time history)
 
-  3. Output velocity field
-
   4. Uniform global refinement
-
-  5. Drucker-Prager viscoelastoplastic
 
   6. FaultCohesiveTract (dikes)
 

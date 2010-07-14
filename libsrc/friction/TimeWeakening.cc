@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "SlipWeakening.hh" // implementation of object methods
+#include "TimeWeakening.hh" // implementation of object methods
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
@@ -30,7 +30,7 @@
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace friction {
-    namespace _SlipWeakening {
+    namespace _TimeWeakening {
 
       // Number of physical properties.
       const int numProperties = 4;
@@ -39,98 +39,92 @@ namespace pylith {
       const pylith::materials::Metadata::ParamDescription properties[] = {
 	{ "static_coefficient", 1, pylith::topology::FieldBase::SCALAR },
 	{ "dynamic_coefficient", 1, pylith::topology::FieldBase::SCALAR },
-        { "slip_weakening_parameter", 1, pylith::topology::FieldBase::SCALAR },
+        { "time_weakening_parameter", 1, pylith::topology::FieldBase::SCALAR },
 	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Number of State Variables.
-      const int numStateVars = 2;
+      const int numStateVars = 1;
 
       // State Variables.
       const pylith::materials::Metadata::ParamDescription stateVars[] = {
-	{ "cumulative_slip", 1, pylith::topology::FieldBase::SCALAR },
-	{ "previous_slip", 1, pylith::topology::FieldBase::SCALAR },
+	{ "elapsed_time", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
       const int numDBProperties = 4;
       const char* dbProperties[4] = { "static-coefficient",
 				      "dynamic-coefficient",
-				      "slip-weakening-parameter",
+				      "time-weakening-parameter",
 				      "cohesion",
       };
 
-      const int numDBStateVars = 2;
-      const char* dbStateVars[2] = { "cumulative-slip",
-				     "previous-slip",
+      const int numDBStateVars = 1;
+      const char* dbStateVars[1] = { "elapsed-time",
       };      
       
-    } // _SlipWeakening
+    } // _TimeWeakening
   } // friction
 } // pylith
 
 // Indices of physical properties
-const int pylith::friction::SlipWeakening::p_coefS = 0;
-const int pylith::friction::SlipWeakening::p_coefD = 
-  pylith::friction::SlipWeakening::p_coefS + 1;
-const int pylith::friction::SlipWeakening::p_d0 = 
-  pylith::friction::SlipWeakening::p_coefD + 1;
-const int pylith::friction::SlipWeakening::p_cohesion =
-  pylith::friction::SlipWeakening::p_d0 + 1;
+const int pylith::friction::TimeWeakening::p_coefS = 0;
+const int pylith::friction::TimeWeakening::p_coefD = 
+  pylith::friction::TimeWeakening::p_coefS + 1;
+const int pylith::friction::TimeWeakening::p_Tc = 
+  pylith::friction::TimeWeakening::p_coefD + 1;
+const int pylith::friction::TimeWeakening::p_cohesion =
+  pylith::friction::TimeWeakening::p_Tc + 1;
 
 // Indices of database values (order must match dbProperties)
-const int pylith::friction::SlipWeakening::db_coefS = 0;
-const int pylith::friction::SlipWeakening::db_coefD = 
-  pylith::friction::SlipWeakening::db_coefS + 1;
-const int pylith::friction::SlipWeakening::db_d0 = 
-  pylith::friction::SlipWeakening::db_coefD + 1;
-const int pylith::friction::SlipWeakening::db_cohesion =
-  pylith::friction::SlipWeakening::db_d0 + 1;
+const int pylith::friction::TimeWeakening::db_coefS = 0;
+const int pylith::friction::TimeWeakening::db_coefD = 
+  pylith::friction::TimeWeakening::db_coefS + 1;
+const int pylith::friction::TimeWeakening::db_Tc = 
+  pylith::friction::TimeWeakening::db_coefD + 1;
+const int pylith::friction::TimeWeakening::db_cohesion =
+  pylith::friction::TimeWeakening::db_Tc + 1;
 
 // Indices of state variables.
-const int pylith::friction::SlipWeakening::s_slipCum = 0;
-const int pylith::friction::SlipWeakening::s_slipPrev = 
-  pylith::friction::SlipWeakening::s_slipCum + 1;
+const int pylith::friction::TimeWeakening::s_time = 0;
 
 // Indices of database values (order must match dbProperties)
-const int pylith::friction::SlipWeakening::db_slipCum = 0;
-const int pylith::friction::SlipWeakening::db_slipPrev = 
-  pylith::friction::SlipWeakening::db_slipCum + 1;
+const int pylith::friction::TimeWeakening::db_time = 0;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::friction::SlipWeakening::SlipWeakening(void) :
-  FrictionModel(materials::Metadata(_SlipWeakening::properties,
-				    _SlipWeakening::numProperties,
-				    _SlipWeakening::dbProperties,
-				    _SlipWeakening::numDBProperties,
-				    _SlipWeakening::stateVars,
-				    _SlipWeakening::numStateVars,
-				    _SlipWeakening::dbStateVars,
-				    _SlipWeakening::numDBStateVars))
+pylith::friction::TimeWeakening::TimeWeakening(void) :
+  FrictionModel(materials::Metadata(_TimeWeakening::properties,
+				    _TimeWeakening::numProperties,
+				    _TimeWeakening::dbProperties,
+				    _TimeWeakening::numDBProperties,
+				    _TimeWeakening::stateVars,
+				    _TimeWeakening::numStateVars,
+				    _TimeWeakening::dbStateVars,
+				    _TimeWeakening::numDBStateVars))
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::friction::SlipWeakening::~SlipWeakening(void)
+pylith::friction::TimeWeakening::~TimeWeakening(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
 void
-pylith::friction::SlipWeakening::_dbToProperties(
+pylith::friction::TimeWeakening::_dbToProperties(
 					   double* const propValues,
 					   const double_array& dbValues) const
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
-  assert(_SlipWeakening::numDBProperties == numDBValues);
+  assert(_TimeWeakening::numDBProperties == numDBValues);
 
   const double db_static = dbValues[db_coefS];
   const double db_dynamic = dbValues[db_coefD];
-  const double db_do = dbValues[db_d0];
+  const double db_To = dbValues[db_Tc];
   const double db_c = dbValues[db_cohesion];
 
   if (db_static < 0.0) {
@@ -149,17 +143,17 @@ pylith::friction::SlipWeakening::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_d0 <= 0.0) {
+  if (db_To <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for slip weakening parameter "
+    msg << "Spatial database returned nonpositive value for time weakening parameter "
 	<< "of friction.\n"
-	<< "slip weakening parameter of friction: " << db_d0 << "\n";
+	<< "time weakening parameter of friction: " << db_To << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
   propValues[p_coefS] = db_static;
   propValues[p_coefD] = db_dynamic;
-  propValues[p_d0] = db_do;
+  propValues[p_Tc] = db_To;
   propValues[p_cohesion] = db_c;
 
 } // _dbToProperties
@@ -167,91 +161,87 @@ pylith::friction::SlipWeakening::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::friction::SlipWeakening::_nondimProperties(double* const values,
+pylith::friction::TimeWeakening::_nondimProperties(double* const values,
 						    const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
-  assert(nvalues == _SlipWeakening::numProperties);
+  assert(nvalues == _TimeWeakening::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const double timeScale = _normalizer->timeScale();
   const double pressureScale = _normalizer->pressureScale();
 
-  values[p_d0] /= lengthScale;
+  values[p_Tc] /= timeScale;
   values[p_cohesion] /= pressureScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::friction::SlipWeakening::_dimProperties(double* const values,
+pylith::friction::TimeWeakening::_dimProperties(double* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
-  assert(nvalues == _SlipWeakening::numProperties);
+  assert(nvalues == _TimeWeakening::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const double timeScale = _normalizer->timeScale();
   const double pressureScale = _normalizer->pressureScale();
 
-  values[p_d0] *= lengthScale;
+  values[p_Tc] *= timeScale;
   values[p_cohesion] *= pressureScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
 // Compute state variables from values in spatial database.
 void
-pylith::friction::SlipWeakening::_dbToStateVars(
+pylith::friction::TimeWeakening::_dbToStateVars(
 					   double* const stateValues,
 					   const double_array& dbValues) const
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();
-  assert(_SlipWeakening::numDBStateVars == numDBValues);
+  assert(_TimeWeakening::numDBStateVars == numDBValues);
 
-  const double cumulativeSlip = dbValues[db_slipCum];
-  const double previousSlip = dbValues[db_slipPrev];
- 
-  stateValues[s_slipCum] = cumulativeSlip;
-  stateValues[s_slipPrev] = previousSlip;
+  const double timeElasped = dbValues[db_time];
+  
+  stateValues[s_time] = timeElasped;
 } // _dbToStateVars
 
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-pylith::friction::SlipWeakening::_nondimStateVars(double* const values,
+pylith::friction::TimeWeakening::_nondimStateVars(double* const values,
 						  const int nvalues) const
 { // _nondimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
-  assert(nvalues == _SlipWeakening::numStateVars);
+  assert(nvalues == _TimeWeakening::numStateVars);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const double timeScale = _normalizer->timeScale();
 
-  values[s_slipCum] /= lengthScale;
-  values[s_slipPrev] /= lengthScale;
+  values[s_time] /= timeScale;
 } // _nondimStateVars
 
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-pylith::friction::SlipWeakening::_dimStateVars(double* const values,
+pylith::friction::TimeWeakening::_dimStateVars(double* const values,
 					       const int nvalues) const
 { // _dimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
-  assert(nvalues == _SlipWeakening::numStateVars);
+  assert(nvalues == _TimeWeakening::numStateVars);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const double timeScale = _normalizer->timeScale();
 
-  values[s_slipCum] *= lengthScale;
-  values[s_slipPrev] *= lengthScale;
+  values[s_time] *= timeScale;
 } // _dimStateVars
 
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
 double
-pylith::friction::SlipWeakening::_calcFriction(const double slip,
+pylith::friction::TimeWeakening::_calcFriction(const double slip,
 						const double slipRate,
 						const double normalTraction,
 						const double* properties,
@@ -268,18 +258,16 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    if (stateVars[s_slipCum] < properties[p_d0]) {
-	// if/else linear slip-weakening form of mu_f 
+    if (stateVars[s_time] < properties[p_Tc]) {
+	// if/else linear time-weakening form of mu_f 
 	mu_f = properties[p_coefS] -
 	  (properties[p_coefS] - properties[p_coefD]) * 
-	  stateVars[s_slipCum] / properties[p_d0];
+	  stateVars[s_time] / properties[p_Tc];
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
     friction = - mu_f * normalTraction + properties[p_cohesion];
-  } else {
-    friction = properties[p_cohesion];    
-  } // if/else
+  } // if
 
   PetscLogFlops(6);
 
@@ -289,7 +277,7 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::SlipWeakening::_updateStateVars(const double slip,
+pylith::friction::TimeWeakening::_updateStateVars(const double slip,
 						  const double slipRate,
 						  const double normalTraction,
 						  double* const stateVars,
@@ -301,15 +289,13 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(0 != numProperties);
 
   if (slipRate != 0.0) {
-    const double slipPrev = stateVars[s_slipPrev];
+    const double dt = _dt;
 
-    stateVars[s_slipPrev] = stateVars[s_slipCum];
-    stateVars[s_slipCum] += fabs(slip - slipPrev);
+    stateVars[s_time] += dt;
   } else {
-    // Sliding has stopped, so reset state variables.
-    stateVars[s_slipPrev] = slip;
-    stateVars[s_slipCum] = 0.0;
+    stateVars[s_time] = 0.0;
   } // else
+ 
 } // _updateStateVars
 
 

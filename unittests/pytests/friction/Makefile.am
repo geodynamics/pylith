@@ -24,7 +24,8 @@ noinst_PYTHON = \
 	TestFrictionModel.py \
 	TestStaticFriction.py \
 	TestSlipWeakening.py \
-	TestRateStateAgeing.py
+	TestRateStateAgeing.py \
+	TestTimeWeakening.py
 
 
 # End of file 

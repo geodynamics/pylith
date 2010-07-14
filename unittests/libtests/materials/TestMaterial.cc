@@ -337,8 +337,18 @@ pylith::materials::TestMaterial::testDBToProperties(void)
   CPPUNIT_ASSERT(0 != _material);
   CPPUNIT_ASSERT(0 != _data);
   
-  const int numLocs = _data->numLocs;
+  // Check to make sure names of Metadata values match names of test
+  // data values (consistency check).
   const int numDBProperties = _data->numDBProperties;
+  char** dbPropertyLabelsE = _data->dbPropertyValues;
+  CPPUNIT_ASSERT_EQUAL(numDBProperties, _material->_metadata.numDBProperties());
+  const char* const* dbPropertyLabels = _material->_metadata.dbProperties();
+  for (int i=0; i < numDBProperties; ++i) 
+    CPPUNIT_ASSERT_EQUAL(std::string(dbPropertyLabelsE[i]),
+			 std::string(dbPropertyLabels[i]));
+
+  // Test _dbToProperties()
+  const int numLocs = _data->numLocs;
   double_array dbValues(numDBProperties);
 
   const int propertiesSize = _data->numPropsQuadPt;
@@ -443,8 +453,18 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
   CPPUNIT_ASSERT(0 != _material);
   CPPUNIT_ASSERT(0 != _data);
   
-  const int numLocs = _data->numLocs;
+  // Check to make sure names of Metadata values match names of test
+  // data values (consistency check).
   const int numDBStateVars = _data->numDBStateVars;
+  char** dbStateVarsLabelsE = _data->dbStateVarValues;
+  CPPUNIT_ASSERT_EQUAL(numDBStateVars, _material->_metadata.numDBStateVars());
+  const char* const* dbStateVarsLabels = _material->_metadata.dbStateVars();
+  for (int i=0; i < numDBStateVars; ++i) 
+    CPPUNIT_ASSERT_EQUAL(std::string(dbStateVarsLabelsE[i]),
+			 std::string(dbStateVarsLabels[i]));
+
+  // Test _dbToStateVars()
+  const int numLocs = _data->numLocs;
   double_array dbValues(numDBStateVars);
 
   const int stateVarsSize = _data->numVarsQuadPt;
