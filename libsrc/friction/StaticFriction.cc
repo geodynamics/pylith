@@ -93,9 +93,9 @@ pylith::friction::StaticFriction::_dbToProperties(
   const double coef = dbValues[db_coef];
   const double cohesion = dbValues[db_cohesion];
  
-  if (coef <= 0.0) {
+  if (coef < 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for coefficient "
+    msg << "Spatial database returned negative value for coefficient "
 	<< "of friction.\n"
 	<< "coefficient of friction: " << coef << "\n";
     throw std::runtime_error(msg.str());

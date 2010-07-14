@@ -24,6 +24,7 @@
 #include "pylith/friction/StaticFriction.hh"
 #include "pylith/friction/SlipWeakening.hh"
 #include "pylith/friction/RateStateAgeing.hh"
+#include "pylith/friction/TimeWeakening.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 #include "pylith/utils/sievetypes.hh"
@@ -57,6 +58,7 @@ import_array();
 %include "StaticFriction.i"
 %include "SlipWeakening.i"
 %include "RateStateAgeing.i"
+%include "TimeWeakening.i"
 
 
 // End of file

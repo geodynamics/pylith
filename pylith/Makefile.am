@@ -61,6 +61,7 @@ nobase_pkgpyexec_PYTHON = \
 	friction/StaticFriction.py \
 	friction/SlipWeakening.py \
 	friction/RateStateAgeing.py \
+	friction/TimeWeakening.py \
 	materials/__init__.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \

@@ -3,7 +3,7 @@ Cubit, given a set of regularly-spaced data, such as might be obtained
 from a DEM. We create the surface as a net surface (see Cubit
 documentation); this requires either a mapped mesh or a set of
 intersecting lines (u-lines and v-lines). In either case, the
-intersecting lines must for a logically structured quadrilateral
+intersecting lines must form a logically structured quadrilateral
 mesh. The Python script, dem2lines.py, creates the lines and resamples
 the original data outside a specified region for which full resolution
 is desired. This is useful because using a full-resolution surface for
@@ -12,9 +12,9 @@ the entire region can be quite memory intensive.
 The steps for creating the NURBS surface are as follows:
 
 1.  We start with a very coarse DEM of Mt. Ruapehu volcano in New
-Zealand in ASCII format. Note that the DEM must be in ASCII format and
-it must be ordered in either rows or columns. The DEM used in this
-example was produced using the GMT grd2xyz utility.
+Zealand (NZMG coordinates) in ASCII format. Note that the DEM must be in
+ASCII format and it must be ordered in either rows or columns. The DEM used
+in this example was produced using the GMT grd2xyz utility.
 
 2.  The parameters for the Python script are contained in the file
 dem2lines.cfg. In this file we specify the name of the input
@@ -34,14 +34,14 @@ also populate the ulines and vlines directories. You can visualize the
 VTK file to make sure it looks OK.
 
 4.  Once you have created the u-lines and v-lines, you must create a
-journal file the Cubit can use to create the NURBS surface. Each file
+journal file that Cubit can use to create the NURBS surface. Each file
 in the ulines and vlines directories is a separate Cubit command to
 create a single spline curve. To create the desired surface, we first
 create a ulines.jou file and a vlines.jou file to execute each of
 these. We then create a mktopo.jou file that executes these two
-journal files and then creates the NURBS surface
-(ruapehu_topo.sab). You can create the surface yourself by running
-Cubit and playing back the 'mktopo.jou' file.
+journal files and then creates the NURBS surface (ruapehu_topo.sab).
+You can create the surface yourself by running Cubit and playing back the
+'mktopo.jou' file.
 
 5.  Once the surface has been created, you can import it in future
 Cubit sessions and use it just as you would any surface created within

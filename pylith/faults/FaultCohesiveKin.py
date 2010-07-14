@@ -87,7 +87,7 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
             'data': ["slip",
                      "traction_change"]},
          'cell': \
-           {'info': [],
+           {'info': ["distribution"],
             'data': []}}
     return
 

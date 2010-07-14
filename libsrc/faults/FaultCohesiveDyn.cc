@@ -1090,24 +1090,6 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 } // vertexField
 
 // ----------------------------------------------------------------------
-// Get cell field associated with integrator.
-const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::FaultCohesiveDyn::cellField(const char* name,
-                                             const topology::SolutionFields* fields) { // cellField
-  // Should not reach this point if requested field was found
-  std::ostringstream msg;
-  msg << "Request for unknown cell field '" << name << "' for fault '"
-      << label() << ".";
-  throw std::runtime_error(msg.str());
-
-  // Satisfy return values
-  assert(0 != _fields);
-  const topology::Field<topology::SubMesh>& buffer = _fields->get(
-    "buffer (vector)");
-  return buffer;
-} // cellField
-
-// ----------------------------------------------------------------------
 void
 pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
 { // _setupInitialTractions

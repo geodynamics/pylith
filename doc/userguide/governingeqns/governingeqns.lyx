@@ -1537,7 +1537,7 @@ key "Bathe:1995"
  The Green-Lagrange strain provides a measure of the strain relative to
  the original, undeformed configuration.
 \begin_inset Formula \begin{gather}
-\varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}+u_{k,i}u_{k,i}),\text{ or}\\
+\varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}+u_{k,i}u_{k,j}),\text{ or}\\
 \varepsilon_{ij}=X_{ji}X_{ij}-\delta_{ij},\text{ where}\\
 X_{ij}=x_{i,j}(t)=\frac{\partial}{\partial x_{j}}(x_{i}(0)+u_{i}(t)),\end{gather}
 
