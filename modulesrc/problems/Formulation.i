@@ -88,10 +88,6 @@ namespace pylith {
       void submeshIntegrators(pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh> >** integrators,
 			      const int numIntegrators);
       
-	  /// Initialize formulation.
-	  virtual
-	  void initialize(void);
-
       /** Update handles and parameters for reforming the Jacobian and
        *  residual.
        *
@@ -148,13 +144,6 @@ namespace pylith {
       /// Compute rate fields (velocity and/or acceleration) at time t.
       virtual
       void calcRateFields(void) = 0;
-
-      // PROTECTED MEMBERS //////////////////////////////////////////////
-      protected :
-
-      /// Setup rate fields.
-      virtual
-      void _setupRateFields(void) = 0;
 
     }; // Formulation
 
