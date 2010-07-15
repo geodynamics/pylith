@@ -94,6 +94,8 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     # Allocate other fields, reusing layout from dispIncr
     self._info.log("Creating other fields.")
     self.fields.add("disp(t-dt)", "displacement")
+    self.fields.add("velocity(t)", "velocity")
+    self.fields.add("acceleration(t)", "acceleration")
     self.fields.copyLayout("dispIncr(t->t+dt)")
     self._debug.log(resourceUsageString())
 
@@ -105,6 +107,19 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     residual = self.fields.get("residual")
     residual.zero()
     residual.createVector()
+
+    lengthScale = normalizer.lengthScale()
+    timeScale = normalizer.timeScale()
+    velocityScale = lengthScale / timeScale
+    velocityT = self.fields.get("velocity(t)")
+    velocityT.scale(velocityScale.value)
+    velocityT.zero()
+
+    accelerationScale = velocityScale / timeScale
+    accelerationT = self.fields.get("acceleration(t)")
+    accelerationT.scale(accelerationScale.value)
+    accelerationT.zero()
+
     self._debug.log(resourceUsageString())
     logger.stagePop()
 

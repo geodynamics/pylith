@@ -152,28 +152,6 @@ pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 } // preconditioner
 
 // ----------------------------------------------------------------------
-// Initialize formulation.
-void
-pylith::problems::Formulation::initialize(void)
-{ // initialize
-
-  // Determine whether we need to compute velocity
-  _isJacobianSymmetric = false;
-  int numIntegrators = _meshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    assert(0 != _meshIntegrators[i]);
-    if (_meshIntegrators[i]->isJacobianSymmetric())
-      _isJacobianSymmetric = true;
-  } // fpr
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    assert(0 != _submeshIntegrators[i]);
-    if (_submeshIntegrators[i]->isJacobianSymmetric())
-      _isJacobianSymmetric = true;
-  } // for
-} // initialize
-
-// ----------------------------------------------------------------------
 // Update handles and parameters for reforming the Jacobian and
 // residual.
 void
@@ -190,8 +168,6 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
   _fields = fields;
   _t = t;
   _dt = dt;
-
-  _setupRateFields();
 } // updateSettings
 
 // ----------------------------------------------------------------------
@@ -211,8 +187,6 @@ pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* j
   _fields = fields;
   _t = t;
   _dt = dt;
-
-  _setupRateFields();
 } // updateSettings
 
 // ----------------------------------------------------------------------

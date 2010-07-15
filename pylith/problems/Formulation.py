@@ -440,7 +440,6 @@ class Formulation(PetscComponent, ModuleFormulation):
       integrator.initialize(totalTime, numTimeSteps, normalizer)
     ModuleFormulation.meshIntegrators(self, self.integratorsMesh)
     ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
-    ModuleFormulation.initialize(self)
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
@@ -485,7 +484,7 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     memoryLogger.stagePop()
 
-    # This creates a global order
+    # This also creates a global order.
     solution.createVector()
     solution.createScatter()
 

@@ -34,12 +34,6 @@ namespace pylith {
       /// Compute rate fields (velocity and/or acceleration) at time t.
       void calcRateFields(void);
 
-      // PROTECTED MEMBERS //////////////////////////////////////////////
-      protected :
-
-      /// Setup rate fields.
-      void _setupRateFields(void);
-
     }; // Implicit
 
   } // problems
