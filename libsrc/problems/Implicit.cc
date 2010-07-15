@@ -82,21 +82,5 @@ pylith::problems::Implicit::calcRateFields(void)
 
 } // calcRateFields
 
-// ----------------------------------------------------------------------
-// Setup rate fields.
-void
-pylith::problems::Implicit::_setupRateFields(void)
-{ // _setupRateFields
-  assert(0 != _fields);
- 
-  topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
-
-  if (!_fields->hasField("velocity(t)")) {
-    _fields->add("velocity(t)", "velocity");
-    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-    velocity.cloneSection(dispIncr);
-    velocity.zero();
-  } // if
-} // _setupRateFields
 
 // End of file
