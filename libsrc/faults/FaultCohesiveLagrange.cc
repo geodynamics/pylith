@@ -587,7 +587,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   /** We have J = [A C^T]
    *              [C   0]
    *
-   * We want to approximate -( C A^(-1) C^T)^(-1)
+   * We want to approximate -( C A^(-1) C^T )
    *
    * Consider Lagrange vertex L that constrains the relative
    * displacement between vertex N on the negative side of the fault
@@ -730,7 +730,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     // Compute -[C] [Adiag]^(-1) [C]^T
     //   C_{ij}          = orientationVertex[i*spaceDim+j]
     //   C^T_{ij}        = orientationVertex[j*spaceDim+i]
-    //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i] (BRAD: Are you sure its not a minus sign here?)
+    //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i]
     //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
     for (int kDim=0; kDim < spaceDim; ++kDim) {
