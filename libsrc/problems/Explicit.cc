@@ -114,31 +114,5 @@ pylith::problems::Explicit::calcRateFields(void)
   PetscLogFlops(vertices->size() * 6*spaceDim);
 } // calcRateFields
 
-// ----------------------------------------------------------------------
-// Setup rate fields.
-void
-pylith::problems::Explicit::_setupRateFields(void)
-{ // _setupRateFields
-  assert(0 != _fields);
- 
-  topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
-
-  if (!_fields->hasField("velocity(t)")) {
-    _fields->add("velocity(t)", "velocity");
-    topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
-    velocity.cloneSection(dispIncr);
-    velocity.zero();
-  } // if
-
-  if (!_fields->hasField("acceleration(t)")) {
-    _fields->add("acceleration(t)", "acceleration");
-    topology::Field<topology::Mesh>& acceleration = 
-      _fields->get("acceleration(t)");
-    acceleration.cloneSection(dispIncr);
-    acceleration.zero();
-  } // if
-} // _setupRateFields
-
-
 
 // End of file

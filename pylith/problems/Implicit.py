@@ -119,6 +119,7 @@ class Implicit(Formulation, ModuleImplicit):
 
     # Allocate other fields, reusing layout from dispIncr
     self._info.log("Creating other fields.")
+    self.fields.add("velocity(t)", "velocity")
     self.fields.copyLayout("dispIncr(t->t+dt)")
 
     # Setup fields and set to zero
@@ -127,6 +128,14 @@ class Implicit(Formulation, ModuleImplicit):
     residual = self.fields.get("residual")
     residual.zero()
     residual.createVector()
+
+    lengthScale = normalizer.lengthScale()
+    timeScale = normalizer.timeScale()
+    velocityScale = lengthScale / timeScale
+    velocityT = self.fields.get("velocity(t)")
+    velocityT.scale(velocityScale.value)
+    velocityT.zero()
+
     self._debug.log(resourceUsageString())
     memoryLogger.stagePop()
 
