@@ -1,0 +1,32 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.5.1, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release fixes a couple of bugs in v1.5.0. We strongly recommend
+all users of previous PyLith releases to switch to this latest
+release. See the README file for changes required to switch to the
+v1.5.x release series from previous versions.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions are in the User Manual with example
+installation procedures for a few platforms in the bundled doc/install
+directory.
+
+
+RELEASE NOTES
+
+  * Bug fixes
+
+    - Fixed dimensioning of velocity and acceleration fields in
+      output. The scales were set to just the length scale rather than
+      the length scale divided by the time scale and length scale
+      divided by the time scale squared.
+
+    - Fixed partitioning of cohesive cells. Cohesive cells were
+      ignored during partitioning of the mesh, so they were randomly
+      distributed among processors.
