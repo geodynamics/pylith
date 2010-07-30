@@ -3,7 +3,7 @@ dynamic spontaneous rupture benchmarks in which fault opening is
 not permitted.
 
 
-We are pleased to announce release of PyLith version 1.5.0
+We are pleased to announce release of PyLith version 1.5.1
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -100,6 +100,22 @@ left-lateral, but now the up-direction is used to enforce positive
 slip corresponds to reverse motion for dipping faults. For horizontal
 fault surfaces in 3-D a normal of (0,0,1) is assumed in determining
 the up-dip direction.
+
+----------------------------------------------------------------------
+Version 1.5.1
+----------------------------------------------------------------------
+
+  * Bug fixes
+
+    - Fixed dimensioning of velocity and acceleration fields in
+      output. The scales were set to just the length scale rather than
+      the length scale divided by the time scale and length scale
+      divided by the time scale squared.
+
+    - Fixed partitioning of cohesive cells. Cohesive cells were
+      ignored during partitioning of the mesh, so they were randomly
+      distributed among processors.
+
 
 ----------------------------------------------------------------------
 Version 1.5.0

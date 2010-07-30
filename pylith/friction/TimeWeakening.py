@@ -40,7 +40,7 @@ class TimeWeakening(FrictionModel, ModuleTimeWeakening):
                      "dynamic_coefficient",
                      "time_weakening_parameter",
                      "cohesion"],
-            'data': ["Elapsed_time"]},
+            'data': ["elapsed_time"]},
          'cell': \
            {'info': [],
             'data': []}}
