@@ -155,20 +155,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     return
 
 
-  def poststep(self, t, dt, fields):
-    """
-    Hook for doing stuff after advancing time step.
-    """
-    logEvent = "%spoststep" % self._loggingPrefix
-    self._eventLogger.eventBegin(logEvent)
-
-    Integrator.poststep(self, t, dt, fields)
-    FaultCohesive.poststep(self, t, dt, fields)
-
-    self._eventLogger.eventEnd(logEvent)
-    return
-
-
   def getVertexField(self, name, fields=None):
     """
     Get vertex field.

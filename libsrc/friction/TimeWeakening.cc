@@ -295,7 +295,7 @@ pylith::friction::TimeWeakening::_updateStateVars(const double slip,
   } else {
     stateVars[s_time] = 0.0;
   } // else
- 
+
 } // _updateStateVars
 
 
