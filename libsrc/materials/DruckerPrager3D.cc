@@ -540,10 +540,11 @@ pylith::materials::DruckerPrager3D::_calcStressElastoplastic(
 				      strainPPTpdt[5]/ae + devStressInitial[5]};
     const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
     const double yieldFunction = 3.0* alphaYield * trialMeanStress +
-      pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
-							  trialDevStress) -
+      sqrt(0.5 *
+	   pylith::materials::ElasticMaterial::scalarProduct3D( trialDevStress,
+								trialDevStress)) -
       beta;
-    PetscLogFlops(74);
+    PetscLogFlops(76);
 
     // If yield function is greater than zero, compute elastoplastic stress.
     if (yieldFunction >= 0.0) {
@@ -802,9 +803,11 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 				    strainPPTpdt[5]/ae + devStressInitial[5]};
   const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
   const double yieldFunction = 3.0* alphaYield * trialMeanStress +
-    pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
-							trialDevStress) - beta;
-  PetscLogFlops(74);
+    sqrt(0.5 *
+	 pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
+							     trialDevStress)) -
+    beta;
+  PetscLogFlops(76);
   
   // If yield function is greater than zero, compute elastoplastic stress and
   // corresponding tangent matrix.
@@ -1059,9 +1062,11 @@ pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic(
 				    strainPPTpdt[5]/ae + devStressInitial[5]};
   const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
   const double yieldFunction = 3.0* alphaYield * trialMeanStress +
-    pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
-							trialDevStress) - beta;
-  PetscLogFlops(74);
+    sqrt(0.5 *
+	 pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
+							     trialDevStress)) -
+    beta;
+  PetscLogFlops(76);
 
   // If yield function is greater than zero, compute plastic strains.
   // Otherwise, plastic strains remain the same.
