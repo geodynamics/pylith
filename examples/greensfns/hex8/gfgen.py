@@ -23,7 +23,10 @@ import os
 import re
 import glob
 from pyre.units.time import s
+from pyre.units.length import m
 
+from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+from spatialdata.geocoords.CSCart import CSCart
 from pyre.applications.Script import Script as Application
 
 class GfGen(Application):
@@ -45,15 +48,15 @@ class GfGen(Application):
     ## \b Properties
     ## @li \b fault_info_file  Name of VTK file containing fault info.
     ## @li \b spatialdb_output_root Root name for output spatialdb files.
+    ## @li \b slip_time_spatialdb Name of spatialdb file containing slip times.
     ## @li \b metadata_output_file Name of output file containing metadata.
-    ## @li \b response_output_root Root name for files containing responses.
+    ## @li \b config_output_file Name of .cfg output file.
     ## @li \b impulse_type Type of impulse to be applied.
     ## @li \b impulse_value Amount of impulse to apply.
-    ## @li \b timestamp_width Width of timestamp field.
+    ## @li \b impulse_number_width Width of impulse number field.
     ##
     ## \b Facilities
     ## @li \b geometry  Geometry for output database.
-    ## @li \b iohandler  Object for writing database.
 
     import pyre.inventory
 
@@ -65,13 +68,17 @@ class GfGen(Application):
                                              default="impulse.spatialdb")
     spatialdbOutputRoot.meta['tip'] = "Root name for output spatialdb files."
 
+    slipTimeSpatialdb = pyre.inventory.str("slip_time_spatialdb",
+                                             default="sliptime.spatialdb")
+    slipTimeSpatialdb.meta['tip'] = "Name of spatialdb file containing slip times."
+
     metadataOutputFile = pyre.inventory.str("metadata_output_file",
                                        default="impulse_description.txt")
     metadataOutputFile.meta['tip'] = "Name of output file containing metadata."
 
-    responseOutputRoot = pyre.inventory.str("response_output_root",
-                                            default="response.vtk")
-    responseOutputRoot.meta['tip'] = "Root name for files containing responses."
+    configOutputFile = pyre.inventory.str("config_output_file",
+                                          default="greenfn.cfg")
+    configOutputFile.meta['tip'] = "Name of .cfg output file."
 
     impulseType = pyre.inventory.str("impulse_type",
                                      default="left-lateral-slip",
@@ -82,19 +89,14 @@ class GfGen(Application):
     impulseValue = pyre.inventory.dimensional("impulse_value", default=1.0*m)
     impulseValue.meta['tip'] = "Impulse value."
 
-    timestampWidth = pyre.inventory.int("timestamp_width", default=4)
-    timestampWidth.meta['tip'] = "Width of timestamp field in spatialdb files."
+    impulseNumberWidth = pyre.inventory.int("impulse_number_width", default=4)
+    impulseNumberWidth.meta['tip'] = "Width of impulse number field."
 
     from spatialdata.spatialdb.generator.Geometry import Geometry
     geometry = pyre.inventory.facility("geometry", family="geometry",
                                        factory=Geometry)
     geometry.meta['tip'] = "Geometry for output database."
 
-    from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-    iohandler = pyre.inventory.facility("iohandler", family="simpledb_io",
-                                        factory=SimplIOAscii)
-    iohandler.meta['tip'] = "Object for writing database."
-    
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -107,8 +109,9 @@ class GfGen(Application):
     self.cellType = ""
 
     self.faultCoords = None
-    self.faultNormals = None
-    self.integratedSlip = None
+    self.normalDir = None
+    self.strikeDir = None
+    self.dipDir = None
 
     return
 
@@ -136,17 +139,17 @@ class GfGen(Application):
     # File info.
     self.faultInfoFile = self.inventory.faultInfoFile
     self.spatialdbOutputRoot = self.inventory.spatialdbOutputRoot
+    self.slipTimeSpatialdb = self.inventory.slipTimeSpatialdb
     self.metadataOutputFile = self.inventory.metadataOutputFile
-    self.responseOutputRoot = self.inventory.responseOutputRoot
+    self.configOutputFile = self.inventory.configOutputFile
 
     # Impulse information
     self.impulseType = self.inventory.impulseType
     self.impulseValue = self.inventory.impulseValue.value
-    self.timestampWidth = self.inventory.timestampWidth
+    self.impulseNumberWidth = self.inventory.impulseNumberWidth
 
     # Spatialdb output facilities
     self.geometry = self.inventory.geometry
-    self.iohandler = self.inventory.iohandler
 
     return
       
@@ -176,8 +179,11 @@ class GfGen(Application):
     for vertDataArray in range(numVertDataArrays):
       arrayName = vertData.get_array_name(vertDataArray)
       if (arrayName == "normal_dir"):
-        self.faultNormals = vertData.get_array(vertDataArray).to_array()
-        break
+        self.normalDir = vertData.get_array(vertDataArray).to_array()
+      elif (arrayName == "strike_dir"):
+        self.strikeDir = vertData.get_array(vertDataArray).to_array()
+      elif (arrayName == "dip_dir"):
+        self.dipDir = vertData.get_array(vertDataArray).to_array()
 
     return
 
@@ -219,19 +225,25 @@ class GfGen(Application):
 
     # Create root output filename.
     suffIndex = self.spatialdbOutputRoot.rfind(".spatialdb")
-    if (suffIndex == -1):
-      outputRoot = self.spatialdbOutputRoot
-    else:
+    outputRoot = self.spatialdbOutputRoot
+    if (suffIndex != -1):
       outputRoot = self.spatialdbOutputRoot[:suffIndex - 1]
+
+    # Set up coordinate system.
+    # cs = self.geometry.coordsys()
+    # cs.initialize()
+    dataDim = self.spaceDim - 1
     
     # Loop over impulses to generate and modify the appropriate entries.
     for impulse in range(self.numFaultVertices):
 
       # Set filename
       impulseNum = int(impulse)
-      impulseString = repr(impulseNum).rjust(self.timestampWidth, '0')
+      impulseString = repr(impulseNum).rjust(self.impulseNumberWidth, '0')
       filename = outputRoot + "_i" + impulseString + ".spatialdb"
-      self.iohandler.filename = filename
+      writer = SimpleIOAscii()
+      writer.inventory.filename = filename
+      writer._configure()
 
       # Modify database values.
       array1[impulse] = self.impulseValue
@@ -246,105 +258,117 @@ class GfGen(Application):
       if (self.spaceDim == 2):
         data = {'points': self.faultVertices,
                 'coordsys': self.geometry.coordsys,
-                'data_dim': self.geometry.dataDim,
+                'data_dim': dataDim,
                 'values': [info1, info2]}
       else:
         data = {'points': self.faultVertices,
                 'coordsys': self.geometry.coordsys,
-                'data_dim': self.geometry.dataDim,
+                'data_dim': dataDim,
                 'values': [info1, info2, info3]}
 
-      self.iohandler.write(data)
+      writer.write(data)
 
     return
 
     
-  def _getGfGen(self):
+  def _makeConfig(self):
     """
-    Function to loop over integration points and compute principal axes for
-    each point.
+    Function to create .cfg file for creating Green's functions.
     """
-    # Create empty arrays for each principal axis and eigenvalue.
-    self.minPrincAxis = numpy.empty((self.numTensorPoints, self.spaceDim),
-                                    dtype=numpy.float64)
-    self.intPrincAxis = numpy.empty((self.numTensorPoints, self.spaceDim),
-                                    dtype=numpy.float64)
-    self.maxPrincAxis = numpy.empty((self.numTensorPoints, self.spaceDim),
-                                    dtype=numpy.float64)
-    self.minEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
-    self.intEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
-    self.maxEigenValue = numpy.empty(self.numTensorPoints, dtype=numpy.float64)
-    # Loop over integration points.
-    for point in xrange(self.numTensorPoints):
-      tensor = self.tensorSorted[point, :]
-      tensorOrdered, eigenValuesOrdered = self._compGfGen(tensor)
-      self.minPrincAxis[point,:] = tensorOrdered[0]
-      self.intPrincAxis[point,:] = tensorOrdered[1]
-      self.maxPrincAxis[point,:] = tensorOrdered[2]
-      self.minEigenValue[point] = eigenValuesOrdered[0]
-      self.intEigenValue[point] = eigenValuesOrdered[1]
-      self.maxEigenValue[point] = eigenValuesOrdered[2]
+    f = open(self.configOutputFile, 'w')
+    newLine = "\n"
 
+    # Write top-level header
+    topHeader = "# -*- Python -*-" + newLine + "[pylithapp]" + newLine + newLine
+    f.write(topHeader)
+    
+    # Write time step information
+    totalTime = "total_time = " + repr(float(self.numFaultVertices - 1)) + \
+                "*year" + newLine
+    dt  = "dt = 1.0*year" + newLine
+    divider = "# ----------------------------------------------------------" + \
+              newLine
+    problem = divider + "# problem" + newLine + divider + \
+              "[pylithapp.timedependent.implicit.time_step]" + newLine + \
+              totalTime + dt
+    f.write(problem)
+    faults = divider + "# faults" + newLine + divider + \
+             "[pylithapp.timedependent.interfaces.fault]" + newLine
+    f.write(newLine)
+    f.write(faults)
+    eqSrcs = "eq_srcs = ["
+    f.write(eqSrcs)
+    comma = ","
+
+    # Write eq_srcs list.
+    for impulse in range(self.numFaultVertices):
+      srcName = repr(impulse).rjust(self.impulseNumberWidth, '0')
+      f.write(srcName)
+      if (impulse != self.numFaultVertices - 1):
+        f.write(comma)
+
+    srcEnd = "]" + newLine
+    f.write(srcEnd)
+
+    # Base strings for eq_src info.
+    baseHeader = "[pylithapp.timedependent.interfaces.fault.eq_srcs."
+    baseOrigin = "origin_time = "
+    suffIndex = self.spatialdbOutputRoot.rfind(".spatialdb")
+    slipRoot = self.spatialdbOutputRoot
+    if (suffIndex != -1):
+      slipRoot = self.spatialdbOutputRoot[:suffIndex - 1]
+    baseSlip = "slip_function.slip.iohandler.filename = " + slipRoot + "_i"
+    slipTime = "slip_function.slip_time.iohandler.filename = " + \
+               self.slipTimeSpatialdb + newLine
+
+    # Write info for each eq_src.
+    for impulse in range(self.numFaultVertices):
+      f.write(newLine)
+      srcName = repr(impulse).rjust(self.impulseNumberWidth, '0')
+      originTime = float(impulse)
+      originString = str(originTime) + "*year\n"
+      f.write(baseHeader + srcName + "]\n")
+      f.write(baseOrigin + originString)
+      f.write(baseSlip + srcName + ".spatialdb\n")
+      f.write(slipTime)
+
+    f.close()
+    
     return
   
 
-  def _compGfGen(self, tensor):
+  def _makeMetadata(self):
     """
-    Function to compute 3D principal axes, sort them, and multiply by
-    corresponding eigenvalue.
+    Function to write out metadata file containing information for each
+    impulse.
     """
-    tensorMat = numpy.array([(tensor[0], tensor[3], tensor[5]),
-                             (tensor[3], tensor[1], tensor[4]),
-                             (tensor[5], tensor[4], tensor[2])],
-                            dtype=numpy.float64)
-    (eigenValue, princAxes) = numpy.linalg.eigh(tensorMat)
-    idx = eigenValue.argsort()
-    eigenValuesOrdered = eigenValue[idx]
-    princAxesOrdered = princAxes[:,idx]
-    tensorOrdered = numpy.empty_like(princAxesOrdered)
-    tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
-    tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]
-    tensorOrdered[2,:] = eigenValuesOrdered[2] * princAxesOrdered[2,:]
-    return tensorOrdered, eigenValuesOrdered
-  
+    f = open(self.metadataOutputFile, 'w')
+    tab = "\t"
+    newLine = "\n"
+    header = "Impulse #" + tab + "X-Coord" + tab + "Y-Coord" + tab + \
+             "Z-Coord" + tab + "Normal-X" + tab + "Normal-Y" + tab + \
+             "Normal-Z" + tab + "Strike-X" + tab + "Strike-Y" + tab + \
+             "Strike-Z" + tab + "Dip-X" + tab + "Dip-Y" + tab + "Dip-Z" \
+             + newLine
+    f.write(header)
+    for impulse in range(self.numFaultVertices):
+      x = str(self.faultVertices[impulse, 0]) + tab
+      y = str(self.faultVertices[impulse, 1]) + tab
+      z = str(self.faultVertices[impulse, 2]) + tab
+      xNorm = str(self.normalDir[impulse, 0]) + tab
+      yNorm = str(self.normalDir[impulse, 1]) + tab
+      zNorm = str(self.normalDir[impulse, 2]) + tab
+      xStrike = str(self.strikeDir[impulse, 0]) + tab
+      yStrike = str(self.strikeDir[impulse, 1]) + tab
+      zStrike = str(self.strikeDir[impulse, 2]) + tab
+      xDip = str(self.dipDir[impulse, 0]) + tab
+      yDip = str(self.dipDir[impulse, 1]) + tab
+      zDip = str(self.dipDir[impulse, 2]) + newLine
+      outLine = str(impulse) + tab + x + y + z + xNorm + yNorm + zNorm + \
+                xStrike + yStrike + zStrike + xDip + yDip + zDip
+      f.write(outLine)
 
-  def _writeVtkFile(self):
-    """
-    Function to write out vertex and cell info along with principal axes
-    computed as vectors.
-    """
-    from enthought.tvtk.api import tvtk
-
-    # Set up mesh info for VTK file.
-    mesh = tvtk.UnstructuredGrid(points=self.vertArray)
-    mesh.set_cells(self.cellType, self.cells)
-
-    # Add scalar fields.
-    minEigenName = "min_eigenvalue"
-    intEigenName = "int_eigenvalue"
-    maxEigenName = "max_eigenvalue"
-    mesh.cell_data.scalars = self.minEigenValue
-    mesh.cell_data.scalars.name = minEigenName
-    s2 = mesh.cell_data.add_array(self.intEigenValue)
-    mesh.cell_data.get_array(s2).name = intEigenName
-    s3 = mesh.cell_data.add_array(self.maxEigenValue)
-    mesh.cell_data.get_array(s3).name = maxEigenName
-    mesh.update()
-
-    # Add vector fields and write VTK file
-    minAxisName = "min_principal_axis"
-    intAxisName = "int_principal_axis"
-    maxAxisName = "max_principal_axis"
-    mesh.cell_data.vectors = self.minPrincAxis
-    mesh.cell_data.vectors.name = minAxisName
-    v2 = mesh.cell_data.add_array(self.intPrincAxis)
-    mesh.cell_data.get_array(v2).name = intAxisName
-    v3 = mesh.cell_data.add_array(self.maxPrincAxis)
-    mesh.cell_data.get_array(v3).name = maxAxisName
-    mesh.update()
-    w = tvtk.UnstructuredGridWriter(file_name=self.vtkOutputFile,
-		    input=mesh)
-    w.write()
+    f.close()
 
     return
   

@@ -1,0 +1,31 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the distribution of slip on the
+// fault surface. In this case we prescribe a piecewise linear, depth
+// dependent distribution of slip. The slip is 2.0 m left-lateral
+// with 0.25 m of reverse slip at the surface with a linear taper from
+// 2.0 m to 0.0 m from -2 km to -4 km.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  left-lateral-slip  reverse-slip  fault-opening
+  value-units =  m  m  m
+  num-locs = 3
+  data-dim = 1 // Locations of data points form a line.
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
+    space-dim = 3
+  } // cs-data
+} // SimpleDB
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) left-lateral-slip (m) (right-lateral is negative)
+// (5) reverse-slip (m)
+// (6) fault-opening (m)
+0.0  0.0  0.0     2.00  0.25  0.00
+0.0  0.0 -2.0     2.00  0.00  0.00
+0.0  0.0 -4.0     0.00  0.00  0.00
