@@ -1,20 +1,37 @@
-In this directory are files that allow a somewhat kludgy method of
-generating Green's functions using PyLith. The impulses are unit amounts of
+In this directory are files that allow a primitive method of generating
+Green's functions using PyLith.  The impulses are specified amounts of
 strike-slip applied on the vertices of a fault, and the responses are
 displacements at the vertices on the ground surface. The method used is as
 follows:
 
 The entire problem is treated as a time-dependent elastic problem with
-time-varying slip. At each time step, a unit slip is applied for the
+time-varying slip. At each time step, a specified slip is applied for the
 desired impulse. For time step zero, this is all that needs to be done.
 For subsequent time steps, it is necessary to remove the applied impulse
 from the previous step. This is done by applying a unit negative impulse.
 It is necessary to generate a sequence of spatial databases to specify the
-slip at each time step. These are contained in the directory gfspatialdb.
+slip at each time step. A Python application has been provided that
+generates these spatial databases, as well as a .cfg file to be used by
+PyLith and a file describing the impulses (metadata).
 
-To run the problem, simpyly type:
+Before the impulses can be generated, we first require a .vtk file
+containing fault information.  There are thus three steps required to
+generate the Green's functions:
 
-pylith gftest.cfg
+1.  Run PyLith once to generate the fault information file
+(gftest-initial-fault_info.vtk).  This may be done as follows:
+pylith initial-run.cfg
+
+2.  Edit the gfgen.cfg file as needed to provide the parameters for
+gfgen.py, then simply run gfgen.py:
+./gfgen.py
+
+3.  Finally, run PyLith again using the generated gftest.cfg file along
+with the spatial databases in gfspatialdb:
+pylith gftest.cfg gfoutput.cfg
+
+The gfoutput.cfg file simply contains output information, so that the
+impulse and response files end up in gfimpulses and gfresponses.
 
 When it has finished running, you will have a number of VTK files in the
 gfimpulses directory that show what the applied fault slip was for each
