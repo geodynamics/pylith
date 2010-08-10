@@ -248,8 +248,10 @@ class GfGen(Application):
       # Modify database values.
       array1[impulse] = self.impulseValue
       if (impulse > 0):
-        array1[impulse -1] = -self.impulseValue
+        array1[impulse - 1] = -self.impulseValue
       
+      if (impulse > 1):
+	array1[impulse - 2] = 0.0
       info1 = {'name': self.impulseType,
                'units': "m",
                'data': array1.flatten()}
