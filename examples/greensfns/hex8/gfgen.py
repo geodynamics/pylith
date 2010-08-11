@@ -219,7 +219,7 @@ class GfGen(Application):
       info2 = {'name': "left-lateral-slip",
                'units': "m",
                'data': array2.flatten()}
-      info3 = {'name': "reverse-slip",
+      info3 = {'name': "fault-opening",
                'units': "m",
                'data': array2.flatten()}
 
