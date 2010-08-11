@@ -331,8 +331,6 @@ pylith::feassemble::IntegratorElasticity::cellField(
       topology::Field<topology::Mesh>& buffer = 
 	_outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "total_strain");
-      buffer.label(name);
-      buffer.scale(1.0);
       buffer.addDimensionOkay(true);
       return buffer;
 
@@ -357,8 +355,6 @@ pylith::feassemble::IntegratorElasticity::cellField(
       topology::Field<topology::Mesh>& buffer = 
 	_outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "stress");
-      buffer.label(name);
-      buffer.scale(_normalizer->pressureScale());
       buffer.addDimensionOkay(true);
       return buffer;
 
