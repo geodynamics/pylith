@@ -93,6 +93,8 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     # Second case has different values for friction angle and dilatation angle.
     frictionAngleB = math.radians(25.0)
     dilatationAngleB = math.radians(25.0)
+    # frictionAngleB = 0.0
+    # dilatationAngleB = 0.0
     cohesionB = 1.0e4
     strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -256,7 +258,9 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     trialDevStress = strainPPTpdt/ae + devStressInitial
     trialMeanStress = meanStrainPPTpdt/am + meanStressInitial
     yieldFunction = 3.0 * alphaYieldV * trialMeanStress + \
-                    self._scalarProduct(trialDevStress,  trialDevStress) - betaV
+                    math.sqrt(0.5 * self._scalarProduct(trialDevStress,
+                                                        trialDevStress)) - \
+                                                        betaV
 
     # If yield function is greater than zero, compute elastoplastic stress.
     if (yieldFunction >= 0.0):
