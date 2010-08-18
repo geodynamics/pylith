@@ -195,7 +195,7 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
   const double dilatationAngle = dbValues[db_dilatationAngle];
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0 || frictionAngle < 0.0
-      || cohesion <= 0.0 || dilatationAngle < 0.0
+      || cohesion < 0.0 || dilatationAngle < 0.0
       || frictionAngle < dilatationAngle) {
     std::ostringstream msg;
     msg << "Spatial database returned illegal value for physical "
