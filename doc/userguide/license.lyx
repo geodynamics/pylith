@@ -1,11 +1,12 @@
-#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding latin1
 \font_roman default
@@ -16,9 +17,11 @@
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 1
@@ -41,6 +44,7 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
@@ -50,7 +54,7 @@ PyLith Software License
 \end_layout
 
 \begin_layout Standard
-Copyright (C) 2004-2008 Rensselaer Polytechnic Institute
+Copyright (C) 2010 University of California, Davis
 \end_layout
 
 \begin_layout Standard
