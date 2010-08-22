@@ -36,6 +36,7 @@ swig_sources = \
 	CellFilterAvg.i \
 	DataWriter.i \
 	DataWriterVTK.i \
+	DataWriterHDF5.i \
 	OutputManager.i \
 	OutputSolnSubset.i
 
