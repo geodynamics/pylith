@@ -294,7 +294,8 @@ pylith::friction::TimeWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  if (slipRate != 0.0) {
+  const double tolerance = 1.0e-12;
+  if (slipRate > tolerance) {
     const double dt = _dt;
 
     stateVars[s_time] += dt;
