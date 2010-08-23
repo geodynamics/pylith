@@ -304,7 +304,8 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  if (slipRate != 0.0) {
+  const double tolerance = 1.0e-12;
+  if (slipRate > tolerance) {
     const double slipPrev = stateVars[s_slipPrev];
 
     stateVars[s_slipPrev] = stateVars[s_slipCum];
