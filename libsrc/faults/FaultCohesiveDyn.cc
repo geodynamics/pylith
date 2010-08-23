@@ -652,8 +652,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   double_array lagrangeTpdtVertex(spaceDim);
   double_array dLagrangeTpdtVertex(spaceDim);
 
-  _updateSlipRate(*fields);
-
   // Update time step in friction (can vary).
   _friction->timeStep(_dt);
 
