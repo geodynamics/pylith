@@ -1,3 +1,8 @@
+# THIS IS TRICKY and can cause hundreds of conflicts in your local 
+# version of the repository.
+#
+# Don't attempt a merge unless you really know what you are doing!!!!
+
 # Run svn log to find last marge.
 svn log | less
 
