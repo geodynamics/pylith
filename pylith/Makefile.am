@@ -91,6 +91,10 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/DataWriterVTKMesh.py \
 	meshio/DataWriterVTKSubMesh.py \
 	meshio/DataWriterVTKSubSubMesh.py \
+	meshio/DataWriterHDF5.py \
+	meshio/DataWriterHDF5Mesh.py \
+	meshio/DataWriterHDF5SubMesh.py \
+	meshio/DataWriterHDF5SubSubMesh.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \

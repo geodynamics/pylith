@@ -29,6 +29,9 @@ subpkginclude_HEADERS = \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
 	DataWriterVTK.cc \
+	DataWriterHDF5.hh \
+	DataWriterHDF5.icc \
+	DataWriterHDF5.cc \
 	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \

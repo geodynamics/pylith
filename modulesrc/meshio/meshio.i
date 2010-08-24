@@ -35,6 +35,7 @@
 #include "pylith/meshio/CellFilterAvg.hh"
 #include "pylith/meshio/DataWriter.hh"
 #include "pylith/meshio/DataWriterVTK.hh"
+#include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSolnSubset.hh"
 
@@ -69,6 +70,7 @@
 %include "CellFilterAvg.i"
 %include "DataWriter.i"
 %include "DataWriterVTK.i"
+%include "DataWriterHDF5.i"
 %include "OutputManager.i"
 %include "OutputSolnSubset.i"
 
@@ -90,6 +92,10 @@
 %template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubSubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
+
+%template(MeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubSubMeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
 
 %template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
