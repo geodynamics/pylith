@@ -2,10 +2,16 @@
 //
 // ----------------------------------------------------------------------
 //
-//                           Brad T. Aagaard
-//                        U.S. Geological Survey
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
 //
-// {LicenseText}
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010 University of California, Davis
+//
+// See COPYING for license information.
 //
 // ----------------------------------------------------------------------
 //
@@ -288,7 +294,8 @@ pylith::friction::TimeWeakening::_updateStateVars(const double slip,
   assert(0 != numStateVars);
   assert(0 != numProperties);
 
-  if (slipRate != 0.0) {
+  const double tolerance = 1.0e-12;
+  if (slipRate > tolerance) {
     const double dt = _dt;
 
     stateVars[s_time] += dt;
