@@ -23,14 +23,33 @@ CURRENT ISSUES/PRIORITIES
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
 
+* Reimplement Fields to use a single section.
+
+    Fields -> SolutionFields
+
+    FieldsNew<int fiberDim> [UniformSection]
+      add(name, label, fiberDim)
+      allocate()
+      section()
+      getField(name)
+
+    FieldMetadata
+      label
+      scale
+      dimensionsOkay
+
+    Field(section, metadata)
+       
+
 * Optimization
-  + Reimplement Fields to use a single section.
-    - SolutionFields (RealSection)
-    - UniformFields (UniformSection)?
-  + May be gotchas associated with Petsc Vec and scatters
   + inline methods (what isn't getting inlined) -Winline
   + Specialized elasticity integrator objects for Quad4, Hex8
     - Add for lgdeform, implicit time integration?
+
+
+* Testing
+  + Need full-scale test with variation in physical properties
+    within a material.
 
 * Lumped elasticity formulation for large deformations
 
@@ -68,6 +87,36 @@ SECONDARY PRIORITIES
 
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
+
+* Time step based on strain rate
+
+  TimeStepStrainRate object
+    strainRateTarget
+    strainRateTolerance
+    maxDt
+    updateInterval
+
+    if (fabs(1.0 - strainRate / strainRateTarget) < tolerance) {
+      assert(strainRate != 0.0);
+      dtNew = dtOld * strainRateTolerance / strainRate;
+      if (dtNew > maxDt)
+        dtNew = maxDt;
+    } // if
+
+  ElasticMaterial
+    strain rate not stored for purely elastic materials
+
+    storeStrainRate()
+      set flag to store strain rate
+    maxStrainRate()
+      compute total strain (if nec)
+      compute strain rate, get maximum
+    
+* Explicit time step
+
+  utility code
+    Compute stable explicit time step
+    Write stable time step explicit (CFL, adhoc)
 
 * Manual
 
