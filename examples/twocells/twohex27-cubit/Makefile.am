@@ -16,12 +16,20 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	twohex8 \
-	twohex27-cubit \
-	twoquad4 \
-	twotet4 \
-	twotet4-geoproj \
-	twotri3
+dist_noinst_DATA = \
+	README \
+	axialdisp.cfg \
+	axialdisp.jpg \
+	axialdisp.spatialdb \
+	dislocation.cfg \
+	dislocation_slip.spatialdb \
+	dislocation_sliptime.spatialdb \
+	geometry.jou \
+	matprops.spatialdb \
+	mesh_twohex27.jou
+	pylithapp.cfg \
+	sheardisp.cfg \
+	sheardisp.spatialdb \
+	twohex27.exo
 
 # End of file 
