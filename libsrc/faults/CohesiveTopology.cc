@@ -545,7 +545,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 		    << cellNeighbors.size() << std::endl;
           throw ALE::Exception("Invalid number of neighbors");
 	} // if
-      } else if (numCorners == 4) {
+      } else if (numCorners == 4 || numCorners == 9) {
         if (cellNeighbors.size() > 4) {
           std::cout << "Cell " << *c_iter
 		    << " has an invalid number of neighbors "

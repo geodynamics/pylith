@@ -122,33 +122,53 @@ class FIATLagrange(ReferenceCell):
         if dim == 2:
           self.vertices = numpy.zeros((self.numCorners, dim))
           n = 0
-          # Bottom
-          for r in range(0, numBasisFns-1):
-            self.vertices[n][0] = vertices[r]
+          # Corners
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[1]
+          n += 1
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[1]
+          n += 1
+
+          # Edges
+          #   Bottom
+          for p in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[p]
             self.vertices[n][1] = vertices[0]
             n += 1
-          # Right
-          for q in range(0, numBasisFns-1):
-            self.vertices[n][0] = vertices[numBasisFns-1]
+          #   Right
+          for q in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[1]
             self.vertices[n][1] = vertices[q]
             n += 1
-          # Top
-          for r in range(numBasisFns-1, 0, -1):
-            self.vertices[n][0] = vertices[r]
-            self.vertices[n][1] = vertices[numBasisFns-1]
+
+          #   Top
+          for p in range(numBasisFns-1, 1, -1):
+            self.vertices[n][0] = vertices[p]
+            self.vertices[n][1] = vertices[1]
             n += 1
-          # Left
-          for q in range(numBasisFns-1, 0, -1):
+
+          #   Left
+          for r in range(numBasisFns-1, 1, -1):
             self.vertices[n][0] = vertices[0]
-            self.vertices[n][1] = vertices[q]
+            self.vertices[n][1] = vertices[r]
             n += 1
-          # Interior
-          for q in range(1, numBasisFns-1):
-            for r in range(1, numBasisFns-1):
-              self.vertices[n][0] = vertices[r]
+
+          # Face
+          for q in range(2, numBasisFns):
+            for p in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[p]
               self.vertices[n][1] = vertices[q]
               n += 1
-          if not n == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
+
+          if not n == self.numCorners:
+            raise RuntimeError('Invalid 2D function tabulation, n is %d' % n)
         
           self.quadPts = numpy.zeros((numQuadPts*numQuadPts, dim))
           self.quadWts = numpy.zeros((numQuadPts*numQuadPts,))
@@ -156,203 +176,82 @@ class FIATLagrange(ReferenceCell):
                                          numBasisFns*numBasisFns))
           self.basisDeriv = numpy.zeros((numQuadPts*numQuadPts,
                                          numBasisFns*numBasisFns, dim))
+
+          # Order of basis functions and quadrature points don't matter
           n = 0
-          # Bottom
-          for r in range(0, numQuadPts-1):
-            self.quadPts[n][0] = quadpts[r]
-            self.quadPts[n][1] = quadpts[0]
-            self.quadWts[n]    = quadwts[r]*quadwts[0]
-            m = 0
-            # Bottom
-            for g in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[r][g]*basis[0][0]
-              self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[0][0]
-              self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[0][0][0]
-              m += 1
-            # Right
-            for f in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[r][numBasisFns-1]*basis[0][f]
-              self.basisDeriv[n][m][0] = basisDeriv[r][numBasisFns-1][0]*basis[0][f]
-              self.basisDeriv[n][m][1] = basis[r][numBasisFns-1]*basisDeriv[0][f][0]
-              m += 1
-            # Top
-            for g in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[r][g]*basis[0][numBasisFns-1]
-              self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[0][numBasisFns-1]
-              self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[0][numBasisFns-1][0]
-              m += 1
-            # Left
-            for f in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[r][0]*basis[0][f]
-              self.basisDeriv[n][m][0] = basisDeriv[r][0][0]*basis[0][f]
-              self.basisDeriv[n][m][1] = basis[r][0]*basisDeriv[0][f][0]
-              m += 1
-            # Interior
-            for f in range(1, numBasisFns-1):
-              for g in range(1, numBasisFns-1):
-                self.basis[n][m] = basis[r][g]*basis[0][f]
-                self.basisDeriv[0][r][f][g][0] = basisDeriv[r][g][0]*basis[0][f]
-                self.basisDeriv[0][r][f][g][1] = basis[r][g]*basisDeriv[0][f][0]
-                m += 1
-            if not m == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
-            n += 1
-          # Right
-          for q in range(0, numQuadPts-1):
-            self.quadPts[n][0] = quadpts[numQuadPts-1]
-            self.quadPts[n][1] = quadpts[q]
-            self.quadWts[n]    = quadwts[numQuadPts-1]*quadwts[q]
-            m = 0
-            # Bottom
-            for g in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[numQuadPts-1][g]*basis[q][0]
-              self.basisDeriv[n][m][0] = basisDeriv[numQuadPts-1][g][0]*basis[q][0]
-              self.basisDeriv[n][m][1] = basis[numQuadPts-1][g]*basisDeriv[q][0][0]
-              m += 1
-            # Right
-            for f in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[numQuadPts-1][numBasisFns-1]*basis[q][f]
-              self.basisDeriv[n][m][0] = basisDeriv[numQuadPts-1][numBasisFns-1][0]*basis[q][f]
-              self.basisDeriv[n][m][1] = basis[numQuadPts-1][numBasisFns-1]*basisDeriv[q][f][0]
-              m += 1
-            # Top
-            for g in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[numQuadPts-1][g]*basis[q][numBasisFns-1]
-              self.basisDeriv[n][m][0] = basisDeriv[numQuadPts-1][g][0]*basis[q][numBasisFns-1]
-              self.basisDeriv[n][m][1] = basis[numQuadPts-1][g]*basisDeriv[q][numBasisFns-1][0]
-              m += 1
-            # Left
-            for f in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[numQuadPts-1][0]*basis[q][f]
-              self.basisDeriv[n][m][0] = basisDeriv[numQuadPts-1][0][0]*basis[q][f]
-              self.basisDeriv[n][m][1] = basis[numQuadPts-1][0]*basisDeriv[q][f][0]
-              m += 1
-            # Interior
-            for f in range(1, numBasisFns-1):
-              for g in range(1, numBasisFns-1):
-                self.basis[n][m] = basis[numQuadPts-1][g]*basis[0][f]
-                self.basisDeriv[q][numQuadPts-1][f][g][0] = basisDeriv[numQuadPts-1][g][0]*basis[q][f]
-                self.basisDeriv[q][numQuadPts-1][f][g][1] = basis[numQuadPts-1][g]*basisDeriv[q][f][0]
-                m += 1
-            if not m == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
-            n += 1
-          # Top
-          for r in range(numQuadPts-1, 0, -1):
-            self.quadPts[n][0] = quadpts[r]
-            self.quadPts[n][1] = quadpts[numQuadPts-1]
-            self.quadWts[n]    = quadwts[r]*quadwts[numQuadPts-1]
-            m = 0
-            # Bottom
-            for g in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[r][g]*basis[numQuadPts-1][0]
-              self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[numQuadPts-1][0]
-              self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[numQuadPts-1][0][0]
-              m += 1
-            # Right
-            for f in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[r][numBasisFns-1]*basis[numQuadPts-1][f]
-              self.basisDeriv[n][m][0] = basisDeriv[r][numBasisFns-1][0]*basis[numQuadPts-1][f]
-              self.basisDeriv[n][m][1] = basis[r][numBasisFns-1]*basisDeriv[numQuadPts-1][f][0]
-              m += 1
-            # Top
-            for g in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[r][g]*basis[numQuadPts-1][numBasisFns-1]
-              self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[numQuadPts-1][numBasisFns-1]
-              self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[numQuadPts-1][numBasisFns-1][0]
-              m += 1
-            # Left
-            for f in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[r][0]*basis[numQuadPts-1][f]
-              self.basisDeriv[n][m][0] = basisDeriv[r][0][0]*basis[numQuadPts-1][f]
-              self.basisDeriv[n][m][1] = basis[r][0]*basisDeriv[numQuadPts-1][f][0]
-              m += 1
-            # Interior
-            for f in range(1, numBasisFns-1):
-              for g in range(1, numBasisFns-1):
-                self.basis[n][m] = basis[r][g]*basis[numQuadPts-1][f]
-                self.basisDeriv[numQuadPts-1][r][f][g][0] = basisDeriv[r][g][0]*basis[numQuadPts-1][f]
-                self.basisDeriv[numQuadPts-1][r][f][g][1] = basis[r][g]*basisDeriv[numQuadPts-1][f][0]
-                m += 1
-            if not m == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
-            n += 1
-          # Left
-          for q in range(numQuadPts-1, 0, -1):
-            self.quadPts[n][0] = quadpts[0]
-            self.quadPts[n][1] = quadpts[q]
-            self.quadWts[n]    = quadwts[0]*quadwts[q]
-            m = 0
-            # Bottom
-            for g in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[0][g]*basis[q][0]
-              self.basisDeriv[n][m][0] = basisDeriv[0][g][0]*basis[q][0]
-              self.basisDeriv[n][m][1] = basis[0][g]*basisDeriv[q][0][0]
-              m += 1
-            # Right
-            for f in range(0, numBasisFns-1):
-              self.basis[n][m] = basis[0][numBasisFns-1]*basis[q][f]
-              self.basisDeriv[n][m][0] = basisDeriv[0][numBasisFns-1][0]*basis[q][f]
-              self.basisDeriv[n][m][1] = basis[0][numBasisFns-1]*basisDeriv[q][f][0]
-              m += 1
-            # Top
-            for g in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[0][g]*basis[q][numBasisFns-1]
-              self.basisDeriv[n][m][0] = basisDeriv[0][g][0]*basis[q][numBasisFns-1]
-              self.basisDeriv[n][m][1] = basis[0][g]*basisDeriv[q][numBasisFns-1][0]
-              m += 1
-            # Left
-            for f in range(numBasisFns-1, 0, -1):
-              self.basis[n][m] = basis[0][0]*basis[q][f]
-              self.basisDeriv[n][m][0] = basisDeriv[0][0][0]*basis[q][f]
-              self.basisDeriv[n][m][1] = basis[0][0]*basisDeriv[q][f][0]
-              m += 1
-            # Interior
-            for f in range(1, numBasisFns-1):
-              for g in range(1, numBasisFns-1):
-                self.basis[n][m] = basis[0][g]*basis[0][f]
-                self.basisDeriv[q][0][f][g][0] = basisDeriv[0][g][0]*basis[q][f]
-                self.basisDeriv[q][0][f][g][1] = basis[0][g]*basisDeriv[q][f][0]
-                m += 1
-            if not m == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
-            n += 1
-          # Interior
-          for q in range(1, numQuadPts-1):
-            for r in range(1, numQuadPts-1):
-              self.quadPts[n][0] = quadpts[r]
+          for q in range(0, numQuadPts):
+            for p in range(0, numQuadPts):
+              self.quadPts[n][0] = quadpts[p]
               self.quadPts[n][1] = quadpts[q]
-              self.quadWts[n]    = quadwts[r]*quadwts[q]
+              self.quadWts[n]    = quadwts[p]*quadwts[q]
+              
               m = 0
-              # Bottom
-              for g in range(0, numBasisFns-1):
-                self.basis[n][m] = basis[r][g]*basis[q][0]
-                self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[q][0]
-                self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[q][0][0]
+              # Corners
+              bp = 0; bq = 0
+              self.basis[n][m] = basis[p][bp]*basis[q][bq]
+              self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+              self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
+              m += 1
+              bp = 1; bq = 0
+              self.basis[n][m] = basis[p][bp]*basis[q][bq]
+              self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+              self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
+              m += 1
+              bp = 1; bq = 1
+              self.basis[n][m] = basis[p][bp]*basis[q][bq]
+              self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+              self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
+              m += 1
+              bp = 0; bq = 1
+              self.basis[n][m] = basis[p][bp]*basis[q][bq]
+              self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+              self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
+              m += 1
+
+              # Edges
+              #   Bottom
+              for bp in range(2, numBasisFns):
+                bq = 0
+                self.basis[n][m] = basis[p][bp]*basis[q][bq]
+                self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+                self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                 m += 1
-              # Right
-              for f in range(0, numBasisFns-1):
-                self.basis[n][m] = basis[r][numBasisFns-1]*basis[q][f]
-                self.basisDeriv[n][m][0] = basisDeriv[r][numBasisFns-1][0]*basis[q][f]
-                self.basisDeriv[n][m][1] = basis[r][numBasisFns-1]*basisDeriv[q][f][0]
+
+              #   Right
+              for bq in range(2, numBasisFns):
+                bp = 1
+                self.basis[n][m] = basis[p][bp]*basis[q][bq]
+                self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+                self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                 m += 1
-              # Top
-              for g in range(numBasisFns-1, 0, -1):
-                self.basis[n][m] = basis[r][g]*basis[q][numBasisFns-1]
-                self.basisDeriv[n][m][0] = basisDeriv[r][g][0]*basis[q][numBasisFns-1]
-                self.basisDeriv[n][m][1] = basis[r][g]*basisDeriv[q][numBasisFns-1][0]
+
+              #   Top
+              for bp in range(numBasisFns-1, 1, -1):
+                bq = 1
+                self.basis[n][m] = basis[p][bp]*basis[q][bq]
+                self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+                self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                 m += 1
-              # Left
-              for f in range(numBasisFns-1, 0, -1):
-                self.basis[n][m] = basis[r][0]*basis[q][f]
-                self.basisDeriv[n][m][0] = basisDeriv[r][0][0]*basis[q][f]
-                self.basisDeriv[n][m][1] = basis[r][0]*basisDeriv[q][f][0]
+
+              #   Left
+              for bq in range(numBasisFns-1, 1, -1):
+                bp = 0
+                self.basis[n][m] = basis[p][bp]*basis[q][bq]
+                self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+                self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                 m += 1
-              # Interior
-              for f in range(1, numBasisFns-1):
-                for g in range(1, numBasisFns-1):
-                  self.basis[n][m] = basis[r][g]*basis[q][f]
-                  self.basisDeriv[q][r][f][g][0] = basisDeriv[r][g][0]*basis[q][f]
-                  self.basisDeriv[q][r][f][g][1] = basis[r][g]*basisDeriv[q][f][0]
+
+              # Face
+              for bq in range(2, numBasisFns):
+                for bp in range(2, numBasisFns):
+                  self.basis[n][m] = basis[p][bp]*basis[q][bq]
+                  self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]
+                  self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                   m += 1
-              if not m == self.numCorners: raise RuntimeError('Invalid 2D function tabulation')
+
+              if not m == numBasisFns**2: raise RuntimeError('Invalid 2D quadrature')
               n += 1
+
           if not n == self.numQuadPts: raise RuntimeError('Invalid 2D quadrature')
         elif dim == 3:
           self.vertices = numpy.zeros((self.numCorners, dim))

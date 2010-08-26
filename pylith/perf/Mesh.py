@@ -27,6 +27,7 @@ class Mesh(Memory):
                (1,3): 'line3',
                (2,3): 'tri3',
                (2,4): 'quad4',
+               (2,9): 'quad9',
                (3,4): 'tet4',
                (3,8): 'hex8'
                }
