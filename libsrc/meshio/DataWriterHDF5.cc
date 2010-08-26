@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include <petscmesh_viewers.hh> // USES HDF5Viewer
+#include <petscmesh_formats.hh> // USES PCICE output
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -71,9 +72,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
 						       const char* label,
 						       const int labelId)
 { // openTimeStep
-#if 0
-  // MATT - This stuff needs to be updated for HDF5.
-
   try {
     PetscErrorCode err = 0;
     
@@ -81,34 +79,31 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
 
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetType(_viewer, PETSCVIEWERASCII);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_HDF5);
+    err = PetscViewerSetType(_viewer, PETSCVIEWERHDF5);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerFileSetName(_viewer, filename.c_str());
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    
-    err = HDF5Viewer::writeHeader(sieveMesh, _viewer);
-    CHECK_PETSC_ERROR(err);
-    //std::cout << "Wrote header for " << filename << std::endl;
-    err = HDF5Viewer::writeVertices(sieveMesh, _viewer);
-    CHECK_PETSC_ERROR(err);
-    //std::cout << "Wrote vertices for " << filename << std::endl;
-    if (0 == label) {
-      err = HDF5Viewer::writeElements(sieveMesh, _viewer);
-      CHECK_PETSC_ERROR(err);
-    } else {
-      const std::string labelName = 
-	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = HDF5Viewer::writeElements(sieveMesh, label, labelId, labelName, 0, _viewer);      
-      CHECK_PETSC_ERROR(err);
-    } // if
-    //std::cout << "Wrote elements for " << filename << std::endl;
+    //const ALE::Obj<typename field_type::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
+    Vec coordVec;
 
-    _wroteVertexHeader = false;
-    _wroteCellHeader = false;
+    // BRAD: Are the coordinates in Fields, so I can just get the Vec out?
+    err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
+    Vec          elemVec;
+    PetscInt     numElements, numCorners, *vertices;
+    PetscScalar *tmpVertices;
+    PetscTruth   columnMajor = PETSC_FALSE;
+
+    ALE::PCICE::Builder::outputElementsLocal(sieveMesh, &numElements, &numCorners, &vertices, columnMajor);
+    // Hack right now, move to HDF5 Section viewer
+    err = PetscMalloc(sizeof(PetscScalar)*numElements*numCorners, &tmpVertices);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < numElements*numCorners; ++i) {tmpVertices[i] = vertices[i];}
+    err = VecCreateMPIWithArray(sieveMesh->comm(), numElements*numCorners, PETSC_DETERMINE, tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
+    err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
+    err = PetscFree(vertices);CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while preparing for writing data to HDF5 file "
@@ -125,8 +120,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
 	<< _filename << " at time " << t << ".\n";
     throw std::runtime_error(msg.str());
   } // try/catch
-
-#endif
 } // openTimeStep
 
 // ----------------------------------------------------------------------
@@ -147,48 +140,16 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 					    const field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
-#if 0
-  // MATT - This stuff needs to be update for HDF5.
-
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename field_type::Mesh::RealSection RealSection;
-
   try {
-    int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
+    // We will try the simplest thing, using the embedded vector. If this is not
+    // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-    const std::string labelName = 
-      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-    const ALE::Obj<typename SieveMesh::numbering_type>& numbering =
-      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, 0);
-    assert(!numbering.isNull());
-
-    const ALE::Obj<RealSection>& section = field.section();
-    assert(!section.isNull());
-    assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    
-    const int localFiberDim = 
-      (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
-    int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
-    assert(fiberDim > 0);
-    const int enforceDim =
-      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
+    // BRAD: Do we need to syncrhonize values here?
+    const PetscVec vector = field.vector();
+    assert(vector != PETSC_NULL);
 
     PetscErrorCode err = 0;
-    if (!_wroteVertexHeader) {
-      err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
-				   numbering->getGlobalSize());
-      CHECK_PETSC_ERROR(err);
-      _wroteVertexHeader = true;
-    } // if
-
-    err = HDF5Viewer::writeField(section, field.label(), fiberDim, numbering,
-				_viewer, enforceDim, _precision);
+    err = VecView(vector, _viewer);
     CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -201,8 +162,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 	<< t << " to HDF5 file '" << _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
-
-#endif
 } // writeVertexField
 
 // ----------------------------------------------------------------------
@@ -215,53 +174,17 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 				       const char* label,
 				       const int labelId)
 { // writeCellField
-#if 0
-  // MATT - This stuff needs to be update to HDF5.
-
-  typedef typename field_type::Mesh::SieveMesh SieveMesh;
-  typedef typename field_type::Mesh::RealSection RealSection;
-
   try {
-    int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
+    // We will try the simplest thing, using the embedded vector. If this is not
+    // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    // Correctly handle boundary and fault meshes
-    //   Cannot just use mesh->depth() because boundaries report the wrong thing
-    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-    assert(!sieveMesh.isNull());
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-    const int depth = (0 == label) ? cellDepth : labelId;
-    const std::string labelName = (0 == label) ?
-      ((sieveMesh->hasLabel("censored depth")) ?
-       "censored depth" : "depth") : label;
-    assert(!sieveMesh->getFactory().isNull());
-    const ALE::Obj<typename SieveMesh::numbering_type>& numbering = 
-      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
-    assert(!numbering.isNull());
-    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
-    const ALE::Obj<RealSection>& section = field.section();
-    assert(!section.isNull());
-
-    const int localFiberDim = 
-      (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
-    int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
-    assert(fiberDim > 0);
-    const int enforceDim =
-      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
+    // BRAD: Do we need to syncrhonize values here?
+    const PetscVec vector = field.vector();
+    assert(vector != PETSC_NULL);
 
     PetscErrorCode err = 0;
-    if (!_wroteCellHeader) {
-      err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
-				   numbering->getGlobalSize());
-      CHECK_PETSC_ERROR(err);
-      _wroteCellHeader = true;
-    } // if
-
-    HDF5Viewer::writeField(section, field.label(), fiberDim, numbering,
-			  _viewer, enforceDim, _precision);
+    err = VecView(vector, _viewer);
+    CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -273,8 +196,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 	<< t << " to HDF5 file '" << _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
-
-#endif
 } // writeCellField
 
 // ----------------------------------------------------------------------
