@@ -505,6 +505,178 @@ class Hex8(object):
     return (1-p[0])*(1+p[1])/8.0
   
 # ----------------------------------------------------------------------
+class Hex27(object):
+
+  def __init__(self):
+    """
+    Setup hex8 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0, -1.0], # Corners
+                            [+1.0, -1.0, -1.0],
+                            [+1.0, +1.0, -1.0],
+                            [-1.0, +1.0, -1.0],
+                            [-1.0, -1.0, +1.0],
+                            [+1.0, -1.0, +1.0],
+                            [+1.0, +1.0, +1.0],
+                            [-1.0, +1.0, +1.0],
+                            [ 0.0, -1.0, -1.0], # Bottom edges
+                            [+1.0,  0.0, -1.0],
+                            [ 0.0, +1.0, -1.0],
+                            [-1.0,  0.0, -1.0],
+                            [-1.0, -1.0,  0.0], # Middle edges
+                            [+1.0, -1.0,  0.0],
+                            [+1.0, +1.0,  0.0],
+                            [-1.0, +1.0,  0.0],
+                            [ 0.0, -1.0, +1.0], # Top edges
+                            [+1.0,  0.0, +1.0],
+                            [ 0.0, +1.0, +1.0],
+                            [-1.0,  0.0, +1.0],
+                            [ 0.0,  0.0,  0.0], # Interior
+                            [ 0.0,  0.0, -1.0], # Faces
+                            [ 0.0,  0.0, +1.0],
+                            [-1.0,  0.0,  0.0],
+                            [+1.0,  0.0,  0.0],
+                            [ 0.0, -1.0,  0.0],
+                            [ 0.0, +1.0,  0.0]])
+    quadPts = numpy.array([ [-1.0/3**0.5, -1.0/3**0.5, -1.0/3**0.5],
+                            [+1.0/3**0.5, -1.0/3**0.5, -1.0/3**0.5],
+                            [+1.0/3**0.5, +1.0/3**0.5, -1.0/3**0.5],
+                            [-1.0/3**0.5, +1.0/3**0.5, -1.0/3**0.5],
+                            [-1.0/3**0.5, -1.0/3**0.5, +1.0/3**0.5],
+                            [+1.0/3**0.5, -1.0/3**0.5, +1.0/3**0.5],
+                            [+1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5],
+                            [-1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5]])
+    quadWts = numpy.array( [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (8, 8), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (8, 8, 3), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q),
+                                  self.N2(q), self.N3(q),
+                                  self.N4(q), self.N5(q),
+                                  self.N6(q), self.N7(q)],
+                                 dtype=numpy.float64).reshape( (8,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N3p(q), self.N3q(q), self.N3r(q)],
+                           [self.N4p(q), self.N4q(q), self.N4r(q)],
+                           [self.N5p(q), self.N5q(q), self.N5r(q)],
+                           [self.N6p(q), self.N6q(q), self.N6r(q)],
+                           [self.N7p(q), self.N7q(q), self.N7r(q)]])      
+      basisDeriv[iQuad] = deriv.reshape((8, 3))
+      iQuad += 1
+
+    self.cellDim = 3
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
+
+  def N0(self, p):
+    return (1-p[0])*(1-p[1])*(1-p[2])/8.0
+  
+  def N0p(self, p):
+    return -(1-p[1])*(1-p[2])/8.0
+  
+  def N0q(self, p):
+    return -(1-p[0])*(1-p[2])/8.0
+  
+  def N0r(self, p):
+    return -(1-p[0])*(1-p[1])/8.0
+  
+  def N1(self, p):
+    return (1+p[0])*(1-p[1])*(1-p[2])/8.0
+  
+  def N1p(self, p):
+    return (1-p[1])*(1-p[2])/8.0
+  
+  def N1q(self, p):
+    return -(1+p[0])*(1-p[2])/8.0
+  
+  def N1r(self, p):
+    return -(1+p[0])*(1-p[1])/8.0
+  
+  def N2(self, p):
+    return (1+p[0])*(1+p[1])*(1-p[2])/8.0
+  
+  def N2p(self, p):
+    return (1+p[1])*(1-p[2])/8.0
+  
+  def N2q(self, p):
+    return (1+p[0])*(1-p[2])/8.0
+
+  def N2r(self, p):
+    return -(1+p[0])*(1+p[1])/8.0
+
+  def N3(self, p):
+    return (1-p[0])*(1+p[1])*(1-p[2])/8.0
+  
+  def N3p(self, p):
+    return -(1+p[1])*(1-p[2])/8.0
+  
+  def N3q(self, p):
+    return (1-p[0])*(1-p[2])/8.0
+  
+  def N3r(self, p):
+    return -(1-p[0])*(1+p[1])/8.0
+  
+  def N4(self, p):
+    return (1-p[0])*(1-p[1])*(1+p[2])/8.0
+
+  def N4p(self, p):
+    return -(1-p[1])*(1+p[2])/8.0
+  
+  def N4q(self, p):
+    return -(1-p[0])*(1+p[2])/8.0
+  
+  def N4r(self, p):
+    return (1-p[0])*(1-p[1])/8.0
+  
+  def N5(self, p):
+    return (1+p[0])*(1-p[1])*(1+p[2])/8.0
+  
+  def N5p(self, p):
+    return (1-p[1])*(1+p[2])/8.0
+  
+  def N5q(self, p):
+    return -(1+p[0])*(1+p[2])/8.0
+  
+  def N5r(self, p):
+    return (1+p[0])*(1-p[1])/8.0
+  
+  def N6(self, p):
+    return (1+p[0])*(1+p[1])*(1+p[2])/8.0
+  
+  def N6p(self, p):
+    return (1+p[1])*(1+p[2])/8.0
+  
+  def N6q(self, p):
+    return (1+p[0])*(1+p[2])/8.0
+  
+  def N6r(self, p):
+    return (1+p[0])*(1+p[1])/8.0
+
+  def N7(self, p):
+    return (1-p[0])*(1+p[1])*(1+p[2])/8.0
+  
+  def N7p(self, p):
+    return -(1+p[1])*(1+p[2])/8.0
+  
+  def N7q(self, p):
+    return (1-p[0])*(1+p[2])/8.0
+  
+  def N7r(self, p):
+    return (1-p[0])*(1+p[1])/8.0
+  
+# ----------------------------------------------------------------------
 class TestFIATLagrange(unittest.TestCase):
   """
   Unit testing of FIATLagrange object.
