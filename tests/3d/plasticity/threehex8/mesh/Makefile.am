@@ -16,9 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	matprops \
-	plasticity \
-	slipdir
+dist_noinst_DATA = \
+	geometry.jou \
+	mesh_threehex8.jou \
+	threehex8.exo
 
 # End of file 

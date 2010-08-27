@@ -304,6 +304,17 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
+		tests/3d/plasticity/Makefile
+		tests/3d/plasticity/threehex27/Makefile
+		tests/3d/plasticity/threehex27/config/Makefile
+		tests/3d/plasticity/threehex27/mesh/Makefile
+		tests/3d/plasticity/threehex27/results/Makefile
+		tests/3d/plasticity/threehex27/spatialdb/Makefile
+		tests/3d/plasticity/threehex8/Makefile
+		tests/3d/plasticity/threehex8/config/Makefile
+		tests/3d/plasticity/threehex8/mesh/Makefile
+		tests/3d/plasticity/threehex8/results/Makefile
+		tests/3d/plasticity/threehex8/spatialdb/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile

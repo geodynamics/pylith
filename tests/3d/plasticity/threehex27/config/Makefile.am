@@ -16,9 +16,13 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	matprops \
-	plasticity \
-	slipdir
+dist_noinst_DATA = \
+	elas_ng_ni_v03.cfg \
+	plas_dp1_ng_ni_v03.cfg \
+	plas_dp2_ng_ni_v03.cfg \
+	plas_dp3_ng_ni_v03.cfg \
+	plas_vm1_ng_ni_v03.cfg \
+	pylithapp.cfg \
+	visc_e10_ng_ni_v03.cfg
 
 # End of file 

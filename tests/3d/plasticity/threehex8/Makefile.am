@@ -17,8 +17,9 @@
 #
 
 SUBDIRS = \
-	matprops \
-	plasticity \
-	slipdir
+	config \
+	mesh \
+	results \
+	spatialdb
 
 # End of file 
