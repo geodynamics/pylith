@@ -17,8 +17,7 @@
 #
 
 SUBDIRS = \
-	matprops \
-	plasticity \
-	slipdir
+	threehex8 \
+	threehex27
 
 # End of file 

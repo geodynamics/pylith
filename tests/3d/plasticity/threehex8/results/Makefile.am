@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	matprops \
-	plasticity \
-	slipdir
+dist_noinst_DATA =
+
 
 # End of file 
