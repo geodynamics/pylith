@@ -86,12 +86,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     const ALE::Obj<typename field_type::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-    field_type coordField(coordinates);
+#if 0 // Waiting for Field(mesh, coordinates, metadata)
+    FieldBase::Metadata metadata;
+    field_type coordField(mesh, coordinates, metadata);
 
     coordField.createVector();
     coordField.createScatter();
     coordField.scatterSectionToVector();
     err = VecView(coordField.vector(), _viewer);CHECK_PETSC_ERROR(err);
+#endif
     Vec          elemVec;
     PetscInt     numElements, numCorners, *vertices;
     PetscScalar *tmpVertices;
