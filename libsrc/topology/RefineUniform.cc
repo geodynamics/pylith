@@ -119,13 +119,11 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
   ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), * newSieveMesh,
 					   edge2vertex);
 #else
-#if 0 // DON'T KNOW NEW INTERFACE 
   // Is arg to CellRefiner constructor the new mesh or the old mesh?
   ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> refiner(*newSieveMesh);
 
   ALE::MeshBuilder<SieveMesh>::refineGeneral< SieveMesh,
     ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
-#endif
 #endif
 
   // Fix material ids
