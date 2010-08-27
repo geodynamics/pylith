@@ -332,6 +332,7 @@ AC_CONFIG_FILES([Makefile
 		examples/greensfns/hex8/gfresponses/Makefile
 		examples/greensfns/hex8/gfspatialdb/Makefile
 		examples/twocells/twohex8/Makefile
+		examples/twocells/twohex27-cubit/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
 		examples/twocells/twotet4-geoproj/Makefile

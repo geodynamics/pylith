@@ -42,7 +42,7 @@ template<typename mesh_type>
 inline
 void
 pylith::topology::Field<mesh_type>::label(const char* value) {
-  _label = value;
+  _metadata.label = value;
 }
 
 // Get label for field.
@@ -50,7 +50,7 @@ template<typename mesh_type>
 inline
 const char*
 pylith::topology::Field<mesh_type>::label(void) const {
-  return _label.c_str();
+  return _metadata.label.c_str();
 }
 
 // Set vector field type
@@ -58,7 +58,7 @@ template<typename mesh_type>
 inline
 void
 pylith::topology::Field<mesh_type>::vectorFieldType(const VectorFieldEnum value) {
-  _vecFieldType = value;
+  _metadata.vectorFieldType = value;
 }
 
 // Get vector field type
@@ -66,7 +66,7 @@ template<typename mesh_type>
 inline
 typename pylith::topology::Field<mesh_type>::VectorFieldEnum
 pylith::topology::Field<mesh_type>::vectorFieldType(void) const {
-  return _vecFieldType;
+  return _metadata.vectorFieldType;
 }
 
 // Set scale for dimensionalizing field.
@@ -74,7 +74,7 @@ template<typename mesh_type>
 inline
 void
 pylith::topology::Field<mesh_type>::scale(const double value) {
-  _scale = value;
+  _metadata.scale = value;
 }
 
 // Get scale for dimensionalizing field.
@@ -82,7 +82,7 @@ template<typename mesh_type>
 inline
 double
 pylith::topology::Field<mesh_type>::scale(void) const {
-  return _scale;
+  return _metadata.scale;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
@@ -90,7 +90,7 @@ template<typename mesh_type>
 inline
 void
 pylith::topology::Field<mesh_type>::addDimensionOkay(const bool value) {
-  _dimensionsOkay = value;
+  _metadata.dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
@@ -98,7 +98,7 @@ template<typename mesh_type>
 inline
 bool
 pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
-  return _dimensionsOkay;
+  return _metadata.dimsOkay;
 }
 
 // Get PETSc vector associated with field.

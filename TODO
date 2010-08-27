@@ -26,6 +26,7 @@ CURRENT ISSUES/PRIORITIES
 * Reimplement Fields to use a single section.
 
     Fields -> SolutionFields
+    FieldsNew -> Fields
 
     FieldsNew<int fiberDim> [UniformSection]
       add(name, label, fiberDim)
@@ -38,7 +39,7 @@ CURRENT ISSUES/PRIORITIES
       scale
       dimensionsOkay
 
-    Field(section, metadata)
+    Field(mesh, section, metadata)
        
 
 * Optimization

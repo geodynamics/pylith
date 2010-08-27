@@ -85,16 +85,20 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    const ALE::Obj<typename field_type::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-#if 0 // Waiting for Field(mesh, coordinates, metadata)
-    FieldBase::Metadata metadata;
-    field_type coordField(mesh, coordinates, metadata);
+    const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
+      sieveMesh->getRealSection("coordinates");
+    topology::FieldBase::Metadata metadata;
+    // :KLUDGE: We would like to use field_type for the coordinates
+    // field. However, the mesh coordinates are Field<mesh_type> and
+    // field_type can be Field<Mesh> (e.g., displacement field over a
+    // SubMesh).
+    topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
 
-    coordField.createVector();
-    coordField.createScatter();
-    coordField.scatterSectionToVector();
-    err = VecView(coordField.vector(), _viewer);CHECK_PETSC_ERROR(err);
-#endif
+    coordinates.createVector();
+    coordinates.createScatter();
+    coordinates.scatterSectionToVector();
+    err = VecView(coordinates.vector(), _viewer);CHECK_PETSC_ERROR(err);
+
     Vec          elemVec;
     PetscInt     numElements, numCorners, *vertices;
     PetscScalar *tmpVertices;
