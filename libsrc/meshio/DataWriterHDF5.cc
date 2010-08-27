@@ -142,7 +142,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 				            const double t,
-					    const field_type& field,
+					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
   try {
@@ -178,7 +178,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 				       const double t,
-				       const field_type& field,
+				       field_type& field,
 				       const char* label,
 				       const int labelId)
 { // writeCellField

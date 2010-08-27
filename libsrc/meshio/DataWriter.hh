@@ -101,7 +101,7 @@ public :
   */
   virtual
   void writeVertexField(const double t,
-			const field_type& field,
+			field_type& field,
 			const mesh_type& mesh) = 0;
 
   /** Write field over cells to file.
@@ -114,7 +114,7 @@ public :
    */
   virtual
   void writeCellField(const double t,
-		      const field_type& field,
+		      field_type& field,
 		      const char* label =0,
 		      const int labelId =0) = 0;
 

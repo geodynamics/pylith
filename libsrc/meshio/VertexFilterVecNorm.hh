@@ -59,7 +59,7 @@ public :
    *
    * @param fieldIn Field to filter.
    */
-  const field_type&
+  field_type&
   filter(const field_type& fieldIn);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
