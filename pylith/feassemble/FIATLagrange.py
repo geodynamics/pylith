@@ -293,8 +293,6 @@ class FIATLagrange(ReferenceCell):
             self.vertices[n][1] = vertices[q]
             self.vertices[n][2] = vertices[r]
             n += 1
-          print "VERTEX ORDER",vertexOrder
-          print "VERTICES",self.vertices
           if not n == self.numCorners:
             raise RuntimeError('Invalid 3-D vertex ordering: '+str(n)+ \
                                ' should be '+str(self.numCorners))
