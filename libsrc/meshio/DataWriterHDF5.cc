@@ -85,11 +85,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    //const ALE::Obj<typename field_type::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-    Vec coordVec;
+    const ALE::Obj<typename field_type::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
+    field_type coordField(coordinates);
 
-    // BRAD: Are the coordinates in Fields, so I can just get the Vec out?
-    err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
+    coordField.createVector();
+    coordField.createScatter();
+    coordField.scatterSectionToVector();
+    err = VecView(coordField.vector(), _viewer);CHECK_PETSC_ERROR(err);
     Vec          elemVec;
     PetscInt     numElements, numCorners, *vertices;
     PetscScalar *tmpVertices;
@@ -144,9 +146,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     // We will try the simplest thing, using the embedded vector. If this is not
     // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    // BRAD: Do we need to syncrhonize values here?
     const PetscVec vector = field.vector();
-    assert(vector != PETSC_NULL);
+    if (vector == PETSC_NULL) {
+      field.createVector();
+    }
+    // TODO: Create scatter if necessary
+    field.scatterSectionToVector();
 
     PetscErrorCode err = 0;
     err = VecView(vector, _viewer);
@@ -178,9 +183,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     // We will try the simplest thing, using the embedded vector. If this is not
     // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    // BRAD: Do we need to syncrhonize values here?
     const PetscVec vector = field.vector();
-    assert(vector != PETSC_NULL);
+    if (vector == PETSC_NULL) {
+      field.createVector();
+    }
+    // TODO: Create scatter if necessary
+    field.scatterSectionToVector();
 
     PetscErrorCode err = 0;
     err = VecView(vector, _viewer);
