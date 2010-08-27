@@ -13,7 +13,7 @@
 /**
  * @file libsrc/topology/Fields.hh
  *
- * @brief Set of fields over a finite-element mesh. All fields are
+ * @brief Set of real fields over a finite-element mesh. All fields are
  * associated with the same points. We use uniform sections so the
  * fiber dimension is set at compile time.
  */
@@ -24,18 +24,18 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
-#include "pylith/topology/FieldBase.hh" // USES FieldBase::DomainEnum
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Metadata
 
 #include <string> // USES std::string
 
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.
-template<typename field_type,
+template<typename mesh_type,
 	 int fiberDimTotal>
 class pylith::topology::FieldsNew
 { // Fields
-  friend class TestFieldsMesh; // unit testing
-  friend class TestFieldsSubMesh; // unit testing
+  friend class TestFieldsNewMesh; // unit testing
+  friend class TestFieldsNewSubMesh; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -44,8 +44,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Fields(const typename field_type::Mesh& mesh,
-	 const pylith::topology::FieldBase::DomainEnum domain);
+  Fields(const typename mesh_type& mesh);
 
   /// Destructor.
   virtual
@@ -65,79 +64,92 @@ public :
   /** Add field.
    *
    * @param name Name of field.
-   * @param label Label for field (used in output).
-   */
-  void add(const char* name,
-	   const char* label);
-
-  /** Add field.
-   *
-   * @param name Name of field.
    * @param label Label for field.
    * @param fiberDim Fiber dimension for field.
    */
   void add(const char* name,
 	   const char* label,
-	   const int fiberDim);
+	   const int fiberDim,
+	   FieldBase::VectorFieldEnum vectorFieldType =FieldBase::OTHER,
+	   const double scale =1.0,
+	   const bool dimsOkay =false);
+
+  /** Create and allocate Sieve section.
+   *
+   * @param points Points over which to define section.
+   */
+  void allocate(const ALE::Obj<label_sequence>& points);
+
+  /** Create and allocate Sieve section.
+   *
+   * @param points Points over which to define section.
+   */
+  void allocate(const int_array& points,
+		const int fiberDim);
+
+  /** Create and allocate Sieve section.
+   *
+   * @param domain Type of points over which to define section.
+   * @param stratum Stratum depth (for vertices) and height (for cells).
+   */
+  void allocate(const DomainEnum domain,
+		const int stratum =0);
 
   /** Get field.
    *
    * @param name Name of field.
    */
-  const field_type& getField(const char* name) const;
+  const Field<mesh_type>& getField(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
    */
-  field_type& getField(const char* name);
+  Field<mesh_type>& getField(const char* name);
 	   
-  /** Copy layout to other fields.
-   *
-   * @param name Name of field to use as template for layout.
-   */
-  void copyLayout(const char* name);
-
   /** Get mesh associated with fields.
    *
    * @returns Finite-element mesh.
    */
-  const typename field_type::Mesh& mesh(void) const;
+  const typename mesh_type& mesh(void) const;
 
   /** Return the names of all fields.
    *
    * @returns an array of all field names
    */
   void fieldNames(int *numNames,
-		  char ***outNames);
+		  char ***names);
 
 // PROTECTED STRUCTS ////////////////////////////////////////////////////
 protected :
 
   struct FieldInfo {
+    FieldBase::Metadata metadata;
+    int fiberDim;
     int fibration; 
   }; // FieldInfo
 
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
-  typedef std::map< std::string, field_type* > map_type;
+  typedef std::map< std::string, FieldInfo > map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  map_type _fields;
-  const typename field_type::Mesh& _mesh;
+  map_type _fields; ///< Fields without constraints over a common set of points.
+  ALE::Obj<mesh_type::URealSection> _section; ///< Section containing fields.
+  const typename mesh_type& _mesh; ///< Mesh associated with fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  Fields(const Fields&); ///< Not implemented
-  const Fields& operator=(const Fields&); ///< Not implemented
+  FieldsNew(const FieldsNew&); ///< Not implemented
+  const FieldsNew& operator=(const FieldsNew&); ///< Not implemented
 
-}; // Fields
+}; // FieldsNew
 
-#include "Fields.icc"
+#include "FieldsNew.icc"
 
 #endif // pylith_topology_fields_hh
 

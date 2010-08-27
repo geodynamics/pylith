@@ -70,6 +70,14 @@ public :
    */
   Field(const mesh_type& mesh);
 
+  /** Constructor with mesh, section, and metadata.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  Field(const mesh_type& mesh,
+	const ALE::Obj<RealSection>& section,
+	const Metadata& metadata);
+
   /// Destructor.
   ~Field(void);
 
@@ -294,15 +302,12 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _scale; ///< Dimensional scale associated with field.
-  std::string _label; ///< Label for field.
+  Metadata _metadata;
   const mesh_type& _mesh; ///< Mesh associated with section.
   ALE::Obj<RealSection> _section; ///< Real section with data.
   PetscVec _vector; ///< PETSc vector associated with field.
   PetscVecScatter _scatter; ///< PETSc scatter associated with field.
   PetscVec _scatterVec; ///< PETSC vector used in scattering.
-  VectorFieldEnum _vecFieldType; ///< Type of vector field.
-  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize.
 
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

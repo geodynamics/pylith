@@ -357,9 +357,9 @@ pylith::topology::TestFieldMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(1.0, field._scale);
-  CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._vecFieldType);
-  CPPUNIT_ASSERT_EQUAL(false, field._dimensionsOkay);
+  CPPUNIT_ASSERT_EQUAL(1.0, field._metadata.scale);
+  CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._metadata.vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
 } // testClear
 
 // ----------------------------------------------------------------------

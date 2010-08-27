@@ -138,7 +138,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
     writer.openTimeStep(t, *_submesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    const SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_submesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
@@ -175,7 +175,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
     for (int i=0; i < nfields; ++i) {
-      const SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
@@ -186,7 +186,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps, label, id);
     writer.openTimeStep(t, *_submesh, label, id);
     for (int i=0; i < nfields; ++i) {
-      const SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field, label, id);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
