@@ -60,18 +60,6 @@ namespace pylith {
        */
       const pylith::topology::SubMesh& subdomainMesh(const pylith::topology::Mesh& mesh);
   
-      /** Append finite-element vertex field to file.
-       *
-       * @param t Time associated with field.
-       * @param field Vertex field.
-       * @param mesh Mesh for output.
-       */
-      void appendVertexField(const double t,
-			     const pylith::topology::Field<pylith::topology::Mesh>& field,
-			     const pylith::topology::SubMesh& mesh);
-
-
-
     }; // OutputSolnSubset
 
   } // meshio

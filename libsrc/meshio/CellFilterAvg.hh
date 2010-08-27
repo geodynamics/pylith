@@ -69,7 +69,7 @@ public :
    *
    * @returns Averaged field.
    */
-  const field_type&
+  field_type&
   filter(const field_type& fieldIn,
 	 const char* label =0,
 	 const int labelId =0);

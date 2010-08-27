@@ -68,7 +68,7 @@ pylith::meshio::VertexFilterVecNorm<field_type>::clone(void) const
 // ----------------------------------------------------------------------
 // Filter field.
 template<typename field_type>
-const field_type&
+field_type&
 pylith::meshio::VertexFilterVecNorm<field_type>::filter(
 				   const field_type& fieldIn)
 { // filter
