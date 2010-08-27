@@ -155,9 +155,9 @@ class FIATLagrange(ReferenceCell):
             n += 1
 
           #   Left
-          for r in range(numBasisFns-1, 1, -1):
+          for q in range(numBasisFns-1, 1, -1):
             self.vertices[n][0] = vertices[0]
-            self.vertices[n][1] = vertices[r]
+            self.vertices[n][1] = vertices[q]
             n += 1
 
           # Face
@@ -168,7 +168,8 @@ class FIATLagrange(ReferenceCell):
               n += 1
 
           if not n == self.numCorners:
-            raise RuntimeError('Invalid 2D function tabulation, n is %d' % n)
+            raise RuntimeError('Invalid 2-D function tabulation: '+str(n)+ \
+                                 ' should be '+str(self.numCorners))
         
           self.quadPts = numpy.zeros((numQuadPts*numQuadPts, dim))
           self.quadWts = numpy.zeros((numQuadPts*numQuadPts,))
@@ -177,7 +178,8 @@ class FIATLagrange(ReferenceCell):
           self.basisDeriv = numpy.zeros((numQuadPts*numQuadPts,
                                          numBasisFns*numBasisFns, dim))
 
-          # Order of basis functions and quadrature points don't matter
+          # Order of quadrature points doesn't matter
+          # Order of basis functions should match vertices for isoparametric
           n = 0
           for q in range(0, numQuadPts):
             for p in range(0, numQuadPts):
@@ -249,47 +251,188 @@ class FIATLagrange(ReferenceCell):
                   self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]
                   m += 1
 
-              if not m == numBasisFns**2: raise RuntimeError('Invalid 2D quadrature')
+              if not m == numBasisFns**2:
+                raise RuntimeError('Invalid 2-D quadrature')
               n += 1
 
-          if not n == self.numQuadPts: raise RuntimeError('Invalid 2D quadrature')
+          if not n == self.numQuadPts:
+            raise RuntimeError('Invalid 2-D quadrature')
+
         elif dim == 3:
           self.vertices = numpy.zeros((self.numCorners, dim))
           n = 0
-          # Depth
-          for s in range(numBasisFns):
-            # Bottom
-            for r in range(0, numBasisFns-1):
-              self.vertices[n][0] = vertices[r]
-              self.vertices[n][1] = vertices[0]
-              self.vertices[n][2] = vertices[s]
-              n += 1
-            # Right
-            for q in range(0, numBasisFns-1):
-              self.vertices[n][0] = vertices[numBasisFns-1]
+          # Corners
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[0]
+          self.vertices[n][2] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[0]
+          self.vertices[n][2] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[1]
+          self.vertices[n][2] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[1]
+          self.vertices[n][2] = vertices[0]
+          n += 1
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[0]
+          self.vertices[n][2] = vertices[1]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[0]
+          self.vertices[n][2] = vertices[1]
+          n += 1
+          self.vertices[n][0] = vertices[1]
+          self.vertices[n][1] = vertices[1]
+          self.vertices[n][2] = vertices[1]
+          n += 1
+          self.vertices[n][0] = vertices[0]
+          self.vertices[n][1] = vertices[1]
+          self.vertices[n][2] = vertices[1]
+          n += 1
+
+          # Edges
+          #   Bottom front
+          for p in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[p]
+            self.vertices[n][1] = vertices[0]
+            self.vertices[n][2] = vertices[0]
+            n += 1
+          #   Bottom right
+          for q in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[1]
+            self.vertices[n][1] = vertices[q]
+            self.vertices[n][2] = vertices[0]
+            n += 1
+
+          #   Bottom back
+          for p in range(numBasisFns-1, 1, -1):
+            self.vertices[n][0] = vertices[p]
+            self.vertices[n][1] = vertices[1]
+            self.vertices[n][2] = vertices[0]
+            n += 1
+
+          #   Bottom left
+          for q in range(numBasisFns-1, 1, -1):
+            self.vertices[n][0] = vertices[0]
+            self.vertices[n][1] = vertices[q]
+            self.vertices[n][2] = vertices[0]
+            n += 1
+          #   Middle left front
+          for r in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[0]
+            self.vertices[n][1] = vertices[0]
+            self.vertices[n][2] = vertices[r]
+            n += 1
+          #   Middle right front
+          for r in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[1]
+            self.vertices[n][1] = vertices[0]
+            self.vertices[n][2] = vertices[r]
+            n += 1
+
+          #   Middle right back
+          for r in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[1]
+            self.vertices[n][1] = vertices[1]
+            self.vertices[n][2] = vertices[r]
+            n += 1
+
+          #   Middle left back
+          for r in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[0]
+            self.vertices[n][1] = vertices[1]
+            self.vertices[n][2] = vertices[r]
+            n += 1
+          #   Top front
+          for p in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[p]
+            self.vertices[n][1] = vertices[0]
+            self.vertices[n][2] = vertices[1]
+            n += 1
+          #   Top right
+          for q in range(2, numBasisFns):
+            self.vertices[n][0] = vertices[1]
+            self.vertices[n][1] = vertices[q]
+            self.vertices[n][2] = vertices[1]
+            n += 1
+
+          #   Top back
+          for p in range(numBasisFns-1, 1, -1):
+            self.vertices[n][0] = vertices[p]
+            self.vertices[n][1] = vertices[1]
+            self.vertices[n][2] = vertices[1]
+            n += 1
+
+          #   Top left
+          for r in range(numBasisFns-1, 1, -1):
+            self.vertices[n][0] = vertices[0]
+            self.vertices[n][1] = vertices[r]
+            self.vertices[n][2] = vertices[1]
+            n += 1
+
+          # Face
+          # Interior
+          for r in range(2, numBasisFns):
+            for q in range(2, numBasisFns):
+              for p in range(2, numBasisFns):
+                self.vertices[n][0] = vertices[p]
+                self.vertices[n][1] = vertices[q]
+                self.vertices[n][2] = vertices[r]
+                n += 1
+
+          # Bottom
+          for q in range(2, numBasisFns):
+            for p in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[p]
               self.vertices[n][1] = vertices[q]
-              self.vertices[n][2] = vertices[s]
+              self.vertices[n][2] = vertices[0]
               n += 1
-            # Top
-            for r in range(numBasisFns-1, 0, -1):
-              self.vertices[n][0] = vertices[r]
-              self.vertices[n][1] = vertices[numBasisFns-1]
-              self.vertices[n][2] = vertices[s]
+          # Top
+          for q in range(2, numBasisFns):
+            for p in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[p]
+              self.vertices[n][1] = vertices[q]
+              self.vertices[n][2] = vertices[1]
               n += 1
-            # Left
-            for q in range(numBasisFns-1, 0, -1):
+          # Left
+          for r in range(2, numBasisFns):
+            for q in range(2, numBasisFns):
               self.vertices[n][0] = vertices[0]
               self.vertices[n][1] = vertices[q]
-              self.vertices[n][2] = vertices[s]
+              self.vertices[n][2] = vertices[r]
               n += 1
-            # Interior
-            for q in range(1, numBasisFns-1):
-              for r in range(1, numBasisFns-1):
-                self.vertices[n][0] = vertices[r]
-                self.vertices[n][1] = vertices[q]
-                self.vertices[n][2] = vertices[s]
-                n += 1
-          if not n == self.numCorners: raise RuntimeError('Invalid 3D function tabulation: '+str(n)+' should be '+str(self.numCorners))
+          # Right
+          for r in range(2, numBasisFns):
+            for q in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[1]
+              self.vertices[n][1] = vertices[q]
+              self.vertices[n][2] = vertices[r]
+              n += 1
+          # Front
+          for r in range(2, numBasisFns):
+            for p in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[p]
+              self.vertices[n][1] = vertices[0]
+              self.vertices[n][2] = vertices[r]
+              n += 1
+          # Back
+          for r in range(2, numBasisFns):
+            for p in range(2, numBasisFns):
+              self.vertices[n][0] = vertices[p]
+              self.vertices[n][1] = vertices[1]
+              self.vertices[n][2] = vertices[r]
+              n += 1
+
+          if not n == self.numCorners:
+            raise RuntimeError('Invalid 3-D function tabulation: '+str(n)+ \
+                                 ' should be '+str(self.numCorners))
+
+          print "VERTICES",self.vertices
 
           self.quadPts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts, dim))
           self.quadWts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,))
