@@ -19,8 +19,10 @@ mesh volume all
 # ----------------------------------------------------------------------
 block 1 volume 1 5 6
 block 1 name "elastic"
+block 1 element type hex27
 block 2 volume 7 9 8
 block 2 name "viscoelastic"
+block 2 element type hex27
 
 # ----------------------------------------------------------------------
 # Create nodesets for faults
