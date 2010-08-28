@@ -392,38 +392,71 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
   assert(0 != cells);
   assert(cells->size() == numCells*numCorners);
 
-  if (2 == meshDim && 4 == numCorners) // QUAD
-#if 0 // OLD
-    // 0 1 2 3 -> 0 1 3 2
-    for (int iCell=0; iCell < numCells; ++iCell) {
-      const int i2 = iCell*numCorners+2;
-      const int i3 = iCell*numCorners+3;
-      const int tmp = (*cells)[i2];
-      (*cells)[i2] = (*cells)[i3];
-      (*cells)[i3] = tmp;
-    } // for
-#else
-  ; // do nothing
-#endif
-  else if (3 == meshDim && 8 == numCorners) // HEX
-#if 0 // OLD
-    // 0 1 2 3 4 5 6 7 -> 0 1 3 2 4 5 7 6
-    for (int iCell=0; iCell < numCells; ++iCell) {
-      const int i2 = iCell*numCorners+2;
-      const int i3 = iCell*numCorners+3;
-      int tmp = (*cells)[i2];
-      (*cells)[i2] = (*cells)[i3];
-      (*cells)[i3] = tmp;
+  if (2 == meshDim && 4 == numCorners) { // QUAD4
+    ; // do nothing
+  } else if (3 == meshDim && 8 == numCorners) { // HEX8
+    ; // do nothing
+  } else if (3 == meshDim && 27 == numCorners) { // HEX27
+    // CUBIT
+    // corners, 
+    // bottom edges, middle edges, top edges
+    // interior
+    // bottom/top, left/right, front/back
 
-      const int i6 = iCell*numCorners+6;
-      const int i7 = iCell*numCorners+7;
-      tmp = (*cells)[i6];
-      (*cells)[i6] = (*cells)[i7];
-      (*cells)[i7] = tmp;
+    // PyLith
+    // corners, 
+    // bottom edges, top edges, middle edges
+    // left/right, front/back, bottom/top
+    // interior
+    int tmp = 0;
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int i12 = iCell*numCorners+12;
+      const int i13 = iCell*numCorners+13;
+      const int i14 = iCell*numCorners+14; 
+      const int i15 = iCell*numCorners+15; 
+      const int i16 = iCell*numCorners+16; 
+      const int i17 = iCell*numCorners+17; 
+      const int i18 = iCell*numCorners+18; 
+      const int i19 = iCell*numCorners+19; 
+      const int i20 = iCell*numCorners+20; 
+      const int i21 = iCell*numCorners+21; 
+      const int i22 = iCell*numCorners+22; 
+      const int i23 = iCell*numCorners+23; 
+      const int i24 = iCell*numCorners+24; 
+      const int i25 = iCell*numCorners+25; 
+      const int i26 = iCell*numCorners+26; 
+
+      tmp = (*cells)[i12];
+      (*cells)[i12] = (*cells)[i16];
+      (*cells)[i16] = tmp;
+
+      tmp = (*cells)[i13];
+      (*cells)[i13] = (*cells)[i17];
+      (*cells)[i17] = tmp;
+
+      tmp = (*cells)[i14];
+      (*cells)[i14] = (*cells)[i18];
+      (*cells)[i18] = tmp;
+
+      tmp = (*cells)[i15];
+      (*cells)[i15] = (*cells)[i19];
+      (*cells)[i19] = tmp;
+
+      tmp = (*cells)[i20];
+      (*cells)[i20] = (*cells)[i23];
+      (*cells)[i23] = (*cells)[i26];
+      (*cells)[i26] = tmp;
+
+      tmp = (*cells)[i21];
+      (*cells)[i21] = (*cells)[i24];
+      (*cells)[i24] = tmp;
+
+      tmp = (*cells)[i22];
+      (*cells)[i22] = (*cells)[i25];
+      (*cells)[i25] = tmp;
     } // for
-#else
-  ; // do nothing
-#endif
+  } // if/else
+
 } // _orientCells
   
 

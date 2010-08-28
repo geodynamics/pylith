@@ -211,26 +211,6 @@ class FIATLagrange(ReferenceCell):
           q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
           r = numpy.zeros(numBasis-2, dtype=numpy.int32)
           vertexOrder += zip(p,q,r)
-          #   Middle left front
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle right front
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle right back
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle left back
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
           #   Top front
           p = numpy.arange(2, numBasis, dtype=numpy.int32)
           q = numpy.zeros(numBasis-2, dtype=numpy.int32)
@@ -251,24 +231,28 @@ class FIATLagrange(ReferenceCell):
           q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
           r = numpy.ones(numBasis-2, dtype=numpy.int32)
           vertexOrder += zip(p,q,r)
+          #   Middle left front
+          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+          r = numpy.arange(2, numBasis, dtype=numpy.int32)
+          vertexOrder += zip(p,q,r)
+          #   Middle right front
+          p = numpy.ones(numBasis-2, dtype=numpy.int32)
+          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+          r = numpy.arange(2, numBasis, dtype=numpy.int32)
+          vertexOrder += zip(p,q,r)
+          #   Middle right back
+          p = numpy.ones(numBasis-2, dtype=numpy.int32)
+          q = numpy.ones(numBasis-2, dtype=numpy.int32)
+          r = numpy.arange(2, numBasis, dtype=numpy.int32)
+          vertexOrder += zip(p,q,r)
+          #   Middle left back
+          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+          q = numpy.ones(numBasis-2, dtype=numpy.int32)
+          r = numpy.arange(2, numBasis, dtype=numpy.int32)
+          vertexOrder += zip(p,q,r)
+
           # Face
-          # Interior
-          ip = numpy.arange(2, numBasis, dtype=numpy.int32)
-          p = numpy.tile(ip, (1, (numBasis-2)*(numBasis-2)))
-          iq = numpy.arange(2, numBasis, dtype=numpy.int32)
-          q = numpy.tile(iq, ((numBasis-2), numBasis-2)).transpose()
-          ir = numpy.arange(2, numBasis, dtype=numpy.int32)
-          r = numpy.tile(ir, ((numBasis-2)*(numBasis-2), 1)).transpose()
-          vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())
-          
-          # Bottom / Top
-          ip = numpy.arange(2, numBasis, dtype=numpy.int32)
-          p = numpy.tile(ip, (1, 2*(numBasis-2)))
-          iq = numpy.arange(2, numBasis, dtype=numpy.int32)
-          q = numpy.tile(iq, (2, numBasis-2)).transpose()
-          ir = numpy.arange(0, 2, dtype=numpy.int32)
-          r = numpy.tile(ir, ((numBasis-2)*(numBasis-2), 1)).transpose()
-          vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())          
           # Left / Right
           ip = numpy.arange(0, 2, dtype=numpy.int32)
           p = numpy.tile(ip, ((numBasis-2)*(numBasis-2), 1)).transpose()
@@ -285,7 +269,24 @@ class FIATLagrange(ReferenceCell):
           ir = numpy.arange(2, numBasis, dtype=numpy.int32)
           r = numpy.tile(ir, (2, numBasis-2)).transpose()
           vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())
+          # Bottom / Top
+          ip = numpy.arange(2, numBasis, dtype=numpy.int32)
+          p = numpy.tile(ip, (1, 2*(numBasis-2)))
+          iq = numpy.arange(2, numBasis, dtype=numpy.int32)
+          q = numpy.tile(iq, (2, numBasis-2)).transpose()
+          ir = numpy.arange(0, 2, dtype=numpy.int32)
+          r = numpy.tile(ir, ((numBasis-2)*(numBasis-2), 1)).transpose()
+          vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())          
 
+          # Interior
+          ip = numpy.arange(2, numBasis, dtype=numpy.int32)
+          p = numpy.tile(ip, (1, (numBasis-2)*(numBasis-2)))
+          iq = numpy.arange(2, numBasis, dtype=numpy.int32)
+          q = numpy.tile(iq, ((numBasis-2), numBasis-2)).transpose()
+          ir = numpy.arange(2, numBasis, dtype=numpy.int32)
+          r = numpy.tile(ir, ((numBasis-2)*(numBasis-2), 1)).transpose()
+          vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())
+          
           self.vertices = numpy.zeros((self.numCorners, dim))
           n = 0
           for (p,q,r) in vertexOrder:
