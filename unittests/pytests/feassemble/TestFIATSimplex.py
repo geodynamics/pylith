@@ -189,6 +189,114 @@ class Tri3(object):
     return 0.5
 
 # ----------------------------------------------------------------------
+class Tri6(object):
+
+  def __init__(self):
+    """
+    Setup tri33 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0],
+                            [+1.0, -1.0],
+                            [-1.0, +1.0],
+                            [ 0.0,  0.0],
+                            [-1.0,  0.0],
+                            [ 0.0, -1.0]])
+    quadPts = numpy.array([ [-0.64288254, -0.68989795],
+                            [-0.84993778,  0.28989795],
+                            [ 0.33278049, -0.68989795],
+                            [-0.43996017,  0.28989795]])
+    quadWts = numpy.array( [0.63608276,  0.36391724,  0.63608276,  0.36391724])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (4, 6), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (4, 6, 2), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), self.N2(q),
+                                  self.N3(q), self.N4(q), self.N5(q)],
+                                 dtype=numpy.float64).reshape( (6,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q)],
+                           [self.N1p(q), self.N1q(q)],
+                           [self.N2p(q), self.N2q(q)],
+                           [self.N3p(q), self.N3q(q)],
+                           [self.N4p(q), self.N4q(q)],
+                           [self.N5p(q), self.N5q(q)]])
+      print deriv
+      basisDeriv[iQuad] = deriv.reshape((6, 2))
+      iQuad += 1
+
+    self.cellDim = 2
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
+
+  def N0(self, p):
+    return 0.5*(-p[0]-p[1])*(-1.0-p[0]-p[1])
+
+  def N0p(self, p):
+    return 0.5+p[0]+p[1]
+
+  def N0q(self, p):
+    return 0.5+p[0]+p[1]
+
+
+  def N1(self, p):
+    return 0.5*(1.0+p[0])*(p[0])
+
+  def N1p(self, p):
+    return 0.5+p[0]
+
+  def N1q(self, p):
+    return 0
+
+
+  def N2(self, p):
+    return 0.5*(1.0+p[1])*(p[1])
+
+  def N2p(self, p):
+    return 0
+
+  def N2q(self, p):
+    return 0.5+p[1]
+
+
+  def N3(self, p):
+    return (1.0+p[0])*(1+p[1])
+
+  def N3p(self, p):
+    return (1+p[1])
+
+  def N3q(self, p):
+    return (1.0+p[0])
+
+
+  def N4(self, p):
+    return (-p[0]-p[1])*(1+p[1])
+
+  def N4p(self, p):
+    return -(1+p[1])
+
+  def N4q(self, p):
+    return -1.0-p[0]-2*p[1]
+
+
+  def N5(self, p):
+    return (-p[0]-p[1])*(1+p[0])
+
+  def N5p(self, p):
+    return -1.0-2*p[0]-p[1]
+
+  def N5q(self, p):
+    return -(1+p[0])
+
+
+# ----------------------------------------------------------------------
 class Tet4(object):
 
   def __init__(self):
@@ -344,12 +452,29 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tri3 cell.
     """
     cell = FIATSimplex()
-    cell.shape  = "triangle"
-    cell.degree = 1
-    cell.order  = 1
+    cell.inventory.shape  = "triangle"
+    cell.inventory.degree = 1
+    cell._configure()
     cell.initialize(spaceDim=2)
 
     cellE = Tri3()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryTri2D
+    self.failUnless(isinstance(cell.geometry, GeometryTri2D))
+    return
+
+
+  def test_initialize_tri6(self):
+    """
+    Test initialize() with tri6 cell.
+    """
+    cell = FIATSimplex()
+    cell.inventory.shape  = "triangle"
+    cell.inventory.degree = 2
+    cell._configure()
+    cell.initialize(spaceDim=2)
+
+    cellE = Tri6()
     self._checkVals(cellE, cell)
     from pylith.feassemble.CellGeometry import GeometryTri2D
     self.failUnless(isinstance(cell.geometry, GeometryTri2D))
@@ -361,9 +486,9 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tet4 cell.
     """
     cell = FIATSimplex()
-    cell.shape  = "tetrahedron"
-    cell.degree = 1
-    cell.order  = 1
+    cell.inventory.shape  = "tetrahedron"
+    cell.inventory.degree = 1
+    cell._configure()
     cell.initialize(spaceDim=3)
 
     cellE = Tet4()
