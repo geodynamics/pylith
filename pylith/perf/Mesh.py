@@ -26,6 +26,7 @@ class Mesh(Memory):
   cellTypes = {(1,2): 'line2',
                (1,3): 'line3',
                (2,3): 'tri3',
+               (2,6): 'tri6',
                (2,4): 'quad4',
                (2,9): 'quad9',
                (3,4): 'tet4',
