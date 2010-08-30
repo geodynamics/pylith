@@ -172,7 +172,8 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
   assert(0 != jacobian);
   assert(0 != det);
 
-  assert(numCorners()*spaceDim() == vertices.size());
+  assert( (numCorners()*spaceDim() == vertices.size()) || // linear hex
+	  ((numCorners()+19)*spaceDim() == vertices.size()) ); // quadratic hex
   assert(cellDim() == location.size());
   assert(spaceDim()*cellDim() == jacobian->size());
 
