@@ -155,6 +155,7 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
   PointArray                     origVertices;
   PointArray                     faceVertices;
 
+  faultSieve->setDebug(2);
   if (!faultSieve->commRank()) {
     numCorners = mesh->getNumCellCorners();
     faceSize   = selection::numFaceVertices(mesh);
@@ -226,12 +227,26 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
           if (dim == 0) {
             f = *faceVertices.begin();
           }
-          if (faceSize != dim+1) {
+
+	  std::cout << "dim: " << dim << ", faceSize: " << faceSize << ", numCorners: " << numCorners << std::endl;
+
+          if (2 == dim && 4 == faceSize){
             if (debug) std::cout << "  Adding hex face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+            ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(
+		     faultSieve, orientation, dim, curElement, 
+		     bdVertices, oFaultFaces, f, o);
+          } else if ((1 == dim && 3 == faceSize) ||
+		     (2 == dim && 9 == faceSize)){
+            if (debug) std::cout << "  Adding quadratic hex face " << f
+				 << std::endl;
+            ALE::SieveBuilder<ALE::Mesh>::buildQuadraticHexFaces(
+		     faultSieve, orientation, dim, curElement, 
+		     bdVertices, oFaultFaces, f, o);
           } else {
             if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+            ALE::SieveBuilder<ALE::Mesh>::buildFaces(
+		     faultSieve, orientation, dim, curElement,
+		     bdVertices, oFaultFaces, f, o);
           }
           faultSieve->addArrow(f, support[s]);
           //faultSieve->view("");
