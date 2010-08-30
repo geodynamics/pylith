@@ -396,6 +396,8 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
     ; // do nothing
   } else if (3 == meshDim && 8 == numCorners) { // HEX8
     ; // do nothing
+  } else if (2 == meshDim && 6 == numCorners) { // TRI6
+    ; // do nothing
   } else if (3 == meshDim && 27 == numCorners) { // HEX27
     // CUBIT
     // corners, 

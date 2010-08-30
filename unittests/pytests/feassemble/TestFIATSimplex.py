@@ -198,9 +198,9 @@ class Tri6(object):
     vertices = numpy.array([[-1.0, -1.0],
                             [+1.0, -1.0],
                             [-1.0, +1.0],
+                            [ 0.0, -1.0],
                             [ 0.0,  0.0],
-                            [-1.0,  0.0],
-                            [ 0.0, -1.0]])
+                            [-1.0,  0.0]])
     quadPts = numpy.array([ [-0.64288254, -0.68989795],
                             [-0.84993778,  0.28989795],
                             [ 0.33278049, -0.68989795],
@@ -267,33 +267,33 @@ class Tri6(object):
 
 
   def N3(self, p):
-    return (1.0+p[0])*(1+p[1])
+    return (-p[0]-p[1])*(1+p[0])
 
   def N3p(self, p):
-    return (1+p[1])
+    return -1.0-2*p[0]-p[1]
 
   def N3q(self, p):
-    return (1.0+p[0])
+    return -(1+p[0])
 
 
   def N4(self, p):
-    return (-p[0]-p[1])*(1+p[1])
+    return (1.0+p[0])*(1+p[1])
 
   def N4p(self, p):
-    return -(1+p[1])
+    return (1+p[1])
 
   def N4q(self, p):
-    return -1.0-p[0]-2*p[1]
+    return (1.0+p[0])
 
 
   def N5(self, p):
-    return (-p[0]-p[1])*(1+p[0])
+    return (-p[0]-p[1])*(1+p[1])
 
   def N5p(self, p):
-    return -1.0-2*p[0]-p[1]
+    return -(1+p[1])
 
   def N5q(self, p):
-    return -(1+p[0])
+    return -1.0-p[0]-2*p[1]
 
 
 # ----------------------------------------------------------------------
