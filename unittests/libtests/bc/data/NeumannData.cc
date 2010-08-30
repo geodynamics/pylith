@@ -33,10 +33,10 @@ pylith::bc::NeumannData::NeumannData(void) :
   label(""),
   spaceDim(0),
   cellDim(0),
-  numBoundaryVertices(0),
-  numBoundaryCells(0),
+  numVertices(0),
+  numCells(0),
   numCorners(0),
-  cellVertices(0),
+  cells(0),
   tractionsCell(0),
   valsResidual(0)
 { // constructor
