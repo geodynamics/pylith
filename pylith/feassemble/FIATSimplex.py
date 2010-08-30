@@ -93,32 +93,7 @@ class FIATSimplex(ReferenceCell):
     """
     self._setupGeometry(spaceDim)
 
-    if "point" != self.shape.lower():
-      quadrature = self._setupQuadrature()
-      basisFns = self._setupBasisFns()
-
-      # Get coordinates of vertices (dual basis)
-      self.vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
-
-      # Evaluate basis functions at quadrature points
-      quadpts = quadrature.get_points()
-      basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
-      self.basis = numpy.reshape(basis.flatten(), basis.shape)
-
-      # Evaluate derivatives of basis functions at quadrature points
-      import FIAT.shapes
-      dim = FIAT.shapes.dimension(basisFns.base.shape)
-      basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
-                                for d in range(dim)]).transpose()
-      self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
-
-      self.quadPts = numpy.array(quadrature.get_points())
-      self.quadWts = numpy.array(quadrature.get_weights())
-
-      self.cellDim = dim
-      self.numCorners = len(basisFns)
-      self.numQuadPts = len(quadrature.get_weights())
-    else:
+    if "point" == self.shape.lower():
       # Need 0-D quadrature for boundary conditions of 1-D meshes
       self.cellDim = 0
       self.numCorners = 1
@@ -128,6 +103,53 @@ class FIATSimplex(ReferenceCell):
       self.quadPts = numpy.array([[0.0]])
       self.quadWts = numpy.array([1.0])
       self.vertices = numpy.array([[0.0]])
+    else:
+      quadrature = self._setupQuadrature()
+      basisFns = self._setupBasisFns()
+
+      # Get coordinates of vertices (dual basis)
+      vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
+
+      # Evaluate basis functions at quadrature points
+      quadpts = quadrature.get_points()
+      basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+
+      # Evaluate derivatives of basis functions at quadrature points
+      import FIAT.shapes
+      dim = FIAT.shapes.dimension(basisFns.base.shape)
+      basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                                for d in range(dim)]).transpose()
+
+      self.cellDim = dim
+      self.numCorners = len(basisFns)
+      self.numQuadPts = len(quadrature.get_weights())
+
+      if 1 == self.degree or "line" == self.shape.lower():
+        self.vertices = vertices
+        self.basis = numpy.reshape(basis.flatten(), basis.shape)
+        self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+
+        self.quadPts = numpy.array(quadrature.get_points())
+        self.quadWts = numpy.array(quadrature.get_weights())
+
+      elif 2 == self.degree:
+        # Set order of vertices and basis functions.
+        if "triangle" == self.shape.lower():
+          v = [0, 1, 2, 5, 3, 4]
+        elif "tetrahedron" == self.shape.lower():
+          v = [0, 1, 2, 3, 6, 4, 5, 7, 8, 9]
+        else:
+          raise ValueError("Unknown cell type '"+self.shape.lower()+"'.")
+
+        self.vertices = vertices[v,:]
+        self.basis = numpy.reshape(basis[:,v].flatten(), basis.shape)
+        self.basisDeriv = numpy.reshape(basisDeriv[:,v,:].flatten(), 
+                                        basisDeriv.shape)
+
+        self.quadPts = numpy.array(quadrature.get_points())
+        self.quadWts = numpy.array(quadrature.get_weights())
+      else:
+        raise NotImplemented("Degree "+str(self.degree)+" not implemented.")
 
     self._info.line("Cell geometry: ")
     self._info.line(self.geometry)
