@@ -21,20 +21,6 @@
 ## @brief Analytical solution to axial displacement problem.
 
 ## 2-D axial extension test with linear quadrilateral cells.
-##
-##          Uy=-a
-##          ----------
-##          |        |
-## Ux=-b    |        |
-##          |        |
-##          |        |
-##          ----------
-##          Uy=+a
-## 
-## Dirichlet boundary conditions
-##   Ux(0,y) = -b
-##   Uy(x,-4000) = +a
-##   Uy(x,+4000) = -a
 
 import numpy
 
@@ -59,8 +45,8 @@ ezz = 1.0/(2*p_mu) * (szz - p_lambda/(3*p_lambda+2*p_mu) * (sxx+syy+szz))
 
 exy = 1.0/(2*p_mu) * (sxy)
 
-print exx,eyy,exy,ezz
-print -exx*p_lambda/(p_lambda+2*p_mu)
+#print exx,eyy,exy,ezz
+#print -exx*p_lambda/(p_lambda+2*p_mu)
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
