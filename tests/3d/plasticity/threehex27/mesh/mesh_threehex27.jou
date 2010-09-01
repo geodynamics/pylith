@@ -76,6 +76,13 @@ nodeset 16 group face_zpos
 nodeset 16 name "face_zpos"
 
 # ----------------------------------------------------------------------
+# Create nodeset for middle-z face
+# ----------------------------------------------------------------------
+group "face_zmid" add node with z_coord > -0.1 and with z_coord < 0.1
+nodeset 17 group face_zmid
+nodeset 17 name "face_zmid"
+
+# ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "threehex27.exo" dimension 3 overwrite
