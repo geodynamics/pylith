@@ -58,6 +58,7 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
   _scatter(0),
   _scatterVec(0)
 { // constructor
+  assert(!section.isNull());
 } // constructor
 
 // ----------------------------------------------------------------------

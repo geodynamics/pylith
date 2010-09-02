@@ -14,170 +14,24 @@
 #error "FieldsNew.icc must be included only from FieldsNew.hh"
 #endif
 
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
-
-// ----------------------------------------------------------------------
-// Default constructor.
-template<typename mesh_type, int fiberDimTotal>
-pylith::topology::Fields<field_type>::Fields(
-				  const typename field_type::Mesh& mesh) :
-  _mesh(mesh)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
-// Destructor.
-template<typename mesh_type, int fiberDimTotal>
-pylith::topology::Fields<field_type>::~Fields(void)
-{ // destructor
-  deallocate();
-} // destructor
-
-// ----------------------------------------------------------------------
-// Deallocate PETSc and local data structures.
-template<typename mesh_type, int fiberDimTotal>
-void
-pylith::topology::Fields<field_type>::deallocate(void)
-{ // deallocate
-  if (!_section.isNull())
-    _section->clear();
-} // deallocate
-
 // ----------------------------------------------------------------------
 // Check if fields contains a given field.
-template<typename mesh_type, int fiberDimTotal>
+template<typename mesh_type>
 bool
-pylith::topology::Fields<field_type>::hasField(const char* name) const
+pylith::topology::FieldsNew<mesh_type>::hasField(const char* name) const
 { // hasField
   typename map_type::const_iterator iter = _fields.find(name);
   return iter != _fields.end();
 } // hasField
 
 // ----------------------------------------------------------------------
-// Add field.
-template<typename mesh_type, int fiberDimTotal>
-void
-pylith::topology::Fields<field_type>::add(const char* name,
-					  const char* label,
-					  const int fiberDim,
-					  const FieldBase::VectorFieldEnum vectorFieldType,
-					  const double scale,
-					  const bool dimsOkay)
-{ // add
-  if (hasField(name)) {
-    std::ostringstream msg;
-    msg << "Could not add field '" << name
-	<< "' to fields manager, because it already exists.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  // Check to see if we have room to add field.
-  int fiberDimCurrent = 0;
-  for (map_type::iterator iter=_fields.begin(); iter != _fields.end(); iter++)
-    fiberDimCurrent += iter->second.fiberDim;
-  if (fiberDimCurrent + fiberDim > fiberDimTotal) {
-    std::ostringstream msg;
-    msg << "No room to add field '" << name << "' to Fields object.\n"
-	<< "  Total fiber dimension: " << fiberDimTotal << "\n"
-	<< "  Current fiber dimension: " << fiberDimCurrent << "\n"
-	<< "  Fiber dimension for new field: " << fiberDim;
-    throw std::runtime_error(msg.str());
-  } // if
-
-  // Set metadata
-  FieldInfo info;
-  info.metadata.label = label;
-  info.metadata.vectorFieldType = vectorFieldType;
-  info.metadata.scale = scale;
-  info.metadata.dimsOkay = dimsOkay;
-  
-  // Set fibration and fiber dimension
-  info.fibration = _fields.size() + 1;
-  info.fiberDim = fiberDim;
-
-  _fields[name] = info;
-} // add
-
-// ----------------------------------------------------------------------
-// Get field.
-template<typename mesh_type, int fiberDimTotal>
-const field_type&
-pylith::topology::Fields<field_type>::get(const char* name) const
-{ // get
-  typename map_type::const_iterator iter = _fields.find(name);
-  if (iter == _fields.end()) {
-    std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
-    throw std::runtime_error(msg.str());
-  } // if
-  return *iter->second;
-} // get
-	   
-// ----------------------------------------------------------------------
-// Get field.
-template<typename mesh_type, int fiberDimTotal>
-field_type&
-pylith::topology::Fields<field_type>::get(const char* name)
-{ // get
-  typename map_type::iterator iter = _fields.find(name);
-  if (iter == _fields.end()) {
-    std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
-    throw std::runtime_error(msg.str());
-  } // if
-  return *iter->second;
-} // get
-
-// ----------------------------------------------------------------------
-// Copy layout to other fields.
-template<typename mesh_type, int fiberDimTotal>
-void
-pylith::topology::Fields<field_type>::copyLayout(const char* name)
-{ // copyLayout
-  typename map_type::const_iterator src = _fields.find(name);
-  if (src == _fields.end()) {
-    std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  const typename map_type::iterator begin = _fields.begin();
-  const typename map_type::iterator end = _fields.end();
-  for (typename map_type::iterator iter=begin; iter != end; ++iter)
-    if (iter != src)
-      iter->second->cloneSection(*src->second);
-} // copyLayout
-
-// ----------------------------------------------------------------------
 // Get mesh associated with fields.
-template<typename mesh_type, int fiberDimTotal>
-const typename field_type::Mesh&
-pylith::topology::Fields<field_type>::mesh(void) const
+template<typename mesh_type>
+const mesh_type&
+pylith::topology::FieldsNew<mesh_type>::mesh(void) const
 { // mesh
   return _mesh;
 } // mesh
-
-// ----------------------------------------------------------------------
-// Get names of all fields
-template<typename mesh_type, int fiberDimTotal>
-void
-pylith::topology::Fields<field_type>::fieldNames(int *numNames, char ***outNames)
-{ // fieldNames
-  *numNames = _fields.size();
-  PetscErrorCode ierr = PetscMalloc((*numNames) * sizeof(char *), outNames);
-  const typename map_type::const_iterator namesEnd = _fields.end();
-  int i = 0;
-  for (typename map_type::const_iterator name = _fields.begin(); name != namesEnd; ++name) {
-    char *newName;
-
-    ierr = PetscStrallocpy(name->first.c_str(), &newName);
-    (*outNames)[i++] = newName;
-  }
-} // fieldNames
 
 
 // End of file 
