@@ -37,7 +37,7 @@ namespace pylith {
     class FieldBase;
     template<typename mesh_type> class Field;
     template<typename field_type> class Fields;
-    template<typename field_type, int fiberDimTotal> class FieldsNew;
+    template<typename mesh_type> class FieldsNew;
     class SolutionFields;
 
     class Jacobian;

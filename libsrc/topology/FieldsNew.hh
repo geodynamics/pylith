@@ -30,8 +30,7 @@
 
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.
-template<typename mesh_type,
-	 int fiberDimTotal>
+template<typename mesh_type>
 class pylith::topology::FieldsNew
 { // Fields
   friend class TestFieldsNewMesh; // unit testing
@@ -44,11 +43,11 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Fields(const typename mesh_type& mesh);
+  FieldsNew(const mesh_type& mesh);
 
   /// Destructor.
   virtual
-  ~Fields(void);
+  ~FieldsNew(void);
 
   /// Deallocate PETSc and local data structures.
   virtual
@@ -78,47 +77,47 @@ public :
    *
    * @param points Points over which to define section.
    */
-  void allocate(const ALE::Obj<label_sequence>& points);
+  void allocate(const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& points);
 
   /** Create and allocate Sieve section.
    *
    * @param points Points over which to define section.
    */
-  void allocate(const int_array& points,
-		const int fiberDim);
+  void allocate(const int_array& points);
 
   /** Create and allocate Sieve section.
    *
    * @param domain Type of points over which to define section.
    * @param stratum Stratum depth (for vertices) and height (for cells).
    */
-  void allocate(const DomainEnum domain,
+  void allocate(const FieldBase::DomainEnum domain,
 		const int stratum =0);
 
   /** Get field.
    *
    * @param name Name of field.
    */
-  const Field<mesh_type>& getField(const char* name) const;
+  const Field<mesh_type>& get(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
    */
-  Field<mesh_type>& getField(const char* name);
+  Field<mesh_type>& get(const char* name);
 	   
   /** Get mesh associated with fields.
    *
    * @returns Finite-element mesh.
    */
-  const typename mesh_type& mesh(void) const;
+  const mesh_type& mesh(void) const;
 
   /** Return the names of all fields.
    *
-   * @returns an array of all field names
+   * @param numNames Number of fields,
+   * @param names Names of fields.
    */
-  void fieldNames(int *numNames,
-		  char ***names);
+  void fieldNames(int* numNames,
+		  std::string** names) const;
 
 // PROTECTED STRUCTS ////////////////////////////////////////////////////
 protected :
@@ -127,6 +126,7 @@ protected :
     FieldBase::Metadata metadata;
     int fiberDim;
     int fibration; 
+    Field<mesh_type>* field;
   }; // FieldInfo
 
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
@@ -134,12 +134,21 @@ protected :
 
   typedef std::map< std::string, FieldInfo > map_type;
 
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
+
+  /** Compute total fiber dimension for section.
+   *
+   * @returns Fiber dimension.
+   */
+  int _fiberDim(void) const;
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   map_type _fields; ///< Fields without constraints over a common set of points.
-  ALE::Obj<mesh_type::URealSection> _section; ///< Section containing fields.
-  const typename mesh_type& _mesh; ///< Mesh associated with fields.
+  ALE::Obj<typename mesh_type::RealSection> _section; ///< Section containing fields.
+  const mesh_type& _mesh; ///< Mesh associated with fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -150,6 +159,7 @@ private :
 }; // FieldsNew
 
 #include "FieldsNew.icc"
+#include "FieldsNew.cc"
 
 #endif // pylith_topology_fields_hh
 
