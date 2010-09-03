@@ -394,10 +394,35 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
 
   if (2 == meshDim && 4 == numCorners) { // QUAD4
     ; // do nothing
+
   } else if (3 == meshDim && 8 == numCorners) { // HEX8
     ; // do nothing
+
   } else if (2 == meshDim && 6 == numCorners) { // TRI6
-    ; // do nothing
+    // CUBIT
+    // corners, 
+    // bottom edges, middle edges, top edges
+
+    // PyLith (Sieve)
+    // bottom edge, right edge, left edge, corners
+
+    // Permutation: 3, 4, 5, 0, 1, 2
+    int tmp = 0;
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int ii = iCell*numCorners;
+      tmp = (*cells)[ii+0];
+      (*cells)[ii+0] = (*cells)[ii+3];
+      (*cells)[ii+3] = tmp;
+
+      tmp = (*cells)[ii+1];
+      (*cells)[ii+1] = (*cells)[ii+4];
+      (*cells)[ii+4] = tmp;
+
+      tmp = (*cells)[ii+2];
+      (*cells)[ii+2] = (*cells)[ii+5];
+      (*cells)[ii+5] = tmp;
+    } // for
+
   } else if (3 == meshDim && 27 == numCorners) { // HEX27
     // CUBIT
     // corners, 
