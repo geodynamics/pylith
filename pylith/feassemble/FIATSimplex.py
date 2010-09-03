@@ -124,32 +124,17 @@ class FIATSimplex(ReferenceCell):
       self.numCorners = len(basisFns)
       self.numQuadPts = len(quadrature.get_weights())
 
-      if 1 == self.degree or "line" == self.shape.lower():
-        self.vertices = vertices
-        self.basis = numpy.reshape(basis.flatten(), basis.shape)
-        self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+      # Permute from FIAT order to Sieve order
+      p = self._permutationFIATToSieve()
+      self.vertices = vertices[p,:]
+      self.basis = numpy.reshape(basis[:,p].flatten(), basis.shape)
+      self.basisDeriv = numpy.reshape(basisDeriv[:,p,:].flatten(), 
+                                      basisDeriv.shape)
 
-        self.quadPts = numpy.array(quadrature.get_points())
-        self.quadWts = numpy.array(quadrature.get_weights())
+      # No permutation in order of quadrature points
+      self.quadPts = numpy.array(quadrature.get_points())
+      self.quadWts = numpy.array(quadrature.get_weights())
 
-      elif 2 == self.degree:
-        # Set order of vertices and basis functions.
-        if "triangle" == self.shape.lower():
-          v = [0, 1, 2, 5, 3, 4]
-        elif "tetrahedron" == self.shape.lower():
-          v = [0, 1, 2, 3, 6, 4, 5, 7, 8, 9]
-        else:
-          raise ValueError("Unknown cell type '"+self.shape.lower()+"'.")
-
-        self.vertices = vertices[v,:]
-        self.basis = numpy.reshape(basis[:,v].flatten(), basis.shape)
-        self.basisDeriv = numpy.reshape(basisDeriv[:,v,:].flatten(), 
-                                        basisDeriv.shape)
-
-        self.quadPts = numpy.array(quadrature.get_points())
-        self.quadWts = numpy.array(quadrature.get_weights())
-      else:
-        raise NotImplemented("Degree "+str(self.degree)+" not implemented.")
 
     self._info.line("Cell geometry: ")
     self._info.line(self.geometry)
@@ -180,6 +165,49 @@ class FIATSimplex(ReferenceCell):
     if self.order == -1:
       self.order = self.degree
     return
+
+  
+  def _permutationFIATToSieve(self):
+    """
+    Permute from FIAT basis order to Sieve basis order.
+
+    FIAT: corners, edges, faces
+
+    Sieve: breadth search first (faces, edges, corners)
+    """
+    import FIAT.shapes
+
+    basis = self.cell.function_space()
+    dim = FIAT.shapes.dimension(self._getShape())
+    ids = self.cell.Udual.entity_ids
+    permutation = []
+    if dim == 1:
+      for edge in ids[1]:
+        permutation.extend(ids[1][edge])
+      for vertex in ids[0]:
+        permutation.extend(ids[0][vertex])
+    elif dim == 2:
+      for face in ids[2]:
+        permutation.extend(ids[2][face])
+      for edge in ids[1]:
+        permutation.extend(ids[1][(edge+2)%3])
+      for vertex in ids[0]:
+        permutation.extend(ids[0][vertex])
+    elif dim == 3:
+      for volume in ids[3]:
+        permutation.extend(ids[3][volume])
+      for face in [3, 2, 0, 1]:
+        permutation.extend(ids[2][face])
+      for edge in [2, 0, 1, 3]:
+        permutation.extend(ids[1][edge])
+      for edge in [4, 5]:
+        if len(ids[1][edge]) > 0:
+          permutation.extend(ids[1][edge][::-1])
+      for vertex in ids[0]:
+        permutation.extend(ids[0][vertex])
+    else:
+      raise ValueError("Unknown dimension '%d'." % dim)
+    return permutation
 
 
   def _setupGeometry(self, spaceDim):
@@ -215,6 +243,7 @@ class FIATSimplex(ReferenceCell):
     if None == self.geometry:
       raise ValueError("Could not set shape '%s' of cell for '%s' in spatial " \
                        "dimension '%s'." % (name, self.name, spaceDim))
+
     return
   
 
@@ -233,15 +262,15 @@ class FIATSimplex(ReferenceCell):
     Setup basis functions for reference cell.
     """
     from FIAT.Lagrange import Lagrange
-    return Lagrange(self._getShape(), self.degree).function_space()
+    self.cell = Lagrange(self._getShape(), self.degree)
+    return self.cell.function_space() 
 
 
   def _setupVertices(self):
     """
     Setup evaluation functional points for reference cell.
     """
-    from FIAT.Lagrange import Lagrange
-    return Lagrange(self._getShape(), self.degree).Udual.pts
+    return self.cell.Udual.pts
 
 
   def _getShape(self):
