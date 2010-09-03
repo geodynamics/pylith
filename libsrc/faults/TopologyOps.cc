@@ -242,6 +242,13 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
             ALE::SieveBuilder<ALE::Mesh>::buildQuadraticHexFaces(
 		     faultSieve, orientation, dim, curElement, 
 		     bdVertices, oFaultFaces, f, o);
+          } else if ((1 == dim && 3 == faceSize) ||
+		     (2 == dim && 6 == faceSize)){
+            if (debug) std::cout << "  Adding quadratic tri face " << f
+				 << std::endl;
+            ALE::SieveBuilder<ALE::Mesh>::buildQuadraticTetFaces(
+		     faultSieve, orientation, dim, curElement, 
+		     bdVertices, oFaultFaces, f, o);
           } else {
             if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
             ALE::SieveBuilder<ALE::Mesh>::buildFaces(
