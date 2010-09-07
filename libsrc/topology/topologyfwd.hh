@@ -27,6 +27,14 @@
 #if !defined(pylith_topology_topologyfwd_hh)
 #define pylith_topology_topologyfwd_hh
 
+#include "pylith/utils/sievetypes.hh"
+
+namespace ALE {
+  template<typename point_type, 
+	   typename value_type,
+	   typename allocator> class IUniformSectionDS;
+} // ALE
+
 namespace pylith {
   namespace topology {
 
@@ -35,7 +43,8 @@ namespace pylith {
     class MeshOps;
 
     class FieldBase;
-    template<typename mesh_type> class Field;
+    template<typename mesh_type, 
+	     typename section_type =ALE::IGeneralSection<pylith::Mesh::point_type, double> > class Field;
     template<typename field_type> class Fields;
     template<typename mesh_type> class FieldsNew;
     class SolutionFields;

@@ -52,7 +52,9 @@
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -857,7 +859,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
   RestrictVisitor orientationVisitor(*orientationSection,
-				     orientationCell.size(),
+				     orientationCell.size(), 
 				     &orientationCell[0]);
 
   const int numConstraintVert = numBasis;
@@ -885,9 +887,9 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 					    solutionSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*solutionSection, *globalOrder,
-			  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-				    sieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianVisitor(*solutionSection, *globalOrder,
+				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+					   sieveMesh->depth())*spaceDim);
 
 
 
@@ -1618,8 +1620,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
   const ALE::Obj<RealSection>& coordinatesSection =
       faultSieveMesh->getRealSection("coordinates");
   assert(!coordinatesSection.isNull());
-  topology::Mesh::RestrictVisitor coordinatesVisitor(*coordinatesSection,
-    coordinatesCell.size(), &coordinatesCell[0]);
+  RestrictVisitor coordinatesVisitor(*coordinatesSection,
+				     coordinatesCell.size(),
+				     &coordinatesCell[0]);
 
   // Set orientation function
   assert(cohesiveDim == _quadrature->cellDim());
@@ -1840,14 +1843,14 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
-  topology::Mesh::UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);
+  UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);
 
   double_array coordinatesCell(numBasis * spaceDim);
   const ALE::Obj<RealSection>& coordinates = faultSieveMesh->getRealSection(
     "coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates,
-    coordinatesCell.size(), &coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates,
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
       faultSieveMesh->heightStratum(0);

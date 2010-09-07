@@ -2,10 +2,16 @@
 //
 // ======================================================================
 //
-//                           Brad T. Aagaard
-//                        U.S. Geological Survey
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
 //
-// {LicenseText}
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010 University of California, Davis
+//
+// See COPYING for license information.
 //
 // ======================================================================
 //
@@ -134,6 +140,8 @@ protected :
 
   typedef std::map< std::string, FieldInfo > map_type;
 
+  typedef typename mesh_type::RealSection section_type;
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -147,7 +155,7 @@ protected :
 protected :
 
   map_type _fields; ///< Fields without constraints over a common set of points.
-  ALE::Obj<typename mesh_type::RealSection> _section; ///< Section containing fields.
+  ALE::Obj<section_type> _section; ///< Section containing fields.
   const mesh_type& _mesh; ///< Mesh associated with fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

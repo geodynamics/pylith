@@ -45,10 +45,6 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityImplicitLgDeform::ElasticityImplicitLgDeform(void) :
   _dtm1(-1.0)
@@ -188,27 +184,23 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-					       numBasis*spaceDim, 
-					       &dispTCell[0]);
+  RestrictVisitor dispTVisitor(*dispTSection,
+			       numBasis*spaceDim, &dispTCell[0]);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
-  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-						   numBasis*spaceDim, 
-						   &dispTIncrCell[0]);
+  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+				   numBasis*spaceDim, &dispTIncrCell[0]);
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-						   &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -392,15 +384,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
-  topology::Mesh::RestrictVisitor dispTVisitor(*dispTSection,
-					       numBasis*spaceDim, 
-					       &dispTCell[0]);
+  RestrictVisitor dispTVisitor(*dispTSection,
+			       numBasis*spaceDim, &dispTCell[0]);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
-  topology::Mesh::RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-						   numBasis*spaceDim, 
-						   &dispTIncrCell[0]);
+  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
+				   numBasis*spaceDim, &dispTIncrCell[0]);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -415,18 +405,17 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 					    dispTSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispTSection,
-						 *globalOrder,
-			   (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-				     sieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianVisitor(*dispTSection,
+				 *globalOrder,
+				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+					   sieveMesh->depth())*spaceDim);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
