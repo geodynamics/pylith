@@ -70,14 +70,14 @@ const char* pylith::bc::NeumannDataQuad4::_label = "bc3";
 
 const int pylith::bc::NeumannDataQuad4::_spaceDim = 2;
 const int pylith::bc::NeumannDataQuad4::_cellDim = 1;
-
-const int pylith::bc::NeumannDataQuad4::_numBoundaryVertices = 3;
-const int pylith::bc::NeumannDataQuad4::_numBoundaryCells = 2;
+const int pylith::bc::NeumannDataQuad4::_numVertices = 3;
+const int pylith::bc::NeumannDataQuad4::_numCells = 2;
 const int pylith::bc::NeumannDataQuad4::_numCorners = 2;
-const double pylith::bc::NeumannDataQuad4::_cellVertices[] = {-1.0,-1.0,
-							      0.0,-1.0,
-							      0.0,-1.0,
-							      1.0,-1.0};
+const int pylith::bc::NeumannDataQuad4::_cells[] = {
+  2, 4,
+  4, 6,
+};
+
 const double pylith::bc::NeumannDataQuad4::_tractionsCell[] = {
   0.0, -0.1056624327,
   0.0, -0.3943375673,
@@ -111,11 +111,11 @@ pylith::bc::NeumannDataQuad4::NeumannDataQuad4(void)
 
   spaceDim = _spaceDim;
   cellDim = _cellDim;
-  numBoundaryVertices = _numBoundaryVertices;
-  numBoundaryCells = _numBoundaryCells;
+  numVertices = _numVertices;
+  numCells = _numCells;
   numCorners = _numCorners;
+  cells = const_cast<int*>(_cells);
 
-  cellVertices = const_cast<double*>(_cellVertices);
   tractionsCell = const_cast<double*>(_tractionsCell);
   valsResidual = const_cast<double*>(_valsResidual);
 

@@ -61,12 +61,12 @@ public:
 
   /// @name Boundary mesh information
   //@{
-  int spaceDim; ///< Number of dimensions of vertex coordinates
-  int cellDim; ///< Dimension of surface cells.
-  int numBoundaryVertices; ///< Number of boundary vertices in the mesh.
-  int numBoundaryCells; ///< Number of cells on Neumann boundary.
-  int numCorners; ///< Number of vertices for each boundary cell.
-  double* cellVertices; ///< Vertex coordinates for boundary cells.
+  int spaceDim; ///< Number of dimensions in vertex coordinates
+  int cellDim; ///< Number of dimensions associated with cell
+  int numVertices; ///< Number of vertices
+  int numCells; ///< Number of cells
+  int numCorners; ///< Number of vertices in cell
+  int* cells; ///< Indices of vertices in cells
   //@}
 
   /// @name Calculated values.
