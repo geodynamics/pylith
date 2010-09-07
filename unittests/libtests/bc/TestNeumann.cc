@@ -167,52 +167,29 @@ pylith::bc::TestNeumann::testInitialize(void)
   const int numCorners = _data->numCorners;
   const int spaceDim = _data->spaceDim;
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = submesh->heightStratum(1);
-  const int numBoundaryVertices = submesh->depthStratum(0)->size();
-  const int numBoundaryCells = cells->size();
+  const int numVertices = submesh->depthStratum(0)->size();
+  const int numCells = cells->size();
+  const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
 
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
-  CPPUNIT_ASSERT_EQUAL(_data->numBoundaryVertices, numBoundaryVertices);
-  CPPUNIT_ASSERT_EQUAL(_data->numBoundaryCells, numBoundaryCells);
+  CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
-  const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
-  const ALE::Obj<SubRealSection>& coordinates =
-    submesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, numCorners*spaceDim);
-  // coordinates->view("Mesh coordinates from TestNeumann::testInitialize");
-
-  const int numBasis = bc._quadrature->numBasis();
-  const int cellVertSize = _data->numCorners * spaceDim;
-  double_array cellVertices(cellVertSize);
-
-  const double tolerance = 1.0e-06;
-
-  // check cell vertices
-  int iCell = 0;
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = submesh->getSieve();
+  ALE::ISieveVisitor::PointRetriever<SieveSubMesh::sieve_type> pV(sieve->getMaxConeSize());
+  int dp = 0;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     const int numCorners = submesh->getNumCellCorners(*c_iter, boundaryDepth);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
 
-    coordsVisitor.clear();
-    submesh->restrictClosure(*c_iter, coordsVisitor);
-    double vert =0.0;
-    double vertE =0.0;
-    const double* cellVertices = coordsVisitor.getValues();
-    // std::cout << "c_iter " << *c_iter << " vertex coords:" << std::endl;
-    for(int iVert = 0; iVert < numCorners; ++iVert) {
-      for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	vertE = _data->cellVertices[iDim+spaceDim*iVert+iCell*cellVertSize];
-	vert = cellVertices[iDim+spaceDim*iVert];
-        // std::cout << "  " << cellVertices[iDim+spaceDim*iVert];
-	if (fabs(vertE) > 1.0)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vert/vertE, tolerance);
-	else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(vert, vertE, tolerance);
-      } // for
-      // std::cout << std::endl;
-    } // for
-    iCell++;
+    sieve->cone(*c_iter, pV);
+    const SieveSubMesh::point_type *cone = pV.getPoints();
+    for(int p = 0; p < pV.getSize(); ++p, ++dp) {
+      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
+    }
+    pV.clear();
   } // for
 
   // Check traction values
@@ -224,6 +201,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   const ALE::Obj<SubRealSection>& tractionSection =
     bc._parameters->get("initial").section();
 
+  const double tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {

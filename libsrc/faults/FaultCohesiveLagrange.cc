@@ -1374,7 +1374,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int numCorners = _quadrature->refGeometry().numCorners();
+  const int numCorners = _quadrature->numBasis();
   const ALE::Obj<SieveMesh::label_sequence>& cells =
       sieveMesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());
