@@ -32,8 +32,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
   _mesh(mesh),
   _vector(0),
   _scatter(0),
@@ -47,9 +47,9 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
 
 // ----------------------------------------------------------------------
 // Constructor with mesh, section, and metadata.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
-					  const ALE::Obj<RealSection>& section,
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
+					  const ALE::Obj<section_type>& section,
 					  const Metadata& metadata) :
   _metadata(metadata),
   _mesh(mesh),
@@ -63,17 +63,17 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 // Destructor.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>::~Field(void)
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type, section_type>::~Field(void)
 { // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::deallocate(void)
+pylith::topology::Field<mesh_type, section_type>::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
   if (0 != _vector) {
@@ -94,9 +94,9 @@ pylith::topology::Field<mesh_type>::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 int
-pylith::topology::Field<mesh_type>::spaceDim(void) const
+pylith::topology::Field<mesh_type, section_type>::spaceDim(void) const
 { // spaceDim
   const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
   return (0 != cs) ? cs->spaceDim() : 0;
@@ -104,32 +104,32 @@ pylith::topology::Field<mesh_type>::spaceDim(void) const
 
 // ----------------------------------------------------------------------
 // Get the chart size.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 int
-pylith::topology::Field<mesh_type>::chartSize(void) const
+pylith::topology::Field<mesh_type, section_type>::chartSize(void) const
 { // chartSize
   return _section.isNull() ? 0 : _section->getChart().size();
 } // chartSize
 
 // ----------------------------------------------------------------------
 // Get the number of degrees of freedom.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 int
-pylith::topology::Field<mesh_type>::sectionSize(void) const
+pylith::topology::Field<mesh_type, section_type>::sectionSize(void) const
 { // sectionSize
   return _section.isNull() ? 0 : _section->size();
 } // sectionSize
 
 // ----------------------------------------------------------------------
 // Create seive section.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::newSection(void)
+pylith::topology::Field<mesh_type, section_type>::newSection(void)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
 
-  _section = new RealSection(_mesh.comm(), _mesh.debug());  
+  _section = new section_type(_mesh.comm(), _mesh.debug());  
 
   logger.stagePop();
 } // newSection
@@ -137,9 +137,9 @@ pylith::topology::Field<mesh_type>::newSection(void)
 // ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion for a
 // sequence of points.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::newSection(
+pylith::topology::Field<mesh_type, section_type>::newSection(
 				       const ALE::Obj<label_sequence>& points,
 				       const int fiberDim)
 { // newSection
@@ -154,7 +154,7 @@ pylith::topology::Field<mesh_type>::newSection(
     throw std::runtime_error(msg.str());
   } // if
 
-  _section = new RealSection(_mesh.comm(), _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
 
   if (points->size() > 0) {
     const point_type pointMin = 
@@ -172,9 +172,9 @@ pylith::topology::Field<mesh_type>::newSection(
 // ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion for a list of
 // points.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const int_array& points,
+pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& points,
 					       const int fiberDim)
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
@@ -188,7 +188,7 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
     throw std::runtime_error(msg.str());
   } // if
   
-  _section = new RealSection(_mesh.comm(), _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
 
   const int npts = points.size();
   if (npts > 0) {
@@ -205,9 +205,9 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
 
 // ----------------------------------------------------------------------
 // Create sieve section and set chart and fiber dimesion.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
+pylith::topology::Field<mesh_type, section_type>::newSection(const DomainEnum domain,
 					       const int fiberDim,
 					       const int stratum)
 { // newSection
@@ -230,9 +230,9 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
 
 // ----------------------------------------------------------------------
 // Create section given chart.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::newSection(const Field& src,
+pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 					       const int fiberDim)
 { // newSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -250,7 +250,7 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<RealSection>& srcSection = src.section();
+  const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull()) {
     _section->setChart(srcSection->getChart());
     const chart_type& chart = _section->getChart();
@@ -269,9 +269,9 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
 
 // ----------------------------------------------------------------------
 // Create section with same layout as another section.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
+pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 { // cloneSection
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -281,7 +281,7 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
   _metadata = src._metadata;
   _metadata.label = label;
 
-  const ALE::Obj<RealSection>& srcSection = src.section();
+  const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
     logger.stagePop();
     newSection();
@@ -313,9 +313,9 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
 
 // ----------------------------------------------------------------------
 // Clear variables associated with section.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::clear(void)
+pylith::topology::Field<mesh_type, section_type>::clear(void)
 { // clear
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -333,9 +333,9 @@ pylith::topology::Field<mesh_type>::clear(void)
 
 // ----------------------------------------------------------------------
 // Allocate Sieve section.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::allocate(void)
+pylith::topology::Field<mesh_type, section_type>::allocate(void)
 { // allocate
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -351,9 +351,9 @@ pylith::topology::Field<mesh_type>::allocate(void)
 
 // ----------------------------------------------------------------------
 // Zero section values (excluding constrained DOF).
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::zero(void)
+pylith::topology::Field<mesh_type, section_type>::zero(void)
 { // zero
   if (!_section.isNull())
     _section->zero(); // Does not zero BC.
@@ -361,9 +361,9 @@ pylith::topology::Field<mesh_type>::zero(void)
 
 // ----------------------------------------------------------------------
 // Zero section values (including constrained DOF).
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::zeroAll(void)
+pylith::topology::Field<mesh_type, section_type>::zeroAll(void)
 { // zeroAll
   if (!_section.isNull()) {
     const chart_type& chart = _section->getChart();
@@ -389,9 +389,9 @@ pylith::topology::Field<mesh_type>::zeroAll(void)
 
 // ----------------------------------------------------------------------
 // Complete section by assembling across processors.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::complete(void)
+pylith::topology::Field<mesh_type, section_type>::complete(void)
 { // complete
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Completion");
@@ -409,9 +409,9 @@ pylith::topology::Field<mesh_type>::complete(void)
 
 // ----------------------------------------------------------------------
 // Copy field values and metadata.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::copy(const Field& field)
+pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
 { // copy
   // Check compatibility of sections
   const int srcSize = field.chartSize();
@@ -460,9 +460,9 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
 
 // ----------------------------------------------------------------------
 // Copy field values.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::RealSection>& osection)
+pylith::topology::Field<mesh_type, section_type>::copy(const ALE::Obj<section_type>& osection)
 { // copy
   // Check compatibility of sections
   const int srcSize = osection->getChart().size();
@@ -501,9 +501,9 @@ pylith::topology::Field<mesh_type>::copy(const ALE::Obj<typename mesh_type::Real
 
 // ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
-template<typename mesh_type>
-pylith::topology::Field<mesh_type>&
-pylith::topology::Field<mesh_type>::operator+=(const Field& field)
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type, section_type>&
+pylith::topology::Field<mesh_type, section_type>::operator+=(const Field& field)
 { // operator+=
   // Check compatibility of sections
   const int srcSize = field.chartSize();
@@ -560,9 +560,9 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 
 // ----------------------------------------------------------------------
 // Dimensionalize field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::dimensionalize(void) const
+pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
 { // dimensionalize
   if (!_metadata.dimsOkay) {
     std::ostringstream msg;
@@ -598,9 +598,9 @@ pylith::topology::Field<mesh_type>::dimensionalize(void) const
 
 // ----------------------------------------------------------------------
 // Print field to standard out.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::view(const char* label) const
+pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 { // view
   std::string vecFieldString;
   switch(_metadata.vectorFieldType)
@@ -646,9 +646,9 @@ pylith::topology::Field<mesh_type>::view(const char* label) const
 
 // ----------------------------------------------------------------------
 // Create PETSc vector for field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::createVector(void)
+pylith::topology::Field<mesh_type, section_type>::createVector(void)
 { // createVector
   PetscErrorCode err = 0;
 
@@ -680,9 +680,9 @@ pylith::topology::Field<mesh_type>::createVector(void)
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
 // Sieve section view.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::createScatter(void)
+pylith::topology::Field<mesh_type, section_type>::createScatter(void)
 { // createScatter
   assert(!_section.isNull());
   assert(!_mesh.sieveMesh().isNull());
@@ -708,9 +708,9 @@ pylith::topology::Field<mesh_type>::createScatter(void)
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::scatterSectionToVector(void) const
+pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(void) const
 { // scatterSectionToVector
   scatterSectionToVector(_vector);
 } // scatterSectionToVector
@@ -718,9 +718,9 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(void) const
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
 //  PETSc vector view of the field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector) const
+pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const PetscVec vector) const
 { // scatterSectionToVector
   assert(!_section.isNull());
   assert(0 != _scatter);
@@ -737,9 +737,9 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::scatterVectorToSection(void) const
+pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(void) const
 { // scatterVectorToSection
   scatterVectorToSection(_vector);
 } // scatterVectorToSection
@@ -747,9 +747,9 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(void) const
 // ----------------------------------------------------------------------
 // Scatter PETSc vector information across processors to update the
 // section view of the field.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector) const
+pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const PetscVec vector) const
 { // scatterVectorToSection
   assert(!_section.isNull());
   assert(0 != _scatter);
@@ -765,9 +765,9 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
 
 // ----------------------------------------------------------------------
 // Setup split field with all one space per spatial dimension.
-template<typename mesh_type>
+template<typename mesh_type, typename section_type>
 void 
-pylith::topology::Field<mesh_type>::splitDefault(void)
+pylith::topology::Field<mesh_type, section_type>::splitDefault(void)
 { // splitDefault
   assert(!_section.isNull());
   const int spaceDim = _mesh.dimension();

@@ -41,10 +41,6 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorElasticity::IntegratorElasticity(void) :
   _material(0),
@@ -211,17 +207,15 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
   const ALE::Obj<RealSection>& dispSection = disp.section();
   assert(!dispSection.isNull());
-  topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
-					      dispCell.size(), &dispCell[0]);
+  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
   // Loop over cells
@@ -537,17 +531,15 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
   const ALE::Obj<RealSection>& dispSection = disp.section();
   assert(!dispSection.isNull());
-  topology::Mesh::RestrictVisitor dispVisitor(*dispSection, 
-					      dispCell.size(), &dispCell[0]);
+  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
     
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
   const ALE::Obj<RealSection>& fieldSection = field->section();

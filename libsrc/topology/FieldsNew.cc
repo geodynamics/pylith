@@ -87,7 +87,6 @@ void
 pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& points)
 { // allocate
   typedef typename mesh_type::SieveMesh::point_type point_type;
-  typedef typename mesh_type::RealSection RealSection;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fields");
@@ -95,7 +94,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
   // Set fiber dimension
   const int fiberDim = _fiberDim();
   assert(fiberDim > 0);
-  _section = new RealSection(_mesh.comm(), _mesh.debug());
+  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
   assert(!_section.isNull());
 
   // Set spaces
@@ -110,7 +109,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
       *std::min_element(points->begin(), points->end());
     const point_type pointMax = 
       *std::max_element(points->begin(), points->end());
-    _section->setChart(typename RealSection::chart_type(pointMin, pointMax+1));
+    _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
     _section->setFiberDimension(points, fiberDim);
     
     int fibration = 0;
@@ -119,7 +118,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
 	 ++f_iter, ++fibration)
       _section->setFiberDimension(points, f_iter->second.fiberDim, fibration);
   } else // Create empty chart
-    _section->setChart(typename RealSection::chart_type(0, 0));
+    _section->setChart(typename section_type::chart_type(0, 0));
 
   // Allocate section
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
@@ -136,7 +135,6 @@ void
 pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
 { // allocate
   typedef typename mesh_type::SieveMesh::point_type point_type;
-  typedef typename mesh_type::RealSection RealSection;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -144,7 +142,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   // Set fiber dimension
   const int fiberDim = _fiberDim();
   assert(fiberDim > 0);
-  _section = new RealSection(_mesh.comm(), _mesh.debug());
+  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
   assert(!_section.isNull());
 
   // Set spaces
@@ -158,7 +156,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   if (npts > 0) {
     const point_type pointMin = points.min();
     const point_type pointMax = points.max();
-    _section->setChart(typename RealSection::chart_type(pointMin, pointMax+1));
+    _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
     for (int i=0; i < npts; ++i)
       _section->setFiberDimension(points[i], fiberDim);
 
@@ -170,7 +168,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
 	_section->setFiberDimension(points[i], 
 				    f_iter->second.fiberDim, fibration);
   } else  // create empty chart
-    _section->setChart(typename RealSection::chart_type(0, 0));
+    _section->setChart(typename section_type::chart_type(0, 0));
 
   // Allocate section
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();

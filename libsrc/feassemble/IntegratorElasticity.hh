@@ -270,6 +270,16 @@ protected :
   /// Buffers for output.
   topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
 
+// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
+protected :
+
+  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+  typedef pylith::topology::Mesh::RealSection RealSection;
+
+  typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
+  typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

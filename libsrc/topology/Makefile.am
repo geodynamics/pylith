@@ -40,6 +40,8 @@ subpkginclude_HEADERS = \
 	SubMesh.hh \
 	SubMesh.icc \
 	SubMesh.cc \
+	UniformSectionDS.hh \
+	UniformSectionDS.cc \
 	topologyfwd.hh
 
 noinst_HEADERS =

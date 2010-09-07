@@ -43,12 +43,6 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Mesh::UpdateAddVisitor UpdateAddVisitor;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitLgDeform::ElasticityExplicitLgDeform(void) :
   _dtm1(-1.0)
@@ -194,16 +188,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-						   &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -408,16 +400,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::Mesh::UpdateAddVisitor residualVisitor(*residualSection,
-						   &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
@@ -592,17 +582,16 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solnSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
-			    (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-			    sieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
+				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+					   sieveMesh->depth())*spaceDim);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -718,16 +707,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   // Get sections
   const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
-  topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
-						   &_cellVector[0]);
+  UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);

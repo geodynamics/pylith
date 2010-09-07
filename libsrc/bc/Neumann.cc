@@ -40,7 +40,9 @@
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 typedef pylith::topology::SubMesh::RealSection SubRealSection;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+
+typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -115,8 +117,7 @@ pylith::bc::Neumann::integrateResidual(
     _parameters->get("value").section();
   assert(!tractionSection.isNull());
   const ALE::Obj<RealSection>& residualSection = residual.section();
-  topology::SubMesh::UpdateAddVisitor residualVisitor(*residualSection,
-						      &_cellVector[0]);
+  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   double_array coordinatesCell(numBasis*spaceDim);
@@ -425,9 +426,8 @@ pylith::bc::Neumann::_queryDB(topology::Field<topology::SubMesh>* field,
   const ALE::Obj<RealSection>& coordinates =
     subSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   const ALE::Obj<RealSection>& section = field->section();
   assert(!section.isNull());
@@ -538,9 +538,8 @@ void
   const ALE::Obj<RealSection>& coordinates =
     subSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
     _parameters->get("initial").section() : 0;
