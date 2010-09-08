@@ -97,37 +97,109 @@ pylith::topology::TestFieldsNewMesh::testAdd(void)
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 } // testAdd
 
-#if 0
 // ----------------------------------------------------------------------
-// Test add(domain).
+// Test allocate(sequence).
 void
-pylith::topology::TestFieldsNewMesh::testAddDomain(void)
-{ // testAddDomain
-  const int fiberDim = 3;
+pylith::topology::TestFieldsNewMesh::testAllocateSequence(void)
+{ // testAllocateSequence
+  const int fiberDim = 7;
 
   CPPUNIT_ASSERT(0 != _mesh);
   FieldsNewMesh fields(*_mesh);
   
-  const char* label = "field";
-  fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
-  const size_t size = 1;
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "other", 4, FieldBase::OTHER);
+
+  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+
+  fields.allocate(vertices);
+
+  const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  Field<Mesh>& field = fields.get(label);
-  const ALE::Obj<RealSection>& section = field.section();
+  const ALE::Obj<RealSection>& section = fields.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+} // testAllocateSequence
+
+// ----------------------------------------------------------------------
+// Test allocate(array).
+void
+pylith::topology::TestFieldsNewMesh::testAllocateArray(void)
+{ // testAllocateSequence
+  const int fiberDim = 7;
+  const int nptsIn = 3;
+  const int ptsIn[nptsIn] = {
+    1, 3, 4,
+  };
+  const int nptsOut = 1;
+  const int ptsOut[nptsOut] = {
+    2,
+  };
+
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+  
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "other", 4, FieldBase::OTHER);
+
+  int_array verticesIn(nptsIn);
+  for (int i=0; i < nptsIn; ++i)
+    verticesIn = ptsIn[i];
+
+  int_array verticesOut(nptsOut);
+  for (int i=0; i < nptsOut; ++i)
+    verticesOut = ptsOut[i];
+
+  fields.allocate(verticesIn);
+
+  const size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+  const ALE::Obj<RealSection>& section = fields.section();
+  CPPUNIT_ASSERT(!section.isNull());
+  for (int i=0; i < nptsIn; ++i)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(verticesIn[i]));
+  for (int i=0; i < nptsOut; ++i)
+    CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(verticesOut[i]));
+} // testAllocateArray
+
+// ----------------------------------------------------------------------
+// Test allocate(domain).
+void
+pylith::topology::TestFieldsNewMesh::testAllocateDomain(void)
+{ // testAllocateDomain
+  const int fiberDim = 7;
+
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+  
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "other", 4, FieldBase::OTHER);
+  fields.allocate(Field<Mesh>::VERTICES_FIELD);
+
+  const size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+  const ALE::Obj<RealSection>& section = fields.section();
   CPPUNIT_ASSERT(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
-  field.allocate();
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
-} // testAddDomain
-#endif
+} // testAllocateDomain
 
 // ----------------------------------------------------------------------
 // Test get().

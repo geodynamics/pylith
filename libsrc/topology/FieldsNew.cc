@@ -94,7 +94,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
   // Set fiber dimension
   const int fiberDim = _fiberDim();
   assert(fiberDim > 0);
-  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
   assert(!_section.isNull());
 
   // Set spaces
@@ -142,7 +142,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   // Set fiber dimension
   const int fiberDim = _fiberDim();
   assert(fiberDim > 0);
-  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
   assert(!_section.isNull());
 
   // Set spaces
@@ -253,8 +253,8 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
     f_iter->second.field = 
       new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
 			   f_iter->second.metadata);
-    assert(0 != f_iter->second.field);
   } // if
+  assert(0 != f_iter->second.field);
 
   return *f_iter->second.field;
 } // get
