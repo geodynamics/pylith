@@ -33,5 +33,14 @@ pylith::topology::FieldsNew<mesh_type>::mesh(void) const
   return _mesh;
 } // mesh
 
+// ----------------------------------------------------------------------
+// Get section containing fields.
+template<typename mesh_type>
+const ALE::Obj<typename pylith::topology::FieldsNew<mesh_type>::section_type>& 
+pylith::topology::FieldsNew<mesh_type>::section(void) const
+{ // section
+  return _section;
+} // section
+
 
 // End of file 

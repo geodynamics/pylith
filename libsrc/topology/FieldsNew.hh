@@ -42,6 +42,8 @@ class pylith::topology::FieldsNew
   friend class TestFieldsNewMesh; // unit testing
   friend class TestFieldsNewSubMesh; // unit testing
 
+  typedef typename mesh_type::RealSection section_type;
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -117,6 +119,12 @@ public :
    */
   const mesh_type& mesh(void) const;
 
+  /** Get section containing fields.
+   *
+   * @returns Sieve section
+   */
+  const ALE::Obj<section_type>& section(void) const;
+
   /** Return the names of all fields.
    *
    * @param numNames Number of fields,
@@ -139,8 +147,6 @@ protected :
 protected :
 
   typedef std::map< std::string, FieldInfo > map_type;
-
-  typedef typename mesh_type::RealSection section_type;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
