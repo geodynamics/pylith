@@ -27,6 +27,8 @@
 #if !defined(pylith_topology_fields_hh)
 #define pylith_topology_fields_hh
 
+#define USE_UNIFORMSECTION
+
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
@@ -42,7 +44,11 @@ class pylith::topology::FieldsNew
   friend class TestFieldsNewMesh; // unit testing
   friend class TestFieldsNewSubMesh; // unit testing
 
+#if defined(USE_UNIFORMSECTION)
+  typedef typename mesh_type::RealUniformSection section_type;
+#else
   typedef typename mesh_type::RealSection section_type;
+#endif
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -105,13 +111,13 @@ public :
    *
    * @param name Name of field.
    */
-  const Field<mesh_type>& get(const char* name) const;
+  const Field<mesh_type, section_type>& get(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
    */
-  Field<mesh_type>& get(const char* name);
+  Field<mesh_type, section_type>& get(const char* name);
 	   
   /** Get mesh associated with fields.
    *
@@ -140,7 +146,7 @@ protected :
     FieldBase::Metadata metadata;
     int fiberDim;
     int fibration; 
-    Field<mesh_type>* field;
+    Field<mesh_type, section_type>* field;
   }; // FieldInfo
 
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////

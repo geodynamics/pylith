@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <cassert> // USES assert()
+
 // ----------------------------------------------------------------------
 template<typename point_type, 
 	 typename value_type, 
@@ -183,6 +185,10 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::setChart(const chart
   this->_atlas->setChart(chart);
   int dim = _fiberDim;
   this->_atlas->updatePoint(*this->getChart().begin(), &dim);
+
+  const int numSpaces = this->_spaces.size();
+  for(int i=0; i < numSpaces; ++i)
+    this->_spaces[i]->setChart(chart);
 } // setChart
 
 // ----------------------------------------------------------------------
@@ -392,6 +398,7 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::allocatePoint(void)
 { // allocatePoint
   this->_array = this->_allocator.allocate(this->sizeWithBC());
   this->_array -= this->getChart().min()*_fiberDim;
+  assert(this->_array);
   const index_type chartEnd = this->getChart().max()*_fiberDim;
   for(index_type i=this->getChart().min()*_fiberDim;
       i < chartEnd;
@@ -467,6 +474,7 @@ template<typename point_type,
 void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::zero(void)
 { // zero
+  assert(this->_array);
   memset(this->_array+(this->getChart().min()*_fiberDim), 0,
 	 this->sizeWithBC()*sizeof(value_type));
 } // zero
@@ -479,6 +487,7 @@ template<typename point_type,
 const typename ALE::IUniformSectionDS<point_type, value_type, alloc_type>::values_type& 
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::restrictSpace(void) const
 { // restrictSpace
+  assert(this->_array);
   return this->_array;
 } // restrictSpace
 
@@ -490,6 +499,7 @@ template<typename point_type,
 const typename ALE::IUniformSectionDS<point_type, value_type, alloc_type>::value_type*
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::restrictPoint(const point_type& p) const
 { // restrictPoint
+  assert(this->_array);
   if (!this->hasPoint(p))
     return this->_emptyValue.v;
   return &this->_array[p*_fiberDim];
@@ -504,6 +514,7 @@ void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::updatePoint(const point_type& p,
 				    const value_type v[])
 { // updatePoint
+  assert(this->_array);
   for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
     this->_array[idx] = v[i];
 } // updatePoint
@@ -517,6 +528,7 @@ void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::updateAddPoint(const point_type& p,
 				       const value_type v[])
 { // updateAddPoint
+  assert(this->_array);
   for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
     this->_array[idx] += v[i];
 } // updateAddPoint
@@ -607,6 +619,10 @@ void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::addSpace(void)
 { // addSpace
   Obj<atlas_type> space = new atlas_type(this->comm(), this->debug());
+  assert(!space.isNull());
+
+  assert(!this->_atlas.isNull());
+  space->setChart(this->_atlas->getChart());
   this->_spaces.push_back(space);
 } // addSpace
 
@@ -619,6 +635,9 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFiberDimension(
 						    const point_type& p,
 						    const int space) const
 { // getFiberDimension
+  assert(space < this->_spaces.size());
+  assert(!this->_spaces[space].isNull());
+
   return *this->_spaces[space]->restrictPoint(p);
 } // getFiberDimension
 
@@ -632,9 +651,11 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::setFiberDimension(
 					    int dim,
 					    const int space)
 { // setFiberDimension
-  const index_type idx = -1;
+  assert(space < this->_spaces.size());
+  assert(!this->_spaces[space].isNull());
+
   this->_spaces[space]->addPoint(p);
-  this->_spaces[space]->updatePoint(p, &idx);
+  this->_spaces[space]->updatePoint(p, &dim);
 } // setFiberDimension
 
 // ----------------------------------------------------------------------
@@ -708,10 +729,9 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFibration(const i
   assert(fiberDim > 0);
   Obj<IUniformSectionDS> field = new IUniformSectionDS(this->comm(),
 						       fiberDim,
-						       *chart.begin(),
-						       *chart.end(),
 						       this->debug());
-  
+  field->_atlas->setChart(chart);
+
   // Copy sizes
   const typename chart_type::const_iterator chartEnd = chart.end();
   for(typename chart_type::const_iterator c_iter=chart.begin();
@@ -721,14 +741,23 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFibration(const i
     if (fDim)
       field->setFiberDimension(*c_iter, fDim);
   } // for
-  
+  field->allocatePoint();
+
   // Copy values
+  value_type* spaceValues = (fiberDim > 0) ? new value_type[fiberDim] : NULL;
   const chart_type& newChart = field->getChart();
   const typename chart_type::const_iterator newChartEnd = newChart.end();
   for(typename chart_type::const_iterator c_iter = newChart.begin();
       c_iter != newChartEnd;
       ++c_iter)
-    field->updatePoint(*c_iter, this->restrictPoint(*c_iter));
+    if (field->getFiberDimension(*c_iter) > 0) {
+      assert(fiberDim <= field->getFiberDimension(*c_iter));
+      const value_type* allValues = this->restrictPoint(*c_iter);
+      for (int i=0; i < fiberDim; ++i)
+	spaceValues[i] = allValues[i];
+      field->updatePoint(*c_iter, spaceValues);
+    } // if
+  delete[] spaceValues; spaceValues = NULL;
 
   return field;
 } // getFibration
