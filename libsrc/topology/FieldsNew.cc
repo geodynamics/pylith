@@ -74,6 +74,13 @@ pylith::topology::FieldsNew<mesh_type>::add(const char* name,
   // Set fibration and fiber dimension
   info.fibration = _fields.size();
   info.fiberDim = fiberDim;
+  int sindex = 0;
+  const typename map_type::const_iterator fieldsEnd = _fields.end();
+  for (typename map_type::iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    sindex += f_iter->second.fiberDim;
+  info.sindex = sindex;
 
   info.field = 0;
 
@@ -263,6 +270,23 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
 
   return *f_iter->second.field;
 } // get
+
+// ----------------------------------------------------------------------
+// Get index of first value of field in section.
+template<typename mesh_type>
+int
+pylith::topology::FieldsNew<mesh_type>::sectionIndex(const char* name) const
+{ // sectionIndex
+  typename map_type::const_iterator f_iter = _fields.find(name);
+  if (f_iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager for retrieval of section index.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  return f_iter->second.sindex;
+} // sectionIndex
 
 // ----------------------------------------------------------------------
 // Get names of all fields
