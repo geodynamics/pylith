@@ -55,6 +55,7 @@ class pylith::topology::TestFieldsNewMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testGet );
   CPPUNIT_TEST( testGetConst );
   CPPUNIT_TEST( testMesh );
+  CPPUNIT_TEST( testSectionIndex );
   CPPUNIT_TEST( testFieldNames );
 
   CPPUNIT_TEST_SUITE_END();
@@ -94,6 +95,9 @@ public :
 
   /// Test mesh().
   void testMesh(void);
+
+  /// Test sectionIndex().
+  void testSectionIndex(void);
 
   /// Test fieldNames().
   void testFieldNames(void);

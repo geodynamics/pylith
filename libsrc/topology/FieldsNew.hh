@@ -131,6 +131,13 @@ public :
    */
   const ALE::Obj<section_type>& section(void) const;
 
+  /** Get index of first value of field in section.
+   *
+   * @param name Name of field.
+   * @returns Index of first value of field in section.
+   */
+  int sectionIndex(const char* name) const;
+
   /** Return the names of all fields.
    *
    * @param numNames Number of fields,
@@ -143,10 +150,11 @@ public :
 protected :
 
   struct FieldInfo {
-    FieldBase::Metadata metadata;
-    int fiberDim;
-    int fibration; 
-    Field<mesh_type, section_type>* field;
+    FieldBase::Metadata metadata; ///< Metadata for field.
+    Field<mesh_type, section_type>* field; ///< Single field.
+    int fiberDim; ///< Fiber dimension of field.
+    int fibration;  ///< Index of fibration associated with field.
+    int sindex; ///< Index of first value of field in section.
   }; // FieldInfo
 
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////

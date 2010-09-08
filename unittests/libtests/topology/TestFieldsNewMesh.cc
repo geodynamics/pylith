@@ -274,6 +274,21 @@ pylith::topology::TestFieldsNewMesh::testMesh(void)
 } // testMesh
 
 // ----------------------------------------------------------------------
+// Test sectionIndex().
+void
+pylith::topology::TestFieldsNewMesh::testSectionIndex(void)
+{ // testSectionIndex
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+
+  CPPUNIT_ASSERT_EQUAL(0, fields.sectionIndex("field A"));
+  CPPUNIT_ASSERT_EQUAL(3, fields.sectionIndex("field B"));
+} // testSectionIndex
+
+// ----------------------------------------------------------------------
 // Test fieldNames() const.
 void
 pylith::topology::TestFieldsNewMesh::testFieldNames(void)
