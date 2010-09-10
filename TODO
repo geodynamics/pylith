@@ -28,19 +28,11 @@ CURRENT ISSUES/PRIORITIES
     Fields -> SolutionFields
     FieldsNew -> Fields
 
-    FieldsNew<int fiberDim> [UniformSection]
-      add(name, label, fiberDim)
-      allocate()
-      section()
-      getField(name)
-
-    FieldMetadata
-      label
-      scale
-      dimensionsOkay
-
-    Field(mesh, section, metadata)
-       
+    UniformSectionDS
+      getFibration needs to return an ISection
+        chart from original section
+        array from original section
+        atlas - set offsets based on fibration
 
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
