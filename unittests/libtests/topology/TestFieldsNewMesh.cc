@@ -218,14 +218,14 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
 
-  Field<Mesh, section_type>& fieldA = fields.get("field A");
+  Field<Mesh>& fieldA = fields.get("field A");
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
 		       fieldA.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
-  Field<Mesh, section_type>& fieldB = fields.get("field B");
+  Field<Mesh>& fieldB = fields.get("field B");
   CPPUNIT_ASSERT_EQUAL(std::string("displacement"), 
 		       std::string(fieldB.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::OTHER,
@@ -246,14 +246,14 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
 
-  const Field<Mesh, section_type>& fieldA = fields.get("field A");
+  const Field<Mesh>& fieldA = fields.get("field A");
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
 		       fieldA.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
-  const Field<Mesh, section_type>& fieldB = fields.get("field B");
+  const Field<Mesh>& fieldB = fields.get("field B");
   CPPUNIT_ASSERT_EQUAL(std::string("displacement"), 
 		       std::string(fieldB.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::OTHER,

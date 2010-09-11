@@ -177,7 +177,8 @@ public:
   template<typename OtherSection>
   void copyFibration(const Obj<OtherSection>& section);
 
-  Obj<IUniformSectionDS> getFibration(const int space) const;
+  Obj<ALE::IGeneralSection<point_type, value_type, alloc_type> >
+  getFibration(const int space) const;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:

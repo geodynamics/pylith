@@ -707,7 +707,8 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::copyFibration(const 
   const std::vector<Obj<atlas_type> >& spaces = section->getSpaces();
   
   this->_spaces.clear();
-  const typename std::vector<Obj<atlas_type> >::const_iteraor spacesEnd = spaces.end();
+  const typename std::vector<Obj<atlas_type> >::const_iteraor spacesEnd
+    = spaces.end();
   for(typename std::vector<Obj<atlas_type> >::const_iterator s_iter=spaces.begin();
       s_iter != spacesEnd;
       ++s_iter)
@@ -718,46 +719,50 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::copyFibration(const 
 template<typename point_type, 
 	 typename value_type, 
 	 typename alloc_type>
-ALE::Obj<ALE::IUniformSectionDS<point_type, value_type, alloc_type> >
+ALE::Obj<ALE::IGeneralSection<point_type, value_type, alloc_type> >
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFibration(const int space) const {
-  const chart_type& chart = this->getChart();
+  typedef typename ALE::IGeneralSection<point_type, value_type, alloc_type>::chart_type IGeneralSection_chart_type;
+  typedef typename ALE::IGeneralSection<point_type, value_type, alloc_type>::atlas_type IGeneralSection_atlas_type;
 
-  const int localFiberDim = this->getFiberDimension(*chart.begin(), space);
-  int fiberDim = 0;
-  MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
-		MPI_INT, MPI_MAX, this->comm());
-  assert(fiberDim > 0);
-  Obj<IUniformSectionDS> field = new IUniformSectionDS(this->comm(),
-						       fiberDim,
-						       this->debug());
-  field->_atlas->setChart(chart);
+  Obj<IGeneralSection<point_type, value_type, alloc_type> > field =
+    new IGeneralSection<point_type, value_type, alloc_type>(this->comm(),
+							    this->debug());
+  field->setChart(this->getChart());
+  const chart_type& chart = this->getChart();
 
   // Copy sizes
   const typename chart_type::const_iterator chartEnd = chart.end();
-  for(typename chart_type::const_iterator c_iter=chart.begin();
-      c_iter != chartEnd;
-      ++c_iter) {
-    const int fDim = this->getFiberDimension(*c_iter, space);
-    if (fDim)
-      field->setFiberDimension(*c_iter, fDim);
-  } // for
-  field->allocatePoint();
+  for(typename chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
+    const int fiberDim = this->getFiberDimension(*c_iter, space);
 
-  // Copy values
-  value_type* spaceValues = (fiberDim > 0) ? new value_type[fiberDim] : NULL;
-  const chart_type& newChart = field->getChart();
-  const typename chart_type::const_iterator newChartEnd = newChart.end();
-  for(typename chart_type::const_iterator c_iter = newChart.begin();
-      c_iter != newChartEnd;
-      ++c_iter)
-    if (field->getFiberDimension(*c_iter) > 0) {
-      assert(fiberDim <= field->getFiberDimension(*c_iter));
-      const value_type* allValues = this->restrictPoint(*c_iter);
-      for (int i=0; i < fiberDim; ++i)
-	spaceValues[i] = allValues[i];
-      field->updatePoint(*c_iter, spaceValues);
-    } // if
-  delete[] spaceValues; spaceValues = NULL;
+    if (fiberDim)
+      field->setFiberDimension(*c_iter, fiberDim);
+  } // for
+  field->allocateStorage();
+  Obj<IGeneralSection_atlas_type> newAtlas = 
+    new IGeneralSection_atlas_type(this->comm(), this->debug());
+  const IGeneralSection_chart_type& newChart = field->getChart();
+
+
+  // Copy offsets
+  newAtlas->setChart(newChart);
+  newAtlas->allocatePoint();
+  const typename IGeneralSection_chart_type::const_iterator newChartEnd =
+    newChart.end();
+  for (typename IGeneralSection_chart_type::const_iterator c_iter=newChart.begin();
+       c_iter != newChartEnd;
+       ++c_iter) {
+    typename IGeneralSection<point_type, value_type, alloc_type>::index_type idx;
+
+    idx.prefix = field->getFiberDimension(*c_iter);
+    idx.index  = this->_atlas->restrictPoint(*c_iter)[0];
+    for(int s = 0; s < space; ++s)
+      idx.index += this->getFiberDimension(*c_iter, s);
+    newAtlas->addPoint(*c_iter);
+    newAtlas->updatePoint(*c_iter, &idx);
+  } // for
+  field->replaceStorage(this->_array, true, this->sizeWithBC());
+  field->setAtlas(newAtlas);
 
   return field;
 } // getFibration
