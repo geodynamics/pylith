@@ -221,7 +221,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const FieldBase::DomainEnum dom
 // ----------------------------------------------------------------------
 // Get field.
 template<typename mesh_type>
-const pylith::topology::Field<mesh_type, typename pylith::topology::FieldsNew<mesh_type>::section_type>&
+const pylith::topology::Field<mesh_type>&
 pylith::topology::FieldsNew<mesh_type>::get(const char* name) const
 { // get
   typename map_type::const_iterator f_iter = _fields.find(name);
@@ -248,7 +248,7 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name) const
 // ----------------------------------------------------------------------
 // Get field.
 template<typename mesh_type>
-pylith::topology::Field<mesh_type, typename pylith::topology::FieldsNew<mesh_type>::section_type>&
+pylith::topology::Field<mesh_type>&
 pylith::topology::FieldsNew<mesh_type>::get(const char* name)
 { // get
   typename map_type::iterator f_iter = _fields.find(name);
@@ -264,8 +264,8 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
   delete f_iter->second.field; f_iter->second.field = 0;
   assert(!_section.isNull());
   f_iter->second.field = 
-    new Field<mesh_type, section_type>(_mesh, _section->getFibration(fibration), 
-				       f_iter->second.metadata);
+    new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
+			 f_iter->second.metadata);
   assert(0 != f_iter->second.field);
 
   return *f_iter->second.field;

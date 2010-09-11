@@ -111,13 +111,13 @@ public :
    *
    * @param name Name of field.
    */
-  const Field<mesh_type, section_type>& get(const char* name) const;
+  const Field<mesh_type>& get(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
    */
-  Field<mesh_type, section_type>& get(const char* name);
+  Field<mesh_type>& get(const char* name);
 	   
   /** Get mesh associated with fields.
    *
@@ -151,7 +151,7 @@ protected :
 
   struct FieldInfo {
     FieldBase::Metadata metadata; ///< Metadata for field.
-    Field<mesh_type, section_type>* field; ///< Single field.
+    Field<mesh_type>* field; ///< Single field.
     int fiberDim; ///< Fiber dimension of field.
     int fibration;  ///< Index of fibration associated with field.
     int sindex; ///< Index of first value of field in section.
