@@ -108,19 +108,18 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh>& newSieveMesh = newMesh->sieveMesh();
   assert(!newSieveMesh.isNull());
+  ALE::Obj<SieveMesh::sieve_type> newSieve =
+    new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
+  newSieveMesh->setSieve(newSieve);
 
   std::map<edge_type, point_type> edge2vertex;
    
 #if 0 // ORIGINAL VERSION
-  ALE::Obj<SieveMesh::sieve_type> newSieve =
-    new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
-
-  newSieveMesh->setSieve(newSieve);
   ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), * newSieveMesh,
 					   edge2vertex);
 #else
   // Is arg to CellRefiner constructor the new mesh or the old mesh?
-  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> refiner(*newSieveMesh);
+  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> refiner(*sieveMesh);
 
   ALE::MeshBuilder<SieveMesh>::refineGeneral< SieveMesh,
     ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
