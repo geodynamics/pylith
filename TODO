@@ -3,6 +3,8 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 * Uniform global refinement for tets with faults
+  testcase: unittests/pytests/topology/TestRefineUniform.py
+  + BUG: setting coordinates: vertex2edge use in Mesh.hh
 
 * Output to HDF5 files.
 
