@@ -48,7 +48,7 @@ const char* pylith::meshio::DataWriterVTKDataMatMeshTet4::_timeFormat =
 const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numVertexFields = 3;
 const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numVertices = 11;
 
-const pylith::meshio::DataWriterVTKData::FieldStruct
+const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexFields[] = {
   { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
@@ -87,7 +87,7 @@ const double pylith::meshio::DataWriterVTKDataMatMeshTet4::_vertexField2[] = {
 const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numCellFields = 3;
 const int pylith::meshio::DataWriterVTKDataMatMeshTet4::_numCells = 2;
 
-const pylith::meshio::DataWriterVTKData::FieldStruct
+const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataMatMeshTet4::_cellFields[] = {
   { "traction", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
@@ -123,7 +123,7 @@ pylith::meshio::DataWriterVTKDataMatMeshTet4::DataWriterVTKDataMatMeshTet4(void)
   numVertexFields = _numVertexFields;
   assert(3 == numVertexFields);
   numVertices = _numVertices;
-  vertexFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_vertexFields);
+  vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
   vertexFields[0] = const_cast<double*>(_vertexField0);
   vertexFields[1] = const_cast<double*>(_vertexField1);
   vertexFields[2] = const_cast<double*>(_vertexField2);
@@ -131,7 +131,7 @@ pylith::meshio::DataWriterVTKDataMatMeshTet4::DataWriterVTKDataMatMeshTet4(void)
   numCellFields = _numCellFields;
   assert(3 == numCellFields);
   numCells = _numCells;
-  cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
+  cellFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);
   cellFields[1] = const_cast<double*>(_cellField1);
   cellFields[2] = const_cast<double*>(_cellField2);

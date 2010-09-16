@@ -32,6 +32,10 @@ testmeshio_SOURCES = \
 	TestMeshIOLagrit.cc \
 	TestCellFilterAvg.cc \
 	TestVertexFilterVecNorm.cc \
+	TestDataWriterMesh.cc \
+	TestDataWriterSubMesh.cc \
+	TestDataWriterBCMesh.cc \
+	TestDataWriterFaultMesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshLine2.cc \
@@ -55,6 +59,7 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshQuad4.cc \
 	TestDataWriterVTKSubMeshTet4.cc \
 	TestDataWriterVTKSubMeshHex8.cc \
+	TestDataWriterHDF5.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -67,7 +72,11 @@ testmeshio_SOURCES = \
 
 noinst_HEADERS = \
 	TestCellFilterAvg.hh \
+	TestDataWriterMesh.hh \
 	TestDataWriterVTK.hh \
+	TestDataWriterSubMesh.hh \
+	TestDataWriterBCMesh.hh \
+	TestDataWriterFaultMesh.hh \
 	TestDataWriterVTKMesh.hh \
 	TestDataWriterVTKMeshLine2.hh \
 	TestDataWriterVTKMeshTri3.hh \
@@ -95,6 +104,7 @@ noinst_HEADERS = \
 	TestDataWriterVTKBCMeshQuad4.hh \
 	TestDataWriterVTKBCMeshTet4.hh \
 	TestDataWriterVTKBCMeshHex8.hh \
+	TestDataWriterHDF5.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -105,7 +115,7 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
-	data/DataWriterVTKData.cc \
+	data/DataWriterData.cc \
 	data/DataWriterVTKDataMeshLine2.cc \
 	data/DataWriterVTKDataMeshTri3.cc \
 	data/DataWriterVTKDataMeshQuad4.cc \
@@ -145,7 +155,7 @@ testmeshio_SOURCES += \
 
 
 noinst_HEADERS += \
-	data/DataWriterVTKData.hh \
+	data/DataWriterData.hh \
 	data/DataWriterVTKDataMeshLine2.hh \
 	data/DataWriterVTKDataMeshTri3.hh \
 	data/DataWriterVTKDataMeshQuad4.hh \

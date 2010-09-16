@@ -47,7 +47,7 @@ const char* pylith::meshio::DataWriterVTKDataBCMeshHex8::_timeFormat =
 const int pylith::meshio::DataWriterVTKDataBCMeshHex8::_numVertexFields = 3;
 const int pylith::meshio::DataWriterVTKDataBCMeshHex8::_numVertices = 8;
 
-const pylith::meshio::DataWriterVTKData::FieldStruct
+const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataBCMeshHex8::_vertexFields[] = {
   { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
@@ -80,7 +80,7 @@ const double pylith::meshio::DataWriterVTKDataBCMeshHex8::_vertexField2[] = {
 const int pylith::meshio::DataWriterVTKDataBCMeshHex8::_numCellFields = 3;
 const int pylith::meshio::DataWriterVTKDataBCMeshHex8::_numCells = 2;
 
-const pylith::meshio::DataWriterVTKData::FieldStruct
+const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataBCMeshHex8::_cellFields[] = {
   { "traction", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
@@ -115,7 +115,7 @@ pylith::meshio::DataWriterVTKDataBCMeshHex8::DataWriterVTKDataBCMeshHex8(void)
   numVertexFields = _numVertexFields;
   numVertices = _numVertices;
   assert(3 == numVertexFields);
-  vertexFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_vertexFields);
+  vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
   vertexFields[0] = const_cast<double*>(_vertexField0);
   vertexFields[1] = const_cast<double*>(_vertexField1);
   vertexFields[2] = const_cast<double*>(_vertexField2);
@@ -123,7 +123,7 @@ pylith::meshio::DataWriterVTKDataBCMeshHex8::DataWriterVTKDataBCMeshHex8(void)
   numCellFields = _numCellFields;
   numCells = _numCells;
   assert(3 == numCellFields);
-  cellFieldsInfo = const_cast<DataWriterVTKData::FieldStruct*>(_cellFields);
+  cellFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_cellFields);
   cellFields[0] = const_cast<double*>(_cellField0);
   cellFields[1] = const_cast<double*>(_cellField1);
   cellFields[2] = const_cast<double*>(_cellField2);

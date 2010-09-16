@@ -17,44 +17,42 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterVTK.hh
+ * @file unittests/libtests/meshio/TestDataWriterHDF5.hh
  *
- * @brief C++ TestDataWriterVTK object
+ * @brief C++ TestDataWriterHDF5 object
  *
- * C++ unit testing for DataWriterVTK.
+ * C++ unit testing for DataWriterHDF5.
  */
 
-#if !defined(pylith_meshio_testdatawritervtk_hh)
-#define pylith_meshio_testdatawritervtk_hh
+#if !defined(pylith_meshio_testdatawriterhdf5_hh)
+#define pylith_meshio_testdatawriterhdf5_hh
+
+#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterVTK;
+    class TestDataWriterHDF5;
   } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTK
-{ // class TestDataWriterVTK
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5
+{ // class TestDataWriterHDF5
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /** Check VTK file against archived file.
+  /** Check HDF5 file against archived file.
    *
    * @param filename Name of file to check.
-   * @param t Time for file.
-   * @param timeFormat Format of timestamp in filename.
    */
   static
-  void checkFile(const char* filename,
-		 const double t,
-		 const char* timeFormat);
+  void checkFile(const char* filename);
   
-}; // class TestDataWriterVTK
+}; // class TestDataWriterHDF5
 
-#endif // pylith_meshio_testdatawritervtk_hh
+#endif // pylith_meshio_testdatawriterhdf5_hh
 
 
 // End of file 

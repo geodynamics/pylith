@@ -17,18 +17,17 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterVTKMesh.hh
+ * @file unittests/libtests/meshio/TestDataWriterHDF5Mesh.hh
  *
- * @brief C++ TestDataWriterVTKMesh object
+ * @brief C++ TestDataWriterHDF5Mesh object
  *
- * C++ unit testing for DataWriterVTKMesh.
+ * C++ unit testing for DataWriterHDF5Mesh.
  */
 
-#if !defined(pylith_meshio_testdatawritervtkmesh_hh)
-#define pylith_meshio_testdatawritervtkmesh_hh
+#if !defined(pylith_meshio_testdatawriterhdf5mesh_hh)
+#define pylith_meshio_testdatawriterhdf5mesh_hh
 
-#include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
-#include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
+#include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
@@ -37,25 +36,22 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterVTKMesh;
+    class TestDataWriterHDF5Mesh;
   } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK,
-					      public TestDataWriterMesh,
-					      public CppUnit::TestFixture
-{ // class TestDataWriterVTKMesh
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5Mesh : public TestDataWriterHDF5,
+					       public TestDataWriterMesh,
+					       public CppUnit::TestFixture
+{ // class TestDataWriterHDF5Mesh
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMesh );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5Mesh );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testTimeFormat );
-  CPPUNIT_TEST( testTimeConstant );
-  CPPUNIT_TEST( testPrecision );
-  CPPUNIT_TEST( testVtkFilename );
+  CPPUNIT_TEST( testHdf5Filename );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -74,15 +70,6 @@ public :
   /// Test filename()
   void testFilename(void);
 
-  /// Test timeFormat()
-  void testTimeFormat(void);
-
-  /// Test timeConstant()
-  void testTimeConstant(void);
-
-  /// Test precision()
-  void testPrecision(void);
-
   /// Test openTimeStep() and closeTimeStep()
   void testTimeStep(void);
 
@@ -92,12 +79,12 @@ public :
   /// Test writeCellField.
   void testWriteCellField(void);
 
-  /// Test vtkFilename.
-  void testVtkFilename(void);
+  /// Test hdf5Filename.
+  void testHdf5Filename(void);
 
-}; // class TestDataWriterVTKMesh
+}; // class TestDataWriterHDF5Mesh
 
-#endif // pylith_meshio_testdatawritervtkmesh_hh
+#endif // pylith_meshio_testdatawriterhdf5mesh_hh
 
 
 // End of file 
