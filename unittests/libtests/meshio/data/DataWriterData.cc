@@ -16,11 +16,11 @@
 // ======================================================================
 //
 
-#include "DataWriterVTKData.hh"
+#include "DataWriterData.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshio::DataWriterVTKData::DataWriterVTKData(void) :
+pylith::meshio::DataWriterData::DataWriterData(void) :
   meshFilename(0),
   faultLabel(0),
   faultId(0),
@@ -43,7 +43,7 @@ pylith::meshio::DataWriterVTKData::DataWriterVTKData(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::DataWriterVTKData::~DataWriterVTKData(void)
+pylith::meshio::DataWriterData::~DataWriterData(void)
 { // destructor
 } // destructor
 

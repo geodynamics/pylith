@@ -28,8 +28,11 @@
 #define pylith_meshio_testdatawritervtkbcmesh_hh
 
 #include "TestDataWriterVTK.hh"
+#include "TestDataWriterBCMesh.hh"
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh, Field
+
+#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -39,7 +42,9 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKBCMesh : public TestDataWriterVTK
+class pylith::meshio::TestDataWriterVTKBCMesh : public TestDataWriterVTK,
+						public TestDataWriterBCMesh,
+						public CppUnit::TestFixture
 { // class TestDataWriterVTKBCMesh
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
@@ -69,36 +74,6 @@ public :
 
   /// Test writeCellField.
   void testWriteCellField(void);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  /// Initialize mesh.
-  void _initialize(void);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  topology::Mesh* _mesh; ///< Mesh for domain
-  topology::SubMesh* _submesh; ///< Mesh for subdomain.
-  bool _flipFault; ///< If true, flip fault orientation.
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  /** Create vertex fields.
-   *
-   * @param fields Vertex fields.
-   */
-  void
-  _createVertexFields(topology::Fields<topology::Field<topology::SubMesh> >* fields) const;
-
-  /** Create cell fields.
-   *
-   * @param fields Cell fields.
-   */
-  void
-  _createCellFields(topology::Fields<topology::Field<topology::SubMesh> >* fields) const;
 
 }; // class TestDataWriterVTKBCMesh
 

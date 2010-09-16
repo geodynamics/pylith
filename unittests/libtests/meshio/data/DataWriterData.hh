@@ -16,29 +16,29 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawritervtkdata_hh)
-#define pylith_meshio_datawritervtkdata_hh
+#if !defined(pylith_meshio_datawriterdata_hh)
+#define pylith_meshio_datawriterdata_hh
 
 #include "pylith/topology/FieldBase.hh" // USES VectorFieldEnum
 
 namespace pylith {
   namespace meshio {
-     class DataWriterVTKData;
+     class DataWriterData;
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKData
-{ // DataWriterVTKData
+class pylith::meshio::DataWriterData
+{ // DataWriterData
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Constructor
-  DataWriterVTKData(void);
+  DataWriterData(void);
 
   /// Destructor
   virtual
-  ~DataWriterVTKData(void);
+  ~DataWriterData(void);
 
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public:
@@ -57,9 +57,9 @@ public:
   int faultId; ///< Material identifier for fault.
   char* bcLabel; ///< Name of group of vertices for bc.
 
-  char* timestepFilename; ///< Name of VTK file without fields.
-  char* vertexFilename; ///< Name of VTK file for vertex fields.
-  char* cellFilename; ///< Name of VTK file for cell fields.
+  char* timestepFilename; ///< Name of file without fields.
+  char* vertexFilename; ///< Name of file for vertex fields.
+  char* cellFilename; ///< Name of file for cell fields.
 
   double time; ///< Time for fields.
   char* timeFormat; ///< Format for time stamp.
@@ -83,9 +83,9 @@ public:
   double* cellFields[3]; /// Array of cell field values.
   //@}
 
-}; // DataWriterVTKData
+}; // DataWriterData
 
-#endif // pylith_meshio_datawritervtkdata_hh
+#endif // pylith_meshio_datawriterdata_hh
 
 
 // End of file

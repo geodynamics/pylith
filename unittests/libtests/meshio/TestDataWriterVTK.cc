@@ -20,27 +20,12 @@
 
 #include "TestDataWriterVTK.hh" // Implementation of class methods
 
-#include "data/DataWriterVTKData.hh" // USES DataWriterVTKData
+#include <cppunit/extensions/HelperMacros.h>
 
 #include <string.h> // USES strcmp()
 #include <iostream> // USES std::cerr
+#include <sstream> // USES std::ostringstream
 #include <fstream> // USES std::ifstream
-
-// ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterVTK::setUp(void)
-{ // setUp
-  _data = 0;
-} // setUp
-
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterVTK::tearDown(void)
-{ // tearDown
-  delete _data; _data = 0;
-} // tearDown
 
 // ----------------------------------------------------------------------
 // Check VTK file against archived file.
