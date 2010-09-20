@@ -52,7 +52,7 @@ mesh = {
     // In this example, cells 0 and 1 both are associated with material ID 1.
     material-ids = {
              0   1
-             1   1
+             1   2
     }
   }
 
