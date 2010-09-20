@@ -112,18 +112,10 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
     new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
   newSieveMesh->setSieve(newSieve);
 
-  std::map<edge_type, point_type> edge2vertex;
-   
-#if 0 // ORIGINAL VERSION
-  ALE::MeshBuilder<Mesh>::refineTetrahedra(*mesh.sieveMesh(), * newSieveMesh,
-					   edge2vertex);
-#else
-  // Is arg to CellRefiner constructor the new mesh or the old mesh?
   ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> refiner(*sieveMesh);
 
   ALE::MeshBuilder<SieveMesh>::refineGeneral< SieveMesh,
     ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
-#endif
 
   // Fix material ids
   const int numCells = sieveMesh->heightStratum(0)->size();
@@ -146,6 +138,8 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
   const ALE::Obj<std::set<std::string> >& sectionNames =
     sieveMesh->getIntSections();
   
+  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type>::edge_map_type& edge2vertex = refiner.getEdgeToVertex();
+
   const std::set<std::string>::const_iterator namesBegin = 
     sectionNames->begin();
   const std::set<std::string>::const_iterator namesEnd = 
@@ -161,6 +155,7 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
     newGroup->setChart(Mesh::IntSection::chart_type(numNewCells, 
 						    numNewCells + numNewVertices));
     const Mesh::IntSection::chart_type& newChart = newGroup->getChart();
+    std::cout << "NEW CHART (" << numNewCells << ", " << numNewCells + numNewVertices << ")" << std::endl;
       
     const int chartMax = chart.max();
     for (int p = chart.min(), pNew = newChart.min(); p < chartMax; ++p, ++pNew) {
@@ -173,8 +168,7 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
 	 e_iter != edge2VertexEnd;
 	 ++e_iter) {
       const point_type vertexA = e_iter->first.first;
-      const point_type vertexB = e_iter->first.second;
-      
+      const point_type vertexB = e_iter->first.second;      
       if (group->getFiberDimension(vertexA) && group->getFiberDimension(vertexB))
 	if (group->restrictPoint(vertexA)[0] == group->restrictPoint(vertexB)[0])
 	  newGroup->setFiberDimension(e_iter->second, 1);
