@@ -223,7 +223,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(const double
   const int indexExt = _filename.find(".h5");
   const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
   if (0 == numTimeSteps)
-    filename << std::string(_filename, 0, indexExt) << "_info.hdf5";
+    filename << std::string(_filename, 0, indexExt) << "_info.h5";
 
   return std::string(filename.str());
 } // _hdf5Filename

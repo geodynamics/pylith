@@ -42,7 +42,8 @@ noinst_PYTHON = \
 	TestJacobian.py \
 	TestMeshGenerator.py \
 	TestMeshGenSimple.py \
-	TestMeshImporter.py
+	TestMeshImporter.py \
+	TestRefineUniform.py
 
 
 noinst_tmp = \
