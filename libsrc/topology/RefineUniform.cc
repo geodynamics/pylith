@@ -155,7 +155,6 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
     newGroup->setChart(Mesh::IntSection::chart_type(numNewCells, 
 						    numNewCells + numNewVertices));
     const Mesh::IntSection::chart_type& newChart = newGroup->getChart();
-    std::cout << "NEW CHART (" << numNewCells << ", " << numNewCells + numNewVertices << ")" << std::endl;
       
     const int chartMax = chart.max();
     for (int p = chart.min(), pNew = newChart.min(); p < chartMax; ++p, ++pNew) {
