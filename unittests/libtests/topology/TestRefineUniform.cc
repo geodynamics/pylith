@@ -28,6 +28,8 @@
 
 #include "pylith/utils/array.hh" // USES int_array
 
+#include "data/MeshDataCohesiveTri3Level2.hh"
+#include "data/MeshDataCohesiveTri3Level2Fault1.hh"
 #include "data/MeshDataCohesiveTet4Level2.hh"
 #include "data/MeshDataCohesiveTet4Level2Fault1.hh"
 
@@ -48,6 +50,24 @@ pylith::topology::TestRefineUniform::testConstructor(void)
 { // testConstructor
   RefineUniform refiner;
 } // testConstructor
+
+// ----------------------------------------------------------------------
+// Test refine() with level 2, tri3 cells, and no fault.
+void
+pylith::topology::TestRefineUniform::testRefineTri3Level2(void)
+{ // testRefineTri3Level2
+  MeshDataCohesiveTri3Level2 data;
+  _testRefine(data);
+} // testRefineTri3Level2
+
+// ----------------------------------------------------------------------
+// Test refine() with level 2, tri3 cells, and one fault.
+void
+pylith::topology::TestRefineUniform::testRefineTri3Level2Fault1(void)
+{ // testRefineTri3Level2Fault1
+  MeshDataCohesiveTri3Level2Fault1 data;
+  _testRefine(data);
+} // testRefineTri3Level2Fault1
 
 // ----------------------------------------------------------------------
 // Test refine() with level 2, tet4 cells, and no fault.
@@ -172,6 +192,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells+data.numCellsCohesive, numCells);
 
+  // Normal cells
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
   const int offset = numCells;
   SieveMesh::label_sequence::iterator c_iter = cells->begin();
@@ -184,6 +205,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     for(int p = 0; p < coneSize; ++p, ++i)
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]-offset);
   } // for
+  // Cohesive cells
   for (int iCell=0, i=0; iCell < data.numCellsCohesive; ++iCell, ++c_iter) {
     pV.clear();
     sieve->cone(*c_iter, pV);

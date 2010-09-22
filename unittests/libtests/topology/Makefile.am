@@ -58,11 +58,15 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testtopology_SOURCES += \
 	data/MeshDataCohesive.cc \
+	data/MeshDataCohesiveTri3Level2.cc \
+	data/MeshDataCohesiveTri3Level2Fault1.cc \
 	data/MeshDataCohesiveTet4Level2.cc \
 	data/MeshDataCohesiveTet4Level2Fault1.cc
 
 noinst_HEADERS += \
 	data/MeshDataCohesive.hh \
+	data/MeshDataCohesiveTri3Level2.hh \
+	data/MeshDataCohesiveTri3Level2Fault1.hh \
 	data/MeshDataCohesiveTet4Level2.hh \
 	data/MeshDataCohesiveTet4Level2Fault1.hh
 

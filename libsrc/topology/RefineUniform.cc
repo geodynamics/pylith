@@ -64,43 +64,6 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 { // refine
   assert(0 != newMesh);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-
-  newMesh->debug(mesh.debug());
-
-  // Assume number of corners per cell is the same for the entire mesh
-  assert(cells->size() > 0);
-  const int cellNumCorners = sieveMesh->getNumCellCorners(*cells->begin());
-
-  if (3 == mesh.dimension() && 4 == cellNumCorners)
-    _refineTet4(newMesh, mesh, levels);
-
-  // TODO: Add other refinement cases here
-
-  else {
-    std::ostringstream msg;
-    msg << "Unknown case for uniform global refinement.\n"
-	<< "mesh dimension: " << mesh.dimension()
-	<< ", number of corners in cell: " << cellNumCorners;
-    throw std::runtime_error(msg.str());
-  } // else
-} // refine
-    
-
-// ----------------------------------------------------------------------
-// Refine tet4 mesh.
-void
-pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
-					     const Mesh& mesh,
-					     const int levels)
-{ // _refineTet4
-  assert(0 != newMesh);
-
   typedef SieveMesh::point_type point_type;
   typedef Edge<point_type> edge_type;
 
@@ -117,7 +80,7 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
   ALE::MeshBuilder<SieveMesh>::refineGeneral< SieveMesh,
     ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
 
-  // Fix material ids
+  // Set material ids
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -150,13 +113,14 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
       newSieveMesh->setValue(newMaterials, *cNew_iter, material);
   } // for
   
-  // Fix groups, assuming vertex groups
+  // Recreate groups, assuming vertex groups
   const int numNewVertices = newSieveMesh->depthStratum(0)->size();
   const int numNewCells = newSieveMesh->heightStratum(0)->size();
   const ALE::Obj<std::set<std::string> >& sectionNames =
     sieveMesh->getIntSections();
   
-  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type>::edge_map_type& edge2vertex = refiner.getEdgeToVertex();
+  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type>::edge_map_type& edge2vertex =
+    refiner.getEdgeToVertex();
 
   const std::set<std::string>::const_iterator namesBegin = 
     sectionNames->begin();
@@ -207,7 +171,7 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
 	  newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
     } // for
   } // for
-} // _refineTet4
-
+} // refine
+    
 
 // End of file 
