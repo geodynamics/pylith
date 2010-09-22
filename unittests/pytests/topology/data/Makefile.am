@@ -18,9 +18,7 @@
 
 dist_noinst_DATA = \
 	tri3.mesh \
-	twotet4.mesh \
-	twotet4_nofault_refined2.mesh \
-	twotet4_fault_refined2.mesh
+	twotet4.mesh
 
 noinst_TMP =
 
