@@ -2,9 +2,25 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* Uniform global refinement for tets with faults
-  testcase: unittests/pytests/topology/TestRefineUniform.py
-  + BUG: setting coordinates: vertex2edge use in Mesh.hh
+* Unform global refinement for tets with faults
+  tet4, level 2
+  Cleanup implementation
+    Cleanup RefineUniform
+    reorder refined cells for optimized looping
+
+  tri3, level 2
+  hex8, level 2
+  quad4, level 2
+  tet4, level 4
+  tri3, level 4
+  hex8, level 4
+  quad4, level 4
+
+  C++ unit tests
+    
+    
+  Python unit tests
+    Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
 
@@ -83,7 +99,7 @@ SECONDARY PRIORITIES
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
 
-* Time step based on strain rate
+* Time step based on state variables
 
   TimeStepStrainRate object
     strainRateTarget

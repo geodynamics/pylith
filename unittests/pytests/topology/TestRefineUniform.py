@@ -52,6 +52,18 @@ class TestRefineUniform(unittest.TestCase):
     return
 
 
+  def test_refineTet4Fault(self):
+    """
+    Test refine().
+    """
+    filenameIn = "data/twotet4.mesh"
+    filenameOut = "data/twotet4_test.mesh"
+    filenameOutE = "data/twotet4_fault_refined2.mesh"
+
+    self._runTest(filenameIn, filenameOut, filenameOutE, "fault")
+    return
+
+
   def test_factory(self):
     """
     Test factory method.
@@ -61,7 +73,7 @@ class TestRefineUniform(unittest.TestCase):
     return
 
 
-  def _runTest(self, filenameIn, filenameOut, filenameOutE):
+  def _runTest(self, filenameIn, filenameOut, filenameOutE, faultGroup=None):
 
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
@@ -73,30 +85,29 @@ class TestRefineUniform(unittest.TestCase):
     io.inventory.coordsys = cs
     io._configure()
     
-    from spatialdata.units.Nondimensional import Nondimensional
-    normalizer = Nondimensional()
-
     mesh = io.read(debug=True, interpolate=False)
+
+    if not faultGroup is None:
+      from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
+      fault = FaultCohesiveKin()
+      fault.inventory.matId = 10
+      fault.inventory.faultLabel = faultGroup
+      fault._configure()
+
+      nvertices = fault.numVertices(mesh)
+      firstFaultVertex = 0
+      firstLagrangeVertex = nvertices
+      firstFaultCell      = 2*nvertices
+      fault.adjustTopology(mesh, 
+                           firstFaultVertex, 
+                           firstLagrangeVertex,
+                           firstFaultCell)
 
     from pylith.topology.RefineUniform import RefineUniform
     refiner = RefineUniform()
     meshRefined = refiner.refine(mesh)
 
     meshRefined.view("MESH")
-    
-    io.filename(filenameOut)
-    io.write(meshRefined)
-
-    fileE = open(filenameOutE, "r")
-    linesE = fileE.readlines()
-    fileE.close()
-    fileT = open(filenameOut, "r")
-    linesT = fileT.readlines()
-    fileT.close()
-
-    self.assertEqual(len(linesE), len(linesT))
-    for (lineE, lineT) in zip(linesE, linesT):
-      self.assertEqual(lineE, lineT)
     
     return
 
