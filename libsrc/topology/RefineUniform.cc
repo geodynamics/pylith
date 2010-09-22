@@ -118,18 +118,36 @@ pylith::topology::RefineUniform::_refineTet4(Mesh* const newMesh,
     ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
 
   // Fix material ids
-  const int numCells = sieveMesh->heightStratum(0)->size();
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = 
+    cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = 
+    cells->end();
   const ALE::Obj<SieveMesh::label_type>& materials =
     sieveMesh->getLabel("material-id");
+
+  const ALE::Obj<SieveMesh::label_sequence>& newCells = 
+    newSieveMesh->heightStratum(0);
+  assert(!newCells.isNull());
+  const SieveMesh::label_sequence::iterator newCellsBegin = 
+    newCells->begin();
+  const SieveMesh::label_sequence::iterator newCellsEnd = 
+    newCells->end();
   const ALE::Obj<SieveMesh::label_type>& newMaterials =
     newSieveMesh->createLabel("material-id");
   
-  const int numNewCellsPerCell = 8; // :KLUDGE: depends on levels
-  for(int icell=0; icell < numCells; ++icell) {
-    const int material = sieveMesh->getValue(materials, icell);
+
+  for (SieveMesh::label_sequence::const_iterator c_iter = cellsBegin,
+	 cNew_iter = newCellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    const int numNewCellsPerCell = refiner.numNewCells(*c_iter);
+    const int material = sieveMesh->getValue(materials, *c_iter);
     
-    for(int i=0; i < numNewCellsPerCell; ++i)
-      newSieveMesh->setValue(newMaterials, icell*8+i, material);
+    for(int i=0; i < numNewCellsPerCell; ++i, ++cNew_iter)
+      newSieveMesh->setValue(newMaterials, *cNew_iter, material);
   } // for
   
   // Fix groups, assuming vertex groups

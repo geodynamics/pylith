@@ -186,7 +186,9 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
       ++e_iter) {
     sieve->cone(*e_iter, pV);
     const SieveMesh::point_type *cone = pV.getPoints();
-    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+    const int coneSize = pV.getSize();
+    assert(coneSize == *numCorners);
+    for(int p = 0; p < coneSize; ++p, ++i) {
       (*cells)[i] = vNumbering->getIndex(cone[p]);
     }
     pV.clear();
