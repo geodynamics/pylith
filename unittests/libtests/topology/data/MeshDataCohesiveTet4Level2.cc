@@ -57,23 +57,22 @@ const double pylith::topology::MeshDataCohesiveTet4Level2::_vertices[] = {
 };
 
 const int pylith::topology::MeshDataCohesiveTet4Level2::_cells[] = {
-  1,       8,       5,       7,
-  2,       9,       6,       5,
-  3,      10,       7,       6,
-  0,       8,      10,       9,
-  5,       8,       9,       6,
-  6,       9,      10,       8,
-  7,      10,       8,       6,
-  5,       6,       7,       8,
-  1,      11,       7,       5,
-  3,      12,       6,       7,
-  2,      13,       5,       6,
-  4,      11,      13,      12,
-  7,      11,      12,       6,
-  6,      12,      13,      11,
-  5,      13,      11,       6,
-  7,       6,       5,      11,
-
+  1,   8,  5,  7,
+  5,   6,  7,  8,
+  5,   8,  9,  6,
+  2,   9,  6,  5,
+  7,  10,  8,  6,
+  3,  10,  7,  6,
+  6,   9, 10,  8,
+  0,   8, 10,  9,
+  1,  11,  7,  5,
+  7,   6,  5, 11,
+  7,  11, 12,  6,
+  3,  12,  6,  7,
+  5,  13, 11,  6,
+  2,  13,  5,  6,
+  6,  12, 13, 11,
+  4,  11, 13, 12,
 };
 const int pylith::topology::MeshDataCohesiveTet4Level2::_cellsCohesive[] = {
 };

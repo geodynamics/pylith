@@ -50,6 +50,9 @@ class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestRefineUniform );
 
   CPPUNIT_TEST( testConstructor );
+
+  CPPUNIT_TEST( testRefineTri3Level2 );
+  CPPUNIT_TEST( testRefineTri3Level2Fault1 );
   CPPUNIT_TEST( testRefineTet4Level2 );
   CPPUNIT_TEST( testRefineTet4Level2Fault1 );
 
@@ -60,6 +63,12 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
+
+  /// Test refine() with level 2, tri3 cells, and no fault.
+  void testRefineTri3Level2(void);
+
+  /// Test refine() with level 2, tri3 cells, and one fault.
+  void testRefineTri3Level2Fault1(void);
 
   /// Test refine() with level 2, tet4 cells, and no fault.
   void testRefineTet4Level2(void);

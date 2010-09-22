@@ -3,11 +3,6 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 * Unform global refinement for tets with faults
-  tet4, level 2
-  Cleanup implementation
-    Cleanup RefineUniform
-    reorder refined cells for optimized looping
-
   tri3, level 2
   hex8, level 2
   quad4, level 2
