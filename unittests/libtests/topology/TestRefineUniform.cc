@@ -130,6 +130,8 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
       faultB.adjustTopology(mesh, &firstFaultVertex, 
 			    &firstLagrangeVertex, &firstFaultCell);
   } // if
+
+  mesh->view("UNREFINED MESH");
 } // _setupMesh
 
 // ----------------------------------------------------------------------
@@ -194,7 +196,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
 
   // Normal cells
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  const int offset = numCells;
+  const int offset = numCells - data.numCellsCohesive;
   SieveMesh::label_sequence::iterator c_iter = cells->begin();
   for(int iCell=0, i=0; iCell < data.numCells; ++iCell, ++c_iter) {
     pV.clear();

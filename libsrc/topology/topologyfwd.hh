@@ -33,6 +33,10 @@ namespace ALE {
   template<typename point_type, 
 	   typename value_type,
 	   typename allocator> class IUniformSectionDS;
+
+  class MeshRefiner;
+  class CellRefinerTri3;
+  class MeshOrder;
 } // ALE
 
 namespace pylith {
@@ -53,7 +57,6 @@ namespace pylith {
 
     class Distributor;
 
-    class MeshRefiner;
     class RefineUniform;
 
     class ReverseCuthillMcKee;

@@ -46,6 +46,13 @@ subpkginclude_HEADERS = \
 
 noinst_HEADERS =
 
+# TEMPORARY
+noinst_HEADERS += \
+	MeshRefiner.hh \
+	CellRefinerTri3.hh \
+	MeshOrder.hh
+
+
 # export
 clean-local: clean-subpkgincludeHEADERS
 BUILT_SOURCES = export-subpkgincludeHEADERS
