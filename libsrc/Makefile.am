@@ -139,6 +139,13 @@ libpylith_la_SOURCES = \
 	utils/TestArray.cc
 
 
+# TEMPORARY
+libpylith_la_SOURCES += \
+	topology/MeshRefiner.cc \
+	topology/CellRefinerTri3.cc \
+	topology/MeshOrder.cc
+
+
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \

@@ -22,26 +22,15 @@
 
 #include "Mesh.hh" // USES Mesh
 
+#include "CellRefinerTri3.hh" // USES CellRefinerTri3
+#include "MeshRefiner.hh" // USES MeshRefiner
+
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
-template<typename Point>
-class Edge : public std::pair<Point, Point> {
-public:
-  Edge() : std::pair<Point, Point>() {};
-  Edge(const Point l) : std::pair<Point, Point>(l, l) {};
-  Edge(const Point l, const Point r) : std::pair<Point, Point>(l, r) {};
-  ~Edge() {};
-  friend std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
-    stream << "(" << edge.first << ", " << edge.second << ")";
-    return stream;
-  };
-};
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -65,7 +54,6 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   assert(0 != newMesh);
 
   typedef SieveMesh::point_type point_type;
-  typedef Edge<point_type> edge_type;
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -75,10 +63,9 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
   newSieveMesh->setSieve(newSieve);
 
-  ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> refiner(*sieveMesh);
-
-  ALE::MeshBuilder<SieveMesh>::refineGeneral< SieveMesh,
-    ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type> >(*sieveMesh, *newSieveMesh, refiner);
+  ALE::CellRefinerTri3 cellSplitter(*sieveMesh);
+  ALE::MeshRefiner refiner;
+  refiner.refine(newSieveMesh, sieveMesh, cellSplitter);
 
   // Set material ids
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -106,7 +93,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 	 cNew_iter = newCellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int numNewCellsPerCell = refiner.numNewCells(*c_iter);
+    const int numNewCellsPerCell = cellSplitter.numNewCells(*c_iter);
     const int material = sieveMesh->getValue(materials, *c_iter);
     
     for(int i=0; i < numNewCellsPerCell; ++i, ++cNew_iter)
@@ -119,6 +106,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   const ALE::Obj<std::set<std::string> >& sectionNames =
     sieveMesh->getIntSections();
   
+#if 0
   ALE::MeshBuilder<SieveMesh>::CellRefiner<SieveMesh,edge_type>::edge_map_type& edge2vertex =
     refiner.getEdgeToVertex();
 
@@ -171,6 +159,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 	  newGroup->updatePoint(e_iter->second, group->restrictPoint(vertexA));
     } // for
   } // for
+#endif
 } // refine
     
 
