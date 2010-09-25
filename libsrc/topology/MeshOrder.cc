@@ -39,19 +39,48 @@ ALE::MeshOrder::~MeshOrder(void)
 void
 ALE::MeshOrder::initialize(const ALE::Obj<mesh_type>& mesh)
 { // initialize
+  assert(!mesh.isNull());
+
   const ALE::Obj<mesh_type::label_sequence>& cells = mesh->heightStratum(0);
   assert(!cells.isNull());
-  const int numCells = cells->size();
-  _cellsNormal = ALE::Interval<point_type>(0, numCells);
-      
+
   const Obj<mesh_type::label_sequence>& vertices = mesh->depthStratum(0);
   assert(!vertices.isNull());
-  const int numVertices = vertices->size();
-  _verticesNormal = ALE::Interval<point_type>(numCells, numCells+numVertices);
 
-  const int numEntities = numCells + numVertices;
-  _cellsCensored = ALE::Interval<point_type>(numEntities, numEntities);
-  _verticesCensored = ALE::Interval<point_type>(numEntities, numEntities);
+  if (mesh->hasLabel("censored depth")) {
+    // Count number of cells in censored depth (normal cells).
+    const Obj<mesh_type::label_sequence>& cellsNormal = mesh->getLabelStratum("censored depth", mesh->depth());
+    assert(!cellsNormal.isNull());
+    const mesh_type::label_sequence::iterator cellsNormalEnd = cellsNormal->end();
+    const int numCellsNormal = cellsNormal->size();
+	
+    // Count number of remaining cells (censored cells).
+    const int numCellsCensored = cells->size() - numCellsNormal;
+	
+    // Get number of normal vertices.
+    assert(!mesh->getFactory().isNull());
+    Obj<mesh_type::numbering_type> vNumbering = mesh->getFactory()->getNumbering(mesh, "censored depth", 0);
+    assert(!vNumbering.isNull());
+    const int numVerticesNormal = vNumbering->size();
+	
+    // Count number of remaining vertices (censored vertices).
+    const int numVerticesCensored = vertices->size() - numVerticesNormal;
+
+    _cellsNormal = ALE::Interval<point_type>(0, numCellsNormal);
+    _verticesNormal = ALE::Interval<point_type>(numCellsNormal, numCellsNormal+numVerticesNormal);
+    _verticesCensored = ALE::Interval<point_type>(numCellsNormal+numVerticesNormal, numCellsNormal+numVerticesNormal+numVerticesCensored);
+    _cellsCensored = ALE::Interval<point_type>(numCellsNormal+numVerticesNormal+numVerticesCensored,
+					       numCellsNormal+numVerticesNormal+numVerticesCensored+numCellsCensored);
+  } else {
+    const int numCells = cells->size();    
+    const int numVertices = vertices->size();
+    const int numEntities = numCells + numVertices;
+
+    _cellsNormal = ALE::Interval<point_type>(0, numCells);
+    _verticesNormal = ALE::Interval<point_type>(numCells, numCells+numVertices);
+    _cellsCensored = ALE::Interval<point_type>(numEntities, numEntities);
+    _verticesCensored = ALE::Interval<point_type>(numEntities, numEntities);
+  } // if/else
 } // initialize
 
 // ----------------------------------------------------------------------

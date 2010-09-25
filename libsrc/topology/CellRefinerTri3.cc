@@ -110,8 +110,9 @@ ALE::CellRefinerTri3::getNewCells(const point_type** cells,
     break;
   } // TRIANGLE
   case LINE_COHESIVE_LAGRANGE: {
-    const int coneVertexOffset = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
-    _newCells_LINE_COHESIVE_LAGRANGE(cells, numCells, cone, coneSize, coneVertexOffset);
+    const int coneVertexOffsetNormal = orderNewMesh.verticesNormal().min() - orderOldMesh.verticesNormal().min();
+    const int coneVertexOffsetCensored = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
+    _newCells_LINE_COHESIVE_LAGRANGE(cells, numCells, cone, coneSize, coneVertexOffsetNormal, coneVertexOffsetCensored);
     break;
   } // LINE_COHESIVE_LAGRANGE
   default:
@@ -152,6 +153,53 @@ ALE::CellRefinerTri3::setCoordsNewVertices(const ALE::Obj<mesh_type::real_sectio
     newCoordsSection->updatePoint(newVertex, coordinatesVertex);
   } // for
 } // setCoordsNewVertices
+
+// ----------------------------------------------------------------------
+// Add space for new vertices in group.
+void
+ALE::CellRefinerTri3::groupAddNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+					  const ALE::Obj<mesh_type::int_section_type>& oldGroup)
+{ // groupAddNewVertices
+  assert(!newGroup.isNull());
+  assert(!oldGroup.isNull());
+
+  const edge_map_type::const_iterator edgesEnd = _edgeToVertex.end();
+  for (edge_map_type::const_iterator e_iter = _edgeToVertex.begin(); e_iter != edgesEnd; ++e_iter) {
+    const point_type newVertex = e_iter->second;
+    const point_type edgeVertexA = e_iter->first.first;
+    const point_type edgeVertexB = e_iter->first.second;
+
+    if (oldGroup->getFiberDimension(edgeVertexA) && oldGroup->getFiberDimension(edgeVertexB)) {
+      if (oldGroup->restrictPoint(edgeVertexA)[0] == oldGroup->restrictPoint(edgeVertexB)[0]) {
+	  newGroup->setFiberDimension(newVertex, 1);
+      } // if
+    } // if
+  } // for
+} // groupAddNewVertices
+
+// ----------------------------------------------------------------------
+// Set new vertices in group.
+void
+ALE::CellRefinerTri3::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+					  const ALE::Obj<mesh_type::int_section_type>& oldGroup)
+{ // groupSetNewVertices
+  assert(!newGroup.isNull());
+  assert(!oldGroup.isNull());
+
+  const edge_map_type::const_iterator edgesEnd = _edgeToVertex.end();
+  for (edge_map_type::const_iterator e_iter = _edgeToVertex.begin(); e_iter != edgesEnd; ++e_iter) {
+    const point_type newVertex = e_iter->second;
+    const point_type edgeVertexA = e_iter->first.first;
+    const point_type edgeVertexB = e_iter->first.second;
+
+    if (oldGroup->getFiberDimension(edgeVertexA) && oldGroup->getFiberDimension(edgeVertexB)) {
+      if (oldGroup->restrictPoint(edgeVertexA)[0] == oldGroup->restrictPoint(edgeVertexB)[0]) {
+	newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertexA));
+	std::cout << "Adding new vertex: " << newVertex << " based on old vertices " << edgeVertexA << " and " << edgeVertexB << std::endl;
+      } // if
+    } // if
+  } // for
+} // groupSetNewVertices
 
 // ----------------------------------------------------------------------
 // Get cell type.
@@ -276,7 +324,8 @@ ALE::CellRefinerTri3::_newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells,
 						       int *numCells,
 						       const point_type cone[],
 						       const int coneSize,
-						       const int coneVertexOffset)
+						       const int coneVertexOffsetNormal,
+						       const int coneVertexOffsetCensored)
 { // _newCells_LINE_COHESIVE_LAGRANGE
   const int coneSizeLine6 = 6;
   const int numEdgesLine6 = 3;
@@ -298,23 +347,24 @@ ALE::CellRefinerTri3::_newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells,
   } // for
 
   // new cell 0
-  lineCells[0*6+0] = cone[0] + coneVertexOffset;
+  lineCells[0*6+0] = cone[0] + coneVertexOffsetNormal;
   lineCells[0*6+1] = newVertices[0];
-  lineCells[0*6+2] = cone[2] + coneVertexOffset;
+  lineCells[0*6+2] = cone[2] + coneVertexOffsetNormal;
   lineCells[0*6+3] = newVertices[1];
-  lineCells[0*6+4] = cone[4] + coneVertexOffset;
+  lineCells[0*6+4] = cone[4] + coneVertexOffsetCensored;
   lineCells[0*6+5] = newVertices[2];
 
   // new cell 1
   lineCells[1*6+0] = newVertices[0];
-  lineCells[1*6+1] = cone[1] + coneVertexOffset;
+  lineCells[1*6+1] = cone[1] + coneVertexOffsetNormal;
   lineCells[1*6+2] = newVertices[1];
-  lineCells[1*6+3] = cone[3] + coneVertexOffset;
+  lineCells[1*6+3] = cone[3] + coneVertexOffsetNormal;
   lineCells[1*6+4] = newVertices[2];
-  lineCells[1*6+5] = cone[5] + coneVertexOffset;
+  lineCells[1*6+5] = cone[5] + coneVertexOffsetCensored;
   
   *numCells = 2;
   *cells    = lineCells;
 } // _newCells_LINE_COHESIVE_LAGRANGE
+
 
 // End of file 

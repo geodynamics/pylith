@@ -261,7 +261,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
-    const int offset = ("vertex" == groupType) ? numCells : 0;
+    const int offset = ("vertex" == groupType) ? data.numCells : 0;
     for(chart_type::const_iterator c_iter = chart.begin();
 	c_iter != chart.end();
 	++c_iter)
