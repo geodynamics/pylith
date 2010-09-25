@@ -94,6 +94,17 @@ private :
   void _calcNewOverlap(const Obj<mesh_type>& newMesh,
 		       const Obj<mesh_type>& mesh);
   
+  /** Create integer sections in new mesh.
+   *
+   * :WARNING: Only implemented for integer sections containing vertices.
+   *
+   * @param newMesh New (refined) mesh.
+   * @param mesh Current (unrefined) mesh with integer sections.
+   */
+  void _createIntSections(const Obj<mesh_type>& newMesh,
+			  const Obj<mesh_type>& mesh,
+			  CellRefinerTri3& refiner);
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

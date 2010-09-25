@@ -94,6 +94,22 @@ public :
   void setCoordsNewVertices(const ALE::Obj<mesh_type::real_section_type>& newCoordsSection,
 			    const ALE::Obj<mesh_type::real_section_type>& oldCoordsSection);
 
+  /** Add space for new vertices in group.
+   *
+   * @param newGroup Group in refine mesh.
+   * @param oldGroup Group in original mesh.
+   */
+  void groupAddNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+			   const ALE::Obj<mesh_type::int_section_type>& oldGroup);
+
+  /** Set new vertices in group.
+   *
+   * @param newGroup Group in refine mesh.
+   * @param oldGroup Group in original mesh.
+   */
+  void groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+			   const ALE::Obj<mesh_type::int_section_type>& oldGroup);
+
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
 
@@ -176,13 +192,15 @@ private :
    * @param numCells Number of refined cells.
    * @param cone Vertices in cell (original mesh).
    * @param coneSize Number of vertices in cell.
-   * @param coneVertexOffset Offset for cone vertices.
+   * @param coneVertexOffsetNormal Offset for normal cone vertices.
+   * @param coneVertexOffset Offset for censored cone vertices.
    */
   void _newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells,
 					int *numCells,
 					const point_type cone[],
 					const int coneSize,
-					const int coneVertexOffset);
+					const int coneVertexOffsetNormal,
+					const int coneVertexOffsetCensored);
   
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
