@@ -196,7 +196,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
 
   // Normal cells
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  const int offset = numCells - data.numCellsCohesive;
   SieveMesh::label_sequence::iterator c_iter = cells->begin();
   for(int iCell=0, i=0; iCell < data.numCells; ++iCell, ++c_iter) {
     pV.clear();
@@ -205,7 +204,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     const int coneSize = pV.getSize();
     CPPUNIT_ASSERT_EQUAL(data.numCorners, coneSize);
     for(int p = 0; p < coneSize; ++p, ++i)
-      CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]-offset);
+      CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
   } // for
   // Cohesive cells
   for (int iCell=0, i=0; iCell < data.numCellsCohesive; ++iCell, ++c_iter) {
@@ -215,7 +214,7 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     const int coneSize = pV.getSize();
     CPPUNIT_ASSERT_EQUAL(data.numCornersCohesive, coneSize);
     for(int p = 0; p < coneSize; ++p, ++i)
-      CPPUNIT_ASSERT_EQUAL(data.cellsCohesive[i], cone[p]-offset);
+      CPPUNIT_ASSERT_EQUAL(data.cellsCohesive[i], cone[p]);
   } // for
 
   // check materials
@@ -261,12 +260,11 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
     const int numPoints = groupField->size();
     int_array points(numPoints);
     int i = 0;
-    const int offset = ("vertex" == groupType) ? data.numCells : 0;
     for(chart_type::const_iterator c_iter = chart.begin();
 	c_iter != chart.end();
 	++c_iter)
       if (groupField->getFiberDimension(*c_iter))
-	points[i++] = *c_iter - offset;
+	points[i++] = *c_iter;
     
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
