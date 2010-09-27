@@ -56,22 +56,22 @@ const double pylith::topology::MeshDataCohesiveTri3Level2::_vertices[] = {
 };
 
 const int pylith::topology::MeshDataCohesiveTri3Level2::_cells[] = {
-   0,  5,  7,
-   5,  6,  7,
-   1,  6,  5,
-   2,  7,  6,
-   2,  8,  7,
-   8,  9,  7,
-   3,  9,  8,
-   0,  7,  9,
-   2,  6, 11,
-   6, 10, 11,
-   1, 10,  6,
-   4, 11, 10,
-   2, 11,  8,
-  11, 12,  8,
-   4, 12, 11,
-   3,  8, 12,
+  16,  21,  23,
+  21,  22,  23,
+  17,  22,  21,
+  18,  23,  22,
+  18,  24,  23,
+  24,  25,  23,
+  19,  25,  24,
+  16,  23,  25,
+  18,  22,  27,
+  22,  26,  27,
+  17,  26,  22,
+  20,  27,  26,
+  18,  27,  24,
+  27,  28,  24,
+  20,  28,  27,
+  19,  24,  28,
 };
 const int pylith::topology::MeshDataCohesiveTri3Level2::_cellsCohesive[] = {
 };
@@ -87,10 +87,10 @@ const int pylith::topology::MeshDataCohesiveTri3Level2::_groupSizes[] = {
 };
 
 const int pylith::topology::MeshDataCohesiveTri3Level2::_groups[] = {
-  0, 1, 3, 5, 9,
-  1, 4, 10,
-  0, 4,
-  1, 2, 3, 6, 8,
+  16, 17, 19, 21, 25,
+  17, 20, 26,
+  16, 20,
+  17, 18, 19, 22, 24,
 };
 
 const char* pylith::topology::MeshDataCohesiveTri3Level2::_groupNames[] = {
