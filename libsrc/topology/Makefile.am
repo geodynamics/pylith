@@ -49,7 +49,9 @@ noinst_HEADERS =
 # TEMPORARY
 noinst_HEADERS += \
 	MeshRefiner.hh \
+	MeshRefiner.cc \
 	CellRefinerTri3.hh \
+	CellRefinerTet4.hh \
 	MeshOrder.hh
 
 

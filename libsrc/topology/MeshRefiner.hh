@@ -19,7 +19,7 @@
 /**
  * @file libsrc/topology/MeshRefiner.hh
  *
- * @brief Object for tri3 refinement of cells.
+ * @brief Object for refinement of cells.
  */
 
 #if !defined(pylith_topology_meshrefiner_hh)
@@ -29,7 +29,8 @@
 #include "topologyfwd.hh" // forward declarations
 
 // RefineTri3 --------------------------------------------------------
-/// Object for tri3 refinement of cells.
+/// Object for refinement of cells.
+template<typename cellrefiner_type>
 class ALE::MeshRefiner
 { // MeshRefiner
   typedef IMesh<> mesh_type;
@@ -55,7 +56,7 @@ public :
    */
   void refine(const Obj<mesh_type>& newMesh, 
 	      const Obj<mesh_type>& mesh, 
-	      CellRefinerTri3& refiner);
+	      cellrefiner_type& refiner);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
@@ -68,7 +69,7 @@ private :
    */
   void _refine(const Obj<mesh_type>& newMesh, 
 	       const Obj<mesh_type>& mesh, 
-	       CellRefinerTri3& refiner);
+	       cellrefiner_type& refiner);
   
   /** Refine mesh with a censored depth.
    *
@@ -78,7 +79,7 @@ private :
    */
   void _refineCensored(const Obj<mesh_type>& newMesh, 
 		       const Obj<mesh_type>& mesh, 
-		       CellRefinerTri3& refiner);
+		       cellrefiner_type& refiner);
 
   /** Stratify mesh.
    *
@@ -92,10 +93,11 @@ private :
    *
    * @param newMesh New (refined) mesh.
    * @param mesh Current (unrefined) mesh with integer sections.
+   * @param refiner Cell refiner.
    */
   void _createIntSections(const Obj<mesh_type>& newMesh,
 			  const Obj<mesh_type>& mesh,
-			  CellRefinerTri3& refiner);
+			  cellrefiner_type& refiner);
 
   /** Create labels in new mesh.
    *
@@ -103,18 +105,21 @@ private :
    *
    * @param newMesh New (refined) mesh.
    * @param mesh Current (unrefined) mesh with integer sections.
+   * @param refiner Cell refiner.
    */
   void _createLabels(const Obj<mesh_type>& newMesh,
 		     const Obj<mesh_type>& mesh,
-		     CellRefinerTri3& refiner);
+		     cellrefiner_type& refiner);
 
   /** Calculate new overlap.
    *
    * @param newMesh New (refined) mesh.
    * @param mesh Current (unrefined) mesh with overlap.
+   * @param refiner Cell refiner.
    */
   void _calcNewOverlap(const Obj<mesh_type>& newMesh,
-		       const Obj<mesh_type>& mesh);
+		       const Obj<mesh_type>& mesh,
+		       cellrefiner_type& refiner);
   
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -129,6 +134,8 @@ private :
   const MeshRefiner& operator=(const MeshRefiner&); ///< Not implemented
 
 }; // MeshRefiner
+
+#include "MeshRefiner.cc"
 
 #endif // pylith_topology_meshrefiner_hh
 

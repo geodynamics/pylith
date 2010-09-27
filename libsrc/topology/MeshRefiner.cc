@@ -20,14 +20,14 @@
 
 #include "MeshRefiner.hh" // implementation of class methods
 
-#include "CellRefinerTri3.hh" // USES CellRefinerTri3
 #include "MeshOrder.hh" // USES MeshOrder
 
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor
-ALE::MeshRefiner::MeshRefiner(void) :
+template<typename cellrefiner_type>
+ALE::MeshRefiner<cellrefiner_type>::MeshRefiner(void) :
   _orderOldMesh(new MeshOrder),
   _orderNewMesh(new MeshOrder)
 { // constructor
@@ -35,7 +35,8 @@ ALE::MeshRefiner::MeshRefiner(void) :
 
 // ----------------------------------------------------------------------
 // Destructor
-ALE::MeshRefiner::~MeshRefiner(void)
+template<typename cellrefiner_type>
+ALE::MeshRefiner<cellrefiner_type>::~MeshRefiner(void)
 { // destructor
   delete _orderOldMesh; _orderOldMesh = PETSC_NULL;
   delete _orderNewMesh; _orderNewMesh = PETSC_NULL;
@@ -43,10 +44,11 @@ ALE::MeshRefiner::~MeshRefiner(void)
 
 // ----------------------------------------------------------------------
 // Refine mesh.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::refine(const Obj<mesh_type>& newMesh, 
-			 const Obj<mesh_type>& mesh, 
-			 CellRefinerTri3& refiner)
+ALE::MeshRefiner<cellrefiner_type>::refine(const Obj<mesh_type>& newMesh, 
+				      const Obj<mesh_type>& mesh, 
+				      cellrefiner_type& refiner)
 { // refine
   assert(!mesh.isNull());
   if (mesh->hasLabel("censored depth")) {
@@ -58,10 +60,11 @@ ALE::MeshRefiner::refine(const Obj<mesh_type>& newMesh,
 
 // ----------------------------------------------------------------------
 // Refine mesh.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh, 
-			  const Obj<mesh_type>& mesh, 
-			  CellRefinerTri3& refiner)
+ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh, 
+				       const Obj<mesh_type>& mesh, 
+				       cellrefiner_type& refiner)
 { // _refine
   typedef Interval<point_type>::const_iterator interval_type;
 
@@ -182,17 +185,18 @@ ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh,
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
 
   _stratify(newMesh);
-  _calcNewOverlap(newMesh, mesh);
+  _calcNewOverlap(newMesh, mesh, refiner);
   _createIntSections(newMesh, mesh, refiner);
   _createLabels(newMesh, mesh, refiner);
 } // _refine
   
 // ----------------------------------------------------------------------
 // Refine mesh with a censored depth.
-  void
-    ALE::MeshRefiner::_refineCensored(const Obj<mesh_type>& newMesh, 
-				      const Obj<mesh_type>& mesh, 
-				      CellRefinerTri3& refiner)
+template<typename cellrefiner_type>
+void
+ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMesh, 
+					       const Obj<mesh_type>& mesh, 
+					       cellrefiner_type& refiner)
 { // _refineCensored
   typedef Interval<point_type>::const_iterator interval_type;
 
@@ -385,7 +389,7 @@ ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh,
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
 
   _stratify(newMesh);
-  _calcNewOverlap(newMesh, mesh);
+  _calcNewOverlap(newMesh, mesh, refiner);
   _createIntSections(newMesh, mesh, refiner);
   _createLabels(newMesh, mesh, refiner);
 
@@ -407,8 +411,9 @@ ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh,
 
 // ----------------------------------------------------------------------
 // Stratify mesh.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::_stratify(const Obj<mesh_type>& mesh)
+ALE::MeshRefiner<cellrefiner_type>::_stratify(const Obj<mesh_type>& mesh)
 { // _stratify
   typedef Interval<point_type>::const_iterator interval_type;
 
@@ -449,10 +454,11 @@ ALE::MeshRefiner::_stratify(const Obj<mesh_type>& mesh)
 
 // ----------------------------------------------------------------------
 // Create integer sections in new mesh.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::_createIntSections(const Obj<mesh_type>& newMesh,
-				     const Obj<mesh_type>& mesh,
-				     CellRefinerTri3& refiner)
+ALE::MeshRefiner<cellrefiner_type>::_createIntSections(const Obj<mesh_type>& newMesh,
+						  const Obj<mesh_type>& mesh,
+						  cellrefiner_type& refiner)
 { // _createIntSections
   assert(!newMesh.isNull());
   assert(!mesh.isNull());
@@ -521,15 +527,18 @@ ALE::MeshRefiner::_createIntSections(const Obj<mesh_type>& newMesh,
 
 // ----------------------------------------------------------------------
 // Create labels in new mesh.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::_createLabels(const Obj<mesh_type>& newMesh,
-				     const Obj<mesh_type>& mesh,
-				     CellRefinerTri3& refiner)
+ALE::MeshRefiner<cellrefiner_type>::_createLabels(const Obj<mesh_type>& newMesh,
+					     const Obj<mesh_type>& mesh,
+					     cellrefiner_type& refiner)
 { // _createLabels
   assert(!newMesh.isNull());
   assert(!mesh.isNull());
   assert(_orderOldMesh);
   assert(_orderNewMesh);
+
+  typedef ALE::Interval<point_type> interval_type;
 
   const mesh_type::labels_type labels = mesh->getLabels();
   const mesh_type::labels_type::const_iterator labelsEnd = labels.end();
@@ -544,36 +553,55 @@ ALE::MeshRefiner::_createLabels(const Obj<mesh_type>& newMesh,
     const Obj<mesh_type::label_type>& newLabel = newMesh->createLabel(l_iter->first);
     assert(!newLabel.isNull());
 
-    typedef mesh_type::label_type::traits::arrow_container_type::set_type arrows_set_type;
+    const int defaultValue = -999;
 
-    arrows_set_type::const_iterator oldArrowsEnd = oldLabel->_arrows.set.end();
-    for (arrows_set_type::const_iterator a_iter=oldLabel->_arrows.set.begin(); a_iter != oldArrowsEnd; ++a_iter) {
+    // Update cells
+    // Normal cells
+    interval_type::const_iterator pointsEnd = _orderOldMesh->cellsNormal().end();
+    for (interval_type::const_iterator p_iter = _orderOldMesh->cellsNormal().begin(); p_iter != pointsEnd; ++p_iter) {
+      const int value = mesh->getValue(oldLabel, *p_iter, defaultValue);
+      if (defaultValue == value)
+	continue;
 
-      const mesh_type::point_type pOld = a_iter->target;
-      const int value = mesh->getValue(oldLabel, pOld);
+      const int numNewCellsPerCell = refiner.numNewCells(*p_iter);
+      mesh_type::point_type pNew = _orderNewMesh->cellsNormal().min() + (*p_iter - _orderOldMesh->cellsNormal().min())*numNewCellsPerCell;
+      for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
+	newMesh->setValue(newLabel, pNew, value);
+    } // for
+    
+    // Censored cells
+    pointsEnd = _orderOldMesh->cellsCensored().end();
+    for (interval_type::const_iterator p_iter = _orderOldMesh->cellsCensored().begin(); p_iter != pointsEnd; ++p_iter) {
+      const int value = mesh->getValue(oldLabel, *p_iter, defaultValue);
+      if (defaultValue == value)
+	continue;
       
-      if (_orderOldMesh->cellsNormal().hasPoint(pOld)) {
-	const int numNewCellsPerCell = refiner.numNewCells(pOld);
-	mesh_type::point_type pNew = _orderNewMesh->cellsNormal().min() + (pOld - _orderOldMesh->cellsNormal().min())*numNewCellsPerCell;
-	for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
-	  newMesh->setValue(newLabel, pNew, value);
-	  
-      } else if (_orderOldMesh->verticesNormal().hasPoint(pOld)) {
-	const mesh_type::point_type pNew = _orderNewMesh->verticesNormal().min() + (pOld - _orderOldMesh->verticesNormal().min());
+      const int numNewCellsPerCell = refiner.numNewCells(*p_iter);
+      mesh_type::point_type pNew = _orderNewMesh->cellsCensored().min() + (*p_iter - _orderOldMesh->cellsCensored().min())*numNewCellsPerCell;
+      for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
 	newMesh->setValue(newLabel, pNew, value);
-	
-      } else if (_orderOldMesh->verticesCensored().hasPoint(pOld)) {
-	const mesh_type::point_type pNew = _orderNewMesh->verticesCensored().min() + (pOld - _orderOldMesh->verticesCensored().min());
-	newMesh->setValue(newLabel, pNew, value);
-	
-      } else if (_orderOldMesh->cellsCensored().hasPoint(pOld)) {
-	const int numNewCellsPerCell = refiner.numNewCells(pOld);
-	mesh_type::point_type pNew = _orderNewMesh->cellsCensored().min() + (pOld - _orderOldMesh->cellsCensored().min())*numNewCellsPerCell;
-	for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
-	  newMesh->setValue(newLabel, pNew, value);
-      } else {
-	throw ALE::Exception("Unexpected cell encountered when creating labels.");
-      } // if/else
+    } // for
+    
+    // Normal vertices
+    pointsEnd = _orderOldMesh->verticesNormal().end();
+    for (interval_type::const_iterator p_iter = _orderOldMesh->verticesNormal().begin(); p_iter != pointsEnd; ++p_iter) {
+      const int value = mesh->getValue(oldLabel, *p_iter, defaultValue);
+      if (defaultValue == value)
+	continue;
+      
+      const mesh_type::point_type pNew = _orderNewMesh->verticesNormal().min() + (*p_iter - _orderOldMesh->verticesNormal().min());
+      newMesh->setValue(newLabel, pNew, value);
+    } // for
+
+    // Censored vertices
+    pointsEnd = _orderOldMesh->verticesCensored().end();
+    for (interval_type::const_iterator p_iter = _orderOldMesh->verticesCensored().begin(); p_iter != pointsEnd; ++p_iter) {
+      const int value = mesh->getValue(oldLabel, *p_iter, defaultValue);
+      if (defaultValue == value)
+	continue;
+      
+      const mesh_type::point_type pNew = _orderNewMesh->verticesCensored().min() + (*p_iter - _orderOldMesh->verticesCensored().min());
+      newMesh->setValue(newLabel, pNew, value);
     } // for
 
     refiner.labelAddNewVertices(newMesh, mesh, l_iter->first.c_str());
@@ -582,9 +610,11 @@ ALE::MeshRefiner::_createLabels(const Obj<mesh_type>& newMesh,
 
 // ----------------------------------------------------------------------
 // Calculate new overlap.
+template<typename cellrefiner_type>
 void
-ALE::MeshRefiner::_calcNewOverlap(const Obj<mesh_type>& newMesh,
-				  const Obj<mesh_type>& mesh)
+ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMesh,
+						    const Obj<mesh_type>& mesh,
+						    cellrefiner_type& refiner)
 { // _calcNewOverlap
   assert(!newMesh.isNull());
   assert(!mesh.isNull());

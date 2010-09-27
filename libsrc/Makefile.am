@@ -141,8 +141,8 @@ libpylith_la_SOURCES = \
 
 # TEMPORARY
 libpylith_la_SOURCES += \
-	topology/MeshRefiner.cc \
 	topology/CellRefinerTri3.cc \
+	topology/CellRefinerTet4.cc \
 	topology/MeshOrder.cc
 
 
