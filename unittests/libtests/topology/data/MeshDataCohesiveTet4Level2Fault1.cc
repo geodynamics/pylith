@@ -49,9 +49,6 @@ const double pylith::topology::MeshDataCohesiveTet4Level2Fault1::_vertices[] = {
    0.0, -1.0, 0.0,
    0.0,  0.0, 1.0,
    0.0,  1.0, 0.0,
-   0.0, -1.0, 0.0,
-   0.0,  0.0, 1.0,
-   0.0,  1.0, 0.0,
    0.0, -0.5, 0.5,
    0.0,  0.5, 0.5,
    0.0,  0.0, 0.0,
@@ -64,34 +61,37 @@ const double pylith::topology::MeshDataCohesiveTet4Level2Fault1::_vertices[] = {
    0.5, -0.5, 0.0,
    0.5,  0.5, 0.0,
    0.5,  0.0, 0.5,
+   0.0, -1.0, 0.0,
+   0.0,  0.0, 1.0,
+   0.0,  1.0, 0.0,
    0.0, -0.5, 0.5,
    0.0,  0.0, 0.0,
    0.0,  0.5, 0.5,
 };
 
 const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cells[] = {
-   1,  14,  11,  13, // original cell 1
-  11,  12,  13,  14,
-  11,  14,  15,  12,
-   2,  15,  12,  11,
-  13,  16,  14,  12,
-   3,  16,  13,  12,
-  12,  15,  16,  14,
-   0,  14,  16,  15,
-   5,  20,  17,  19, // original cell 2
-  17,  18,  19,  20,
-  17,  20,  21,  18,
-   7,  21,  18,  17,
-  19,  22,  20,  18,
-   6,  22,  19,  18,
-  18,  21,  22,  20,
-   4,  20,  22,  21,
+   1,  11,   8,  10, // original cell 1
+   8,   9,  10,  11,
+   8,  11,  12,   9,
+   2,  12,   9,   8,
+  10,  13,  11,   9,
+   3,  13,  10,   9,
+   9,  12,  13,  11,
+   0,  11,  13,  12,
+   5,  17,  14,  16, // original cell 2
+  14,  15,  16,  17,
+  14,  17,  18,  15,
+   7,  18,  15,  14,
+  16,  19,  17,  15,
+   6,  19,  16,  15,
+  15,  18,  19,  17,
+   4,  17,  19,  18,
 };
 const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_cellsCohesive[] = {
-   2,  11,  12,   6,  19,  18,   9,  23,  25,
-  11,  13,  12,  19,  17,  18,  23,  24,  25,
-   1,  13,  11,   5,  17,  19,   8,  24,  23,
-   3,  12,  13,   7,  18,  17,  10,  25,  24,
+   2,   8,   9,   6,  16,  15,  21,  23,  25,
+   8,  10,   9,  16,  14,  15,  23,  24,  25,
+   1,  10,   8,   5,  14,  16,  20,  24,  23,
+   3,   9,  10,   7,  15,  14,  22,  25,  24,
 };
 const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_materialIds[] = {
   1, 1, 1, 1, 1, 1, 1, 1,
@@ -106,10 +106,10 @@ const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groupSizes[] = {
 };
 
 const int pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groups[] = {
-  0, 1, 5, 14,
-  2, 4, 6, 22,
+  0, 1, 5, 11,
+  2, 4, 6, 19,
   0, 4,
-  1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 18, 19, 23, 24, 25,
+  1, 2, 3, 5, 6, 7, 8, 9, 10, 14, 15, 16, 20, 21, 22, 23, 24, 25,
 };
 
 const char* pylith::topology::MeshDataCohesiveTet4Level2Fault1::_groupNames[] = {
