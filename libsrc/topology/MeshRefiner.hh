@@ -86,14 +86,6 @@ private :
    */
   void _stratify(const Obj<mesh_type>& mesh);
 
-  /** Calculate new overlap.
-   *
-   * @param newMesh New (refined) mesh.
-   * @param mesh Current (unrefined) mesh with overlap.
-   */
-  void _calcNewOverlap(const Obj<mesh_type>& newMesh,
-		       const Obj<mesh_type>& mesh);
-  
   /** Create integer sections in new mesh.
    *
    * :WARNING: Only implemented for integer sections containing vertices.
@@ -105,6 +97,25 @@ private :
 			  const Obj<mesh_type>& mesh,
 			  CellRefinerTri3& refiner);
 
+  /** Create labels in new mesh.
+   *
+   * :WARNING: Only implemented for integer sections containing vertices.
+   *
+   * @param newMesh New (refined) mesh.
+   * @param mesh Current (unrefined) mesh with integer sections.
+   */
+  void _createLabels(const Obj<mesh_type>& newMesh,
+		     const Obj<mesh_type>& mesh,
+		     CellRefinerTri3& refiner);
+
+  /** Calculate new overlap.
+   *
+   * @param newMesh New (refined) mesh.
+   * @param mesh Current (unrefined) mesh with overlap.
+   */
+  void _calcNewOverlap(const Obj<mesh_type>& newMesh,
+		       const Obj<mesh_type>& mesh);
+  
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
