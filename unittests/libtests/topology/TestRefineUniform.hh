@@ -53,10 +53,8 @@ class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testRefineTri3Level2 );
   CPPUNIT_TEST( testRefineTri3Level2Fault1 );
-#if 0
   CPPUNIT_TEST( testRefineTet4Level2 );
   CPPUNIT_TEST( testRefineTet4Level2Fault1 );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 
