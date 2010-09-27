@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "CellRefinerTri3.hh" // implementation of class methods
+#include "CellRefinerTet4.hh" // implementation of class methods
 
 #include "MeshOrder.hh" // USES MeshOrder
 
@@ -27,28 +27,28 @@
 #include <iostream> // TEMPORARY
 // ----------------------------------------------------------------------
 // Constructor
-ALE::CellRefinerTri3::CellRefinerTri3(const mesh_type& mesh) :
+ALE::CellRefinerTet4::CellRefinerTet4(const mesh_type& mesh) :
   _mesh(mesh)
 { // constructor
-  assert(2 == mesh.getDimension());
+  assert(3 == mesh.getDimension());
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-ALE::CellRefinerTri3::~CellRefinerTri3(void)
+ALE::CellRefinerTet4::~CellRefinerTet4(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Get number of refined cells for each original cell.
 int
-ALE::CellRefinerTri3::numNewCells(const point_type cell)
+ALE::CellRefinerTet4::numNewCells(const point_type cell)
 { // numNewCells
   switch (_cellType(cell)) {
-  case TRIANGLE:
+  case TETRAHEDRON:
+    return 8;
+  case TRIANGLE_COHESIVE_LAGRANGE:
     return 4;
-  case LINE_COHESIVE_LAGRANGE:
-    return 2;
   default:
     assert(0);
     throw ALE::Exception("Unknown cell type.");
@@ -58,7 +58,7 @@ ALE::CellRefinerTri3::numNewCells(const point_type cell)
 // ----------------------------------------------------------------------
 // Split cell into smaller cells of same type.
 void
-ALE::CellRefinerTri3::splitCell(const point_type cell,
+ALE::CellRefinerTet4::splitCell(const point_type cell,
 				const point_type cone[],
 				const int coneSize,
 				point_type* curNewVertex)
@@ -69,11 +69,11 @@ ALE::CellRefinerTri3::splitCell(const point_type cell,
   const EdgeType* edges;
   
   switch (_cellType(cell)) {
-  case TRIANGLE:
-    _edges_TRIANGLE(&edges, &numEdges, cone, coneSize);
+  case TETRAHEDRON:
+    _edges_TETRAHEDRON(&edges, &numEdges, cone, coneSize);
     break;
-  case LINE_COHESIVE_LAGRANGE:
-    _edges_LINE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize);
+  case TRIANGLE_COHESIVE_LAGRANGE:
+    _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize);
     break;
   default:
     throw ALE::Exception("Unknown cell type.");
@@ -92,7 +92,7 @@ ALE::CellRefinerTri3::splitCell(const point_type cell,
 // ----------------------------------------------------------------------
 // Get refined cells.
 void
-ALE::CellRefinerTri3::getNewCells(const point_type** cells,
+ALE::CellRefinerTet4::getNewCells(const point_type** cells,
 				  int* numCells,
 				  const point_type cell,
 				  const point_type cone[],
@@ -104,17 +104,17 @@ ALE::CellRefinerTri3::getNewCells(const point_type** cells,
   assert(numCells);
 
   switch (_cellType(cell)) {
-  case TRIANGLE: {
+  case TETRAHEDRON: {
     const int coneVertexOffset = orderNewMesh.verticesNormal().min() - orderOldMesh.verticesNormal().min();
-    _newCells_TRIANGLE(cells, numCells, cone, coneSize, coneVertexOffset);
+    _newCells_TETRAHEDRON(cells, numCells, cone, coneSize, coneVertexOffset);
     break;
-  } // TRIANGLE
-  case LINE_COHESIVE_LAGRANGE: {
+  } // TETRAHEDRON
+  case TRIANGLE_COHESIVE_LAGRANGE: {
     const int coneVertexOffsetNormal = orderNewMesh.verticesNormal().min() - orderOldMesh.verticesNormal().min();
     const int coneVertexOffsetCensored = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
-    _newCells_LINE_COHESIVE_LAGRANGE(cells, numCells, cone, coneSize, coneVertexOffsetNormal, coneVertexOffsetCensored);
+    _newCells_TRIANGLE_COHESIVE_LAGRANGE(cells, numCells, cone, coneSize, coneVertexOffsetNormal, coneVertexOffsetCensored);
     break;
-  } // LINE_COHESIVE_LAGRANGE
+  } // TRIANGLE_COHESIVE_LAGRANGE
   default:
     throw ALE::Exception("Unknown cell type.");
   } // switch
@@ -123,7 +123,7 @@ ALE::CellRefinerTri3::getNewCells(const point_type** cells,
 // ----------------------------------------------------------------------
 // Set coordinates of new vertices.
 void
-ALE::CellRefinerTri3::setCoordsNewVertices(const ALE::Obj<mesh_type::real_section_type>& newCoordsSection,
+ALE::CellRefinerTet4::setCoordsNewVertices(const ALE::Obj<mesh_type::real_section_type>& newCoordsSection,
 					   const ALE::Obj<mesh_type::real_section_type>& oldCoordsSection)
 { // setCoordsNewVertices
   assert(!newCoordsSection.isNull());
@@ -157,7 +157,7 @@ ALE::CellRefinerTri3::setCoordsNewVertices(const ALE::Obj<mesh_type::real_sectio
 // ----------------------------------------------------------------------
 // Add space for new vertices in group.
 void
-ALE::CellRefinerTri3::groupAddNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+ALE::CellRefinerTet4::groupAddNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
 					  const ALE::Obj<mesh_type::int_section_type>& oldGroup)
 { // groupAddNewVertices
   assert(!newGroup.isNull());
@@ -180,7 +180,7 @@ ALE::CellRefinerTri3::groupAddNewVertices(const ALE::Obj<mesh_type::int_section_
 // ----------------------------------------------------------------------
 // Set new vertices in group.
 void
-ALE::CellRefinerTri3::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
+ALE::CellRefinerTet4::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
 					  const ALE::Obj<mesh_type::int_section_type>& oldGroup)
 { // groupSetNewVertices
   assert(!newGroup.isNull());
@@ -204,7 +204,7 @@ ALE::CellRefinerTri3::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_
 // ----------------------------------------------------------------------
 // Add new vertices to label.
 void
-ALE::CellRefinerTri3::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
+ALE::CellRefinerTet4::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
 					  const ALE::Obj<mesh_type>& oldMesh,
 					  const char* labelName)
 { // labelAddNewVertices
@@ -238,16 +238,16 @@ ALE::CellRefinerTri3::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
 
 // ----------------------------------------------------------------------
 // Get cell type.
-ALE::CellRefinerTri3::CellEnum
-ALE::CellRefinerTri3::_cellType(const point_type cell)
+ALE::CellRefinerTet4::CellEnum
+ALE::CellRefinerTet4::_cellType(const point_type cell)
 { // _cellType
   assert(!_mesh.getSieve().isNull());
 
   switch (_mesh.getSieve()->getConeSize(cell)) {
-  case 3:
-    return TRIANGLE;
-  case 6:
-    return LINE_COHESIVE_LAGRANGE;
+  case 4:
+    return TETRAHEDRON;
+  case 9:
+    return TRIANGLE_COHESIVE_LAGRANGE;
   case 0: {
     std::ostringstream msg;
     std::cerr << "Internal error. Cone size for mesh point " << cell << " is zero. May be a vertex.";
@@ -266,61 +266,70 @@ ALE::CellRefinerTri3::_cellType(const point_type cell)
 // ----------------------------------------------------------------------
 // Get edges of triangular cell.
 void
-ALE::CellRefinerTri3::_edges_TRIANGLE(const EdgeType** edges,
-				      int* numEdges,
-				      const point_type cone[],
-				      const int coneSize)
-{ // _edges_TRIANGLE
-  static EdgeType triEdges[3];
+ALE::CellRefinerTet4::_edges_TETRAHEDRON(const EdgeType** edges,
+					 int* numEdges,
+					 const point_type cone[],
+					 const int coneSize)
+{ // _edges_TETRAHEDRON
+  static EdgeType splitEdges[6];
   
-  assert(coneSize == 3);
-  triEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-  triEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-  triEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
-  *numEdges = 3;
-  *edges    = triEdges;
-} // _edges_TRIANGLE
+  assert(coneSize == 4);
+  splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+  splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+  splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+  splitEdges[3] = EdgeType(std::min(cone[0], cone[3]), std::max(cone[0], cone[3]));
+  splitEdges[4] = EdgeType(std::min(cone[1], cone[3]), std::max(cone[1], cone[3]));
+  splitEdges[5] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
+  *numEdges = 6;
+  *edges    = splitEdges;
+} // _edges_TETRAHEDRON
   
 // ----------------------------------------------------------------------
 // Get edges of line cohesive cell with Lagrange multipler vertices.
 void
-ALE::CellRefinerTri3::_edges_LINE_COHESIVE_LAGRANGE(const EdgeType** edges,
-						    int* numEdges,
-						    const point_type cone[],
-						    const int coneSize)
-{ // _edges_LINE_COHESIVE_LAGRANGE
-  static EdgeType lineEdges[6];
+ALE::CellRefinerTet4::_edges_TRIANGLE_COHESIVE_LAGRANGE(const EdgeType** edges,
+							int* numEdges,
+							const point_type cone[],
+							const int coneSize)
+{ // _edges_TRIANGLE_COHESIVE_LAGRANGE
+  static EdgeType splitEdges[9];
 
-  assert(coneSize == 6);
-  lineEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-  lineEdges[1] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
-  lineEdges[2] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
-  *numEdges = 3;
-  *edges    = lineEdges;
-} // _edges_LINE_COHESIVE_LAGRANGE
+  assert(coneSize == 9);
+  splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+  splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+  splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+  splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
+  splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+  splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
+  splitEdges[6] = EdgeType(std::min(cone[6], cone[7]), std::max(cone[6], cone[7]));
+  splitEdges[7] = EdgeType(std::min(cone[7], cone[8]), std::max(cone[7], cone[8]));
+  splitEdges[8] = EdgeType(std::min(cone[8], cone[6]), std::max(cone[8], cone[6]));
+  *numEdges = 9;
+  *edges = splitEdges;
+} // _edges_TRIANGLE_COHESIVE_LAGRANGE
   
 // ----------------------------------------------------------------------
 // Get new cells from refinement of a triangular cell.
 void
-ALE::CellRefinerTri3::_newCells_TRIANGLE(const point_type** cells,
-					 int *numCells,
-					 const point_type cone[],
-					 const int coneSize,
-					 const int coneVertexOffset)
-{ // _newCells_TRIANGLE
-  const int coneSizeTri3 = 3;
-  const int numEdgesTri3 = 3;
-  const int numNewCells = 4;
-  const int numNewVertices = 3;
+ALE::CellRefinerTet4::_newCells_TETRAHEDRON(const point_type** cells,
+					    int *numCells,
+					    const point_type cone[],
+					    const int coneSize,
+					    const int coneVertexOffset)
+{ // _newCells_TETRAHEDRON
+  const int coneSizeTet4 = 4;
+  const int numEdgesTet4 = 6;
+  const int numNewCells = 8;
+  const int numNewVertices = 6;
 
   int numEdges = 0;
   const EdgeType  *edges;
-  _edges_TRIANGLE(&edges, &numEdges, cone, coneSize);
-  assert(numEdgesTri3 == numEdges);
+  _edges_TETRAHEDRON(&edges, &numEdges, cone, coneSize);
+  assert(numEdgesTet4 == numEdges);
 
-  static point_type triCells[numNewCells*coneSizeTri3];
+  static point_type newCells[numNewCells*coneSizeTet4];
   point_type newVertices[numNewVertices];
-  for(int iEdge=0, iNewVertex=0; iEdge < numEdgesTri3; ++iEdge) {
+  for(int iEdge=0, iNewVertex=0; iEdge < numEdgesTet4; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       throw ALE::Exception("Missing edge in refined mesh");
     } // if
@@ -328,78 +337,130 @@ ALE::CellRefinerTri3::_newCells_TRIANGLE(const point_type** cells,
   } // for
 
   // new cell 0
-  triCells[0*3+0] = cone[0] + coneVertexOffset;
-  triCells[0*3+1] = newVertices[0];
-  triCells[0*3+2] = newVertices[2];
+  newCells[0*4+0] = cone[0]+coneVertexOffset;
+  newCells[0*4+1] = newVertices[3];
+  newCells[0*4+2] = newVertices[0];
+  newCells[0*4+3] = newVertices[2];
 
   // new cell 1
-  triCells[1*3+0] = newVertices[0];
-  triCells[1*3+1] = newVertices[1];
-  triCells[1*3+2] = newVertices[2];
+  newCells[1*4+0] = newVertices[0];
+  newCells[1*4+1] = newVertices[1];
+  newCells[1*4+2] = newVertices[2];
+  newCells[1*4+3] = newVertices[3];
 
   // new cell 2
-  triCells[2*3+0] = cone[1] + coneVertexOffset;
-  triCells[2*3+1] = newVertices[1];
-  triCells[2*3+2] = newVertices[0];
+  newCells[2*4+0] = newVertices[0];
+  newCells[2*4+1] = newVertices[3];
+  newCells[2*4+2] = newVertices[4];
+  newCells[2*4+3] = newVertices[1];
 
   // new cell 3
-  triCells[3*3+0] = cone[2] + coneVertexOffset;
-  triCells[3*3+1] = newVertices[2];
-  triCells[3*3+2] = newVertices[1];
+  newCells[3*4+0] = cone[1]+coneVertexOffset;
+  newCells[3*4+1] = newVertices[4];
+  newCells[3*4+2] = newVertices[1];
+  newCells[3*4+3] = newVertices[0];
+
+  // new cell 4
+  newCells[4*4+0] = newVertices[2];
+  newCells[4*4+1] = newVertices[5];
+  newCells[4*4+2] = newVertices[3];
+  newCells[4*4+3] = newVertices[1];
+
+  // new cell 5
+  newCells[5*4+0] = cone[2]+coneVertexOffset;
+  newCells[5*4+1] = newVertices[5];
+  newCells[5*4+2] = newVertices[2];
+  newCells[5*4+3] = newVertices[1];
+
+  // new cell 6
+  newCells[6*4+0] = newVertices[1];
+  newCells[6*4+1] = newVertices[4];
+  newCells[6*4+2] = newVertices[5];
+  newCells[6*4+3] = newVertices[3];
+
+  // new cell 7
+  newCells[7*4+0] = cone[3]+coneVertexOffset;
+  newCells[7*4+1] = newVertices[3];
+  newCells[7*4+2] = newVertices[5];
+  newCells[7*4+3] = newVertices[4];
 
   *numCells = numNewCells;
-  *cells    = triCells;
-} // _newCells_TRIANGLE
+  *cells = newCells;
+} // _newCells_TETRAHEDRON
   
 // ----------------------------------------------------------------------
 // Get new cells from refinement of a line cohseive cell with Lagrange
 // multiplier vertices.
 void
-ALE::CellRefinerTri3::_newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells,
-						       int *numCells,
-						       const point_type cone[],
-						       const int coneSize,
-						       const int coneVertexOffsetNormal,
-						       const int coneVertexOffsetCensored)
-{ // _newCells_LINE_COHESIVE_LAGRANGE
-  const int coneSizeLine6 = 6;
-  const int numEdgesLine6 = 3;
-  const int numNewCells = 2;
-  const int numNewVertices = 3;
+ALE::CellRefinerTet4::_newCells_TRIANGLE_COHESIVE_LAGRANGE(const point_type** cells,
+							   int *numCells,
+							   const point_type cone[],
+							   const int coneSize,
+							   const int coneVertexOffsetNormal,
+							   const int coneVertexOffsetCensored)
+{ // _newCells_TRIANGLE_COHESIVE_LAGRANGE
+  const int coneSizeTriPrism9 = 9;
+  const int numEdgesTriPrism9 = 9;
+  const int numNewCells = 4;
+  const int numNewVertices = 9;
 
   int numEdges = 0;
   const EdgeType *edges;
-  _edges_LINE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize);
-  assert(numEdgesLine6 == numEdges);
+  _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize);
+  assert(numEdgesTriPrism9 == numEdges);
 
-  static point_type lineCells[numNewCells*coneSizeLine6];
+  static point_type newCells[numNewCells*coneSizeTriPrism9];
   point_type newVertices[numNewVertices];
-  for(int iEdge=0, iNewVertex=0; iEdge < numEdgesLine6; ++iEdge) {
+  for(int iEdge=0, iNewVertex=0; iEdge < numEdgesTriPrism9; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       throw ALE::Exception("Missing edge in refined mesh");
     } // if
     newVertices[iNewVertex++] = _edgeToVertex[edges[iEdge]];
   } // for
 
-  // new cell 0
-  lineCells[0*6+0] = cone[0] + coneVertexOffsetNormal;
-  lineCells[0*6+1] = newVertices[0];
-  lineCells[0*6+2] = cone[2] + coneVertexOffsetNormal;
-  lineCells[0*6+3] = newVertices[1];
-  lineCells[0*6+4] = cone[4] + coneVertexOffsetCensored;
-  lineCells[0*6+5] = newVertices[2];
-
-  // new cell 1
-  lineCells[1*6+0] = newVertices[0];
-  lineCells[1*6+1] = cone[1] + coneVertexOffsetNormal;
-  lineCells[1*6+2] = newVertices[1];
-  lineCells[1*6+3] = cone[3] + coneVertexOffsetNormal;
-  lineCells[1*6+4] = newVertices[2];
-  lineCells[1*6+5] = cone[5] + coneVertexOffsetCensored;
+  newCells[0*9+0] = cone[0]+coneVertexOffsetNormal; // New cell 0
+  newCells[0*9+1] = newVertices[0];
+  newCells[0*9+2] = newVertices[2];
+  newCells[0*9+3] = cone[3]+coneVertexOffsetNormal;
+  newCells[0*9+4] = newVertices[3];
+  newCells[0*9+5] = newVertices[5];
+  newCells[0*9+6] = cone[6]+coneVertexOffsetCensored;
+  newCells[0*9+7] = newVertices[6];
+  newCells[0*9+8] = newVertices[8];
   
-  *numCells = 2;
-  *cells    = lineCells;
-} // _newCells_LINE_COHESIVE_LAGRANGE
+  newCells[1*9+0] = newVertices[0]; // New cell 1
+  newCells[1*9+1] = newVertices[1];
+  newCells[1*9+2] = newVertices[2];
+  newCells[1*9+3] = newVertices[3];
+  newCells[1*9+4] = newVertices[4];
+  newCells[1*9+5] = newVertices[5];
+  newCells[1*9+6] = newVertices[6];
+  newCells[1*9+7] = newVertices[7];
+  newCells[1*9+8] = newVertices[8];
+  
+  newCells[2*9+0] = cone[1]+coneVertexOffsetNormal; // New cell 2
+  newCells[2*9+1] = newVertices[1];
+  newCells[2*9+2] = newVertices[0];
+  newCells[2*9+3] = cone[4]+coneVertexOffsetNormal;
+  newCells[2*9+4] = newVertices[4];
+  newCells[2*9+5] = newVertices[3];
+  newCells[2*9+6] = cone[7]+coneVertexOffsetCensored;
+  newCells[2*9+7] = newVertices[7];
+  newCells[2*9+8] = newVertices[6];
+  
+  newCells[3*9+0] = cone[2]+coneVertexOffsetNormal; // New cell 3
+  newCells[3*9+1] = newVertices[2];
+  newCells[3*9+2] = newVertices[1];
+  newCells[3*9+3] = cone[5]+coneVertexOffsetNormal;
+  newCells[3*9+4] = newVertices[5];
+  newCells[3*9+5] = newVertices[4];
+  newCells[3*9+6] = cone[8]+coneVertexOffsetCensored;
+  newCells[3*9+7] = newVertices[8];
+  newCells[3*9+8] = newVertices[7];
+
+  *numCells = numNewCells;
+  *cells    = newCells;
+} // _newCells_TRIANGLE_COHESIVE_LAGRANGE
 
 
 // End of file 

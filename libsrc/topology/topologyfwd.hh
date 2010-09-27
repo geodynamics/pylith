@@ -34,8 +34,9 @@ namespace ALE {
 	   typename value_type,
 	   typename allocator> class IUniformSectionDS;
 
-  class MeshRefiner;
+  template<typename cellrefiner_type> class MeshRefiner;
   class CellRefinerTri3;
+  class CellRefinerTet4;
   class MeshOrder;
 } // ALE
 

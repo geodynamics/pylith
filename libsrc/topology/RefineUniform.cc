@@ -23,6 +23,7 @@
 #include "Mesh.hh" // USES Mesh
 
 #include "CellRefinerTri3.hh" // USES CellRefinerTri3
+#include "CellRefinerTet4.hh" // USES CellRefinerTet4
 #include "MeshRefiner.hh" // USES MeshRefiner
 
 #include <stdexcept> // USES std::runtime_error
@@ -63,10 +64,56 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     new SieveMesh::sieve_type(mesh.comm(), mesh.debug());
   newSieveMesh->setSieve(newSieve);
 
-  ALE::CellRefinerTri3 cellSplitter(*sieveMesh);
-  ALE::MeshRefiner refiner;
-  refiner.refine(newSieveMesh, sieveMesh, cellSplitter);
+  const Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  assert(cells->size() > 0);
 
+  const int numCorners = sieveMesh->getNumCellCorners();
+  const int dim = mesh.dimension();
+
+  switch (dim) {
+  case 0:
+  case 1:
+    throw std::runtime_error("Uniform refinement not implemented.");
+    break;
+
+  case 2:
+    switch (numCorners) {
+    case 3: {
+      ALE::CellRefinerTri3 cellSplitter(*sieveMesh);
+      ALE::MeshRefiner<ALE::CellRefinerTri3> refinement;
+      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
+      break;
+    } // case 3
+    case 4: {
+      throw std::logic_error("Not implemented.");
+      break;
+    } // case 4
+    default :
+      throw std::runtime_error("Unknown number of corners for cells.");
+    } // switch
+    break;
+    
+  case 3:
+    switch (numCorners) {
+    case 4: {
+      ALE::CellRefinerTet4 cellSplitter(*sieveMesh);
+      ALE::MeshRefiner<ALE::CellRefinerTet4> refinement;
+      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
+      break;
+    } // case 4
+    case 8: {
+      throw std::logic_error("Not implemented.");
+      break;
+    } // case 4
+    default :
+      throw std::runtime_error("Unknown number of corners for cells.");
+    } // switch
+    break;
+
+  default :
+    throw std::logic_error("Unknown dimension.");
+  } // switch
 } // refine
     
 
