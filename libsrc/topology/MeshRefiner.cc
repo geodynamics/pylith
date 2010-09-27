@@ -184,6 +184,7 @@ ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh,
   _stratify(newMesh);
   _calcNewOverlap(newMesh, mesh);
   _createIntSections(newMesh, mesh, refiner);
+  _createLabels(newMesh, mesh, refiner);
 } // _refine
   
 // ----------------------------------------------------------------------
@@ -386,6 +387,7 @@ ALE::MeshRefiner::_refine(const Obj<mesh_type>& newMesh,
   _stratify(newMesh);
   _calcNewOverlap(newMesh, mesh);
   _createIntSections(newMesh, mesh, refiner);
+  _createLabels(newMesh, mesh, refiner);
 
   // Create sensored depth
   const ALE::Obj<Mesh::label_type>& censoredLabel = newMesh->createLabel("censored depth");
@@ -452,6 +454,9 @@ ALE::MeshRefiner::_createIntSections(const Obj<mesh_type>& newMesh,
 				     const Obj<mesh_type>& mesh,
 				     CellRefinerTri3& refiner)
 { // _createIntSections
+  assert(!newMesh.isNull());
+  assert(!mesh.isNull());
+
   const ALE::Obj<std::set<std::string> >& sectionNames =
     mesh->getIntSections();  
   const std::set<std::string>::const_iterator namesBegin = 
@@ -515,11 +520,75 @@ ALE::MeshRefiner::_createIntSections(const Obj<mesh_type>& newMesh,
 } // _createIntSections
 
 // ----------------------------------------------------------------------
+// Create labels in new mesh.
+void
+ALE::MeshRefiner::_createLabels(const Obj<mesh_type>& newMesh,
+				     const Obj<mesh_type>& mesh,
+				     CellRefinerTri3& refiner)
+{ // _createLabels
+  assert(!newMesh.isNull());
+  assert(!mesh.isNull());
+  assert(_orderOldMesh);
+  assert(_orderNewMesh);
+
+  const mesh_type::labels_type labels = mesh->getLabels();
+  const mesh_type::labels_type::const_iterator labelsEnd = labels.end();
+  for (mesh_type::labels_type::const_iterator l_iter=labels.begin(); l_iter != labelsEnd; ++l_iter) {
+    // Handle censored depth separately.
+    if ("censored depth" == l_iter->first || "depth" == l_iter->first || "height" == l_iter->first) {
+      continue;
+    } // if
+
+    const Obj<mesh_type::label_type>& oldLabel = l_iter->second;
+    assert(!oldLabel.isNull());
+    const Obj<mesh_type::label_type>& newLabel = newMesh->createLabel(l_iter->first);
+    assert(!newLabel.isNull());
+
+    typedef mesh_type::label_type::traits::arrow_container_type::set_type arrows_set_type;
+
+    arrows_set_type::const_iterator oldArrowsEnd = oldLabel->_arrows.set.end();
+    for (arrows_set_type::const_iterator a_iter=oldLabel->_arrows.set.begin(); a_iter != oldArrowsEnd; ++a_iter) {
+
+      const mesh_type::point_type pOld = a_iter->target;
+      const int value = mesh->getValue(oldLabel, pOld);
+      
+      if (_orderOldMesh->cellsNormal().hasPoint(pOld)) {
+	const int numNewCellsPerCell = refiner.numNewCells(pOld);
+	mesh_type::point_type pNew = _orderNewMesh->cellsNormal().min() + (pOld - _orderOldMesh->cellsNormal().min())*numNewCellsPerCell;
+	for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
+	  newMesh->setValue(newLabel, pNew, value);
+	  
+      } else if (_orderOldMesh->verticesNormal().hasPoint(pOld)) {
+	const mesh_type::point_type pNew = _orderNewMesh->verticesNormal().min() + (pOld - _orderOldMesh->verticesNormal().min());
+	newMesh->setValue(newLabel, pNew, value);
+	
+      } else if (_orderOldMesh->verticesCensored().hasPoint(pOld)) {
+	const mesh_type::point_type pNew = _orderNewMesh->verticesCensored().min() + (pOld - _orderOldMesh->verticesCensored().min());
+	newMesh->setValue(newLabel, pNew, value);
+	
+      } else if (_orderOldMesh->cellsCensored().hasPoint(pOld)) {
+	const int numNewCellsPerCell = refiner.numNewCells(pOld);
+	mesh_type::point_type pNew = _orderNewMesh->cellsCensored().min() + (pOld - _orderOldMesh->cellsCensored().min())*numNewCellsPerCell;
+	for(int i=0; i < numNewCellsPerCell; ++i, ++pNew)
+	  newMesh->setValue(newLabel, pNew, value);
+      } else {
+	throw ALE::Exception("Unexpected cell encountered when creating labels.");
+      } // if/else
+    } // for
+
+    refiner.labelAddNewVertices(newMesh, mesh, l_iter->first.c_str());
+  } // for
+} // _createLabels
+
+// ----------------------------------------------------------------------
 // Calculate new overlap.
 void
 ALE::MeshRefiner::_calcNewOverlap(const Obj<mesh_type>& newMesh,
 				  const Obj<mesh_type>& mesh)
 { // _calcNewOverlap
+  assert(!newMesh.isNull());
+  assert(!mesh.isNull());
+
   // Exchange new boundary vertices
   //   We can convert endpoints, and then just match to new vertex on this side
   //   1) Create the overlap of edges which are vertex pairs (do not need for interpolated meshes)

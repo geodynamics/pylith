@@ -110,6 +110,16 @@ public :
   void groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
 			   const ALE::Obj<mesh_type::int_section_type>& oldGroup);
 
+  /** Add new vertices to label.
+   *
+   * @param newMesh Mesh with refined cells.
+   * @param oldMesh Original mesh.
+   * @param labelName Name of label.
+   */
+  void labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
+			   const ALE::Obj<mesh_type>& oldMesh,
+			   const char* labelName);
+
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
 

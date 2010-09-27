@@ -202,6 +202,40 @@ ALE::CellRefinerTri3::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_
 } // groupSetNewVertices
 
 // ----------------------------------------------------------------------
+// Add new vertices to label.
+void
+ALE::CellRefinerTri3::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
+					  const ALE::Obj<mesh_type>& oldMesh,
+					  const char* labelName)
+{ // labelAddNewVertices
+  assert(!newMesh.isNull());
+  assert(!oldMesh.isNull());
+
+  const Obj<mesh_type::label_sequence>& oldLabelVertices = oldMesh->getLabelStratum(labelName, 0);
+  assert(!oldLabelVertices.isNull());
+
+  const Obj<mesh_type::label_type>& oldLabel = oldMesh->getLabel(labelName);
+  assert(!oldLabel.isNull());
+  const Obj<mesh_type::label_type>& newLabel = newMesh->getLabel(labelName);
+  assert(!newLabel.isNull());
+
+  const edge_map_type::const_iterator edgesEnd = _edgeToVertex.end();
+  for (edge_map_type::const_iterator e_iter = _edgeToVertex.begin(); e_iter != edgesEnd; ++e_iter) {
+    const point_type newVertex = e_iter->second;
+    const point_type edgeVertexA = e_iter->first.first;
+    const point_type edgeVertexB = e_iter->first.second;
+
+#if 0
+    // NEED TO TEST IF OLD LABEL HAS ENDPOINTS 
+    if (oldLabel->supportContains<>(edgeVertexA) && oldLabel->supportContains<>(edgeVertexB)) {
+      assert(oldMesh->getValue(oldLabel, edgeVertexA) == oldMesh->getValue(oldLabel, edgeVertexB));
+      newMesh->setValue(newLabel, newVertex, oldMesh->getValue(oldLabel, edgeVertexA));
+    } // if
+#endif
+  } // for
+} // labelAddNewVertices
+
+// ----------------------------------------------------------------------
 // Get cell type.
 ALE::CellRefinerTri3::CellEnum
 ALE::CellRefinerTri3::_cellType(const point_type cell)

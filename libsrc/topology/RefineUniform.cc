@@ -67,38 +67,6 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   ALE::MeshRefiner refiner;
   refiner.refine(newSieveMesh, sieveMesh, cellSplitter);
 
-  // Set material ids
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = 
-    cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = 
-    cells->end();
-  const ALE::Obj<SieveMesh::label_type>& materials =
-    sieveMesh->getLabel("material-id");
-
-  const ALE::Obj<SieveMesh::label_sequence>& newCells = 
-    newSieveMesh->heightStratum(0);
-  assert(!newCells.isNull());
-  const SieveMesh::label_sequence::iterator newCellsBegin = 
-    newCells->begin();
-  const SieveMesh::label_sequence::iterator newCellsEnd = 
-    newCells->end();
-  const ALE::Obj<SieveMesh::label_type>& newMaterials =
-    newSieveMesh->createLabel("material-id");
-  
-  for (SieveMesh::label_sequence::const_iterator c_iter = cellsBegin,
-	 cNew_iter = newCellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int numNewCellsPerCell = cellSplitter.numNewCells(*c_iter);
-    const int material = sieveMesh->getValue(materials, *c_iter);
-    
-    for(int i=0; i < numNewCellsPerCell; ++i, ++cNew_iter)
-      newSieveMesh->setValue(newMaterials, *cNew_iter, material);
-  } // for
-  
 } // refine
     
 
