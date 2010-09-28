@@ -231,9 +231,10 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
 	
   // Count number of remaining cells (other cells).
   const int numSkip = cellsNormal->size();  
-  mesh_type::label_sequence::iterator c_iter = cells->begin();
+  mesh_type::label_sequence::const_iterator c_iter = cells->begin();
   for (int i=0; i < numSkip; ++i)
     ++c_iter;
+  const mesh_type::label_sequence::const_iterator cellsCensoredBegin = c_iter;
   int newNumCellsCensored = 0;
   for (; c_iter != cellsEnd; ++c_iter)
     newNumCellsCensored += refiner.numNewCells(*c_iter);
@@ -251,19 +252,21 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
     sieve->cone(*c_iter, cV);
     refiner.splitCell(*c_iter, cV.getPoints(), cV.getSize(), &curNewVertex);
   } // for
+  for(mesh_type::label_sequence::iterator c_iter = cellsCensoredBegin; c_iter != cellsEnd; ++c_iter) {
+    cV.clear();
+    sieve->cone(*c_iter, cV);
+    refiner.splitCell(*c_iter, cV.getPoints(), cV.getSize(), &curNewVertex);
+  } // for
   const int newNumVerticesNormal = curNewVertex - counterBegin + oldNumVerticesNormal;
 	
   // Count number of remaining vertices (other vertices).
   const int oldNumVerticesCensored = vertices->size() - oldNumVerticesNormal;
   counterBegin = newNumCellsNormal + newNumVerticesNormal + oldNumVerticesCensored;
   curNewVertex = counterBegin;
-  c_iter = cells->begin();
-  for (int i=0; i < numSkip; ++i)
-    ++c_iter;
-  for (; c_iter != cellsEnd; ++c_iter) {
+  for(mesh_type::label_sequence::iterator c_iter = cellsCensoredBegin; c_iter != cellsEnd; ++c_iter) {
     cV.clear();
     sieve->cone(*c_iter, cV);
-    refiner.splitCell(*c_iter, cV.getPoints(), cV.getSize(), &curNewVertex);
+    refiner.splitCellUncensored(*c_iter, cV.getPoints(), cV.getSize(), &curNewVertex);
   } // for
   const int newNumVerticesCensored = curNewVertex - counterBegin + oldNumVerticesCensored;
 
@@ -627,19 +630,23 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   //   4) Fuse matches new vertex pairs and inserts them into the old overlap
 
   // Create the parallel overlap
-#if 0
-  int *oldNumCellsP    = new int[mesh->commSize()];
-  int *newNumCellsP = new int[newMesh->commSize()];
-  int  ierr;
+
+  // Get offsets for points across processors and add points in overlap from original mesh to new overlap
+  int* oldVerticesStartP = (mesh->commSize() > 0) ? new int[mesh->commSize()] : 0;
+  int* newVerticesStartP = (newMesh->commSize() > 0) ? new int[newMesh->commSize()] : 0;
+  int ierr = 0;
   
-  ierr = MPI_Allgather((void *) &oldNumCells, 1, MPI_INT, oldNumCellsP, 1, MPI_INT, mesh->comm());CHKERRXX(ierr);
-  ierr = MPI_Allgather((void *) &newNumCells, 1, MPI_INT, newNumCellsP, 1, MPI_INT, newMesh->comm());CHKERRXX(ierr);
+  const int oldVerticesStart = _orderOldMesh->verticesNormal().min();
+  const int newVerticesStart = _orderNewMesh->verticesNormal().min();
+
+  ierr = MPI_Allgather((void *) &oldVerticesStart, 1, MPI_INT, oldVerticesStartP, 1, MPI_INT, mesh->comm());CHKERRXX(ierr);
+  ierr = MPI_Allgather((void *) &newVerticesStart, 1, MPI_INT, newVerticesStartP, 1, MPI_INT, newMesh->comm());CHKERRXX(ierr);
   Obj<mesh_type::send_overlap_type> newSendOverlap = newMesh->getSendOverlap();
   Obj<mesh_type::recv_overlap_type> newRecvOverlap = newMesh->getRecvOverlap();
   const Obj<mesh_type::send_overlap_type>& sendOverlap = mesh->getSendOverlap();
   const Obj<mesh_type::recv_overlap_type>& recvOverlap = mesh->getRecvOverlap();
   Obj<mesh_type::send_overlap_type::traits::capSequence> sendPoints  = sendOverlap->cap();
-  const mesh_type::send_overlap_type::source_type        localOffset = newNumCellsP[newMesh->commRank()] - oldNumCellsP[mesh->commRank()];
+  const mesh_type::send_overlap_type::source_type localOffset = newVerticesStart - oldVerticesStart;
   
   for(mesh_type::send_overlap_type::traits::capSequence::iterator p_iter = sendPoints->begin(); p_iter != sendPoints->end(); ++p_iter) {
     const Obj<mesh_type::send_overlap_type::traits::supportSequence>& ranks      = sendOverlap->support(*p_iter);
@@ -648,11 +655,11 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     for(mesh_type::send_overlap_type::traits::supportSequence::iterator r_iter = ranks->begin(); r_iter != ranks->end(); ++r_iter) {
       const int                                   rank         = *r_iter;
       const mesh_type::send_overlap_type::source_type& remotePoint  = r_iter.color();
-      const mesh_type::send_overlap_type::source_type  remoteOffset = newNumCellsP[rank] - oldNumCellsP[rank];
+      const mesh_type::send_overlap_type::source_type  remoteOffset = newVerticesStartP[rank] - oldVerticesStartP[rank];
       
       newSendOverlap->addArrow(localPoint+localOffset, rank, remotePoint+remoteOffset);
-    }
-  }
+    } // for
+  } // for
   Obj<mesh_type::recv_overlap_type::traits::baseSequence> recvPoints = recvOverlap->base();
   
   for(mesh_type::recv_overlap_type::traits::baseSequence::iterator p_iter = recvPoints->begin(); p_iter != recvPoints->end(); ++p_iter) {
@@ -662,101 +669,16 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     for(mesh_type::recv_overlap_type::traits::coneSequence::iterator r_iter = ranks->begin(); r_iter != ranks->end(); ++r_iter) {
       const int                                        rank         = *r_iter;
       const mesh_type::recv_overlap_type::target_type& remotePoint  = r_iter.color();
-      const mesh_type::recv_overlap_type::target_type  remoteOffset = newNumCellsP[rank] - oldNumCellsP[rank];
+      const mesh_type::recv_overlap_type::target_type  remoteOffset = newVerticesStartP[rank] - oldVerticesStartP[rank];
       
       newRecvOverlap->addArrow(rank, localPoint+localOffset, remotePoint+remoteOffset);
-    }
-  }
+    } // for
+  } // for
   newMesh->setCalculatedOverlap(true);
-  delete [] oldNumCellsP;
-  delete [] newNumCellsP;
-  // Check edges in edge2vertex for both endpoints sent to same process
-  //   Put it in section with point being the lowest numbered vertex and value (other endpoint, new vertex)
-  Obj<ALE::Section<point_type, edge_type> > newVerticesSection = new ALE::Section<point_type, edge_type>(mesh->comm());
-  std::map<edge_type, std::vector<int> > bdedge2rank;
-  
-  for(std::map<edge_type, point_type>::const_iterator e_iter = edge2vertex.begin(); e_iter != edge2vertex.end(); ++e_iter) {
-    const point_type left  = e_iter->first.first;
-    const point_type right = e_iter->first.second;
-    
-    if (sendOverlap->capContains(left) && sendOverlap->capContains(right)) {
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq = sendOverlap->support(left);
-      std::list<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks   = sendOverlap->support(right);
-      std::list<int> ranks;
-      std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks->begin(), rightRanks->end(),
-			    std::insert_iterator<std::list<int> >(ranks, ranks.begin()));
-      
-      if(ranks.size()) {
-	newVerticesSection->addFiberDimension(std::min(e_iter->first.first, e_iter->first.second)+localOffset, 1);
-	for(std::list<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
-	  bdedge2rank[e_iter->first].push_back(*r_iter);
-	}
-      }
-    }
-  }
-  newVerticesSection->allocatePoint();
-  const ALE::Section<point_type, edge_type>::chart_type& chart = newVerticesSection->getChart();
-  
-  for(ALE::Section<point_type, edge_type>::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-    typedef ALE::Section<point_type, edge_type>::value_type value_type;
-    const point_type p      = *c_iter;
-    const int        dim    = newVerticesSection->getFiberDimension(p);
-    int              v      = 0;
-    value_type      *values = new value_type[dim];
-    
-    for(std::map<edge_type, std::vector<int> >::const_iterator e_iter = bdedge2rank.begin(); e_iter != bdedge2rank.end() && v < dim; ++e_iter) {
-      if (std::min(e_iter->first.first, e_iter->first.second)+localOffset == p) {
-	values[v++] = edge_type(std::max(e_iter->first.first, e_iter->first.second)+localOffset, edge2vertex[e_iter->first]);
-      }
-    }
-    newVerticesSection->updatePoint(p, values);
-    delete [] values;
-  }
-  // Copy across overlap
-  typedef ALE::Pair<int, point_type> overlap_point_type;
-  Obj<ALE::Section<overlap_point_type, edge_type> > overlapVertices = new ALE::Section<overlap_point_type, edge_type>(mesh->comm());
-  
-  ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection, overlapVertices);
-  // Merge by translating edge to local points, finding edge in edge2vertex, and adding (local new vetex, remote new vertex) to overlap
-  for(std::map<edge_type, std::vector<int> >::const_iterator e_iter = bdedge2rank.begin(); e_iter != bdedge2rank.end(); ++e_iter) {
-    const point_type localPoint = edge2vertex[e_iter->first];
-    
-    for(std::vector<int>::const_iterator r_iter = e_iter->second.begin(); r_iter != e_iter->second.end(); ++r_iter) {
-      point_type remoteLeft = -1, remoteRight = -1;
-      const int  rank       = *r_iter;
-      
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffset);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
-	if (rank == *lr_iter) {
-	  remoteLeft = lr_iter.color();
-	  break;
-	}
-      }
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffset);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
-	if (rank == *rr_iter) {
-	  remoteRight = rr_iter.color();
-	  break;
-	}
-      }
-      const point_type remoteMin   = std::min(remoteLeft, remoteRight);
-      const point_type remoteMax   = std::max(remoteLeft, remoteRight);
-      const int        remoteSize  = overlapVertices->getFiberDimension(overlap_point_type(rank, remoteMin));
-      const edge_type *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
-      point_type       remotePoint = -1;
-      
-      for(int d = 0; d < remoteSize; ++d) {
-	if (remoteVals[d].first == remoteMax) {
-	  remotePoint = remoteVals[d].second;
-	  break;
-	}
-      }
-      newSendOverlap->addArrow(localPoint, rank, remotePoint);
-      newRecvOverlap->addArrow(rank, localPoint, remotePoint);
-    }
-  }
-#endif
+  delete [] oldVerticesStartP; oldVerticesStartP = PETSC_NULL;
+  delete [] newVerticesStartP; newVerticesStartP = PETSC_NULL;
+
+  refiner.overlapAddNewVertices(newMesh, *_orderNewMesh, mesh, *_orderOldMesh);
 } // _calcNewOverlap
 
 

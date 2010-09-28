@@ -130,8 +130,6 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
       faultB.adjustTopology(mesh, &firstFaultVertex, 
 			    &firstLagrangeVertex, &firstFaultCell);
   } // if
-
-  mesh->view("UNREFINED MESH");
 } // _setupMesh
 
 // ----------------------------------------------------------------------
@@ -147,8 +145,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
   RefineUniform refiner;
   Mesh newMesh(data.cellDim);
   refiner.refine(&newMesh, mesh, data.refineLevel);
-
-  newMesh.view("REFINED MESH");
 
   // Check mesh dimension
   CPPUNIT_ASSERT_EQUAL(data.cellDim, newMesh.dimension());

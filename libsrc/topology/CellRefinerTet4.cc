@@ -90,6 +90,42 @@ ALE::CellRefinerTet4::splitCell(const point_type cell,
 } // splitCell
 
 // ----------------------------------------------------------------------
+// Split cell into smaller cells of same type.
+void
+ALE::CellRefinerTet4::splitCellUncensored(const point_type cell,
+					  const point_type cone[],
+					  const int coneSize,
+					  point_type* curNewVertex)
+{ // splitCellUncensored
+  assert(curNewVertex);
+
+  int numEdges = 0;
+  const EdgeType* edges;
+  
+  const bool uncensored = true;
+
+  switch (_cellType(cell)) {
+  case TETRAHEDRON:
+    // No censored vertices on normal cell.
+    break;
+  case TRIANGLE_COHESIVE_LAGRANGE:
+    _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize, uncensored);
+    break;
+  default:
+    throw ALE::Exception("Unknown cell type.");
+  } // switch
+
+  for(int iEdge=0; iEdge < numEdges; ++iEdge) {
+    if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
+      // if vertex does not exist
+      std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
+      _edgeToVertex[edges[iEdge]] = *curNewVertex;
+      ++(*curNewVertex);
+    } // if
+  } // for
+} // splitCellUncensored
+
+// ----------------------------------------------------------------------
 // Get refined cells.
 void
 ALE::CellRefinerTet4::getNewCells(const point_type** cells,
@@ -237,6 +273,16 @@ ALE::CellRefinerTet4::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
 } // labelAddNewVertices
 
 // ----------------------------------------------------------------------
+// Calculate new overlap.
+void
+ALE::CellRefinerTet4::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
+					    const MeshOrder& orderNewMesh,
+					    const Obj<mesh_type>& oldMesh,
+					    const MeshOrder& orderOldMesh)
+{ // overlapAddNewVertices
+} // overlapAddNewVertices
+
+// ----------------------------------------------------------------------
 // Get cell type.
 ALE::CellRefinerTet4::CellEnum
 ALE::CellRefinerTet4::_cellType(const point_type cell)
@@ -290,22 +336,39 @@ void
 ALE::CellRefinerTet4::_edges_TRIANGLE_COHESIVE_LAGRANGE(const EdgeType** edges,
 							int* numEdges,
 							const point_type cone[],
-							const int coneSize)
+							const int coneSize,
+							const bool uncensored)
 { // _edges_TRIANGLE_COHESIVE_LAGRANGE
-  static EdgeType splitEdges[9];
+  if (uncensored) {
+    // Use all vertices
+    static EdgeType splitEdges[9];
 
-  assert(coneSize == 9);
-  splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-  splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-  splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
-  splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
-  splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
-  splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
-  splitEdges[6] = EdgeType(std::min(cone[6], cone[7]), std::max(cone[6], cone[7]));
-  splitEdges[7] = EdgeType(std::min(cone[7], cone[8]), std::max(cone[7], cone[8]));
-  splitEdges[8] = EdgeType(std::min(cone[8], cone[6]), std::max(cone[8], cone[6]));
-  *numEdges = 9;
-  *edges = splitEdges;
+    assert(coneSize == 9);
+    splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+    splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+    splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
+    splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+    splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
+    splitEdges[6] = EdgeType(std::min(cone[6], cone[7]), std::max(cone[6], cone[7]));
+    splitEdges[7] = EdgeType(std::min(cone[7], cone[8]), std::max(cone[7], cone[8]));
+    splitEdges[8] = EdgeType(std::min(cone[8], cone[6]), std::max(cone[8], cone[6]));
+    *numEdges = 9;
+    *edges = splitEdges;
+  } else {
+    // Omit edges with censored (Lagrange multipler) vertices.
+    static EdgeType splitEdges[6];
+
+    assert(coneSize == 9);
+    splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+    splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+    splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
+    splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+    splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
+    *numEdges = 6;
+    *edges = splitEdges;
+  } // if/else
 } // _edges_TRIANGLE_COHESIVE_LAGRANGE
   
 // ----------------------------------------------------------------------
@@ -406,7 +469,7 @@ ALE::CellRefinerTet4::_newCells_TRIANGLE_COHESIVE_LAGRANGE(const point_type** ce
 
   int numEdges = 0;
   const EdgeType *edges;
-  _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize);
+  _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize, true);
   assert(numEdgesTriPrism9 == numEdges);
 
   static point_type newCells[numNewCells*coneSizeTriPrism9];
