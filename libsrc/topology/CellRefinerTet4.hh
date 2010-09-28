@@ -57,7 +57,8 @@ public :
    */
   int numNewCells(const point_type cell);
 
-  /** Split cell into smaller cells of same type.
+  /** Split cell into smaller cells of same type. Do not create
+   * censored vertices on censored cells.
    *
    * @param cell Original cell.
    * @param cone Vertices in cell (original mesh).
@@ -68,6 +69,19 @@ public :
 		 const point_type cone[],
 		 const int coneSize,
 		 point_type* curNewVertex);
+
+  /** Split cell into smaller cells of same type. Create only censored
+   * vertices on censored cells.
+   *
+   * @param cell Original cell.
+   * @param cone Vertices in cell (original mesh).
+   * @param coneSize Number of vertices in cell.
+   * @param curNewVertex Value for next new vertex.
+   */
+  void splitCellUncensored(const point_type cell,
+			   const point_type cone[],
+			   const int coneSize,
+			   point_type* curNewVertex);
 
   /** Get refined cells.
    *
@@ -120,6 +134,18 @@ public :
 			   const ALE::Obj<mesh_type>& oldMesh,
 			   const char* labelName);
 
+  /** Calculate new overlap.
+   *
+   * @param newMesh New (refined) mesh.
+   * @param orderNewMesh Order in new mesh.
+   * @param oldMesh Current (unrefined) mesh with overlap.
+   * @param orderOldMesh Order in old mesh.
+   */
+  void overlapAddNewVertices(const Obj<mesh_type>& newMesh,
+			     const MeshOrder& orderNewMesh,
+			     const Obj<mesh_type>& oldMesh,
+			     const MeshOrder& orderOldMesh);
+  
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
 
@@ -175,11 +201,13 @@ private :
    * @param numEdges Number of edges.
    * @param cone Vertices in cell (original mesh).
    * @param coneSize Number of vertices in cell.
+   * @param uncensored True if including edges with censored vertices.
    */
   void _edges_TRIANGLE_COHESIVE_LAGRANGE(const EdgeType** edges,
 					 int* numEdges,
 					 const point_type cone[],
-					 const int coneSize);
+					 const int coneSize,
+					 const bool uncensored =false);
   
   /** Get new cells from refinement of a triangular cell.
    *

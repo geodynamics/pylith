@@ -114,6 +114,8 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   default :
     throw std::logic_error("Unknown dimension.");
   } // switch
+
+  newMesh->view("REFINED MESH");
 } // refine
     
 
