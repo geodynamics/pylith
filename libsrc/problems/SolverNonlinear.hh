@@ -139,7 +139,7 @@ public :
 			    PetscReal xnorm,
 			    PetscReal *ynorm,
 			    PetscReal *gnorm,
-			    PetscTruth *flag);
+			    PetscBool *flag);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
