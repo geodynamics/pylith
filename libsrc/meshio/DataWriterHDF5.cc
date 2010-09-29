@@ -102,7 +102,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     Vec          elemVec;
     PetscInt     numElements, numCorners, *vertices;
     PetscScalar *tmpVertices;
-    PetscTruth   columnMajor = PETSC_FALSE;
+    PetscBool    columnMajor = PETSC_FALSE;
 
     ALE::PCICE::Builder::outputElementsLocal(sieveMesh, &numElements, &numCorners, &vertices, columnMajor);
     // Hack right now, move to HDF5 Section viewer
