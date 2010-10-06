@@ -40,7 +40,7 @@ typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 void
 pylith::meshio::TestDataWriterVTKMesh::setUp(void)
 { // setUp
-  TestDataWriterVTKMesh::setUp();
+  TestDataWriterMesh::setUp();
 } // setUp
 
 // ----------------------------------------------------------------------
