@@ -143,7 +143,8 @@ libpylith_la_SOURCES = \
 libpylith_la_SOURCES += \
 	topology/CellRefinerTri3.cc \
 	topology/CellRefinerTet4.cc \
-	topology/MeshOrder.cc
+	topology/MeshOrder.cc \
+	topology/RefineEdges2.cc
 
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

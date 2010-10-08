@@ -52,7 +52,8 @@ noinst_HEADERS += \
 	MeshRefiner.cc \
 	CellRefinerTri3.hh \
 	CellRefinerTet4.hh \
-	MeshOrder.hh
+	MeshOrder.hh \
+	RefineEdges2.hh
 
 
 # export
