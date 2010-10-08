@@ -59,8 +59,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testConstructor(void)
   DataWriterHDF5<topology::Mesh, MeshField> writer;
 
   CPPUNIT_ASSERT(0 == writer._viewer);
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -86,10 +84,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
   DataWriterHDF5<topology::Mesh, MeshField> writer;
 
   writer.filename(_data->timestepFilename);
-  writer.timeFormat(_data->timeFormat);
-
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 
   const double t = _data->time;
   const int numTimeSteps = 1;
@@ -103,16 +97,10 @@ pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
     writer.openTimeStep(t, *_mesh, label, id);
   } // else
 
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
-
   writer.closeTimeStep();
   writer.close();
 
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
-
-  checkFile(_data->timestepFilename, t, _data->timeFormat);
+  checkFile(_data->timestepFilename);
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -129,7 +117,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
-  writer.timeFormat(_data->timeFormat);
 
   const int nfields = _data->numVertexFields;
 
@@ -147,15 +134,11 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
   for (int i=0; i < nfields; ++i) {
     MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_mesh);
-    CPPUNIT_ASSERT(writer._wroteVertexHeader);
-    CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   } // for
   writer.closeTimeStep();
   writer.close();
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   
-  checkFile(_data->vertexFilename, t, _data->timeFormat);
+  checkFile(_data->vertexFilename);
 } // testWriteVertexField
 
 // ----------------------------------------------------------------------
@@ -172,7 +155,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
   _createCellFields(&cellFields);
 
   writer.filename(_data->cellFilename);
-  writer.timeFormat(_data->timeFormat);
 
   const int nfields = _data->numCellFields;
 
@@ -184,8 +166,6 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
     for (int i=0; i < nfields; ++i) {
       MeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field);
-      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-      CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
   } else {
     const char* label = _data->cellsLabel;
@@ -195,16 +175,12 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
     for (int i=0; i < nfields; ++i) {
       MeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field, label, id);
-      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-      CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
   } // else
   writer.closeTimeStep();
   writer.close();
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
   
-  checkFile(_data->cellFilename, t, _data->timeFormat);
+  checkFile(_data->cellFilename);
 } // testWriteCellField
 
 // ----------------------------------------------------------------------
@@ -216,22 +192,17 @@ void pylith::meshio::TestDataWriterHDF5Mesh::testHdf5Filename(void)
   // Append info to filename if number of time steps is 0.
   writer._numTimeSteps = 0;
   writer._filename = "output.h5";
-  CPPUNIT_ASSERT_EQUAL(std::string("output_info.h5"), writer._hdf5Filename(0.0));
+  CPPUNIT_ASSERT_EQUAL(std::string("output_info.h5"), writer._hdf5Filename());
 		       
-  // Use default normalization of 1.0, remove period from time stamp.
-  writer._numTimeSteps = 100;
-  writer._filename = "output.h5";
-  writer.timeFormat("%05.2f");
-  CPPUNIT_ASSERT_EQUAL(std::string("output_t0230.h5"), 
-		       writer._hdf5Filename(2.3));
+  writer._numTimeSteps = 5;
+  writer._filename = "output_abc.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abc.h5"),
+		       writer._hdf5Filename());
   
-  // Use normalization of 20.0, remove period from time stamp.
-  writer._numTimeSteps = 100;
-  writer._filename = "output.h5";
-  writer.timeFormat("%05.2f");
-  writer.timeConstant(20.0);
-  CPPUNIT_ASSERT_EQUAL(std::string("output_t0250.h5"), 
-		       writer._hdf5Filename(50.0));
+  writer._numTimeSteps = 10;
+  writer._filename = "output_abcd.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"), 
+		       writer._hdf5Filename());
 } // testHdf5Filename
 
 

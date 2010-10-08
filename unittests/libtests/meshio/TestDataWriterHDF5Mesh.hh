@@ -28,8 +28,7 @@
 #define pylith_meshio_testdatawriterhdf5mesh_hh
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
-
-#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+#include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
 
 #include <cppunit/extensions/HelperMacros.h>
 

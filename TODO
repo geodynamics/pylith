@@ -2,18 +2,16 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* Unform global refinement for tets with faults
-  tri3, level 2
-  hex8, level 2
+* Unform global refinement
+  tri3 and tet4, level 2 work in serial, sometimes crash in parallel
+
   quad4, level 2
+  hex8, level 2
   tet4, level 4
   tri3, level 4
   hex8, level 4
   quad4, level 4
 
-  C++ unit tests
-    
-    
   Python unit tests
     Can't test result (no cohesive cells in MeshIOAscii).
 
