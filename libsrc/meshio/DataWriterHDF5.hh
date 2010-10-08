@@ -126,11 +126,8 @@ private :
    */
   DataWriterHDF5(const DataWriterHDF5& w);
 
-  /** Generate filename for HDF5 file.
-   *
-   * @param t Time in seconds.
-   */
-  std::string _hdf5Filename(const double t) const;
+  /// Generate filename for HDF5 file.
+  std::string _hdf5Filename(void) const;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -75,7 +75,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
   try {
     PetscErrorCode err = 0;
     
-    const std::string& filename = _hdf5Filename(t);
+    const std::string& filename = _hdf5Filename();
 
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
@@ -217,13 +217,16 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 // Generate filename for HDF5 file.
 template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(const double t) const
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
 { // _hdf5Filename
   std::ostringstream filename;
   const int indexExt = _filename.find(".h5");
   const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
-  if (0 == numTimeSteps)
+  if (0 == numTimeSteps) {
     filename << std::string(_filename, 0, indexExt) << "_info.h5";
+  } else {
+    filename << _filename;
+  } // if/else
 
   return std::string(filename.str());
 } // _hdf5Filename

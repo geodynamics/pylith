@@ -60,6 +60,7 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshTet4.cc \
 	TestDataWriterVTKSubMeshHex8.cc \
 	TestDataWriterHDF5.cc \
+	TestDataWriterHDF5Mesh.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -105,6 +106,7 @@ noinst_HEADERS = \
 	TestDataWriterVTKBCMeshTet4.hh \
 	TestDataWriterVTKBCMeshHex8.hh \
 	TestDataWriterHDF5.hh \
+	TestDataWriterHDF5Mesh.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
