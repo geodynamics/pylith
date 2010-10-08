@@ -26,17 +26,12 @@
 #define pylith_topology_cellrefinertri3_hh
 
 // Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
-
-#include <list> // USES std::pair
+#include "RefineEdges2.hh" // ISA RefineEdges2
 
 // CellRefinerTri3 ------------------------------------------------------
 /// Object for tri3 refinement of cells.
-class ALE::CellRefinerTri3
+class ALE::CellRefinerTri3 : public RefineEdges2
 { // CellRefinerTri3
-  typedef IMesh<> mesh_type;
-  typedef mesh_type::point_type point_type;
-
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -99,71 +94,6 @@ public :
 		   const int coneSize,
 		   const MeshOrder& orderOldMesh,
 		   const MeshOrder& orderNewMesh);
-
-  /** Set coordinates of new vertices.
-   *
-   * @param newCoordsSection Coordinates of vertices in new mesh.
-   * @param oldCoordsSection Coordinates of vertices in original mesh.
-   */
-  void setCoordsNewVertices(const ALE::Obj<mesh_type::real_section_type>& newCoordsSection,
-			    const ALE::Obj<mesh_type::real_section_type>& oldCoordsSection);
-
-  /** Add space for new vertices in group.
-   *
-   * @param newGroup Group in refine mesh.
-   * @param oldGroup Group in original mesh.
-   */
-  void groupAddNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
-			   const ALE::Obj<mesh_type::int_section_type>& oldGroup);
-
-  /** Set new vertices in group.
-   *
-   * @param newGroup Group in refine mesh.
-   * @param oldGroup Group in original mesh.
-   */
-  void groupSetNewVertices(const ALE::Obj<mesh_type::int_section_type>& newGroup,
-			   const ALE::Obj<mesh_type::int_section_type>& oldGroup);
-
-  /** Add new vertices to label.
-   *
-   * @param newMesh Mesh with refined cells.
-   * @param oldMesh Original mesh.
-   * @param labelName Name of label.
-   */
-  void labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
-			   const ALE::Obj<mesh_type>& oldMesh,
-			   const char* labelName);
-
-  /** Calculate new overlap.
-   *
-   * @param newMesh New (refined) mesh.
-   * @param orderNewMesh Order in new mesh.
-   * @param oldMesh Current (unrefined) mesh with overlap.
-   * @param orderOldMesh Order in old mesh.
-   */
-  void overlapAddNewVertices(const Obj<mesh_type>& newMesh,
-			     const MeshOrder& orderNewMesh,
-			     const Obj<mesh_type>& oldMesh,
-			     const MeshOrder& orderOldMesh);
-  
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
-
-  template<typename Point>
-  class Edge : public std::pair<Point, Point> {
-  public:
-    Edge() : std::pair<Point, Point>() {};
-    Edge(const Point l) : std::pair<Point, Point>(l, l) {};
-    Edge(const Point l, const Point r) : std::pair<Point, Point>(l, r) {};
-    ~Edge() {};
-    friend std::ostream& operator<<(std::ostream& stream, const Edge& edge) {
-      stream << "(" << edge.first << ", " << edge.second << ")";
-      return stream;
-    };
-  };
-
-  typedef Edge<point_type> EdgeType;
-  typedef std::map<EdgeType, point_type> edge_map_type;
 
 // PRIVATE ENUMS ////////////////////////////////////////////////////////
 private :
@@ -240,12 +170,6 @@ private :
 					const int coneVertexOffsetNormal,
 					const int coneVertexOffsetCensored);
   
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
-
-  const mesh_type& _mesh;
-  edge_map_type _edgeToVertex;
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
