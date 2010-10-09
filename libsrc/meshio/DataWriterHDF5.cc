@@ -81,6 +81,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetType(_viewer, PETSCVIEWERHDF5);
     CHECK_PETSC_ERROR(err);
+    err = PetscViewerFileSetMode(_viewer, FILE_MODE_WRITE);
+    CHECK_PETSC_ERROR(err);
     err = PetscViewerFileSetName(_viewer, filename.c_str());
     CHECK_PETSC_ERROR(err);
 
