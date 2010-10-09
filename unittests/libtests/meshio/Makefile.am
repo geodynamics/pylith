@@ -61,6 +61,7 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshHex8.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
+	TestDataWriterHDF5MeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -107,6 +108,7 @@ noinst_HEADERS = \
 	TestDataWriterVTKBCMeshHex8.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
+	TestDataWriterHDF5MeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -141,6 +143,7 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataBCMeshQuad4.cc \
 	data/DataWriterVTKDataBCMeshTet4.cc \
 	data/DataWriterVTKDataBCMeshHex8.cc \
+	data/DataWriterHDF5DataMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -181,6 +184,7 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataBCMeshQuad4.hh \
 	data/DataWriterVTKDataBCMeshTet4.hh \
 	data/DataWriterVTKDataBCMeshHex8.hh \
+	data/DataWriterHDF5DataMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
