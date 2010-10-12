@@ -59,9 +59,6 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshQuad4.cc \
 	TestDataWriterVTKSubMeshTet4.cc \
 	TestDataWriterVTKSubMeshHex8.cc \
-	TestDataWriterHDF5.cc \
-	TestDataWriterHDF5Mesh.cc \
-	TestDataWriterHDF5MeshHex8.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
@@ -106,9 +103,6 @@ noinst_HEADERS = \
 	TestDataWriterVTKBCMeshQuad4.hh \
 	TestDataWriterVTKBCMeshTet4.hh \
 	TestDataWriterVTKBCMeshHex8.hh \
-	TestDataWriterHDF5.hh \
-	TestDataWriterHDF5Mesh.hh \
-	TestDataWriterHDF5MeshHex8.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -217,6 +211,20 @@ if ENABLE_CUBIT
   testmeshio_SOURCES += TestMeshIOCubit.cc
   noinst_HEADERS += TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
+endif
+
+if ENABLE_HDF5
+  testmeshio_SOURCES += \
+	TestDataWriterHDF5.cc \
+	TestDataWriterHDF5Mesh.cc \
+	TestDataWriterHDF5MeshHex8.cc
+
+  noinst_HEADERS += \
+	TestDataWriterHDF5.hh \
+	TestDataWriterHDF5Mesh.hh \
+	TestDataWriterHDF5MeshHex8.hh
+
+  testmeshio_LDADD += -lhdf5
 endif
 
 

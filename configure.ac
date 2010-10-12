@@ -70,6 +70,15 @@ AC_ARG_ENABLE([tetgen],
 	[enable_tetgen=no])
 AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 
+# PETSc w/HDF5
+AC_ARG_ENABLE([hdf5],
+    [AC_HELP_STRING([--enable-hdf5],
+        [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
+	[enable_hdf5=yes
+	CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS],
+	[enable_hdf5=no])
+AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
+
 # MEMORY LOGGING
 AC_ARG_ENABLE([memory_logging],
     [AC_HELP_STRING([--enable-memory-logging],
@@ -181,6 +190,24 @@ if test "$enable_tetgen" = "yes" ; then
     [AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)
      AC_MSG_ERROR([tetgen library not found; check PETSc installation.])
+  ])
+fi
+
+# HDF5
+if test "$enable_hdf5" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
+  CPPFLAGS="$PETSC_INCLUDE $PETSC_CXX_INCLUDE $CPPFLAGS"  
+  AC_CHECK_HEADER([hdf5.h], [], [
+    AC_MSG_ERROR([HDF5 header not found.])
+  ])
+  AC_MSG_CHECKING([for H5Fopen in -lhdf5])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[#include <hdf5.h>]],
+	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
+    [AC_MSG_RESULT(yes)],
+    [AC_MSG_RESULT(no)
+     AC_MSG_ERROR([hdf5 library not found.])
   ])
 fi
 
