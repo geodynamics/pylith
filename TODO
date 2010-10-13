@@ -57,6 +57,8 @@ CURRENT ISSUES/PRIORITIES
 
 * Lumped elasticity formulation for large deformations
 
+* Add output of initial fields (initial stress and initial strain).
+
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
