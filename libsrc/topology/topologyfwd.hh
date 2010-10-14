@@ -38,6 +38,10 @@ namespace ALE {
   class RefineEdges2;
   class CellRefinerTri3;
   class CellRefinerTet4;
+
+  class RefineFace4Edges2;
+  class CellRefinerQuad4;
+
   class MeshOrder;
 } // ALE
 

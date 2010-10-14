@@ -50,10 +50,12 @@ noinst_HEADERS =
 noinst_HEADERS += \
 	MeshRefiner.hh \
 	MeshRefiner.cc \
+	RefineEdges2.hh \
 	CellRefinerTri3.hh \
 	CellRefinerTet4.hh \
-	MeshOrder.hh \
-	RefineEdges2.hh
+	RefineFace4Edges2.hh \
+	CellRefinerQuad4.hh \
+	MeshOrder.hh
 
 
 # export
