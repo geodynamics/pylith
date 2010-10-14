@@ -700,6 +700,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(void)
     CHECK_PETSC_ERROR(err);
   } // if
   assert(_section->sizeWithBC() > 0);
+  assert(_section->restrictSpace());
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
 			      &_scatterVec); CHECK_PETSC_ERROR(err);
