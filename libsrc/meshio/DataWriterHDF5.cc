@@ -218,6 +218,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     std::cout << "GLOBAL ORDER LOCAL SIZE: " << globalOrder->getLocalSize() << std::endl;
 
 #endif
+    // TODO: Create scatter only if necessary
+    field.createScatter();
+    field.scatterSectionToVector();
 
     PetscErrorCode err = 0;
     err = VecView(vector, _viewer);
