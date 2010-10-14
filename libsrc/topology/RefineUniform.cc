@@ -24,6 +24,7 @@
 
 #include "CellRefinerTri3.hh" // USES CellRefinerTri3
 #include "CellRefinerTet4.hh" // USES CellRefinerTet4
+#include "CellRefinerQuad4.hh" // USES CellRefinerQuad4
 #include "MeshRefiner.hh" // USES MeshRefiner
 
 #include <stdexcept> // USES std::runtime_error
@@ -86,7 +87,9 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
       break;
     } // case 3
     case 4: {
-      throw std::logic_error("Not implemented.");
+      ALE::CellRefinerQuad4 cellSplitter(*sieveMesh);
+      ALE::MeshRefiner<ALE::CellRefinerQuad4> refinement;
+      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
       break;
     } // case 4
     default :

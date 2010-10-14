@@ -106,14 +106,11 @@ ALE::RefineEdges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_typ
   const edge_map_type::const_iterator edgesEnd = _edgeToVertex.end();
   for (edge_map_type::const_iterator e_iter = _edgeToVertex.begin(); e_iter != edgesEnd; ++e_iter) {
     const point_type newVertex = e_iter->second;
-    const point_type edgeVertexA = e_iter->first.first;
-    const point_type edgeVertexB = e_iter->first.second;
+    const point_type edgeVertex = e_iter->first.first;
 
-    if (oldGroup->getFiberDimension(edgeVertexA) && oldGroup->getFiberDimension(edgeVertexB)) {
-      if (oldGroup->restrictPoint(edgeVertexA)[0] == oldGroup->restrictPoint(edgeVertexB)[0]) {
-	newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertexA));
-	std::cout << "Adding new vertex: " << newVertex << " based on old vertices " << edgeVertexA << " and " << edgeVertexB << std::endl;
-      } // if
+    if (1 == newGroup->getFiberDimension(newVertex)) {
+      newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertex));
+      std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
     } // if
   } // for
 } // groupSetNewVertices

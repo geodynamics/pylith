@@ -32,6 +32,8 @@
 #include "data/MeshDataCohesiveTri3Level2Fault1.hh"
 #include "data/MeshDataCohesiveTet4Level2.hh"
 #include "data/MeshDataCohesiveTet4Level2Fault1.hh"
+#include "data/MeshDataCohesiveQuad4Level2.hh"
+#include "data/MeshDataCohesiveQuad4Level2Fault1.hh"
 
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
@@ -86,6 +88,24 @@ pylith::topology::TestRefineUniform::testRefineTet4Level2Fault1(void)
   MeshDataCohesiveTet4Level2Fault1 data;
   _testRefine(data);
 } // testRefineTet4Level2Fault1
+
+// ----------------------------------------------------------------------
+// Test refine() with level 2, quad4 cells, and no fault.
+void
+pylith::topology::TestRefineUniform::testRefineQuad4Level2(void)
+{ // testRefineQuad4Level2
+  MeshDataCohesiveQuad4Level2 data;
+  _testRefine(data);
+} // testRefineQuad4Level2
+
+// ----------------------------------------------------------------------
+// Test refine() with level 2, quad4 cells, and one fault.
+void
+pylith::topology::TestRefineUniform::testRefineQuad4Level2Fault1(void)
+{ // testRefineQuad4Level2Fault1
+  MeshDataCohesiveQuad4Level2Fault1 data;
+  _testRefine(data);
+} // testRefineQuad4Level2Fault1
 
 // ----------------------------------------------------------------------
 void

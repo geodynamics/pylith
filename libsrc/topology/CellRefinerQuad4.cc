@@ -361,7 +361,7 @@ void
 
   // new cell 3
   quadCells[3*4+0] = cone[2] + coneVertexOffset;
-  quadCells[3*4+1] = newVertices[3];
+  quadCells[3*4+1] = newVertices[2];
   quadCells[3*4+2] = newVertices[4];
   quadCells[3*4+3] = newVertices[1];
 

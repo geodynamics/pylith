@@ -19,6 +19,7 @@
 dist_noinst_DATA = \
 	tri3.mesh \
 	fourtri3.mesh \
+	fourquad4.mesh \
 	twotet4.mesh
 
 noinst_TMP = 

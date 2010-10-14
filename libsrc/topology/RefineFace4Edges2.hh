@@ -121,40 +121,40 @@ protected :
   public:
     Face(void) {};
     Face(const Point p) {
-      _points[0] = p;
-      _points[1] = p;
-      _points[2] = p;
-      _points[3] = p;
+      points[0] = p;
+      points[1] = p;
+      points[2] = p;
+      points[3] = p;
     };
     Face(const Point p0,	 
 	 const Point p1,
 	 const Point p2,
 	 const Point p3) {
-      _points[0] = p0;
-      _points[1] = p1;
-      _points[2] = p2;
-      _points[3] = p3;      
+      points[0] = p0;
+      points[1] = p1;
+      points[2] = p2;
+      points[3] = p3;      
     };
     ~Face(void) {};
     friend bool operator==(const Face& a, const Face& b) {
       const bool result = 
-	a._points[0] == b._points[0] &&
-	a._points[1] == b._points[1] &&
-	a._points[2] == b._points[2] &&
-	a._points[3] == b._points[3];
+	a.points[0] == b.points[0] &&
+	a.points[1] == b.points[1] &&
+	a.points[2] == b.points[2] &&
+	a.points[3] == b.points[3];
       return result;
     };
     friend bool operator<(const Face& a, const Face& b) {
-      if (a._points[0] < b._points[0]) {
+      if (a.points[0] < b.points[0]) {
 	return true;
-      } else if (a._points[0] == b._points[0]) {
-	if (a._points[1] < b._points[1]) {
+      } else if (a.points[0] == b.points[0]) {
+	if (a.points[1] < b.points[1]) {
 	  return true;
-	} else if (a._points[1] == b._points[1]) {
-	  if (a._points[2] < b._points[2]) {
+	} else if (a.points[1] == b.points[1]) {
+	  if (a.points[2] < b.points[2]) {
 	    return true;
-	  } else if (a._points[2] == b._points[2]) {
-	    if (a._points[3] < b._points[3]) {
+	  } else if (a.points[2] == b.points[2]) {
+	    if (a.points[3] < b.points[3]) {
 	      return true;
 	    } // if
 	  } // if/else
@@ -164,15 +164,15 @@ protected :
       return false;
     };
     friend std::ostream& operator<<(std::ostream& stream, const Face& face) {
-      stream << "(" << face._points[0]
-	     << ", " << face._points[1]
-	     << ", " << face._points[2]
-	     << ", " << face._points[3]
+      stream << "(" << face.points[0]
+	     << ", " << face.points[1]
+	     << ", " << face.points[2]
+	     << ", " << face.points[3]
 	     << ")";
       return stream;
     };
-  private:
-    Point _points[4];
+  public:
+    int points[4];
   };
   typedef Face<point_type> FaceType;
   typedef std::map<FaceType, point_type> face_map_type;

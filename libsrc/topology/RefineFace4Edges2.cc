@@ -69,6 +69,24 @@ ALE::RefineFace4Edges2::setCoordsNewVertices(const ALE::Obj<mesh_type::real_sect
 
     newCoordsSection->updatePoint(newVertex, coordinatesVertex);
   } // for
+
+  const face_map_type::const_iterator facesEnd = _faceToVertex.end();
+  for (face_map_type::const_iterator f_iter = _faceToVertex.begin(); f_iter != facesEnd; ++f_iter) {
+    const point_type newVertex = f_iter->second;
+
+    assert(spaceDim == newCoordsSection->getFiberDimension(newVertex));
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      coordinatesVertex[iDim] = 0.0;
+    for (int iVertex=0; iVertex < 4; ++iVertex) {
+      const point_type faceVertex = f_iter->first.points[iVertex];
+      assert(spaceDim == oldCoordsSection->getFiberDimension(faceVertex));
+
+      const mesh_type::real_section_type::value_type* coords = oldCoordsSection->restrictPoint(faceVertex);
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	coordinatesVertex[iDim] += 0.25*coords[iDim];
+    } // for
+    newCoordsSection->updatePoint(newVertex, coordinatesVertex);
+  } // for
 } // setCoordsNewVertices
 
 // ----------------------------------------------------------------------
@@ -92,6 +110,23 @@ ALE::RefineFace4Edges2::groupAddNewVertices(const ALE::Obj<mesh_type::int_sectio
       } // if
     } // if
   } // for
+
+  const face_map_type::const_iterator facesEnd = _faceToVertex.end();
+  for (face_map_type::const_iterator f_iter = _faceToVertex.begin(); f_iter != facesEnd; ++f_iter) {
+    const point_type newVertex = f_iter->second;
+
+    bool hasFace = true;
+    for (int iVertex=0; iVertex < 4; ++iVertex) {
+      const point_type faceVertex = f_iter->first.points[iVertex];
+      if (!oldGroup->getFiberDimension(faceVertex)) {
+	hasFace = false;
+	break;
+      } // if
+    } // for
+    if (hasFace) {
+      newGroup->setFiberDimension(newVertex, 1);
+    } // if
+  } // for
 } // groupAddNewVertices
 
 // ----------------------------------------------------------------------
@@ -106,14 +141,22 @@ ALE::RefineFace4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_sectio
   const edge_map_type::const_iterator edgesEnd = _edgeToVertex.end();
   for (edge_map_type::const_iterator e_iter = _edgeToVertex.begin(); e_iter != edgesEnd; ++e_iter) {
     const point_type newVertex = e_iter->second;
-    const point_type edgeVertexA = e_iter->first.first;
-    const point_type edgeVertexB = e_iter->first.second;
+    const point_type edgeVertex = e_iter->first.first;
 
-    if (oldGroup->getFiberDimension(edgeVertexA) && oldGroup->getFiberDimension(edgeVertexB)) {
-      if (oldGroup->restrictPoint(edgeVertexA)[0] == oldGroup->restrictPoint(edgeVertexB)[0]) {
-	newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertexA));
-	std::cout << "Adding new vertex: " << newVertex << " based on old vertices " << edgeVertexA << " and " << edgeVertexB << std::endl;
-      } // if
+    if (1 == newGroup->getFiberDimension(newVertex)) {
+      newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertex));
+      std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
+    } // if
+  } // for
+
+  const face_map_type::const_iterator facesEnd = _faceToVertex.end();
+  for (face_map_type::const_iterator f_iter = _faceToVertex.begin(); f_iter != facesEnd; ++f_iter) {
+    const point_type newVertex = f_iter->second;
+    const point_type faceVertex = f_iter->first.points[0];
+
+    if (1 == newGroup->getFiberDimension(newVertex)) {
+      newGroup->updatePoint(newVertex, oldGroup->restrictPoint(faceVertex));
+      std::cout << "Adding new vertex: " << newVertex << " based on face " << f_iter->first << std::endl;
     } // if
   } // for
 } // groupSetNewVertices
@@ -151,6 +194,28 @@ ALE::RefineFace4Edges2::labelAddNewVertices(const ALE::Obj<mesh_type>& newMesh,
       newMesh->setValue(newLabel, newVertex, valueA);
     } // if
   } // for
+
+  const face_map_type::const_iterator facesEnd = _faceToVertex.end();
+  for (face_map_type::const_iterator f_iter = _faceToVertex.begin(); f_iter != facesEnd; ++f_iter) {
+    const point_type newVertex = f_iter->second;
+    const point_type faceVertex = f_iter->first.points[0];
+    const int value = oldMesh->getValue(oldLabel, faceVertex, defaultValue);
+
+    if (value != defaultValue) {
+      bool hasFace = true;
+      for (int iVertex=1; iVertex < 4; ++iVertex) {
+	const point_type faceVertex2 = f_iter->first.points[iVertex];
+	const int value2 = oldMesh->getValue(oldLabel, faceVertex2, defaultValue);
+	if (value2 != value) {
+	  hasFace = false;
+	  break;
+	} // if
+      } // for
+      if (hasFace) {
+	newMesh->setValue(newLabel, newVertex, value);
+      } // if
+    } // if
+  } // for
 } // labelAddNewVertices
 
 // ----------------------------------------------------------------------
@@ -163,6 +228,8 @@ ALE::RefineFace4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 { // overlapAddNewVertices
   assert(!newMesh.isNull());
   assert(!oldMesh.isNull());
+
+  // :TODO: Add face vertices
 
   Obj<mesh_type::send_overlap_type> newSendOverlap = newMesh->getSendOverlap();
   assert(!newSendOverlap.isNull());

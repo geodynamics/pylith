@@ -5,7 +5,7 @@ CURRENT ISSUES/PRIORITIES
 * Unform global refinement
   tri3 and tet4, level 2 work in serial, sometimes crash in parallel
 
-  quad4, level 2
+  quad4, level 2 (add face vertices for overlap)
   hex8, level 2
   tet4, level 4
   tri3, level 4
