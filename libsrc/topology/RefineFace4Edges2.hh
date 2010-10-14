@@ -119,7 +119,7 @@ protected :
   template<typename Point>
   class Face {
   public:
-    Face(void);
+    Face(void) {};
     Face(const Point p) {
       _points[0] = p;
       _points[1] = p;

@@ -109,6 +109,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     typedef ALE::OrientedConeSectionV<typename mesh_type::SieveMesh::sieve_type> oriented_cones_wrapper_type;
     Obj<oriented_cones_wrapper_type> cones = new oriented_cones_wrapper_type(sieveMesh->getSieve());
 
+#if 0
     // Hack right now, move to HDF5 Section viewer
     err = PetscMalloc(sizeof(PetscScalar)*cones->size(), &tmpVertices);CHECK_PETSC_ERROR(err);
     for(int p = sieveMesh->getSieve()->getChart().min(), i = 0; p < sieveMesh->getSieve()->getChart().max(); ++p) {
@@ -123,6 +124,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
+#endif
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while preparing for writing data to HDF5 file "
