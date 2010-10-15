@@ -130,6 +130,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(void)
   logger.stagePush("Field");
 
   _section = new section_type(_mesh.comm(), _mesh.debug());  
+  assert(!_section.isNull());
+  _section->setName(_metadata.label);
 
   logger.stagePop();
 } // newSection
@@ -155,6 +157,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
   } // if
 
   _section = new section_type(_mesh.comm(), _mesh.debug());
+  assert(!_section.isNull());
+  _section->setName(_metadata.label);
 
   if (points->size() > 0) {
     const point_type pointMin = 
@@ -189,6 +193,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
   } // if
   
   _section = new section_type(_mesh.comm(), _mesh.debug());
+  assert(!_section.isNull());
+  _section->setName(_metadata.label);
 
   const int npts = points.size();
   if (npts > 0) {
