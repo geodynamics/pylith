@@ -60,10 +60,10 @@ private:
   // Mesh information
   static const int _spaceDim;
   static const int _cellDim;
-  static const int _numBoundaryVertices;
-  static const int _numBoundaryCells;
+  static const int _numVertices;
+  static const int _numCells;
   static const int _numCorners;
-  static const double _cellVertices[];
+  static const int _cells[];
 
   // Calculated values.
   static const double _tractionsCell[];

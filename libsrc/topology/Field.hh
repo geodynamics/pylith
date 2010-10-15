@@ -40,7 +40,8 @@
  *
  * Extends Sieve real general section by adding metadata.
  */
-template<typename mesh_type>
+template<typename mesh_type,
+	 typename section_type>
 class pylith::topology::Field : public FieldBase
 { // Field
   friend class TestFieldMesh; // unit testing
@@ -52,14 +53,17 @@ public:
   // Convenience typedefs
   typedef mesh_type Mesh;
 
+  typedef ALE::ISieveVisitor::RestrictVisitor<section_type> RestrictVisitor;
+  typedef ALE::ISieveVisitor::UpdateAddVisitor<section_type> UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::UpdateAllVisitor<section_type> UpdateAllVisitor;
+
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
 
   // Convenience typedefs
-  typedef typename mesh_type::RealSection RealSection;
   typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
-  typedef typename RealSection::chart_type chart_type;
+  typedef typename section_type::chart_type chart_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -69,6 +73,14 @@ public :
    * @param mesh Finite-element mesh.
    */
   Field(const mesh_type& mesh);
+
+  /** Constructor with mesh, section, and metadata.
+   *
+   * @param mesh Finite-element mesh.
+   */
+  Field(const mesh_type& mesh,
+	const ALE::Obj<section_type>& section,
+	const Metadata& metadata);
 
   /// Destructor.
   ~Field(void);
@@ -80,7 +92,7 @@ public :
    *
    * @returns Sieve section.
    */
-  const ALE::Obj<RealSection>& section(void) const;
+  const ALE::Obj<section_type>& section(void) const;
 
   /** Get mesh associated with field.
    *
@@ -227,7 +239,7 @@ public :
    *
    * @param field Field to copy.
    */
-  void copy(const ALE::Obj<typename mesh_type::RealSection>& field);
+  void copy(const ALE::Obj<section_type>& field);
 
   /** Add two fields, storing the result in one of the fields.
    *
@@ -294,15 +306,12 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _scale; ///< Dimensional scale associated with field.
-  std::string _label; ///< Label for field.
+  Metadata _metadata;
   const mesh_type& _mesh; ///< Mesh associated with section.
-  ALE::Obj<RealSection> _section; ///< Real section with data.
+  ALE::Obj<section_type> _section; ///< Real section with data.
   PetscVec _vector; ///< PETSc vector associated with field.
   PetscVecScatter _scatter; ///< PETSc scatter associated with field.
   PetscVec _scatterVec; ///< PETSC vector used in scattering.
-  VectorFieldEnum _vecFieldType; ///< Type of vector field.
-  bool _dimensionsOkay; ///< Flag indicating it is okay to dimensionalize.
 
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

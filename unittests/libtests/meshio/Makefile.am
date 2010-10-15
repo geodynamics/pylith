@@ -32,6 +32,10 @@ testmeshio_SOURCES = \
 	TestMeshIOLagrit.cc \
 	TestCellFilterAvg.cc \
 	TestVertexFilterVecNorm.cc \
+	TestDataWriterMesh.cc \
+	TestDataWriterSubMesh.cc \
+	TestDataWriterBCMesh.cc \
+	TestDataWriterFaultMesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshLine2.cc \
@@ -67,7 +71,11 @@ testmeshio_SOURCES = \
 
 noinst_HEADERS = \
 	TestCellFilterAvg.hh \
+	TestDataWriterMesh.hh \
 	TestDataWriterVTK.hh \
+	TestDataWriterSubMesh.hh \
+	TestDataWriterBCMesh.hh \
+	TestDataWriterFaultMesh.hh \
 	TestDataWriterVTKMesh.hh \
 	TestDataWriterVTKMeshLine2.hh \
 	TestDataWriterVTKMeshTri3.hh \
@@ -105,7 +113,7 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
-	data/DataWriterVTKData.cc \
+	data/DataWriterData.cc \
 	data/DataWriterVTKDataMeshLine2.cc \
 	data/DataWriterVTKDataMeshTri3.cc \
 	data/DataWriterVTKDataMeshQuad4.cc \
@@ -129,6 +137,7 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataBCMeshQuad4.cc \
 	data/DataWriterVTKDataBCMeshTet4.cc \
 	data/DataWriterVTKDataBCMeshHex8.cc \
+	data/DataWriterHDF5DataMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -145,7 +154,7 @@ testmeshio_SOURCES += \
 
 
 noinst_HEADERS += \
-	data/DataWriterVTKData.hh \
+	data/DataWriterData.hh \
 	data/DataWriterVTKDataMeshLine2.hh \
 	data/DataWriterVTKDataMeshTri3.hh \
 	data/DataWriterVTKDataMeshQuad4.hh \
@@ -169,6 +178,7 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataBCMeshQuad4.hh \
 	data/DataWriterVTKDataBCMeshTet4.hh \
 	data/DataWriterVTKDataBCMeshHex8.hh \
+	data/DataWriterHDF5DataMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -201,6 +211,20 @@ if ENABLE_CUBIT
   testmeshio_SOURCES += TestMeshIOCubit.cc
   noinst_HEADERS += TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
+endif
+
+if ENABLE_HDF5
+  testmeshio_SOURCES += \
+	TestDataWriterHDF5.cc \
+	TestDataWriterHDF5Mesh.cc \
+	TestDataWriterHDF5MeshHex8.cc
+
+  noinst_HEADERS += \
+	TestDataWriterHDF5.hh \
+	TestDataWriterHDF5Mesh.hh \
+	TestDataWriterHDF5MeshHex8.hh
+
+  testmeshio_LDADD += -lhdf5
 endif
 
 

@@ -27,7 +27,7 @@
 
 #include <cassert> // USES assert()
 
-//#define ISOPARAMETRIC
+#define ISOPARAMETRIC
 
 // ----------------------------------------------------------------------
 // Constructor

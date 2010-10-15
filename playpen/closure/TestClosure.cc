@@ -130,21 +130,19 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
 
 #else
   // Create fields
-  pylith::topology::SolutionFields fields(mesh);
-  fields.add("field AB", "field_AB");
-  topology::Field<topology::Mesh>& fieldAB = fields.get("field AB");
-  fieldAB.newSection(topology::FieldBase::VERTICES_FIELD, 2*spaceDim);
-  fieldAB.allocate();
-  fieldAB.zero();
-  fields.copyLayout("field AB");
+  pylith::topology::FieldsNew fields(mesh);
+  fields.add("field A", "displacement", spaceDim, topology::FieldBase::VECTOR);
+  fields.add("field B", "velocity", spaceDim, topology::FieldBase::VECTOR);
+  fields.allocate(topology::FieldBase::VERTICES_FIELD, 2*spaceDim);
 
   // Create field visitors
-  double_array fieldABCell(coneSize*2*spaceDim);
-  const ALE::Obj<RealSection>& fieldABSection = fields.get("field AB").section();
-  assert(!fieldABSection.isNull());
-  topology::Mesh::RestrictVisitor fieldABVisitor(*fieldABSection,
-						 fieldABCell.size(),
-						&fieldABCell[0]);
+  double_array fieldsCell(coneSize*2*spaceDim);
+  const ALE::Obj<RealUniformSection>fieldsSection = fields.section();
+  
+  assert(!fieldsSection.isNull());
+  topology::Mesh::RestrictVisitor fieldABVisitor(*fieldsSection,
+						 fieldsCell.size(),
+						 &fieldsCell[0]);
   
   double_array tmpCell(coneSize*2*spaceDim);
 #endif
@@ -175,8 +173,8 @@ pylith::playpen::TestClosure::testRestrictClosure(const pylith::topology::Mesh& 
       // Perform trivial operation on fields
       //tmpCell = fieldACell + fieldBCell + coordsCell;
 #else
-      fieldABVisitor.clear();
-      sieveMesh->restrictClosure(*c_iter, fieldABVisitor);
+      fieldsVisitor.clear();
+      sieveMesh->restrictClosure(*c_iter, fieldsVisitor);
       
       // Perform trivial operation on fields
       //for (int i=0; i < dataSize; ++i) 

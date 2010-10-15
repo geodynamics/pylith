@@ -20,7 +20,7 @@
 
 #include "TestDataWriterVTKBCMesh.hh" // Implementation of class methods
 
-#include "data/DataWriterVTKData.hh" // USES DataWriterVTKData
+#include "data/DataWriterData.hh" // USES DataWriterData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -40,10 +40,7 @@ typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 void
 pylith::meshio::TestDataWriterVTKBCMesh::setUp(void)
 { // setUp
-  TestDataWriterVTK::setUp();
-  _mesh = 0;
-  _submesh = 0;
-  _flipFault = false;
+  TestDataWriterBCMesh::setUp();
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -51,9 +48,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::tearDown(void)
 { // tearDown
-  TestDataWriterVTK::tearDown();
-  delete _mesh; _mesh = 0;
-  delete _submesh; _submesh = 0;
+  TestDataWriterBCMesh::tearDown();
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -138,7 +133,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
     writer.openTimeStep(t, *_submesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    const SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_submesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
@@ -175,7 +170,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
     for (int i=0; i < nfields; ++i) {
-      const SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
@@ -186,7 +181,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
     writer.open(*_submesh, numTimeSteps, label, id);
     writer.openTimeStep(t, *_submesh, label, id);
     for (int i=0; i < nfields; ++i) {
-      const SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
+      SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field, label, id);
       CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
@@ -199,140 +194,6 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
   
   checkFile(_data->cellFilename, t, _data->timeFormat);
 } // testWriteCellField
-
-// ----------------------------------------------------------------------
-// Initialize mesh.
-void
-pylith::meshio::TestDataWriterVTKBCMesh::_initialize(void)
-{ // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-
-  delete _mesh; _mesh = new topology::Mesh;
-  MeshIOAscii iohandler;
-  iohandler.filename(_data->meshFilename);
-  iohandler.read(_mesh);
-
-  if (0 != _data->faultLabel) {
-    faults::FaultCohesiveKin fault;
-    int firstFaultVertex    = 0;
-    int firstLagrangeVertex = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-    int firstFaultCell      = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-    if (fault.useLagrangeConstraints()) {
-      firstFaultCell += _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-    }
-    fault.label(_data->faultLabel);
-    fault.id(_data->faultId);
-    fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
-  } // if
-
-  delete _submesh; _submesh = new topology::SubMesh(*_mesh, _data->bcLabel);
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh =
-    _submesh->sieveMesh();
-  assert(!sieveSubMesh.isNull());
-  sieveSubMesh->setRealSection("coordinates", 
-			       sieveMesh->getRealSection("coordinates"));
-  //_mesh->view("BC mesh");
-} // _initialize
-
-// ----------------------------------------------------------------------
-// Create vertex fields.
-void
-pylith::meshio::TestDataWriterVTKBCMesh::_createVertexFields(
-	    topology::Fields<SubMeshField>* fields) const
-{ // _createVertexFields
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
-
-  try {
-    const int nfields = _data->numVertexFields;
-
-    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh = 
-      _submesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveSubMesh.isNull());
-    const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& vertices =
-      sieveSubMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const topology::SubMesh::SieveMesh::label_sequence::iterator verticesEnd =
-      vertices->end();
-
-    // Set vertex fields
-    for (int i=0; i < nfields; ++i) {
-      const char* name = _data->vertexFieldsInfo[i].name;
-      const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
-      fields->add(name, name);
-      SubMeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
-      field.allocate();
-      field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
-
-      const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int ipt = 0;
-      for (topology::SubMesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	   v_iter != verticesEnd;
-	   ++v_iter, ++ipt) {
-	const double* values = &_data->vertexFields[i][ipt*fiberDim];
-	section->updatePoint(*v_iter, values);
-      } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
-    } // for
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
-} // _createVertexFields
-
-// ----------------------------------------------------------------------
-// Create cell fields.
-void
-pylith::meshio::TestDataWriterVTKBCMesh::_createCellFields(
-	     topology::Fields<SubMeshField>* fields) const
-{ // _createCellFields
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
-
-  try {
-    const int nfields = _data->numCellFields;
-
-    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveSubMesh =
-      _submesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveSubMesh.isNull());
-    const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& cells = 
-      sieveSubMesh->heightStratum(1);
-    assert(!cells.isNull());
-    const topology::SubMesh::SieveMesh::label_sequence::iterator cellsBegin = 
-      cells->begin();
-    const topology::SubMesh::SieveMesh::label_sequence::iterator cellsEnd = 
-      cells->end();
-
-    // Set cell fields
-    for (int i=0; i < nfields; ++i) {
-      const char* name = _data->cellFieldsInfo[i].name;
-      const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
-      fields->add(name, name);
-      SubMeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim, 1);
-      field.allocate();
-      field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
-
-      const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int icell = 0;
-      for (topology::SubMesh::SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-	   c_iter != cellsEnd;
-	   ++c_iter, ++icell) {
-	const double* values = &_data->cellFields[i][icell*fiberDim];
-	section->updatePoint(*c_iter, values);
-      } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
-    } // for
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
-} // _createCellFields
 
 
 // End of file 

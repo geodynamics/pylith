@@ -39,7 +39,9 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+
+typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -171,8 +173,7 @@ pylith::friction::FrictionModel::initialize(
   const ALE::Obj<RealSection>& propertiesSection = _properties->section();
   assert(!propertiesSection.isNull());
   double_array propertiesCell(numBasis*numDBProperties);
-  topology::Mesh::UpdateAddVisitor propertiesVisitor(*propertiesSection,
-        &propertiesCell[0]);
+  UpdateAddVisitor propertiesVisitor(*propertiesSection, &propertiesCell[0]);
 
   // Setup database for querying for physical properties
   assert(0 != _dbProperties);
@@ -287,8 +288,7 @@ pylith::friction::FrictionModel::initialize(
     const ALE::Obj<RealSection>& stateVarsSection =_stateVars->section();
     assert(!stateVarsSection.isNull());
     double_array stateVarsCell(numBasis*numDBStateVars);
-    topology::Mesh::UpdateAddVisitor stateVarsVisitor(*stateVarsSection,
-                                                      &stateVarsCell[0]);
+    UpdateAddVisitor stateVarsVisitor(*stateVarsSection, &stateVarsCell[0]);
 
     for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
         c_iter != cellsEnd;

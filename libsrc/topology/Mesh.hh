@@ -30,6 +30,8 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
+#include "UniformSectionDS.hh" // USES IUniformSectionDS
+
 #include <petscmesh.hh> // HASA ALE::IMesh
 
 // Mesh -----------------------------------------------------------------
@@ -57,13 +59,11 @@ public :
    */
   //@{
   typedef ALE::IMesh<> SieveMesh;
-  typedef SieveMesh::real_section_type RealSection;
-  typedef SieveMesh::int_section_type IntSection;
   typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
-  typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
-  typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
-  typedef ALE::ISieveVisitor::UpdateAllVisitor<RealSection> UpdateAllVisitor;
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+
+  typedef SieveMesh::int_section_type IntSection;
+  typedef SieveMesh::real_section_type RealSection;
+  typedef ALE::IUniformSectionDS<SieveMesh::point_type, double> RealUniformSection;
   //@}
 
 

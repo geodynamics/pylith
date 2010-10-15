@@ -33,6 +33,8 @@
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 
+typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
+
 // ----------------------------------------------------------------------
 // Test copy constuctor.
 void
@@ -238,9 +240,8 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   const ALE::Obj<topology::Mesh::RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
   size_t size = 0;

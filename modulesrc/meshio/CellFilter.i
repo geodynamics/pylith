@@ -65,9 +65,9 @@ namespace pylith {
        * @returns Averaged field.
        */
       virtual
-      const field_type& filter(const field_type& fieldIn,
-			       const char* label =0,
-			       const int labelId =0) = 0;
+      field_type& filter(const field_type& fieldIn,
+			 const char* label =0,
+			 const int labelId =0) = 0;
 
     }; // CellFilter
 

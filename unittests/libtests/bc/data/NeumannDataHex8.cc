@@ -78,18 +78,14 @@ const char* pylith::bc::NeumannDataHex8::_label = "tractionVerts";
 
 const int pylith::bc::NeumannDataHex8::_spaceDim = 3;
 const int pylith::bc::NeumannDataHex8::_cellDim = 2;
-
-const int pylith::bc::NeumannDataHex8::_numBoundaryVertices = 6;
-const int pylith::bc::NeumannDataHex8::_numBoundaryCells = 2;
+const int pylith::bc::NeumannDataHex8::_numVertices = 6;
+const int pylith::bc::NeumannDataHex8::_numCells = 2;
 const int pylith::bc::NeumannDataHex8::_numCorners = 4;
-const double pylith::bc::NeumannDataHex8::_cellVertices[] = { 0.0,-1.0,-1.0,
-							      0.0,-1.0, 1.0,
-							     -2.0,-1.0, 1.0,
-							     -2.0,-1.0,-1.0,
-							      2.0,-1.0,-1.0,
-							      2.0,-1.0, 1.0,
-							      0.0,-1.0, 1.0,
-							      0.0,-1.0,-1.0};
+const int pylith::bc::NeumannDataHex8::_cells[] = {
+  4, 2, 6, 8,
+  8, 6, 10, 12,
+};
+
 const double pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
@@ -129,11 +125,11 @@ pylith::bc::NeumannDataHex8::NeumannDataHex8(void)
 
   spaceDim = _spaceDim;
   cellDim = _cellDim;
-  numBoundaryVertices = _numBoundaryVertices;
-  numBoundaryCells = _numBoundaryCells;
+  numVertices = _numVertices;
+  numCells = _numCells;
   numCorners = _numCorners;
+  cells = const_cast<int*>(_cells);
 
-  cellVertices = const_cast<double*>(_cellVertices);
   tractionsCell = const_cast<double*>(_tractionsCell);
   valsResidual = const_cast<double*>(_valsResidual);
 

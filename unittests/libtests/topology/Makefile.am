@@ -34,8 +34,10 @@ testtopology_SOURCES = \
 	TestFieldSubMesh.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
+	TestFieldsNewMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
+	TestRefineUniform.cc \
 	test_topology.cc
 
 
@@ -47,14 +49,30 @@ noinst_HEADERS = \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
+	TestFieldsNewMesh.hh \
 	TestSolutionFields.hh \
-	TestJacobian.hh
+	TestJacobian.hh \
+	TestRefineUniform.hh
 
 
 # Source files associated with testing data
-testtopology_SOURCES += 
+testtopology_SOURCES += \
+	data/MeshDataCohesive.cc \
+	data/MeshDataCohesiveTri3Level2.cc \
+	data/MeshDataCohesiveTri3Level2Fault1.cc \
+	data/MeshDataCohesiveTet4Level2.cc \
+	data/MeshDataCohesiveTet4Level2Fault1.cc \
+	data/MeshDataCohesiveQuad4Level2.cc \
+	data/MeshDataCohesiveQuad4Level2Fault1.cc
 
-noinst_HEADERS += 
+noinst_HEADERS += \
+	data/MeshDataCohesive.hh \
+	data/MeshDataCohesiveTri3Level2.hh \
+	data/MeshDataCohesiveTri3Level2Fault1.hh \
+	data/MeshDataCohesiveTet4Level2.hh \
+	data/MeshDataCohesiveTet4Level2Fault1.hh \
+	data/MeshDataCohesiveQuad4Level2.hh \
+	data/MeshDataCohesiveQuad4Level2Fault1.hh
 
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \

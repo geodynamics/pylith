@@ -47,8 +47,10 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Mesh::UpdateAddVisitor UpdateAddVisitor;
+
+typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -415,10 +417,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 					    dispTSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispTSection,
-						 *globalOrder,
-			   (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-				     sieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianVisitor(*dispTSection,
+				 *globalOrder,
+				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+					   sieveMesh->depth())*spaceDim);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 

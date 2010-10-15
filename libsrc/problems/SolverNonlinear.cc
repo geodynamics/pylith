@@ -183,7 +183,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 					      PetscReal xnorm,
 					      PetscReal *ynorm,
 					      PetscReal *gnorm,
-					      PetscTruth *flag)
+					      PetscBool *flag)
 { // lineSearch
   // Note that for line search purposes we work with with the related
   // minimization problem:
@@ -198,7 +198,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   PetscErrorCode ierr;
   PetscInt       count;
   SNES_LS        *neP = (SNES_LS*)snes->data;
-  PetscTruth     changed_w = PETSC_FALSE,changed_y = PETSC_FALSE;
+  PetscBool     changed_w = PETSC_FALSE,changed_y = PETSC_FALSE;
 
   PetscFunctionBegin;
   ierr = PetscLogEventBegin(SNES_LineSearch,snes,x,f,g);CHKERRQ(ierr);

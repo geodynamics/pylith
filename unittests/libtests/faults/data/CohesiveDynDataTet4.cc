@@ -60,9 +60,9 @@ const double pylith::faults::CohesiveDynDataTet4::_basis[] = {
   3.33333333e-01,};
 
 const double pylith::faults::CohesiveDynDataTet4::_basisDeriv[] = {
- -1.00000000e+00, -1.00000000e+00,
-  1.00000000e+00,  0.00000000e+00,
-  0.00000000e+00,  1.00000000e+00,
+ -0.50000000e+00, -0.50000000e+00,
+  0.50000000e+00,  0.00000000e+00,
+  0.00000000e+00,  0.50000000e+00,
 };
 
 const double pylith::faults::CohesiveDynDataTet4::_verticesRef[] = {

@@ -181,7 +181,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
 				            const double t,
-					    const field_type& field,
+					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
   typedef typename mesh_type::SieveMesh SieveMesh;
@@ -243,7 +243,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 				       const double t,
-				       const field_type& field,
+				       field_type& field,
 				       const char* label,
 				       const int labelId)
 { // writeCellField

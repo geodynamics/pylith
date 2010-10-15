@@ -77,7 +77,7 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       void writeVertexField(const double t,
-			    const field_type& field,
+			    field_type& field,
 			    const mesh_type& mesh);
       
       /** Write field over cells to file.
@@ -89,7 +89,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void writeCellField(const double t,
-			  const field_type& field,
+			  field_type& field,
 			  const char* label =0,
 			  const int labelId =0);
       

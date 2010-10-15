@@ -141,9 +141,14 @@ pylith::topology::TestFieldMesh::testNewSection(void)
   _buildMesh(&mesh);
 
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
+
   field.newSection();
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testNewSection
 
 // ----------------------------------------------------------------------
@@ -159,6 +164,9 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
   CPPUNIT_ASSERT(!sieveMesh.isNull());
 
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
+
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -171,6 +179,8 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testNewSectionPoints
 
 // ----------------------------------------------------------------------
@@ -186,6 +196,9 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
   CPPUNIT_ASSERT(!sieveMesh.isNull());
 
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
+
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -219,6 +232,8 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
   // Points not int array should have a fiber dimension of zero.
   for (int i=0; i < pointsOut.size(); ++i)
     CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(pointsOut[i]));
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testNewSectionPointsArray
 
 // ----------------------------------------------------------------------
@@ -234,6 +249,8 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
   CPPUNIT_ASSERT(!sieveMesh.isNull());
 
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
 
   const ALE::Obj<Mesh::RealSection>& section = field.section();
@@ -245,6 +262,8 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testNewSectionDomain
 
 // ----------------------------------------------------------------------
@@ -268,6 +287,8 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 
   const int fiberDim2 = 5;
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
   field.newSection(fieldSrc, fiberDim2);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
@@ -278,6 +299,8 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
        v_iter != vertices->end();
        ++v_iter)
     CPPUNIT_ASSERT_EQUAL(fiberDim2, section->getFiberDimension(*v_iter));
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testNewSectionField
 
 // ----------------------------------------------------------------------
@@ -327,6 +350,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   } // Setup source field
 
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
   field.cloneSection(fieldSrc);
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
@@ -341,6 +366,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
 
   // Verify vector scatter was also copied.
   CPPUNIT_ASSERT_EQUAL(fieldSrc._scatter, field._scatter);
+
+  CPPUNIT_ASSERT_EQUAL(label, std::string(section->getName()));
 } // testCloneSection
 
 // ----------------------------------------------------------------------
@@ -357,9 +384,9 @@ pylith::topology::TestFieldMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(1.0, field._scale);
-  CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._vecFieldType);
-  CPPUNIT_ASSERT_EQUAL(false, field._dimensionsOkay);
+  CPPUNIT_ASSERT_EQUAL(1.0, field._metadata.scale);
+  CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._metadata.vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
 } // testClear
 
 // ----------------------------------------------------------------------
@@ -834,6 +861,8 @@ pylith::topology::TestFieldMesh::testCreateVector(void)
   Mesh mesh;
   _buildMesh(&mesh);
   Field<Mesh> field(mesh);
+  const std::string& label = "field A";
+  field.label(label.c_str());
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
   field.allocate();
   
@@ -854,6 +883,10 @@ pylith::topology::TestFieldMesh::testCreateVector(void)
   // Make sure we can do multiple calls to createVector().
   field.createVector();
   CPPUNIT_ASSERT(0 != field._vector);
+
+  const char* vecname = 0;
+  PetscObjectGetName((PetscObject)field._vector, &vecname);
+  CPPUNIT_ASSERT_EQUAL(label, std::string(vecname));
 } // testCreateVector
 
 // ----------------------------------------------------------------------

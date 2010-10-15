@@ -29,7 +29,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error()
 
-//#define ISOPARAMETRIC
+#define ISOPARAMETRIC
 
 // ----------------------------------------------------------------------
 // Constructor

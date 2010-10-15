@@ -59,7 +59,7 @@ class DataWriterVTKSubSubMesh(DataWriterVTK, ModuleDataWriterVTK):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_data_writer():
+def data_writer():
   """
   Factory associated with DataWriter.
   """

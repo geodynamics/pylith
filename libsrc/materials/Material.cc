@@ -39,7 +39,9 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+
+typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.

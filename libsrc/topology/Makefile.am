@@ -27,6 +27,9 @@ subpkginclude_HEADERS = \
 	Field.cc \
 	Fields.hh \
 	Fields.icc \
+	FieldsNew.hh \
+	FieldsNew.icc \
+	FieldsNew.cc \
 	Jacobian.hh \
 	Mesh.hh \
 	Mesh.icc \
@@ -37,9 +40,23 @@ subpkginclude_HEADERS = \
 	SubMesh.hh \
 	SubMesh.icc \
 	SubMesh.cc \
+	UniformSectionDS.hh \
+	UniformSectionDS.cc \
 	topologyfwd.hh
 
 noinst_HEADERS =
+
+# TEMPORARY
+noinst_HEADERS += \
+	MeshRefiner.hh \
+	MeshRefiner.cc \
+	RefineEdges2.hh \
+	CellRefinerTri3.hh \
+	CellRefinerTet4.hh \
+	RefineFace4Edges2.hh \
+	CellRefinerQuad4.hh \
+	MeshOrder.hh
+
 
 # export
 clean-local: clean-subpkgincludeHEADERS

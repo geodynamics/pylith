@@ -2,7 +2,18 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* Uniform global refinement for tets with faults
+* Unform global refinement
+  tri3 and tet4, level 2 work in serial, sometimes crash in parallel
+
+  quad4, level 2 (add face vertices for overlap)
+  hex8, level 2
+  tet4, level 4
+  tri3, level 4
+  hex8, level 4
+  quad4, level 4
+
+  Python unit tests
+    Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
 
@@ -23,16 +34,30 @@ CURRENT ISSUES/PRIORITIES
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
 
+* Reimplement Fields to use a single section.
+
+    Fields -> SolutionFields
+    FieldsNew -> Fields
+
+    UniformSectionDS
+      getFibration needs to return an ISection
+        chart from original section
+        array from original section
+        atlas - set offsets based on fibration
+
 * Optimization
-  + Reimplement Fields to use a single section.
-    - SolutionFields (RealSection)
-    - UniformFields (UniformSection)?
-  + May be gotchas associated with Petsc Vec and scatters
   + inline methods (what isn't getting inlined) -Winline
   + Specialized elasticity integrator objects for Quad4, Hex8
     - Add for lgdeform, implicit time integration?
 
+
+* Testing
+  + Need full-scale test with variation in physical properties
+    within a material.
+
 * Lumped elasticity formulation for large deformations
+
+* Add output of initial fields (initial stress and initial strain).
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
@@ -68,6 +93,36 @@ SECONDARY PRIORITIES
 
   Make fault nucleation (initial tractions) modular (allow space/time
   variation).
+
+* Time step based on state variables
+
+  TimeStepStrainRate object
+    strainRateTarget
+    strainRateTolerance
+    maxDt
+    updateInterval
+
+    if (fabs(1.0 - strainRate / strainRateTarget) < tolerance) {
+      assert(strainRate != 0.0);
+      dtNew = dtOld * strainRateTolerance / strainRate;
+      if (dtNew > maxDt)
+        dtNew = maxDt;
+    } // if
+
+  ElasticMaterial
+    strain rate not stored for purely elastic materials
+
+    storeStrainRate()
+      set flag to store strain rate
+    maxStrainRate()
+      compute total strain (if nec)
+      compute strain rate, get maximum
+    
+* Explicit time step
+
+  utility code
+    Compute stable explicit time step
+    Write stable time step explicit (CFL, adhoc)
 
 * Manual
 

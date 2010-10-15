@@ -81,14 +81,28 @@ class VTKDataReader(object):
     cellId = cellTypes[0]
     if numpy.sum(cellTypes-cellId) != 0:
       raise ValueError("Expecting cells to all be the same type.")
-    if cellId == 5: # tri3
-      ncorners = 3
-    elif cellId == 12: # tri3
-      ncorners = 8
+    if cellId == 1: # vertex
+      ncorners = 1
     elif cellId == 3: # line2
       ncorners = 2
+    elif cellId == 5: # tri3
+      ncorners = 3
     elif cellId == 9: # quad4
       ncorners = 4
+    elif cellId == 10: # tet4
+      ncorners = 4
+    elif cellId == 12: # hex8
+      ncorners = 8
+    elif cellId == 21: # line3
+      ncorners = 3
+    elif cellId == 22: # tri6
+      ncorners = 6
+    elif cellId == 22: # quad9
+      ncorners = 9
+    elif cellId == 24: # tet10
+      ncorners = 10
+    elif cellId == 29: # hex27
+      ncorners = 27
     elif cellId == 255: # unknown?
       ncorners = 1
     else:

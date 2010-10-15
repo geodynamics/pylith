@@ -28,8 +28,11 @@
 #define pylith_meshio_testdatawritervtkmesh_hh
 
 #include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
+#include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
+
+#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -39,7 +42,9 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK
+class pylith::meshio::TestDataWriterVTKMesh : public TestDataWriterVTK,
+					      public TestDataWriterMesh,
+					      public CppUnit::TestFixture
 { // class TestDataWriterVTKMesh
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
@@ -89,35 +94,6 @@ public :
 
   /// Test vtkFilename.
   void testVtkFilename(void);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  /// Initialize mesh.
-  void _initialize(void);
-
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  topology::Mesh* _mesh; ///< Mesh for data
-  bool _flipFault; ///< If true, flip fault orientation.
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  /** Create vertex fields.
-   *
-   * @param fields Vertex fields.
-   */
-  void
-  _createVertexFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
-
-  /** Create cell fields.
-   *
-   * @param fields Cell fields.
-   */
-  void
-  _createCellFields(topology::Fields<topology::Field<topology::Mesh> >* fields) const;
 
 }; // class TestDataWriterVTKMesh
 

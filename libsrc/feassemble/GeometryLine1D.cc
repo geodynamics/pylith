@@ -99,7 +99,8 @@ pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
   assert(0 != jacobian);
   assert(0 != det);
 
-  assert(numCorners()*spaceDim() == vertices.size());
+  assert( (numCorners()*spaceDim() == vertices.size()) || // linear edge
+	  ((numCorners()+1)*spaceDim() == vertices.size()) ); // quadratic edge
   assert(spaceDim()*cellDim() == jacobian->size());
 
   const double x0 = vertices[0];

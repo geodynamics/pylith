@@ -65,7 +65,7 @@ public :
    * @param fieldIn Field to filter.
    */
   virtual
-  const field_type&
+  field_type&
   filter(const field_type& fieldIn) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
