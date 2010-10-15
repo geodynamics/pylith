@@ -674,6 +674,8 @@ pylith::topology::Field<mesh_type, section_type>::createVector(void)
 
   err = VecCreate(_mesh.comm(), &_vector);
   CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject)_vector, _metadata.label.c_str());
+  CHECK_PETSC_ERROR(err);
 
   err = VecSetSizes(_vector, order->getLocalSize(), order->getGlobalSize());
   CHECK_PETSC_ERROR(err);

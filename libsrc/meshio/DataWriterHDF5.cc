@@ -95,7 +95,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     // field_type can be Field<Mesh> (e.g., displacement field over a
     // SubMesh).
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
-
+    coordinates.label("vertices");
     coordinates.createVector();
     coordinates.createScatter();
     coordinates.scatterSectionToVector();
@@ -120,6 +120,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
       }
     }
     err = VecCreateMPIWithArray(sieveMesh->comm(), cones->size(), PETSC_DETERMINE, tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
