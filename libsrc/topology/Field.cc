@@ -283,9 +283,9 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
   logger.stagePush("Field");
 
   deallocate();
-  std::string label = _metadata.label;
+  std::string origLabel = _metadata.label;
   _metadata = src._metadata;
-  _metadata.label = label;
+  label(origLabel.c_str());
 
   const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
@@ -460,7 +460,7 @@ pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
     } // for
   } // if
 
-  _metadata.label = field._metadata.label;
+  label(field._metadata.label.c_str()); // Update label
   _metadata.scale = field._metadata.scale;
 } // copy
 
