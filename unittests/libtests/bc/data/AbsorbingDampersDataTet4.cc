@@ -35,9 +35,9 @@ const double pylith::bc::AbsorbingDampersDataTet4::_basis[] = {
   0.3333333333333333,
 };
 const double pylith::bc::AbsorbingDampersDataTet4::_basisDerivRef[] = {
- -1.0, -1.0,
-  1.0,  0.0,
-  0.0,  1.0,
+ -0.5, -0.5,
+  0.5,  0.0,
+  0.0,  0.5,
 };
 
 const char* pylith::bc::AbsorbingDampersDataTet4::_spatialDBFilename = 

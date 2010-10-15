@@ -58,8 +58,8 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKMesh import output_data_writer
-    filter = output_data_writer()
+    from pylith.meshio.DataWriterVTKMesh import data_writer
+    filter = data_writer()
     return
 
 
@@ -95,8 +95,8 @@ class TestDataWriterVTKSubMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKSubMesh import output_data_writer
-    filter = output_data_writer()
+    from pylith.meshio.DataWriterVTKSubMesh import data_writer
+    filter = data_writer()
     return
 
 
@@ -132,8 +132,8 @@ class TestDataWriterVTKSubSubMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKSubSubMesh import output_data_writer
-    filter = output_data_writer()
+    from pylith.meshio.DataWriterVTKSubSubMesh import data_writer
+    filter = data_writer()
     return
 
 

@@ -125,13 +125,8 @@ pylith::bc::TestTimeDependent::testVerifyConfiguration(void)
     PointForce bc;
     bc.dbTimeHistory(&th);
 
-    bool caught = false;
-    try {
-      bc.TimeDependent::verifyConfiguration(mesh);
-    } catch ( const std::exception& err) {
-      caught = true;
-    } // catch
-    CPPUNIT_ASSERT(caught);
+    CPPUNIT_ASSERT_THROW(bc.TimeDependent::verifyConfiguration(mesh),
+			 std::runtime_error);
   } // change (missing change)
 
 } // testVerifyConfiguration

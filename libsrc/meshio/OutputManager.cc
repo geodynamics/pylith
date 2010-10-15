@@ -163,12 +163,12 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
 			                                const double t,
-							const field_type& field,
+							field_type& field,
 							const mesh_type& mesh)
 { // appendVertexField
-  const field_type& fieldFiltered = 
+  field_type& fieldFiltered = 
     (0 == _vertexFilter) ? field : _vertexFilter->filter(field);
-  const field_type& fieldDimensioned = _dimension(fieldFiltered);
+  field_type& fieldDimensioned = _dimension(fieldFiltered);
   
   _writer->writeVertexField(t, fieldDimensioned, mesh);
 } // appendVertexField
@@ -179,13 +179,13 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
 				                     const double t,
-						     const field_type& field,
+						     field_type& field,
 						     const char* label,
 						     const int labelId)
 { // appendCellField
-  const field_type& fieldFiltered = 
+  field_type& fieldFiltered = 
     (0 == _cellFilter) ? field : _cellFilter->filter(field, label, labelId);
-  const field_type& fieldDimensioned = _dimension(fieldFiltered);
+  field_type& fieldDimensioned = _dimension(fieldFiltered);
 
   _writer->writeCellField(t, fieldDimensioned, label, labelId);
 } // appendCellField
@@ -193,8 +193,8 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
 // ----------------------------------------------------------------------
 // Dimension field.
 template<typename mesh_type, typename field_type>
-const field_type&
-pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(const field_type& fieldIn)
+field_type&
+pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(field_type& fieldIn)
 { // _dimension
   if (1.0 == fieldIn.scale())
     return fieldIn;

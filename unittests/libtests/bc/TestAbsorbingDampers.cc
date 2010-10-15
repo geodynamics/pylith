@@ -45,7 +45,6 @@ typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 typedef pylith::topology::SubMesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 typedef pylith::topology::SubMesh::RealSection SubRealSection;
-typedef pylith::topology::SubMesh::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 // Setup testing data.

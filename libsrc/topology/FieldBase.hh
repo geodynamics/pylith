@@ -29,6 +29,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include <string> // USES std::string
+
 // FieldBase ------------------------------------------------------------
 /** @brief Basic information related to a vector field over the
  * vertices or cells of a finite-element mesh.
@@ -54,6 +56,17 @@ public :
     VERTICES_FIELD=0, ///< FieldBase over vertices.
     CELLS_FIELD=1, ///< FieldBase over cells.
   }; // DomainEnum
+
+// PUBLIC STRUCTS ///////////////////////////////////////////////////////
+public :
+
+  struct Metadata {
+    std::string label; // Label for field.
+    VectorFieldEnum vectorFieldType; ///< Type of vector field.
+    double scale; // Dimension scale associated with values.
+    bool dimsOkay; // Ok to replace nondimensionalized values 
+                   // with dimensionalized values.
+  }; // Metadata
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

@@ -40,6 +40,9 @@
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
+typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
@@ -323,9 +326,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
   // Create arrays for querying
@@ -470,9 +472,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
   // Create arrays for querying

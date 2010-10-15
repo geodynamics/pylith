@@ -53,19 +53,6 @@ public :
 	      const Mesh& mesh,
 	      const int levels =2);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
-
-  /** Refine tet4 mesh.
-   *
-   * @param newMesh Refined mesh (result).
-   * @param mesh Mesh to refine.
-   * @param levels Number of levels to refine.
-   */
-  void _refineTet4(Mesh* const newMesh,
-		   const Mesh& mesh,
-		   const int levels =2);
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

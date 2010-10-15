@@ -27,10 +27,13 @@
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
+typedef pylith::topology::SubMesh::DomainSieveMesh SieveMesh;
 typedef pylith::topology::SubMesh::RealSection SubRealSection;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+
+typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -232,9 +235,8 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
   const ALE::Obj<RealSection>& coordinates =
     faultSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   // :TODO: Use spaces to create subsections like in FaultCohesiveKin.
   _fields->add("orientation", "orientation", 
@@ -357,9 +359,8 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
     const ALE::Obj<RealSection>& coordinates =
       faultSieveMesh->getRealSection("coordinates");
     assert(!coordinates.isNull());
-    topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						  coordinatesCell.size(),
-						  &coordinatesCell[0]);
+    RestrictVisitor coordsVisitor(*coordinates, 
+				  coordinatesCell.size(), &coordinatesCell[0]);
 
     const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
     

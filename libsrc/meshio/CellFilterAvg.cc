@@ -80,7 +80,7 @@ pylith::meshio::CellFilterAvg<mesh_type, field_type>::fieldAvg(void) const
 // ----------------------------------------------------------------------
 // Filter field.
 template<typename mesh_type, typename field_type>
-const field_type&
+field_type&
 pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
 						const field_type& fieldIn,
 						const char* label,

@@ -19,6 +19,7 @@
 EXTRA_DIST = \
 	general \
 	Sieve.tex \
+	toplevel_flow.txt \
 	SWIG
 
 

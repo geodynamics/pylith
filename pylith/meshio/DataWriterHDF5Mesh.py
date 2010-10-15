@@ -56,7 +56,7 @@ class DataWriterHDF5Mesh(DataWriterHDF5, ModuleDataWriterHDF5):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def output_data_writer():
+def data_writer():
   """
   Factory associated with DataWriter.
   """

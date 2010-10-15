@@ -19,7 +19,7 @@
 #if !defined(pylith_meshio_datawritervtkdatafaultmeshtet4_hh)
 #define pylith_meshio_datawritervtkdatafaultmeshtet4_hh
 
-#include "DataWriterVTKData.hh" // ISA DataWriterVTKData
+#include "DataWriterData.hh" // ISA DataWriterData
 
 namespace pylith {
   namespace meshio {
@@ -27,7 +27,7 @@ namespace pylith {
   } // meshio
 } // pylith
 
-class pylith::meshio::DataWriterVTKDataFaultMeshTet4 : public DataWriterVTKData
+class pylith::meshio::DataWriterVTKDataFaultMeshTet4 : public DataWriterData
 { // DataWriterVTKDataFaultMeshTet4
 
 public: 

@@ -408,6 +408,9 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 
   // Initial stress and strain values
   const double meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0;
+  // :BUG:? CHARLES - Doesn't sigma_zz contribute to
+  // meanStressInitial? Isn't sigma_zz nonzero and found from sigma_xx
+  // and sigma_yy?
   const double meanStressInitial = (initialStress[0] + initialStress[1]) / 3.0;
   const double devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
 				     initialStrain[1] - meanStrainInitial,

@@ -112,8 +112,8 @@ const int pylith::bc::AbsorbingDampersDataHex8::_numVertices = 6;
 const int pylith::bc::AbsorbingDampersDataHex8::_numCells = 2;
 const int pylith::bc::AbsorbingDampersDataHex8::_numCorners = 4;
 const int pylith::bc::AbsorbingDampersDataHex8::_cells[] = {
-  4, 10,  8,  2,
-  6, 12, 10,  4,
+  2, 4, 10,  8,
+  4, 6, 12, 10,
 };
 
 

@@ -45,17 +45,16 @@ class pylith::topology::SubMesh
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public:
 
+  // Sieve mesh for higher level domain (mesh, not submesh)
+  typedef Mesh::SieveMesh DomainSieveMesh;
+
   // Typedefs for basic types associated with Sieve mesh.
   // SieveMesh, RealSection, and IntSection are used in templated code.
   typedef Mesh::SieveSubMesh SieveMesh;
-  typedef Mesh::RealSection  RealSection;
-  typedef Mesh::IntSection IntSection;
-  typedef Mesh::RestrictVisitor RestrictVisitor;
-  typedef Mesh::UpdateAddVisitor UpdateAddVisitor;
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
 
-  // Sieve mesh for higher level domain (mesh, not submesh)
-  typedef Mesh::SieveMesh DomainSieveMesh;
+  typedef Mesh::IntSection IntSection;
+  typedef Mesh::RealSection RealSection;
+  typedef Mesh::RealUniformSection  RealUniformSection;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

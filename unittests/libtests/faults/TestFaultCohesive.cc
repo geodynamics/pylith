@@ -418,7 +418,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8h(void)
 { // testAdjustTopologyHex8h
   CohesiveDataHex8h data;
   FaultCohesiveTract fault;
-  _testAdjustTopology(&fault, data, false);
+  _testAdjustTopology(&fault, data, true);
 } // testAdjustTopologyHex8h
 
 // ----------------------------------------------------------------------
@@ -550,6 +550,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
 				   tolerance);
   } // for
+
+  mesh.view("MESH");
 
   // check cells
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();

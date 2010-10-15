@@ -42,12 +42,6 @@
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Mesh::UpdateAddVisitor UpdateAddVisitor;
-
-// ----------------------------------------------------------------------
 const int pylith::feassemble::ElasticityExplicitTet4::_spaceDim = 3;
 const int pylith::feassemble::ElasticityExplicitTet4::_cellDim = 3;
 const int pylith::feassemble::ElasticityExplicitTet4::_tensorSize = 6;
@@ -752,17 +746,16 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", dispSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::Mesh::IndicesVisitor jacobianVisitor(*dispSection, *globalOrder,
-		  (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-			    sieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianVisitor(*dispSection, *globalOrder,
+				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
+					   sieveMesh->depth())*spaceDim);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -893,16 +886,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   // Get sections
   const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
   assert(!jacobianSection.isNull());
-  topology::Mesh::UpdateAddVisitor jacobianVisitor(*jacobianSection, 
-						   &_cellVector[0]);
+  UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
 
   double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  topology::Mesh::RestrictVisitor coordsVisitor(*coordinates, 
-						coordinatesCell.size(),
-						&coordinatesCell[0]);
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)

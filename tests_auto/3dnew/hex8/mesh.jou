@@ -41,7 +41,7 @@ nodeset 11 name "fault_b"
 group "face_xpos" add node in surface 31
 group "face_xpos" add node in surface 39
 nodeset 20 group face_xpos
-nodeset 20 name "face xpos"
+nodeset 20 name "face_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
@@ -49,7 +49,7 @@ nodeset 20 name "face xpos"
 group "face_xneg" add node in surface 41
 group "face_xneg" add node in surface 49
 nodeset 21 group face_xneg
-nodeset 21 name "face xneg"
+nodeset 21 name "face_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
@@ -61,7 +61,7 @@ group "face_ypos" add node in surface 38
 group "face_ypos" add node in surface 46
 group "face_ypos" add node in surface 56
 nodeset 22 group face_ypos
-nodeset 22 name "face ypos"
+nodeset 22 name "face_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
@@ -73,7 +73,7 @@ group "face_yneg" add node in surface 36
 group "face_yneg" add node in surface 48
 group "face_yneg" add node in surface 58
 nodeset 23 group face_yneg
-nodeset 23 name "face yneg"
+nodeset 23 name "face_yneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +z face
@@ -82,7 +82,7 @@ group "face_zpos" add node in surface 18
 group "face_zpos" add node in surface 27
 group "face_zpos" add node in surface 23
 nodeset 24 group face_zpos
-nodeset 24 name "face zpos"
+nodeset 24 name "face_zpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face
@@ -91,7 +91,7 @@ group "face_zneg" add node in surface 17
 group "face_zneg" add node in surface 28
 group "face_zneg" add node in surface 21
 nodeset 25 group face_zneg
-nodeset 25 name "face zneg"
+nodeset 25 name "face_zneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face
@@ -99,7 +99,7 @@ nodeset 25 name "face zneg"
 group "face_zneg_nofault" add node in face_zneg
 group "face_zneg_nofault" remove node in fault
 nodeset 26 group face_zneg_nofault
-nodeset 26 name "face zneg nofault"
+nodeset 26 name "face_zneg_nofault"
 
 # ----------------------------------------------------------------------
 # Export exodus file

@@ -113,7 +113,7 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       void appendVertexField(const double t,
-			     const field_type& field,
+			     field_type& field,
 			     const mesh_type& mesh);
       
       /** Append finite-element cell field to file.
@@ -125,7 +125,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       void appendCellField(const double t,
-			   const field_type& field,
+			   field_type& field,
 			   const char* label =0,
 			   const int labelId =0);
 

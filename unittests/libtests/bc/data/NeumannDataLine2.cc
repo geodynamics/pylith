@@ -52,11 +52,13 @@ const char* pylith::bc::NeumannDataLine2::_label = "bc1";
 
 const int pylith::bc::NeumannDataLine2::_spaceDim = 1;
 const int pylith::bc::NeumannDataLine2::_cellDim = 0;
-
-const int pylith::bc::NeumannDataLine2::_numBoundaryVertices = 1;
-const int pylith::bc::NeumannDataLine2::_numBoundaryCells = 1;
+const int pylith::bc::NeumannDataLine2::_numVertices = 1;
+const int pylith::bc::NeumannDataLine2::_numCells = 1;
 const int pylith::bc::NeumannDataLine2::_numCorners = 1;
-const double pylith::bc::NeumannDataLine2::_cellVertices[] = { -1.0};
+const int pylith::bc::NeumannDataLine2::_cells[] = {
+  2,
+};
+
 const double pylith::bc::NeumannDataLine2::_tractionsCell[] = {
   1.0,
 };
@@ -84,11 +86,11 @@ pylith::bc::NeumannDataLine2::NeumannDataLine2(void)
 
   spaceDim = _spaceDim;
   cellDim = _cellDim;
-  numBoundaryVertices = _numBoundaryVertices;
-  numBoundaryCells = _numBoundaryCells;
+  numVertices = _numVertices;
+  numCells = _numCells;
   numCorners = _numCorners;
+  cells = const_cast<int*>(_cells);
 
-  cellVertices = const_cast<double*>(_cellVertices);
   tractionsCell = const_cast<double*>(_tractionsCell);
   valsResidual = const_cast<double*>(_valsResidual);
 

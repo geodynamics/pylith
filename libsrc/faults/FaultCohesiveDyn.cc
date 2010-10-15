@@ -56,7 +56,10 @@
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RestrictVisitor RestrictVisitor;
+
+typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -1128,8 +1131,8 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   assert(!forcesInitialSection.isNull());
   double_array forcesInitialCell(numBasis*spaceDim);
   double_array tractionQuadPt(spaceDim);
-  topology::Mesh::UpdateAddVisitor forcesInitialVisitor(*forcesInitialSection,
-        &forcesInitialCell[0]);
+  UpdateAddVisitor forcesInitialVisitor(*forcesInitialSection,
+					&forcesInitialCell[0]);
 
   assert(0 != _dbInitialTract);
   _dbInitialTract->open();
@@ -1639,10 +1642,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     faultSieveMesh->getFactory()->getGlobalOrder(faultSieveMesh, "default", solutionFaultSection);
   assert(!globalOrderFault.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  topology::SubMesh::IndicesVisitor jacobianFaultVisitor(*solutionFaultSection,
-                                                 *globalOrderFault,
-                           (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
-                                     faultSieveMesh->depth())*spaceDim);
+  IndicesVisitor jacobianFaultVisitor(*solutionFaultSection,
+				      *globalOrderFault,
+				      (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
+						faultSieveMesh->depth())*spaceDim);
 
   const int iCone = (negativeSide) ? 0 : 1;
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;

@@ -60,12 +60,13 @@ const char* pylith::bc::NeumannDataTri3::_label = "bc";
 
 const int pylith::bc::NeumannDataTri3::_spaceDim = 2;
 const int pylith::bc::NeumannDataTri3::_cellDim = 1;
-
-const int pylith::bc::NeumannDataTri3::_numBoundaryVertices = 2;
-const int pylith::bc::NeumannDataTri3::_numBoundaryCells = 1;
+const int pylith::bc::NeumannDataTri3::_numVertices = 2;
+const int pylith::bc::NeumannDataTri3::_numCells = 1;
 const int pylith::bc::NeumannDataTri3::_numCorners = 2;
-const double pylith::bc::NeumannDataTri3::_cellVertices[] = { 0.0,-1.0,
-							      1.0, 0.0};
+const int pylith::bc::NeumannDataTri3::_cells[] = {
+  3,  5,
+};
+
 const double pylith::bc::NeumannDataTri3::_tractionsCell[] = {
   1.4142135624,  0.0,
 };
@@ -94,11 +95,11 @@ pylith::bc::NeumannDataTri3::NeumannDataTri3(void)
 
   spaceDim = _spaceDim;
   cellDim = _cellDim;
-  numBoundaryVertices = _numBoundaryVertices;
-  numBoundaryCells = _numBoundaryCells;
+  numVertices = _numVertices;
+  numCells = _numCells;
   numCorners = _numCorners;
+  cells = const_cast<int*>(_cells);
 
-  cellVertices = const_cast<double*>(_cellVertices);
   tractionsCell = const_cast<double*>(_tractionsCell);
   valsResidual = const_cast<double*>(_valsResidual);
 

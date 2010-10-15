@@ -27,6 +27,24 @@
 #if !defined(pylith_topology_topologyfwd_hh)
 #define pylith_topology_topologyfwd_hh
 
+#include "pylith/utils/sievetypes.hh"
+
+namespace ALE {
+  template<typename point_type, 
+	   typename value_type,
+	   typename allocator> class IUniformSectionDS;
+
+  template<typename cellrefiner_type> class MeshRefiner;
+  class RefineEdges2;
+  class CellRefinerTri3;
+  class CellRefinerTet4;
+
+  class RefineFace4Edges2;
+  class CellRefinerQuad4;
+
+  class MeshOrder;
+} // ALE
+
 namespace pylith {
   namespace topology {
 
@@ -35,17 +53,16 @@ namespace pylith {
     class MeshOps;
 
     class FieldBase;
-    template<typename mesh_type> class Field;
+    template<typename mesh_type, 
+	     typename section_type =ALE::IGeneralSection<pylith::Mesh::point_type, double> > class Field;
     template<typename field_type> class Fields;
-    typedef Fields<Field<Mesh> > FieldsMesh;
-    typedef Fields<Field<SubMesh> > FieldsSubMesh;
+    template<typename mesh_type> class FieldsNew;
     class SolutionFields;
 
     class Jacobian;
 
     class Distributor;
 
-    class MeshRefiner;
     class RefineUniform;
 
     class ReverseCuthillMcKee;
