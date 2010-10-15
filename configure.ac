@@ -170,7 +170,7 @@ fi
 if test "$enable_tetgen" = "yes" ; then
   AC_REQUIRE_CPP
   AC_LANG(C++)
-  CPPFLAGS="$PETSC_INCLUDE $PETSC_CXX_INCLUDE $CPPFLAGS"
+  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"
   AC_CHECK_HEADER([tetgen.h], [], [
     AC_MSG_ERROR([tetgen header not found; check PETSc installation.])
   ])
