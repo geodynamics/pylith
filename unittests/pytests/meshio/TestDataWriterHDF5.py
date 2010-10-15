@@ -16,27 +16,27 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/meshio/TestDataWriterVTK.py
+## @file unittests/pytests/meshio/TestDataWriterHDF5.py
 
-## @brief Unit testing of Python DataWriterVTK object.
+## @brief Unit testing of Python DataWriterHDF5 object.
 
 import unittest
 
-from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
-from pylith.meshio.DataWriterVTKSubMesh import DataWriterVTKSubMesh
-from pylith.meshio.DataWriterVTKSubSubMesh import DataWriterVTKSubSubMesh
+from pylith.meshio.DataWriterHDF5Mesh import DataWriterHDF5Mesh
+from pylith.meshio.DataWriterHDF5SubMesh import DataWriterHDF5SubMesh
+from pylith.meshio.DataWriterHDF5SubSubMesh import DataWriterHDF5SubSubMesh
 
 # ----------------------------------------------------------------------
-class TestDataWriterVTKMesh(unittest.TestCase):
+class TestDataWriterHDF5Mesh(unittest.TestCase):
   """
-  Unit testing of Python DataWriterVTKMesh object.
+  Unit testing of Python DataWriterHDF5Mesh object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = DataWriterVTKMesh()
+    filter = DataWriterHDF5Mesh()
     filter._configure()
     return
 
@@ -45,7 +45,7 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = DataWriterVTKMesh()
+    filter = DataWriterHDF5Mesh()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -58,22 +58,22 @@ class TestDataWriterVTKMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKMesh import data_writer
+    from pylith.meshio.DataWriterHDF5Mesh import data_writer
     filter = data_writer()
     return
 
 
 # ----------------------------------------------------------------------
-class TestDataWriterVTKSubMesh(unittest.TestCase):
+class TestDataWriterHDF5SubMesh(unittest.TestCase):
   """
-  Unit testing of Python DataWriterVTK object.
+  Unit testing of Python DataWriterHDF5 object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = DataWriterVTKSubMesh()
+    filter = DataWriterHDF5SubMesh()
     filter._configure()
     return
 
@@ -82,7 +82,7 @@ class TestDataWriterVTKSubMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = DataWriterVTKSubMesh()
+    filter = DataWriterHDF5SubMesh()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -95,22 +95,22 @@ class TestDataWriterVTKSubMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKSubMesh import data_writer
+    from pylith.meshio.DataWriterHDF5SubMesh import data_writer
     filter = data_writer()
     return
 
 
 # ----------------------------------------------------------------------
-class TestDataWriterVTKSubSubMesh(unittest.TestCase):
+class TestDataWriterHDF5SubSubMesh(unittest.TestCase):
   """
-  Unit testing of Python DataWriterVTK object.
+  Unit testing of Python DataWriterHDF5 object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    filter = DataWriterVTKSubSubMesh()
+    filter = DataWriterHDF5SubSubMesh()
     filter._configure()
     return
 
@@ -119,7 +119,7 @@ class TestDataWriterVTKSubSubMesh(unittest.TestCase):
     """
     Test constructor.
     """
-    filter = DataWriterVTKSubSubMesh()
+    filter = DataWriterHDF5SubSubMesh()
     filter._configure()
 
     from spatialdata.units.Nondimensional import Nondimensional
@@ -132,7 +132,7 @@ class TestDataWriterVTKSubSubMesh(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.meshio.DataWriterVTKSubSubMesh import data_writer
+    from pylith.meshio.DataWriterHDF5SubSubMesh import data_writer
     filter = data_writer()
     return
 
