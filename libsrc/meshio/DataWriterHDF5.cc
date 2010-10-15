@@ -169,6 +169,16 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       field.createVector();
       vector = field.vector();
     }
+
+#if 0 // TEMPORARY DEBUGGING
+    const char* vecname = 0;
+    PetscObjectGetName((PetscObject) vector, &vecname);
+    std::cout << "NAME field: " << field.label()
+	      << ", section: " << field.section()->getName()
+	      << ", vec: " << vecname
+	      << std::endl;
+#endif
+
     // TODO: Create scatter if necessary
     field.createScatter();
     field.scatterSectionToVector();
@@ -209,15 +219,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
       vector = field.vector();
     }
 
-#if 1 // TEMPORARY DEBUGGING
-    field.view("CELL FIELD");
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
-    assert(!section.isNull());
-    const ALE::Obj<typename mesh_type::SieveMesh::order_type>& globalOrder = sieveMesh->getFactory()->getGlobalOrder(sieveMesh, section->getName(), section);
-    std::cout << "GLOBAL ORDER LOCAL SIZE: " << globalOrder->getLocalSize() << std::endl;
-
+#if 0 // TEMPORARY DEBUGGING
+    const char* vecname = 0;
+    PetscObjectGetName((PetscObject) vector, &vecname);
+    std::cout << "NAME field: " << field.label()
+	      << ", section: " << field.section()->getName()
+	      << ", vec: " << vecname
+	      << std::endl;
 #endif
     // TODO: Create scatter only if necessary
     field.createScatter();
