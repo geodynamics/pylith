@@ -91,13 +91,8 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/DataWriterVTKMesh.py \
 	meshio/DataWriterVTKSubMesh.py \
 	meshio/DataWriterVTKSubSubMesh.py \
-	meshio/DataWriterHDF5.py \
-	meshio/DataWriterHDF5Mesh.py \
-	meshio/DataWriterHDF5SubMesh.py \
-	meshio/DataWriterHDF5SubSubMesh.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
-	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
 	meshio/MeshIOSieve.py \
 	meshio/OutputDirichlet.py \
@@ -179,6 +174,17 @@ nobase_pkgpyexec_PYTHON = \
 	tests/StateVariables.py \
 	tests/Fault.py
 
+if ENABLE_CUBIT
+  nobase_pkgpyexec_PYTHON += meshio/MeshIOCubit.py
+endif
+
+if ENABLE_HDF5
+  nobase_pkgpyexec_PYTHON += \
+	meshio/DataWriterHDF5.py \
+	meshio/DataWriterHDF5Mesh.py \
+	meshio/DataWriterHDF5SubMesh.py \
+	meshio/DataWriterHDF5SubSubMesh.py
+endif
 
 if ENABLE_TETGEN
   nobase_pkgpyexec_PYTHON += topology/MeshGenSimple.py
