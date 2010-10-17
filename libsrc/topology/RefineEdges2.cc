@@ -282,8 +282,10 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 		  << std::endl;
       } // if
       //assert(-1 != newRemotePoint);
-      newSendOverlap->addArrow(newLocalPoint, rank, newRemotePoint);
-      newRecvOverlap->addArrow(rank, newLocalPoint, newRemotePoint);
+      if (-1 != newRemotePoint) {
+	newSendOverlap->addArrow(newLocalPoint, rank, newRemotePoint);
+	newRecvOverlap->addArrow(rank, newLocalPoint, newRemotePoint);
+      } // if
     } // for
   } // for
 

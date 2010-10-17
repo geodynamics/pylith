@@ -25,7 +25,9 @@ namespace pylith {
   } // meshio
 } // pylith
 
-typedef int hid_t; // HASA hid_t
+extern "C" {
+#include "hdf5.h" // USES hdf5
+}
 
 class pylith::meshio::HDF5
 { // HDF5
@@ -38,7 +40,8 @@ public :
    * @param filename Name of HDF5 file
    * @param mode Mode for HDF5 file
    */
-  HDF5(const char* filename, hid_t mode);
+  HDF5(const char* filename,
+       hid_t mode);
 
   /// Destructor
   ~HDF5(void);
@@ -52,43 +55,76 @@ public :
    */
   hid_t createGroup(const char* name);
 
-  /** Create scalar attribute.
+  /** Set scalar attribute.
    *
    * @param parent Parent of attribute.
-   * @param attrName Name of attribute.
-   * @param pValue Pointer to scalar value
+   * @param name Name of attribute.
+   * @param value Attribute value.
    * @param datatype Datatype of scalar.
    */
   void writeAttribute(hid_t parent,
 		      const char* name,
-		      const void* pValue,
+		      const void* value,
 		      hid_t datatype);
 
-  /** Create string attribute.
+  /** Set string attribute.
    *
    * @param parent Parent of attribute.
-   * @param attrName Name of attribute.
+   * @param name Name of attribute.
    * @param value String value
    */
   void writeAttribute(hid_t parent,
 		      const char* name,
 		      const char* value);
 
-  /** Write dataset.
+  /** Create dataset.
    *
-   * @param parent Parent of dataset.
+   * @param parent Full path for parent of dataset.
    * @param name Name of dataset.
-   * @param pData Pointer to data.
    * @param dims Dimensions of data.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
-  void writeDataset(hid_t parent,
-		    const char* name,
-		    const void* pData,
-		    const int* dims,
-		    const int ndims,
-		    hid_t datatype);
+  void createDataset(const char* parent,
+		     const char* name,
+		     const hsize_t* dims,
+		     const hsize_t ndims,
+		     hid_t datatype);
+  
+  /** Create dataset associated with data stored in a raw external
+   * binary file.
+   *
+   * @param parent Parent of dataset.
+   * @param name Name of dataset.
+   * @param filename Name of external raw data file.
+   * @param dims Dimensions of data.
+   * @param ndims Number of dimensions of data.
+   * @param datatype Type of data.
+   */
+  void createDatasetRawExternal(const char* parent,
+				const char* name,
+				const char* filename,
+				const hsize_t* dims,
+				const hsize_t ndims,
+				hid_t datatype);
+
+  /** Append slice to dataset.
+   *
+   * @param parent Parent of dataset.
+   * @param name Name of dataset.
+   * @param data Data.
+   * @param dims Dimensions of data.
+   * @param ndims Number of dimensions of data.
+   * @param islice Index of data slice.
+   * @param datatype Type of data.
+   */
+  void writeDatasetSlice(const char* parent,
+			 const char* name,
+			 const void* data,
+			 const hsize_t* dims,
+			 const hsize_t ndims,
+			 const int islice,
+			 hid_t datatype);
 
 // PRIVATE MEMBERS ------------------------------------------------------
 private :

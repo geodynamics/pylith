@@ -165,6 +165,12 @@ AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \
+	meshio/HDF5.cc
+  libpylith_la_LIBADD += -lhdf5
+endif
+
+if ENABLE_CUBIT
+  libpylith_la_SOURCES += \
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
