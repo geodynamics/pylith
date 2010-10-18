@@ -215,6 +215,7 @@ endif
 
 if ENABLE_HDF5
   testmeshio_SOURCES += \
+	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5MeshHex8.cc
