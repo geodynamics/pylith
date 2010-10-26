@@ -405,6 +405,73 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 					       const hsize_t ndims,
 					       hid_t datatype)
 { // createDatasetRawExternal
+  try {
+    // Open group
+    hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
+    if (group < 0) 
+      throw std::runtime_error("Could not open group.");
+
+    // Create the dataspace
+    hid_t dataspace = H5Screate_simple(ndims, dims, 0);
+    if (dataspace < 0)
+      throw std::runtime_error("Could not create dataspace.");
+      
+    // Create chunked dataset
+    hid_t property = H5Pcreate(H5P_DATASET_CREATE);
+    if (property < 0)
+      throw std::runtime_error("Could not create property for dataset.");
+
+#if 0 // Not allowed for external storage?
+    herr_t err = H5Pset_chunk(property, ndims, dims);
+    if (err < 0)
+      throw std::runtime_error("Could not set chunk.");
+
+    // Set gzip compression level for chunk.
+    //H5Pset_deflate(property, 6);
+#endif
+
+    // Set external file
+    const off_t offset = 0;
+    hsize_t sizeBytes = 0;
+    for (int i=0; i < ndims; ++i)
+      sizeBytes += dims[i] * H5Tget_size(datatype);
+    herr_t err = H5Pset_external(property, filename, offset, sizeBytes);
+    if (err < 0)
+      throw std::runtime_error("Could not set external file property.");
+
+    hid_t dataset = H5Dcreate(group, name,
+			      datatype, dataspace, H5P_DEFAULT,
+			      property, H5P_DEFAULT);
+    if (dataset < 0) 
+      throw std::runtime_error("Could not create dataset.");
+
+    err = H5Dclose(dataset);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataset.");
+
+    err = H5Pclose(property);
+    if (err < 0) 
+      throw std::runtime_error("Could not close property.");
+
+    err = H5Sclose(dataspace);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataspace.");
+
+    err = H5Gclose(group);
+    if (err < 0) 
+      throw std::runtime_error("Could not close group.");
+
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while creating dataset '"
+	<< parent << "/" << name << "':\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) {
+    std::ostringstream msg;
+    msg << "Unknown  occurred while creating dataset '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
 } // createDatasetRawExternal
 
 // ----------------------------------------------------------------------
