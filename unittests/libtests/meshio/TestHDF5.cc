@@ -57,6 +57,8 @@ pylith::meshio::TestHDF5::testOpenClose(void)
 
   h5.open("test.h5", H5F_ACC_RDONLY);
   CPPUNIT_ASSERT(h5._file >= 0);
+  h5.close();
+  CPPUNIT_ASSERT(-1 == h5._file);
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -74,6 +76,7 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
   CPPUNIT_ASSERT(group >= 0);
   herr_t err = H5Gclose(group);
   CPPUNIT_ASSERT(err >= 0);
+  h5.close();
 } // testCreateGroup
 
 // ----------------------------------------------------------------------
@@ -96,6 +99,7 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
   double scalar = 0;
   h5.readAttribute("/data", "myscalar", (void*)&scalar, H5T_NATIVE_DOUBLE);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(scalarE, scalar, tolerance);
+  h5.close();
 } // testAttributeScalar
 
 // ----------------------------------------------------------------------
@@ -116,6 +120,7 @@ pylith::meshio::TestHDF5::testAttributeString(void)
   h5.open("test.h5", H5F_ACC_RDONLY);
   std::string value = h5.readAttribute("/data", "mystring");
   CPPUNIT_ASSERT_EQUAL(valueE, value);
+  h5.close();
 } // testAttributeString
 
 // ----------------------------------------------------------------------
@@ -135,6 +140,11 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
   CPPUNIT_ASSERT(group >= 0);
   hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
   CPPUNIT_ASSERT(dataset >= 0);
+  herr_t err = H5Dclose(dataset);
+  CPPUNIT_ASSERT(err >= 0);
+  err = H5Gclose(group);
+  CPPUNIT_ASSERT(err >= 0);
+  h5.close();
 } // testCreateDataset
 
 // ----------------------------------------------------------------------
@@ -142,6 +152,36 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
 void
 pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
 { // testCreateDatasetRawExternal
+  const hsize_t ndims = 1;
+  const hsize_t dims[ndims] = { 6 };
+
+  // Create raw data file
+  hsize_t nitems = 0;
+  for (int i=0; i < ndims; ++i)
+    nitems += dims[i];
+  const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
+  int* values = (nitems > 0) ? new int[nitems] : 0;
+  for (int i=0; i < nitems; ++i)
+    values[i] = 2 * i + 1;
+  std::ofstream fout("test.dat");
+  fout.write((char*)values, sizeBytes);
+  fout.close();
+  delete[] values; values = 0;
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
+  h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndims, H5T_NATIVE_INT);
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  hid_t group = H5Gopen(h5._file, "/", H5P_DEFAULT);
+  CPPUNIT_ASSERT(group >= 0);
+  hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
+  CPPUNIT_ASSERT(dataset >= 0);
+  herr_t err = H5Dclose(dataset);
+  CPPUNIT_ASSERT(err >= 0);
+  err = H5Gclose(group);
+  CPPUNIT_ASSERT(err >= 0);
+  h5.close();
 } // testCreateDatasetRawExternal
 
 // ----------------------------------------------------------------------

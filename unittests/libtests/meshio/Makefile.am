@@ -309,7 +309,12 @@ noinst_tmp = \
 	output_vertex_t12.vtk \
 	output_vertex_filter_t12.vtk \
 	output_cell_t12.vtk \
-	output_cell_filter_t12.vtk
+	output_cell_filter_t12.vtk \
+	test.h5 \
+	test.dat \
+	hex8.h5 \
+	hex8_vertex.h5 \
+	hex8_cell.h5
 
 CLEANFILES = $(noinst_tmp)
 
