@@ -23,7 +23,7 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8 && !defined(H5_USE_API_16)
+#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8 && !defined(H5_USE_16_API)
 #define PYLITH_HDF5_USE_API_18
 #endif
 
