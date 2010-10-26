@@ -22,7 +22,7 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 
-#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8 && !defined(H5_USE_API_16)
+#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8 && !defined(H5_USE_16_API)
 #define PYLITH_HDF5_USE_API_18
 #endif
 
