@@ -16,9 +16,9 @@
 # ======================================================================
 #
 
-## @file unittests/meshio/testcubit.py
+## @file unittests/meshio/testhdf5.py
 
-## @brief Python application for testing CUBIT related meshio code.
+## @brief Python application for testing HDF5 related meshio code.
 
 from pyre.applications.Script import Script
 
@@ -60,8 +60,14 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestMeshIOCubit import TestMeshIOCubit
-    suite.addTest(unittest.makeSuite(TestMeshIOCubit))
+    from TestDataWriterHDF5 import TestDataWriterHDF5Mesh
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5Mesh))
+
+    from TestDataWriterHDF5 import TestDataWriterHDF5SubMesh
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubMesh))
+
+    from TestDataWriterHDF5 import TestDataWriterHDF5SubSubMesh
+    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubSubMesh))
 
     return suite
 
