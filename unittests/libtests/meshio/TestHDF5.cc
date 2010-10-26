@@ -76,7 +76,7 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t group = H5Gopen(h5._file, "/mygroup", H5P_DEFAULT);
 #else
   hid_t group = H5Gopen(h5._file, "/mygroup");
@@ -144,13 +144,13 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t group = H5Gopen(h5._file, "/", H5P_DEFAULT);
 #else
   hid_t group = H5Gopen(h5._file, "/");
 #endif
   CPPUNIT_ASSERT(group >= 0);
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
 #else
   hid_t dataset = H5Dopen(group, "data");
@@ -189,13 +189,13 @@ pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t group = H5Gopen(h5._file, "/", H5P_DEFAULT);
 #else
   hid_t group = H5Gopen(h5._file, "/");
 #endif
   CPPUNIT_ASSERT(group >= 0);
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
 #else
   hid_t dataset = H5Dopen(group, "data");

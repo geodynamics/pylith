@@ -112,7 +112,7 @@ pylith::meshio::HDF5::close(void)
 void
 pylith::meshio::HDF5::createGroup(const char* name)
 { // createGroup
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
   hid_t group = H5Gcreate(_file, name, 0, H5P_DEFAULT, H5P_DEFAULT);
 #else // depracated HDF5 1.6 API
   hid_t group = H5Gcreate(_file, name, 0);
@@ -144,7 +144,7 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace for");
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
@@ -152,7 +152,7 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     if (dataset < 0)
       throw std::runtime_error("Could not open parent dataset for");
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t attribute = H5Acreate(dataset, name,
 				datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT);
 #else
@@ -194,7 +194,7 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
 				    hid_t datatype)
 { // readAttribute
   try {
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
@@ -248,7 +248,7 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     if (dataspace < 0) 
       throw std::runtime_error("Could not create dataspace for");
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
@@ -264,7 +264,7 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     if (err < 0) 
       throw std::runtime_error("Could not set size of");
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t attribute = H5Acreate(dataset, name,
 				datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT);
 #else
@@ -310,7 +310,7 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
   std::string value;
 
   try {
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
@@ -373,7 +373,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
 { // createDataset
   try {
     // Open group
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t group = H5Gopen(_file, parent);
@@ -398,7 +398,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
     // Set gzip compression level for chunk.
     //H5Pset_deflate(property, 6);
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dcreate(group, name,
 			      datatype, dataspace, H5P_DEFAULT,
 			      property, H5P_DEFAULT);
@@ -451,7 +451,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 { // createDatasetRawExternal
   try {
     // Open group
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t group = H5Gopen(_file, parent);
@@ -487,7 +487,7 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
     if (err < 0)
       throw std::runtime_error("Could not set external file property.");
 
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dcreate(group, name,
 			      datatype, dataspace, H5P_DEFAULT,
 			      property, H5P_DEFAULT);
@@ -554,7 +554,7 @@ pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
     offset[0] = islice;
 
     // Open group
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
 #else
     hid_t group = H5Gopen(_file, parent);
@@ -563,7 +563,7 @@ pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
       throw std::runtime_error("Could not open group.");
     
     // Open the dataset
-#if defined(PYLITH_USE_HDF5_API_18)
+#if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(group, name, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(group, name);
