@@ -75,7 +75,8 @@ AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
 	[enable_hdf5=yes
-	CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS],
+	CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
+	PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
 	[enable_hdf5=no])
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 

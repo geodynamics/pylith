@@ -36,8 +36,14 @@ noinst_PYTHON = \
 	TestOutputManagerSubMesh.py \
 	TestOutputSolnSubset.py \
 	TestDataWriterVTK.py \
+	TestDataWriterHDF5.py \
 	TestSingleOutput.py
 
+
+if ENABLE_HDF5
+  TESTS += testhdf5.py
+  dist_check_SCRIPTS += testhdf5.py
+endif	
 
 if ENABLE_CUBIT
   TESTS += testcubit.py
