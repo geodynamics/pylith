@@ -81,7 +81,7 @@ _utilsmodule_la_LIBADD += \
 endif
 
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
