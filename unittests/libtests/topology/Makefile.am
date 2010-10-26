@@ -75,7 +75,7 @@ noinst_HEADERS += \
 	data/MeshDataCohesiveQuad4Level2Fault1.hh
 
 AM_CPPFLAGS = \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testtopology_LDADD = \
