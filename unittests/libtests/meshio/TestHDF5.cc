@@ -37,7 +37,7 @@ pylith::meshio::TestHDF5::testConstructor(void)
   HDF5 one;
   CPPUNIT_ASSERT(-1 == one._file);
 
-  HDF5 two("test.h5", H5F_ACC_TRUNC, true);
+  HDF5 two("test.h5", H5F_ACC_TRUNC);
   CPPUNIT_ASSERT(two._file >= 0);
   two.close();
 
@@ -53,16 +53,20 @@ pylith::meshio::TestHDF5::testOpenClose(void)
   HDF5 h5;
   CPPUNIT_ASSERT(-1 == h5._file);
 
-  h5.open("test.h5", H5F_ACC_TRUNC, true);
+  h5.open("test.h5", H5F_ACC_TRUNC);
   CPPUNIT_ASSERT(h5._file >= 0);
+  CPPUNIT_ASSERT(h5.isOpen());
   
   h5.close();
   CPPUNIT_ASSERT(-1 == h5._file);
+  CPPUNIT_ASSERT(!h5.isOpen());
 
   h5.open("test.h5", H5F_ACC_RDONLY);
   CPPUNIT_ASSERT(h5._file >= 0);
+  CPPUNIT_ASSERT(h5.isOpen());
   h5.close();
   CPPUNIT_ASSERT(-1 == h5._file);
+  CPPUNIT_ASSERT(!h5.isOpen());
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -70,7 +74,7 @@ pylith::meshio::TestHDF5::testOpenClose(void)
 void
 pylith::meshio::TestHDF5::testCreateGroup(void)
 { // testCreateGroup
-  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   h5.createGroup("/mygroup");
   h5.close();
@@ -92,11 +96,11 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
 void
 pylith::meshio::TestHDF5::testAttributeScalar(void)
 { // testAttributeScalar
-  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 1;
   const hsize_t dims[ndims] = { 2 };
-  h5.createDataset("/", "data", dims, ndims, H5T_NATIVE_INT);
+  h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
 
   const double scalarE = 2.5;
   h5.writeAttribute("/data", "myscalar", (void*)&scalarE, H5T_NATIVE_DOUBLE);
@@ -115,11 +119,11 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
 void
 pylith::meshio::TestHDF5::testAttributeString(void)
 { // testAttributeString
-  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 1;
   const hsize_t dims[ndims] = { 2 };
-  h5.createDataset("/", "data", dims, ndims, H5T_NATIVE_INT);
+  h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
 
   const std::string valueE = "abcd";
   h5.writeAttribute("/data", "mystring", valueE.c_str());
@@ -136,11 +140,12 @@ pylith::meshio::TestHDF5::testAttributeString(void)
 void
 pylith::meshio::TestHDF5::testCreateDataset(void)
 { // testCreateDataset
-  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-  const hsize_t ndims = 1;
-  const hsize_t dims[ndims] = { 2 };
-  h5.createDataset("/", "data", dims, ndims, H5T_NATIVE_INT);
+  const hsize_t ndims = 2;
+  const hsize_t dims[ndims] = { 3, 2 };
+  const hsize_t dimsChunk[ndims] = { 1, 2 };
+  h5.createDataset("/", "data", dims, dimsChunk, ndims, H5T_NATIVE_INT);
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
@@ -168,24 +173,24 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
 void
 pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
 { // testCreateDatasetRawExternal
-  const hsize_t ndims = 1;
-  const hsize_t dims[ndims] = { 6 };
+  const int ndimsE = 2;
+  const hsize_t dimsE[ndimsE] = { 2, 3 };
 
   // Create raw data file
-  hsize_t nitems = 0;
-  for (int i=0; i < ndims; ++i)
-    nitems += dims[i];
+  hsize_t nitems = dimsE[0];
+  for (int i=1; i < ndimsE; ++i)
+    nitems *= dimsE[i];
   const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
-  int* values = (nitems > 0) ? new int[nitems] : 0;
+  int* valuesE = (nitems > 0) ? new int[nitems] : 0;
   for (int i=0; i < nitems; ++i)
-    values[i] = 2 * i + 1;
+    valuesE[i] = 2 * i + 1;
   std::ofstream fout("test.dat");
-  fout.write((char*)values, sizeBytes);
+  fout.write((char*)valuesE, sizeBytes);
   fout.close();
-  delete[] values; values = 0;
 
-  HDF5 h5("test.h5", H5F_ACC_TRUNC, true);
-  h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndims, H5T_NATIVE_INT);
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+  h5.createDatasetRawExternal("/", "data", "test.dat", dimsE, ndimsE,
+			      H5T_NATIVE_INT);
   h5.close();
 
   h5.open("test.h5", H5F_ACC_RDONLY);
@@ -201,7 +206,31 @@ pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
   hid_t dataset = H5Dopen(group, "data");
 #endif
   CPPUNIT_ASSERT(dataset >= 0);
-  herr_t err = H5Dclose(dataset);
+
+  hid_t dataspace = H5Dget_space(dataset);
+  CPPUNIT_ASSERT(dataspace >= 0);
+  
+  const int ndims = H5Sget_simple_extent_ndims(dataspace);
+  CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
+  hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
+  H5Sget_simple_extent_dims(dataspace, dims, 0);
+  for (int i=0; i < ndims; ++i)
+    CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+
+  int* values = (nitems > 0) ? new int[nitems] : 0;
+  herr_t err = H5Dread(dataset, H5T_NATIVE_INT, dataspace, dataspace, 
+		       H5P_DEFAULT, (void*)values);
+  CPPUNIT_ASSERT(err >= 0);
+
+  for (int i=0; i < nitems; ++i)
+    CPPUNIT_ASSERT_EQUAL(valuesE[i], values[i]);
+  delete[] valuesE; valuesE = 0;
+  delete[] values; values = 0;
+  delete[] dims; dims = 0;
+
+  err = H5Sclose(dataspace);
+  CPPUNIT_ASSERT(err >= 0);
+  err = H5Dclose(dataset);
   CPPUNIT_ASSERT(err >= 0);
   err = H5Gclose(group);
   CPPUNIT_ASSERT(err >= 0);
@@ -209,11 +238,55 @@ pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
 } // testCreateDatasetRawExternal
 
 // ----------------------------------------------------------------------
-// Test writeDatasetSlice.
+// Test writeDatasetChunk() and readDatasetChunk().
 void
-pylith::meshio::TestHDF5::testWriteDatasetSlice(void)
-{ // testWriteDatasetSlice
-} // testWriteDatasetSlice
+pylith::meshio::TestHDF5::testDatasetChunk(void)
+{ // testDatasetChunk
+  const int ndimsE = 3;
+  const hsize_t dimsE[ndimsE] = { 4, 2, 3 };
+  const hsize_t dimsChunkE[ndimsE] = { 1, 2, 3 };
+
+  // Create data.
+  hsize_t nitems = dimsE[0];
+  hsize_t nitemsS = 1;
+  for (int i=1; i < ndimsE; ++i) {
+    nitems *= dimsE[i];
+    nitemsS *= dimsE[i];
+  } // for
+  const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
+  int* valuesE = (nitems > 0) ? new int[nitems] : 0;
+  for (int i=0; i < nitems; ++i)
+    valuesE[i] = 2 * i + 1;
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+  h5.createDataset("/", "data", dimsE, dimsChunkE, ndimsE, H5T_NATIVE_INT);
+
+  for (int i=0; i < dimsE[0]; ++i)
+    h5.writeDatasetChunk("/", "data", (void*)&valuesE[i*nitemsS], 
+			 dimsE, dimsChunkE, ndimsE, i, H5T_NATIVE_INT);
+  h5.close();
+  
+  int ndims = 0;
+  hsize_t* dims = 0;
+  int* values = 0;
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  for (int i=0; i < dimsE[0]; ++i) {
+    h5.readDatasetChunk("/", "data", (char**)&values, &dims, &ndims, i, 
+			H5T_NATIVE_INT);
+    CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
+    for (int iDim=1; iDim < ndims; ++iDim)
+      CPPUNIT_ASSERT_EQUAL(dimsE[iDim], dims[iDim]);
+
+    for (int ii=0; ii < nitemsS; ++ii)
+      CPPUNIT_ASSERT_EQUAL(valuesE[i*nitemsS+ii], values[ii]);
+  } // for
+
+  delete[] values; values = 0;
+  delete[] dims; dims = 0;
+  delete[] valuesE; valuesE = 0;
+
+  h5.close();
+} // testDatasetChunk
 
 
 // End of file 

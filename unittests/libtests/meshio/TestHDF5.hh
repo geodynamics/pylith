@@ -50,7 +50,7 @@ class pylith::meshio::TestHDF5 : public CppUnit::TestFixture
   CPPUNIT_TEST( testAttributeString );
   CPPUNIT_TEST( testCreateDataset );
   CPPUNIT_TEST( testCreateDatasetRawExternal );
-  CPPUNIT_TEST( testWriteDatasetSlice );
+  CPPUNIT_TEST( testDatasetChunk );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -78,8 +78,8 @@ public :
   /// Test createDatasetRawExternal().
   void testCreateDatasetRawExternal(void);
 
-  /// Test writeDatasetSlice().
-  void testWriteDatasetSlice(void);
+  /// Test writeDatasetChunk() and readDatasetChunk().
+  void testDatasetChunk(void);
 
 }; // class TestHDF5
 

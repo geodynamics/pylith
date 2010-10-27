@@ -37,10 +37,9 @@ pylith::meshio::HDF5::HDF5(void) :
 // ----------------------------------------------------------------------
 // Constructor with filename and mode.
 pylith::meshio::HDF5::HDF5(const char* filename,
-			   hid_t mode,
-			   const bool create)
+			   hid_t mode)
 { // constructor
-  if (create) {
+  if (H5F_ACC_TRUNC == mode) {
     _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
     if (_file < 0) {
       std::ostringstream msg;
@@ -69,14 +68,15 @@ pylith::meshio::HDF5::~HDF5(void)
 // Open HDF5 file.
 void
 pylith::meshio::HDF5::open(const char* filename,
-			   hid_t mode,
-			   const bool create)
+			   hid_t mode)
 { // open
+  assert(filename);
+
   if (_file >= 0) {
     throw std::runtime_error("HDF5 file already open.");
   } // if
 
-  if (create) {
+  if (H5F_ACC_TRUNC == mode) {
     _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
     if (_file < 0) {
       std::ostringstream msg;
@@ -108,10 +108,20 @@ pylith::meshio::HDF5::close(void)
 } // close
 
 // ----------------------------------------------------------------------
+// Check if HDF5 file is open.
+bool
+pylith::meshio::HDF5::isOpen(void) const
+{ // isOpen
+  return (_file == -1) ? false : true;
+} // isOpen
+
+// ----------------------------------------------------------------------
 // Create group.
 void
 pylith::meshio::HDF5::createGroup(const char* name)
 { // createGroup
+  assert(name);
+
 #if defined(PYLITH_HDF5_USE_API_18)
   hid_t group = H5Gcreate(_file, name, 0, H5P_DEFAULT, H5P_DEFAULT);
 #else // depracated HDF5 1.6 API
@@ -139,6 +149,10 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
 				     const void* value,
 				     hid_t datatype)
 { // writeAttribute
+  assert(parent);
+  assert(name);
+  assert(value);
+
   try {
     hid_t dataspace = H5Screate(H5S_SCALAR);
     if (dataspace < 0)
@@ -193,6 +207,10 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
 				    void* value,
 				    hid_t datatype)
 { // readAttribute
+  assert(parent);
+  assert(name);
+  assert(value);
+
   try {
 #if defined(PYLITH_HDF5_USE_API_18)
     hid_t dataset = H5Dopen(_file, parent, H5P_DEFAULT);
@@ -243,6 +261,10 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
 				     const char* name,
 				     const char* value)
 { // writeAttribute
+  assert(parent);
+  assert(name);
+  assert(value);
+
   try {
     hid_t dataspace = H5Screate(H5S_SCALAR);
     if (dataspace < 0) 
@@ -303,10 +325,13 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
 
 // ----------------------------------------------------------------------
 // Read string attribute.
-const char*
+std::string
 pylith::meshio::HDF5::readAttribute(const char* parent,
 				    const char* name)
 { // readAttribute
+  assert(parent);
+  assert(name);
+
   std::string value;
 
   try {
@@ -359,84 +384,8 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
     throw std::runtime_error(msg.str());
   } // try/catch
 
-  return value.c_str();
+  return std::string(value);
 } // readAttribute
-
-// ----------------------------------------------------------------------
-// Create dataset.
-void
-pylith::meshio::HDF5::createDataset(const char* parent,
-				    const char* name,
-				    const hsize_t* dims,
-				    const hsize_t ndims,
-				    hid_t datatype)
-{ // createDataset
-  try {
-    // Open group
-#if defined(PYLITH_HDF5_USE_API_18)
-    hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
-#else
-    hid_t group = H5Gopen(_file, parent);
-#endif
-    if (group < 0) 
-      throw std::runtime_error("Could not open group.");
-
-    // Create the dataspace
-    hid_t dataspace = H5Screate_simple(ndims, dims, 0);
-    if (dataspace < 0)
-      throw std::runtime_error("Could not create dataspace.");
-      
-    // Create chunked dataset
-    hid_t property = H5Pcreate(H5P_DATASET_CREATE);
-    if (property < 0)
-      throw std::runtime_error("Could not create property for dataset.");
-
-    herr_t err = H5Pset_chunk(property, ndims, dims);
-    if (err < 0)
-      throw std::runtime_error("Could not set chunk.");
-
-    // Set gzip compression level for chunk.
-    //H5Pset_deflate(property, 6);
-
-#if defined(PYLITH_HDF5_USE_API_18)
-    hid_t dataset = H5Dcreate(group, name,
-			      datatype, dataspace, H5P_DEFAULT,
-			      property, H5P_DEFAULT);
-#else
-    hid_t dataset = H5Dcreate(group, name,
-			      datatype, dataspace, property);
-#endif
-    if (dataset < 0) 
-      throw std::runtime_error("Could not create dataset.");
-
-    err = H5Dclose(dataset);
-    if (err < 0)
-      throw std::runtime_error("Could not close dataset.");
-
-    err = H5Pclose(property);
-    if (err < 0) 
-      throw std::runtime_error("Could not close property.");
-
-    err = H5Sclose(dataspace);
-    if (err < 0) 
-      throw std::runtime_error("Could not close dataspace.");
-
-    err = H5Gclose(group);
-    if (err < 0) 
-      throw std::runtime_error("Could not close group.");
-
-  } catch (const std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error occurred while creating dataset '"
-	<< parent << "/" << name << "':\n"
-	<< err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) {
-    std::ostringstream msg;
-    msg << "Unknown  occurred while creating dataset '" << name << "'.";
-    throw std::runtime_error(msg.str());
-  } // try/catch
-} // createDataset
 
 // ----------------------------------------------------------------------
 // Create dataset associated with data stored in a raw external binary
@@ -446,9 +395,14 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 					       const char* name,
 					       const char* filename,
 					       const hsize_t* dims,
-					       const hsize_t ndims,
+					       const int ndims,
 					       hid_t datatype)
 { // createDatasetRawExternal
+  assert(parent);
+  assert(name);
+  assert(filename);
+  assert(dims);
+
   try {
     // Open group
 #if defined(PYLITH_HDF5_USE_API_18)
@@ -469,20 +423,11 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
     if (property < 0)
       throw std::runtime_error("Could not create property for dataset.");
 
-#if 0 // Not allowed for external storage?
-    herr_t err = H5Pset_chunk(property, ndims, dims);
-    if (err < 0)
-      throw std::runtime_error("Could not set chunk.");
-
-    // Set gzip compression level for chunk.
-    //H5Pset_deflate(property, 6);
-#endif
-
     // Set external file
     const off_t offset = 0;
-    hsize_t sizeBytes = 0;
+    hsize_t sizeBytes = H5Tget_size(datatype);
     for (int i=0; i < ndims; ++i)
-      sizeBytes += dims[i] * H5Tget_size(datatype);
+      sizeBytes *= dims[i];
     herr_t err = H5Pset_external(property, filename, offset, sizeBytes);
     if (err < 0)
       throw std::runtime_error("Could not set external file property.");
@@ -528,16 +473,102 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 } // createDatasetRawExternal
 
 // ----------------------------------------------------------------------
+// Create dataset.
+void
+pylith::meshio::HDF5::createDataset(const char* parent,
+				    const char* name,
+				    const hsize_t* dims,
+				    const hsize_t* dimsChunk,
+				    const int ndims,
+				    hid_t datatype)
+{ // createDataset
+  assert(parent);
+  assert(name);
+  assert(dims);
+
+  try {
+    // Open group
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
+#else
+    hid_t group = H5Gopen(_file, parent);
+#endif
+    if (group < 0) 
+      throw std::runtime_error("Could not open group.");
+
+    // Create the dataspace
+    hid_t dataspace = H5Screate_simple(ndims, dims, 0);
+    if (dataspace < 0)
+      throw std::runtime_error("Could not create dataspace.");
+      
+    // Create chunked dataset
+    hid_t property = H5Pcreate(H5P_DATASET_CREATE);
+    if (property < 0)
+      throw std::runtime_error("Could not create property for dataset.");
+
+    herr_t err = H5Pset_chunk(property, ndims, dimsChunk);
+    if (err < 0)
+      throw std::runtime_error("Could not set chunk.");
+      
+    // Set gzip compression level for chunk.
+    H5Pset_deflate(property, 6);
+
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t dataset = H5Dcreate(group, name,
+			      datatype, dataspace, H5P_DEFAULT,
+			      property, H5P_DEFAULT);
+#else
+    hid_t dataset = H5Dcreate(group, name,
+			      datatype, dataspace, property);
+#endif
+    if (dataset < 0) 
+      throw std::runtime_error("Could not create dataset.");
+
+    err = H5Dclose(dataset);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataset.");
+
+    err = H5Pclose(property);
+    if (err < 0) 
+      throw std::runtime_error("Could not close property.");
+
+    err = H5Sclose(dataspace);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataspace.");
+
+    err = H5Gclose(group);
+    if (err < 0) 
+      throw std::runtime_error("Could not close group.");
+
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while creating dataset '"
+	<< parent << "/" << name << "':\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) {
+    std::ostringstream msg;
+    msg << "Unknown  occurred while creating dataset '" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // createDataset
+
+// ----------------------------------------------------------------------
 // Append slice to dataset.
 void
-pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
+pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
 					const char* name,
 					const void* data,
 					const hsize_t* dims,
-					const hsize_t ndims,
-					const int islice,
+					const hsize_t* dimsChunk,
+					const int ndims,
+					const int chunk,
 					hid_t datatype)
 { // writeDatasetSlice
+  assert(parent);
+  assert(name);
+  assert(data);
+  assert(dims);
   assert(_file > 0);
 
   try {
@@ -545,13 +576,12 @@ pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
     hsize_t* count = (ndims > 0) ? new hsize_t[ndims] : 0;
     hsize_t* stride = (ndims > 0) ? new hsize_t[ndims] : 0;
     hsize_t* offset = (ndims > 0) ? new hsize_t[ndims] : 0;
-    
     for (int i=0; i < ndims; ++i) {
       count[i] = 1;
       stride[i] = 1;
       offset[i] = 0;
     } // for
-    offset[0] = islice;
+    offset[0] = chunk;
 
     // Open group
 #if defined(PYLITH_HDF5_USE_API_18)
@@ -575,12 +605,15 @@ pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
     if (dataspace < 0)
       throw std::runtime_error("Could not get dataspace.");
 
-    hid_t chunkspace = H5Screate_simple(ndims, dims, 0);
+    hid_t chunkspace = H5Screate_simple(ndims, dimsChunk, 0);
     if (chunkspace < 0)
       throw std::runtime_error("Could not create chunk dataspace.");
 
     herr_t err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
-				     offset, stride, count, dims);
+				     offset, stride, count, dimsChunk);
+    delete[] count; count = 0;
+    delete[] stride; stride = 0;
+    delete[] offset; offset = 0;
     if (err < 0)
       throw std::runtime_error("Could not select hyperslab.");
 
@@ -618,6 +651,119 @@ pylith::meshio::HDF5::writeDatasetSlice(const char* parent,
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeDatasetSlice
+
+// ----------------------------------------------------------------------
+// Read dataset slice.
+void
+pylith::meshio::HDF5::readDatasetChunk(const char* parent,
+				       const char* name,
+				       char** const data,
+				       hsize_t** const dims,
+				       int* const ndims,
+				       const int chunk,
+				       hid_t datatype)
+{ // readDatasetSlice
+  assert(parent);
+  assert(name);
+  assert(data);
+  assert(dims);
+  assert(_file > 0);
+
+  try {
+    // Open group
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t group = H5Gopen(_file, parent, H5P_DEFAULT);
+#else
+    hid_t group = H5Gopen(_file, parent);
+#endif
+    if (group < 0)
+      throw std::runtime_error("Could not open group.");
+    
+    // Open the dataset
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t dataset = H5Dopen(group, name, H5P_DEFAULT);
+#else
+    hid_t dataset = H5Dopen(group, name);
+#endif
+    if (dataset < 0)
+      throw std::runtime_error("Could not open dataset.");
+    
+    hid_t dataspace = H5Dget_space(dataset);
+    if (dataspace < 0)
+      throw std::runtime_error("Could not get dataspace.");
+
+    *ndims = H5Sget_simple_extent_ndims(dataspace);
+    assert(*ndims > 0);
+    delete[] *dims; *dims = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    H5Sget_simple_extent_dims(dataspace, *dims, 0);
+
+    // Select hyperslab in file
+    hsize_t* dimsChunk = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    hsize_t* count = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    hsize_t* stride = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    hsize_t* offset = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    
+    for (int i=0; i < *ndims; ++i) {
+      dimsChunk[i] = (*dims)[i];
+      count[i] = 1;
+      stride[i] = 1;
+      offset[i] = 0;
+    } // for
+    dimsChunk[0] = 1;
+    offset[0] = chunk;
+
+    hid_t chunkspace = H5Screate_simple(*ndims, dimsChunk, 0);
+    if (chunkspace < 0)
+      throw std::runtime_error("Could not create chunk dataspace.");
+
+    herr_t err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
+				     offset, stride, count, dimsChunk);
+    delete[] count; count = 0;
+    delete[] stride; stride = 0;
+    delete[] offset; offset = 0;
+    if (err < 0)
+      throw std::runtime_error("Could not select hyperslab.");
+
+    int sizeBytes = H5Tget_size(datatype);
+    for (int i=0; i < *ndims; ++i)
+      sizeBytes *= (dimsChunk)[i];
+    delete[] *data; *data = (sizeBytes > 0) ? new char[sizeBytes] : 0;
+    delete[] dimsChunk; dimsChunk = 0;
+
+    err = H5Dread(dataset, datatype, chunkspace, dataspace, 
+		  H5P_DEFAULT, (void*)*data);
+    if (err < 0)
+      throw std::runtime_error("Could not read data.");
+
+    err = H5Sclose(chunkspace);
+    if (err < 0)
+      throw std::runtime_error("Could not close chunk dataspace.");
+
+    err = H5Sclose(dataspace);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataspace.");
+
+    err = H5Dclose(dataset);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataset.");
+    
+    err = H5Gclose(group);
+    if (err < 0)
+      throw std::runtime_error("Could not close group.");
+
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while reading dataset '"
+	<< parent << "/" << name << "':\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) {
+    std::ostringstream msg;
+    msg << "Unknown  occurred while reading dataset '"
+	<< parent << "/" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // readDatasetSlice
 
 
 // End of file

@@ -26,6 +26,8 @@ extern "C" {
 #include "hdf5.h" // USES hid_t
 }
 
+#include <string> // USES std::string
+
 // HDF5 -----------------------------------------------------------------
 /// High-level interface for HDF5 operations.
 class pylith::meshio::HDF5
@@ -42,11 +44,9 @@ public :
    *
    * @param filename Name of HDF5 file
    * @param mode Mode for HDF5 file
-   * @param create If true, create HDF5 file.
    */
   HDF5(const char* filename,
-       hid_t mode,
-       const bool create =false);
+       hid_t mode);
 
   /// Destructor
   ~HDF5(void);
@@ -55,14 +55,18 @@ public :
    *
    * @param filename Name of HDF5 file
    * @param mode Mode for HDF5 file
-   * @param create If true, create HDF5 file.
    */
   void open(const char* filename,
-	    hid_t mode,
-	    const bool create =false);
+	    hid_t mode);
 
   /// Close HDF5 file.
   void close(void);
+
+  /** Check if HDF5 file is open.
+   *
+   * @returns True if HDF5 file is open, false otherwise.
+   */
+  bool isOpen(void) const;
 
   /** Create group.
    *
@@ -112,7 +116,7 @@ public :
    * @param name Name of attribute.
    * @param value String value
    */
-  const char* readAttribute(const char* parent,
+  std::string readAttribute(const char* parent,
 			    const char* name);
 
   /** Create dataset.
@@ -120,13 +124,15 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param dims Dimensions of data.
+   * @param dimsChunk Dimensions of data chunks.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
   void createDataset(const char* parent,
 		     const char* name,
 		     const hsize_t* dims,
-		     const hsize_t ndims,
+		     const hsize_t* dimsChunk,
+		     const int ndims,
 		     hid_t datatype);
   
   /** Create dataset associated with data stored in a raw external
@@ -144,10 +150,32 @@ public :
 				const char* name,
 				const char* filename,
 				const hsize_t* dims,
-				const hsize_t ndims,
+				const int ndims,
 				hid_t datatype);
   
-  /** Append slice to dataset.
+  /** Append chunk to dataset.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param data Data.
+   * @param dims Dimensions of data.
+   * @param dimsChunk Dimensions of data chunks.
+   * @param ndims Number of dimensions of data.
+   * @param chunk Index of data chunk.
+   * @param datatype Type of data.
+   */
+  void writeDatasetChunk(const char* parent,
+			 const char* name,
+			 const void* data,
+			 const hsize_t* dims,
+			 const hsize_t* dimsChunk,
+			 const int ndims,
+			 const int chunk,
+			 hid_t datatype);
+
+  /** Read dataset chunk.
+   *
+   * Currently this method assumes the chunk size (slice along dim=0).
    *
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
@@ -157,13 +185,13 @@ public :
    * @param islice Index of data slice.
    * @param datatype Type of data.
    */
-  void writeDatasetSlice(const char* parent,
-			 const char* name,
-			 const void* data,
-			 const hsize_t* dims,
-			 const hsize_t ndims,
-			 const int islice,
-			 hid_t datatype);
+  void readDatasetChunk(const char* parent,
+			const char* name,
+			char** const data,
+			hsize_t** const dims,
+			int* const ndims,
+			const int chunk,
+			hid_t datatype);
 
 // PRIVATE MEMBERS ------------------------------------------------------
 private :
