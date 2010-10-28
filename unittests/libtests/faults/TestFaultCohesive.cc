@@ -551,7 +551,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 				   tolerance);
   } // for
 
-  mesh.view("MESH");
+  //mesh.view("MESH");
 
   // check cells
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
