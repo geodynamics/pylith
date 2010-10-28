@@ -79,7 +79,7 @@ class Line3(object):
     """
     Setup line3 cell.
     """
-    vertices = numpy.array([[0.0], [-1.0], [1.0]])
+    vertices = numpy.array([[-1.0], [1.0], [0.0]])
     quadPts = numpy.array([ [-1.0/3**0.5],
                             [+1.0/3**0.5] ])
     quadWts = numpy.array( [1.0, 1.0])
@@ -109,24 +109,24 @@ class Line3(object):
 
 
   def N0(self, p):
-    return (1.0-p*p)
-
-  def N0p(self, p):
-    return -2.0*p
-
-
-  def N1(self, p):
     return -0.5*p*(1.0-p)
 
-  def N1p(self, p):
+  def N0p(self, p):
     return 1.0*p - 0.5
 
 
-  def N2(self, p):
+  def N1(self, p):
     return 0.5*p*(1.0+p)
 
-  def N2p(self, p):
+  def N1p(self, p):
     return 1.0*p + 0.5
+
+
+  def N2(self, p):
+    return (1.0-p*p)
+
+  def N2p(self, p):
+    return -2.0*p
 
 
 # ----------------------------------------------------------------------
@@ -203,12 +203,12 @@ class Tri6(object):
     """
     Setup tri33 cell.
     """
-    vertices = numpy.array([[ 0.0, -1.0],
-                            [ 0.0,  0.0],
-                            [-1.0,  0.0],
-                            [-1.0, -1.0],
+    vertices = numpy.array([[-1.0, -1.0],
                             [+1.0, -1.0],
-                            [-1.0, +1.0]])
+                            [-1.0, +1.0],
+                            [ 0.0, -1.0],
+                            [ 0.0,  0.0],
+                            [-1.0,  0.0]])
     quadPts = numpy.array([ [-0.64288254, -0.68989795],
                             [-0.84993778,  0.28989795],
                             [ 0.33278049, -0.68989795],
@@ -245,63 +245,63 @@ class Tri6(object):
 
 
   def N0(self, p):
-    return (-p[0]-p[1])*(1+p[0])
+    return 0.5*(-p[0]-p[1])*(-1.0-p[0]-p[1])
 
   def N0p(self, p):
-    return -1.0-2*p[0]-p[1]
+    return 0.5+p[0]+p[1]
 
   def N0q(self, p):
-    return -(1+p[0])
+    return 0.5+p[0]+p[1]
 
 
   def N1(self, p):
-    return (1.0+p[0])*(1+p[1])
+    return 0.5*(1.0+p[0])*(p[0])
 
   def N1p(self, p):
-    return (1+p[1])
+    return 0.5+p[0]
 
   def N1q(self, p):
-    return (1.0+p[0])
+    return 0
 
 
   def N2(self, p):
-    return (-p[0]-p[1])*(1+p[1])
+    return 0.5*(1.0+p[1])*(p[1])
 
   def N2p(self, p):
-    return -(1+p[1])
+    return 0
 
   def N2q(self, p):
-    return -1.0-p[0]-2*p[1]
+    return 0.5+p[1]
 
 
   def N3(self, p):
-    return 0.5*(-p[0]-p[1])*(-1.0-p[0]-p[1])
+    return (-p[0]-p[1])*(1+p[0])
 
   def N3p(self, p):
-    return 0.5+p[0]+p[1]
+    return -1.0-2*p[0]-p[1]
 
   def N3q(self, p):
-    return 0.5+p[0]+p[1]
+    return -(1+p[0])
 
 
   def N4(self, p):
-    return 0.5*(1.0+p[0])*(p[0])
+    return (1.0+p[0])*(1+p[1])
 
   def N4p(self, p):
-    return 0.5+p[0]
+    return (1+p[1])
 
   def N4q(self, p):
-    return 0
+    return (1.0+p[0])
 
 
   def N5(self, p):
-    return 0.5*(1.0+p[1])*(p[1])
+    return (-p[0]-p[1])*(1+p[1])
 
   def N5p(self, p):
-    return 0
+    return -(1+p[1])
 
   def N5q(self, p):
-    return 0.5+p[1]
+    return -1.0-p[0]-2*p[1]
 
 
 # ----------------------------------------------------------------------
