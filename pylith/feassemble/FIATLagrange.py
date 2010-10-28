@@ -90,7 +90,7 @@ class FIATLagrange(ReferenceCell):
     """
     self._setupGeometry(spaceDim)
 
-    if  self.cellDim > 0:
+    if self.cellDim > 0:
       quadrature = self._setupQuadrature()
       element = self._setupElement()
       dim = self.cellDim
@@ -113,13 +113,48 @@ class FIATLagrange(ReferenceCell):
       self.numCorners = numBasis**dim
 
       if dim == 1:
-        self.vertices = numpy.array(vertices)
-        self.quadPts = quadpts
-        self.quadWts = quadwts
-        self.basis = numpy.reshape(basis.flatten(), basis.shape)
-        self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
-      else:
-        if dim == 2:
+        # Set order of vertices and basis functions.
+        # Corners
+        vertexOrder = [0, 1]
+        # Edges
+        p = numpy.arange(2, numBasis, dtype=numpy.int32)
+        vertexOrder += zip(p)
+        
+        self.vertices = numpy.zeros((self.numCorners, dim))
+        n = 0
+        for p in vertexOrder:
+          self.vertices[n][0] = vertices[p]
+          n += 1
+        if not n == self.numCorners:
+          raise RuntimeError('Invalid 1-D vertex ordering: '+str(n)+ \
+                             ' should be '+str(self.numCorners))
+          
+        self.quadPts = numpy.zeros((numQuadPts, dim))
+        self.quadWts = numpy.zeros((numQuadPts,))
+        self.basis = numpy.zeros((numQuadPts, numBasis))
+        self.basisDeriv = numpy.zeros((numQuadPts, numBasis, dim))
+        
+        # Order of quadrature points doesn't matter
+        # Order of basis functions should match vertices for isoparametric
+        n = 0
+        for p in range(0, numQuadPts):
+          self.quadPts[n][0] = quadpts[p]
+          self.quadWts[n]    = quadwts[p]
+            
+          m = 0
+          for (bp) in vertexOrder:
+            self.basis[n][m] = basis[p][bp]
+            self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]
+            m += 1
+          if not m == self.numCorners:
+            raise RuntimeError('Invalid 2-D basis tabulation: '+str(m)+ \
+                               ' should be '+str(self.numCorners))
+          n += 1
+        if not n == self.numQuadPts:
+          raise RuntimeError('Invalid 2-D quadrature: '+str(n)+ \
+                             ' should be '+str(self.numQuadPts))
+
+      elif dim == 2:
           # Set order of vertices and basis functions.
           # Corners
           vertexOrder = [(0,0), (1,0), (1,1), (0,1)]
@@ -185,74 +220,74 @@ class FIATLagrange(ReferenceCell):
             raise RuntimeError('Invalid 2-D quadrature: '+str(n)+ \
                                ' should be '+str(self.numQuadPts))
 
-        elif dim == 3:
-          # Set order of vertices and basis functions.
-          # Corners
-          vertexOrder = [(0,0,0), (1,0,0), (1,1,0), (0,1,0),
-                         (0,0,1), (1,0,1), (1,1,1), (0,1,1)]
-          # Edges
-          #   Bottom front
-          p = numpy.arange(2, numBasis, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Bottom right
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.arange(2, numBasis, dtype=numpy.int32)
-          r = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Bottom back
-          p = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Bottom left
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
-          r = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Top front
-          p = numpy.arange(2, numBasis, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.ones(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Top right
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.arange(2, numBasis, dtype=numpy.int32)
-          r = numpy.ones(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Top back
-          p = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.ones(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Top left
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
-          r = numpy.ones(numBasis-2, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle left front
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle right front
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle right back
-          p = numpy.ones(numBasis-2, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-          #   Middle left back
-          p = numpy.zeros(numBasis-2, dtype=numpy.int32)
-          q = numpy.ones(numBasis-2, dtype=numpy.int32)
-          r = numpy.arange(2, numBasis, dtype=numpy.int32)
-          vertexOrder += zip(p,q,r)
-
-          # Face
+      elif dim == 3:
+        # Set order of vertices and basis functions.
+        # Corners
+        vertexOrder = [(0,0,0), (1,0,0), (1,1,0), (0,1,0),
+                       (0,0,1), (1,0,1), (1,1,1), (0,1,1)]
+        # Edges
+        #   Bottom front
+        p = numpy.arange(2, numBasis, dtype=numpy.int32)
+        q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        r = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Bottom right
+        p = numpy.ones(numBasis-2, dtype=numpy.int32)
+        q = numpy.arange(2, numBasis, dtype=numpy.int32)
+        r = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Bottom back
+        p = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
+        q = numpy.ones(numBasis-2, dtype=numpy.int32)
+        r = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Bottom left
+        p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
+        r = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Top front
+        p = numpy.arange(2, numBasis, dtype=numpy.int32)
+        q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        r = numpy.ones(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Top right
+        p = numpy.ones(numBasis-2, dtype=numpy.int32)
+        q = numpy.arange(2, numBasis, dtype=numpy.int32)
+        r = numpy.ones(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Top back
+        p = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
+        q = numpy.ones(numBasis-2, dtype=numpy.int32)
+        r = numpy.ones(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Top left
+        p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        q = numpy.arange(numBasis-1, 1, step=-1, dtype=numpy.int32)
+        r = numpy.ones(numBasis-2, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Middle left front
+        p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        r = numpy.arange(2, numBasis, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Middle right front
+        p = numpy.ones(numBasis-2, dtype=numpy.int32)
+        q = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        r = numpy.arange(2, numBasis, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Middle right back
+        p = numpy.ones(numBasis-2, dtype=numpy.int32)
+        q = numpy.ones(numBasis-2, dtype=numpy.int32)
+        r = numpy.arange(2, numBasis, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        #   Middle left back
+        p = numpy.zeros(numBasis-2, dtype=numpy.int32)
+        q = numpy.ones(numBasis-2, dtype=numpy.int32)
+        r = numpy.arange(2, numBasis, dtype=numpy.int32)
+        vertexOrder += zip(p,q,r)
+        # Face
+        if numBasis > 2:
           # Left / Right
           ip = numpy.arange(0, 2, dtype=numpy.int32)
           p = numpy.tile(ip, ((numBasis-2)*(numBasis-2), 1)).transpose()
@@ -286,58 +321,58 @@ class FIATLagrange(ReferenceCell):
           ir = numpy.arange(2, numBasis, dtype=numpy.int32)
           r = numpy.tile(ir, ((numBasis-2)*(numBasis-2), 1)).transpose()
           vertexOrder += zip(p.ravel(),q.ravel(),r.ravel())
-          
-          self.vertices = numpy.zeros((self.numCorners, dim))
-          n = 0
-          for (p,q,r) in vertexOrder:
-            self.vertices[n][0] = vertices[p]
-            self.vertices[n][1] = vertices[q]
-            self.vertices[n][2] = vertices[r]
-            n += 1
-          if not n == self.numCorners:
-            raise RuntimeError('Invalid 3-D vertex ordering: '+str(n)+ \
-                               ' should be '+str(self.numCorners))
+        
+        self.vertices = numpy.zeros((self.numCorners, dim))
+        n = 0
+        for (p,q,r) in vertexOrder:
+          self.vertices[n][0] = vertices[p]
+          self.vertices[n][1] = vertices[q]
+          self.vertices[n][2] = vertices[r]
+          n += 1
+        if not n == self.numCorners:
+          raise RuntimeError('Invalid 3-D vertex ordering: '+str(n)+ \
+                             ' should be '+str(self.numCorners))
 
-          self.quadPts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts, dim))
-          self.quadWts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,))
-          self.basis      = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,
-                                         numBasis*numBasis*numBasis))
-          self.basisDeriv = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,
-                                         numBasis*numBasis*numBasis,
-                                         dim))
+        self.quadPts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts, dim))
+        self.quadWts    = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,))
+        self.basis      = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,
+                                       numBasis*numBasis*numBasis))
+        self.basisDeriv = numpy.zeros((numQuadPts*numQuadPts*numQuadPts,
+                                       numBasis*numBasis*numBasis,
+                                       dim))
 
-          # Order of quadrature points doesn't matter
-          # Order of basis functions should match vertices for isoparametric
-          n = 0
-          for r in range(0, numQuadPts):
-            for q in range(0, numQuadPts):
-              for p in range(0, numQuadPts):
-                self.quadPts[n][0] = quadpts[p]
-                self.quadPts[n][1] = quadpts[q]
-                self.quadPts[n][2] = quadpts[r]
-                self.quadWts[n]    = quadwts[p]*quadwts[q]*quadwts[r]
-              
-                m = 0
-                for (bp,bq,br) in vertexOrder:
-                  self.basis[n][m] = basis[p][bp]*basis[q][bq]*basis[r][br]
-                  self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]*basis[r][br]
-                  self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]*basis[r][br]
-                  self.basisDeriv[n][m][2] = basis[p][bp]*basis[q][bq]*basisDeriv[r][br][0]
-                  m += 1
+        # Order of quadrature points doesn't matter
+        # Order of basis functions should match vertices for isoparametric
+        n = 0
+        for r in range(0, numQuadPts):
+          for q in range(0, numQuadPts):
+            for p in range(0, numQuadPts):
+              self.quadPts[n][0] = quadpts[p]
+              self.quadPts[n][1] = quadpts[q]
+              self.quadPts[n][2] = quadpts[r]
+              self.quadWts[n]    = quadwts[p]*quadwts[q]*quadwts[r]
+            
+              m = 0
+              for (bp,bq,br) in vertexOrder:
+                self.basis[n][m] = basis[p][bp]*basis[q][bq]*basis[r][br]
+                self.basisDeriv[n][m][0] = basisDeriv[p][bp][0]*basis[q][bq]*basis[r][br]
+                self.basisDeriv[n][m][1] = basis[p][bp]*basisDeriv[q][bq][0]*basis[r][br]
+                self.basisDeriv[n][m][2] = basis[p][bp]*basis[q][bq]*basisDeriv[r][br][0]
+                m += 1
 
-                if not m == self.numCorners:
-                  raise RuntimeError('Invalid 3-D basis tabulation: '+str(m)+ \
-                                     ' should be '+str(self.numCorners))
-                n += 1
-          if not n == self.numQuadPts:
-            raise RuntimeError('Invalid 3-D quadrature: '+str(n)+ \
-                               ' should be '+str(self.numQuadPts))
+              if not m == self.numCorners:
+                raise RuntimeError('Invalid 3-D basis tabulation: '+str(m)+ \
+                                   ' should be '+str(self.numCorners))
+              n += 1
+        if not n == self.numQuadPts:
+          raise RuntimeError('Invalid 3-D quadrature: '+str(n)+ \
+                             ' should be '+str(self.numQuadPts))
 
-        self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
-        self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
-        self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
-        self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
-        self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
+      self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
+      self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
+      self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
+      self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
+      self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
     else:
       # Need 0-D quadrature for boundary conditions of 1-D meshes
       self.cellDim = 0
