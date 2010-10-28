@@ -155,7 +155,7 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
   PointArray                     origVertices;
   PointArray                     faceVertices;
 
-  faultSieve->setDebug(2);
+  //faultSieve->setDebug(2);
   if (!faultSieve->commRank()) {
     numCorners = mesh->getNumCellCorners();
     faceSize   = selection::numFaceVertices(mesh);
@@ -228,7 +228,7 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
             f = *faceVertices.begin();
           }
 
-	  std::cout << "dim: " << dim << ", faceSize: " << faceSize << ", numCorners: " << numCorners << std::endl;
+	  //std::cout << "dim: " << dim << ", faceSize: " << faceSize << ", numCorners: " << numCorners << std::endl;
 
           if (2 == dim && 4 == faceSize){
             if (debug) std::cout << "  Adding hex face " << f << std::endl;
