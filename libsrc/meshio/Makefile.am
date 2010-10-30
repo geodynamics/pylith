@@ -53,7 +53,10 @@ if ENABLE_HDF5
 	HDF5.hh \
 	DataWriterHDF5.hh \
 	DataWriterHDF5.icc \
-	DataWriterHDF5.cc
+	DataWriterHDF5.cc \
+	DataWriterHDF5Ext.hh \
+	DataWriterHDF5Ext.icc \
+	DataWriterHDF5Ext.cc
 endif
 
 if ENABLE_CUBIT

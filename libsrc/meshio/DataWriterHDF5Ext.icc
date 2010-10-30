@@ -16,23 +16,23 @@
 // ======================================================================
 //
 
-#if !defined(pylith_meshio_datawriterhdf5_hh)
-#error "DataWriterHDF5.icc must be included only from DataWriterHDF5.hh"
+#if !defined(pylith_meshio_datawriterhdf5ext_hh)
+#error "DataWriterHDF5Ext.icc must be included only from DataWriterHDF5Ext.hh"
 #else
 
 // Make copy of this object.
 template<typename mesh_type, typename field_type>
 inline
 pylith::meshio::DataWriter<mesh_type, field_type>*
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::clone(void) const {
-  return new DataWriterHDF5(*this);
+pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::clone(void) const {
+  return new DataWriterHDF5Ext(*this);
 }
 
 // Set filename for HDF5 file.
 template<typename mesh_type, typename field_type>
 inline
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::filename(const char* filename) {
+pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::filename(const char* filename) {
   _filename = filename;
 }
 
