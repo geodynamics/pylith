@@ -18,17 +18,17 @@
 
 #include <portinfo>
 
-#include "TestDataWriterHDF5Mesh.hh" // Implementation of class methods
+#include "TestDataWriterHDF5ExtMesh.hh" // Implementation of class methods
 
 #include "data/DataWriterData.hh" // USES DataWriterData
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
+#include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5Mesh );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMesh );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
@@ -36,7 +36,7 @@ typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterHDF5Mesh::setUp(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::setUp(void)
 { // setUp
   TestDataWriterMesh::setUp();
 } // setUp
@@ -44,7 +44,7 @@ pylith::meshio::TestDataWriterHDF5Mesh::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterHDF5Mesh::tearDown(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::tearDown(void)
 { // tearDown
   TestDataWriterMesh::tearDown();
 } // tearDown
@@ -52,19 +52,19 @@ pylith::meshio::TestDataWriterHDF5Mesh::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testConstructor(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::testConstructor(void)
 { // testConstructor
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
-  CPPUNIT_ASSERT(0 == writer._viewer);
+  CPPUNIT_ASSERT(writer._h5);
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test filename()
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testFilename(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::testFilename(void)
 { // testDebug
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   const char* filename = "data.h5";
   writer.filename(filename);
@@ -72,14 +72,14 @@ pylith::meshio::TestDataWriterHDF5Mesh::testFilename(void)
 } // testFilename
 
 // ----------------------------------------------------------------------
-// Test openTimeStep() and closeTimeStep()
+// Test open() and close()
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
-{ // testTimeStep
+pylith::meshio::TestDataWriterHDF5ExtMesh::testOpenClose(void)
+{ // testOpenClose
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   writer.filename(_data->timestepFilename);
 
@@ -87,29 +87,26 @@ pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
-    writer.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
     writer.open(*_mesh, numTimeSteps, label, id);
-    writer.openTimeStep(t, *_mesh, label, id);
   } // else
 
-  writer.closeTimeStep();
   writer.close();
 
   checkFile(_data->timestepFilename);
-} // testTimeStep
+} // testOpenClose
 
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteVertexField(void)
 { // testWriteVertexField
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   topology::Fields<MeshField> vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
@@ -142,12 +139,12 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteVertexField(void)
 // ----------------------------------------------------------------------
 // Test writeCellField.
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
+pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteCellField(void)
 { // testWriteCellField
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   topology::Fields<MeshField> cellFields(*_mesh);
   _createCellFields(&cellFields);
@@ -182,10 +179,10 @@ pylith::meshio::TestDataWriterHDF5Mesh::testWriteCellField(void)
 } // testWriteCellField
 
 // ----------------------------------------------------------------------
-// Test _hdf5Filename.
-void pylith::meshio::TestDataWriterHDF5Mesh::testHdf5Filename(void)
+// Test _hdf5Filename().
+void pylith::meshio::TestDataWriterHDF5ExtMesh::testHdf5Filename(void)
 { // testHdf5Filename
-  DataWriterHDF5<topology::Mesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
 
   // Append info to filename if number of time steps is 0.
   writer._numTimeSteps = 0;
@@ -202,6 +199,28 @@ void pylith::meshio::TestDataWriterHDF5Mesh::testHdf5Filename(void)
   CPPUNIT_ASSERT_EQUAL(std::string("output_abcd.h5"), 
 		       writer._hdf5Filename());
 } // testHdf5Filename
+
+// ----------------------------------------------------------------------
+// Test _datasetFilename().
+void pylith::meshio::TestDataWriterHDF5ExtMesh::testDatasetFilename(void)
+{ // testDatasetFilename
+  DataWriterHDF5Ext<topology::Mesh, MeshField> writer;
+
+  // Append info to filename if number of time steps is 0.
+  writer._numTimeSteps = 0;
+  writer._filename = "output.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_info_ABCD.h5"), writer._datasetFilename("ABCD"));
+		       
+  writer._numTimeSteps = 5;
+  writer._filename = "output_abc.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abc_field1.h5"),
+		       writer._datasetFilename("field1"));
+  
+  writer._numTimeSteps = 10;
+  writer._filename = "output_abcd.h5";
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abcd_field2.h5"), 
+		       writer._datasetFilename("field2"));
+} // testDatasetFilename
 
 
 // End of file 

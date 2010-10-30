@@ -218,7 +218,8 @@ if ENABLE_HDF5
 	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
-	TestDataWriterHDF5MeshHex8.cc
+	TestDataWriterHDF5MeshHex8.cc \
+	TestDataWriterHDF5ExtMesh.cc
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \

@@ -18,9 +18,6 @@
 
 #include <portinfo>
 
-#include <petscmesh_viewers.hh> // USES HDF5Viewer
-#include <petscmesh_formats.hh> // USES PCICE output
-
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
