@@ -147,7 +147,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 				  dims, ndims, H5T_NATIVE_DOUBLE);
     
     // Write cells
-    const std::string& filenameCells = _datasetFilename("vertices");
+    const std::string& filenameCells = _datasetFilename("cells");
     err = PetscViewerBinaryCreate(sieveMesh->comm(), &binaryViewer);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerBinaryOpen(sieveMesh->comm(), filenameCells.c_str(),
