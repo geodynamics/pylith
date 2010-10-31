@@ -219,12 +219,15 @@ if ENABLE_HDF5
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5MeshHex8.cc \
-	TestDataWriterHDF5ExtMesh.cc
+	TestDataWriterHDF5ExtMesh.cc \
+	TestDataWriterHDF5ExtMeshHex8.cc
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
-	TestDataWriterHDF5MeshHex8.hh
+	TestDataWriterHDF5MeshHex8.hh \
+	TestDataWriterHDF5ExtMesh.hh \
+	TestDataWriterHDF5ExtMeshHex8.hh
 
   testmeshio_LDADD += -lhdf5
 endif

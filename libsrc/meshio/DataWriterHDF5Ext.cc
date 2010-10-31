@@ -78,7 +78,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 						const char* label,
 						const int labelId)
 { // open
-  assert(!_h5);
+  assert(_h5);
   _datasets.clear();
 
   try {
@@ -107,7 +107,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
-      sieveMesh->getRealSection("coordinates_dimensioned");
+      sieveMesh->hasRealSection("coordinates_dimensioned") ?
+      sieveMesh->getRealSection("coordinates_dimensioned") :
+      sieveMesh->getRealSection("coordinates");
     
     topology::FieldBase::Metadata metadata;
     // :KLUDGE: We would like to use field_type for the coordinates
@@ -135,6 +137,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       sieveMesh->depthStratum(0);
     assert(!vertices.isNull());
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+    assert(cs);
     const hsize_t ndims = 2;
     hsize_t dims[ndims];
     dims[0] = vertices->size();
@@ -365,7 +368,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 				       const char* label,
 				       const int labelId)
 { // writeCellField
-  assert(!_h5);
+  assert(_h5);
 
   try {
     // :TODO: Must account for possible presence of 'censored depth'
@@ -497,12 +500,12 @@ template<typename mesh_type, typename field_type>
 std::string
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_datasetFilename(const char* field) const
 { // _datasetFilename
-  std::ostringstream filename;
+  std::ostringstream filenameS;
   std::string filenameH5 = _hdf5Filename();
   const int indexExt = filenameH5.find(".h5");
-  filename << std::string(filenameH5, 0, indexExt) << "_" << field << ".h5";
+  filenameS << std::string(filenameH5, 0, indexExt) << "_" << field << ".dat";
 
-  return std::string(filename.str());
+  return std::string(filenameS.str());
 } // _datasetFilename
 
 
