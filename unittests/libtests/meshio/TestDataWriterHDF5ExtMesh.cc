@@ -209,16 +209,17 @@ void pylith::meshio::TestDataWriterHDF5ExtMesh::testDatasetFilename(void)
   // Append info to filename if number of time steps is 0.
   writer._numTimeSteps = 0;
   writer._filename = "output.h5";
-  CPPUNIT_ASSERT_EQUAL(std::string("output_info_ABCD.h5"), writer._datasetFilename("ABCD"));
+  CPPUNIT_ASSERT_EQUAL(std::string("output_info_ABCD.dat"),
+		       writer._datasetFilename("ABCD"));
 		       
   writer._numTimeSteps = 5;
   writer._filename = "output_abc.h5";
-  CPPUNIT_ASSERT_EQUAL(std::string("output_abc_field1.h5"),
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abc_field1.dat"),
 		       writer._datasetFilename("field1"));
   
   writer._numTimeSteps = 10;
   writer._filename = "output_abcd.h5";
-  CPPUNIT_ASSERT_EQUAL(std::string("output_abcd_field2.h5"), 
+  CPPUNIT_ASSERT_EQUAL(std::string("output_abcd_field2.dat"), 
 		       writer._datasetFilename("field2"));
 } // testDatasetFilename
 
