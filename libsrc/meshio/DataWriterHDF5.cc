@@ -96,7 +96,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     coordinates.createVector();
     coordinates.createScatter();
     coordinates.scatterSectionToVector();
+    err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
     err = VecView(coordinates.vector(), _viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
 
     Vec          elemVec;
     PetscScalar *tmpVertices;
@@ -118,8 +120,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     }
     err = VecCreateMPIWithArray(sieveMesh->comm(), cones->size(), PETSC_DETERMINE, tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -181,8 +185,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     field.scatterSectionToVector();
 
     PetscErrorCode err = 0;
-    err = VecView(vector, _viewer);
-    CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields"); CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -229,8 +234,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     field.scatterSectionToVector();
 
     PetscErrorCode err = 0;
-    err = VecView(vector, _viewer);
-    CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields"); CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
