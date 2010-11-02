@@ -320,11 +320,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
       assert(!section.isNull());
       assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
 
-      const int localFiberDim = 
+      const int fiberDimLocal = 
 	(sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
 	section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
       int fiberDim = 0;
-      MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
+      MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
 		    MPI_INT, MPI_MAX, field.mesh().comm());
       assert(fiberDim > 0);
 
@@ -438,11 +438,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
       const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
       assert(!section.isNull());
       
-      const int localFiberDim = 
+      const int fiberDimLocal = 
 	(sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
 	section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
       int fiberDim = 0;
-      MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
+      MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
 		    MPI_INT, MPI_MAX, field.mesh().comm());
       assert(fiberDim > 0);
 
