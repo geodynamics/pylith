@@ -274,6 +274,20 @@ pylith::topology::TestFieldsNewMesh::testMesh(void)
 } // testMesh
 
 // ----------------------------------------------------------------------
+// Test fiberDim().
+void
+pylith::topology::TestFieldsNewMesh::testFiberDim(void)
+{ // testFiberDim
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+
+  CPPUNIT_ASSERT_EQUAL(7, fields.fiberDim());
+} // testFiberDim
+
+// ----------------------------------------------------------------------
 // Test sectionIndex().
 void
 pylith::topology::TestFieldsNewMesh::testSectionIndex(void)
@@ -287,6 +301,21 @@ pylith::topology::TestFieldsNewMesh::testSectionIndex(void)
   CPPUNIT_ASSERT_EQUAL(0, fields.sectionIndex("field A"));
   CPPUNIT_ASSERT_EQUAL(3, fields.sectionIndex("field B"));
 } // testSectionIndex
+
+// ----------------------------------------------------------------------
+// Test sectionFiberDim().
+void
+pylith::topology::TestFieldsNewMesh::testSectionFiberDim(void)
+{ // testSectionFiberDim
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+
+  CPPUNIT_ASSERT_EQUAL(3, fields.sectionFiberDim("field A"));
+  CPPUNIT_ASSERT_EQUAL(4, fields.sectionFiberDim("field B"));
+} // testSectionFiberDim
 
 // ----------------------------------------------------------------------
 // Test fieldNames() const.

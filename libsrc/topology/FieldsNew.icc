@@ -10,7 +10,7 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_fields_hh)
+#if !defined(pylith_topology_fieldsnew_hh)
 #error "FieldsNew.icc must be included only from FieldsNew.hh"
 #endif
 
