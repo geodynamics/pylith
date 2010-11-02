@@ -18,10 +18,12 @@ CURRENT ISSUES/PRIORITIES
     Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
-  MATT * adding ability to use groups with PETSc HDF5 viewer
-       * adding ability to use block sizes for multiple dimensions and timesteps
-
-  BRAD * add new writer for external datasets
+  MATT * add ability to combine timesteps into a single dataset
+       * write cells as ints
+       * censor vertices/cells
+       * Adjust PetscViewerBinary so it can dump just values, no size info
+  BRAD * write cells as ints
+       * censor vertices/cells
 
 * Reimplement Fields to use a single section.
   BRAD - 
