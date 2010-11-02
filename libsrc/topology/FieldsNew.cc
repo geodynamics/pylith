@@ -99,10 +99,10 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
   logger.stagePush("Fields");
 
   // Set fiber dimension
-  const int fiberDim = _fiberDim();
-  assert(fiberDim > 0);
+  const int dim = fiberDim();
+  assert(dim > 0);
 #if defined(USE_UNIFORMSECTION)
-  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), dim, _mesh.debug());
 #else
   _section = new section_type(_mesh.comm(), _mesh.debug());
 #endif
@@ -122,7 +122,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
     const point_type pointMax = 
       *std::max_element(points->begin(), points->end());
     _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
-    _section->setFiberDimension(points, fiberDim);
+    _section->setFiberDimension(points, dim);
     
     int fibration = 0;
     for (typename map_type::iterator f_iter=_fields.begin();
@@ -152,10 +152,10 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   logger.stagePush("Field");
 
   // Set fiber dimension
-  const int fiberDim = _fiberDim();
-  assert(fiberDim > 0);
+  const int dim = fiberDim();
+  assert(dim > 0);
 #if defined(USE_UNIFORMSECTION)
-  _section = new section_type(_mesh.comm(), fiberDim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), dim, _mesh.debug());
 #else
   _section = new section_type(_mesh.comm(), _mesh.debug());
 #endif
@@ -174,7 +174,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
     const point_type pointMax = points.max();
     _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
     for (int i=0; i < npts; ++i)
-      _section->setFiberDimension(points[i], fiberDim);
+      _section->setFiberDimension(points[i], dim);
 
     int fibration = 0;
     for (typename map_type::iterator f_iter=_fields.begin();
@@ -289,6 +289,23 @@ pylith::topology::FieldsNew<mesh_type>::sectionIndex(const char* name) const
 } // sectionIndex
 
 // ----------------------------------------------------------------------
+// Get fiber dimension of field in section.
+template<typename mesh_type>
+int
+pylith::topology::FieldsNew<mesh_type>::sectionFiberDim(const char* name) const
+{ // sectionFiberDim
+  typename map_type::const_iterator f_iter = _fields.find(name);
+  if (f_iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in fields manager for retrieval of section index.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  return f_iter->second.fiberDim;
+} // sectionFiberDim
+
+// ----------------------------------------------------------------------
 // Get names of all fields
 template<typename mesh_type>
 void
@@ -311,8 +328,8 @@ pylith::topology::FieldsNew<mesh_type>::fieldNames(int *numNames,
 // Compute total fiber dimension for section.
 template<typename mesh_type>
 int
-pylith::topology::FieldsNew<mesh_type>::_fiberDim(void) const
-{ // _fiberDim
+pylith::topology::FieldsNew<mesh_type>::fiberDim(void) const
+{ // fiberDim
   int fiberDim = 0;
   const typename map_type::const_iterator fieldsEnd = _fields.end();
   for (typename map_type::const_iterator f_iter=_fields.begin();
@@ -329,7 +346,7 @@ pylith::topology::FieldsNew<mesh_type>::_fiberDim(void) const
 
 
   return fiberDim;
-} // _fiberDim
+} // fiberDim
 
 
 // End of file 

@@ -24,8 +24,8 @@
  * fiber dimension is set at compile time.
  */
 
-#if !defined(pylith_topology_fields_hh)
-#define pylith_topology_fields_hh
+#if !defined(pylith_topology_fieldsnew_hh)
+#define pylith_topology_fieldsnew_hh
 
 #define USE_UNIFORMSECTION
 
@@ -131,12 +131,25 @@ public :
    */
   const ALE::Obj<section_type>& section(void) const;
 
+  /** Compute total fiber dimension for section.
+   *
+   * @returns Fiber dimension.
+   */
+  int fiberDim(void) const;
+
   /** Get index of first value of field in section.
    *
    * @param name Name of field.
    * @returns Index of first value of field in section.
    */
   int sectionIndex(const char* name) const;
+
+  /** Get fiber dimension of field in section.
+   *
+   * @param name Name of field.
+   * @returns Fiber dimension of field in section.
+   */
+  int sectionFiberDim(const char* name) const;
 
   /** Return the names of all fields.
    *
@@ -165,12 +178,6 @@ protected :
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
-  /** Compute total fiber dimension for section.
-   *
-   * @returns Fiber dimension.
-   */
-  int _fiberDim(void) const;
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
@@ -189,7 +196,7 @@ private :
 #include "FieldsNew.icc"
 #include "FieldsNew.cc"
 
-#endif // pylith_topology_fields_hh
+#endif // pylith_topology_fieldsnew_hh
 
 
 // End of file 

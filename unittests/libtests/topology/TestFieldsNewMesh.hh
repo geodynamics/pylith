@@ -55,7 +55,9 @@ class pylith::topology::TestFieldsNewMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testGet );
   CPPUNIT_TEST( testGetConst );
   CPPUNIT_TEST( testMesh );
+  CPPUNIT_TEST( testFiberDim );
   CPPUNIT_TEST( testSectionIndex );
+  CPPUNIT_TEST( testSectionFiberDim );
   CPPUNIT_TEST( testFieldNames );
 
   CPPUNIT_TEST_SUITE_END();
@@ -96,8 +98,14 @@ public :
   /// Test mesh().
   void testMesh(void);
 
+  /// Test fiberDim().
+  void testFiberDim(void);
+
   /// Test sectionIndex().
   void testSectionIndex(void);
+
+  /// Test sectionFiberDim().
+  void testSectionFiberDim(void);
 
   /// Test fieldNames().
   void testFieldNames(void);
