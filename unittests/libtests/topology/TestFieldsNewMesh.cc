@@ -218,6 +218,17 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
 
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
+    vertices->end();
+
+  // Check field A
   Field<Mesh>& fieldA = fields.get("field A");
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
@@ -225,6 +236,17 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
+  const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
+  CPPUNIT_ASSERT(!sectionA.isNull());
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const int fiberDim = sectionA->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(3, fiberDim);
+  } // for
+
+
+  // Check field B
   Field<Mesh>& fieldB = fields.get("field B");
   CPPUNIT_ASSERT_EQUAL(std::string("displacement"), 
 		       std::string(fieldB.label()));
@@ -232,6 +254,15 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
 		       fieldB.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(2.0, fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
+
+  const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();
+  CPPUNIT_ASSERT(!sectionB.isNull());
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const int fiberDim = sectionB->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(4, fiberDim);
+  } // for
 } // testGet
 
 // ----------------------------------------------------------------------
@@ -246,6 +277,17 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
 
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
+    vertices->begin();
+  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
+    vertices->end();
+
+  // Check field A
   const Field<Mesh>& fieldA = fields.get("field A");
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
@@ -253,6 +295,17 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
+  const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
+  CPPUNIT_ASSERT(!sectionA.isNull());
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const int fiberDim = sectionA->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(3, fiberDim);
+  } // for
+
+
+  // Check field B
   const Field<Mesh>& fieldB = fields.get("field B");
   CPPUNIT_ASSERT_EQUAL(std::string("displacement"), 
 		       std::string(fieldB.label()));
@@ -260,6 +313,15 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
 		       fieldB.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(2.0, fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
+
+  const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();
+  CPPUNIT_ASSERT(!sectionB.isNull());
+  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    const int fiberDim = sectionB->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(4, fiberDim);
+  } // for
 } // testGetConst
 
 // ----------------------------------------------------------------------
@@ -345,6 +407,21 @@ pylith::topology::TestFieldsNewMesh::testFieldNames(void)
 
   delete[] names; names = 0;
 } // testFieldNames
+
+// ----------------------------------------------------------------------
+// Test view().
+void
+pylith::topology::TestFieldsNewMesh::testView(void)
+{ // testView
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+  fields.allocate(FieldBase::VERTICES_FIELD);
+
+  fields.view("TEST VIEW");
+} // testView
 
 
 // End of file 

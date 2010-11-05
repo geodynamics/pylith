@@ -20,7 +20,8 @@
 
 #include "AbsorbingDampers.hh" // implementation of object methods
 
-#include "pylith/topology/Field.hh" // HOLDSA Field
+#include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
+#include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
@@ -40,7 +41,7 @@
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
@@ -107,13 +108,10 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   delete _parameters;
   _parameters = 
-    new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+    new topology::FieldsNew<topology::SubMesh>(*_boundaryMesh);
   assert(0 != _parameters);
-  _parameters->add("damping constants", "damping_constants");
-  topology::Field<topology::SubMesh>& dampingConsts =
-    _parameters->get("damping constants");
-  dampingConsts.newSection(cells, fiberDim);
-  dampingConsts.allocate();
+  _parameters->add("damping constants", "damping_constants", fiberDim);
+  _parameters->allocate(cells);
 
   logger.stagePop();
 
@@ -160,8 +158,9 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const double velocityScale = 
     _normalizer->lengthScale() / _normalizer->timeScale();
 
-  const ALE::Obj<SubRealSection>& dampersSection = dampingConsts.section();
-  assert(!dampersSection.isNull());
+  const ALE::Obj<SubRealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
 
@@ -241,7 +240,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 	  fabs(dampingConstsGlobal[iQuad*spaceDim+iDim]);
       } // for
     } // for
-    dampersSection->updatePoint(*c_iter, &dampingConstsGlobal[0]);
+    parametersSection->updatePoint(*c_iter, &dampingConstsGlobal[0]);
   } // for
 
   _db->close();
@@ -278,7 +277,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
   // Allocate vectors for cell values.
   _initCellVector();
-  double_array dampersCell(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
@@ -290,9 +288,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection =
-    _parameters->get("damping constants").section();
-  assert(!dampersSection.isNull());
+  const ALE::Obj<SubRealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
 
   // Use _cellVector for cell residual.
   const ALE::Obj<RealSection>& residualSection = residual.section();
@@ -344,8 +342,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     // Restrict input fields to cell
     velVisitor.clear();
     sieveSubMesh->restrictClosure(*c_iter, velVisitor);
-
-    dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
+    assert(numQuadPts*spaceDim == 
+	   parametersSection->getFiberDimension(*c_iter));
+    const double* dampersCell = parametersSection->restrictPoint(*c_iter);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -424,7 +423,6 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
 
   // Allocate vectors for cell values.
   _initCellVector();
-  double_array dampersCell(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
@@ -436,9 +434,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection =
-    _parameters->get("damping constants").section();
-  assert(!dampersSection.isNull());
+  const ALE::Obj<SubRealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
 
   // Use _cellVector for cell values.
   const ALE::Obj<RealSection>& residualSection = residual.section();
@@ -490,8 +488,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(
     // Restrict input fields to cell
     velVisitor.clear();
     sieveSubMesh->restrictClosure(*c_iter, velVisitor);
-
-    dampersSection->restrictPoint(*c_iter, &dampersCell[0], dampersCell.size());
+    assert(numQuadPts*spaceDim == 
+	   parametersSection->getFiberDimension(*c_iter));
+    const double* dampersCell = parametersSection->restrictPoint(*c_iter);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -576,9 +575,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection =
-    _parameters->get("damping constants").section();
-  assert(!dampersSection.isNull());
+  const ALE::Obj<SubRealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
 
   const topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
@@ -636,8 +635,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #endif
 
     // Get damping constants
-    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
-    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
+    assert(numQuadPts*spaceDim == parametersSection->getFiberDimension(*c_iter));
+    const double* dampingConstsCell = parametersSection->restrictPoint(*c_iter);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -741,9 +740,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   _initCellVector();
 
   // Get sections
-  const ALE::Obj<SubRealSection>& dampersSection =
-    _parameters->get("damping constants").section();
-  assert(!dampersSection.isNull());
+  const ALE::Obj<SubRealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
 
   const topology::Field<topology::Mesh>& solution = fields->solution();
   const ALE::Obj<SieveMesh>& sieveMesh = solution.mesh().sieveMesh();
@@ -788,8 +787,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #endif
 
     // Get damping constants
-    assert(numQuadPts*spaceDim == dampersSection->getFiberDimension(*c_iter));
-    const double* dampingConstsCell = dampersSection->restrictPoint(*c_iter);
+    assert(numQuadPts*spaceDim == parametersSection->getFiberDimension(*c_iter));
+    const double* dampingConstsCell = parametersSection->restrictPoint(*c_iter);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);

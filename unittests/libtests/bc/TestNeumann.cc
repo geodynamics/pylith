@@ -27,6 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
@@ -47,7 +48,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumann );
 typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 typedef pylith::topology::SubMesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
 
@@ -198,15 +199,23 @@ pylith::bc::TestNeumann::testInitialize(void)
   double_array tractionsCell(fiberDim);
   int index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
-  const ALE::Obj<SubRealSection>& tractionSection =
-    bc._parameters->get("initial").section();
+  const ALE::Obj<SubRealUniformSection>& parametersSection =
+    bc._parameters->section();
+  CPPUNIT_ASSERT(!parametersSection.isNull());
+  const int parametersFiberDim = bc._parameters->fiberDim();
+  const int initialIndex = bc._parameters->sectionIndex("initial");
+  const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
 
   const double tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    tractionSection->restrictPoint(*c_iter,
-				   &tractionsCell[0], tractionsCell.size());
+    CPPUNIT_ASSERT_EQUAL(parametersFiberDim,
+			 parametersSection->getFiberDimension(*c_iter));
+    const double* parametersCell = parametersSection->restrictPoint(*c_iter);
+    CPPUNIT_ASSERT(parametersCell);
+    CPPUNIT_ASSERT(initialIndex + initialFiberDim <= parametersFiberDim);
+    const double* tractionsCell = &parametersCell[initialIndex];
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int iDim =0; iDim < spaceDim; ++iDim) {
 	const double tractionsCellData = _data->tractionsCell[index];
@@ -263,49 +272,6 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
-// Test _queryDB().
-void
-pylith::bc::TestNeumann::test_queryDB(void)
-{ // testQueryDB
-  _data = new NeumannDataQuad4();
-  feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
-  _quadrature->refGeometry(&geometry);
-
-  topology::Mesh mesh;
-  Neumann bc;
-  _preinitialize(&mesh, &bc, true);
-
-  spatialdata::spatialdb::SimpleDB dbInitial("_TestNeumann _queryDB");
-  spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
-  dbInitialIO.filename("data/quad4_traction_initial.spatialdb");
-  dbInitial.ioHandler(&dbInitialIO);
-  dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
-
-  const double scale = _TestNeumann::pressureScale;
-  const int spaceDim = _TestNeumann::spaceDim;
-  const int numQuadPts = _TestNeumann::numQuadPts;
-  const int fiberDim = numQuadPts*spaceDim;
-  const char* queryVals[spaceDim] = { "traction-shear", "traction-normal" };
-
-  topology::Field<topology::SubMesh> initial(*bc._boundaryMesh);
-  initial.newSection(topology::FieldBase::CELLS_FIELD, fiberDim, 1);
-  initial.allocate();
-  initial.zero();
-  initial.scale(_TestNeumann::pressureScale);
-
-  dbInitial.open();
-  dbInitial.queryVals(queryVals, spaceDim);
-  bc._queryDB(&initial, &dbInitial, spaceDim, scale);
-  dbInitial.close();
-
-  const ALE::Obj<RealSection>& initialSection = initial.section();
-  CPPUNIT_ASSERT(!initialSection.isNull());
-  _TestNeumann::_checkValues(_TestNeumann::initial,
-				 fiberDim, initial);
-} // testQueryDB
-
-// ----------------------------------------------------------------------
 // Test _queryDatabases().
 void
 pylith::bc::TestNeumann::test_queryDatabases(void)
@@ -353,35 +319,37 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
-  
+
+  // bc._parameters->view("PARAMETERS"); // DEBUGGING
+
   // Check initial values.
   const topology::Field<topology::SubMesh>& initial = 
     bc._parameters->get("initial");
   _TestNeumann::_checkValues(_TestNeumann::initial, 
-				 numQuadPts*spaceDim, initial);
+			     numQuadPts*spaceDim, initial);
 
   // Check rate values.
   const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(_TestNeumann::rate, 
-				 numQuadPts*spaceDim, rate);
+			     numQuadPts*spaceDim, rate);
 
   // Check rate start time.
   const topology::Field<topology::SubMesh>& rateTime = 
     bc._parameters->get("rate time");
   _TestNeumann::_checkValues(_TestNeumann::rateTime, 
-				 numQuadPts, rateTime);
+			     numQuadPts, rateTime);
 
   // Check change values.
   const topology::Field<topology::SubMesh>& change = 
     bc._parameters->get("change");
   _TestNeumann::_checkValues(_TestNeumann::change, 
-				 numQuadPts*spaceDim, change);
+			     numQuadPts*spaceDim, change);
 
   // Check change start time.
   const topology::Field<topology::SubMesh>& changeTime = 
     bc._parameters->get("change time");
   _TestNeumann::_checkValues(_TestNeumann::changeTime, 
-				 numQuadPts*1, changeTime);
+			     numQuadPts, changeTime);
   th.close();
 } // test_queryDatabases
 
@@ -445,7 +413,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   const topology::Field<topology::SubMesh>& initial = 
     bc._parameters->get("initial");
   _TestNeumann::_checkValues(&valuesE[0], 
-				 numQuadPts*spaceDim, initial);
+			     numQuadPts*spaceDim, initial);
 
   // Check rate values.
   for (int i=0; i < valuesE.size(); i+=spaceDim) {
@@ -454,7 +422,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   } // for
   const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
   _TestNeumann::_checkValues(&valuesE[0], 
-				 numQuadPts*spaceDim, rate);
+			     numQuadPts*spaceDim, rate);
 
   // Check change values.
   for (int i=0; i < valuesE.size(); i+=spaceDim) {
@@ -464,7 +432,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   const topology::Field<topology::SubMesh>& change = 
     bc._parameters->get("change");
   _TestNeumann::_checkValues(&valuesE[0], 
-				 numQuadPts*spaceDim, change);
+			     numQuadPts*spaceDim, change);
 } // test_paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -502,7 +470,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   const topology::Field<topology::SubMesh>& value = 
     bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::initial, 
-				 numQuadPts*spaceDim, value);
+			     numQuadPts*spaceDim, value);
 } // test_calculateValueInitial
 
 // ----------------------------------------------------------------------
@@ -540,7 +508,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
   const topology::Field<topology::SubMesh>& value = 
     bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesRate,
-				 numQuadPts*spaceDim, value);
+			     numQuadPts*spaceDim, value);
 } // test_calculateValueRate
 
 // ----------------------------------------------------------------------
@@ -578,7 +546,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
   const topology::Field<topology::SubMesh>& value = 
     bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChange,
-				 numQuadPts*spaceDim, value);
+			     numQuadPts*spaceDim, value);
 } // test_calculateValueChange
 
 // ----------------------------------------------------------------------
@@ -621,7 +589,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   const topology::Field<topology::SubMesh>& value = 
     bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH,
-				 numQuadPts*spaceDim, value);
+			     numQuadPts*spaceDim, value);
 } // test_calculateValueChangeTH
 
 // ----------------------------------------------------------------------

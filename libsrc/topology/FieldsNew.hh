@@ -110,12 +110,14 @@ public :
   /** Get field.
    *
    * @param name Name of field.
+   * @returns Field.
    */
   const Field<mesh_type>& get(const char* name) const;
 	   
   /** Get field.
    *
    * @param name Name of field.
+   * @returns Field.
    */
   Field<mesh_type>& get(const char* name);
 	   
@@ -158,6 +160,12 @@ public :
    */
   void fieldNames(int* numNames,
 		  std::string** names) const;
+
+  /** View fields and section.
+   *
+   * @param label Label for fields.
+   */
+  void view(const char* label);
 
 // PROTECTED STRUCTS ////////////////////////////////////////////////////
 protected :

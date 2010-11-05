@@ -50,7 +50,6 @@ class pylith::bc::TestNeumann : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( test_getLabel );
-  CPPUNIT_TEST( test_queryDB );
   CPPUNIT_TEST( test_queryDatabases );
   CPPUNIT_TEST( test_paramsLocalToGlobal );
   CPPUNIT_TEST( test_calculateValueInitial );
@@ -84,9 +83,6 @@ public :
 
   /// Test _getLabel().
   void test_getLabel(void);
-
-  /// Test _queryDB().
-  void test_queryDB(void);
 
   /// Test _queryDatabases().
   void test_queryDatabases(void);
