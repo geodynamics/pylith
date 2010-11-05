@@ -107,12 +107,12 @@ protected :
 
   /** Query database for values.
    *
-   * @param field Field in which to store values.
+   * @param name Name of field associated with database.
    * @param db Spatial database with values.
    * @param querySize Number of values at each location.
    * @param scale Dimension scale associated with values.
    */
-  void _queryDB(topology::Field<topology::SubMesh>* field,
+  void _queryDB(const char* name,
 		spatialdata::spatialdb::SpatialDB* const db,
 		const int querySize,
 		const double scale);

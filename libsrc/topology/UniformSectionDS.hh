@@ -142,6 +142,11 @@ public:
   // Return only the values associated to this point, not its closure
   const value_type *restrictPoint(const point_type& p) const;
 
+  // Return only the values associated to this point, not its closure
+  void restrictPoint(const point_type& p,
+		     value_type* const values,
+		     const int size) const;
+
   // Update only the values associated to this point, not its closure
   void updatePoint(const point_type& p,
 		   const value_type v[]);

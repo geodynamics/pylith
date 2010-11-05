@@ -27,6 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -44,7 +45,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
 typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 typedef pylith::topology::SubMesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealSection SubRealSection;
+typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -140,8 +141,8 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   double_array dampersCell(fiberDim);
   int index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
-  const ALE::Obj<SubRealSection>& dampersSection = 
-    bc._parameters->get("damping constants").section();
+  const ALE::Obj<SubRealUniformSection>& dampersSection = 
+    bc._parameters->section();
 
   const double tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();

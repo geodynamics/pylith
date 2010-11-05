@@ -124,11 +124,11 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
     _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
     _section->setFiberDimension(points, dim);
     
-    int fibration = 0;
     for (typename map_type::iterator f_iter=_fields.begin();
 	 f_iter != fieldsEnd;
-	 ++f_iter, ++fibration)
-      _section->setFiberDimension(points, f_iter->second.fiberDim, fibration);
+	 ++f_iter)
+      _section->setFiberDimension(points, f_iter->second.fiberDim, 
+				  f_iter->second.fibration);
   } else // Create empty chart
     _section->setChart(typename section_type::chart_type(0, 0));
 
@@ -176,13 +176,12 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
     for (int i=0; i < npts; ++i)
       _section->setFiberDimension(points[i], dim);
 
-    int fibration = 0;
     for (typename map_type::iterator f_iter=_fields.begin();
 	 f_iter != fieldsEnd;
-	 ++f_iter, ++fibration)
+	 ++f_iter)
       for (int i=0; i < npts; ++i)
-	_section->setFiberDimension(points[i], 
-				    f_iter->second.fiberDim, fibration);
+	_section->setFiberDimension(points[i], f_iter->second.fiberDim, 
+				    f_iter->second.fibration);
   } else  // create empty chart
     _section->setChart(typename section_type::chart_type(0, 0));
 
@@ -272,6 +271,30 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
 } // get
 
 // ----------------------------------------------------------------------
+// Compute total fiber dimension for section.
+template<typename mesh_type>
+int
+pylith::topology::FieldsNew<mesh_type>::fiberDim(void) const
+{ // fiberDim
+  int fiberDim = 0;
+  const typename map_type::const_iterator fieldsEnd = _fields.end();
+  for (typename map_type::const_iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    fiberDim += f_iter->second.fiberDim;
+
+  if (fiberDim < 0) {
+    std::ostringstream msg;
+    msg << "Fiber dimension (" << fiberDim << ") for Fields object must "
+	<< "be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+
+  return fiberDim;
+} // fiberDim
+
+// ----------------------------------------------------------------------
 // Get index of first value of field in section.
 template<typename mesh_type>
 int
@@ -325,28 +348,23 @@ pylith::topology::FieldsNew<mesh_type>::fieldNames(int *numNames,
 } // fieldNames
 
 // ----------------------------------------------------------------------
-// Compute total fiber dimension for section.
+// View fields and section.
 template<typename mesh_type>
-int
-pylith::topology::FieldsNew<mesh_type>::fiberDim(void) const
-{ // fiberDim
-  int fiberDim = 0;
+void
+pylith::topology::FieldsNew<mesh_type>::view(const char* label)
+{ // view
+  std::cout << "Fields '" << label << "':\n";
   const typename map_type::const_iterator fieldsEnd = _fields.end();
-  for (typename map_type::const_iterator f_iter=_fields.begin();
+  for (typename map_type::const_iterator f_iter = _fields.begin();
        f_iter != fieldsEnd;
        ++f_iter)
-    fiberDim += f_iter->second.fiberDim;
-
-  if (fiberDim < 0) {
-    std::ostringstream msg;
-    msg << "Fiber dimension (" << fiberDim << ") for Fields object must "
-	<< "be nonnegative.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-
-  return fiberDim;
-} // fiberDim
+    std::cout << "  Field: " << f_iter->first
+	      << ", fibration: " << f_iter->second.fibration
+	      << ", fiber dim: " << f_iter->second.fiberDim
+	      << ", first value index: " << f_iter->second.sindex
+	      << std::endl;
+  _section->view("Section");
+} // view
 
 
 // End of file 
