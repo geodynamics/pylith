@@ -149,20 +149,34 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
 // ----------------------------------------------------------------------
 // Return the names of all vertex groups.
 void
-pylith::topology::Mesh::groups(int *numNames, char ***outNames)
+pylith::topology::Mesh::groups(int* numNames, 
+			       char*** names) const
 { // groups
-  const ALE::Obj<std::set<std::string> >& sectionNames =  _mesh->getIntSections();
+  assert(!_mesh.isNull());
+  const ALE::Obj<std::set<std::string> >& sectionNames =  
+    _mesh->getIntSections();
+  assert(!sectionNames.isNull());
   
   *numNames = sectionNames->size();
-  PetscErrorCode ierr = PetscMalloc((*numNames) * sizeof(char *), outNames);
+  *names = new char*[sectionNames->size()];
+  assert(*names);
+
   const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
   int i = 0;
-  for (std::set<std::string>::const_iterator name = sectionNames->begin(); name != namesEnd; ++name) {
-    char *newName;
-
-    ierr = PetscStrallocpy(name->c_str(), &newName);
-    (*outNames)[i++] = newName;
-  }
+  for (std::set<std::string>::const_iterator n_iter=sectionNames->begin(); 
+       n_iter != namesEnd;
+       ++n_iter) {
+    const char len = n_iter->length();
+    char* newName = 0;
+    if (len > 0) {
+      newName = new char[len+1];
+      strncpy(newName, n_iter->c_str(), len+1);
+    } else {
+      newName = new char[1];
+      newName[0] ='\0';
+    } // if/else
+    (*names)[i++] = newName;
+  } // for
 } // groups
 
 // ----------------------------------------------------------------------
