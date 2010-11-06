@@ -179,9 +179,11 @@ public :
 
   /** Return the names of all vertex groups.
    *
-   * @returns the names of al lvertex groups.
+   * @param numNames Number of fields,
+   * @param names Names of fields.
    */
-  void groups(int *numNames, char ***outNames);
+  void groups(int* numNames, 
+	      char*** names) const;
 
   /** Return the size of a group.
    *

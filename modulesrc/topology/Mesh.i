@@ -130,9 +130,11 @@ namespace pylith {
 
       /** Return the names of all vertex groups.
        *
-       * @returns an array of all vertex group names
+       * @param numValues Number of field values [output].
+       * @param values Values of field values [output].
        */
-      void groups(int *numNames, char ***outNames);
+      void groups(int* numValues, 
+		  char*** values) const;
 
       /** Return the size of a group.
        *
