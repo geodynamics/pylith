@@ -102,21 +102,23 @@
 }
 
 
-%typemap(argout) (int *numNames, char ***outNames) {
-  int       num   = *$1;
-  char    **names = *$2;
-  PyObject *l     = PyList_New(num);
+// Treat output array of strings as a special case.
+%typemap(argout) (int* numValues, char*** values) {
+  Py_ssize_t nvalues = *$1;
+  char **values = *$2;
+  PyObject *l = PyList_New(nvalues);
 
-  for(Py_ssize_t i = 0; i < (Py_ssize_t) num; ++i) {
-    PyList_SetItem(l, i, PyString_FromString(names[i]));
-    PetscFree(names[i]);
-  }
-  PetscFree(names);
+  for(Py_ssize_t i=0; i < nvalues; ++i) {
+    PyList_SetItem(l, i, PyString_FromString(values[i]));
+    delete[] values[i];
+  } // for
+  delete[] values;
   $result = l;
-}
-%typemap(in,numinputs=0) (int *numNames, char ***outNames)(int tempI, char **tempC) {
+ } // typemap(out) (int*, char***)
+%typemap(in,numinputs=0) (int* numValues, char*** values)(int tempI, char** tempC) {
     $1 = &tempI;
     $2 = &tempC;
-}
+ } // typemap(in) (int*, char***)
+
 
 // End of file

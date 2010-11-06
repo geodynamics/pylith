@@ -123,9 +123,11 @@ public :
 
   /** Return the names of all fields.
    *
-   * @returns an array of all field names
+   * @param numNames Number of field names [output].
+   * @param names Names of field names [output].
    */
-  void fieldNames(int *numNames, char ***outNames);
+  void fieldNames(int* numNames, 
+		  char*** names) const;
 
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :

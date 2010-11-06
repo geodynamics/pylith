@@ -101,11 +101,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
   // Set fiber dimension
   const int dim = fiberDim();
   assert(dim > 0);
-#if defined(USE_UNIFORMSECTION)
   _section = new section_type(_mesh.comm(), dim, _mesh.debug());
-#else
-  _section = new section_type(_mesh.comm(), _mesh.debug());
-#endif
   assert(!_section.isNull());
 
   // Set spaces
@@ -154,11 +150,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   // Set fiber dimension
   const int dim = fiberDim();
   assert(dim > 0);
-#if defined(USE_UNIFORMSECTION)
   _section = new section_type(_mesh.comm(), dim, _mesh.debug());
-#else
-  _section = new section_type(_mesh.comm(), _mesh.debug());
-#endif
   assert(!_section.isNull());
 
   // Set spaces
@@ -217,33 +209,6 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const FieldBase::DomainEnum dom
   allocate(points);
 } // allocate
 
-// ----------------------------------------------------------------------
-// Get field.
-template<typename mesh_type>
-const pylith::topology::Field<mesh_type>&
-pylith::topology::FieldsNew<mesh_type>::get(const char* name) const
-{ // get
-  typename map_type::const_iterator f_iter = _fields.find(name);
-  if (f_iter == _fields.end()) {
-    std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  const int fibration = f_iter->second.fibration;
-  assert(fibration >= 0 && fibration < _fields.size());
-
-  delete f_iter->second.field; f_iter->second.field = 0;
-  assert(!_section.isNull());
-  f_iter->second.field = 
-    new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
-			 f_iter->second.metadata);
-  assert(0 != f_iter->second.field);
-
-  return *f_iter->second.field;
-} // get
-	   
 // ----------------------------------------------------------------------
 // Get field.
 template<typename mesh_type>
@@ -333,18 +298,30 @@ pylith::topology::FieldsNew<mesh_type>::sectionFiberDim(const char* name) const
 template<typename mesh_type>
 void
 pylith::topology::FieldsNew<mesh_type>::fieldNames(int *numNames, 
-						   std::string** names) const
+						   char*** names) const
 { // fieldNames
-  const int size = _fields.size();
-  *numNames = size;
-  *names = new std::string[size];
-  
+  assert(numNames);
+  assert(names);
+
+  *numNames = _fields.size();
+  *names = new char*[_fields.size()];
+  assert(*names);
+  const typename map_type::const_iterator namesEnd = _fields.end();
   int i = 0;
-  const typename map_type::const_iterator fieldsEnd = _fields.end();
-  for (typename map_type::const_iterator f_iter = _fields.begin();
-       f_iter != fieldsEnd;
-       ++f_iter)
-    (*names)[i++] = f_iter->first;
+  for (typename map_type::const_iterator name = _fields.begin(); 
+       name != namesEnd;
+       ++name) {
+    const char len = name->first.length();
+    char* newName = 0;
+    if (len > 0) {
+      newName = new char[len+1];
+      strncpy(newName, name->first.c_str(), len+1);
+    } else {
+      newName = new char[1];
+      newName[0] ='\0';
+    } // if/else
+    (*names)[i++] = newName;
+  } // for
 } // fieldNames
 
 // ----------------------------------------------------------------------

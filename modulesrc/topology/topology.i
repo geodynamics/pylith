@@ -27,6 +27,7 @@
 #include "pylith/topology/FieldBase.hh"
 #include "pylith/topology/Field.hh"
 #include "pylith/topology/Fields.hh"
+#include "pylith/topology/FieldsNew.hh"
 #include "pylith/topology/SolutionFields.hh"
 #include "pylith/topology/Jacobian.hh"
 #include "pylith/topology/Distributor.hh"
@@ -65,6 +66,7 @@ import_array();
 %include "FieldBase.i"
 %include "Field.i"
 %include "Fields.i"
+%include "FieldsNew.i"
 %include "SolutionFields.i"
 %include "Jacobian.i"
 %include "Distributor.i"
@@ -76,6 +78,9 @@ import_array();
 %template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh>;
 %template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >;
+
+%template(MeshFieldsNew) pylith::topology::FieldsNew<pylith::topology::Mesh>;
+%template(SubMeshFieldsNew) pylith::topology::FieldsNew<pylith::topology::SubMesh>;
 
 // End of file
 

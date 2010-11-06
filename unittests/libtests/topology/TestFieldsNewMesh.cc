@@ -32,12 +32,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsNewMesh );
 // ----------------------------------------------------------------------
 typedef pylith::topology::FieldsNew<pylith::topology::Mesh> FieldsNewMesh;
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-#if defined(USE_UNIFORMSECTION)
-typedef pylith::topology::Mesh::RealUniformSection section_type;
-#else
-typedef pylith::topology::Mesh::RealSection section_type;
-#endif
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 void
@@ -126,7 +121,7 @@ pylith::topology::TestFieldsNewMesh::testAllocateSequence(void)
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  const ALE::Obj<section_type>& section = fields.section();
+  const ALE::Obj<RealUniformSection>& section = fields.section();
   CPPUNIT_ASSERT(!section.isNull());
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -168,7 +163,7 @@ pylith::topology::TestFieldsNewMesh::testAllocateArray(void)
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  const ALE::Obj<section_type>& section = fields.section();
+  const ALE::Obj<RealUniformSection>& section = fields.section();
   CPPUNIT_ASSERT(!section.isNull());
   for (int i=0; i < nptsIn; ++i)
     CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(verticesIn[i]));
@@ -193,7 +188,7 @@ pylith::topology::TestFieldsNewMesh::testAllocateDomain(void)
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
-  const ALE::Obj<section_type>& section = fields.section();
+  const ALE::Obj<RealUniformSection>& section = fields.section();
   CPPUNIT_ASSERT(!section.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -397,14 +392,17 @@ pylith::topology::TestFieldsNewMesh::testFieldNames(void)
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
 
   int numFields = 0;
-  std::string* names = 0;
+  char** names = 0;
   fields.fieldNames(&numFields, &names);
   
   CPPUNIT_ASSERT_EQUAL(numFieldsE, numFields);
   
   for (int i=0; i < numFields; ++i)
-    CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), names[i]);
+    CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), std::string(names[i]));
 
+  for (int i=0; i < numFields; ++i) {
+    delete[] names[i]; names[i] = 0;
+  } // for
   delete[] names; names = 0;
 } // testFieldNames
 
