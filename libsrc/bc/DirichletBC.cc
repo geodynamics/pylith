@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -34,6 +34,7 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -204,24 +205,34 @@ pylith::bc::DirichletBC::setField(const double t,
 
   const int numPoints = _points.size();
 
-  double_array valueVertex(numFixedDOF);
-  const ALE::Obj<RealSection>& valueSection = 
-    _parameters->get("value").section();
-  assert(!valueSection.isNull());
+  assert(_parameters);
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  const int valueIndex = _parameters->sectionIndex("value");
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(valueFiberDim == numFixedDOF);
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
 
-  const ALE::Obj<RealSection>& section = field.section();
-  assert(!section.isNull());
+  const ALE::Obj<RealSection>& fieldSection = field.section();
+  assert(!fieldSection.isNull());
   const int fiberDimension = 
-    (numPoints > 0) ? section->getFiberDimension(_points[0]) : 0;
+    (numPoints > 0) ? fieldSection->getFiberDimension(_points[0]) : 0;
   double_array fieldVertex(fiberDimension);
   
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const SieveMesh::point_type point = _points[iPoint];
-    section->restrictPoint(point, &fieldVertex[0], fieldVertex.size());
-    valueSection->restrictPoint(point, &valueVertex[0], valueVertex.size());
+    const SieveMesh::point_type p_bc = _points[iPoint];
+
+    fieldSection->restrictPoint(p_bc, &fieldVertex[0], fieldVertex.size());
+
+    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
+    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      fieldVertex[_bcDOF[iDOF]] = valueVertex[iDOF];
-    section->updatePointAll(_points[iPoint], &fieldVertex[0]);
+      fieldVertex[_bcDOF[iDOF]] = parametersVertex[valueIndex+iDOF];
+
+    fieldSection->updatePointAll(p_bc, &fieldVertex[0]);
   } // for
 } // setField
 
@@ -243,24 +254,34 @@ pylith::bc::DirichletBC::setFieldIncr(const double t0,
 
   const int numPoints = _points.size();
 
-  double_array valueVertex(numFixedDOF);
-  const ALE::Obj<RealSection>& valueSection = 
-    _parameters->get("value").section();
-  assert(!valueSection.isNull());
+  assert(_parameters);
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  const int valueIndex = _parameters->sectionIndex("value");
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(valueFiberDim == numFixedDOF);
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
 
-  const ALE::Obj<RealSection>& section = field.section();
-  assert(!section.isNull());
+  const ALE::Obj<RealSection>& fieldSection = field.section();
+  assert(!fieldSection.isNull());
   const int fiberDimension = 
-    (numPoints > 0) ? section->getFiberDimension(_points[0]) : 0;
+    (numPoints > 0) ? fieldSection->getFiberDimension(_points[0]) : 0;
   double_array fieldVertex(fiberDimension);
   
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const SieveMesh::point_type point = _points[iPoint];
-    section->restrictPoint(point, &fieldVertex[0], fieldVertex.size());
-    valueSection->restrictPoint(point, &valueVertex[0], valueVertex.size());
+    const SieveMesh::point_type p_bc = _points[iPoint];
+
+    fieldSection->restrictPoint(p_bc, &fieldVertex[0], fieldVertex.size());
+
+    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
+    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      fieldVertex[_bcDOF[iDOF]] = valueVertex[iDOF];
-    section->updatePointAll(_points[iPoint], &fieldVertex[0]);
+      fieldVertex[_bcDOF[iDOF]] = parametersVertex[valueIndex+iDOF];
+
+    fieldSection->updatePointAll(p_bc, &fieldVertex[0]);
   } // for
 
 } // setFieldIncr

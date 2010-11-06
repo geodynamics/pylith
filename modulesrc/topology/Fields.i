@@ -105,9 +105,11 @@ namespace pylith {
 
       /** Return the names of all fields.
        *
-       * @returns an array of all field names
+       * @param numValues Number of field values [output].
+       * @param values Values of field values [output].
        */
-      void fieldNames(int *numNames, char ***outNames);
+      void fieldNames(int* numValues, 
+		      char*** values) const;
 
     }; // Fields
 

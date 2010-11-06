@@ -17,6 +17,7 @@
 // ----------------------------------------------------------------------
 // Check if fields contains a given field.
 template<typename mesh_type>
+inline
 bool
 pylith::topology::FieldsNew<mesh_type>::hasField(const char* name) const
 { // hasField
@@ -27,6 +28,7 @@ pylith::topology::FieldsNew<mesh_type>::hasField(const char* name) const
 // ----------------------------------------------------------------------
 // Get mesh associated with fields.
 template<typename mesh_type>
+inline
 const mesh_type&
 pylith::topology::FieldsNew<mesh_type>::mesh(void) const
 { // mesh
@@ -36,6 +38,7 @@ pylith::topology::FieldsNew<mesh_type>::mesh(void) const
 // ----------------------------------------------------------------------
 // Get section containing fields.
 template<typename mesh_type>
+inline
 const ALE::Obj<typename pylith::topology::FieldsNew<mesh_type>::section_type>& 
 pylith::topology::FieldsNew<mesh_type>::section(void) const
 { // section

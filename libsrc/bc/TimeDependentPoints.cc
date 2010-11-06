@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -35,6 +35,7 @@
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
@@ -118,96 +119,79 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   logger.stagePush("BoundaryConditions");
 
   delete _parameters;
-  _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+  _parameters = new topology::FieldsNew<topology::Mesh>(mesh);
 
-  // Create section to hold time dependent values
-  _parameters->add("value", fieldName);
-  topology::Field<topology::Mesh>& value = _parameters->get("value");
-  value.scale(valueScale);
-  value.vectorFieldType(topology::FieldBase::OTHER);
-  value.newSection(_points, numBCDOF);
-  value.allocate();
-
-  if (0 != _dbInitial) { // Setup initial values, if provided.
-    std::string fieldLabel = std::string("initial_") + std::string(fieldName);
-    _parameters->add("initial", fieldLabel.c_str());
-    topology::Field<topology::Mesh>& initial = 
-      _parameters->get("initial");
-    initial.cloneSection(value);
-    initial.scale(valueScale);
-    initial.vectorFieldType(topology::FieldBase::OTHER);
-
+  _parameters->add("value", "value", numBCDOF, topology::FieldBase::OTHER,
+		   valueScale);
+  
+  if (_dbInitial) {
+    const std::string& fieldLabel =
+      std::string("initial_") + std::string(fieldName);
+    _parameters->add("initial", fieldLabel.c_str(),
+		     numBCDOF, topology::FieldBase::OTHER,
+		     valueScale);
+  } // if
+  if (_dbRate) {
+    const std::string& fieldLabel = 
+      std::string("rate_") + std::string(fieldName);
+    _parameters->add("rate", fieldLabel.c_str(),
+		     numBCDOF, topology::FieldBase::OTHER,
+		     rateScale);
+    const std::string& timeLabel = 
+      std::string("rate_time_") + std::string(fieldName);    
+    _parameters->add("rate time", timeLabel.c_str(),
+		     1, topology::FieldBase::SCALAR,
+		     timeScale);
+  } // if
+  if (_dbChange) {
+    const std::string& fieldLabel = 
+      std::string("change_") + std::string(fieldName);
+    _parameters->add("change", fieldLabel.c_str(),
+		     numBCDOF, topology::FieldBase::OTHER,
+		     valueScale);
+    const std::string& timeLabel = 
+      std::string("change_time_") + std::string(fieldName);
+    _parameters->add("change time", timeLabel.c_str(),
+		     1, topology::FieldBase::SCALAR,
+		     timeScale);
+  } // if
+  _parameters->allocate(_points);
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  
+  if (_dbInitial) { // Setup initial values, if provided.
     _dbInitial->open();
     _dbInitial->queryVals(valueNames, numBCDOF);
-    _queryDB(&initial, _dbInitial, numBCDOF, valueScale);
+    _queryDB("initial", _dbInitial, numBCDOF, valueScale);
     _dbInitial->close();
   } // if
 
-  if (0 != _dbRate) { // Setup rate of change of values, if provided.
-    std::string fieldLabel = std::string("rate_") + std::string(fieldName);
-    _parameters->add("rate", fieldLabel.c_str());
-    topology::Field<topology::Mesh>& rate = 
-      _parameters->get("rate");
-    rate.cloneSection(value);
-    rate.scale(rateScale);
-    rate.vectorFieldType(topology::FieldBase::OTHER);
-    const ALE::Obj<RealSection>& rateSection = rate.section();
-    assert(!rateSection.isNull());
-
+  if (_dbRate) { // Setup rate of change of values, if provided.
     _dbRate->open();
     _dbRate->queryVals(rateNames, numBCDOF);
-    _queryDB(&rate, _dbRate, numBCDOF, rateScale);
-
-    std::string timeLabel = 
-      std::string("rate_time_") + std::string(fieldName);
-    _parameters->add("rate time", timeLabel.c_str());
-    topology::Field<topology::Mesh>& rateTime = 
-      _parameters->get("rate time");
-    rateTime.newSection(rate, 1);
-    rateTime.allocate();
-    rateTime.scale(timeScale);
-    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
-
+    _queryDB("rate", _dbRate, numBCDOF, rateScale);
+    
     const char* timeNames[1] = { "rate-start-time" };
     _dbRate->queryVals(timeNames, 1);
-    _queryDB(&rateTime, _dbRate, 1, timeScale);
+    _queryDB("rate time", _dbRate, 1, timeScale);
     _dbRate->close();
   } // if
-
-  if (0 != _dbChange) { // Setup change of values, if provided.
-    std::string fieldLabel = std::string("change_") + std::string(fieldName);
-    _parameters->add("change", fieldLabel.c_str());
-    topology::Field<topology::Mesh>& change = 
-      _parameters->get("change");
-    change.cloneSection(value);
-    change.scale(valueScale);
-    change.vectorFieldType(topology::FieldBase::OTHER);
-    const ALE::Obj<RealSection>& changeSection = change.section();
-    assert(!changeSection.isNull());
-
+  
+  if (_dbChange) { // Setup change of values, if provided.
     _dbChange->open();
     _dbChange->queryVals(valueNames, numBCDOF);
-    _queryDB(&change, _dbChange, numBCDOF, valueScale);
-
-    std::string timeLabel = 
-      std::string("change_time_") + std::string(fieldName);
-    _parameters->add("change time", timeLabel.c_str());
-    topology::Field<topology::Mesh>& changeTime = 
-      _parameters->get("change time");
-    changeTime.newSection(change, 1);
-    changeTime.allocate();
-    changeTime.scale(timeScale);
-    changeTime.vectorFieldType(topology::FieldBase::SCALAR);
-
+    _queryDB("change", _dbChange, numBCDOF, valueScale);
+    
     const char* timeNames[1] = { "change-start-time" };
     _dbChange->queryVals(timeNames, 1);
-    _queryDB(&changeTime, _dbChange, 1, timeScale);
+    _queryDB("change time", _dbChange, 1, timeScale);
     _dbChange->close();
-
+    
     if (0 != _dbTimeHistory)
       _dbTimeHistory->open();
   } // if
-
+  
   // Dellocate memory
   for (int i=0; i < numBCDOF; ++i) {
     delete[] valueNames[i]; valueNames[i] = 0;
@@ -222,15 +206,16 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Query database for values.
 void
-pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field,
+pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 				 spatialdata::spatialdb::SpatialDB* const db,
 				 const int querySize,
 				 const double scale)
 { // _queryDB
-  assert(0 != field);
-  assert(0 != db);
+  assert(name);
+  assert(db);
+  assert(_parameters);
 
-  const topology::Mesh& mesh = field->mesh();
+  const topology::Mesh& mesh = _parameters->mesh();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
@@ -244,10 +229,16 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  const ALE::Obj<RealSection>& section = field->section();
-  assert(!section.isNull());
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  const int valueIndex = _parameters->sectionIndex(name);
+  const int valueFiberDim = _parameters->sectionFiberDim(name);
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  double_array parametersVertex(parametersFiberDim);
 
-  double_array valuesVertex(querySize);
+  double_array valueVertex(querySize);
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -256,19 +247,28 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
 			       &coordsVertex[0], coordsVertex.size());
     _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
 				lengthScale);
-    int err = db->query(&valuesVertex[0], valuesVertex.size(), 
+    int err = db->query(&valueVertex[0], valueVertex.size(), 
 			&coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
-      msg << "Error querying for '" << field->label() << "' at (";
+      msg << "Error querying for '" << name << "' at (";
       for (int i=0; i < spaceDim; ++i)
 	msg << "  " << coordsVertex[i];
       msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    _getNormalizer().nondimensionalize(&valuesVertex[0], valuesVertex.size(),
+    _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(),
 				   scale);
-    section->updatePoint(_points[iPoint], &valuesVertex[0]);
+
+    // Update section
+    assert(parametersFiberDim == 
+	   parametersSection->getFiberDimension(_points[iPoint]));
+    parametersSection->restrictPoint(_points[iPoint], &parametersVertex[0],
+				     parametersVertex.size());
+    for (int i=0; i < valueFiberDim; ++i)
+      parametersVertex[valueIndex+i] = valueVertex[i];
+    
+    parametersSection->updatePoint(_points[iPoint], &parametersVertex[0]);
   } // for
 } // _queryDB
 
@@ -277,69 +277,88 @@ pylith::bc::TimeDependentPoints::_queryDB(topology::Field<topology::Mesh>* field
 void
 pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 { // _calculateValue
-  assert(0 != _parameters);
-
-  const ALE::Obj<RealSection>& valueSection = 
-    _parameters->get("value").section();
-  assert(!valueSection.isNull());
-  valueSection->zero();
+  assert(_parameters);
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
   const double timeScale = _getNormalizer().timeScale();
 
-  const ALE::Obj<RealSection>& initialSection = (0 != _dbInitial) ?
-    _parameters->get("initial").section() : 0;
-  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
-    _parameters->get("rate").section() : 0;
-  const ALE::Obj<RealSection>& rateTimeSection = (0 != _dbRate) ?
-    _parameters->get("rate time").section() : 0;
-  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
-    _parameters->get("change").section() : 0;
-  const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
-    _parameters->get("change time").section() : 0;
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  double_array parametersVertex(parametersFiberDim);
+  
+  const int valueIndex = _parameters->sectionIndex("value");
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(numBCDOF == valueFiberDim);
+  
+  const int initialIndex = 
+    (_dbInitial) ? _parameters->sectionIndex("initial") : -1;
+  const int initialFiberDim = 
+    (_dbInitial) ? _parameters->sectionFiberDim("initial") : 0;
 
-  double_array valuesVertex(numBCDOF);
-  double_array bufferVertex(numBCDOF);
+  const int rateIndex = 
+    (_dbRate) ? _parameters->sectionIndex("rate") : -1;
+  const int rateFiberDim = 
+    (_dbRate) ? _parameters->sectionFiberDim("rate") : 0;
+  const int rateTimeIndex = 
+    (_dbRate) ? _parameters->sectionIndex("rate time") : -1;
+  const int rateTimeFiberDim = 
+    (_dbRate) ? _parameters->sectionFiberDim("rate time") : 0;
+
+  const int changeIndex = 
+    (_dbChange) ? _parameters->sectionIndex("change") : -1;
+  const int changeFiberDim = 
+    (_dbChange) ? _parameters->sectionFiberDim("change") : 0;
+  const int changeTimeIndex = 
+    (_dbChange) ? _parameters->sectionIndex("change time") : -1;
+  const int changeTimeFiberDim = 
+    (_dbChange) ? _parameters->sectionFiberDim("change time") : 0;
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label
     
-    valuesVertex = 0.0;
-    
+    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
+    parametersSection->restrictPoint(p_bc, &parametersVertex[0],
+				     parametersVertex.size());
+    for (int i=0; i < valueFiberDim; ++i)
+      parametersVertex[valueIndex+i] = 0.0;
+
     // Contribution from initial value
-    if (0 != _dbInitial) {
-      assert(!initialSection.isNull());
-      initialSection->restrictPoint(p_bc, 
-				    &bufferVertex[0], bufferVertex.size());
-      valuesVertex += bufferVertex;
+    if (_dbInitial) {
+      assert(initialIndex >= 0);
+      assert(initialFiberDim == valueFiberDim);
+      for (int i=0; i < initialFiberDim; ++i)
+	parametersVertex[valueIndex+i] += parametersVertex[initialIndex+i];
     } // if
     
     // Contribution from rate of change of value
-    if (0 != _dbRate) {
-      assert(!rateSection.isNull());
-      assert(!rateTimeSection.isNull());
-      double tRate = 0.0;
+    if (_dbRate) {
+      assert(rateIndex >= 0);
+      assert(rateFiberDim == valueFiberDim);
+      assert(rateTimeIndex >= 0);
+      assert(rateTimeFiberDim == 1);
       
-      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
-      if (t > tRate) { // rate of change integrated over time
-	bufferVertex *= (t - tRate);
-	valuesVertex += bufferVertex;
-      } // if
+      const double tRel = t - parametersVertex[rateTimeIndex];
+      if (tRel > 0.0)  // rate of change integrated over time
+	for (int iDim=0; iDim < numBCDOF; ++iDim)
+	  parametersVertex[valueIndex+iDim] += 
+	    parametersVertex[rateIndex+iDim] * tRel;
     } // if
-    
-    // Contribution from change of value
-    if (0 != _dbChange) {
-      assert(!changeSection.isNull());
-      assert(!changeTimeSection.isNull());
-      double tChange = 0.0;
 
-      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
-      if (t >= tChange) { // change in value over time
+    // Contribution from change of value
+    if (_dbChange) {
+      assert(changeIndex >= 0);
+      assert(changeFiberDim == valueFiberDim);
+      assert(changeTimeIndex >= 0);
+      assert(changeTimeFiberDim == 1);
+
+      const double tRel = t - parametersVertex[changeTimeIndex];
+      if (tRel >= 0) { // change in value over time
 	double scale = 1.0;
 	if (0 != _dbTimeHistory) {
-	  double tDim = t - tChange;
+	  double tDim = tRel;
 	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	  const int err = _dbTimeHistory->query(&scale, tDim);
 	  if (0 != err) {
@@ -350,12 +369,13 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
-	bufferVertex *= scale;
-	valuesVertex += bufferVertex;
+	for (int iDim=0; iDim < numBCDOF; ++iDim)
+	  parametersVertex[valueIndex+iDim] += 
+	    parametersVertex[changeIndex+iDim] * scale;
       } // if
     } // if
 
-    valueSection->updatePoint(p_bc, &valuesVertex[0]);
+    parametersSection->updateAddPoint(p_bc, &parametersVertex[0]);
   } // for
 }  // _calculateValue
 
@@ -366,45 +386,60 @@ void
 pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
 						     const double t1)
 { // _calculateValueIncr
-  assert(0 != _parameters);
-
-  const ALE::Obj<RealSection>& valueSection = 
-    _parameters->get("value").section();
-  assert(!valueSection.isNull());
-  valueSection->zero();
+  assert(_parameters);
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
   const double timeScale = _getNormalizer().timeScale();
 
-  const ALE::Obj<RealSection>& rateSection = ( 0 != _dbRate) ?
-    _parameters->get("rate").section() : 0;
-  const ALE::Obj<RealSection>& rateTimeSection = (0 != _dbRate) ?
-    _parameters->get("rate time").section() : 0;
-  const ALE::Obj<RealSection>& changeSection = ( 0 != _dbChange) ?
-    _parameters->get("change").section() : 0;
-  const ALE::Obj<RealSection>& changeTimeSection = ( 0 != _dbChange) ?
-    _parameters->get("change time").section() : 0;
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  double_array parametersVertex(parametersFiberDim);
+  
+  const int valueIndex = _parameters->sectionIndex("value");
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(numBCDOF == valueFiberDim);
+  
+  const int rateIndex = 
+    (_dbRate) ? _parameters->sectionIndex("rate") : -1;
+  const int rateFiberDim = 
+    (_dbRate) ? _parameters->sectionFiberDim("rate") : 0;
+  const int rateTimeIndex = 
+    (_dbRate) ? _parameters->sectionIndex("rate time") : -1;
+  const int rateTimeFiberDim = 
+    (_dbRate) ? _parameters->sectionFiberDim("rate time") : 0;
 
-  double_array valuesVertex(numBCDOF);
-  double_array bufferVertex(numBCDOF);
+  const int changeIndex = 
+    (_dbChange) ? _parameters->sectionIndex("change") : -1;
+  const int changeFiberDim = 
+    (_dbChange) ? _parameters->sectionFiberDim("change") : 0;
+  const int changeTimeIndex = 
+    (_dbChange) ? _parameters->sectionIndex("change time") : -1;
+  const int changeTimeFiberDim = 
+    (_dbChange) ? _parameters->sectionFiberDim("change time") : 0;
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label
     
-    valuesVertex = 0.0;
-    
+    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
+    parametersSection->restrictPoint(p_bc, &parametersVertex[0],
+				     parametersVertex.size());
+    for (int i=0; i < valueFiberDim; ++i)
+      parametersVertex[valueIndex+i] = 0.0;
+
     // No contribution from initial value
     
     // Contribution from rate of change of value
-    if (0 != _dbRate) {
-      assert(!rateSection.isNull());
-      assert(!rateTimeSection.isNull());
-      double tRate = 0.0;
+    if (_dbRate) {
+      assert(rateIndex >= 0);
+      assert(rateFiberDim == valueFiberDim);
+      assert(rateTimeIndex >= 0);
+      assert(rateTimeFiberDim == 1);
       
-      rateSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      rateTimeSection->restrictPoint(p_bc, &tRate, 1);
-
       // Account for when rate dependence begins.
+      const double tRate = parametersVertex[rateTimeIndex];
       double tIncr = 0.0;
       if (t0 > tRate) // rate dependence for t0 to t1
 	tIncr = t1 - t0;
@@ -412,19 +447,21 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
 	tIncr = t1 - tRate;
       else
 	tIncr = 0.0; // no rate dependence for t0 to t1
-      
-      bufferVertex *= tIncr;
-      valuesVertex += bufferVertex;
+
+      if (tIncr > 0.0)  // rate of change integrated over time
+	for (int iDim=0; iDim < numBCDOF; ++iDim)
+	  parametersVertex[valueIndex+iDim] += 
+	    parametersVertex[rateIndex+iDim] * tIncr;
     } // if
     
     // Contribution from change of value
-    if (0 != _dbChange) {
-      assert(!changeSection.isNull());
-      assert(!changeTimeSection.isNull());
-      double tChange = 0.0;
+    if (_dbChange) {
+      assert(changeIndex >= 0);
+      assert(changeFiberDim == valueFiberDim);
+      assert(changeTimeIndex >= 0);
+      assert(changeTimeFiberDim == 1);
 
-      changeSection->restrictPoint(p_bc, &bufferVertex[0], bufferVertex.size());
-      changeTimeSection->restrictPoint(p_bc, &tChange, 1);
+      const double tChange = parametersVertex[changeTimeIndex];
       if (t0 >= tChange) { // increment is after change starts
 	double scale0 = 1.0;
 	double scale1 = 1.0;
@@ -450,8 +487,9 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
-	bufferVertex *= scale1 - scale0;
-	valuesVertex += bufferVertex;
+	for (int iDim=0; iDim < numBCDOF; ++iDim)
+	  parametersVertex[valueIndex+iDim] += 
+	    parametersVertex[changeIndex+iDim] * (scale1 - scale0);
       } else if (t1 >= tChange) { // increment spans when change starts
 	double scale1 = 1.0;
 	if (0 != _dbTimeHistory) {
@@ -466,12 +504,13 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
 	    throw std::runtime_error(msg.str());
 	  } // if
 	} // if
-	bufferVertex *= scale1;
-	valuesVertex += bufferVertex;
+	for (int iDim=0; iDim < numBCDOF; ++iDim)
+	  parametersVertex[valueIndex+iDim] += 
+	    parametersVertex[changeIndex+iDim] * scale1;
       } // if/else
     } // if
 
-    valueSection->updatePoint(p_bc, &valuesVertex[0]);
+    parametersSection->updateAddPoint(p_bc, &parametersVertex[0]);
   } // for
 }  // _calculateValueIncr
 

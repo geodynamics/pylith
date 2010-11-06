@@ -26,6 +26,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -40,6 +41,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForce );
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -105,34 +107,50 @@ pylith::bc::TestPointForce::testInitialize(void)
       CPPUNIT_ASSERT_EQUAL(_data->forcePoints[i]+offset, bc._points[i]);
   } // if
 
-  // Check values
   CPPUNIT_ASSERT(0 != bc._parameters);
-  const ALE::Obj<RealSection>& initialSection =
-    bc._parameters->get("initial").section();
-  CPPUNIT_ASSERT(!initialSection.isNull());
-
+  const ALE::Obj<RealUniformSection>& parametersSection =
+    bc._parameters->section();
+  CPPUNIT_ASSERT(!parametersSection.isNull());
+  const int parametersFiberDim = bc._parameters->fiberDim();
+  
   const double tolerance = 1.0e-06;
+
+  // Check values
+  const int initialIndex = bc._parameters->sectionIndex("initial");
+  const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
+  CPPUNIT_ASSERT_EQUAL(numForceDOF, initialFiberDim);
+
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
-    CPPUNIT_ASSERT_EQUAL(numForceDOF, initialSection->getFiberDimension(p_force));
-    const double* valuesInitial = initialSection->restrictPoint(p_force);
+
+    CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
+			 parametersSection->getFiberDimension(p_force));
+    const double* parametersVertex = parametersSection->restrictPoint(p_force);
+    CPPUNIT_ASSERT(parametersVertex);
+
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceInitial[i*numForceDOF+iDOF],
-				   valuesInitial[iDOF], tolerance);
+				   parametersVertex[initialIndex+iDOF],
+				   tolerance);
   } // for
 
   // Check rate of change
-  const ALE::Obj<RealSection>& rateSection =
-    bc._parameters->get("rate").section();
-  CPPUNIT_ASSERT(!rateSection.isNull());
+  const int rateIndex = bc._parameters->sectionIndex("rate");
+  const int rateFiberDim = bc._parameters->sectionFiberDim("rate");
+  CPPUNIT_ASSERT_EQUAL(numForceDOF, rateFiberDim);
 
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
-    CPPUNIT_ASSERT_EQUAL(numForceDOF, rateSection->getFiberDimension(p_force));
-    const double* valuesRate = rateSection->restrictPoint(p_force);
+
+    CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
+			 parametersSection->getFiberDimension(p_force));
+    const double* parametersVertex = parametersSection->restrictPoint(p_force);
+    CPPUNIT_ASSERT(parametersVertex);
+
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceRate,
-				   valuesRate[iDOF], tolerance);
+				   parametersVertex[rateIndex+iDOF],
+				   tolerance);
   } // for
 } // testInitialize
 

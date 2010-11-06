@@ -27,8 +27,6 @@
 #if !defined(pylith_topology_fieldsnew_hh)
 #define pylith_topology_fieldsnew_hh
 
-#define USE_UNIFORMSECTION
-
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
@@ -44,11 +42,7 @@ class pylith::topology::FieldsNew
   friend class TestFieldsNewMesh; // unit testing
   friend class TestFieldsNewSubMesh; // unit testing
 
-#if defined(USE_UNIFORMSECTION)
   typedef typename mesh_type::RealUniformSection section_type;
-#else
-  typedef typename mesh_type::RealSection section_type;
-#endif
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -112,13 +106,6 @@ public :
    * @param name Name of field.
    * @returns Field.
    */
-  const Field<mesh_type>& get(const char* name) const;
-	   
-  /** Get field.
-   *
-   * @param name Name of field.
-   * @returns Field.
-   */
   Field<mesh_type>& get(const char* name);
 	   
   /** Get mesh associated with fields.
@@ -159,7 +146,7 @@ public :
    * @param names Names of fields.
    */
   void fieldNames(int* numNames,
-		  std::string** names) const;
+		  char*** names) const;
 
   /** View fields and section.
    *

@@ -425,9 +425,9 @@ pylith::bc::Neumann::_queryDB(const char* name,
     _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
-  const int valuesIndex = _parameters->sectionIndex(name);
-  const int valuesFiberDim = _parameters->sectionFiberDim(name);
-  assert(valuesIndex+valuesFiberDim <= parametersFiberDim);
+  const int valueIndex = _parameters->sectionIndex(name);
+  const int valueFiberDim = _parameters->sectionFiberDim(name);
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
   double_array parametersCell(parametersFiberDim);
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
@@ -484,8 +484,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
     assert(parametersFiberDim == parametersSection->getFiberDimension(*c_iter));
     parametersSection->restrictPoint(*c_iter, 
 				     &parametersCell[0], parametersCell.size());
-    for (int i=0; i < valuesFiberDim; ++i)
-      parametersCell[valuesIndex+i] = valuesCell[i];
+    for (int i=0; i < valueFiberDim; ++i)
+      parametersCell[valueIndex+i] = valuesCell[i];
     
     parametersSection->updatePoint(*c_iter, &parametersCell[0]);
   } // for
@@ -674,8 +674,8 @@ pylith::bc::Neumann::_calculateValue(const double t)
   double_array parametersCell(parametersFiberDim);
   
   const int valueIndex = _parameters->sectionIndex("value");
-  const int valuesFiberDim = _parameters->sectionFiberDim("value");
-  assert(numQuadPts*spaceDim == valuesFiberDim);
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(numQuadPts*spaceDim == valueFiberDim);
 
   const int initialIndex = 
     (_dbInitial) ? _parameters->sectionIndex("initial") : -1;
@@ -707,13 +707,13 @@ pylith::bc::Neumann::_calculateValue(const double t)
     assert(parametersFiberDim == parametersSection->getFiberDimension(*c_iter));
     parametersSection->restrictPoint(*c_iter, 
 				     &parametersCell[0], parametersCell.size());
-    for (int i=0; i < valuesFiberDim; ++i)
+    for (int i=0; i < valueFiberDim; ++i)
       parametersCell[valueIndex+i] = 0.0;
 
     // Contribution from initial value
     if (0 != _dbInitial) {
       assert(initialIndex >= 0);
-      assert(initialFiberDim == valuesFiberDim);
+      assert(initialFiberDim == valueFiberDim);
       for (int i=0; i < initialFiberDim; ++i)
 	parametersCell[valueIndex+i] += parametersCell[initialIndex+i];
     } // if
@@ -721,7 +721,7 @@ pylith::bc::Neumann::_calculateValue(const double t)
     // Contribution from rate of change of value
     if (0 != _dbRate) {
       assert(rateIndex >= 0);
-      assert(rateFiberDim == valuesFiberDim);
+      assert(rateFiberDim == valueFiberDim);
       assert(rateTimeIndex >= 0);
       assert(rateTimeFiberDim == numQuadPts);
       
@@ -737,7 +737,7 @@ pylith::bc::Neumann::_calculateValue(const double t)
     // Contribution from change of value
     if (0 != _dbChange) {
       assert(changeIndex >= 0);
-      assert(changeFiberDim == valuesFiberDim);
+      assert(changeFiberDim == valueFiberDim);
       assert(changeTimeIndex >= 0);
       assert(changeTimeFiberDim == numQuadPts);
 
@@ -763,7 +763,6 @@ pylith::bc::Neumann::_calculateValue(const double t)
 	} // if
       } // for
     } // if
-
     
     parametersSection->updateAddPoint(*c_iter, &parametersCell[0]);
   } // for
