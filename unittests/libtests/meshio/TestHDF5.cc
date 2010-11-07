@@ -22,7 +22,7 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 
-#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8 && !defined(H5_USE_16_API)
+#if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
 #define PYLITH_HDF5_USE_API_18
 #endif
 
@@ -81,7 +81,7 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
 
   h5.open("test.h5", H5F_ACC_RDONLY);
 #if defined(PYLITH_HDF5_USE_API_18)
-  hid_t group = H5Gopen(h5._file, "/mygroup", H5P_DEFAULT);
+  hid_t group = H5Gopen2(h5._file, "/mygroup", H5P_DEFAULT);
 #else
   hid_t group = H5Gopen(h5._file, "/mygroup");
 #endif
@@ -150,13 +150,13 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
 
   h5.open("test.h5", H5F_ACC_RDONLY);
 #if defined(PYLITH_HDF5_USE_API_18)
-  hid_t group = H5Gopen(h5._file, "/", H5P_DEFAULT);
+  hid_t group = H5Gopen2(h5._file, "/", H5P_DEFAULT);
 #else
   hid_t group = H5Gopen(h5._file, "/");
 #endif
   CPPUNIT_ASSERT(group >= 0);
 #if defined(PYLITH_HDF5_USE_API_18)
-  hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
+  hid_t dataset = H5Dopen2(group, "data", H5P_DEFAULT);
 #else
   hid_t dataset = H5Dopen(group, "data");
 #endif
@@ -167,75 +167,6 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
   CPPUNIT_ASSERT(err >= 0);
   h5.close();
 } // testCreateDataset
-
-// ----------------------------------------------------------------------
-// Test createDatasetRawExternal.
-void
-pylith::meshio::TestHDF5::testCreateDatasetRawExternal(void)
-{ // testCreateDatasetRawExternal
-  const int ndimsE = 2;
-  const hsize_t dimsE[ndimsE] = { 2, 3 };
-
-  // Create raw data file
-  hsize_t nitems = dimsE[0];
-  for (int i=1; i < ndimsE; ++i)
-    nitems *= dimsE[i];
-  const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
-  int* valuesE = (nitems > 0) ? new int[nitems] : 0;
-  for (int i=0; i < nitems; ++i)
-    valuesE[i] = 2 * i + 1;
-  std::ofstream fout("test.dat");
-  fout.write((char*)valuesE, sizeBytes);
-  fout.close();
-
-  HDF5 h5("test.h5", H5F_ACC_TRUNC);
-  h5.createDatasetRawExternal("/", "data", "test.dat", dimsE, ndimsE,
-			      H5T_NATIVE_INT);
-  h5.close();
-
-  h5.open("test.h5", H5F_ACC_RDONLY);
-#if defined(PYLITH_HDF5_USE_API_18)
-  hid_t group = H5Gopen(h5._file, "/", H5P_DEFAULT);
-#else
-  hid_t group = H5Gopen(h5._file, "/");
-#endif
-  CPPUNIT_ASSERT(group >= 0);
-#if defined(PYLITH_HDF5_USE_API_18)
-  hid_t dataset = H5Dopen(group, "data", H5P_DEFAULT);
-#else
-  hid_t dataset = H5Dopen(group, "data");
-#endif
-  CPPUNIT_ASSERT(dataset >= 0);
-
-  hid_t dataspace = H5Dget_space(dataset);
-  CPPUNIT_ASSERT(dataspace >= 0);
-  
-  const int ndims = H5Sget_simple_extent_ndims(dataspace);
-  CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
-  hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
-  H5Sget_simple_extent_dims(dataspace, dims, 0);
-  for (int i=0; i < ndims; ++i)
-    CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
-
-  int* values = (nitems > 0) ? new int[nitems] : 0;
-  herr_t err = H5Dread(dataset, H5T_NATIVE_INT, dataspace, dataspace, 
-		       H5P_DEFAULT, (void*)values);
-  CPPUNIT_ASSERT(err >= 0);
-
-  for (int i=0; i < nitems; ++i)
-    CPPUNIT_ASSERT_EQUAL(valuesE[i], values[i]);
-  delete[] valuesE; valuesE = 0;
-  delete[] values; values = 0;
-  delete[] dims; dims = 0;
-
-  err = H5Sclose(dataspace);
-  CPPUNIT_ASSERT(err >= 0);
-  err = H5Dclose(dataset);
-  CPPUNIT_ASSERT(err >= 0);
-  err = H5Gclose(group);
-  CPPUNIT_ASSERT(err >= 0);
-  h5.close();
-} // testCreateDatasetRawExternal
 
 // ----------------------------------------------------------------------
 // Test writeDatasetChunk() and readDatasetChunk().
@@ -287,6 +218,77 @@ pylith::meshio::TestHDF5::testDatasetChunk(void)
 
   h5.close();
 } // testDatasetChunk
+
+// ----------------------------------------------------------------------
+// Test createDatasetRawExternal() and updateDatasetRawExternal().
+void
+pylith::meshio::TestHDF5::testDatasetRawExternal(void)
+{ // testDatasetRawExternal
+  const int ndimsE = 2;
+  const hsize_t dimsE[ndimsE] = { 6, 3 };
+  hsize_t dims[ndimsE];
+
+  // Create raw data file
+  hsize_t nitems = dimsE[0];
+  for (int i=1; i < ndimsE; ++i)
+    nitems *= dimsE[i];
+  const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
+  int* valuesE = (nitems > 0) ? new int[nitems] : 0;
+  for (int i=0; i < nitems; ++i)
+    valuesE[i] = 2 * i + 1;
+  std::ofstream fout("test.dat");
+  fout.write((char*)valuesE, sizeBytes);
+  fout.close();
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+  dims[0] = 2;
+  dims[1] = dimsE[1];
+  h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndimsE,
+			      H5T_NATIVE_INT);
+  h5.extendDatasetRawExternal("/", "data", dimsE, ndimsE);
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+#if defined(PYLITH_HDF5_USE_API_18)
+  hid_t group = H5Gopen2(h5._file, "/", H5P_DEFAULT);
+#else
+  hid_t group = H5Gopen(h5._file, "/");
+#endif
+  CPPUNIT_ASSERT(group >= 0);
+#if defined(PYLITH_HDF5_USE_API_18)
+  hid_t dataset = H5Dopen2(group, "data", H5P_DEFAULT);
+#else
+  hid_t dataset = H5Dopen(group, "data");
+#endif
+  CPPUNIT_ASSERT(dataset >= 0);
+
+  hid_t dataspace = H5Dget_space(dataset);
+  CPPUNIT_ASSERT(dataspace >= 0);
+  
+  const int ndims = H5Sget_simple_extent_ndims(dataspace);
+  CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
+  H5Sget_simple_extent_dims(dataspace, dims, 0);
+  for (int i=0; i < ndims; ++i)
+    CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+
+  int* values = (nitems > 0) ? new int[nitems] : 0;
+  herr_t err = H5Dread(dataset, H5T_NATIVE_INT, dataspace, dataspace, 
+		       H5P_DEFAULT, (void*)values);
+  CPPUNIT_ASSERT(err >= 0);
+
+  for (int i=0; i < nitems; ++i)
+    CPPUNIT_ASSERT_EQUAL(valuesE[i], values[i]);
+  delete[] valuesE; valuesE = 0;
+  delete[] values; values = 0;
+
+  err = H5Sclose(dataspace);
+  CPPUNIT_ASSERT(err >= 0);
+  err = H5Dclose(dataset);
+  CPPUNIT_ASSERT(err >= 0);
+  err = H5Gclose(group);
+  CPPUNIT_ASSERT(err >= 0);
+  h5.close();
+} // testDatasetRawExternal
 
 
 // End of file 
