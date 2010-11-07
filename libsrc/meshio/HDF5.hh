@@ -135,24 +135,6 @@ public :
 		     const int ndims,
 		     hid_t datatype);
   
-  /** Create dataset associated with data stored in a raw external
-   * binary file.
-   *
-   * @param parent Full path of parent group for dataset.
-   * @param name Name of dataset.
-   * @param filename Name of external raw data file.
-   * @param dims Dimensions of data.
-   * @param ndims Number of dimensions of data.
-   * @param datatype Type of data.
-   * @returns Dataset identifier.
-   */
-  void createDatasetRawExternal(const char* parent,
-				const char* name,
-				const char* filename,
-				const hsize_t* dims,
-				const int ndims,
-				hid_t datatype);
-  
   /** Append chunk to dataset.
    *
    * @param parent Full path of parent group for dataset.
@@ -193,6 +175,36 @@ public :
 			const int chunk,
 			hid_t datatype);
 
+  /** Create dataset associated with data stored in a raw external
+   * binary file.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param filename Name of external raw data file.
+   * @param dims Dimensions of data.
+   * @param ndims Number of dimensions of data.
+   * @param datatype Type of data.
+   */
+  void createDatasetRawExternal(const char* parent,
+				const char* name,
+				const char* filename,
+				const hsize_t* dims,
+				const int ndims,
+				hid_t datatype);
+  
+  /** Update the properties of a dataset associated with data stored
+   * in a raw external binary file.
+   *
+   * @param parent Full path of parent group for dataset.
+   * @param name Name of dataset.
+   * @param dims Dimensions of data.
+   * @param ndims Number of dimensions of data.
+   */
+  void extendDatasetRawExternal(const char* parent,
+				const char* name,
+				const hsize_t* dims,
+				const int ndims);
+  
 // PRIVATE MEMBERS ------------------------------------------------------
 private :
 
