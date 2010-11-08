@@ -35,46 +35,55 @@ pylith::materials::Metadata::Metadata(const ParamDescription* props,
 				      const int numVars,
 				      const char* dbVars[],
 				      const int numDBVars) :
+  _properties(0),
+  _stateVars(0),
   _numDBProperties(numDBProps),
   _dbProperties(dbProps),
+  _numProperties(numProps),
+  _numStateVars(numVars),
   _numDBStateVars(numDBVars),
   _dbStateVars(dbVars)
 { // constructor
-  ParameterInfo info;
+  if (numProps > 0) {
+    assert(props);
+    _properties = new ParamDescription[numProps];
+    for (int i=0; i < numProps; ++i)
+      _properties[i] = props[i];
+  } // if
 
-  // Set physical property information.
-  _properties.clear();
-  _propertyNames.resize(numProps);
-  for (int i=0; i < numProps; ++i) {
-    info.fiberDim = props[i].fiberDim;
-    info.fieldType = props[i].fieldType;
-    _properties[props[i].name] = info;
-    _propertyNames[i] = props[i].name;
-  } // for
-
-  // Set state variable information.
-  _stateVars.clear();
-  _stateVarNames.resize(numVars);
-  for (int i=0; i < numVars; ++i) {
-    info.fiberDim = vars[i].fiberDim;
-    info.fieldType = vars[i].fieldType;
-    _stateVars[vars[i].name] = info;
-    _stateVarNames[i] = vars[i].name;
-  } // for
+  if (numVars > 0) {
+    assert(vars);
+    _stateVars = new ParamDescription[numVars];
+    for (int i=0; i < numVars; ++i)
+      _stateVars[i] = vars[i];
+  } // if
 } // constructor
 
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::materials::Metadata::Metadata(const Metadata& m) :
-  _properties(m._properties),
-  _stateVars(m._stateVars),
-  _propertyNames(m._propertyNames),
-  _stateVarNames(m._stateVarNames),
+  _properties(0),
+  _stateVars(0),
   _dbProperties(m._dbProperties),
   _dbStateVars(m._dbStateVars),
+  _numProperties(m._numProperties),
+  _numStateVars(m._numStateVars),
   _numDBProperties(m._numDBProperties),
   _numDBStateVars(m._numDBStateVars)
 { // copy constructor
+  if (m._properties) {
+    assert(_numProperties > 0);
+    _properties = new ParamDescription[_numProperties];
+    for (int i=0; i < _numProperties; ++i)
+      _properties[i] = m._properties[i];
+  } // if
+
+  if (m._stateVars) {
+    assert(_numStateVars > 0);
+    _stateVars = new ParamDescription[_numStateVars];
+    for (int i=0; i < _numStateVars; ++i)
+      _stateVars[i] = m._stateVars[i];
+  } // if
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -89,95 +98,9 @@ pylith::materials::Metadata::~Metadata(void)
 void
 pylith::materials::Metadata::deallocate(void)
 { // deallocate
+  delete[] _properties; _properties = 0;
+  delete[] _stateVars; _stateVars = 0;
 } // deallocate
   
-// ----------------------------------------------------------------------
-// Get fiber dimension of value.
-int
-pylith::materials::Metadata::fiberDim(const char* name,
-				      const ValueEnum valueType) const
-{ // fiberDim
-  int fiberDim = 0;
-
-  switch(valueType)
-    { // switch
-
-    case PROPERTY : {
-      ParameterMap::const_iterator iter = _properties.find(name);
-      if (iter == _properties.end()) {
-	std::ostringstream msg;
-	msg << "Could not find property '" << name
-	    << "' in list of properties to get fiber dimension.";
-	throw std::runtime_error(msg.str());
-      } // if
-      fiberDim = iter->second.fiberDim;
-      break;
-    } // PROPERTY
-
-    case STATEVAR : {
-      ParameterMap::const_iterator iter = _stateVars.find(name);
-      if (iter == _stateVars.end()) {
-	std::ostringstream msg;
-	msg << "Could not find state variable '" << name
-	    << "' in list of state variables to get fiber dimension.";
-	throw std::runtime_error(msg.str());
-      } // if
-      fiberDim = iter->second.fiberDim;
-      break;
-    } // STATEVAR
-
-    default :
-      std::cerr << "Bad value type '" << valueType << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Unknown valueType in Metadata.");
-    } // switch
-
-  return fiberDim;
-} // fiberDim
-
-// ----------------------------------------------------------------------
-// Get type of vector field associated with value.
-pylith::topology::FieldBase::VectorFieldEnum
-pylith::materials::Metadata::fieldType(const char* name,
-				       const ValueEnum valueType) const
-{ // fieldType
-  topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
-
-  switch(valueType)
-    { // switch
-
-    case PROPERTY : {
-      ParameterMap::const_iterator iter = _properties.find(name);
-      if (iter == _properties.end()) {
-	std::ostringstream msg;
-	msg << "Could not find property '" << name
-	    << "' in list of properties to get vector field type.";
-	throw std::runtime_error(msg.str());
-      } // if
-      fieldType = iter->second.fieldType;
-      break;
-    } // PROPERTY
-
-    case STATEVAR : {
-      ParameterMap::const_iterator iter = _stateVars.find(name);
-      if (iter == _stateVars.end()) {
-	std::ostringstream msg;
-	msg << "Could not find state variable '" << name
-	    << "' in list of state variables to get vector field type.";
-	throw std::runtime_error(msg.str());
-      } // if
-      fieldType = iter->second.fieldType;
-      break;
-    } // STATEVAR
-      
-    default :
-      std::cerr << "Bad value type '" << valueType << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Unknown valueType in Metadata.");
-    } // switch
-  
-  return fieldType;
-} // fieldType
-   
 
 // End of file

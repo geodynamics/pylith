@@ -64,18 +64,14 @@ pylith::materials::Material::Material(const int dimension,
   _label(""),
   _metadata(metadata)
 { // constructor
-  const string_vector& properties = metadata.properties();
-  const int numProperties = properties.size();
-  for (int i=0; i < numProperties; ++i)
-    _numPropsQuadPt += metadata.fiberDim(properties[i].c_str(),
-					 Metadata::PROPERTY);
+  const int numProperties = metadata.numProperties();
+  for (int i=0; i < numProperties; ++i) 
+    _numPropsQuadPt += metadata.getProperty(i).fiberDim;
   assert(_numPropsQuadPt >= 0);
 
-  const string_vector& stateVars = metadata.stateVars();
-  const int numStateVars = stateVars.size();
+  const int numStateVars = metadata.numStateVars();
   for (int i=0; i < numStateVars; ++i)
-    _numVarsQuadPt += metadata.fiberDim(stateVars[i].c_str(),
-					Metadata::STATEVAR);
+    _numVarsQuadPt += metadata.getStateVar(i).fiberDim;
   assert(_numVarsQuadPt >= 0);
 } // constructor
 
@@ -351,12 +347,10 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       
   if (propertyIndex >= 0) { // If field is a property
     int propOffset = 0;
-    const string_vector& properties = _metadata.properties();
-    assert(propertyIndex < properties.size());
+    assert(propertyIndex < _metadata.numProperties());
     for (int i=0; i < propertyIndex; ++i)
-      propOffset += 
-	_metadata.fiberDim(properties[i].c_str(), Metadata::PROPERTY);
-    const int fiberDim = _metadata.fiberDim(name, Metadata::PROPERTY);
+      propOffset += _metadata.getProperty(i).fiberDim;
+    const int fiberDim = _metadata.getProperty(propertyIndex).fiberDim;
 
     // Get properties section
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
@@ -397,7 +391,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(!fieldSection.isNull());
     field->label(name);
     field->scale(1.0);
-    fieldType = _metadata.fieldType(name, Metadata::PROPERTY);
+    fieldType = _metadata.getProperty(propertyIndex).fieldType;
 
     // Buffer for property at cell's quadrature points
     double_array fieldCell(numQuadPts*fiberDim);
@@ -423,12 +417,10 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
     assert(stateVarIndex >= 0);
     
     int varOffset = 0;
-    const string_vector& stateVars = _metadata.stateVars();
-    assert(stateVarIndex < stateVars.size());
+    assert(stateVarIndex < _metadata.numStateVars());
     for (int i=0; i < stateVarIndex; ++i)
-      varOffset += 
-	_metadata.fiberDim(stateVars[i].c_str(), Metadata::STATEVAR);
-    const int fiberDim = _metadata.fiberDim(name, Metadata::STATEVAR);
+      varOffset += _metadata.getStateVar(i).fiberDim;
+    const int fiberDim = _metadata.getStateVar(stateVarIndex).fiberDim;
 
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
@@ -467,7 +459,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, co
       logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
-    fieldType = _metadata.fieldType(name, Metadata::STATEVAR);
+    fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
     field->label(name);
     field->scale(1.0);
 
@@ -535,18 +527,16 @@ pylith::materials::Material::_findField(int* propertyIndex,
   *stateVarIndex = -1;
 
   const std::string nameString = name;
-  const string_vector& properties = _metadata.properties();
-  const int numProperties = properties.size();
+  const int numProperties = _metadata.numProperties();
   for (int i=0; i < numProperties; ++i)
-    if (nameString == properties[i]) {
+    if (nameString == _metadata.getProperty(i).name) {
       *propertyIndex = i;
       return;
     } // if
 
-  const string_vector& stateVars = _metadata.stateVars();
-  const int numStateVars = stateVars.size();
+  const int numStateVars = _metadata.numStateVars();
   for (int i=0; i < numStateVars; ++i)
-    if (nameString == stateVars[i]) {
+    if (nameString == _metadata.getStateVar(i).name) {
       *stateVarIndex = i;
       return;
     } // if
