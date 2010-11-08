@@ -77,6 +77,7 @@ import_array();
 %include "MaxwellIsotropic3D.i"
 %include "MaxwellPlaneStrain.i"
 %include "GenMaxwellIsotropic3D.i"
+%include "GenMaxwellBulkIsotropic3D.i"
 %include "PowerLaw3D.i"
 %include "DruckerPrager3D.i"
 

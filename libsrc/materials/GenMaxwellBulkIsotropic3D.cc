@@ -96,7 +96,7 @@ namespace pylith {
       };
 
       // Values expected in state variables spatial database
-      const int numDBStateVars = tensorSize + numMaxwellModels*(tensorSize+1);
+      const int numDBStateVars = tensorSize * (numMaxwellModels+1) + numMaxwellModels;
       const char* dbStateVars[numDBStateVars] = {"total-strain-xx",
 						 "total-strain-yy",
 						 "total-strain-zz",
@@ -321,28 +321,28 @@ pylith::materials::GenMaxwellBulkIsotropic3D::_dbToProperties(
 
   double visFrac = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) 
-    visFrac += propValues[db_shearRatio + imodel];
+    visFrac += dbValues[db_shearRatio + imodel];
   if (visFrac > 1.0) {
     std::ostringstream msg;
     msg << "Shear modulus ratios sum to a value greater than 1.0 for\n"
 	<< "Generalized Maxwell model.\n"
-	<< "Ratio 1: " << propValues[db_shearRatio  ] << "\n"
-	<< "Ratio 2: " << propValues[db_shearRatio+1] << "\n"
-	<< "Ratio 3: " << propValues[db_shearRatio+2] << "\n"
+	<< "Ratio 1: " << dbValues[db_shearRatio  ] << "\n"
+	<< "Ratio 2: " << dbValues[db_shearRatio+1] << "\n"
+	<< "Ratio 3: " << dbValues[db_shearRatio+2] << "\n"
 	<< "Total:   " << visFrac << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
   double bulkFrac = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) 
-    bulkFrac += propValues[db_bulkRatio + imodel];
+    bulkFrac += dbValues[db_bulkRatio + imodel];
   if (bulkFrac > 1.0) {
     std::ostringstream msg;
     msg << "Bulk modulus ratios sum to a value greater than 1.0 for\n"
 	<< "Generalized Maxwell Bulk model.\n"
-	<< "Ratio 1: " << propValues[db_bulkRatio  ] << "\n"
-	<< "Ratio 2: " << propValues[db_bulkRatio+1] << "\n"
-	<< "Ratio 3: " << propValues[db_bulkRatio+2] << "\n"
+	<< "Ratio 1: " << dbValues[db_bulkRatio  ] << "\n"
+	<< "Ratio 2: " << dbValues[db_bulkRatio+1] << "\n"
+	<< "Ratio 3: " << dbValues[db_bulkRatio+2] << "\n"
 	<< "Total:   " << bulkFrac << "\n";
     throw std::runtime_error(msg.str());
   } // if
@@ -449,7 +449,7 @@ pylith::materials::GenMaxwellBulkIsotropic3D::_dbToStateVars(
   assert(_GenMaxwellBulkIsotropic3D::numDBStateVars == numDBValues);
 
   const int numMaxwellModels = _GenMaxwellBulkIsotropic3D::numMaxwellModels;
-  const int totalSize = (1 + numMaxwellModels) * _tensorSize;
+  const int totalSize = (1 + numMaxwellModels) * _tensorSize + numMaxwellModels;
   assert(totalSize == _numVarsQuadPt);
   assert(totalSize == numDBValues);
   for (int i=0; i < totalSize; ++i)
@@ -633,8 +633,8 @@ pylith::materials::GenMaxwellBulkIsotropic3D::_calcStressViscoelastic(
   double devStressTpdt = 0.0;
   double volStrainTpdt = 0.0;
   double volStressTpdt = 0.0;
-  volStrainTpdt = meanStressTpdt;
-  volStressTpdt = elasFrac*volStrainTpdt;
+  volStrainTpdt = meanStrainTpdt;
+  volStressTpdt = elasFracK*volStrainTpdt;
   for (int model=0; model < numMaxwellModels; ++model)
     volStressTpdt += kRatio[model] * _viscousStrainBulk[model];
   volStressTpdt = k*volStressTpdt;
@@ -797,7 +797,7 @@ pylith::materials::GenMaxwellBulkIsotropic3D::_calcElasticConstsViscoelastic(
   double elasFrac = 1.0 - visFrac;
   double elasFracK = 1.0 - visFracK;
   double shearFac = mu*(elasFrac + visFac)/3.0;
-  double bulkFac = k*(elasFracK + visFacK);
+  double bulkFac = (elasFracK + visFacK);
 
   elasticConsts[ 0] = bulkModulus * bulkFac + 4.0 * shearFac; // C1111
   elasticConsts[ 1] = bulkModulus * bulkFac - 2.0 * shearFac; // C1122
