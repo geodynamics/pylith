@@ -30,6 +30,8 @@ subpkginclude_HEADERS = \
 	ElasticPlaneStress.hh \
 	GenMaxwellIsotropic3D.hh \
 	GenMaxwellIsotropic3D.icc \
+	GenMaxwellBulkIsotropic3D.hh \
+	GenMaxwellBulkIsotropic3D.icc \
 	MaxwellIsotropic3D.hh \
 	MaxwellIsotropic3D.icc \
 	MaxwellPlaneStrain.hh \

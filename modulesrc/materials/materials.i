@@ -35,6 +35,7 @@
 #include "pylith/materials/MaxwellIsotropic3D.hh"
 #include "pylith/materials/MaxwellPlaneStrain.hh"
 #include "pylith/materials/GenMaxwellIsotropic3D.hh"
+#include "pylith/materials/GenMaxwellBulkIsotropic3D.hh"
 #include "pylith/materials/PowerLaw3D.hh"
 #include "pylith/materials/DruckerPrager3D.hh"
 
