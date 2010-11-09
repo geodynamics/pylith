@@ -225,12 +225,14 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
   const int fibration = f_iter->second.fibration;
   assert(fibration >= 0 && fibration < _fields.size());
 
-  delete f_iter->second.field; f_iter->second.field = 0;
-  assert(!_section.isNull());
-  f_iter->second.field = 
-    new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
-			 f_iter->second.metadata);
-  assert(0 != f_iter->second.field);
+  if (!f_iter->second.field) {
+    delete f_iter->second.field; f_iter->second.field = 0;
+    assert(!_section.isNull());
+    f_iter->second.field = 
+      new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
+			   f_iter->second.metadata);
+    assert(0 != f_iter->second.field);
+  } // if
 
   return *f_iter->second.field;
 } // get
@@ -292,6 +294,47 @@ pylith::topology::FieldsNew<mesh_type>::sectionFiberDim(const char* name) const
 
   return f_iter->second.fiberDim;
 } // sectionFiberDim
+
+// ----------------------------------------------------------------------
+// Complete section by assembling across processors.
+template<typename mesh_type>
+void
+pylith::topology::FieldsNew<mesh_type>::complete(void)
+{ // complete
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Completion");
+
+  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  
+#if 0
+  if (!_section.isNull()) {
+
+#if 0
+    typedef ALE::IUniformSectionDS<ALE::Pair<int, 
+      typename mesh_type::SieveMesh::send_overlap_type::source_type>, 
+      typename section_type::value_type> OverlapSection;
+
+    Obj<OverlapSection> overlapSection = new
+      OverlapSection(_section->comm(), _section->debug());
+    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(), 
+					sieveMesh->getRecvOverlap(), 
+					_section, _section,
+					overlapSection);
+
+
+#else
+    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
+					sieveMesh->getRecvOverlap(), 
+					_section, _section);
+#endif
+  } // if
+#else
+  throw std::logic_error("Need Matt to implement ALE::Completion::completeSectionAdd() for uniform sections.");
+#endif  
+
+  logger.stagePop();
+} // complete
 
 // ----------------------------------------------------------------------
 // Get names of all fields
