@@ -375,7 +375,7 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
       } // if
     } // if
 
-    parametersSection->updateAddPoint(p_bc, &parametersVertex[0]);
+    parametersSection->updatePoint(p_bc, &parametersVertex[0]);
   } // for
 }  // _calculateValue
 
@@ -510,7 +510,7 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
       } // if/else
     } // if
 
-    parametersSection->updateAddPoint(p_bc, &parametersVertex[0]);
+    parametersSection->updatePoint(p_bc, &parametersVertex[0]);
   } // for
 }  // _calculateValueIncr
 
