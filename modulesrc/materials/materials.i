@@ -35,6 +35,7 @@
 #include "pylith/materials/MaxwellIsotropic3D.hh"
 #include "pylith/materials/MaxwellPlaneStrain.hh"
 #include "pylith/materials/GenMaxwellIsotropic3D.hh"
+#include "pylith/materials/GenMaxwellBulkIsotropic3D.hh"
 #include "pylith/materials/PowerLaw3D.hh"
 #include "pylith/materials/DruckerPrager3D.hh"
 
@@ -76,6 +77,7 @@ import_array();
 %include "MaxwellIsotropic3D.i"
 %include "MaxwellPlaneStrain.i"
 %include "GenMaxwellIsotropic3D.i"
+%include "GenMaxwellBulkIsotropic3D.i"
 %include "PowerLaw3D.i"
 %include "DruckerPrager3D.i"
 

@@ -24,6 +24,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -182,46 +183,12 @@ pylith::bc::TestTimeDependentPoints::testGetLabel(void)
 } // testGetLabel
 
 // ----------------------------------------------------------------------
-// Test _queryDB().
-void
-pylith::bc::TestTimeDependentPoints::testQueryDB(void)
-{ // testQueryDB
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
-
-  spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDB");
-  spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
-  dbInitialIO.filename("data/tri3_force.spatialdb");
-  dbInitial.ioHandler(&dbInitialIO);
-  dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
-
-  const double scale = 2.0;
-  const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  const char* queryVals[numBCDOF] = { "force-y", "force-x" };
-
-  topology::Field<topology::Mesh> initial(*_mesh);
-  initial.newSection(_bc->_points, numBCDOF);
-  initial.allocate();
-  initial.zero();
-
-  dbInitial.open();
-  dbInitial.queryVals(queryVals, numBCDOF);
-  _bc->_queryDB(&initial, &dbInitial, numBCDOF, scale);
-  dbInitial.close();
-
-  const ALE::Obj<RealSection>& initialSection = initial.section();
-  CPPUNIT_ASSERT(!initialSection.isNull());
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::initial,
-					 numBCDOF, initialSection, scale);
-} // testQueryDB
-
-// ----------------------------------------------------------------------
 // Test _queryDatabases().
 void
 pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
 { // testQueryDatabases
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -258,7 +225,7 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check initial values.
   const ALE::Obj<RealSection>& initialSection = 
@@ -302,8 +269,8 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 { // testCalculateValueInitial
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -323,7 +290,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -338,8 +305,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 { // testCalculateValueRate
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbRateIO;
@@ -359,7 +326,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -374,8 +341,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 { // testCalculateValueChange
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -395,7 +362,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -410,7 +377,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
 { // testCalculateValueChangeTH
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -434,7 +401,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -449,8 +416,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
 { // testCalculateValueAll
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -488,7 +455,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const int npoints = _TestTimeDependentPoints::npointsIn;
@@ -511,8 +478,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 { // testCalculateValueIncrInitial
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -534,7 +501,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -549,8 +516,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 { // testCalculateValueIncrRate
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbRateIO;
@@ -572,7 +539,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -587,8 +554,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 { // testCalculateValueIncrChange
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -610,7 +577,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -625,7 +592,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
 { // testCalculateValueIncrChangeTH
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -651,7 +618,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const ALE::Obj<RealSection>& valueSection = 
@@ -666,8 +633,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 { // testCalculateValueIncrAll
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _bc);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -707,7 +674,7 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 
   const double tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
-  CPPUNIT_ASSERT(0 != _bc->_parameters);
+  CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const int npoints = _TestTimeDependentPoints::npointsIn;
@@ -745,17 +712,10 @@ pylith::bc::_TestTimeDependentPoints::_checkValues(const double* valuesE,
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
 
     const double* values = section->restrictPoint(p_bc);
+    CPPUNIT_ASSERT(values);
     for (int iDim=0; iDim < fiberDimE; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i*fiberDimE+iDim]/scale,
 				   values[iDim], tolerance);
-  } // for
-
-  // Check points not associated with BC.
-  const int npointsOut = _TestTimeDependentPoints::npointsOut;
-  for (int i=0; i < npointsOut; ++i) {
-    const int p_bc = _TestTimeDependentPoints::pointsOut[i];
-    const int fiberDim = section->getFiberDimension(p_bc);
-    CPPUNIT_ASSERT_EQUAL(0, fiberDim);
   } // for
 } // _checkValues
 

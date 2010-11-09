@@ -49,8 +49,6 @@ class pylith::materials::TestMetadata : public CppUnit::TestFixture
   CPPUNIT_TEST( testCopyConstructor );
   CPPUNIT_TEST( testProperties );
   CPPUNIT_TEST( testStateVars );
-  CPPUNIT_TEST( testFiberDim );
-  CPPUNIT_TEST( testFieldType );
   CPPUNIT_TEST( testDBProperties );
   CPPUNIT_TEST( testDBStateVars );
 
@@ -71,17 +69,11 @@ public :
   /// Test copy constructor.
   void testCopyConstructor(void);
 
-  /// Test properties().
+  /// Test numProperties() and getProperty().
   void testProperties(void);
 
-  /// Test stateVars().
+  /// Test numStateVars() and getStateVar().
   void testStateVars(void);
-
-  /// Test fiberDim().
-  void testFiberDim(void);
-
-  /// Test fieldType().
-  void testFieldType(void);
 
   /// Test dbProperties() and numDBProperties().
   void testDBProperties(void);

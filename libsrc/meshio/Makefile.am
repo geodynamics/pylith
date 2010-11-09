@@ -29,9 +29,6 @@ subpkginclude_HEADERS = \
 	DataWriterVTK.hh \
 	DataWriterVTK.icc \
 	DataWriterVTK.cc \
-	DataWriterHDF5.hh \
-	DataWriterHDF5.icc \
-	DataWriterHDF5.cc \
 	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIO.icc \
@@ -50,6 +47,17 @@ subpkginclude_HEADERS = \
 	VertexFilterVecNorm.hh \
 	VertexFilterVecNorm.cc \
 	meshiofwd.hh
+
+if ENABLE_HDF5
+  subpkginclude_HEADERS += \
+	HDF5.hh \
+	DataWriterHDF5.hh \
+	DataWriterHDF5.icc \
+	DataWriterHDF5.cc \
+	DataWriterHDF5Ext.hh \
+	DataWriterHDF5Ext.icc \
+	DataWriterHDF5Ext.cc
+endif
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \

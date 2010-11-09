@@ -31,6 +31,8 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 
@@ -64,6 +66,10 @@ pylith::meshio::TestDataWriterMesh::_initialize(void)
   MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
   iohandler.read(_mesh);
+
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(_mesh->dimension());
+  _mesh->coordsys(&cs);
 
   if (0 != _data->faultLabel) {
     faults::FaultCohesiveKin fault;

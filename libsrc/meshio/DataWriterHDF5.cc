@@ -18,9 +18,6 @@
 
 #include <portinfo>
 
-#include <petscmesh_viewers.hh> // USES HDF5Viewer
-#include <petscmesh_formats.hh> // USES PCICE output
-
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -89,6 +86,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
       sieveMesh->getRealSection("coordinates");
+    const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+    assert(cs);
     topology::FieldBase::Metadata metadata;
     // :KLUDGE: We would like to use field_type for the coordinates
     // field. However, the mesh coordinates are Field<mesh_type> and
@@ -99,11 +98,31 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     coordinates.createVector();
     coordinates.createScatter();
     coordinates.scatterSectionToVector();
+    int blockSize = 1;
+    err = VecGetBlockSize(coordinates.vector(), &blockSize);
+    CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(coordinates.vector(), cs->spaceDim());
+    CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/geometry"); CHECK_PETSC_ERROR(err);
     err = VecView(coordinates.vector(), _viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(coordinates.vector(), blockSize); // reset
+    CHECK_PETSC_ERROR(err);
 
     Vec          elemVec;
     PetscScalar *tmpVertices;
     PetscBool    columnMajor = PETSC_FALSE;
+
+    // :TODO: Update this to use sizes from numbering to account for
+    // censored vertices.
+    const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells =
+      sieveMesh->heightStratum(0);
+    int numCornersLocal = 0;
+    if (cells->size() > 0)
+      numCornersLocal = sieveMesh->getNumCellCorners(*cells->begin());
+    int numCorners = numCornersLocal;
+    err = MPI_Reduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, 0, 
+		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
     ///ALE::PCICE::Builder::outputElementsLocal(sieveMesh, &numElements, &numCorners, &vertices, columnMajor);
     typedef ALE::OrientedConeSectionV<typename mesh_type::SieveMesh::sieve_type> oriented_cones_wrapper_type;
@@ -121,8 +140,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     }
     err = VecCreateMPIWithArray(sieveMesh->comm(), cones->size(), PETSC_DETERMINE, tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
+#if 0 // :TODO: ONLY WORKS IF CELLS ARE CENSORED
+    err = VecSetBlockSize(elemVec, numCorners); CHECK_PETSC_ERROR(err);
+#endif
     err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -183,9 +207,29 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     field.createScatter();
     field.scatterSectionToVector();
 
+    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
+    const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
+    assert(!section.isNull());
+    const std::string labelName = 
+      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+    assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
+    const int fiberDimLocal = 
+      (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
+      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
+    int fiberDim = 0;
+    MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
+		  MPI_INT, MPI_MAX, field.mesh().comm());
+    assert(fiberDim > 0);
+
     PetscErrorCode err = 0;
-    err = VecView(vector, _viewer);
-    CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields"); CHECK_PETSC_ERROR(err);
+    int blockSize = 0;
+    err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -231,9 +275,39 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     field.createScatter();
     field.scatterSectionToVector();
 
+    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
+      field.mesh().sieveMesh();
+    assert(!sieveMesh.isNull());
+    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    const int depth = (0 == label) ? cellDepth : labelId;
+    const std::string labelName = (0 == label) ?
+      ((sieveMesh->hasLabel("censored depth")) ?
+       "censored depth" : "depth") : label;
+    assert(!sieveMesh->getFactory().isNull());
+    const ALE::Obj<typename mesh_type::SieveMesh::numbering_type>& numbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
+    assert(!numbering.isNull());
+    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
+    const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
+    assert(!section.isNull());
+      
+    const int fiberDimLocal = 
+      (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
+      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
+    int fiberDim = 0;
+    MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
+		  MPI_INT, MPI_MAX, field.mesh().comm());
+    assert(fiberDim > 0);
+
     PetscErrorCode err = 0;
-    err = VecView(vector, _viewer);
-    CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields"); CHECK_PETSC_ERROR(err);
+    
+    int blockSize = 0;
+    err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 

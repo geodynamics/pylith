@@ -63,7 +63,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >*
+  const topology::FieldsNew<topology::SubMesh>*
   parameterFields(void) const;
 
   /** Get boundary mesh.
@@ -90,7 +90,7 @@ protected :
   topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
 
   /// Parameters for boundary condition.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  topology::FieldsNew<topology::SubMesh>* _parameters;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

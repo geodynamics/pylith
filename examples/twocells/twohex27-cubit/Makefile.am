@@ -19,7 +19,6 @@
 dist_noinst_DATA = \
 	README \
 	axialdisp.cfg \
-	axialdisp.jpg \
 	axialdisp.spatialdb \
 	dislocation.cfg \
 	dislocation_slip.spatialdb \

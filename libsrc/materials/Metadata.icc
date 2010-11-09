@@ -20,20 +20,47 @@
 #error "Metadata.icc can only be included from Metadata.hh"
 #endif
 
-// Get names of properties.
-inline
-const pylith::string_vector&
-pylith::materials::Metadata::properties(void) const {
-  return _propertyNames;
-}
+#include <cassert> // USES assert()
 
-// Get names of state variables.
+// ----------------------------------------------------------------------
+// Get number of physical properties.
 inline
-const pylith::string_vector&
-pylith::materials::Metadata::stateVars(void) const {
-  return _stateVarNames;
-}
+int
+pylith::materials::Metadata::numProperties(void) const
+{ // numProperties
+  return _numProperties;
+} // numProperties
 
+// ----------------------------------------------------------------------
+// Get physical property index.
+inline
+const pylith::materials::Metadata::ParamDescription&
+pylith::materials::Metadata::getProperty(const int index) const
+{ // getProperty
+  assert(index >= 0 && index < _numProperties);
+  return _properties[index];
+} // getProperty
+
+// ----------------------------------------------------------------------
+// Get number of state variables.
+inline
+int
+pylith::materials::Metadata::numStateVars(void) const
+{ // numStateVars
+  return _numStateVars;
+} // numStateVars
+
+// ----------------------------------------------------------------------
+// Get state variable index.
+inline
+const pylith::materials::Metadata::ParamDescription&
+pylith::materials::Metadata::getStateVar(const int index) const
+{ // getStateVar
+  assert(index >= 0 && index < _numStateVars);
+  return _stateVars[index];
+} // getStateVar
+
+// ----------------------------------------------------------------------
 // Get names of database values for physical properties.
 inline
 const char* const*
@@ -41,6 +68,7 @@ pylith::materials::Metadata::dbProperties(void) const {
   return _dbProperties;
 }
 
+// ----------------------------------------------------------------------
 // Get number of database values for physical properties.
 inline
 int
@@ -48,6 +76,7 @@ pylith::materials::Metadata::numDBProperties(void) const {
   return _numDBProperties;
 }
 
+// ----------------------------------------------------------------------
 // Get names of database values for state variables.
 inline
 const char* const*
@@ -55,6 +84,7 @@ pylith::materials::Metadata::dbStateVars(void) const {
   return _dbStateVars;
 }
 
+// ----------------------------------------------------------------------
 // Get number of database values for state variables.
 inline
 int

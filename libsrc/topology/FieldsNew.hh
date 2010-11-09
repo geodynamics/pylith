@@ -24,10 +24,8 @@
  * fiber dimension is set at compile time.
  */
 
-#if !defined(pylith_topology_fields_hh)
-#define pylith_topology_fields_hh
-
-#define USE_UNIFORMSECTION
+#if !defined(pylith_topology_fieldsnew_hh)
+#define pylith_topology_fieldsnew_hh
 
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
@@ -44,11 +42,7 @@ class pylith::topology::FieldsNew
   friend class TestFieldsNewMesh; // unit testing
   friend class TestFieldsNewSubMesh; // unit testing
 
-#if defined(USE_UNIFORMSECTION)
   typedef typename mesh_type::RealUniformSection section_type;
-#else
-  typedef typename mesh_type::RealSection section_type;
-#endif
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -110,12 +104,7 @@ public :
   /** Get field.
    *
    * @param name Name of field.
-   */
-  const Field<mesh_type>& get(const char* name) const;
-	   
-  /** Get field.
-   *
-   * @param name Name of field.
+   * @returns Field.
    */
   Field<mesh_type>& get(const char* name);
 	   
@@ -131,6 +120,12 @@ public :
    */
   const ALE::Obj<section_type>& section(void) const;
 
+  /** Compute total fiber dimension for section.
+   *
+   * @returns Fiber dimension.
+   */
+  int fiberDim(void) const;
+
   /** Get index of first value of field in section.
    *
    * @param name Name of field.
@@ -138,13 +133,26 @@ public :
    */
   int sectionIndex(const char* name) const;
 
+  /** Get fiber dimension of field in section.
+   *
+   * @param name Name of field.
+   * @returns Fiber dimension of field in section.
+   */
+  int sectionFiberDim(const char* name) const;
+
   /** Return the names of all fields.
    *
    * @param numNames Number of fields,
    * @param names Names of fields.
    */
   void fieldNames(int* numNames,
-		  std::string** names) const;
+		  char*** names) const;
+
+  /** View fields and section.
+   *
+   * @param label Label for fields.
+   */
+  void view(const char* label);
 
 // PROTECTED STRUCTS ////////////////////////////////////////////////////
 protected :
@@ -165,12 +173,6 @@ protected :
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
-  /** Compute total fiber dimension for section.
-   *
-   * @returns Fiber dimension.
-   */
-  int _fiberDim(void) const;
-
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
@@ -189,7 +191,7 @@ private :
 #include "FieldsNew.icc"
 #include "FieldsNew.cc"
 
-#endif // pylith_topology_fields_hh
+#endif // pylith_topology_fieldsnew_hh
 
 
 // End of file 

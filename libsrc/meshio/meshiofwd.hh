@@ -50,6 +50,7 @@ namespace pylith {
     template<typename mesh_type, typename field_type> class DataWriter;
     template<typename mesh_type, typename field_type> class DataWriterVTK;
     template<typename mesh_type, typename field_type> class DataWriterHDF5;
+    template<typename mesh_type, typename field_type> class DataWriterHDF5Ext;
     template<typename mesh_type, typename field_type> class CellFilter;
     template<typename mesh_type, typename field_type> class CellFilterAvg;
     template<typename field_type> class VertexFilter;
@@ -57,6 +58,8 @@ namespace pylith {
     class OutputSolnSubset;
 
     class UCDFaultFile;
+
+    class HDF5;
 
   } // meshio
 } // pylith

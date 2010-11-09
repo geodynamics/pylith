@@ -195,7 +195,7 @@ noinst_HEADERS += \
 
 
 AM_CPPFLAGS = \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
+	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testmeshio_LDFLAGS = \
@@ -215,14 +215,19 @@ endif
 
 if ENABLE_HDF5
   testmeshio_SOURCES += \
+	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
-	TestDataWriterHDF5MeshHex8.cc
+	TestDataWriterHDF5MeshHex8.cc \
+	TestDataWriterHDF5ExtMesh.cc \
+	TestDataWriterHDF5ExtMeshHex8.cc
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
-	TestDataWriterHDF5MeshHex8.hh
+	TestDataWriterHDF5MeshHex8.hh \
+	TestDataWriterHDF5ExtMesh.hh \
+	TestDataWriterHDF5ExtMeshHex8.hh
 
   testmeshio_LDADD += -lhdf5
 endif
@@ -308,7 +313,12 @@ noinst_tmp = \
 	output_vertex_t12.vtk \
 	output_vertex_filter_t12.vtk \
 	output_cell_t12.vtk \
-	output_cell_filter_t12.vtk
+	output_cell_filter_t12.vtk \
+	test.h5 \
+	test.dat \
+	hex8.h5 \
+	hex8_vertex.h5 \
+	hex8_cell.h5
 
 CLEANFILES = $(noinst_tmp)
 

@@ -182,29 +182,29 @@ class FIATSimplex(ReferenceCell):
     ids = self.cell.Udual.entity_ids
     permutation = []
     if dim == 1:
+      for vertex in ids[0]:
+        permutation.extend(ids[0][vertex])
       for edge in ids[1]:
         permutation.extend(ids[1][edge])
+    elif dim == 2:
       for vertex in ids[0]:
         permutation.extend(ids[0][vertex])
-    elif dim == 2:
-      for face in ids[2]:
-        permutation.extend(ids[2][face])
       for edge in ids[1]:
         permutation.extend(ids[1][(edge+2)%3])
+      for face in ids[2]:
+        permutation.extend(ids[2][face])
+    elif dim == 3:
       for vertex in ids[0]:
         permutation.extend(ids[0][vertex])
-    elif dim == 3:
-      for volume in ids[3]:
-        permutation.extend(ids[3][volume])
-      for face in [3, 2, 0, 1]:
-        permutation.extend(ids[2][face])
       for edge in [2, 0, 1, 3]:
         permutation.extend(ids[1][edge])
       for edge in [4, 5]:
         if len(ids[1][edge]) > 0:
           permutation.extend(ids[1][edge][::-1])
-      for vertex in ids[0]:
-        permutation.extend(ids[0][vertex])
+      for face in [3, 2, 0, 1]:
+        permutation.extend(ids[2][face])
+      for volume in ids[3]:
+        permutation.extend(ids[3][volume])
     else:
       raise ValueError("Unknown dimension '%d'." % dim)
     return permutation
