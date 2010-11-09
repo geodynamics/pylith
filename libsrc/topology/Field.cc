@@ -296,9 +296,9 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 
   if (!_section.isNull()) {
     _section->setAtlas(srcSection->getAtlas());
-    _section->allocateStorage();
     _section->setBC(srcSection->getBC());
-    _section->copyFibration(srcSection);
+    _section->allocateStorage();
+    _section->copySpaces(srcSection);
 
     PetscErrorCode err = 0;
     if (0 != src._scatter) {
@@ -456,7 +456,9 @@ pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
 	 ++c_iter) {
       assert(field._section->getFiberDimension(*c_iter) ==
 	     _section->getFiberDimension(*c_iter));
-      _section->updatePointAll(*c_iter, field._section->restrictPoint(*c_iter));
+      if (_section->getFiberDimension(*c_iter))
+	_section->updatePointAll(*c_iter, 
+				 field._section->restrictPoint(*c_iter));
     } // for
   } // if
 

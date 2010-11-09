@@ -28,6 +28,7 @@
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
@@ -51,6 +52,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 // ----------------------------------------------------------------------
 // Test label()
@@ -149,33 +151,32 @@ pylith::friction::TestFrictionModel::testInitialize(void)
 
   const double tolerance = 1.0e-06;
 
-  // Test propertiesVertex with mesh
+  // Test fieldsPropsStateVars with mesh
+  const int fieldsFiberDim = numProperties;
   int index = 0;
-  double_array propertiesVertex(numProperties);
-  CPPUNIT_ASSERT(0 != friction._properties);
-  const ALE::Obj<RealSection>& propertiesSection =
-      friction._properties->section();
-  CPPUNIT_ASSERT(!propertiesSection.isNull());
+  CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
+  const ALE::Obj<SubRealUniformSection>& fieldsSection =
+    friction._fieldsPropsStateVars->section();
+  CPPUNIT_ASSERT(!fieldsSection.isNull());
   for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(numProperties, propertiesSection->getFiberDimension(*v_iter));
-    propertiesSection->restrictPoint(*v_iter, &propertiesVertex[0],
-      propertiesVertex.size());
+       v_iter != verticesEnd;
+       ++v_iter) {
+    CPPUNIT_ASSERT_EQUAL(fieldsFiberDim, 
+			 fieldsSection->getFiberDimension(*v_iter));
+    const double* fieldsVertex = fieldsSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(fieldsVertex);
     for (int i = 0; i < numProperties; ++i, ++index)
       if (0 != propertiesE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesVertex[i]/propertiesE[index], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[i]/propertiesE[index],
+				     tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], propertiesVertex[i], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsVertex[i],
+				     tolerance);
   } // for
 
   // Test vertex array sizes.
-  size_t size = data.numPropsVertex;
-  CPPUNIT_ASSERT_EQUAL(size, friction._propertiesVertex.size());
-
-  size = data.numVarsVertex;
-  CPPUNIT_ASSERT_EQUAL(size, friction._stateVarsVertex.size());
-
+  size_t size = data.numPropsVertex + data.numVarsVertex;
+  CPPUNIT_ASSERT_EQUAL(size, friction._propsStateVarsVertex.size());
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -192,8 +193,8 @@ pylith::friction::TestFrictionModel::testGetField(void)
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
-  topology::Field<topology::SubMesh> field(fault.faultMesh());
-  friction.getField(&field, "friction_coefficient");
+  const topology::Field<topology::SubMesh>& field = 
+    friction.getField("friction_coefficient");
 
   const ALE::Obj<SieveSubMesh>& sieveMesh = field.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -224,14 +225,14 @@ pylith::friction::TestFrictionModel::testGetField(void)
 } // testGetField
 
 // ----------------------------------------------------------------------
-// Test retrievePropsAndVars().
+// Test retrievePropsStateVars().
 void
-pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
-{ // testRetrievePropsAndVars
+pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
+{ // testRetrievePropsStateVars
   const double propertiesE[] = { 0.45, 1000000 };
-  const int numProperties = 2;
+  const size_t numProperties = 2;
   const double* stateVarsE = 0;
-  const int numStateVars = 0;
+  const size_t numStateVars = 0;
   const int vertex = 2;
 
   topology::Mesh mesh;
@@ -240,35 +241,35 @@ pylith::friction::TestFrictionModel::testRetrievePropsAndVars(void)
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
-  friction.retrievePropsAndVars(vertex);
+  friction.retrievePropsStateVars(vertex);
 
   const double tolerance = 1.0e-06;
 
+  const double_array& fieldsVertex = friction._propsStateVarsVertex;
+  CPPUNIT_ASSERT_EQUAL(numProperties + numStateVars, fieldsVertex.size());
+
   // Check properties array.
+  int index = 0;
   CPPUNIT_ASSERT(0 != propertiesE);
-  const double_array& properties = friction._propertiesVertex;
-  size_t size = numProperties;
-  CPPUNIT_ASSERT_EQUAL(size, properties.size());
-  for (size_t i=0; i < size; ++i)
+  for (size_t i=0; i < numProperties; ++i)
     if (0.0 != propertiesE[i])
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i],
-        tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[index++]/propertiesE[i],
+				   tolerance);
     else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], fieldsVertex[index++],
+				   tolerance);
 
   // Check state variables array.
   CPPUNIT_ASSERT( (0 < numStateVars && 0 != stateVarsE) ||
 		  (0 == numStateVars && 0 == stateVarsE) );
-  const double_array& stateVars = friction._stateVarsVertex;
-  size = numStateVars;
-  CPPUNIT_ASSERT_EQUAL(size, stateVars.size());
-  for (size_t i=0; i < size; ++i)
+  for (size_t i=0; i < numStateVars; ++i)
     if (0.0 != stateVarsE[i])
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i],
-        tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[index++]/stateVarsE[i],
+				   tolerance);
     else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
-} // testRetrievePropsAndVars
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], fieldsVertex[index++],
+				   tolerance);
+} // testRetrievePropsStateVars
 
 // ----------------------------------------------------------------------
 // Test calcFriction()
@@ -290,7 +291,7 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   _initialize(&mesh, &fault, &friction, &data);
 
   friction.timeStep(data.dt);
-  friction.retrievePropsAndVars(vertex);
+  friction.retrievePropsStateVars(vertex);
   const double frictionV = friction.calcFriction(slip, slipRate, normalTraction);
 
   const double tolerance = 1.0e-6;
@@ -319,7 +320,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const int vertex = 2;
     
     friction.timeStep(data.dt);
-    friction.retrievePropsAndVars(vertex);
+    friction.retrievePropsStateVars(vertex);
     friction.updateStateVars(slip, slipRate, normalTraction, vertex);
     
     // no outcome to test
@@ -359,24 +360,28 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     
 
     // Set state variables to given values
-    CPPUNIT_ASSERT_EQUAL(numStateVars, int(friction._stateVarsVertex.size()));
+    friction._propsStateVarsVertex = 0.0;
+    CPPUNIT_ASSERT_EQUAL(numStateVars, friction._varsFiberDim);
     for (size_t i=0; i < numStateVars; ++i)
-      friction._stateVarsVertex[i] = stateVars[i];
+      friction._propsStateVarsVertex[friction._propsFiberDim+i] = stateVars[i];
 
     friction.timeStep(dt);
     friction.updateStateVars(slip, slipRate, normalTraction, vertex);
     
     const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT(0 != friction._stateVars);
-    const ALE::Obj<RealSection>& stateVarsSection = 
-      friction._stateVars->section();
-    const double* stateVarsUpdated = stateVarsSection->restrictPoint(vertex);
-    CPPUNIT_ASSERT_EQUAL(numStateVars, 
-			 stateVarsSection->getFiberDimension(vertex));
+    CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
+    const ALE::Obj<SubRealUniformSection>& fieldsSection = 
+      friction._fieldsPropsStateVars->section();
+    CPPUNIT_ASSERT_EQUAL(friction._fieldsPropsStateVars->fiberDim(),
+			 fieldsSection->getFiberDimension(vertex));
+    const double* fieldsVertex = fieldsSection->restrictPoint(vertex);
+    CPPUNIT_ASSERT(fieldsVertex);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[0],
-				 stateVarsUpdated[0], tolerance);
+				 fieldsVertex[friction._propsFiberDim+0], 
+				 tolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[1],
-				 stateVarsUpdated[1], tolerance);
+				 fieldsVertex[friction._propsFiberDim+1],
+				 tolerance);
   } // Test with friction model with state variables (slip weakening)
 
 } // testUpdateStateVars

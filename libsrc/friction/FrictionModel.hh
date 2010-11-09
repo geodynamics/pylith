@@ -123,51 +123,35 @@ public :
 		  feassemble::Quadrature<topology::SubMesh>* quadrature,
 		  const topology::Field<topology::SubMesh>& area);
   
-  /** Check whether friction model has a field as a property.
+  /** Check whether friction model has a field as a property or state
+   * variable.
    *
    * @param name Name of field.
    *
-   * @returns True if friction model has field as a property, false
-   * otherwise.
+   * @returns True if friction model has field as the given property
+   * or state variable, false otherwise.
    */
-  bool hasProperty(const char* name);
-
-  /** Check whether friction model has a field as a state variable.
-   *
-   * @param name Name of field.
-   *
-   * @returns True if friction model has field as a state variable,
-   * false otherwise.
-   */
-  bool hasStateVar(const char* name);
+  bool hasPropStateVar(const char* name);
 
   /** Get physical property or state variable field. Data is returned
    * via the argument.
    *
-   * @param field Field over fault interface cells.
    * @param name Name of field to retrieve.
+   * @returns Field over fault interface cells.
    */
-  void getField(topology::Field<topology::SubMesh> *field,
-		const char* name) const;
+  const topology::Field<topology::SubMesh>& getField(const char* name);
 
-  /** Get the field with all properties.
+  /** Get the field with all properties and state variables.
    *
    * @returns Properties field.
    */
-  const topology::Field<topology::SubMesh>* propertiesField() const;
+  const topology::FieldsNew<topology::SubMesh>& fieldsPropsStateVars() const;
 
-  /** Get the field with all of the state variables.
+  /** Retrieve properties and state variables for a point.
    *
-   * @returns State variables field.
+   * @param point Finite-element point.
    */
-  const topology::Field<topology::SubMesh>* stateVarsField() const;
-
-  /** Retrieve parameters for physical properties and state variables
-   * for vertex.
-   *
-   * @param vertex Finite-element vertex on friction interface.
-   */
-  void retrievePropsAndVars(const int vertex);
+  void retrievePropsStateVars(const int point);
 
   /** Compute friction at vertex.
    *
@@ -296,42 +280,26 @@ protected :
 			const double* properties,
 			const int numProperties);
 
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /// Setup fields for physical properties and state variables.
+  void _setupPropsStateVars(void);
+
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
   double _dt; ///< Current time step
 
-  /// Field containing physical properties of friction model.
-  topology::Field<topology::SubMesh> *_properties;
-
-  /// Field containing the state variables for the friction model.
-  topology::Field<topology::SubMesh> *_stateVars;
-
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
-  int _numPropsVertex; ///< Number of properties per vertex.
-  int _numVarsVertex; ///< Number of state variables per vertex.
-
   /// Property and state variable metadata.
   const pylith::materials::Metadata _metadata;
 
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-  
-  /** Get indices for physical property or state variable field. Index
-   * of physical property or state variable is set, unknown values are
-   * -1.
-   *
-   * @param propertyIndex Index of field in properties array.
-   * @param stateVarIndex Index of field in state variables array.
-   * @param name Name of field.
-   */
-  void _findField(int* propertyIndex,
-		  int* stateVarIndex,
-		  const char* name) const;
-
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  std::string _label; ///< Label of friction model.
 
   /// Database of parameters for physical properties of friction model.
   spatialdata::spatialdb::SpatialDB* _dbProperties;
@@ -339,21 +307,15 @@ private :
   /// Database of initial state variables for the friction model.
   spatialdata::spatialdb::SpatialDB* _dbInitialState;
 
-  std::string _label; ///< Label of friction model.
+  /// Field containing physical properties and state variables of
+  /// friction model.
+  topology::FieldsNew<topology::SubMesh>* _fieldsPropsStateVars;
 
-  /** Properties for current vertex.
-   *
-   * size = numProps
-   * index = iProp
-   */
-  double_array _propertiesVertex;
+  /// Buffer for properties and state variables at vertex.
+  double_array _propsStateVarsVertex;
 
-  /** State variables for current vertex.
-   *
-   * size = numVars
-   * index = iStateVar
-   */
-  double_array _stateVarsVertex;
+  int _propsFiberDim; ///< Number of properties per point.
+  int _varsFiberDim; ///< Number of state variables per point.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
