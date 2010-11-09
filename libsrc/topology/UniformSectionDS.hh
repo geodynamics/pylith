@@ -149,14 +149,17 @@ public:
 
   // Update only the values associated to this point, not its closure
   void updatePoint(const point_type& p,
-		   const value_type v[]);
+		   const value_type v[],
+		   const int orientation =1);
 
   // Update only the values associated to this point, not its closure
   void updateAddPoint(const point_type& p,
-		      const value_type v[]);
+		      const value_type v[],
+		      const int orientation =1);
 
   void updatePointAll(const point_type& p, 
-		      const value_type v[]);
+		      const value_type v[],
+		      const int orientation =-1);
 
   void view(const std::string& name,
 	    MPI_Comm comm =MPI_COMM_NULL) const;
@@ -165,6 +168,10 @@ public:
 
   const std::vector<Obj<atlas_type> >& getSpaces(void);
   void addSpace(void);
+
+  template<typename OtherSection>
+  void copySpaces(const Obj<OtherSection>& section);
+
   int getFiberDimension(const point_type& p,
 			const int space) const;
   void setFiberDimension(const point_type& p,
@@ -178,9 +185,6 @@ public:
 
   // Return the total number of free dofs
   int size(const int space) const;
-
-  template<typename OtherSection>
-  void copyFibration(const Obj<OtherSection>& section);
 
   Obj<ALE::IGeneralSection<point_type, value_type, alloc_type> >
   getFibration(const int space) const;

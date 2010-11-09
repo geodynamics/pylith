@@ -86,7 +86,7 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::IUniformSectionDS(co
   } // if
   _fiberDim = fiberDim;
 
-  this->_atlas->update(*this->_atlas->getChart().begin(), &fiberDim);
+  this->_atlas->updatePoint(*this->_atlas->getChart().begin(), &fiberDim);
   this->_array = NULL;
   this->_emptyValue.v = new value_type[fiberDim];
   for(int i = 0; i < fiberDim; ++i)
@@ -536,11 +536,20 @@ template<typename point_type,
 	 typename alloc_type>
 void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::updatePoint(const point_type& p,
-				    const value_type v[])
+									const value_type v[],
+									const int orientation)
 { // updatePoint
+  if (!this->hasPoint(p))
+    return;
+
   assert(this->_array);
-  for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
-    this->_array[idx] = v[i];
+  if (orientation >= 0) {
+    for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
+      this->_array[idx] = v[i];
+  } else {
+    for (int i=_fiberDim, idx=(p+1)*_fiberDim-1; i >= 0; --i, --idx)
+      this->_array[idx] = v[i];
+  } // if/else
 } // updatePoint
 
 // ----------------------------------------------------------------------
@@ -550,11 +559,20 @@ template<typename point_type,
 // Update only the values associated to this point, not its closure
 void
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::updateAddPoint(const point_type& p,
-				       const value_type v[])
+									   const value_type v[],
+									   const int orientation)
 { // updateAddPoint
+  if (!this->hasPoint(p))
+    return;
+
   assert(this->_array);
-  for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
-    this->_array[idx] += v[i];
+  if (orientation >= 0) {
+    for(int i = 0, idx = p*_fiberDim; i < _fiberDim; ++i, ++idx)
+      this->_array[idx] += v[i];
+  } else {
+    for (int i=_fiberDim, idx=(p+1)*_fiberDim-1; i >= 0; --i, --idx)
+      this->_array[idx] += v[i];
+  } // if/else
 } // updateAddPoint
 
 // ----------------------------------------------------------------------
@@ -563,9 +581,10 @@ template<typename point_type,
 	 typename alloc_type>
 void 
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::updatePointAll(const point_type& p,
-				       const value_type v[])
+									   const value_type v[],
+									   const int orientation)
 { // updatePointAll
-  this->updatePoint(p, v);
+  this->updatePoint(p, v, orientation);
 } // updatePointAll
 
 // ----------------------------------------------------------------------
@@ -654,6 +673,25 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::addSpace(void)
 template<typename point_type, 
 	 typename value_type, 
 	 typename alloc_type>
+template<typename OtherSection>
+void
+ALE::IUniformSectionDS<point_type, value_type, alloc_type>::copySpaces(const Obj<OtherSection>& section)
+{ // copySpaces
+  const std::vector<Obj<atlas_type> >& spaces = section->getSpaces();
+  
+  this->_spaces.clear();
+  const typename std::vector<Obj<atlas_type> >::const_iteraor spacesEnd
+    = spaces.end();
+  for(typename std::vector<Obj<atlas_type> >::const_iterator s_iter=spaces.begin();
+      s_iter != spacesEnd;
+      ++s_iter)
+    this->_spaces.push_back(*s_iter);
+} // copySpaces
+
+// ----------------------------------------------------------------------
+template<typename point_type, 
+	 typename value_type, 
+	 typename alloc_type>
 int 
 ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFiberDimension(
 						    const point_type& p,
@@ -719,25 +757,6 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::size(const int space
 
   return size;
 } // size
-
-// ----------------------------------------------------------------------
-template<typename point_type, 
-	 typename value_type, 
-	 typename alloc_type>
-template<typename OtherSection>
-void
-ALE::IUniformSectionDS<point_type, value_type, alloc_type>::copyFibration(const Obj<OtherSection>& section)
-{ // copyFibration
-  const std::vector<Obj<atlas_type> >& spaces = section->getSpaces();
-  
-  this->_spaces.clear();
-  const typename std::vector<Obj<atlas_type> >::const_iteraor spacesEnd
-    = spaces.end();
-  for(typename std::vector<Obj<atlas_type> >::const_iterator s_iter=spaces.begin();
-      s_iter != spacesEnd;
-      ++s_iter)
-    this->_spaces.push_back(*s_iter);
-} // copyFibration
 
 // ----------------------------------------------------------------------
 template<typename point_type, 

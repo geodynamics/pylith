@@ -42,7 +42,15 @@ class pylith::topology::FieldsNew
   friend class TestFieldsNewMesh; // unit testing
   friend class TestFieldsNewSubMesh; // unit testing
 
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public:
+
+  // Convenience typedefs
   typedef typename mesh_type::RealUniformSection section_type;
+
+  typedef ALE::ISieveVisitor::RestrictVisitor<section_type> RestrictVisitor;
+  typedef ALE::ISieveVisitor::UpdateAddVisitor<section_type> UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::UpdateAllVisitor<section_type> UpdateAllVisitor;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -139,6 +147,9 @@ public :
    * @returns Fiber dimension of field in section.
    */
   int sectionFiberDim(const char* name) const;
+
+  /// Complete section by assembling across processors.
+  void complete(void);
 
   /** Return the names of all fields.
    *
