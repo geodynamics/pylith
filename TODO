@@ -3,7 +3,9 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 * Unform global refinement
-  tri3 and tet4, level 2 work in serial, sometimes crash in parallel
+  MATT
+    tests_auto/2d/tri3
+      pylith sheardisp_refine.cfg --nodes=3  causes new nonzero malloc
 
   quad4, level 2 (add face vertices for overlap)
   hex8, level 2
@@ -16,6 +18,24 @@ CURRENT ISSUES/PRIORITIES
     Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
+  MATT * add ability to combine timesteps into a single dataset
+       * write cells as ints
+       * censor vertices/cells
+       * Adjust PetscViewerBinary so it can dump just values, no size info
+  BRAD * write cells as ints
+       * censor vertices/cells
+
+* Reimplement Fields to use a single section.
+  BRAD - 
+
+    Fields -> SolutionFields
+    FieldsNew -> Fields
+
+    UniformSectionDS
+      getFibration needs to return an ISection
+        chart from original section
+        array from original section
+        atlas - set offsets based on fibration
 
 * Reformulate solves in terms of Schur complement
 
@@ -34,17 +54,6 @@ CURRENT ISSUES/PRIORITIES
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
 
-* Reimplement Fields to use a single section.
-
-    Fields -> SolutionFields
-    FieldsNew -> Fields
-
-    UniformSectionDS
-      getFibration needs to return an ISection
-        chart from original section
-        array from original section
-        atlas - set offsets based on fibration
-
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
   + Specialized elasticity integrator objects for Quad4, Hex8
@@ -62,6 +71,10 @@ CURRENT ISSUES/PRIORITIES
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
+
+* Interpolated meshes + temperature field
+  No fault, linear elasticity
+  Benchmark memory use and speed
 
 * Combined kinematic and dynamic fault implementation
 

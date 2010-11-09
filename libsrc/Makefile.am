@@ -101,6 +101,7 @@ libpylith_la_SOURCES = \
 	materials/ElasticIsotropic3D.cc \
 	materials/ViscoelasticMaxwell.cc \
 	materials/GenMaxwellIsotropic3D.cc \
+	materials/GenMaxwellBulkIsotropic3D.cc \
 	materials/MaxwellIsotropic3D.cc \
 	materials/MaxwellPlaneStrain.cc \
 	materials/PowerLaw3D.cc \
@@ -159,9 +160,15 @@ libpylith_la_LIBADD += \
 endif
 
 INCLUDES = -I$(top_builddir)/include
-INCLUDES += $(PETSC_INCLUDE)
+INCLUDES += $(PETSC_CC_INCLUDES)
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
+
+if ENABLE_HDF5
+  libpylith_la_SOURCES += \
+	meshio/HDF5.cc
+  libpylith_la_LIBADD += -lhdf5
+endif
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

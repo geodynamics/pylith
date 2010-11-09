@@ -31,33 +31,20 @@
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldEnum
 #include "pylith/utils/array.hh" // HASA string_vector
 
-#include <map> // HASA std::map
+#include <string> // HASA std::string
 
 // MaterialMetadata -----------------------------------------------------
-/** @brief C++ object for material metadata.
- *
- * Extends Sieve mesh to include coordinate system associated with
- * domain.
- */
-
+/// @brief C++ object for material metadata.
 class pylith::materials::Metadata
 { // Mesh
   friend class TestMetadata; // unit testing
-
-// PUBLIC ENUMS /////////////////////////////////////////////////////////
-public :
-
-  enum ValueEnum {
-    PROPERTY=0, ///< Property value.
-    STATEVAR=1, ///< State variable value.
-  }; // ValueEnum
 
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public :
 
   struct ParamDescription {
-    const char* name;
-    const int fiberDim;
+    std::string name;
+    int fiberDim;
     topology::FieldBase::VectorFieldEnum fieldType;
   }; // ParamDescription
 
@@ -96,35 +83,30 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Get names of properties.
-   * 
-   * @returns Array of names of properties.
-   */
-  const string_vector& properties(void) const;
-
-  /** Get names of state variables.
+  /** Get number of physical properties.
    *
-   * @returns Array of names of state variables.
+   * @returns Number of physical properties.
    */
-  const string_vector& stateVars(void) const;
+  int numProperties(void) const;
 
-  /** Get fiber dimension of value.
+  /** Get physical property index.
    *
-   * @param name Name of value.
-   * @param valueType Type of value.
+   * @param index Physical property index.
    */
-  int fiberDim(const char* name,
-	       const ValueEnum valueType) const;
+  const ParamDescription& getProperty(const int index) const;
 
-  /** Get type of vector field associated with value.
+  /** Get number of state variables.
    *
-   * @param name Name of value.
-   * @param valueType Type of value.
+   * @returns Number of state variables.
    */
-  topology::FieldBase::VectorFieldEnum
-  fieldType(const char* name,
-	    const ValueEnum valueType) const;
-   
+  int numStateVars(void) const;
+
+  /** Get state variable index.
+   *
+   * @param index State variable index.
+   */
+  const ParamDescription& getStateVar(const int index) const;
+
   /** Get names of database values for physical properties.
    *
    * @returns Array of names.
@@ -150,30 +132,18 @@ public :
   int numDBStateVars(void) const;
 
 
-// PRIVATE STRUCTS //////////////////////////////////////////////////////
-private :
-
-  struct ParameterInfo {
-    int fiberDim; ///< Fiber dimension for parameter.
-    topology::FieldBase::VectorFieldEnum fieldType; ///< Type of Vector field.
-  }; // ParameterInfo
-
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
-
-  typedef std::map< std::string, ParameterInfo > ParameterMap;
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  ParameterMap _properties; ///< Physical properties information.
-  ParameterMap _stateVars; ///< State variable information.
+  ParamDescription* _properties; ///< Physical properties information.
+  ParamDescription* _stateVars; ///< State variable information.
 
-  string_vector _propertyNames; ///< Names of physical properties.
-  string_vector _stateVarNames; ///< Names of state variables.
-  
   const char* const* _dbProperties; ///< Names of db values for properties. 
   const char* const* _dbStateVars; ///< Names of db values for state varaibles.
+
+  const int _numProperties; ///< Number of physical properties.
+  const int _numStateVars; ///< NUmber of state variables.
+
   const int _numDBProperties; ///< Number of db values for properties.
   const int _numDBStateVars; ///< Number of db values for state variables.
   

@@ -506,6 +506,30 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::restrictPoint(const 
 } // restrictPoint
 
 // ----------------------------------------------------------------------
+// Return only the values associated to this point, not its closure
+template<typename point_type, 
+	 typename value_type, 
+	 typename alloc_type>
+void
+ALE::IUniformSectionDS<point_type, value_type, alloc_type>::restrictPoint(const point_type& p,
+									  value_type* const values,
+									  const int size) const
+{ // restrictPoint
+  assert(size == _fiberDim);
+  assert(values);
+
+  assert(this->_array);
+
+  if (!this->hasPoint(p))
+    for (int i=0; i < _fiberDim; ++i)
+      values[i] = this->_emptyValue.v[i];
+
+  const double* valuesPoint = &this->_array[p*_fiberDim];
+  for (int i=0; i < _fiberDim; ++i)
+    values[i] = valuesPoint[i];
+} // restrictPoint
+
+// ----------------------------------------------------------------------
 // Update only the values associated to this point, not its closure
 template<typename point_type, 
 	 typename value_type, 
@@ -749,13 +773,14 @@ ALE::IUniformSectionDS<point_type, value_type, alloc_type>::getFibration(const i
   newAtlas->allocatePoint();
   const typename IGeneralSection_chart_type::const_iterator newChartEnd =
     newChart.end();
+  int offset = chart.min()*_fiberDim;
   for (typename IGeneralSection_chart_type::const_iterator c_iter=newChart.begin();
        c_iter != newChartEnd;
-       ++c_iter) {
+       ++c_iter, offset+=_fiberDim) {
     typename IGeneralSection<point_type, value_type, alloc_type>::index_type idx;
 
     idx.prefix = field->getFiberDimension(*c_iter);
-    idx.index  = this->_atlas->restrictPoint(*c_iter)[0];
+    idx.index  = offset;
     for(int s = 0; s < space; ++s)
       idx.index += this->getFiberDimension(*c_iter, s);
     newAtlas->addPoint(*c_iter);

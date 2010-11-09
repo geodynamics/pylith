@@ -21,7 +21,7 @@
 #include "PointForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -34,6 +34,7 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -84,8 +85,8 @@ pylith::bc::PointForce::integrateResidual(
 			   const double t,
 			   topology::SolutionFields* const fields)
 { // integrateResidualAssembled
-  assert(0 != _parameters);
-  assert(0 != _normalizer);
+  assert(_parameters);
+  assert(_normalizer);
 
   // Calculate spatial and temporal variation of value for BC.
   _calculateValue(t);
@@ -110,23 +111,32 @@ pylith::bc::PointForce::integrateResidual(
         residualSection);
   assert(!globalOrder.isNull());
 
-  double_array valuesVertex(numBCDOF);
-  const ALE::Obj<RealSection>& valueSection = 
-    _parameters->get("value").section();
-  assert(!valueSection.isNull());
-  
+  const ALE::Obj<RealUniformSection>& parametersSection = 
+    _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  const int valueIndex = _parameters->sectionIndex("value");
+  const int valueFiberDim = _parameters->sectionFiberDim("value");
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  assert(valueFiberDim == numBCDOF);
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label.
 
-    // Contribute to residual if point is local.
+    // Contribute to residual only if point is local.
     if (!globalOrder->isLocal(p_bc))
       continue;
 
     residualVertex *= 0.0; // Reset residual contribution to zero.
     
-    valueSection->restrictPoint(p_bc, &valuesVertex[0], valuesVertex.size());
+    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
+    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+    assert(parametersVertex);
+
     for (int iDOF=0; iDOF < numBCDOF; ++iDOF)
-      residualVertex[_bcDOF[iDOF]] += valuesVertex[iDOF];
+      residualVertex[_bcDOF[iDOF]] += parametersVertex[valueIndex+iDOF];
+
+    assert(residualVertex.size() == residualSection->getFiberDimension(p_bc));
     residualSection->updateAddPoint(p_bc, &residualVertex[0]);
   } // for
 } // integrateResidualAssembled

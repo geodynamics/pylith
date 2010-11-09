@@ -45,7 +45,7 @@ _mpimodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
-INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)

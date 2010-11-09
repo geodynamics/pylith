@@ -16,9 +16,9 @@
 # ======================================================================
 #
 
-## @file unittests/meshio/testmeshio.py
+## @file unittests/meshio/testcubit.py
 
-## @brief Python application for testing meshio code.
+## @brief Python application for testing CUBIT related meshio code.
 
 from pyre.applications.Script import Script
 

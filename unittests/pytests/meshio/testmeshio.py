@@ -89,15 +89,6 @@ class TestApp(Script):
     from TestDataWriterVTK import TestDataWriterVTKSubSubMesh
     suite.addTest(unittest.makeSuite(TestDataWriterVTKSubSubMesh))
 
-    from TestDataWriterHDF5 import TestDataWriterHDF5Mesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5Mesh))
-
-    from TestDataWriterHDF5 import TestDataWriterHDF5SubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubMesh))
-
-    from TestDataWriterHDF5 import TestDataWriterHDF5SubSubMesh
-    suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubSubMesh))
-
     from TestOutputManagerMesh import TestOutputManagerMesh
     suite.addTest(unittest.makeSuite(TestOutputManagerMesh))
 

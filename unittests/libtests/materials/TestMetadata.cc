@@ -97,8 +97,6 @@ pylith::materials::TestMetadata::testCopyConstructor(void)
   delete _metadata; _metadata = &m;
   testProperties();
   testStateVars();
-  testFiberDim();
-  testFieldType();
   testDBProperties();
   testDBStateVars();
 
@@ -110,14 +108,19 @@ pylith::materials::TestMetadata::testCopyConstructor(void)
 void
 pylith::materials::TestMetadata::testProperties(void)
 { // testProperties
-  CPPUNIT_ASSERT(0 != _metadata);
+  CPPUNIT_ASSERT(_metadata);
 
-  const string_vector& properties = _metadata->properties();
-  const size_t numProperties = _TestMetadata::numProperties;
-  CPPUNIT_ASSERT_EQUAL(numProperties, properties.size());
-  for (size_t i=0; i < numProperties; ++i)
+  const int numProperties = _TestMetadata::numProperties;
+  CPPUNIT_ASSERT_EQUAL(numProperties, _metadata->numProperties());
+  for (int i=0; i < numProperties; ++i) {
+    const Metadata::ParamDescription& property = _metadata->getProperty(i);
     CPPUNIT_ASSERT_EQUAL(std::string(_TestMetadata::properties[i].name),
-			 properties[i]);
+			 property.name);
+    CPPUNIT_ASSERT_EQUAL(_TestMetadata::properties[i].fiberDim, 
+			 property.fiberDim);
+    CPPUNIT_ASSERT_EQUAL(_TestMetadata::properties[i].fieldType, 
+			 property.fieldType);
+  } // for
 } // testProperties
 
 // ----------------------------------------------------------------------
@@ -125,67 +128,20 @@ pylith::materials::TestMetadata::testProperties(void)
 void
 pylith::materials::TestMetadata::testStateVars(void)
 { // testStateVars
-  CPPUNIT_ASSERT(0 != _metadata);
+  CPPUNIT_ASSERT(_metadata);
 
-  const string_vector& stateVars = _metadata->stateVars();
-  const size_t numStateVars = _TestMetadata::numStateVars;
-  CPPUNIT_ASSERT_EQUAL(numStateVars, stateVars.size());
-  for (size_t i=0; i < numStateVars; ++i)
+  const int numStateVars = _TestMetadata::numStateVars;
+  CPPUNIT_ASSERT_EQUAL(numStateVars, _metadata->numStateVars());
+  for (int i=0; i < numStateVars; ++i) {
+    const Metadata::ParamDescription& stateVar = _metadata->getStateVar(i);
     CPPUNIT_ASSERT_EQUAL(std::string(_TestMetadata::stateVars[i].name),
-			 stateVars[i]);
+			 stateVar.name);
+    CPPUNIT_ASSERT_EQUAL(_TestMetadata::stateVars[i].fiberDim, 
+			 stateVar.fiberDim);
+    CPPUNIT_ASSERT_EQUAL(_TestMetadata::stateVars[i].fieldType, 
+			 stateVar.fieldType);
+  } // for
 } // testStateVars
-
-// ----------------------------------------------------------------------
-// Test fiberDim().
-void
-pylith::materials::TestMetadata::testFiberDim(void)
-{ // testFiberDim
-  CPPUNIT_ASSERT(0 != _metadata);
-
-  { // check property
-  const int index = 1;
-  const char* property = _TestMetadata::properties[index].name;
-  const int fiberDimE = _TestMetadata::properties[index].fiberDim;
-  const int fiberDim = _metadata->fiberDim(property, Metadata::PROPERTY);
-  CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-  } // check property
-
-  { // check state variable
-  const int index = 1;
-  const char* stateVar = _TestMetadata::stateVars[index].name;
-  const int fiberDimE = _TestMetadata::stateVars[index].fiberDim;
-  const int fiberDim = _metadata->fiberDim(stateVar, Metadata::STATEVAR);
-  CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-  } // check state variable
-} // testFiberDim
-
-// ----------------------------------------------------------------------
-// Test fieldType().
-void
-pylith::materials::TestMetadata::testFieldType(void)
-{ // testFieldType
-  CPPUNIT_ASSERT(0 != _metadata);
-
-  { // check property
-  const int index = 2;
-  const char* property = _TestMetadata::properties[index].name;
-  const topology::FieldBase::VectorFieldEnum fieldTypeE = 
-    _TestMetadata::properties[index].fieldType;
-  const topology::FieldBase::VectorFieldEnum fieldType =
-    _metadata->fieldType(property, Metadata::PROPERTY);
-  CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldType);
-  } // check property
-
-  { // check state variable
-  const int index = 0;
-  const char* stateVar = _TestMetadata::stateVars[index].name;
-  const topology::FieldBase::VectorFieldEnum fieldTypeE = 
-    _TestMetadata::stateVars[index].fieldType;
-  const topology::FieldBase::VectorFieldEnum fieldType =
-    _metadata->fieldType(stateVar, Metadata::STATEVAR);
-  CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldType);
-  } // check state variable
-} // testFieldType
 
 // ----------------------------------------------------------------------
 // Test dbProperties().

@@ -25,9 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
-#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
-#include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5Mesh );

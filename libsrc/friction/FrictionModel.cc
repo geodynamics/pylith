@@ -57,18 +57,14 @@ pylith::friction::FrictionModel::FrictionModel(const materials::Metadata& metada
   _label(""),
   _metadata(metadata)
 { // constructor
-  const string_vector& properties = metadata.properties();
-  const int numProperties = properties.size();
+  const int numProperties = metadata.numProperties();
   for (int i=0; i < numProperties; ++i)
-    _numPropsVertex += metadata.fiberDim(properties[i].c_str(),
-					 materials::Metadata::PROPERTY);
+    _numPropsVertex += metadata.getProperty(i).fiberDim;
   assert(_numPropsVertex >= 0);
-
-  const string_vector& stateVars = metadata.stateVars();
-  const int numStateVars = stateVars.size();
+  
+  const int numStateVars = metadata.numStateVars();
   for (int i=0; i < numStateVars; ++i)
-    _numVarsVertex += metadata.fiberDim(stateVars[i].c_str(),
-				  materials::Metadata::STATEVAR);
+    _numVarsVertex += metadata.getStateVar(i).fiberDim;
   assert(_numVarsVertex >= 0);
 } // constructor
 
@@ -446,13 +442,10 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
       
   if (propertyIndex >= 0) { // If field is a property
     int propOffset = 0;
-    const string_vector& properties = _metadata.properties();
-    assert(propertyIndex < properties.size());
+    assert(propertyIndex < _metadata.numProperties());
     for (int i = 0; i < propertyIndex; ++i)
-      propOffset += _metadata.fiberDim(properties[i].c_str(),
-          materials::Metadata::PROPERTY);
-    const int fiberDim =
-        _metadata.fiberDim(name, materials::Metadata::PROPERTY);
+      propOffset += _metadata.getProperty(i).fiberDim;
+    const int fiberDim = _metadata.getProperty(propertyIndex).fiberDim;
 
     // Get properties section
     const ALE::Obj<RealSection>& propertiesSection = _properties->section();
@@ -490,7 +483,7 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     assert(!fieldSection.isNull());
     field->label(name);
     field->scale(propertyScales[propOffset]);
-    fieldType = _metadata.fieldType(name, materials::Metadata::PROPERTY);
+    fieldType = _metadata.getProperty(propertyIndex).fieldType;
 
     // Buffer for property at cell's quadrature points
     double_array fieldVertex(fiberDim);
@@ -512,13 +505,10 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
     assert(stateVarIndex >= 0);
 
     int varOffset = 0;
-    const string_vector& stateVars = _metadata.stateVars();
-    assert(stateVarIndex < stateVars.size());
+    assert(stateVarIndex < _metadata.numStateVars());
     for (int i = 0; i < stateVarIndex; ++i)
-      varOffset += _metadata.fiberDim(stateVars[i].c_str(),
-          materials::Metadata::STATEVAR);
-    const int fiberDim =
-        _metadata.fiberDim(name, materials::Metadata::STATEVAR);
+      varOffset += _metadata.getStateVar(i).fiberDim;
+    const int fiberDim = _metadata.getStateVar(stateVarIndex).fiberDim;
 
     // Get state variables section
     const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
@@ -554,7 +544,7 @@ pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *fi
       logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
-    fieldType = _metadata.fieldType(name, materials::Metadata::STATEVAR);
+    fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
     field->label(name);
     field->scale(stateVarScales[varOffset]);
 
@@ -692,18 +682,16 @@ pylith::friction::FrictionModel::_findField(int* propertyIndex,
   *stateVarIndex = -1;
 
   const std::string nameString = name;
-  const string_vector& properties = _metadata.properties();
-  const int numProperties = properties.size();
+  const int numProperties = _metadata.numProperties();
   for (int i=0; i < numProperties; ++i)
-    if (nameString == properties[i]) {
+    if (nameString == _metadata.getProperty(i).name) {
       *propertyIndex = i;
       return;
     } // if
 
-  const string_vector& stateVars = _metadata.stateVars();
-  const int numStateVars = stateVars.size();
+  const int numStateVars = _metadata.numStateVars();
   for (int i=0; i < numStateVars; ++i)
-    if (nameString == stateVars[i]) {
+    if (nameString == _metadata.getStateVar(i).name) {
       *stateVarIndex = i;
       return;
     } // if
