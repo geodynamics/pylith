@@ -375,6 +375,21 @@ pylith::topology::TestFieldsNewMesh::testSectionFiberDim(void)
 } // testSectionFiberDim
 
 // ----------------------------------------------------------------------
+// Test complete().
+void
+pylith::topology::TestFieldsNewMesh::testComplete(void)
+{ // testComplete
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+  fields.allocate(FieldBase::VERTICES_FIELD);
+
+  fields.complete();
+} // testComplete
+
+// ----------------------------------------------------------------------
 // Test fieldNames() const.
 void
 pylith::topology::TestFieldsNewMesh::testFieldNames(void)

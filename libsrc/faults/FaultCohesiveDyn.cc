@@ -303,7 +303,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
       tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     // Use fault constitutive model to compute traction associated with
     // friction.
@@ -475,7 +475,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     // Use fault constitutive model to compute traction associated with
     // friction.
@@ -837,7 +837,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
     
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
@@ -1071,13 +1071,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _calcTractions(&buffer, dispT);
     return buffer;
 
-  } else if (_friction->hasProperty(name) || _friction->hasStateVar(name)) {
-    assert(0 != _fields);
-    if (!_fields->hasField("buffer (other)"))
-      _fields->add("buffer (other)", "buffer");
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (other)");
-    _friction->getField(&buffer, name);
-    return buffer;
+  } else if (_friction->hasPropStateVar(name)) {
+    return _friction->getField(name);
 
   } else {
     std::ostringstream msg;
@@ -1946,7 +1941,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
   if (tractionNormal < 0 && 0.0 == slip[1]) {
     // if in compression and no opening
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
-                tractionNormal);
+							  tractionNormal);
     if (tractionShearMag > frictionStress) {
       // traction is limited by friction, so have sliding
       

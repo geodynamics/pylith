@@ -51,8 +51,7 @@ class pylith::friction::TestSlipWeakening : public TestFrictionModel
   CPPUNIT_TEST( testDBToStateVars );
   CPPUNIT_TEST( testNonDimStateVars );
   CPPUNIT_TEST( testDimStateVars );
-  CPPUNIT_TEST( testHasProperty );
-  CPPUNIT_TEST( testHasStateVar );
+  CPPUNIT_TEST( testHasPropStateVar );
   CPPUNIT_TEST( test_calcFriction );
   CPPUNIT_TEST( test_updateStateVars );
 
@@ -70,11 +69,8 @@ public :
   /// Test state variable metadata.
   void testStateVarsMetadata(void);
 
-  /// Test hasProperty().
-  void testHasProperty(void);
-
-  /// Test hasStateVar().
-  void testHasStateVar(void);
+  /// Test hasPropStateVar().
+  void testHasPropStateVar(void);
 
 }; // class TestSlipWeakening
 
