@@ -138,7 +138,7 @@ pylith::friction::RateStateAgeing::_dbToProperties(
 					   double* const propValues,
 					   const double_array& dbValues) const
 { // _dbToProperties
-  assert(0 != propValues);
+  assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBProperties == numDBValues);
 
@@ -196,8 +196,8 @@ void
 pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
 						    const int nvalues) const
 { // _nondimProperties
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _RateStateAgeing::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
@@ -215,8 +215,8 @@ void
 pylith::friction::RateStateAgeing::_dimProperties(double* const values,
 						      const int nvalues) const
 { // _dimProperties
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _RateStateAgeing::numProperties);
 
   const double lengthScale = _normalizer->lengthScale();
@@ -235,7 +235,7 @@ pylith::friction::RateStateAgeing::_dbToStateVars(
 					   double* const stateValues,
 					   const double_array& dbValues) const
 { // _dbToStateVars
-  assert(0 != stateValues);
+  assert(stateValues);
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBStateVars == numDBValues);
 
@@ -250,8 +250,8 @@ void
 pylith::friction::RateStateAgeing::_nondimStateVars(double* const values,
 						    const int nvalues) const
 { // _nondimStateVars
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _RateStateAgeing::numStateVars);
 
   const double timeScale = _normalizer->timeScale();
@@ -265,8 +265,8 @@ void
 pylith::friction::RateStateAgeing::_dimStateVars(double* const values,
 						      const int nvalues) const
 { // _dimStateVars
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _RateStateAgeing::numStateVars);
 
   const double timeScale = _normalizer->timeScale();
@@ -285,10 +285,10 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 						const double* stateVars,
 						const int numStateVars)
 { // _calcFriction
-  assert(0 != properties);
-  assert(_numPropsVertex == numProperties);
-  assert(0 != numStateVars);
-  assert(_numVarsVertex == numStateVars);
+  assert(properties);
+  assert(_RateStateAgeing::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_RateStateAgeing::numStateVars == numStateVars);
 
   double friction = 0.0;
   double mu_f = 0.0;
@@ -327,8 +327,10 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 						  const double* properties,
 						  const int numProperties)
 { // _updateStateVars
-  assert(0 != numStateVars);
-  assert(0 != numProperties);
+  assert(properties);
+  assert(_RateStateAgeing::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_RateStateAgeing::numStateVars == numStateVars);
 
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
