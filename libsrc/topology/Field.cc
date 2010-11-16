@@ -296,8 +296,8 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 
   if (!_section.isNull()) {
     _section->setAtlas(srcSection->getAtlas());
-    _section->setBC(srcSection->getBC());
     _section->allocateStorage();
+    _section->setBC(srcSection->getBC());
     _section->copySpaces(srcSection);
 
     PetscErrorCode err = 0;
