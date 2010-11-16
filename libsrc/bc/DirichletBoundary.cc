@@ -116,7 +116,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   assert(0 != _boundaryMesh);
   assert(0 != _parameters);
 
-  if (_parameters->hasField(name)) {
+  if (!_parameters->hasField(name)) {
     std::ostringstream msg;
     msg << "Parameters for field '" << label << " not provided in "
 	<< "Dirichlet BC '" << _label << "'.";
@@ -192,7 +192,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   assert(0 != _boundaryMesh);
   assert(0 != _parameters);
 
-  if (_parameters->hasField(name)) {
+  if (!_parameters->hasField(name)) {
     std::ostringstream msg;
     msg << "Parameters for field '" << label << " not provided in "
 	<< "Dirichlet BC '" << _label << "'.";
