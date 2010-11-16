@@ -279,7 +279,7 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
     _section->setAtlas(srcSection->getAtlas());
     _section->allocateStorage();
     _section->setBC(srcSection->getBC());
-    _section->copyFibration(srcSection);
+    _section->copySpaces(srcSection);
 
     PetscErrorCode err = 0;
     if (0 != src._scatter) {
