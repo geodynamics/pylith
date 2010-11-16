@@ -215,10 +215,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     std::ostringstream msg;
     msg << "Error while opening HDF5 file " << _filename << ".\n" << err.what();
     throw std::runtime_error(msg.str());
-  } catch (const ALE::Exception& err) {
-    std::ostringstream msg;
-    msg << "Error while opening HDF5 file " << _filename << ".\n" << err.msg();
-    throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while opening HDF5 file " << _filename << ".\n";
