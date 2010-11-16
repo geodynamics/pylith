@@ -277,6 +277,7 @@ public :
   /// information from the "global" PETSc vector view to the "local"
   /// Sieve section view.
   void createScatter(void);
+  void createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering);
 
   /// Scatter section information across processors to update the
   /// PETSc vector view of the field.
