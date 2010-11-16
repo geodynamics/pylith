@@ -153,11 +153,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     msg << "Error while preparing for writing data to HDF5 file "
 	<< _filename << " at time " << t << ".\n" << err.what();
     throw std::runtime_error(msg.str());
-  } catch (const ALE::Exception& err) {
-    std::ostringstream msg;
-    msg << "Error while preparing for writing data to HDF5 file "
-	<< _filename << " at time " << t << ".\n" << err.msg();
-    throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while preparing for writing data to HDF5 file "
@@ -202,13 +197,20 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 	      << ", vec: " << vecname
 	      << std::endl;
 #endif
-
-    // TODO: Create scatter if necessary
-    field.createScatter();
-    field.scatterSectionToVector();
-
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
+
+    // TODO: Create scatter if necessary
+    if (sieveMesh->hasLabel("censored depth")) {
+      // Remove Lagrange vertices
+      const Obj<typename Mesh::numbering_type> vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
+
+      field.createScatter(vNumbering);
+    } else {
+      field.createScatter();
+    }
+    field.scatterSectionToVector();
+
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());
     const std::string labelName = 

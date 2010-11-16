@@ -715,6 +715,31 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(void)
 			      _section->sizeWithBC(), _section->restrictSpace(),
 			      &_scatterVec); CHECK_PETSC_ERROR(err);
 } // createScatter
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering)
+{ // createScatter
+  assert(!_section.isNull());
+  assert(!_mesh.sieveMesh().isNull());
+
+  PetscErrorCode err = 0;
+  if (0 != _scatter) {
+    err = VecScatterDestroy(_scatter); _scatter = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), numbering->getChart(), _section, &_scatter);
+  CHECK_PETSC_ERROR(err);
+
+  if (0 != _scatterVec) {
+    err = VecDestroy(_scatterVec); _scatterVec = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  assert(_section->sizeWithBC() > 0);
+  assert(_section->restrictSpace());
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &_scatterVec); CHECK_PETSC_ERROR(err);
+} // createScatter
 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the
