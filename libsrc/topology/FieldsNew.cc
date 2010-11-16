@@ -94,6 +94,7 @@ void
 pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& points)
 { // allocate
   typedef typename mesh_type::SieveMesh::point_type point_type;
+  typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fields");
@@ -101,15 +102,8 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
   // Set fiber dimension
   const int dim = fiberDim();
   assert(dim > 0);
-  _section = new section_type(_mesh.comm(), dim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
   assert(!_section.isNull());
-
-  // Set spaces
-  const typename map_type::const_iterator fieldsEnd = _fields.end();
-  for (typename map_type::iterator f_iter=_fields.begin();
-       f_iter != fieldsEnd;
-       ++f_iter)
-    _section->addSpace();
 
   assert(!points.isNull());
   if (points->size() > 0) {
@@ -118,16 +112,26 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
     const point_type pointMax = 
       *std::max_element(points->begin(), points->end());
     _section->setChart(typename section_type::chart_type(pointMin, pointMax+1));
-    _section->setFiberDimension(points, dim);
+    const typename label_sequence::const_iterator pointsEnd = points->end();
+    for (typename label_sequence::const_iterator p_iter = points->begin();
+	 p_iter != pointsEnd;
+	 ++p_iter)
+      _section->setFiberDimension(*p_iter, dim);
     
-    for (typename map_type::iterator f_iter=_fields.begin();
-	 f_iter != fieldsEnd;
-	 ++f_iter)
-      _section->setFiberDimension(points, f_iter->second.fiberDim, 
-				  f_iter->second.fibration);
   } else // Create empty chart
     _section->setChart(typename section_type::chart_type(0, 0));
 
+  // Set spaces
+  const typename map_type::const_iterator fieldsEnd = _fields.end();
+  for (typename map_type::iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    _section->addSpace();
+  for (typename map_type::iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    _section->spaceFiberDimension(f_iter->second.fibration, 
+				  f_iter->second.fiberDim);
   // Allocate section
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -150,15 +154,8 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
   // Set fiber dimension
   const int dim = fiberDim();
   assert(dim > 0);
-  _section = new section_type(_mesh.comm(), dim, _mesh.debug());
+  _section = new section_type(_mesh.comm(), _mesh.debug());
   assert(!_section.isNull());
-
-  // Set spaces
-  const typename map_type::const_iterator fieldsEnd = _fields.end();
-  for (typename map_type::iterator f_iter=_fields.begin();
-       f_iter != fieldsEnd;
-       ++f_iter)
-    _section->addSpace();
 
   const int npts = points.size();
   if (npts > 0) {
@@ -168,14 +165,20 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
     for (int i=0; i < npts; ++i)
       _section->setFiberDimension(points[i], dim);
 
-    for (typename map_type::iterator f_iter=_fields.begin();
-	 f_iter != fieldsEnd;
-	 ++f_iter)
-      for (int i=0; i < npts; ++i)
-	_section->setFiberDimension(points[i], f_iter->second.fiberDim, 
-				    f_iter->second.fibration);
   } else  // create empty chart
     _section->setChart(typename section_type::chart_type(0, 0));
+
+  // Set spaces
+  const typename map_type::const_iterator fieldsEnd = _fields.end();
+  for (typename map_type::iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    _section->addSpace();
+  for (typename map_type::iterator f_iter=_fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter)
+    _section->spaceFiberDimension(f_iter->second.fibration, 
+				  f_iter->second.fiberDim);
 
   // Allocate section
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
@@ -307,31 +310,10 @@ pylith::topology::FieldsNew<mesh_type>::complete(void)
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   
-#if 0
-  if (!_section.isNull()) {
-
-#if 0
-    typedef ALE::IUniformSectionDS<ALE::Pair<int, 
-      typename mesh_type::SieveMesh::send_overlap_type::source_type>, 
-      typename section_type::value_type> OverlapSection;
-
-    Obj<OverlapSection> overlapSection = new
-      OverlapSection(_section->comm(), _section->debug());
-    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(), 
-					sieveMesh->getRecvOverlap(), 
-					_section, _section,
-					overlapSection);
-
-
-#else
+  if (!_section.isNull())
     ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
 					sieveMesh->getRecvOverlap(), 
 					_section, _section);
-#endif
-  } // if
-#else
-  throw std::logic_error("Need Matt to implement ALE::Completion::completeSectionAdd() for uniform sections.");
-#endif  
 
   logger.stagePop();
 } // complete

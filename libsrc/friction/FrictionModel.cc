@@ -298,10 +298,7 @@ pylith::friction::FrictionModel::initialize(
     _dbInitialState->close();
   } // if
 
-  std::cout << "\n\nWARNING: SECTION COMPLETION TEMPORARILY DISABLED\n"
-	    << "NEED MATT TO IMPLEMENT COMPLETION FOR UNIFORM SECTIONS\n"
-	    << std::endl;
-  //_fieldsPropsStateVars->complete(); // Assemble contributions
+  _fieldsPropsStateVars->complete(); // Assemble contributions
 
   // Loop over vertices and divide by area to get weighted values,
   // nondimensionalize properties and state variables.

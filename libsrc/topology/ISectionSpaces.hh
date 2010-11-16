@@ -27,8 +27,9 @@
 
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
+#include "pylith/utils/array.hh" // HASA int_array
 
-#include "IField.hh"
+#include "IField.hh" // ISA ISection
 
 // ISectionSpaces -------------------------------------------------------
 /// Extend ALE::ISection to include spaces.
@@ -36,8 +37,19 @@ template<typename Point_,
 	 typename Value_, 
 	 typename Alloc_ =ALE::malloc_allocator<Value_> >
 class pylith::topology::ISectionSpaces : 
-  public ALE::ISection<Point_, Value_, Alloc_> {
+  public ALE::ISection<Point_, Value_, Alloc_>
 { // ISectionFields
+
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  typedef ALE::ISection<Point_, Value_, Alloc_> base;
+  typedef typename base::point_type point_type;
+  typedef typename base::value_type value_type;
+  typedef typename base::alloc_type alloc_type;
+  typedef typename base::index_type index_type;
+  typedef typename base::atlas_type atlas_type;
+  typedef typename base::chart_type chart_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -72,6 +84,23 @@ public :
   virtual
   ~ISectionSpaces(void);
 
+  /** Return only the values associated to this point, not its closure
+   *
+   * @param p Point associated with values.
+   * @returns Values at point.
+   */
+  const value_type* restrictPoint(const point_type& p);
+
+  /** Return only the values associated to this point, not its closure
+   *
+   * @param p Point associated with values.
+   * @param values Array in which to store values.
+   * @param size Size of array.
+   */
+  void restrictPoint(const point_type& p,
+		     value_type* const values,
+		     const int size);
+
   /** Get number of spaces.
    *
    * @returns Number of spaces.
@@ -79,21 +108,27 @@ public :
   int getNumSpaces(void) const;
 
   /// Add space.
-  void addSpace(void);
+  void addSpace();
+  
+  /** Set fiber dimension of space.
+   *
+   * @param space Space identifier (index).
+   * @param fiberDim Fiberdimension of space.
+   */
+  void spaceFiberDimension(const int space,
+			   const int fiberDim);
   
   /** Get field associated with space.
    *
    * @param fibration Index of space.
    */
-  ALE::Obj<IGeneralSection<point_type, value_type, alloc_type> >&
+  ALE::Obj<ALE::IGeneralSection<Point_, Value_, Alloc_> >
     getFibration(const int space);
   
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  map_type _fields; ///< Fields without constraints over a common set of points.
-  ALE::Obj<section_type> _section; ///< Section containing fields.
-  const mesh_type& _mesh; ///< Mesh associated with fields.
+  int_array _spaces; ///< Fiber dimensions of spaces.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -502,7 +502,8 @@ pylith::topology::Field<mesh_type, section_type>::copy(const ALE::Obj<section_ty
 	 ++c_iter) {
       assert(osection->getFiberDimension(*c_iter) ==
 	     _section->getFiberDimension(*c_iter));
-      _section->updatePoint(*c_iter, osection->restrictPoint(*c_iter));
+      if (osection->getFiberDimension(*c_iter))
+	_section->updatePoint(*c_iter, osection->restrictPoint(*c_iter));
     } // for
   } // if
 } // copy
@@ -554,7 +555,7 @@ pylith::topology::Field<mesh_type, section_type>::operator+=(const Field& field)
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
-      if (0 != field._section->getFiberDimension(*c_iter)) {
+      if (field._section->getFiberDimension(*c_iter) > 0) {
 	assert(fiberDim == field._section->getFiberDimension(*c_iter));
 	assert(fiberDim == _section->getFiberDimension(*c_iter));
 	field._section->restrictPoint(*c_iter, &values[0], values.size());
@@ -594,7 +595,7 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
     for (typename chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
 	 ++c_iter) 
-      if (0 != _section->getFiberDimension(*c_iter)) {
+      if (_section->getFiberDimension(*c_iter) > 0) {
 	assert(fiberDim == _section->getFiberDimension(*c_iter));
       
 	_section->restrictPoint(*c_iter, &values[0], values.size());
