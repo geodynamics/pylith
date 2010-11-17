@@ -261,12 +261,12 @@ ALE::RefineFace4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       assert(!rightRanksSeq.isNull());
       std::set<int> rightRanks(rightRanksSeq->begin(), rightRanksSeq->end());
       std::set<int> ranks;
-      std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks->begin(), rightRanks->end(),
-			    std::insert_iterator<std::list<int> >(ranks, ranks.begin()));
+      std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks.begin(), rightRanks.end(),
+			    std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
       
       if(ranks.size()) {
 	newVerticesSection->addFiberDimension(std::min(e_iter->first.first, e_iter->first.second)+localOffset, 1);
-	for(std::list<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
+	for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
 	  bndryEdgeToRank[e_iter->first].push_back(*r_iter);
 	} // for
       } // if
