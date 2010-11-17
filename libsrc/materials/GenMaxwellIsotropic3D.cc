@@ -277,7 +277,7 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
 
   double visFrac = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) 
-    visFrac += propValues[db_shearRatio + imodel];
+    visFrac += dbValues[db_shearRatio + imodel];
   if (visFrac > 1.0) {
     std::ostringstream msg;
     msg << "Shear modulus ratios sum to a value greater than 1.0 for\n"
