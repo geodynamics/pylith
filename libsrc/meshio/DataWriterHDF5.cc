@@ -93,20 +93,22 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     // field. However, the mesh coordinates are Field<mesh_type> and
     // field_type can be Field<Mesh> (e.g., displacement field over a
     // SubMesh).
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    coordinates.createVector();
-    coordinates.createScatter();
-    coordinates.scatterSectionToVector();
+    coordinates.createVector(context);
+    coordinates.createScatter(context);
+    coordinates.scatterSectionToVector(context);
+    const PetscVec coordinatesVector = coordinates.vector(context);
     int blockSize = 1;
-    err = VecGetBlockSize(coordinates.vector(), &blockSize);
+    err = VecGetBlockSize(coordinatesVector, &blockSize);
     CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinates.vector(), cs->spaceDim());
+    err = VecSetBlockSize(coordinatesVector, cs->spaceDim());
     CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry"); CHECK_PETSC_ERROR(err);
-    err = VecView(coordinates.vector(), _viewer);CHECK_PETSC_ERROR(err);
+    err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinates.vector(), blockSize); // reset
+    err = VecSetBlockSize(coordinatesVector, blockSize); // reset
     CHECK_PETSC_ERROR(err);
 
     Vec          elemVec;
@@ -124,7 +126,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     err = MPI_Reduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, 0, 
 		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
-    ///ALE::PCICE::Builder::outputElementsLocal(sieveMesh, &numElements, &numCorners, &vertices, columnMajor);
     typedef ALE::OrientedConeSectionV<typename mesh_type::SieveMesh::sieve_type> oriented_cones_wrapper_type;
     Obj<oriented_cones_wrapper_type> cones = new oriented_cones_wrapper_type(sieveMesh->getSieve());
 
@@ -183,11 +184,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     // We will try the simplest thing, using the embedded vector. If this is not
     // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    PetscVec vector = field.vector();
-    if (vector == PETSC_NULL) {
-      field.createVector();
-      vector = field.vector();
-    }
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    field.createVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
 #if 0 // TEMPORARY DEBUGGING
     const char* vecname = 0;
@@ -200,16 +200,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
 
-    // TODO: Create scatter if necessary
     if (sieveMesh->hasLabel("censored depth")) {
       // Remove Lagrange vertices
       const Obj<typename Mesh::numbering_type> vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
 
-      field.createScatter(vNumbering);
+      field.createScatter(vNumbering, context);
     } else {
-      field.createScatter();
-    }
-    field.scatterSectionToVector();
+      field.createScatter(context);
+    } // if/else
+    field.scatterSectionToVector(context);
 
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());
@@ -259,11 +258,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     // We will try the simplest thing, using the embedded vector. If this is not
     // general enough, due to ordering, etc., we can construct an auxiliary vector.
 
-    PetscVec vector = field.vector();
-    if (vector == PETSC_NULL) {
-      field.createVector();
-      vector = field.vector();
-    }
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+      field.createVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
 #if 0 // TEMPORARY DEBUGGING
     const char* vecname = 0;
@@ -273,9 +271,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 	      << ", vec: " << vecname
 	      << std::endl;
 #endif
-    // TODO: Create scatter only if necessary
-    field.createScatter();
-    field.scatterSectionToVector();
+    field.createScatter(context);
+    field.scatterSectionToVector(context);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();

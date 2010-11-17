@@ -714,15 +714,15 @@ pylith::topology::TestFieldSubMesh::testCreateVector(void)
   const int sizeE = vertices->size() * fiberDim;
 
   field.createVector();
-
-  CPPUNIT_ASSERT(0 != field._vector);
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfo = field._getScatter("");
   int size = 0;
-  VecGetSize(field._vector, &size);
+  VecGetSize(sinfo.vector, &size);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   // Make sure we can do multiple calls to createVector().
   field.createVector();
-  CPPUNIT_ASSERT(0 != field._vector);
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
 } // testCreateVector
 
 // ----------------------------------------------------------------------
@@ -740,9 +740,13 @@ pylith::topology::TestFieldSubMesh::testVector(void)
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
 
-  CPPUNIT_ASSERT(0 == field._vector);
+  CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
   field.createVector();
-  CPPUNIT_ASSERT(0 != field._vector);
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfo = field._getScatter("");
+  CPPUNIT_ASSERT(!sinfo.scatter);
+  CPPUNIT_ASSERT(!sinfo.scatterVec);
+  CPPUNIT_ASSERT(sinfo.vector);
 
   const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = submesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -751,7 +755,7 @@ pylith::topology::TestFieldSubMesh::testVector(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   
   const PetscVec vec = field.vector();
-  CPPUNIT_ASSERT_EQUAL(field._vector, vec);
+  CPPUNIT_ASSERT_EQUAL(sinfo.vector, vec);
   int size = 0;
   VecGetSize(vec, &size);
   const int sizeE = vertices->size() * fiberDim;
@@ -772,13 +776,39 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   
-  CPPUNIT_ASSERT(0 == field._scatter);
+  CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
   field.createScatter();
-  CPPUNIT_ASSERT(0 != field._scatter);
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfo = field._getScatter("");
+  CPPUNIT_ASSERT(sinfo.scatter);
+  CPPUNIT_ASSERT(sinfo.scatterVec);
+  CPPUNIT_ASSERT(!sinfo.vector);
 
   // Make sure we can do multiple calls to createScatter().
   field.createScatter();
-  CPPUNIT_ASSERT(0 != field._scatter);
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+
+  // Create another scatter.
+  field.createScatter("B");
+  CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfoB = field._getScatter("B");
+  CPPUNIT_ASSERT(sinfoB.scatter);
+  CPPUNIT_ASSERT(sinfoB.scatterVec);
+  CPPUNIT_ASSERT(!sinfoB.vector);
+
+  Field<SubMesh> field2(submesh);
+  field2.cloneSection(field);
+  CPPUNIT_ASSERT_EQUAL(size_t(2), field2._scatters.size());
+
+  const Field<SubMesh>::ScatterInfo& sinfo2 = field2._getScatter("");
+  CPPUNIT_ASSERT(sinfo2.scatter);
+  CPPUNIT_ASSERT(sinfo2.scatterVec);
+  CPPUNIT_ASSERT(!sinfo2.vector);
+
+  const Field<SubMesh>::ScatterInfo& sinfo2B = field2._getScatter("B");
+  CPPUNIT_ASSERT(sinfo2B.scatter);
+  CPPUNIT_ASSERT(sinfo2B.scatterVec);
+  CPPUNIT_ASSERT(!sinfo2B.vector);
 } // testCreateScatter
 
 // ----------------------------------------------------------------------
@@ -786,6 +816,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
 void
 pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
 { // testScatterSectionToVector
+  const char* context = "abc";
   const int fiberDim = 3;
   const double valuesE[] = {
     1.1, 2.2, 3.3,
@@ -814,21 +845,19 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
     section->updatePoint(*v_iter, &values[0]);
   } // for
 
-  field.createVector();
-  field.createScatter();
-  field.scatterSectionToVector();
-  CPPUNIT_ASSERT(0 != field._scatter);
-  const PetscVec vec = field.vector();
+  field.createVector(context);
+  field.createScatter(context);
+  field.scatterSectionToVector(context);
+  const PetscVec vec = field.vector(context);
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
-  const int sizeE = vertices->size() * fiberDim;
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
-
   double* valuesVec = 0;
   VecGetArray(vec, &valuesVec);
 
   const double tolerance = 1.0e-06;
+  const int sizeE = vertices->size() * fiberDim;
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
   for (int i=0; i < sizeE; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i], valuesVec[i], tolerance);
   VecRestoreArray(vec, &valuesVec);
@@ -839,6 +868,7 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
 void
 pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
 { // testScatterVectorToSection
+  const char* context = "abcd";
   const int fiberDim = 3;
   const double valuesE[] = {
     1.1, 2.2, 3.3,
@@ -852,7 +882,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
   Field<SubMesh> field(submesh);
   field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
-  field.createVector();
+  field.createVector(context);
 
   const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = submesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
@@ -860,7 +890,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
 
-  const PetscVec vec = field.vector();
+  const PetscVec vec = field.vector(context);
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
@@ -874,9 +904,8 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
     valuesVec[i] = valuesE[i];
   VecRestoreArray(vec, &valuesVec);
 
-  field.createScatter();
-  field.scatterVectorToSection();
-  CPPUNIT_ASSERT(0 != field._scatter);
+  field.createScatter(context);
+  field.scatterVectorToSection(context);
 
   double_array values(fiberDim);
   int i = 0;

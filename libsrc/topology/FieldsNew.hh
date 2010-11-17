@@ -179,7 +179,7 @@ protected :
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
-  typedef std::map< std::string, FieldInfo > map_type;
+  typedef std::map<std::string, FieldInfo> map_type;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

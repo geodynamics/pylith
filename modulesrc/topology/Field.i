@@ -199,33 +199,58 @@ namespace pylith {
        */
       void view(const char* label);
 
-      /// Create PETSc vector for field.
-      void createVector(void);
-      
+      /** Create PETSc vector for field.
+       *
+       * @param context Label for context associated with vector.
+       */
+      void createVector(const char* context ="");
+
       /** Get PETSc vector associated with field.
        *
+       * @param context Label for context associated with vector.
        * @returns PETSc vector.
        */
-      PetscVec vector(void);
-      
+      PetscVec vector(const char* context ="");
+
       /** Get PETSc vector associated with field.
        *
+       * @param context Label for context associated with vector.
        * @returns PETSc vector.
        */
-      const PetscVec vector(void) const;
-      
-      /// Create PETSc vector scatter for field. This is used to transfer
-      /// information from the "global" PETSc vector view to the "local"
-      /// Sieve section view.
-      void createScatter(void);
-      
+      const PetscVec vector(const char* context ="") const;
+
+      /** Create PETSc vector scatter for field. This is used to transfer
+       * information from the "global" PETSc vector view to the "local"
+       * Sieve section view.
+       *
+       * @param context Label for context associated with vector.
+       */
+      void createScatter(const char* context ="");
+
+
       /// Scatter section information across processors to update the
       /// PETSc vector view of the field.
-      void scatterSectionToVector(void) const;
-      
+      void scatterSectionToVector(const char* context ="") const;
+
+      /** Scatter section information across processors to update the
+       * PETSc vector view of the field.
+       *
+       * @param vector PETSc vector to update.
+       */
+      void scatterSectionToVector(const PetscVec vector,
+				  const char* context ="") const;
+
       /// Scatter PETSc vector information across processors to update the
       /// Sieve section view of the field.
-      void scatterVectorToSection(void) const;
+      void scatterVectorToSection(const char* context ="") const;
+
+      /** Scatter section information across processors to update the
+       * PETSc vector view of the field.
+       *
+       * @param vector PETSc vector used in update.
+       */
+      void scatterVectorToSection(const PetscVec vector,
+				  const char* context ="") const;
 
       /// Setup split field with all entries set to a default space of 0.
       void splitDefault(void);
