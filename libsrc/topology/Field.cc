@@ -334,7 +334,9 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	if (fiberDim > 0)
 	  _section->setFiberDimension(*c_iter, fiberDim);
       } // for
-      _section->allocateStorage();
+      const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
+      assert(!sieveMesh.isNull());
+      sieveMesh->allocate(_section);
       _section->setBC(srcSection->getBC());
       _section->copySpaces(srcSection);    
     } // if/else
@@ -800,6 +802,7 @@ void
 pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 								const char* context)
 { // createScatter
+  assert(!numbering.isNull());
   assert(context);
   assert(!_section.isNull());
   assert(!_mesh.sieveMesh().isNull());
