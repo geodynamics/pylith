@@ -34,10 +34,7 @@
 // Default constructor.
 template<typename mesh_type, typename section_type>
 pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
-  _mesh(mesh),
-  _vector(0),
-  _scatter(0),
-  _scatterVec(0)
+  _mesh(mesh)
 { // constructor
   _metadata.label = "unknown";
   _metadata.vectorFieldType = OTHER;
@@ -53,10 +50,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
 					  const Metadata& metadata) :
   _metadata(metadata),
   _mesh(mesh),
-  _section(section),
-  _vector(0),
-  _scatter(0),
-  _scatterVec(0)
+  _section(section)
 { // constructor
   assert(!section.isNull());
 } // constructor
@@ -76,21 +70,49 @@ void
 pylith::topology::Field<mesh_type, section_type>::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
-  if (0 != _vector) {
-    err = VecDestroy(_vector); _vector = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  
+  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
+  for (typename scatter_map_type::iterator s_iter=_scatters.begin();
+       s_iter != scattersEnd;
+       ++s_iter) {
+    if (s_iter->second.vector) {
+      err = VecDestroy(s_iter->second.vector); s_iter->second.vector = 0;
+      CHECK_PETSC_ERROR(err);
+    } // if
 
-  if (0 != _scatter) {
-    err = VecScatterDestroy(_scatter); _scatter = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+    if (s_iter->second.scatter) {
+      err = VecScatterDestroy(s_iter->second.scatter); s_iter->second.scatter = 0;
+      CHECK_PETSC_ERROR(err);
+    } // if
 
-  if (0 != _scatterVec) {
-    err = VecDestroy(_scatterVec); _scatterVec = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+    if (s_iter->second.scatterVec) {
+      err = VecDestroy(s_iter->second.scatterVec); s_iter->second.scatterVec = 0;
+      CHECK_PETSC_ERROR(err);
+    } // if
+  } // for
 } // deallocate
+
+// ----------------------------------------------------------------------
+// Set label for field.
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::Field<mesh_type, section_type>::label(const char* value)
+{ // label
+  _metadata.label = value;
+  if (!_section.isNull()) {
+    _section->setName(value);
+  } // if
+
+  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
+  for (typename scatter_map_type::const_iterator s_iter=_scatters.begin();
+       s_iter != scattersEnd;
+       ++s_iter) {
+    if (s_iter->second.vector) {
+      PetscErrorCode err = PetscObjectSetName((PetscObject)s_iter->second.vector, value);
+      CHECK_PETSC_ERROR(err);    
+    } // if
+  } // for
+} // label
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of domain.
@@ -99,7 +121,7 @@ int
 pylith::topology::Field<mesh_type, section_type>::spaceDim(void) const
 { // spaceDim
   const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
-  return (0 != cs) ? cs->spaceDim() : 0;
+  return (cs) ? cs->spaceDim() : 0;
 } // spaceDim
 
 // ----------------------------------------------------------------------
@@ -317,18 +339,28 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
       _section->copySpaces(srcSection);    
     } // if/else
     
+    // Reuse scatters in clone
     PetscErrorCode err = 0;
-    if (0 != src._scatter) {
-      _scatter = src._scatter;
-      err = PetscObjectReference((PetscObject) _scatter);
-      CHECK_PETSC_ERROR(err);
+    if (src._scatters.size() > 0) {
+      const typename scatter_map_type::const_iterator scattersEnd = src._scatters.end();
+      for (typename scatter_map_type::const_iterator s_iter=src._scatters.begin();
+	   s_iter != scattersEnd;
+	   ++s_iter) {
+	ScatterInfo sinfo;
+	sinfo.vector = 0;
+	sinfo.scatterVec = 0;
+	sinfo.scatter = s_iter->second.scatter;
+	err = PetscObjectReference((PetscObject) sinfo.scatter);
+	CHECK_PETSC_ERROR(err);
       
-      assert(_section->sizeWithBC() > 0);
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-				  _section->sizeWithBC(),
-				  _section->restrictSpace(),
-				  &_scatterVec); CHECK_PETSC_ERROR(err);
-      CHECK_PETSC_ERROR(err);
+	assert(_section->sizeWithBC() > 0);
+	err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+				    _section->sizeWithBC(),
+				    _section->restrictSpace(),
+				    &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+	CHECK_PETSC_ERROR(err);
+	_scatters[s_iter->first] = sinfo;
+      } // for
     } // if
   } // if
   logger.stagePop();
@@ -674,14 +706,17 @@ pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 // Create PETSc vector for field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createVector(void)
+pylith::topology::Field<mesh_type, section_type>::createVector(const char* context)
 { // createVector
-  PetscErrorCode err = 0;
+  assert(context);
 
-  if (0 != _vector) {
-    err = VecDestroy(_vector); _vector = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  PetscErrorCode err = 0;
+  
+  const bool createScatterOk = true;
+  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
+  if (sinfo.vector)
+    return;
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
@@ -692,17 +727,39 @@ pylith::topology::Field<mesh_type, section_type>::createVector(void)
 					    _section->getName(), _section);
   assert(!order.isNull());
 
-  err = VecCreate(_mesh.comm(), &_vector);
-  CHECK_PETSC_ERROR(err);
-  err = PetscObjectSetName((PetscObject)_vector, _metadata.label.c_str());
-  CHECK_PETSC_ERROR(err);
-
-  err = VecSetSizes(_vector, order->getLocalSize(), order->getGlobalSize());
-  CHECK_PETSC_ERROR(err);
-
-  err = VecSetFromOptions(_vector); CHECK_PETSC_ERROR(err);  
   logger.stagePop();
+
+  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());
+  CHECK_PETSC_ERROR(err);
+
+  err = VecSetSizes(sinfo.vector, order->getLocalSize(), order->getGlobalSize());
+  CHECK_PETSC_ERROR(err);
+
+  err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+
 } // createVector
+
+// ----------------------------------------------------------------------
+// Get PETSc vector associated with field.
+template<typename mesh_type, typename section_type>
+PetscVec
+pylith::topology::Field<mesh_type, section_type>::vector(const char* context)
+{ // vector
+  ScatterInfo& sinfo = _getScatter(context);
+  return sinfo.vector;
+} // vector
+
+// ----------------------------------------------------------------------
+// Get PETSc vector associated with field.
+template<typename mesh_type, typename section_type>
+const PetscVec
+pylith::topology::Field<mesh_type, section_type>::vector(const char* context) const
+{ // vector
+  const ScatterInfo& sinfo = _getScatter(context);
+  return sinfo.vector;
+} // vector
 
 // ----------------------------------------------------------------------
 // Create PETSc vector scatter for field. This is used to transfer
@@ -710,53 +767,62 @@ pylith::topology::Field<mesh_type, section_type>::createVector(void)
 // Sieve section view.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(void)
+pylith::topology::Field<mesh_type, section_type>::createScatter(const char* context)
 { // createScatter
+  assert(context);
   assert(!_section.isNull());
   assert(!_mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
-  if (0 != _scatter) {
-    err = VecScatterDestroy(_scatter); _scatter = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
-  CHECK_PETSC_ERROR(err);
+  const bool createScatterOk = true;
+  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
+  if (sinfo.scatter)
+    return;
 
-  if (0 != _scatterVec) {
-    err = VecDestroy(_scatterVec); _scatterVec = 0;
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &sinfo.scatter);
+  CHECK_PETSC_ERROR(err);
+  
+  if (sinfo.scatterVec) {
+    err = VecDestroy(sinfo.scatterVec); sinfo.scatterVec = 0;
     CHECK_PETSC_ERROR(err);
   } // if
+
   assert(_section->sizeWithBC() > 0);
   assert(_section->restrictSpace());
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &_scatterVec); CHECK_PETSC_ERROR(err);
+			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
 } // createScatter
+
+// ----------------------------------------------------------------------
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering)
+pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+								const char* context)
 { // createScatter
+  assert(context);
   assert(!_section.isNull());
   assert(!_mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
-  if (0 != _scatter) {
-    err = VecScatterDestroy(_scatter); _scatter = 0;
-    CHECK_PETSC_ERROR(err);
+  const bool createScatterOk = true;
+  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
+
+  // Only create if scatter and scatterVec do not alreay exist.
+  if (sinfo.scatter) {
+    assert(sinfo.scatter);
+    return;
   } // if
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), numbering->getChart(), _section, &_scatter);
+
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), numbering->getChart(), 
+				_section, &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
-  if (0 != _scatterVec) {
-    err = VecDestroy(_scatterVec); _scatterVec = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
   assert(_section->sizeWithBC() > 0);
   assert(_section->restrictSpace());
   err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &_scatterVec); CHECK_PETSC_ERROR(err);
+			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
 } // createScatter
 
 // ----------------------------------------------------------------------
@@ -764,9 +830,12 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 //  PETSc vector view of the field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(void) const
+pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const char* context) const
 { // scatterSectionToVector
-  scatterSectionToVector(_vector);
+  assert(context);
+
+  const ScatterInfo& sinfo = _getScatter(context);
+  scatterSectionToVector(sinfo.vector, context);
 } // scatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -774,17 +843,18 @@ pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(void) c
 //  PETSc vector view of the field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const PetscVec vector) const
+pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const PetscVec vector,
+									 const char* context) const
 { // scatterSectionToVector
+  assert(vector);
+  assert(context);
   assert(!_section.isNull());
-  assert(0 != _scatter);
-  assert(0 != _scatterVec);
-  assert(0 != vector);
 
   PetscErrorCode err = 0;
-  err = VecScatterBegin(_scatter, _scatterVec, vector,
+  const ScatterInfo& sinfo = _getScatter(context);
+  err = VecScatterBegin(sinfo.scatter, sinfo.scatterVec, vector,
 			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, _scatterVec, vector,
+  err = VecScatterEnd(sinfo.scatter, sinfo.scatterVec, vector,
 		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
 } // scatterSectionToVector
 
@@ -793,9 +863,12 @@ pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const P
 // section view of the field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(void) const
+pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const char* context) const
 { // scatterVectorToSection
-  scatterVectorToSection(_vector);
+  assert(context);
+
+  const ScatterInfo& sinfo = _getScatter(context);
+  scatterVectorToSection(sinfo.vector, context);
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
@@ -803,17 +876,18 @@ pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(void) c
 // section view of the field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const PetscVec vector) const
+pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const PetscVec vector,
+									 const char* context) const
 { // scatterVectorToSection
+  assert(vector);
+  assert(context);
   assert(!_section.isNull());
-  assert(0 != _scatter);
-  assert(0 != _scatterVec);
-  assert(0 != vector);
 
   PetscErrorCode err = 0;
-  err = VecScatterBegin(_scatter, vector, _scatterVec,
+  const ScatterInfo& sinfo = _getScatter(context);
+  err = VecScatterBegin(sinfo.scatter, vector, sinfo.scatterVec,
 			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
-  err = VecScatterEnd(_scatter, vector, _scatterVec,
+  err = VecScatterEnd(sinfo.scatter, vector, sinfo.scatterVec,
 		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
 } // scatterVectorToSection
 
@@ -840,5 +914,54 @@ pylith::topology::Field<mesh_type, section_type>::splitDefault(void)
       _section->setFiberDimension(*c_iter, 1, fibration);
     } // for
 } // splitDefault
+
+// ----------------------------------------------------------------------
+// Get scatter for given context.
+template<typename mesh_type, typename section_type>
+typename pylith::topology::Field<mesh_type, section_type>::ScatterInfo&
+pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* context,
+							      const bool createOk)
+{ // _getScatter
+  assert(context);
+
+  const bool isNewScatter = _scatters.find(context) == _scatters.end();
+
+  if (isNewScatter && !createOk) {
+    std::cout << "_getScatter context: " << context << std::endl;
+    std::ostringstream msg;
+    msg << "Scatter for context '" << context << "' does not exist.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  ScatterInfo& sinfo = _scatters[context];
+  if (isNewScatter) {
+    sinfo.vector = 0;
+    sinfo.scatter = 0;
+    sinfo.scatterVec = 0;
+  } // if
+  assert(_scatters.find(context) != _scatters.end());
+
+  return sinfo;
+} // _getScatter
+
+// ----------------------------------------------------------------------
+// Get scatter for given context.
+template<typename mesh_type, typename section_type>
+const typename pylith::topology::Field<mesh_type, section_type>::ScatterInfo&
+pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* context) const
+{ // _getScatter
+  assert(context);
+
+  const typename scatter_map_type::const_iterator s_iter = 
+    _scatters.find(context);
+  if (s_iter == _scatters.end()) {
+    std::ostringstream msg;
+    msg << "Scatter for context '" << context << "' does not exist.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  return s_iter->second;
+} // _getScatter
+
 
 // End of file 

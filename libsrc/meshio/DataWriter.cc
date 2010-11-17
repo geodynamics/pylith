@@ -22,7 +22,8 @@
 // Constructor
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
-  _numTimeSteps(0)
+  _numTimeSteps(0),
+  _context("")
 { // constructor
 } // constructor
 
@@ -52,6 +53,10 @@ pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
 					    const int labelId)
 { // open
   _numTimeSteps = numTimeSteps;
+  if (label)
+    _context = label;
+  else
+    _context = "";
 } // open
 
 // ----------------------------------------------------------------------
@@ -60,6 +65,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriter<mesh_type, field_type>::close(void)
 { // close
+  _context = "";
 } // close
 
 // ----------------------------------------------------------------------
@@ -84,7 +90,9 @@ pylith::meshio::DataWriter<mesh_type, field_type>::closeTimeStep(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 template<typename mesh_type, typename field_type>
-pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(const DataWriter& w)
+pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(const DataWriter& w) :
+  _numTimeSteps(w._numTimeSteps),
+  _context(w._context)
 { // copy constructor
 } // copy constructor
 

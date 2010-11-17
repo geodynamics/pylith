@@ -29,6 +29,7 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
+#include <string> // HASA std::string
 
 // DataWriter -----------------------------------------------------------
 /// Abstract base class for writing finite-element data to file.
@@ -136,6 +137,7 @@ private :
 protected :
 
   int _numTimeSteps; ///< Expected number of time steps for fields.
+  std::string _context; ///< Context of scatters for DataWriter.
 
 }; // DataWriter
 
