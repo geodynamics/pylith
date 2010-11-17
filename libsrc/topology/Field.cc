@@ -295,17 +295,34 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
   }
 
   if (!_section.isNull()) {
-    _section->setAtlas(srcSection->getAtlas());
-    _section->allocateStorage();
-    _section->setBC(srcSection->getBC());
-    _section->copySpaces(srcSection);
-
+    if (!srcSection->sharedStorage()) {
+      _section->setAtlas(srcSection->getAtlas());
+      _section->allocateStorage();
+      _section->setBC(srcSection->getBC());
+      _section->copySpaces(srcSection);
+    } else {
+      _section->setChart(srcSection->getChart());
+      const chart_type& chart = _section->getChart();
+      const typename chart_type::const_iterator chartBegin = chart.begin();
+      const typename chart_type::const_iterator chartEnd = chart.end();
+      for (typename chart_type::const_iterator c_iter = chartBegin;
+	   c_iter != chartEnd;
+	   ++c_iter) {
+	const int fiberDim = srcSection->getFiberDimension(*c_iter);
+	if (fiberDim > 0)
+	  _section->setFiberDimension(*c_iter, fiberDim);
+      } // for
+      _section->allocateStorage();
+      _section->setBC(srcSection->getBC());
+      _section->copySpaces(srcSection);    
+    } // if/else
+    
     PetscErrorCode err = 0;
     if (0 != src._scatter) {
       _scatter = src._scatter;
       err = PetscObjectReference((PetscObject) _scatter);
       CHECK_PETSC_ERROR(err);
-
+      
       assert(_section->sizeWithBC() > 0);
       err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 				  _section->sizeWithBC(),
@@ -385,7 +402,7 @@ pylith::topology::Field<mesh_type, section_type>::zeroAll(void)
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
-      if (0 != _section->getFiberDimension(*c_iter)) {
+      if (_section->getFiberDimension(*c_iter) > 0) {
 	assert(fiberDim == _section->getFiberDimension(*c_iter));
 	_section->updatePointAll(*c_iter, &values[0]);
       } // if
@@ -456,7 +473,7 @@ pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
 	 ++c_iter) {
       assert(field._section->getFiberDimension(*c_iter) ==
 	     _section->getFiberDimension(*c_iter));
-      if (_section->getFiberDimension(*c_iter))
+      if (_section->getFiberDimension(*c_iter) > 0)
 	_section->updatePointAll(*c_iter, 
 				 field._section->restrictPoint(*c_iter));
     } // for
