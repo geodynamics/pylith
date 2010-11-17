@@ -254,12 +254,13 @@ ALE::RefineFace4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     const point_type right = e_iter->first.second;
     
     if (oldSendOverlap->capContains(left) && oldSendOverlap->capContains(right)) {
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq = oldSendOverlap->support(left);
+      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq  = oldSendOverlap->support(left);
       assert(!leftRanksSeq.isNull());
-      std::list<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks   = oldSendOverlap->support(right);
-      assert(!rightRanks.isNull());
-      std::list<int> ranks;
+      std::set<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
+      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
+      assert(!rightRanksSeq.isNull());
+      std::set<int> rightRanks(rightRanksSeq->begin(), rightRanksSeq->end());
+      std::set<int> ranks;
       std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks->begin(), rightRanks->end(),
 			    std::insert_iterator<std::list<int> >(ranks, ranks.begin()));
       
