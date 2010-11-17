@@ -181,10 +181,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 					    const mesh_type& mesh)
 { // writeVertexField
   try {
-    // We will try the simplest thing, using the embedded vector. If this is not
-    // general enough, due to ordering, etc., we can construct an auxiliary vector.
-
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+
     field.createVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
@@ -200,10 +198,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
 
-    if (sieveMesh->hasLabel("censored depth")) {
-      // Remove Lagrange vertices
-      const Obj<typename Mesh::numbering_type> vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
-
+    if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
+      const Obj<typename Mesh::numbering_type> vNumbering = 
+	sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
       field.createScatter(vNumbering, context);
     } else {
       field.createScatter(context);
@@ -225,12 +222,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 
     PetscErrorCode err = 0;
     err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields"); CHECK_PETSC_ERROR(err);
+
+    // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -255,24 +255,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 				       const int labelId)
 { // writeCellField
   try {
-    // We will try the simplest thing, using the embedded vector. If this is not
-    // general enough, due to ordering, etc., we can construct an auxiliary vector.
-
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
-      field.createVector(context);
-    PetscVec vector = field.vector(context);
-    assert(vector);
-
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
-    field.createScatter(context);
-    field.scatterSectionToVector(context);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
@@ -287,9 +270,29 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
+
+    field.createVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
+
+#if 0 // TEMPORARY DEBUGGING
+    const char* vecname = 0;
+    PetscObjectGetName((PetscObject) vector, &vecname);
+    std::cout << "NAME field: " << field.label()
+	      << ", section: " << field.section()->getName()
+	      << ", vec: " << vecname
+	      << std::endl;
+#endif
+    if (sieveMesh->hasLabel("censored depth")) {
+      // Remove Lagrange vertices and cells.
+      field.createScatter(numbering, context);
+    } else {
+      field.createScatter(context);
+    } // if/else
+    field.scatterSectionToVector(context);
+
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
-    assert(!section.isNull());
-      
+    assert(!section.isNull());      
     const int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
@@ -301,12 +304,14 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     PetscErrorCode err = 0;
     err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields"); CHECK_PETSC_ERROR(err);
     
+    // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
+
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
