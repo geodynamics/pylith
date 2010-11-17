@@ -238,6 +238,8 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionA->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(3, fiberDim);
+    const double* values = sectionA->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(values);
   } // for
 
 
@@ -257,7 +259,14 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionB->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(4, fiberDim);
+    const double* values = sectionB->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(values);
   } // for
+
+  // Make sure we can clone field B
+  Field<Mesh> fieldC(*_mesh);
+  fieldC.cloneSection(fieldB);
+  fieldC.copy(fieldB);
 } // testGet
 
 // ----------------------------------------------------------------------
