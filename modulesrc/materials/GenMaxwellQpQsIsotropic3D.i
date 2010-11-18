@@ -16,25 +16,25 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/materials/GenMaxwellBulkIsotropic3D.ii
+/** @file modulesrc/materials/GenMaxwellQpQsIsotropic3D.i
  *
- * @brief Python interface to C++ GenMaxwellBulkIsotropic3D object.
+ * @brief Python interface to C++ GenMaxwellQpQsIsotropic3D object.
  */
 
 namespace pylith {
   namespace materials {
 
-    class pylith::materials::GenMaxwellBulkIsotropic3D : public ElasticMaterial
-    { // class GenMaxwellBulkIsotropic3D
+    class pylith::materials::GenMaxwellQpQsIsotropic3D : public ElasticMaterial
+    { // class GenMaxwellQpQsIsotropic3D
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor
-      GenMaxwellBulkIsotropic3D(void);
+      GenMaxwellQpQsIsotropic3D(void);
       
       /// Destructor
-      ~GenMaxwellBulkIsotropic3D(void);
+      ~GenMaxwellQpQsIsotropic3D(void);
       
       /** Set current time step.
        *
@@ -200,7 +200,7 @@ namespace pylith {
 				     const double* stateVars,
 				     const int numStateVars) const;
 
-    }; // class GenMaxwellBulkIsotropic3D
+    }; // class GenMaxwellQpQsIsotropic3D
 
   } // materials
 } // pylith

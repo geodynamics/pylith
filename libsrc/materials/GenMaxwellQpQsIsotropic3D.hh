@@ -16,22 +16,22 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/GenMaxwellBulkIsotropic3D.hh
+/** @file libsrc/materials/GenMaxwellQpQsIsotropic3D.hh
  *
- * @brief C++ GenMaxwellBulkIsotropic3D object
+ * @brief C++ GenMaxwellQpQsIsotropic3D object
  */
 
 // :TODO: Rewrite as template over the number of Maxwell models?
 // We could instatiate for 2 and 3 models and provide example for how to
 // instantiate over other numbers of Maxwell models.
 
-#if !defined(pylith_materials_genmaxwellbulkisotropic3d_hh)
-#define pylith_materials_genmaxwellbulkisotropic3d_hh
+#if !defined(pylith_materials_genmaxwellqpqsisotropic3d_hh)
+#define pylith_materials_genmaxwellqpqsisotropic3d_hh
 
 // Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-// GenMaxwellBulkIsotropic3D ------------------------------------------------
+// GenMaxwellQpQsIsotropic3D ------------------------------------------------
 /** @brief 3-D, isotropic, generalized linear Maxwell viscoelastic material.
  *
  * This consists of several Maxwell models in parallel. At present,
@@ -50,18 +50,18 @@
  * (viscosity/mu), and the shear ratio is also stored for each Maxwell
  * model.
  */
-class pylith::materials::GenMaxwellBulkIsotropic3D : public ElasticMaterial
-{ // class GenMaxwellBulkIsotropic3D
-  friend class TestGenMaxwellBulkIsotropic3D; // unit testing
+class pylith::materials::GenMaxwellQpQsIsotropic3D : public ElasticMaterial
+{ // class GenMaxwellQpQsIsotropic3D
+  friend class TestGenMaxwellQpQsIsotropic3D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  GenMaxwellBulkIsotropic3D(void);
+  GenMaxwellQpQsIsotropic3D(void);
 
   /// Destructor
-  ~GenMaxwellBulkIsotropic3D(void);
+  ~GenMaxwellQpQsIsotropic3D(void);
 
   /** Set current time step.
    *
@@ -234,7 +234,7 @@ protected :
 private :
 
   /// Member prototype for _calcStress()
-  typedef void (pylith::materials::GenMaxwellBulkIsotropic3D::*calcStress_fn_type)
+  typedef void (pylith::materials::GenMaxwellQpQsIsotropic3D::*calcStress_fn_type)
     (double* const,
      const int,
      const double*,
@@ -250,7 +250,7 @@ private :
      const bool);
 
   /// Member prototype for _calcElasticConsts()
-  typedef void (pylith::materials::GenMaxwellBulkIsotropic3D::*calcElasticConsts_fn_type)
+  typedef void (pylith::materials::GenMaxwellQpQsIsotropic3D::*calcElasticConsts_fn_type)
     (double* const,
      const int,
      const double*,
@@ -265,7 +265,7 @@ private :
      const int);
 
   /// Member prototype for _updateStateVars()
-  typedef void (pylith::materials::GenMaxwellBulkIsotropic3D::*updateStateVars_fn_type)
+  typedef void (pylith::materials::GenMaxwellQpQsIsotropic3D::*updateStateVars_fn_type)
     (double* const,
      const int,
      const double*,
@@ -521,16 +521,16 @@ private :
 private :
 
   /// Not implemented
-  GenMaxwellBulkIsotropic3D(const GenMaxwellBulkIsotropic3D&);
+  GenMaxwellQpQsIsotropic3D(const GenMaxwellQpQsIsotropic3D&);
 
   /// Not implemented
-  const GenMaxwellBulkIsotropic3D& operator=(const GenMaxwellBulkIsotropic3D&);
+  const GenMaxwellQpQsIsotropic3D& operator=(const GenMaxwellQpQsIsotropic3D&);
 
-}; // class GenMaxwellBulkIsotropic3D
+}; // class GenMaxwellQpQsIsotropic3D
 
-#include "GenMaxwellBulkIsotropic3D.icc" // inline methods
+#include "GenMaxwellQpQsIsotropic3D.icc" // inline methods
 
-#endif // pylith_materials_genmaxwellisotropic3d_hh
+#endif // pylith_materials_genmaxwellqpqsisotropic3d_hh
 
 
 // End of file 

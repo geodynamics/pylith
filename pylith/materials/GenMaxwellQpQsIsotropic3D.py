@@ -16,20 +16,20 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/GenMaxwellBulkIsotropic3D.py
+## @file pylith/materials/GenMaxwellQpQsIsotropic3D.py
 ##
-## @brief Python object implementing 3-D isotropic linear GenMaxwellBulk
+## @brief Python object implementing 3-D isotropic linear GenMaxwellQpQs
 ## viscoelastic material.
 ##
 ## Factory: material.
 
 from ElasticMaterial import ElasticMaterial
-from materials import GenMaxwellBulkIsotropic3D as ModuleGenMaxwellBulkIsotropic3D
+from materials import GenMaxwellQpQsIsotropic3D as ModuleGenMaxwellQpQsIsotropic3D
 
-# GenMaxwellBulkIsotropic3D class
-class GenMaxwellBulkIsotropic3D(ElasticMaterial, ModuleGenMaxwellBulkIsotropic3D):
+# GenMaxwellQpQsIsotropic3D class
+class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D):
   """
-  Python object implementing 3-D isotropic linear GenMaxwellBulk viscoelastic
+  Python object implementing 3-D isotropic linear GenMaxwellQpQs viscoelastic
   material.
 
   Factory: material.
@@ -37,7 +37,7 @@ class GenMaxwellBulkIsotropic3D(ElasticMaterial, ModuleGenMaxwellBulkIsotropic3D
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="genmaxwellbulkisotropic3d"):
+  def __init__(self, name="genmaxwellqpqsisotropic3d"):
     """
     Constructor.
     """
@@ -47,7 +47,7 @@ class GenMaxwellBulkIsotropic3D(ElasticMaterial, ModuleGenMaxwellBulkIsotropic3D
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density",
+           {'info': ["mu", "k", "density",
                      "shear_ratio", "bulk_ratio"
                      "maxwell_time_shear",
                      "maxwell_time_bulk"],
@@ -67,7 +67,7 @@ class GenMaxwellBulkIsotropic3D(ElasticMaterial, ModuleGenMaxwellBulkIsotropic3D
     """
     Call constructor for module object for access to C++ object.
     """
-    ModuleGenMaxwellBulkIsotropic3D.__init__(self)
+    ModuleGenMaxwellQpQsIsotropic3D.__init__(self)
     return
   
 
@@ -75,9 +75,9 @@ class GenMaxwellBulkIsotropic3D(ElasticMaterial, ModuleGenMaxwellBulkIsotropic3D
 
 def material():
   """
-  Factory associated with GenMaxwellBulkIsotropic3D.
+  Factory associated with GenMaxwellQpQsIsotropic3D.
   """
-  return GenMaxwellBulkIsotropic3D()
+  return GenMaxwellQpQsIsotropic3D()
 
 
 # End of file 

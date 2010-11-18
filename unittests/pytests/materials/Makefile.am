@@ -38,7 +38,7 @@ noinst_PYTHON = \
 	TestMaxwellIsotropic3D.py \
 	TestMaxwellPlaneStrain.py \
 	TestGenMaxwellIsotropic3D.py \
-	TestGenMaxwellBulkIsotropic3D.py \
+	TestGenMaxwellQpQsIsotropic3D.py \
 	TestPowerLaw3D.py \
 	TestDruckerPrager3D.py
 
