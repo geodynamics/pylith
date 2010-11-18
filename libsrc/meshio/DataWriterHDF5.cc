@@ -96,7 +96,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    coordinates.createVector(context);
     coordinates.createScatter(context);
     coordinates.scatterSectionToVector(context);
     const PetscVec coordinatesVector = coordinates.vector(context);
@@ -183,36 +182,18 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    field.createVector(context);
-    PetscVec vector = field.vector(context);
-    assert(vector);
-
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
-
     if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
       const Obj<typename Mesh::numbering_type> vNumbering = 
 	sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
-
-      int vecSize = 0;
-      VecGetSize(vector, &vecSize);
-      std::cout << "NUMBERING chart size: " << vNumbering->getChart().size()
-		<< ", VEC size: " << vecSize
-		<< std::endl;
-
       field.createScatter(vNumbering, context);
     } else {
       field.createScatter(context);
     } // if/else
     field.scatterSectionToVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());
@@ -278,18 +259,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     assert(!numbering.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
 
-    field.createVector(context);
-    PetscVec vector = field.vector(context);
-    assert(vector);
-
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
     if (sieveMesh->hasLabel("censored depth")) {
       // Remove Lagrange vertices and cells.
       field.createScatter(numbering, context);
@@ -297,6 +266,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
       field.createScatter(context);
     } // if/else
     field.scatterSectionToVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());      

@@ -351,16 +351,34 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	ScatterInfo sinfo;
 	sinfo.vector = 0;
 	sinfo.scatterVec = 0;
+
+	// Copy scatter
 	sinfo.scatter = s_iter->second.scatter;
 	err = PetscObjectReference((PetscObject) sinfo.scatter);
 	CHECK_PETSC_ERROR(err);
       
+	// Create scatter Vec
 	assert(_section->sizeWithBC() > 0);
 	err = VecCreateSeqWithArray(PETSC_COMM_SELF,
 				    _section->sizeWithBC(),
 				    _section->restrictSpace(),
 				    &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
 	CHECK_PETSC_ERROR(err);
+
+	// Create vector using sizes from source section
+	int vecLocalSize = 0;
+	int vecGlobalSize = 0;
+	err = VecGetLocalSize(s_iter->second.vector, &vecLocalSize); 
+	CHECK_PETSC_ERROR(err);
+	err = VecGetSize(s_iter->second.vector, &vecGlobalSize); CHECK_PETSC_ERROR(err);
+
+	err = VecCreate(_mesh.comm(), &sinfo.vector); CHECK_PETSC_ERROR(err);
+	err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());
+	CHECK_PETSC_ERROR(err);
+	err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize); 
+	CHECK_PETSC_ERROR(err);
+	err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+	
 	_scatters[s_iter->first] = sinfo;
       } // for
     } // if
@@ -705,46 +723,139 @@ pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 } // view
 
 // ----------------------------------------------------------------------
-// Create PETSc vector for field.
+// Create PETSc vector scatter for field. This is used to transfer
+// information from the "global" PETSc vector view to the "local"
+// Sieve section view.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createVector(const char* context)
-{ // createVector
+pylith::topology::Field<mesh_type, section_type>::createScatter(const char* context)
+{ // createScatter
   assert(context);
+  assert(!_section.isNull());
+  assert(!_mesh.sieveMesh().isNull());
+
+#if 0
+  { // DEBUGGING
+    const std::string& orderLabel = _section->getName();
+    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
+    const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel, _section);
+    assert(!order.isNull());
+    std::cout << "CREATE SCATTER for field '" << _metadata.label << "'"
+	      << ", size w/BC: " << _section->sizeWithBC()
+	      << ", size w/o BC: " << _section->size()
+	      << ", order local: " << order->getLocalSize()
+	      << ", global: " << order->getGlobalSize()
+	      << std::endl;
+  } // DEBUGGING
+#endif
 
   PetscErrorCode err = 0;
-  
   const bool createScatterOk = true;
   ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-  if (sinfo.vector)
+  if (sinfo.scatter) {
+    assert(sinfo.scatterVec);
+    assert(sinfo.vector);
     return;
+  } // if
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
-  const std::string& orderLabel = 
-    _section->getName() + std::string("_") + std::string(context);
+  // Create scatter
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &sinfo.scatter);
+  CHECK_PETSC_ERROR(err);
+  
+  // Create scatterVec
+  assert(_section->sizeWithBC() > 0);
+  assert(_section->restrictSpace());
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+
+  // Create vector
+  const std::string& orderLabel = _section->getName();
 
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel, _section);
   assert(!order.isNull());
-  order->view("GLOBAL ORDER");
-
-  logger.stagePop();
 
   err = VecCreate(_mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());
   CHECK_PETSC_ERROR(err);
-
   err = VecSetSizes(sinfo.vector, order->getLocalSize(), order->getGlobalSize());
   CHECK_PETSC_ERROR(err);
-
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+  
+  logger.stagePop();
+} // createScatter
 
-} // createVector
+// ----------------------------------------------------------------------
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+								const char* context)
+{ // createScatter
+  assert(!numbering.isNull());
+  assert(context);
+  assert(!_section.isNull());
+  assert(!_mesh.sieveMesh().isNull());
+
+  PetscErrorCode err = 0;
+  const bool createScatterOk = true;
+  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
+  
+  // Only create if scatter and scatterVec do not alreay exist.
+  if (sinfo.scatter) {
+    assert(sinfo.scatterVec);
+    assert(sinfo.vector);
+    return;
+  } // if
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("GlobalOrder");
+
+  // Create scatter
+  const std::string& orderLabel = 
+    (strlen(context) > 0) ?
+    _section->getName() + std::string("_") + std::string(context) :
+    _section->getName();
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), 
+				orderLabel, numbering->getChart(), 
+				_section, &sinfo.scatter); 
+  CHECK_PETSC_ERROR(err);
+
+  // Create scatterVec
+  assert(_section->sizeWithBC() > 0);
+  assert(_section->restrictSpace());
+  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+			      _section->sizeWithBC(), _section->restrictSpace(),
+			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+
+  // Create vector
+  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, 
+					    orderLabel, numbering->getChart(),
+					    _section);
+  assert(!order.isNull());
+  order->view("GLOBAL ORDER w/numbering");
+
+  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());
+  CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(sinfo.vector, order->getLocalSize(), order->getGlobalSize());
+  CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+  
+  logger.stagePop();
+} // createScatter
 
 // ----------------------------------------------------------------------
 // Get PETSc vector associated with field.
@@ -765,74 +876,6 @@ pylith::topology::Field<mesh_type, section_type>::vector(const char* context) co
   const ScatterInfo& sinfo = _getScatter(context);
   return sinfo.vector;
 } // vector
-
-// ----------------------------------------------------------------------
-// Create PETSc vector scatter for field. This is used to transfer
-// information from the "global" PETSc vector view to the "local"
-// Sieve section view.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const char* context)
-{ // createScatter
-  assert(context);
-  assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
-
-  PetscErrorCode err = 0;
-  const bool createScatterOk = true;
-  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-  if (sinfo.scatter)
-    return;
-
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &sinfo.scatter);
-  CHECK_PETSC_ERROR(err);
-  
-  if (sinfo.scatterVec) {
-    err = VecDestroy(sinfo.scatterVec); sinfo.scatterVec = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
-
-  assert(_section->sizeWithBC() > 0);
-  assert(_section->restrictSpace());
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
-} // createScatter
-
-// ----------------------------------------------------------------------
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-								const char* context)
-{ // createScatter
-  assert(!numbering.isNull());
-  assert(context);
-  assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
-
-  PetscErrorCode err = 0;
-  const bool createScatterOk = true;
-  ScatterInfo& sinfo = _getScatter(context, createScatterOk);
-
-  // Only create if scatter and scatterVec do not alreay exist.
-  if (sinfo.scatter) {
-    assert(sinfo.scatter);
-    return;
-  } // if
-
-  const std::string& orderLabel = 
-    _section->getName() + std::string("_") + std::string(context);
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), orderLabel,
-				numbering->getChart(), 
-				_section, &sinfo.scatter); 
-  CHECK_PETSC_ERROR(err);
-
-  assert(_section->sizeWithBC() > 0);
-  assert(_section->restrictSpace());
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
-} // createScatter
 
 // ----------------------------------------------------------------------
 // Scatter section information across processors to update the

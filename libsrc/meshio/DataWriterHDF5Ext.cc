@@ -128,7 +128,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // use it to censor vertices. Need to create Vec consistent with
     // censored vertices. See DataWriterVTK and VTKViewer for how
     // 'censored depth' is used.
-    coordinates.createVector(context);
     coordinates.createScatter(context);
     coordinates.scatterSectionToVector(context);
     err = VecView(coordinates.vector(), binaryViewer); CHECK_PETSC_ERROR(err);
@@ -265,22 +264,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 
     // :TODO: Must account for possible presence of 'censored depth'
     // and censor the appropriate vertices.
-    field.createVector(context);
+    field.createScatter(context);
+    field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
 
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
-
     // :TODO: Need to account for censored vertices
-    field.createScatter(context);
-    field.scatterSectionToVector(context);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
@@ -379,21 +368,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    field.createVector(context);
+    field.createScatter(context);
+    field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
 
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
     // :TODO: Need to account for censored cells.
-    field.createScatter(context);
-    field.scatterSectionToVector(context);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();

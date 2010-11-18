@@ -261,26 +261,6 @@ public :
    */
   void view(const char* label) const;
 
-  /** Create PETSc vector for field.
-   *
-   * @param context Label for context associated with vector.
-   */
-  void createVector(const char* context ="");
-
-  /** Get PETSc vector associated with field.
-   *
-   * @param context Label for context associated with vector.
-   * @returns PETSc vector.
-   */
-  PetscVec vector(const char* context ="");
-
-  /** Get PETSc vector associated with field.
-   *
-   * @param context Label for context associated with vector.
-   * @returns PETSc vector.
-   */
-  const PetscVec vector(const char* context ="") const;
-
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
    * Sieve section view.
@@ -299,6 +279,20 @@ public :
    */
   void createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 		     const char* context ="");
+
+  /** Get PETSc vector associated with field.
+   *
+   * @param context Label for context associated with vector.
+   * @returns PETSc vector.
+   */
+  PetscVec vector(const char* context ="");
+
+  /** Get PETSc vector associated with field.
+   *
+   * @param context Label for context associated with vector.
+   * @returns PETSc vector.
+   */
+  const PetscVec vector(const char* context ="") const;
 
   /// Scatter section information across processors to update the
   /// PETSc vector view of the field.
