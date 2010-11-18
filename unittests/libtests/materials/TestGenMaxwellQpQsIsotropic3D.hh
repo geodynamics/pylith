@@ -17,33 +17,33 @@
 //
 
 /**
- * @file unittests/libtests/materials/TestGenMaxwellBulkIsotropic3D.hh
+ * @file unittests/libtests/materials/TestGenMaxwellQpQsIsotropic3D.hh
  *
- * @brief C++ TestGenMaxwellBulkIsotropic3D object
+ * @brief C++ TestGenMaxwellQpQsIsotropic3D object
  *
- * C++ unit testing for GenMaxwellBulkIsotropic3D.
+ * C++ unit testing for GenMaxwellQpQsIsotropic3D.
  */
 
-#if !defined(pylith_materials_testgenmaxwellbulkisotropic3d_hh)
-#define pylith_materials_testgenmaxwellbulkisotropic3d_hh
+#if !defined(pylith_materials_testgenmaxwellqpqsisotropic3d_hh)
+#define pylith_materials_testgenmaxwellqpqsisotropic3d_hh
 
 #include "TestElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class TestGenMaxwellBulkIsotropic3D;
-    class GenMaxwellBulkIsotropic3DElasticData;
-    class GenMaxwellBulkIsotropic3DTimeDepData;
+    class TestGenMaxwellQpQsIsotropic3D;
+    class GenMaxwellQpQsIsotropic3DElasticData;
+    class GenMaxwellQpQsIsotropic3DTimeDepData;
   } // materials
 } // pylith
 
-/// C++ unit testing for GenMaxwellBulkIsotropic3D
-class pylith::materials::TestGenMaxwellBulkIsotropic3D : public TestElasticMaterial
-{ // class TestGenMaxwellBulkIsotropic3D
+/// C++ unit testing for GenMaxwellQpQsIsotropic3D
+class pylith::materials::TestGenMaxwellQpQsIsotropic3D : public TestElasticMaterial
+{ // class TestGenMaxwellQpQsIsotropic3D
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestGenMaxwellBulkIsotropic3D );
+  CPPUNIT_TEST_SUITE( TestGenMaxwellQpQsIsotropic3D );
 
   CPPUNIT_TEST( testDimension );
   CPPUNIT_TEST( testTensorSize );
@@ -106,9 +106,9 @@ public :
   /// Test _stableTimeStepImplicit()
   void test_stableTimeStepImplicit(void);
 
-}; // class TestGenMaxwellBulkIsotropic3D
+}; // class TestGenMaxwellQpQsIsotropic3D
 
-#endif // pylith_materials_testgenmaxwellbulkisotropic3d_hh
+#endif // pylith_materials_testgenmaxwellqpqsisotropic3d_hh
 
 
 // End of file 

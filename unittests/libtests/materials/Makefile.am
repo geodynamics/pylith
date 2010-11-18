@@ -38,7 +38,7 @@ testmaterials_SOURCES = \
 	TestMaxwellIsotropic3D.cc \
 	TestMaxwellPlaneStrain.cc \
 	TestGenMaxwellIsotropic3D.cc \
-	TestGenMaxwellBulkIsotropic3D.cc \
+	TestGenMaxwellQpQsIsotropic3D.cc \
 	TestPowerLaw3D.cc \
 	TestDruckerPrager3D.cc \
 	TestEffectiveStress.cc \
@@ -55,7 +55,7 @@ noinst_HEADERS = \
 	TestElasticPlaneStress.hh \
 	TestElasticIsotropic3D.hh \
 	TestGenMaxwellIsotropic3D.hh \
-	TestGenMaxwellBulkIsotropic3D.hh \
+	TestGenMaxwellQpQsIsotropic3D.hh \
 	TestMaxwellIsotropic3D.hh \
 	TestMaxwellPlaneStrain.hh \
 	TestPowerLaw3D.hh \
@@ -77,8 +77,8 @@ testmaterials_SOURCES += \
 	data/MaxwellPlaneStrainTimeDepData.cc \
 	data/GenMaxwellIsotropic3DElasticData.cc \
 	data/GenMaxwellIsotropic3DTimeDepData.cc \
-	data/GenMaxwellBulkIsotropic3DElasticData.cc \
-	data/GenMaxwellBulkIsotropic3DTimeDepData.cc \
+	data/GenMaxwellQpQsIsotropic3DElasticData.cc \
+	data/GenMaxwellQpQsIsotropic3DTimeDepData.cc \
 	data/PowerLaw3DElasticData.cc \
 	data/PowerLaw3DTimeDepData.cc \
 	data/DruckerPrager3DElasticData.cc \
@@ -95,8 +95,8 @@ noinst_HEADERS += \
 	data/ElasticStress1DData.hh \
 	data/GenMaxwellIsotropic3DElasticData.hh \
 	data/GenMaxwellIsotropic3DTimeDepData.hh \
-	data/GenMaxwellBulkIsotropic3DElasticData.hh \
-	data/GenMaxwellBulkIsotropic3DTimeDepData.hh \
+	data/GenMaxwellQpQsIsotropic3DElasticData.hh \
+	data/GenMaxwellQpQsIsotropic3DTimeDepData.hh \
 	data/MaxwellIsotropic3DElasticData.hh \
 	data/MaxwellIsotropic3DTimeDepData.hh \
 	data/MaxwellPlaneStrainElasticData.hh \
