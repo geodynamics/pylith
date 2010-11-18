@@ -199,11 +199,13 @@ namespace pylith {
        */
       void view(const char* label);
 
-      /** Create PETSc vector for field.
+      /** Create PETSc vector scatter for field. This is used to transfer
+       * information from the "global" PETSc vector view to the "local"
+       * Sieve section view.
        *
        * @param context Label for context associated with vector.
        */
-      void createVector(const char* context ="");
+      void createScatter(const char* context ="");
 
       /** Get PETSc vector associated with field.
        *
@@ -218,15 +220,6 @@ namespace pylith {
        * @returns PETSc vector.
        */
       const PetscVec vector(const char* context ="") const;
-
-      /** Create PETSc vector scatter for field. This is used to transfer
-       * information from the "global" PETSc vector view to the "local"
-       * Sieve section view.
-       *
-       * @param context Label for context associated with vector.
-       */
-      void createScatter(const char* context ="");
-
 
       /// Scatter section information across processors to update the
       /// PETSc vector view of the field.
