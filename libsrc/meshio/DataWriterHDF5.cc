@@ -201,6 +201,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
       const Obj<typename Mesh::numbering_type> vNumbering = 
 	sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0);
+
+      int vecSize = 0;
+      VecGetSize(vector, &vecSize);
+      std::cout << "NUMBERING chart size: " << vNumbering->getChart().size()
+		<< ", VEC size: " << vecSize
+		<< std::endl;
+
       field.createScatter(vNumbering, context);
     } else {
       field.createScatter(context);

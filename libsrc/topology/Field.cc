@@ -722,12 +722,15 @@ pylith::topology::Field<mesh_type, section_type>::createVector(const char* conte
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
+  const std::string& orderLabel = 
+    _section->getName() + std::string("_") + std::string(context);
+
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, 
-					    _section->getName(), _section);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel, _section);
   assert(!order.isNull());
+  order->view("GLOBAL ORDER");
 
   logger.stagePop();
 
@@ -817,7 +820,10 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
     return;
   } // if
 
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), numbering->getChart(), 
+  const std::string& orderLabel = 
+    _section->getName() + std::string("_") + std::string(context);
+  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), orderLabel,
+				numbering->getChart(), 
 				_section, &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
