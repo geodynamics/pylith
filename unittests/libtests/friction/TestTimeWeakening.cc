@@ -64,28 +64,18 @@ pylith::friction::TestTimeWeakening::testStateVarsMetadata(void)
 } // testStateVarsMetadata
 
 // ----------------------------------------------------------------------
-// Test hasProperty().
+// Test hasPropStateVar().
 void
-pylith::friction::TestTimeWeakening::testHasProperty(void)
-{ // testHasProperty
+pylith::friction::TestTimeWeakening::testHasPropStateVar(void)
+{ // testHasPropStateVar
   TimeWeakening material;
 
-  CPPUNIT_ASSERT(material.hasProperty("static_coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("dynamic_coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("time_weakening_parameter"));
-  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
-} // testHasProperty
-
-// ----------------------------------------------------------------------
-// Test hasStateVar().
-void
-pylith::friction::TestTimeWeakening::testHasStateVar(void)
-{ // testHasStateVar
-  TimeWeakening material;
-
-  CPPUNIT_ASSERT(material.hasStateVar("elapsed_time"));
-  CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
-} // testHasStateVar
+  CPPUNIT_ASSERT(material.hasPropStateVar("static_coefficient"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("dynamic_coefficient"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("time_weakening_parameter"));
+  CPPUNIT_ASSERT(!material.hasPropStateVar("aaa"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("elapsed_time"));
+} // testHasPropStateVar
 
 
 // End of file 

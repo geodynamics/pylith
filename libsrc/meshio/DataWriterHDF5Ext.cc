@@ -82,6 +82,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
   _datasets.clear();
 
   try {
+    if (label)
+      DataWriter<mesh_type, field_type>::_context = label;
+    else
+      DataWriter<mesh_type, field_type>::_context = "";
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+
     PetscErrorCode err = 0;
     
     _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
@@ -122,9 +128,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // use it to censor vertices. Need to create Vec consistent with
     // censored vertices. See DataWriterVTK and VTKViewer for how
     // 'censored depth' is used.
-    coordinates.createVector();
-    coordinates.createScatter();
-    coordinates.scatterSectionToVector();
+    coordinates.createScatter(context);
+    coordinates.scatterSectionToVector(context);
     err = VecView(coordinates.vector(), binaryViewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerDestroy(binaryViewer); CHECK_PETSC_ERROR(err);
     binaryViewer = 0;
@@ -215,10 +220,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     std::ostringstream msg;
     msg << "Error while opening HDF5 file " << _filename << ".\n" << err.what();
     throw std::runtime_error(msg.str());
-  } catch (const ALE::Exception& err) {
-    std::ostringstream msg;
-    msg << "Error while opening HDF5 file " << _filename << ".\n" << err.msg();
-    throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while opening HDF5 file " << _filename << ".\n";
@@ -232,6 +233,8 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
 { // close
+  DataWriter<mesh_type, field_type>::_context = "";
+
   if (_h5->isOpen()) {
     // :TODO: Update number of time steps in HDF5 based on size of file
 
@@ -257,27 +260,16 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
   assert(_h5);
 
   try {
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+
     // :TODO: Must account for possible presence of 'censored depth'
     // and censor the appropriate vertices.
-    PetscVec vector = field.vector();
-    if (!vector) {
-      field.createVector();
-      vector = field.vector();
-    } // if
+    field.createScatter(context);
+    field.scatterSectionToVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
-
-    // :TODO: Create scatter only if necessary
     // :TODO: Need to account for censored vertices
-    field.createScatter();
-    field.scatterSectionToVector();
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
@@ -374,24 +366,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     // :TODO: Must account for possible presence of 'censored depth'
     // and censor the appropriate vertices.
 
-    PetscVec vector = field.vector();
-    if (vector == PETSC_NULL) {
-      field.createVector();
-      vector = field.vector();
-    }
+    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-#if 0 // TEMPORARY DEBUGGING
-    const char* vecname = 0;
-    PetscObjectGetName((PetscObject) vector, &vecname);
-    std::cout << "NAME field: " << field.label()
-	      << ", section: " << field.section()->getName()
-	      << ", vec: " << vecname
-	      << std::endl;
-#endif
-    // :TODO: Create scatter only if necessary
+    field.createScatter(context);
+    field.scatterSectionToVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
+
     // :TODO: Need to account for censored cells.
-    field.createScatter();
-    field.scatterSectionToVector();
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();

@@ -65,23 +65,13 @@ pylith::friction::TestStaticFriction::testStateVarsMetadata(void)
 // ----------------------------------------------------------------------
 // Test hasProperty().
 void
-pylith::friction::TestStaticFriction::testHasProperty(void)
-{ // testHasProperty
+pylith::friction::TestStaticFriction::testHasPropStateVar(void)
+{ // testHasPropStateVar
   StaticFriction model;
 
-  CPPUNIT_ASSERT(model.hasProperty("friction_coefficient"));
-  CPPUNIT_ASSERT(!model.hasProperty("aaa"));
-} // testHasProperty
-
-// ----------------------------------------------------------------------
-// Test hasStateVar().
-void
-pylith::friction::TestStaticFriction::testHasStateVar(void)
-{ // testHasStateVar
-  StaticFriction model;
-
-  CPPUNIT_ASSERT(!model.hasStateVar("aaa"));
-} // testHasStateVar
+  CPPUNIT_ASSERT(model.hasPropStateVar("friction_coefficient"));
+  CPPUNIT_ASSERT(!model.hasPropStateVar("aaa"));
+} // testHasPropStateVar
 
 
 // End of file 

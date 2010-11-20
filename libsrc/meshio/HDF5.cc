@@ -798,7 +798,11 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
     if (dataset < 0)
       throw std::runtime_error("Could not open dataset.");
 
+#if defined(PYLITH_HDF5_USE_API_18)
     herr_t err = H5Dset_extent(dataset, dims);
+#else
+    herr_t err = H5Dextend(dataset, dims);
+#endif
     if (err < 0)
       throw std::runtime_error("Could not set dataset extent.");
 

@@ -92,7 +92,7 @@ pylith::friction::StaticFriction::_dbToProperties(
 					   double* const propValues,
 					   const double_array& dbValues) const
 { // _dbToProperties
-  assert(0 != propValues);
+  assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_StaticFriction::numDBProperties == numDBValues);
 
@@ -117,8 +117,8 @@ void
 pylith::friction::StaticFriction::_nondimProperties(double* const values,
 						    const int nvalues) const
 { // _nondimProperties
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _StaticFriction::numProperties);
 
   const double pressureScale = _normalizer->pressureScale();
@@ -132,8 +132,8 @@ void
 pylith::friction::StaticFriction::_dimProperties(double* const values,
 						      const int nvalues) const
 { // _dimProperties
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _StaticFriction::numProperties);
 
   const double pressureScale = _normalizer->pressureScale();
@@ -152,8 +152,8 @@ pylith::friction::StaticFriction::_calcFriction(const double slip,
 						const double* stateVars,
 						const int numStateVars)
 { // _calcFriction
-  assert(0 != properties);
-  assert(_numPropsVertex == numProperties);
+  assert(properties);
+  assert(_StaticFriction::numProperties == numProperties);
   assert(0 == numStateVars);
 
   const double friction = (normalTraction <= 0.0) ?

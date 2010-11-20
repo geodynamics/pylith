@@ -238,6 +238,8 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionA->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(3, fiberDim);
+    const double* values = sectionA->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(values);
   } // for
 
 
@@ -257,7 +259,14 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionB->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(4, fiberDim);
+    const double* values = sectionB->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(values);
   } // for
+
+  // Make sure we can clone field B
+  Field<Mesh> fieldC(*_mesh);
+  fieldC.cloneSection(fieldB);
+  fieldC.copy(fieldB);
 } // testGet
 
 // ----------------------------------------------------------------------
@@ -373,6 +382,21 @@ pylith::topology::TestFieldsNewMesh::testSectionFiberDim(void)
   CPPUNIT_ASSERT_EQUAL(3, fields.sectionFiberDim("field A"));
   CPPUNIT_ASSERT_EQUAL(4, fields.sectionFiberDim("field B"));
 } // testSectionFiberDim
+
+// ----------------------------------------------------------------------
+// Test complete().
+void
+pylith::topology::TestFieldsNewMesh::testComplete(void)
+{ // testComplete
+  CPPUNIT_ASSERT(0 != _mesh);
+  FieldsNewMesh fields(*_mesh);
+
+  fields.add("field A", "velocity", 3, FieldBase::VECTOR);
+  fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
+  fields.allocate(FieldBase::VERTICES_FIELD);
+
+  fields.complete();
+} // testComplete
 
 // ----------------------------------------------------------------------
 // Test fieldNames() const.

@@ -74,30 +74,20 @@ pylith::friction::TestRateStateAgeing::testStateVarsMetadata(void)
 } // testStateVarsMetadata
 
 // ----------------------------------------------------------------------
-// Test hasProperty().
+// Test hasPropStateVar().
 void
-pylith::friction::TestRateStateAgeing::testHasProperty(void)
+pylith::friction::TestRateStateAgeing::testHasPropStateVar(void)
 { // testHasProperty
   RateStateAgeing material;
 
-  CPPUNIT_ASSERT(material.hasProperty("reference_friction_coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("reference_slip_rate"));
-  CPPUNIT_ASSERT(material.hasProperty("characteristic_slip_distance"));
-  CPPUNIT_ASSERT(material.hasProperty("constitutive_parameter_a"));
-  CPPUNIT_ASSERT(material.hasProperty("constitutive_parameter_b"));
-  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
-} // testHasProperty
-
-// ----------------------------------------------------------------------
-// Test hasStateVar().
-void
-pylith::friction::TestRateStateAgeing::testHasStateVar(void)
-{ // testHasStateVar
-  RateStateAgeing material;
-
-  CPPUNIT_ASSERT(material.hasStateVar("state_variable"));
-  CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
-} // testHasStateVar
+  CPPUNIT_ASSERT(material.hasPropStateVar("reference_friction_coefficient"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("reference_slip_rate"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("characteristic_slip_distance"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("constitutive_parameter_a"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("constitutive_parameter_b"));
+  CPPUNIT_ASSERT(!material.hasPropStateVar("aaa"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("state_variable"));
+} // testHasPropStateVar
 
 
 // End of file 

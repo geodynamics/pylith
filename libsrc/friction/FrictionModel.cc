@@ -22,6 +22,7 @@
 
 #include "pylith/topology/SubMesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
@@ -39,33 +40,24 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef pylith::topology::FieldsNew<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::friction::FrictionModel::FrictionModel(const materials::Metadata& metadata) :
   _dt(0.0),
-  _properties(0),
-  _stateVars(0),
   _normalizer(new spatialdata::units::Nondimensional),
-  _numPropsVertex(0),
-  _numVarsVertex(0),
+  _metadata(metadata),
+  _label(""),
   _dbProperties(0),
   _dbInitialState(0),
-  _label(""),
-  _metadata(metadata)
+  _fieldsPropsStateVars(0),
+  _propsFiberDim(0),
+  _varsFiberDim(0)
 { // constructor
-  const int numProperties = metadata.numProperties();
-  for (int i=0; i < numProperties; ++i)
-    _numPropsVertex += metadata.getProperty(i).fiberDim;
-  assert(_numPropsVertex >= 0);
-  
-  const int numStateVars = metadata.numStateVars();
-  for (int i=0; i < numStateVars; ++i)
-    _numVarsVertex += metadata.getStateVar(i).fiberDim;
-  assert(_numVarsVertex >= 0);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -81,8 +73,9 @@ void
 pylith::friction::FrictionModel::deallocate(void)
 { // deallocate
   delete _normalizer; _normalizer = 0;
-  delete _properties; _properties = 0;
-  delete _stateVars; _stateVars = 0;
+  delete _fieldsPropsStateVars; _fieldsPropsStateVars = 0;
+  _propsFiberDim = 0;
+  _varsFiberDim = 0;
 
   _dbProperties = 0; // :TODO: Use shared pointer.
   _dbInitialState = 0; // :TODO: Use shared pointer.
@@ -147,6 +140,14 @@ pylith::friction::FrictionModel::initialize(
         coordinatesCell.size(), &coordinatesCell[0]);
 #endif
 
+  // Create fields to hold physical properties and state variables.
+  delete _fieldsPropsStateVars; 
+  _fieldsPropsStateVars = new topology::FieldsNew<topology::SubMesh>(faultMesh);
+  assert(_fieldsPropsStateVars);
+  _setupPropsStateVars();
+  assert(_fieldsPropsStateVars->fiberDim() > 0);
+  _fieldsPropsStateVars->allocate(vertices);
+  
   assert(0 != _normalizer);
   const double lengthScale = _normalizer->lengthScale();
 
@@ -155,28 +156,23 @@ pylith::friction::FrictionModel::initialize(
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
   double_array propertiesDBQuery(numDBProperties);
-  double_array propertiesQuadPt(_numPropsVertex);
+  double_array propertiesQuadPt(_propsFiberDim);
 
-  // Create field to hold physical properties.
-  delete _properties; _properties = 
-			new topology::Field<topology::SubMesh>(faultMesh);
-  _properties->label("properties");
-  assert(0 != _properties);
-  int fiberDim = _numPropsVertex;
-  _properties->newSection(vertices, fiberDim);
-  _properties->allocate();
-  _properties->zero();
-  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-  assert(!propertiesSection.isNull());
-  double_array propertiesCell(numBasis*numDBProperties);
-  UpdateAddVisitor propertiesVisitor(*propertiesSection, &propertiesCell[0]);
+  const int fieldsFiberDim = _fieldsPropsStateVars->fiberDim();
+  assert(_propsFiberDim + _varsFiberDim == fieldsFiberDim);
+  const ALE::Obj<SubRealUniformSection>& fieldsSection = 
+    _fieldsPropsStateVars->section();
+  assert(!fieldsSection.isNull());
+  double_array fieldsCell(numBasis*fieldsFiberDim);
+  UpdateAddVisitor fieldsVisitor(*fieldsSection, &fieldsCell[0]);
 
   // Setup database for querying for physical properties
-  assert(0 != _dbProperties);
+  assert(_dbProperties);
   _dbProperties->open();
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
+  fieldsSection->zero();
   for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
@@ -189,7 +185,7 @@ pylith::friction::FrictionModel::initialize(
     quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
 
-    propertiesCell = 0.0;
+    fieldsCell = 0.0;
 
     const double_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
@@ -221,70 +217,30 @@ pylith::friction::FrictionModel::initialize(
       const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
       for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
         const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
-        for (int iProp = 0; iProp < numDBProperties; ++iProp)
-          propertiesCell[iBasis*numDBProperties+iProp]
+        for (int iProp = 0; iProp < _propsFiberDim; ++iProp)
+          fieldsCell[iBasis*fieldsFiberDim+iProp]
               += propertiesQuadPt[iProp] * dArea;
       } // for
     } // for
-    propertiesVisitor.clear();
-    faultSieveMesh->updateClosure(*c_iter, propertiesVisitor);
+    fieldsVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, fieldsVisitor);
   } // for
   // Close properties database
   _dbProperties->close();
 
-  _properties->complete(); // Assemble contributions
-
-  // Loop over vertices and divide by area to get weighted values and
-  // nondimensionalize properties.
-  const ALE::Obj<RealSection>& areaSection = area.section();
-  assert(!areaSection.isNull());
-
-  double_array propertiesVertex(_numPropsVertex);
-  double areaVertex = 0.0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    propertiesSection->restrictPoint(*v_iter,
-        &propertiesVertex[0], propertiesVertex.size());
-    _nondimProperties(&propertiesVertex[0], _numPropsVertex);
-    areaSection->restrictPoint(*v_iter, &areaVertex, 1);
-    assert(areaVertex > 0.0);
-    propertiesVertex /= areaVertex;
-    propertiesSection->updatePoint(*v_iter, &propertiesVertex[0]);
-  } // for
-
-  // Create field to hold state variables. We create the field even
-  // if there is no initial state, because this we will use this field
-  // to hold the state variables.
-  delete _stateVars; _stateVars = new topology::Field<topology::SubMesh>(faultMesh);
-  _stateVars->label("state variables");
-  fiberDim = _numVarsVertex;
-  if (fiberDim > 0) {
-    assert(0 != _stateVars);
-    assert(0 != _properties);
-    _stateVars->newSection(*_properties, fiberDim);
-    _stateVars->allocate();
-    _stateVars->zero();
-  } // if
-
   // Query database for initial state variables
-  if (0 != _dbInitialState) {
-    assert(_numVarsVertex > 0);
+  if (_dbInitialState) {
+    assert(_varsFiberDim > 0);
 
     // Create arrays for querying
     const int numDBStateVars = _metadata.numDBStateVars();
     double_array stateVarsDBQuery(numDBStateVars);
-    double_array stateVarsQuadPt(_numVarsVertex);
+    double_array stateVarsQuadPt(_varsFiberDim);
 
     // Setup database for querying for initial state variables
     _dbInitialState->open();
     _dbInitialState->queryVals(_metadata.dbStateVars(),
-             _metadata.numDBStateVars());
-
-    const ALE::Obj<RealSection>& stateVarsSection =_stateVars->section();
-    assert(!stateVarsSection.isNull());
-    double_array stateVarsCell(numBasis*numDBStateVars);
-    UpdateAddVisitor stateVarsVisitor(*stateVarsSection, &stateVarsCell[0]);
+			       _metadata.numDBStateVars());
 
     for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
         c_iter != cellsEnd;
@@ -303,14 +259,14 @@ pylith::friction::FrictionModel::initialize(
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
-      stateVarsCell = 0.0;
+      fieldsCell = 0.0;
 
       // Loop over quadrature points in cell and query database
       for (int iQuadPt=0, index=0;
           iQuadPt < numQuadPts;
           ++iQuadPt, index+=spaceDim) {
         int err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
-          &quadPtsGlobal[index], spaceDim, cs);
+					 &quadPtsGlobal[index], spaceDim, cs);
         if (err) {
           std::ostringstream msg;
           msg << "Could not find initial state variables at \n" << "(";
@@ -331,291 +287,109 @@ pylith::friction::FrictionModel::initialize(
         for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
           const double dArea = wt * basis[iQuadPt*numBasis+iBasis];
           for (int iVar = 0; iVar < numDBStateVars; ++iVar)
-            stateVarsCell[iBasis*numDBStateVars+iVar]
+            fieldsCell[iBasis*fieldsFiberDim+_propsFiberDim+iVar]
                 += stateVarsDBQuery[iVar] * dArea;
         } // for
       } // for
-      stateVarsVisitor.clear();
-      faultSieveMesh->updateClosure(*c_iter, stateVarsVisitor);
+      fieldsVisitor.clear();
+      faultSieveMesh->updateClosure(*c_iter, fieldsVisitor);
     } // for
     // Close database
     _dbInitialState->close();
-
-    _stateVars->complete(); // Assemble contributions.
-
-    // Loop over vertices and divide by area to get weighted values and
-    // nondimensionalize properties.
-    double_array stateVarsVertex(_numVarsVertex);
-
-    for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-         v_iter != verticesEnd;
-         ++v_iter) {
-      stateVarsSection->restrictPoint(*v_iter,
-          &stateVarsVertex[0], stateVarsVertex.size());
-      _nondimStateVars(&stateVarsVertex[0], _numVarsVertex);
-      areaSection->restrictPoint(*v_iter, &areaVertex, 1);
-      assert(areaVertex > 0.0);
-      stateVarsVertex /= areaVertex;
-      stateVarsSection->updatePoint(*v_iter, &stateVarsVertex[0]);
-    } // for
   } // if
 
+  _fieldsPropsStateVars->complete(); // Assemble contributions
+
+  // Loop over vertices and divide by area to get weighted values,
+  // nondimensionalize properties and state variables.
+  const ALE::Obj<RealSection>& areaSection = area.section();
+  assert(!areaSection.isNull());
+
+  double_array fieldsVertex(fieldsFiberDim);
+  double areaVertex = 0.0;
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
+       v_iter != verticesEnd;
+       ++v_iter) {
+    fieldsSection->restrictPoint(*v_iter, 
+				 &fieldsVertex[0], fieldsVertex.size());
+
+    _nondimProperties(&fieldsVertex[0], _propsFiberDim);
+    if (_varsFiberDim > 0)
+      _nondimStateVars(&fieldsVertex[_propsFiberDim], _varsFiberDim);
+
+    assert(1 == areaSection->getFiberDimension(*v_iter));
+    const double* areaVertex = areaSection->restrictPoint(*v_iter);
+    assert(*areaVertex > 0.0);
+    fieldsVertex /= *areaVertex;
+
+    assert(fieldsFiberDim == fieldsSection->getFiberDimension(*v_iter));
+    fieldsSection->updatePoint(*v_iter, &fieldsVertex[0]);
+  } // for
+
   // Setup buffers for restrict/update of properties and state variables.
-  _propertiesVertex.resize(_numPropsVertex);
-  _stateVarsVertex.resize(_numVarsVertex);
+  _propsStateVarsVertex.resize(fieldsFiberDim);
 
   //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get the properties field.
-const pylith::topology::Field<pylith::topology::SubMesh>*
-pylith::friction::FrictionModel::propertiesField() const
-{ // propertiesField
-  return _properties;
-} // propertiesField
-
-// ----------------------------------------------------------------------
-// Get the state variables field.
-const pylith::topology::Field<pylith::topology::SubMesh>*
-pylith::friction::FrictionModel::stateVarsField() const
-{ // stateVarsField
-  return _stateVars;
-} // stateVarsField
+// Get the field with all properties and state variables.
+const pylith::topology::FieldsNew<pylith::topology::SubMesh>&
+pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
+{ // fieldsPropsStateVars
+  assert(_fieldsPropsStateVars);
+  return *_fieldsPropsStateVars;
+} // fieldsPropsStateVars
 
 // ----------------------------------------------------------------------
 // Check whether material has a field as a property.
 bool
-pylith::friction::FrictionModel::hasProperty(const char* name)
-{ // hasProperty
-  int propertyIndex = -1;
-  int stateVarIndex = -1;
-  _findField(&propertyIndex, &stateVarIndex, name);
-  return (propertyIndex >= 0);
-} // hasProperty
+pylith::friction::FrictionModel::hasPropStateVar(const char* name)
+{ // hasPropStateVar
+  if (_fieldsPropsStateVars) {
+    return _fieldsPropsStateVars->hasField(name);
+  } else {
+    const std::string nameString = name;
+    const int numProperties = _metadata.numProperties();
+    for (int i=0; i < numProperties; ++i)
+      if (_metadata.getProperty(i).name == nameString)
+	return true;
+    const int numStateVars = _metadata.numStateVars();
+    for (int i=0; i < numStateVars; ++i)
+      if (_metadata.getStateVar(i).name == nameString)
+	return true;
+  } // if/else
 
-// ----------------------------------------------------------------------
-// Check whether material has a field as a state variable.
-bool
-pylith::friction::FrictionModel::hasStateVar(const char* name)
-{ // hasStateVar
-  int propertyIndex = -1;
-  int stateVarIndex = -1;
-  _findField(&propertyIndex, &stateVarIndex, name);
-  return (stateVarIndex >= 0);
-} // hasStateVar
+  return false;
+} // hasPropStateVar
 
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
-void
-pylith::friction::FrictionModel::getField(topology::Field<topology::SubMesh> *field,
-					  const char* name) const
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::friction::FrictionModel::getField(const char* name)
 { // getField
-  // Logging of allocation is handled by getField() caller since it
-  // manages the memory for the field argument.
+  assert(name);
+  assert(_fieldsPropsStateVars);
 
-  assert(0 != field);
-  assert(0 != _properties);
-  assert(0 != _stateVars);
-
-  int propertyIndex = -1;
-  int stateVarIndex = -1;
-  _findField(&propertyIndex, &stateVarIndex, name);
-  if (propertyIndex < 0 && stateVarIndex < 0) {
-    std::ostringstream msg;
-    msg << "Unknown physical property or state variable '" << name
-	<< "' for material '" << _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
-
-  // Get cell information
-  const ALE::Obj<SieveSubMesh>& sieveSubMesh = field->mesh().sieveMesh();
-  assert(!sieveSubMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    sieveSubMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-  topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
-      
-  if (propertyIndex >= 0) { // If field is a property
-    int propOffset = 0;
-    assert(propertyIndex < _metadata.numProperties());
-    for (int i = 0; i < propertyIndex; ++i)
-      propOffset += _metadata.getProperty(i).fiberDim;
-    const int fiberDim = _metadata.getProperty(propertyIndex).fiberDim;
-
-    // Get properties section
-    const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-    assert(!propertiesSection.isNull());
-    const int numPropsVertex = _numPropsVertex;
-
-    // Get dimension scale information for properties.
-    double_array propertyScales(numPropsVertex);
-    propertyScales = 1.0;
-    _dimProperties(&propertyScales[0], propertyScales.size());
-
-    // Allocate buffer for property field if necessary.
-    const ALE::Obj<RealSection>& fieldSection = field->section();
-    bool useCurrentField = !fieldSection.isNull();
-    if (!fieldSection.isNull()) {
-      // check fiber dimension
-      const int
-          totalFiberDimCurrentLocal =
-              (vertices->size() > 0) ? fieldSection->getFiberDimension(
-                  *verticesBegin) : 0;
-      int totalFiberDimCurrent = 0;
-      MPI_Allreduce((void *) &totalFiberDimCurrentLocal,
-          (void *) &totalFiberDimCurrent, 1,
-          MPI_INT, MPI_MAX, field->mesh().comm());
-      assert(totalFiberDimCurrent > 0);
-      useCurrentField = fiberDim == totalFiberDimCurrent;
-    } // if
-    if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("Output");
-      field->newSection(vertices, fiberDim);
-      field->allocate();
-      logger.stagePop();
-    } // if
-    assert(!fieldSection.isNull());
-    field->label(name);
-    field->scale(propertyScales[propOffset]);
-    fieldType = _metadata.getProperty(propertyIndex).fieldType;
-
-    // Buffer for property at cell's quadrature points
-    double_array fieldVertex(fiberDim);
-    double_array propertiesVertex(numPropsVertex);
-
-    // Loop over cells
-    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter) {
-      propertiesSection->restrictPoint(*v_iter, &propertiesVertex[0],
-          propertiesVertex.size());
-
-      for (int i = 0; i < fiberDim; ++i)
-        fieldVertex[i] = propertiesVertex[propOffset+i];
-
-      fieldSection->updatePoint(*v_iter, &fieldVertex[0]);
-    } // for
-  } else { // field is a state variable
-    assert(stateVarIndex >= 0);
-
-    int varOffset = 0;
-    assert(stateVarIndex < _metadata.numStateVars());
-    for (int i = 0; i < stateVarIndex; ++i)
-      varOffset += _metadata.getStateVar(i).fiberDim;
-    const int fiberDim = _metadata.getStateVar(stateVarIndex).fiberDim;
-
-    // Get state variables section
-    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-    assert(!stateVarsSection.isNull());
-    const int numVarsVertext = _numVarsVertex;
-
-    // Get dimension scale information for state variables.
-    double_array stateVarScales(_numVarsVertex);
-    stateVarScales = 1.0;
-    _dimStateVars(&stateVarScales[0], stateVarScales.size());
-
-    // Allocate buffer for state variable field if necessary.
-    const ALE::Obj<RealSection>& fieldSection = field->section();
-    bool useCurrentField = !fieldSection.isNull();
-    if (!fieldSection.isNull()) {
-      // check fiber dimension
-      const int
-          totalFiberDimCurrentLocal =
-              (vertices->size() > 0) ? fieldSection->getFiberDimension(
-                  *verticesBegin) : 0;
-      int totalFiberDimCurrent = 0;
-      MPI_Allreduce((void *) &totalFiberDimCurrentLocal,
-          (void *) &totalFiberDimCurrent, 1,
-          MPI_INT, MPI_MAX, field->mesh().comm());
-      assert(totalFiberDimCurrent > 0);
-      useCurrentField = fiberDim == totalFiberDimCurrent;
-    } // if
-    if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("Output");
-      field->newSection(vertices, fiberDim);
-      field->allocate();
-      logger.stagePop();
-    } // if
-    assert(!fieldSection.isNull());
-    fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
-    field->label(name);
-    field->scale(stateVarScales[varOffset]);
-
-    // Buffer for state variable at cell's quadrature points
-    double_array fieldVertex(fiberDim);
-    double_array stateVarsVertex(_numVarsVertex);
-
-    // Loop over cells
-    for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
-          v_iter != verticesEnd;
-          ++v_iter) {
-      stateVarsSection->restrictPoint(*v_iter, &stateVarsVertex[0],
-          stateVarsVertex.size());
-
-      for (int i = 0; i < fiberDim; ++i)
-        fieldVertex[i] = stateVarsVertex[varOffset + i];
-
-      fieldSection->updatePoint(*v_iter, &fieldVertex[0]);
-    } // for
-  } // if/else
-
-  topology::FieldBase::VectorFieldEnum multiType =
-      topology::FieldBase::MULTI_OTHER;
-  switch (fieldType) { // switch
-  case topology::FieldBase::SCALAR:
-    multiType = topology::FieldBase::MULTI_SCALAR;
-    break;
-  case topology::FieldBase::VECTOR:
-    multiType = topology::FieldBase::MULTI_VECTOR;
-    break;
-  case topology::FieldBase::TENSOR:
-    multiType = topology::FieldBase::MULTI_TENSOR;
-    break;
-  case topology::FieldBase::OTHER:
-    multiType = topology::FieldBase::MULTI_OTHER;
-    break;
-  case topology::FieldBase::MULTI_SCALAR:
-  case topology::FieldBase::MULTI_VECTOR:
-  case topology::FieldBase::MULTI_TENSOR:
-  case topology::FieldBase::MULTI_OTHER:
-  default:
-    std::cerr << "Bad vector field type '" << fieldType << "'." << std::endl;
-    assert(0);
-    throw std::logic_error("Bad vector field type for FrictionModel.");
-  } // switch
-  field->vectorFieldType(multiType);
+  return _fieldsPropsStateVars->get(name);
 } // getField
   
 // ----------------------------------------------------------------------
-// Retrieve parameters for physical properties and state variables
-// for vertex.
+// Retrieve properties and state variables for a point.
 void
-pylith::friction::FrictionModel::retrievePropsAndVars(const int vertex)
-{ // retrievePropsAndVars
-  assert(0 != _properties);
-  assert(0 != _stateVars);
+pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
+{ // retrievePropsStateVars
+  assert(_fieldsPropsStateVars);
 
-  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-  assert(!propertiesSection.isNull());
-  assert(_propertiesVertex.size() == propertiesSection->getFiberDimension(vertex));
-  propertiesSection->restrictPoint(vertex, &_propertiesVertex[0],
-           _propertiesVertex.size());
+  const ALE::Obj<SubRealUniformSection>& fieldsSection =
+    _fieldsPropsStateVars->section();
+  assert(!fieldsSection.isNull());
 
-  if (_numVarsVertex > 0) {
-    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-    assert(!stateVarsSection.isNull());
-    assert(_stateVarsVertex.size() == stateVarsSection->getFiberDimension(vertex));
-    stateVarsSection->restrictPoint(vertex, &_stateVarsVertex[0],
-            _stateVarsVertex.size());
-  } // if
-} // retrievePropsAndVars
+  assert(_propsStateVarsVertex.size() ==
+	 fieldsSection->getFiberDimension(point));
+  fieldsSection->restrictPoint(point, &_propsStateVarsVertex[0],
+			       _propsStateVarsVertex.size());
+} // retrievePropsStateVars
 
 // ----------------------------------------------------------------------
 // Compute friction at vertex.
@@ -624,11 +398,18 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
                                               const double slipRate,
                                               const double normalTraction)
 { // calcFriction
+  assert(_fieldsPropsStateVars);
+
+  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  const double* propertiesVertex = &_propsStateVarsVertex[0];
+  const double* stateVarsVertex = (_varsFiberDim > 0) ?
+    &_propsStateVarsVertex[_propsFiberDim] : 0;
+
   const double friction =
     _calcFriction(slip, slipRate, normalTraction,
-		  &_propertiesVertex[0], _propertiesVertex.size(),
-		  &_stateVarsVertex[0], _stateVarsVertex.size());
-
+		  propertiesVertex, _propsFiberDim,
+		  stateVarsVertex, _varsFiberDim);
+  
   return friction;
 } // calcFriction
 
@@ -640,19 +421,25 @@ pylith::friction::FrictionModel::updateStateVars(const double slip,
 						 const double normalTraction,
 						 const int vertex)
 { // updateStateVars
-  if (0 == _numVarsVertex)
+  assert(_fieldsPropsStateVars);
+
+  if (0 == _varsFiberDim)
     return;
 
-  _updateStateVars(slip, slipRate, normalTraction,
-		   &_stateVarsVertex[0], _stateVarsVertex.size(),
-		   &_propertiesVertex[0], _propertiesVertex.size());
+  const ALE::Obj<SubRealUniformSection>& fieldsSection =
+    _fieldsPropsStateVars->section();
+  assert(!fieldsSection.isNull());
 
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());
-  assert(_stateVarsVertex.size() == 
-	 stateVarsSection->getFiberDimension(vertex));
-  stateVarsSection->updatePoint(vertex, &_stateVarsVertex[0],
-				_stateVarsVertex.size());
+  const double* propertiesVertex = &_propsStateVarsVertex[0];
+  double* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
+  
+  _updateStateVars(slip, slipRate, normalTraction,
+		   &stateVarsVertex[0], _varsFiberDim,
+		   &propertiesVertex[0], _propsFiberDim);
+
+  assert(_propsStateVarsVertex.size() == 
+	 fieldsSection->getFiberDimension(vertex));
+  fieldsSection->updatePoint(vertex, &_propsStateVarsVertex[0]);
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -669,33 +456,58 @@ pylith::friction::FrictionModel::_updateStateVars(const double slip,
 } // _updateStateVars
 
 // ----------------------------------------------------------------------
-// Get indices for physical property or state variable field.
+// Setup fields for physical properties and state variables.
 void
-pylith::friction::FrictionModel::_findField(int* propertyIndex,
-					    int* stateVarIndex,
-					    const char* name) const
-{ // _findField
-  assert(0 != propertyIndex);
-  assert(0 != stateVarIndex);
-
-  *propertyIndex = -1;
-  *stateVarIndex = -1;
-
-  const std::string nameString = name;
+pylith::friction::FrictionModel::_setupPropsStateVars(void)
+{ // _setupPropsStateVars
+  // Determine number of values needed to store physical properties.
   const int numProperties = _metadata.numProperties();
+  _propsFiberDim = 0;
   for (int i=0; i < numProperties; ++i)
-    if (nameString == _metadata.getProperty(i).name) {
-      *propertyIndex = i;
-      return;
-    } // if
-
-  const int numStateVars = _metadata.numStateVars();
-  for (int i=0; i < numStateVars; ++i)
-    if (nameString == _metadata.getStateVar(i).name) {
-      *stateVarIndex = i;
-      return;
-    } // if
-} // _findField
+    _propsFiberDim += _metadata.getProperty(i).fiberDim;
+  assert(_propsFiberDim >= 0);
   
+  // Determine scales for each physical property.
+  double_array propertiesVertex(_propsFiberDim);
+  for (int i=0; i < _propsFiberDim; ++i)
+    propertiesVertex[i] = 1.0;
+  _nondimProperties(&propertiesVertex[0], propertiesVertex.size());
+
+  // Determine number of values needed to store state variables.
+  const int numStateVars = _metadata.numStateVars();
+  _varsFiberDim = 0;
+  for (int i=0; i < numStateVars; ++i)
+    _varsFiberDim += _metadata.getStateVar(i).fiberDim;
+  assert(_varsFiberDim >= 0);
+  
+  // Determine scales for each state variable.
+  double_array stateVarsVertex(_varsFiberDim);
+  for (int i=0; i < _varsFiberDim; ++i)
+    stateVarsVertex[i] = 1.0;
+  _nondimStateVars(&stateVarsVertex[0], stateVarsVertex.size());
+
+  // Setup fields
+  assert(_fieldsPropsStateVars);
+
+  for (int i=0, iScale=0; i < numProperties; ++i) {
+    const materials::Metadata::ParamDescription& property = 
+      _metadata.getProperty(i);
+    _fieldsPropsStateVars->add(property.name.c_str(), property.name.c_str(),
+			       property.fiberDim, property.fieldType,
+			       propertiesVertex[iScale]);
+    iScale += property.fiberDim;
+  } // for
+  
+  for (int i=0, iScale=0; i < numStateVars; ++i) {
+    const materials::Metadata::ParamDescription& stateVar = 
+      _metadata.getStateVar(i);
+    _fieldsPropsStateVars->add(stateVar.name.c_str(), stateVar.name.c_str(),
+			       stateVar.fiberDim, stateVar.fieldType,
+			       stateVarsVertex[iScale]);
+    iScale += stateVar.fiberDim;
+  } // for
+  assert(_varsFiberDim >= 0);
+} // _setupPropsStateVars
+
 
 // End of file 

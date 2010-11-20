@@ -39,21 +39,6 @@ pylith::topology::Field<mesh_type, section_type>::mesh(void) const {
   return _mesh;
 }
 
-// Set label for field.
-template<typename mesh_type, typename section_type>
-inline
-void
-pylith::topology::Field<mesh_type, section_type>::label(const char* value) {
-  _metadata.label = value;
-  if (!_section.isNull()) {
-    _section->setName(value);
-  } // if
-  if (_vector) {
-    PetscErrorCode err = PetscObjectSetName((PetscObject)_vector, value);
-    CHECK_PETSC_ERROR(err);    
-  } // if
-}
-
 // Get label for field.
 template<typename mesh_type, typename section_type>
 inline
@@ -108,22 +93,6 @@ inline
 bool
 pylith::topology::Field<mesh_type, section_type>::addDimensionOkay(void) const {
   return _metadata.dimsOkay;
-}
-
-// Get PETSc vector associated with field.
-template<typename mesh_type, typename section_type>
-inline
-PetscVec
-pylith::topology::Field<mesh_type, section_type>::vector(void) {
-  return _vector;
-}
-
-// Get PETSc vector associated with field.
-template<typename mesh_type, typename section_type>
-inline
-const PetscVec
-pylith::topology::Field<mesh_type, section_type>::vector(void) const {
-  return _vector;
 }
 
 #endif

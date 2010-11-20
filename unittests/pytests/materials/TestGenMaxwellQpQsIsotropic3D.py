@@ -16,25 +16,25 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestGenMaxwellBulkIsotropic3D.py
+## @file unittests/pytests/materials/TestGenMaxwellQpQsIsotropic3D.py
 
-## @brief Unit testing of GenMaxwellBulkIsotropic3D object.
+## @brief Unit testing of GenMaxwellQpQsIsotropic3D object.
 
 import unittest
 
-from pylith.materials.GenMaxwellBulkIsotropic3D import GenMaxwellBulkIsotropic3D
+from pylith.materials.GenMaxwellQpQsIsotropic3D import GenMaxwellQpQsIsotropic3D
 
 # ----------------------------------------------------------------------
-class TestGenMaxwellBulkIsotropic3D(unittest.TestCase):
+class TestGenMaxwellQpQsIsotropic3D(unittest.TestCase):
   """
-  Unit testing of GenMaxwellBulkIsotropic3D object.
+  Unit testing of GenMaxwellQpQsIsotropic3D object.
   """
 
   def setUp(self):
     """
     Setup test subject.
     """
-    self.material = GenMaxwellBulkIsotropic3D()
+    self.material = GenMaxwellQpQsIsotropic3D()
     return
   
 
@@ -82,7 +82,7 @@ class TestGenMaxwellBulkIsotropic3D(unittest.TestCase):
     """
     Test factory method.
     """
-    from pylith.materials.GenMaxwellBulkIsotropic3D import material
+    from pylith.materials.GenMaxwellQpQsIsotropic3D import material
     m = material()
     return
 

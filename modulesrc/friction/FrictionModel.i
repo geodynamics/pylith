@@ -102,51 +102,36 @@ namespace pylith {
 		      pylith::feassemble::Quadrature<pylith::topology::SubMesh>* quadrature,
 		      const pylith::topology::Field<pylith::topology::SubMesh>& area);
   
-      /** Check whether friction model has a field as a property.
+      /** Check whether friction model has a field as a property or
+       * state variable.
        *
        * @param name Name of field.
        *
-       * @returns True if friction model has field as a property, false
-       * otherwise.
+       * @returns True if friction model has field as the given
+       * property or state variable, false otherwise.
        */
-      bool hasProperty(const char* name);
-
-      /** Check whether friction model has a field as a state variable.
-       *
-       * @param name Name of field.
-       *
-       * @returns True if friction model has field as a state variable,
-       * false otherwise.
-       */
-      bool hasStateVar(const char* name);
+      bool hasPropStateVar(const char* name);
 
       /** Get physical property or state variable field. Data is returned
        * via the argument.
        *
-       * @param field Field over fault interface cells.
        * @param name Name of field to retrieve.
+       * @returns Field over fault interface cells.
        */
-      void getField(pylith::topology::Field<pylith::topology::SubMesh> *field,
-		    const char* name) const;
+      const pylith::topology::Field<pylith::topology::SubMesh>& getField(const char* name);
 
-      /** Get the field with all properties.
+      /** Get the field with all properties and state variables.
        *
        * @returns Properties field.
        */
-      const pylith::topology::Field<pylith::topology::SubMesh>* propertiesField() const;
-
-      /** Get the field with all of the state variables.
-       *
-       * @returns State variables field.
-       */
-      const pylith::topology::Field<pylith::topology::SubMesh>* stateVarsField() const;
+      const pylith::topology::FieldsNew<pylith::topology::SubMesh>& fieldsPropsStateVars() const;
 
       /** Retrieve parameters for physical properties and state variables
        * for vertex.
        *
        * @param vertex Finite-element vertex on friction interface.
        */
-      void retrievePropsAndVars(const int vertex);
+      void retrievePropsStateVars(const int vertex);
 
       /** Compute friction at vertex.
        *

@@ -95,7 +95,7 @@ class Explicit(Formulation, ModuleExplicit):
     dispT.zero()
     residual = self.fields.get("residual")
     residual.zero()
-    residual.createVector()
+    residual.createScatter()
 
     lengthScale = normalizer.lengthScale()
     timeScale = normalizer.timeScale()

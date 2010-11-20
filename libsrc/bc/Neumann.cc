@@ -764,7 +764,7 @@ pylith::bc::Neumann::_calculateValue(const double t)
       } // for
     } // if
     
-    parametersSection->updateAddPoint(*c_iter, &parametersCell[0]);
+    parametersSection->updatePoint(*c_iter, &parametersCell[0]);
   } // for
 }  // _calculateValue
 
