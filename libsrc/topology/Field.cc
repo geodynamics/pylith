@@ -338,7 +338,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
       assert(!sieveMesh.isNull());
       sieveMesh->allocate(_section);
       _section->setBC(srcSection->getBC());
-      _section->copySpaces(srcSection);    
+      _section->copySpaces(srcSection); // :BUG: NEED TO REBUILD SPACES 
     } // if/else
     
     // Reuse scatters in clone
