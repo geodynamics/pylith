@@ -742,6 +742,9 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
     const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
       sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel, _section);
     assert(!order.isNull());
+    const ALE::Obj<typename mesh_type::SieveMesh::order_type>& defaultOrder = 
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", _section);
+    assert(!order.isNull());
     std::cout << "CREATE SCATTER for field '" << _metadata.label << "'"
 	      << ", size w/BC: " << _section->sizeWithBC()
 	      << ", size w/o BC: " << _section->size()
@@ -979,7 +982,6 @@ pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* contex
   const bool isNewScatter = _scatters.find(context) == _scatters.end();
 
   if (isNewScatter && !createOk) {
-    std::cout << "_getScatter context: " << context << std::endl;
     std::ostringstream msg;
     msg << "Scatter for context '" << context << "' does not exist.";
     throw std::runtime_error(msg.str());
