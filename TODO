@@ -35,12 +35,16 @@ CURRENT ISSUES/PRIORITIES
 
 * Reformulate solves in terms of Schur complement
 
+  MATT - 
+  Get indices and then call MatGetSubMatrix() in FaultCohesiveLagrange.cc
+    
   + adjustSolnLumped()
     Compute Lagrange multipliers then displacements
   + form C as sparse matrix, use PETSc operations for computation
     (will work parallel)
   + Refactor friction sensitivity solve, fault preconditioner, and
     adjustSolnLumped()
+
 
 * Cleanup
   + memory model
