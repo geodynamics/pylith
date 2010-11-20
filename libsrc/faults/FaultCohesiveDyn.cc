@@ -305,7 +305,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
       tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     // Use fault constitutive model to compute traction associated with
     // friction.
@@ -477,7 +477,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     // Use fault constitutive model to compute traction associated with
     // friction.
@@ -839,7 +839,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
     
     // Get friction properties and state variables.
-    _friction->retrievePropsAndVars(v_fault);
+    _friction->retrievePropsStateVars(v_fault);
 
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
@@ -1073,13 +1073,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _calcTractions(&buffer, dispT);
     return buffer;
 
-  } else if (_friction->hasProperty(name) || _friction->hasStateVar(name)) {
-    assert(0 != _fields);
-    if (!_fields->hasField("buffer (other)"))
-      _fields->add("buffer (other)", "buffer");
-    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (other)");
-    _friction->getField(&buffer, name);
-    return buffer;
+  } else if (_friction->hasPropStateVar(name)) {
+    return _friction->getField(name);
 
   } else {
     std::ostringstream msg;
@@ -1514,7 +1509,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     const topology::Field<topology::SubMesh>& slip =
         _fields->get("slip");
     solution.cloneSection(slip);
-    solution.createVector();
     solution.createScatter();
   } // if
   const topology::Field<topology::SubMesh>& solution =
@@ -1525,7 +1519,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     topology::Field<topology::SubMesh>& residual =
         _fields->get("sensitivity residual");
     residual.cloneSection(solution);
-    residual.createVector();
     residual.createScatter();
   } // if
 
@@ -1950,7 +1943,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
 #endif
     // if in compression and no opening
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
-                tractionNormal);
+							  tractionNormal);
     if (tractionShearMag > frictionStress) {
       // traction is limited by friction, so have sliding
       

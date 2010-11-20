@@ -7,7 +7,9 @@ CURRENT ISSUES/PRIORITIES
     tests_auto/2d/tri3
       pylith sheardisp_refine.cfg --nodes=3  causes new nonzero malloc
 
-  quad4, level 2 (add face vertices for overlap)
+  quad4, level 2 (works in serial)
+  tet4, level 2 (works in serial)
+
   hex8, level 2
   tet4, level 4
   tri3, level 4
@@ -18,33 +20,31 @@ CURRENT ISSUES/PRIORITIES
     Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
-  MATT * add ability to combine timesteps into a single dataset
-       * write cells as ints
+  MATT * write cells as ints
        * censor vertices/cells
        * Adjust PetscViewerBinary so it can dump just values, no size info
   BRAD * write cells as ints
        * censor vertices/cells
 
 * Reimplement Fields to use a single section.
-  BRAD - 
 
     Fields -> SolutionFields
     FieldsNew -> Fields
 
-    UniformSectionDS
-      getFibration needs to return an ISection
-        chart from original section
-        array from original section
-        atlas - set offsets based on fibration
+  
 
 * Reformulate solves in terms of Schur complement
 
+  MATT - 
+  Get indices and then call MatGetSubMatrix() in FaultCohesiveLagrange.cc
+    
   + adjustSolnLumped()
     Compute Lagrange multipliers then displacements
   + form C as sparse matrix, use PETSc operations for computation
     (will work parallel)
   + Refactor friction sensitivity solve, fault preconditioner, and
     adjustSolnLumped()
+
 
 * Cleanup
   + memory model

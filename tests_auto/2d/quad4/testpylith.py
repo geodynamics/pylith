@@ -35,8 +35,8 @@ def suite():
   from TestDislocation import TestDislocation
   suite.addTest(unittest.makeSuite(TestDislocation))
 
-  #from TestDislocation2 import TestDislocation2
-  #suite.addTest(unittest.makeSuite(TestDislocation2))
+  ##from TestDislocation2 import TestDislocation2
+  ##suite.addTest(unittest.makeSuite(TestDislocation2))
 
   from TestLgDeformRigidBody import TestRigidBody
   suite.addTest(unittest.makeSuite(TestRigidBody))
@@ -47,26 +47,26 @@ def suite():
   from TestFrictionCompression import TestFrictionCompression
   suite.addTest(unittest.makeSuite(TestFrictionCompression))
   
+  from TestFrictionOpening import TestFrictionOpening
+  suite.addTest(unittest.makeSuite(TestFrictionOpening))
+
   from TestFrictionShearStick import TestFrictionShearStick
   suite.addTest(unittest.makeSuite(TestFrictionShearStick))
 
   from TestFrictionShearSliding import TestFrictionShearSliding
   suite.addTest(unittest.makeSuite(TestFrictionShearSliding))
 
-  from TestFrictionOpening import TestFrictionOpening
-  suite.addTest(unittest.makeSuite(TestFrictionOpening))
-
   from TestSlipWeakeningCompression import TestSlipWeakeningCompression
   suite.addTest(unittest.makeSuite(TestSlipWeakeningCompression))
   
+  from TestSlipWeakeningOpening import TestSlipWeakeningOpening
+  suite.addTest(unittest.makeSuite(TestSlipWeakeningOpening))
+
   from TestSlipWeakeningShearStick import TestSlipWeakeningShearStick
   suite.addTest(unittest.makeSuite(TestSlipWeakeningShearStick))
 
   from TestSlipWeakeningShearSliding import TestSlipWeakeningShearSliding
   suite.addTest(unittest.makeSuite(TestSlipWeakeningShearSliding))
-
-  from TestSlipWeakeningOpening import TestSlipWeakeningOpening
-  suite.addTest(unittest.makeSuite(TestSlipWeakeningOpening))
 
   return suite
 

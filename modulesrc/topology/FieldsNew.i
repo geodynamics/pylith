@@ -125,6 +125,9 @@ namespace pylith {
        */
       int sectionFiberDim(const char* name) const;
 
+      /// Complete section by assembling across processors.
+      void complete(void);
+
       /** Return the names of all fields.
        *
        * @param numValues Number of fields,

@@ -196,6 +196,17 @@ private :
 					const int coneVertexOffsetNormal,
 					const int coneVertexOffsetCensored);
   
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  static const int _edgesSize;
+  static const int _facesSize;
+  static const int _cellsSize;
+  EdgeType _edges[4]; ///< Buffer for edges
+  FaceType _faces[1]; ///< Buffer for faces
+  point_type _cells[16]; ///< Buffer for cells
+  
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

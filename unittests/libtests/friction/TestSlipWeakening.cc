@@ -72,29 +72,19 @@ pylith::friction::TestSlipWeakening::testStateVarsMetadata(void)
 } // testStateVarsMetadata
 
 // ----------------------------------------------------------------------
-// Test hasProperty().
+// Test hasPropStateVar().
 void
-pylith::friction::TestSlipWeakening::testHasProperty(void)
-{ // testHasProperty
+pylith::friction::TestSlipWeakening::testHasPropStateVar(void)
+{ // testHasPropStateVar
   SlipWeakening material;
 
-  CPPUNIT_ASSERT(material.hasProperty("static_coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("dynamic_coefficient"));
-  CPPUNIT_ASSERT(material.hasProperty("slip_weakening_parameter"));
-  CPPUNIT_ASSERT(!material.hasProperty("aaa"));
-} // testHasProperty
-
-// ----------------------------------------------------------------------
-// Test hasStateVar().
-void
-pylith::friction::TestSlipWeakening::testHasStateVar(void)
-{ // testHasStateVar
-  SlipWeakening material;
-
-  CPPUNIT_ASSERT(material.hasStateVar("cumulative_slip"));
-  CPPUNIT_ASSERT(material.hasStateVar("previous_slip"));
-  CPPUNIT_ASSERT(!material.hasStateVar("aaa"));
-} // testHasStateVar
+  CPPUNIT_ASSERT(material.hasPropStateVar("static_coefficient"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("dynamic_coefficient"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("slip_weakening_parameter"));
+  CPPUNIT_ASSERT(!material.hasPropStateVar("aaa"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("cumulative_slip"));
+  CPPUNIT_ASSERT(material.hasPropStateVar("previous_slip"));
+} // testHasPropStateVar
 
 
 // End of file 

@@ -34,6 +34,9 @@
 
 #include <petscmesh.hh>
 
+#include <map> // USES std::map
+#include <string> // USES std::string
+
 // Field ----------------------------------------------------------------
 /** @brief Vector field over the vertices or cells of a finite-element
  * mesh.
@@ -258,50 +261,100 @@ public :
    */
   void view(const char* label) const;
 
-  /// Create PETSc vector for field.
-  void createVector(void);
+  /** Create PETSc vector scatter for field. This is used to transfer
+   * information from the "global" PETSc vector view to the "local"
+   * Sieve section view.
+   *
+   * @param context Label for context associated with vector.
+   */
+  void createScatter(const char* context ="");
+
+
+  /** Create PETSc vector scatter for field. This is used to transfer
+   * information from the "global" PETSc vector view to the "local"
+   * Sieve section view.
+   *
+   * @param numbering Numbering used to select points in section.
+   * @param context Label for context associated with vector.
+   */
+  void createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+		     const char* context ="");
 
   /** Get PETSc vector associated with field.
    *
+   * @param context Label for context associated with vector.
    * @returns PETSc vector.
    */
-  PetscVec vector(void);
+  PetscVec vector(const char* context ="");
 
   /** Get PETSc vector associated with field.
    *
+   * @param context Label for context associated with vector.
    * @returns PETSc vector.
    */
-  const PetscVec vector(void) const;
-
-  /// Create PETSc vector scatter for field. This is used to transfer
-  /// information from the "global" PETSc vector view to the "local"
-  /// Sieve section view.
-  void createScatter(void);
+  const PetscVec vector(const char* context ="") const;
 
   /// Scatter section information across processors to update the
   /// PETSc vector view of the field.
-  void scatterSectionToVector(void) const;
+  void scatterSectionToVector(const char* context ="") const;
 
   /** Scatter section information across processors to update the
    * PETSc vector view of the field.
    *
    * @param vector PETSc vector to update.
    */
-  void scatterSectionToVector(const PetscVec vector) const;
+  void scatterSectionToVector(const PetscVec vector,
+			      const char* context ="") const;
 
   /// Scatter PETSc vector information across processors to update the
   /// Sieve section view of the field.
-  void scatterVectorToSection(void) const;
+  void scatterVectorToSection(const char* context ="") const;
 
   /** Scatter section information across processors to update the
    * PETSc vector view of the field.
    *
    * @param vector PETSc vector used in update.
    */
-  void scatterVectorToSection(const PetscVec vector) const;
+  void scatterVectorToSection(const PetscVec vector,
+			      const char* context ="") const;
 
   /// Setup split field with all entries set to a default space of 0.
   void splitDefault(void);
+
+// PRIVATE STRUCTS //////////////////////////////////////////////////////
+private :
+
+  /// Data structures used in scattering to/from PETSc Vecs.
+  struct ScatterInfo {
+    PetscVec vector; ///< PETSc vector associated with field.
+    PetscVecScatter scatter; ///< PETSc scatter associated with field.
+    PetscVec scatterVec; ///< PETSC vector used in scattering.
+  }; // ScatterInfo
+
+// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
+private :
+
+  typedef std::map<std::string, ScatterInfo> scatter_map_type;
+
+
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /** Get scatter for given context.
+   *
+   * @param context Context for scatter.
+   * @param createOk If true, okay to create new scatter for
+   * context, if false will throw std::runtime_error if scatter for
+   * context doesn't already exist.
+   */
+  ScatterInfo& _getScatter(const char* context,
+			   const bool createOk =false);
+
+  /** Get scatter for given context.
+   *
+   * @param context Context for scatter.
+   */
+  const ScatterInfo& _getScatter(const char* context) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -309,9 +362,7 @@ private :
   Metadata _metadata;
   const mesh_type& _mesh; ///< Mesh associated with section.
   ALE::Obj<section_type> _section; ///< Real section with data.
-  PetscVec _vector; ///< PETSc vector associated with field.
-  PetscVecScatter _scatter; ///< PETSc scatter associated with field.
-  PetscVec _scatterVec; ///< PETSC vector used in scattering.
+  scatter_map_type _scatters; ///< Collection of scatters.
 
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

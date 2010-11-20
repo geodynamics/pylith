@@ -57,6 +57,7 @@ namespace pylith {
 	     typename section_type =ALE::IGeneralSection<pylith::Mesh::point_type, double> > class Field;
     template<typename field_type> class Fields;
     template<typename mesh_type> class FieldsNew;
+
     class SolutionFields;
 
     class Jacobian;
@@ -67,6 +68,9 @@ namespace pylith {
 
     class ReverseCuthillMcKee;
 
+  template<typename point_type, 
+	   typename value_type,
+	   typename allocator> class ISectionSpaces;
   } // topology
 } // pylith
 

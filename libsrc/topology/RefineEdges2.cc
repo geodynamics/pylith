@@ -177,7 +177,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   //   Put it in section with point being the lowest numbered vertex and value (other endpoint, new vertex)
   Obj<ALE::Section<point_type, EdgeType> > newVerticesSection = new ALE::Section<point_type, EdgeType>(oldMesh->comm());
   assert(!newVerticesSection.isNull());
-  std::map<EdgeType, std::vector<int> > bndryEdgeToRank;
+  std::map<EdgeType, std::vector<int> > bndryEdgeToRank; // Ranks of processes sharing the edge (both vertices)
   
   const int localNormalOffset = orderNewMesh.verticesNormal().min() - orderOldMesh.verticesNormal().min();
   const int localCensoredOffset = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
@@ -189,21 +189,31 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     if (oldSendOverlap->capContains(left) && oldSendOverlap->capContains(right)) {
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq = oldSendOverlap->support(left);
       assert(!leftRanksSeq.isNull());
-      std::list<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks   = oldSendOverlap->support(right);
-      assert(!rightRanks.isNull());
-      std::list<int> ranks;
-      std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks->begin(), rightRanks->end(),
-			    std::insert_iterator<std::list<int> >(ranks, ranks.begin()));
-      
-      if(ranks.size()) {
-	const point_type edgeMin = std::min(e_iter->first.first, e_iter->first.second);
-	const int localMinOffset = (orderOldMesh.verticesNormal().hasPoint(edgeMin)) ? localNormalOffset : localCensoredOffset;
-	newVerticesSection->addFiberDimension(edgeMin+localMinOffset, 1);
-	for(std::list<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
-	  bndryEdgeToRank[e_iter->first].push_back(*r_iter);
-	  std::cout << "[" << myrank << "] Added edge " << e_iter->first << " with rank " << *r_iter << std::endl;
-	} // for
+      std::set<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
+      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
+      assert(!rightRanksSeq.isNull());
+      std::set<int> rightRanks(rightRanksSeq->begin(), rightRanksSeq->end());
+      std::set<int> ranks;
+      std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks.begin(), rightRanks.end(),
+                            std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
+
+#if 0
+      std::cout << "[" << myrank << "]   Checking edge " << e_iter->first << std::endl;
+      for(std::set<int>::const_iterator r_iter = leftRanks.begin(); r_iter != leftRanks.end(); ++r_iter) {
+        std::cout << "[" << myrank << "]     left rank " << *r_iter << std::endl;
+      }
+      for(std::set<int>::const_iterator r_iter = rightRanks.begin(); r_iter != rightRanks.end(); ++r_iter) {
+        std::cout << "[" << myrank << "]     right rank " << *r_iter << std::endl;
+      }
+#endif
+      if (ranks.size()) {
+        const point_type edgeMin = std::min(e_iter->first.first, e_iter->first.second);
+        const int localMinOffset = (orderOldMesh.verticesNormal().hasPoint(edgeMin)) ? localNormalOffset : localCensoredOffset;
+        newVerticesSection->addFiberDimension(edgeMin+localMinOffset, 1);
+        for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
+          bndryEdgeToRank[e_iter->first].push_back(*r_iter);
+          std::cout << "[" << myrank << "] Added edge " << e_iter->first << " with rank " << *r_iter << std::endl;
+        } // for
       } // if
     } // if
   } // for
@@ -224,7 +234,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 	const int localMaxOffset = (orderOldMesh.verticesNormal().hasPoint(edgeMax)) ? localNormalOffset : localCensoredOffset;
 
       if (edgeMin+localMinOffset == p) {
-	values[v++] = EdgeType(edgeMax+localMaxOffset, _edgeToVertex[e_iter->first]);
+        values[v++] = EdgeType(edgeMax+localMaxOffset, _edgeToVertex[e_iter->first]);
       } // if
     } // for
     newVerticesSection->updatePoint(p, values);
@@ -249,42 +259,42 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const int localFirstOffset = (orderOldMesh.verticesNormal().hasPoint(e_iter->first.first)) ? localNormalOffset : localCensoredOffset;
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localFirstOffset);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
-	if (rank == *lr_iter) {
-	  remoteLeft = lr_iter.color();
-	  break;
-	} // if
+        if (rank == *lr_iter) {
+          remoteLeft = lr_iter.color();
+          break;
+        } // if
       } // for
       const int localSecondOffset = (orderOldMesh.verticesNormal().hasPoint(e_iter->first.second)) ? localNormalOffset : localCensoredOffset;
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localSecondOffset);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
-	if (rank == *rr_iter) {
-	  remoteRight = rr_iter.color();
-	  break;
-	} // if
+        if (rank == *rr_iter) {
+          remoteRight = rr_iter.color();
+          break;
+        } // if
       } // for
       const point_type remoteMin   = std::min(remoteLeft, remoteRight);
       const point_type remoteMax   = std::max(remoteLeft, remoteRight);
       const int        remoteSize  = overlapVertices->getFiberDimension(overlap_point_type(rank, remoteMin));
-      const EdgeType *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
+      const EdgeType  *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
       point_type       newRemotePoint = -1;
       
       for(int d = 0; d < remoteSize; ++d) {
-	if (remoteVals[d].first == remoteMax) {
-	  newRemotePoint = remoteVals[d].second;
-	  break;
-	} // if
+        if (remoteVals[d].first == remoteMax) {
+          newRemotePoint = remoteVals[d].second;
+          break;
+        } // if
       } // for
       if (-1 == newRemotePoint) {
-	std::cout << "remoteLeft: " << remoteLeft
-		  << ", remoteRight: " << remoteRight
-		  << ", rank: " << rank
-		  << ", remoteSize: " << remoteSize
-		  << std::endl;
+        std::cout << "remoteLeft: " << remoteLeft
+                  << ", remoteRight: " << remoteRight
+                  << ", rank: " << rank
+                  << ", remoteSize: " << remoteSize
+                  << std::endl;
       } // if
       //assert(-1 != newRemotePoint);
       if (-1 != newRemotePoint) {
-	newSendOverlap->addArrow(newLocalPoint, rank, newRemotePoint);
-	newRecvOverlap->addArrow(rank, newLocalPoint, newRemotePoint);
+        newSendOverlap->addArrow(newLocalPoint, rank, newRemotePoint);
+        newRecvOverlap->addArrow(rank, newLocalPoint, newRemotePoint);
       } // if
     } // for
   } // for

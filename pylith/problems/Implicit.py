@@ -133,7 +133,7 @@ class Implicit(Formulation, ModuleImplicit):
     dispT.zero()
     residual = self.fields.get("residual")
     residual.zero()
-    residual.createVector()
+    residual.createScatter()
 
     lengthScale = normalizer.lengthScale()
     timeScale = normalizer.timeScale()

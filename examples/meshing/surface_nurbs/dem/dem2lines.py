@@ -173,56 +173,62 @@ class Dem2Lines(Application):
     xIndex = xMinInd
     xIndices = []
     count = 0
-    while (xIndex >= 0):
+    while (xIndex > 0):
       count += 1
       xIndex -= count * self.skipInterval
       xIndices.append(xIndex)
     numIndices = len(xIndices)
-    if (xIndices[numIndices - 1] < 0):
-      xIndices[numIndices - 1] = 0
-    elif (xIndices[numIndices - 1] > 0):
-      xIndices.append(0)
+    if (numIndices != 0):
+      if (xIndices[numIndices - 1] != 0):
+        if (xIndices[numIndices - 1] < 0):
+          xIndices[numIndices - 1] = 0
+        elif (xIndices[numIndices - 1] > 0):
+          xIndices.append(0)
     xIndices.reverse()
-    xIndices.extend(range(xMinInd, xMaxInd + 1))
+    xIndices.extend(range(xMinInd, min(xMaxInd + 1, self.numXIn)))
 
     xIndex = xMaxInd
     count = 0
-    while (xIndex <= self.numXIn - 1):
+    while (xIndex < self.numXIn - 1):
       count += 1
       xIndex += count * self.skipInterval
       xIndices.append(xIndex)
     numIndices = len(xIndices)
-    if (xIndices[numIndices - 1] > self.numXIn - 1):
-      xIndices[numIndices - 1] = self.numXIn - 1
-    elif (xIndices[numIndices - 1] < self.numXIn - 1):
-      xIndices.append(self.numXIn - 1)
+    if (xIndices[numIndices - 1] != self.numXIn - 1):
+      if (xIndices[numIndices - 1] > self.numXIn - 1):
+        xIndices[numIndices - 1] = self.numXIn - 1
+      elif (xIndices[numIndices - 1] < self.numXIn - 1):
+        xIndices.append(self.numXIn - 1)
 
     yIndex = yMinInd
     yIndices = []
     count = 0
-    while (yIndex >= 0):
+    while (yIndex > 0):
       count += 1
       yIndex -= count * self.skipInterval
       yIndices.append(yIndex)
     numIndices = len(yIndices)
-    if (yIndices[numIndices - 1] < 0):
-      yIndices[numIndices - 1] = 0
-    elif (yIndices[numIndices - 1] > 0):
-      yIndices.append(0)
+    if (numIndices != 0):
+      if (yIndices[numIndices - 1] != 0):
+        if (yIndices[numIndices - 1] < 0):
+          yIndices[numIndices - 1] = 0
+        elif (yIndices[numIndices - 1] > 0):
+          yIndices.append(0)
     yIndices.reverse()
-    yIndices.extend(range(yMinInd, yMaxInd + 1))
+    yIndices.extend(range(yMinInd, min(yMaxInd + 1, self.numYIn)))
 
     yIndex = yMaxInd
     count = 0
-    while (yIndex <= self.numYIn - 1):
+    while (yIndex < self.numYIn - 1):
       count += 1
       yIndex += count * self.skipInterval
       yIndices.append(yIndex)
     numIndices = len(yIndices)
-    if (yIndices[numIndices - 1] > self.numYIn - 1):
-      yIndices[numIndices - 1] = self.numYIn - 1
-    elif (yIndices[numIndices - 1] < self.numYIn - 1):
-      yIndices.append(self.numYIn - 1)
+    if (yIndices[numIndices - 1] != self.numYIn - 1):
+      if (yIndices[numIndices - 1] > self.numYIn - 1):
+        yIndices[numIndices - 1] = self.numYIn - 1
+      elif (yIndices[numIndices - 1] < self.numYIn - 1):
+        yIndices.append(self.numYIn - 1)
 
     # Get output values.
     self.xOut = self.xIn[xIndices]
