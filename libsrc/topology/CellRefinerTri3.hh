@@ -170,6 +170,15 @@ private :
 					const int coneVertexOffsetNormal,
 					const int coneVertexOffsetCensored);
   
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  static const int _edgesSize;
+  static const int _cellsSize;
+  EdgeType _edges[3]; ///< Buffer for edges
+  point_type _cells[12]; ///< Buffer for cells
+  
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 

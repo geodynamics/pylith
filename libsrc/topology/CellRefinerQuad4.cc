@@ -26,6 +26,12 @@
 
 #include <iostream> // TEMPORARY
 // ----------------------------------------------------------------------
+// These must match the sizes of the buffers in the header file.
+const int ALE::CellRefinerQuad4::_edgesSize = 4;
+const int ALE::CellRefinerQuad4::_facesSize = 1;
+const int ALE::CellRefinerQuad4::_cellsSize = 16;
+
+// ----------------------------------------------------------------------
 // Constructor
 ALE::CellRefinerQuad4::CellRefinerQuad4(const mesh_type& mesh) :
  RefineFace4Edges2(mesh)
@@ -205,15 +211,15 @@ ALE::CellRefinerQuad4::_edges_QUADRILATERAL(const EdgeType** edges,
 					    const point_type cone[],
 					    const int coneSize)
 { // _edges_QUADRILATERAL
-  static EdgeType quadEdges[4];
-  
+  assert(_edgesSize >= 4);
+
   assert(coneSize == 4);
-  quadEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-  quadEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-  quadEdges[2] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
-  quadEdges[3] = EdgeType(std::min(cone[3], cone[0]), std::max(cone[3], cone[0]));
+  _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+  _edges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+  _edges[2] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
+  _edges[3] = EdgeType(std::min(cone[3], cone[0]), std::max(cone[3], cone[0]));
   *numEdges = 4;
-  *edges = quadEdges;
+  *edges = _edges;
 } // _edges_QUADRILATERAL
   
 // ----------------------------------------------------------------------
@@ -227,23 +233,23 @@ ALE::CellRefinerQuad4::_edges_LINE_COHESIVE_LAGRANGE(const EdgeType** edges,
 { // _edges_LINE_COHESIVE_LAGRANGE
   if (uncensored) {
     // Include all edges
-    static EdgeType lineEdges[3];
+    assert(_edgesSize >= 3);
 
     assert(coneSize == 6);
-    lineEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-    lineEdges[1] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
-    lineEdges[2] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+    _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    _edges[1] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
+    _edges[2] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
     *numEdges = 3;
-    *edges    = lineEdges;
+    *edges = _edges;
   } else {
     // Omit edges with censored (Lagrange multiplier) vertices.
-    static EdgeType lineEdges[2];
+    assert(_edgesSize >= 2);
 
     assert(coneSize == 6);
-    lineEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-    lineEdges[1] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
+    _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    _edges[1] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
     *numEdges = 2;
-    *edges    = lineEdges;
+    *edges = _edges;
   } // if/else
 } // _edges_LINE_COHESIVE_LAGRANGE
   
@@ -255,7 +261,7 @@ ALE::CellRefinerQuad4::_faces_QUADRILATERAL(const FaceType** faces,
 					    const point_type cone[],
 					    const int coneSize)
 { // _faces_QUADRILATERAL
-  static FaceType quadFaces[1];
+  assert(_facesSize >= 1);
   
   assert(coneSize == 4);
   
@@ -267,37 +273,37 @@ ALE::CellRefinerQuad4::_faces_QUADRILATERAL(const FaceType** faces,
 
   if (pMin == cone[0]) {
     if (cone[1] < cone[3]) {
-      quadFaces[0] = FaceType(cone[0], cone[1], cone[2], cone[3]);
+      _faces[0] = FaceType(cone[0], cone[1], cone[2], cone[3]);
     } else {
-      quadFaces[0] = FaceType(cone[0], cone[3], cone[2], cone[1]);
+      _faces[0] = FaceType(cone[0], cone[3], cone[2], cone[1]);
     } // if/else
 
   } else if (pMin == cone[1]) {
     if (cone[2] < cone[0]) {
-      quadFaces[0] = FaceType(cone[1], cone[2], cone[3], cone[0]);
+      _faces[0] = FaceType(cone[1], cone[2], cone[3], cone[0]);
     } else {
-      quadFaces[0] = FaceType(cone[1], cone[0], cone[3], cone[2]);
+      _faces[0] = FaceType(cone[1], cone[0], cone[3], cone[2]);
     } // if/else
 
   } else if (pMin == cone[2]) {
     if (cone[3] < cone[1]) {
-      quadFaces[0] = FaceType(cone[2], cone[3], cone[0], cone[1]);
+      _faces[0] = FaceType(cone[2], cone[3], cone[0], cone[1]);
     } else {
-      quadFaces[0] = FaceType(cone[2], cone[1], cone[3], cone[0]);
+      _faces[0] = FaceType(cone[2], cone[1], cone[3], cone[0]);
     } // if/else
 
   } else if (pMin == cone[3]) {
     if (cone[0] < cone[2]) {
-      quadFaces[0] = FaceType(cone[3], cone[0], cone[1], cone[2]);
+      _faces[0] = FaceType(cone[3], cone[0], cone[1], cone[2]);
     } else {
-      quadFaces[0] = FaceType(cone[3], cone[2], cone[1], cone[0]);
+      _faces[0] = FaceType(cone[3], cone[2], cone[1], cone[0]);
     } // if/else
   } else {
     assert(0);
     throw ALE::Exception("Could not determine quad face orientation during uniform global refinement.");
   } // if/else
   *numFaces = 1;
-  *faces = quadFaces;
+  *faces = _faces;
 } // _faces_QUADRILATERAL
   
 // ----------------------------------------------------------------------
@@ -316,16 +322,16 @@ void
   const int numNewVertices = 5;
 
   int numEdges = 0;
-  const EdgeType  *edges;
+  const EdgeType* edges;
   _edges_QUADRILATERAL(&edges, &numEdges, cone, coneSize);
   assert(numEdgesQuad4 == numEdges);
 
   int numFaces = 0;
-  const FaceType  *faces;
+  const FaceType* faces;
   _faces_QUADRILATERAL(&faces, &numFaces, cone, coneSize);
   assert(numFacesQuad4 == numFaces);
 
-  static point_type quadCells[numNewCells*coneSizeQuad4];
+  assert(_cellsSize >= numNewCells*coneSizeQuad4);
   point_type newVertices[numNewVertices];
   int iNewVertex = 0;
   for(int iEdge=0; iEdge < numEdgesQuad4; ++iEdge) {
@@ -342,31 +348,31 @@ void
   } // for
 
   // new cell 0
-  quadCells[0*4+0] = cone[0] + coneVertexOffset;
-  quadCells[0*4+1] = newVertices[0];
-  quadCells[0*4+2] = newVertices[4];
-  quadCells[0*4+3] = newVertices[3];
+  _cells[0*4+0] = cone[0] + coneVertexOffset;
+  _cells[0*4+1] = newVertices[0];
+  _cells[0*4+2] = newVertices[4];
+  _cells[0*4+3] = newVertices[3];
 
   // new cell 1
-  quadCells[1*4+0] = cone[1] + coneVertexOffset;
-  quadCells[1*4+1] = newVertices[1];
-  quadCells[1*4+2] = newVertices[4];
-  quadCells[1*4+3] = newVertices[0];
+  _cells[1*4+0] = cone[1] + coneVertexOffset;
+  _cells[1*4+1] = newVertices[1];
+  _cells[1*4+2] = newVertices[4];
+  _cells[1*4+3] = newVertices[0];
 
   // new cell 2
-  quadCells[2*4+0] = cone[3] + coneVertexOffset;
-  quadCells[2*4+1] = newVertices[3];
-  quadCells[2*4+2] = newVertices[4];
-  quadCells[2*4+3] = newVertices[2];
+  _cells[2*4+0] = cone[3] + coneVertexOffset;
+  _cells[2*4+1] = newVertices[3];
+  _cells[2*4+2] = newVertices[4];
+  _cells[2*4+3] = newVertices[2];
 
   // new cell 3
-  quadCells[3*4+0] = cone[2] + coneVertexOffset;
-  quadCells[3*4+1] = newVertices[2];
-  quadCells[3*4+2] = newVertices[4];
-  quadCells[3*4+3] = newVertices[1];
+  _cells[3*4+0] = cone[2] + coneVertexOffset;
+  _cells[3*4+1] = newVertices[2];
+  _cells[3*4+2] = newVertices[4];
+  _cells[3*4+3] = newVertices[1];
 
   *numCells = numNewCells;
-  *cells    = quadCells;
+  *cells = _cells;
 } // _newCells_QUADRILATERAL
   
 // ----------------------------------------------------------------------
@@ -390,7 +396,7 @@ ALE::CellRefinerQuad4::_newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells
   _edges_LINE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize, true);
   assert(numEdgesLine6 == numEdges);
 
-  static point_type lineCells[numNewCells*coneSizeLine6];
+  assert(_cellsSize >= numNewCells*coneSizeLine6);
   point_type newVertices[numNewVertices];
   for(int iEdge=0, iNewVertex=0; iEdge < numEdgesLine6; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
@@ -400,23 +406,23 @@ ALE::CellRefinerQuad4::_newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells
   } // for
 
   // new cell 0
-  lineCells[0*6+0] = cone[0] + coneVertexOffsetNormal;
-  lineCells[0*6+1] = newVertices[0];
-  lineCells[0*6+2] = cone[2] + coneVertexOffsetNormal;
-  lineCells[0*6+3] = newVertices[1];
-  lineCells[0*6+4] = cone[4] + coneVertexOffsetCensored;
-  lineCells[0*6+5] = newVertices[2];
+  _cells[0*6+0] = cone[0] + coneVertexOffsetNormal;
+  _cells[0*6+1] = newVertices[0];
+  _cells[0*6+2] = cone[2] + coneVertexOffsetNormal;
+  _cells[0*6+3] = newVertices[1];
+  _cells[0*6+4] = cone[4] + coneVertexOffsetCensored;
+  _cells[0*6+5] = newVertices[2];
 
   // new cell 1
-  lineCells[1*6+0] = newVertices[0];
-  lineCells[1*6+1] = cone[1] + coneVertexOffsetNormal;
-  lineCells[1*6+2] = newVertices[1];
-  lineCells[1*6+3] = cone[3] + coneVertexOffsetNormal;
-  lineCells[1*6+4] = newVertices[2];
-  lineCells[1*6+5] = cone[5] + coneVertexOffsetCensored;
+  _cells[1*6+0] = newVertices[0];
+  _cells[1*6+1] = cone[1] + coneVertexOffsetNormal;
+  _cells[1*6+2] = newVertices[1];
+  _cells[1*6+3] = cone[3] + coneVertexOffsetNormal;
+  _cells[1*6+4] = newVertices[2];
+  _cells[1*6+5] = cone[5] + coneVertexOffsetCensored;
   
   *numCells = 2;
-  *cells    = lineCells;
+  *cells = _cells;
 } // _newCells_LINE_COHESIVE_LAGRANGE
 
 

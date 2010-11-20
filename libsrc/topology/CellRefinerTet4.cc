@@ -26,6 +26,11 @@
 
 #include <iostream> // TEMPORARY
 // ----------------------------------------------------------------------
+// These must match the sizes of the buffers in the header file.
+const int ALE::CellRefinerTet4::_edgesSize = 9;
+const int ALE::CellRefinerTet4::_cellsSize = 36;
+
+// ----------------------------------------------------------------------
 // Constructor
 ALE::CellRefinerTet4::CellRefinerTet4(const mesh_type& mesh) :
   RefineEdges2(mesh)
@@ -191,17 +196,17 @@ ALE::CellRefinerTet4::_edges_TETRAHEDRON(const EdgeType** edges,
 					 const point_type cone[],
 					 const int coneSize)
 { // _edges_TETRAHEDRON
-  static EdgeType splitEdges[6];
+  assert(_edgesSize >= 6);
   
   assert(coneSize == 4);
-  splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-  splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-  splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
-  splitEdges[3] = EdgeType(std::min(cone[0], cone[3]), std::max(cone[0], cone[3]));
-  splitEdges[4] = EdgeType(std::min(cone[1], cone[3]), std::max(cone[1], cone[3]));
-  splitEdges[5] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
+  _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+  _edges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+  _edges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+  _edges[3] = EdgeType(std::min(cone[0], cone[3]), std::max(cone[0], cone[3]));
+  _edges[4] = EdgeType(std::min(cone[1], cone[3]), std::max(cone[1], cone[3]));
+  _edges[5] = EdgeType(std::min(cone[2], cone[3]), std::max(cone[2], cone[3]));
   *numEdges = 6;
-  *edges    = splitEdges;
+  *edges = _edges;
 } // _edges_TETRAHEDRON
   
 // ----------------------------------------------------------------------
@@ -215,33 +220,33 @@ ALE::CellRefinerTet4::_edges_TRIANGLE_COHESIVE_LAGRANGE(const EdgeType** edges,
 { // _edges_TRIANGLE_COHESIVE_LAGRANGE
   if (uncensored) {
     // Use all vertices
-    static EdgeType splitEdges[9];
+    assert(_edgesSize >= 9);
 
     assert(coneSize == 9);
-    splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-    splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-    splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
-    splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
-    splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
-    splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
-    splitEdges[6] = EdgeType(std::min(cone[6], cone[7]), std::max(cone[6], cone[7]));
-    splitEdges[7] = EdgeType(std::min(cone[7], cone[8]), std::max(cone[7], cone[8]));
-    splitEdges[8] = EdgeType(std::min(cone[8], cone[6]), std::max(cone[8], cone[6]));
+    _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    _edges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+    _edges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+    _edges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
+    _edges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+    _edges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
+    _edges[6] = EdgeType(std::min(cone[6], cone[7]), std::max(cone[6], cone[7]));
+    _edges[7] = EdgeType(std::min(cone[7], cone[8]), std::max(cone[7], cone[8]));
+    _edges[8] = EdgeType(std::min(cone[8], cone[6]), std::max(cone[8], cone[6]));
     *numEdges = 9;
-    *edges = splitEdges;
+    *edges = _edges;
   } else {
     // Omit edges with censored (Lagrange multipler) vertices.
-    static EdgeType splitEdges[6];
+    assert(_edgesSize >= 6);
 
     assert(coneSize == 9);
-    splitEdges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
-    splitEdges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
-    splitEdges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
-    splitEdges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
-    splitEdges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
-    splitEdges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
+    _edges[0] = EdgeType(std::min(cone[0], cone[1]), std::max(cone[0], cone[1]));
+    _edges[1] = EdgeType(std::min(cone[1], cone[2]), std::max(cone[1], cone[2]));
+    _edges[2] = EdgeType(std::min(cone[2], cone[0]), std::max(cone[2], cone[0]));
+    _edges[3] = EdgeType(std::min(cone[3], cone[4]), std::max(cone[3], cone[4]));
+    _edges[4] = EdgeType(std::min(cone[4], cone[5]), std::max(cone[4], cone[5]));
+    _edges[5] = EdgeType(std::min(cone[5], cone[3]), std::max(cone[5], cone[3]));
     *numEdges = 6;
-    *edges = splitEdges;
+    *edges = _edges;
   } // if/else
 } // _edges_TRIANGLE_COHESIVE_LAGRANGE
   
@@ -260,11 +265,11 @@ ALE::CellRefinerTet4::_newCells_TETRAHEDRON(const point_type** cells,
   const int numNewVertices = 6;
 
   int numEdges = 0;
-  const EdgeType  *edges;
+  const EdgeType* edges;
   _edges_TETRAHEDRON(&edges, &numEdges, cone, coneSize);
   assert(numEdgesTet4 == numEdges);
 
-  static point_type newCells[numNewCells*coneSizeTet4];
+  assert(_cellsSize >= numNewCells*coneSizeTet4);
   point_type newVertices[numNewVertices];
   for(int iEdge=0, iNewVertex=0; iEdge < numEdgesTet4; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
@@ -274,55 +279,55 @@ ALE::CellRefinerTet4::_newCells_TETRAHEDRON(const point_type** cells,
   } // for
 
   // new cell 0
-  newCells[0*4+0] = cone[0]+coneVertexOffset;
-  newCells[0*4+1] = newVertices[3];
-  newCells[0*4+2] = newVertices[0];
-  newCells[0*4+3] = newVertices[2];
+  _cells[0*4+0] = cone[0]+coneVertexOffset;
+  _cells[0*4+1] = newVertices[3];
+  _cells[0*4+2] = newVertices[0];
+  _cells[0*4+3] = newVertices[2];
 
   // new cell 1
-  newCells[1*4+0] = newVertices[0];
-  newCells[1*4+1] = newVertices[1];
-  newCells[1*4+2] = newVertices[2];
-  newCells[1*4+3] = newVertices[3];
+  _cells[1*4+0] = newVertices[0];
+  _cells[1*4+1] = newVertices[1];
+  _cells[1*4+2] = newVertices[2];
+  _cells[1*4+3] = newVertices[3];
 
   // new cell 2
-  newCells[2*4+0] = newVertices[0];
-  newCells[2*4+1] = newVertices[3];
-  newCells[2*4+2] = newVertices[4];
-  newCells[2*4+3] = newVertices[1];
+  _cells[2*4+0] = newVertices[0];
+  _cells[2*4+1] = newVertices[3];
+  _cells[2*4+2] = newVertices[4];
+  _cells[2*4+3] = newVertices[1];
 
   // new cell 3
-  newCells[3*4+0] = cone[1]+coneVertexOffset;
-  newCells[3*4+1] = newVertices[4];
-  newCells[3*4+2] = newVertices[1];
-  newCells[3*4+3] = newVertices[0];
+  _cells[3*4+0] = cone[1]+coneVertexOffset;
+  _cells[3*4+1] = newVertices[4];
+  _cells[3*4+2] = newVertices[1];
+  _cells[3*4+3] = newVertices[0];
 
   // new cell 4
-  newCells[4*4+0] = newVertices[2];
-  newCells[4*4+1] = newVertices[5];
-  newCells[4*4+2] = newVertices[3];
-  newCells[4*4+3] = newVertices[1];
+  _cells[4*4+0] = newVertices[2];
+  _cells[4*4+1] = newVertices[5];
+  _cells[4*4+2] = newVertices[3];
+  _cells[4*4+3] = newVertices[1];
 
   // new cell 5
-  newCells[5*4+0] = cone[2]+coneVertexOffset;
-  newCells[5*4+1] = newVertices[5];
-  newCells[5*4+2] = newVertices[2];
-  newCells[5*4+3] = newVertices[1];
+  _cells[5*4+0] = cone[2]+coneVertexOffset;
+  _cells[5*4+1] = newVertices[5];
+  _cells[5*4+2] = newVertices[2];
+  _cells[5*4+3] = newVertices[1];
 
   // new cell 6
-  newCells[6*4+0] = newVertices[1];
-  newCells[6*4+1] = newVertices[4];
-  newCells[6*4+2] = newVertices[5];
-  newCells[6*4+3] = newVertices[3];
+  _cells[6*4+0] = newVertices[1];
+  _cells[6*4+1] = newVertices[4];
+  _cells[6*4+2] = newVertices[5];
+  _cells[6*4+3] = newVertices[3];
 
   // new cell 7
-  newCells[7*4+0] = cone[3]+coneVertexOffset;
-  newCells[7*4+1] = newVertices[3];
-  newCells[7*4+2] = newVertices[5];
-  newCells[7*4+3] = newVertices[4];
+  _cells[7*4+0] = cone[3]+coneVertexOffset;
+  _cells[7*4+1] = newVertices[3];
+  _cells[7*4+2] = newVertices[5];
+  _cells[7*4+3] = newVertices[4];
 
   *numCells = numNewCells;
-  *cells = newCells;
+  *cells = _cells;
 } // _newCells_TETRAHEDRON
   
 // ----------------------------------------------------------------------
@@ -346,7 +351,7 @@ ALE::CellRefinerTet4::_newCells_TRIANGLE_COHESIVE_LAGRANGE(const point_type** ce
   _edges_TRIANGLE_COHESIVE_LAGRANGE(&edges, &numEdges, cone, coneSize, true);
   assert(numEdgesTriPrism9 == numEdges);
 
-  static point_type newCells[numNewCells*coneSizeTriPrism9];
+  assert(_cellsSize >= numNewCells*coneSizeTriPrism9);
   point_type newVertices[numNewVertices];
   for(int iEdge=0, iNewVertex=0; iEdge < numEdgesTriPrism9; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
@@ -355,48 +360,48 @@ ALE::CellRefinerTet4::_newCells_TRIANGLE_COHESIVE_LAGRANGE(const point_type** ce
     newVertices[iNewVertex++] = _edgeToVertex[edges[iEdge]];
   } // for
 
-  newCells[0*9+0] = cone[0]+coneVertexOffsetNormal; // New cell 0
-  newCells[0*9+1] = newVertices[0];
-  newCells[0*9+2] = newVertices[2];
-  newCells[0*9+3] = cone[3]+coneVertexOffsetNormal;
-  newCells[0*9+4] = newVertices[3];
-  newCells[0*9+5] = newVertices[5];
-  newCells[0*9+6] = cone[6]+coneVertexOffsetCensored;
-  newCells[0*9+7] = newVertices[6];
-  newCells[0*9+8] = newVertices[8];
+  _cells[0*9+0] = cone[0]+coneVertexOffsetNormal; // New cell 0
+  _cells[0*9+1] = newVertices[0];
+  _cells[0*9+2] = newVertices[2];
+  _cells[0*9+3] = cone[3]+coneVertexOffsetNormal;
+  _cells[0*9+4] = newVertices[3];
+  _cells[0*9+5] = newVertices[5];
+  _cells[0*9+6] = cone[6]+coneVertexOffsetCensored;
+  _cells[0*9+7] = newVertices[6];
+  _cells[0*9+8] = newVertices[8];
   
-  newCells[1*9+0] = newVertices[0]; // New cell 1
-  newCells[1*9+1] = newVertices[1];
-  newCells[1*9+2] = newVertices[2];
-  newCells[1*9+3] = newVertices[3];
-  newCells[1*9+4] = newVertices[4];
-  newCells[1*9+5] = newVertices[5];
-  newCells[1*9+6] = newVertices[6];
-  newCells[1*9+7] = newVertices[7];
-  newCells[1*9+8] = newVertices[8];
+  _cells[1*9+0] = newVertices[0]; // New cell 1
+  _cells[1*9+1] = newVertices[1];
+  _cells[1*9+2] = newVertices[2];
+  _cells[1*9+3] = newVertices[3];
+  _cells[1*9+4] = newVertices[4];
+  _cells[1*9+5] = newVertices[5];
+  _cells[1*9+6] = newVertices[6];
+  _cells[1*9+7] = newVertices[7];
+  _cells[1*9+8] = newVertices[8];
   
-  newCells[2*9+0] = cone[1]+coneVertexOffsetNormal; // New cell 2
-  newCells[2*9+1] = newVertices[1];
-  newCells[2*9+2] = newVertices[0];
-  newCells[2*9+3] = cone[4]+coneVertexOffsetNormal;
-  newCells[2*9+4] = newVertices[4];
-  newCells[2*9+5] = newVertices[3];
-  newCells[2*9+6] = cone[7]+coneVertexOffsetCensored;
-  newCells[2*9+7] = newVertices[7];
-  newCells[2*9+8] = newVertices[6];
+  _cells[2*9+0] = cone[1]+coneVertexOffsetNormal; // New cell 2
+  _cells[2*9+1] = newVertices[1];
+  _cells[2*9+2] = newVertices[0];
+  _cells[2*9+3] = cone[4]+coneVertexOffsetNormal;
+  _cells[2*9+4] = newVertices[4];
+  _cells[2*9+5] = newVertices[3];
+  _cells[2*9+6] = cone[7]+coneVertexOffsetCensored;
+  _cells[2*9+7] = newVertices[7];
+  _cells[2*9+8] = newVertices[6];
   
-  newCells[3*9+0] = cone[2]+coneVertexOffsetNormal; // New cell 3
-  newCells[3*9+1] = newVertices[2];
-  newCells[3*9+2] = newVertices[1];
-  newCells[3*9+3] = cone[5]+coneVertexOffsetNormal;
-  newCells[3*9+4] = newVertices[5];
-  newCells[3*9+5] = newVertices[4];
-  newCells[3*9+6] = cone[8]+coneVertexOffsetCensored;
-  newCells[3*9+7] = newVertices[8];
-  newCells[3*9+8] = newVertices[7];
+  _cells[3*9+0] = cone[2]+coneVertexOffsetNormal; // New cell 3
+  _cells[3*9+1] = newVertices[2];
+  _cells[3*9+2] = newVertices[1];
+  _cells[3*9+3] = cone[5]+coneVertexOffsetNormal;
+  _cells[3*9+4] = newVertices[5];
+  _cells[3*9+5] = newVertices[4];
+  _cells[3*9+6] = cone[8]+coneVertexOffsetCensored;
+  _cells[3*9+7] = newVertices[8];
+  _cells[3*9+8] = newVertices[7];
 
   *numCells = numNewCells;
-  *cells    = newCells;
+  *cells = _cells;
 } // _newCells_TRIANGLE_COHESIVE_LAGRANGE
 
 
