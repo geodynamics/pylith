@@ -82,10 +82,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
   _datasets.clear();
 
   try {
-    if (label)
-      DataWriter<mesh_type, field_type>::_context = label;
-    else
-      DataWriter<mesh_type, field_type>::_context = "";
+    DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
     PetscErrorCode err = 0;
@@ -236,13 +233,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
   DataWriter<mesh_type, field_type>::_context = "";
 
   if (_h5->isOpen()) {
-    // :TODO: Update number of time steps in HDF5 based on size of file
-
-    // loop over datasets
-    // Get dataset info (dims, external file name)
-    // compute number of time steps
-    // Update dataset dimensions
-
     _h5->close();
   } // if
   deallocate();
@@ -336,6 +326,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 				    dims, ndims, H5T_NATIVE_DOUBLE);
       delete[] dims; dims = 0;
     } // else
+
+    // :TODO: Update number of time steps in HDF5 file.
 
   } catch (const std::exception& err) {
     std::ostringstream msg;
