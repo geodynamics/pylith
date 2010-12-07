@@ -151,11 +151,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
     msg << "Error while preparing for writing data to VTK file "
 	<< _filename << " at time " << t << ".\n" << err.what();
     throw std::runtime_error(msg.str());
-  } catch (const ALE::Exception& err) {
-    std::ostringstream msg;
-    msg << "Error while preparing for writing data to VTK file "
-	<< _filename << " at time " << t << ".\n" << err.msg();
-    throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while preparing for writing data to VTK file "
