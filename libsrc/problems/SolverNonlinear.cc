@@ -37,6 +37,10 @@
 #include "../src/snes/impls/ls/lsimpl.h"
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverNonlinear::SolverNonlinear(void) :
   _snes(0),
@@ -135,6 +139,7 @@ pylith::problems::SolverNonlinear::solve(
     PetscMat A = 0;
     PetscInt num = 0;
 
+    PetscErrorCode err = 0;
     err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
     err = KSPSetUp(ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
