@@ -696,6 +696,116 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #endif
 
   const int numVertices = _cohesiveVertices.size();
+#if 1
+  int numConstraintVertices = 0;
+
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    if (globalOrder->isLocal(v_lagrange)) ++numConstraintVertices;
+  }
+  int_array indices(2*numConstraintVertices*spaceDim);
+
+  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
+    // Set global order indices
+    for(int d = 0; d < spaceDim; ++d) {
+      indices[(cV*2 + 0)*spaceDim+d] = d + globalOrder->getIndex(v_negative);
+      indices[(cV*2 + 1)*spaceDim+d] = d + globalOrder->getIndex(v_positive);
+    }
+    ++cV;
+  }
+  Mat *localMat[1];
+  IS   indicesIS[1];
+  PetscErrorCode err = 0;
+
+  err = ISCreateGeneral(PETSC_COMM_SELF, indices.size(), &indices[0], PETSC_USE_POINTER, &indicesIS[0]); CHECK_PETSC_ERROR(err);
+  err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, localMat); CHECK_PETSC_ERROR(err);
+  err = ISDestroy(indicesIS[0]); CHECK_PETSC_ERROR(err);
+  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
+    PetscErrorCode err = 0;
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_fault    = _cohesiveVertices[iVertex].fault;
+
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(restrictEvent);
+#endif
+    // Get orientations at fault cell's vertices.
+    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
+				      orientationVertex.size());
+
+    indicesN = indicesRel + (cV*2 + 0)*spaceDim;
+    indicesP = indicesRel + (cV*2 + 1)*spaceDim;
+    err = MatGetValues(*localMat[0],
+		       indicesN.size(), &indicesN[0],
+		       indicesN.size(), &indicesN[0],
+		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
+    jacobianVertexP = 1.0;
+    err = MatGetValues(*localMat[0],
+		       indicesP.size(), &indicesP[0],
+		       indicesP.size(), &indicesP[0],
+		       &jacobianVertexP[0]); CHECK_PETSC_ERROR(err);
+    ++cV;
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    // Compute inverse of Jacobian diagonals
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      jacobianInvVertexN[iDim] = 1.0/jacobianVertexN[iDim*spaceDim+iDim];
+      jacobianInvVertexP[iDim] = 1.0/jacobianVertexP[iDim*spaceDim+iDim];
+    } // for
+
+    // Compute -[C] [Adiag]^(-1) [C]^T
+    //   C_{ij}          = orientationVertex[i*spaceDim+j]
+    //   C^T_{ij}        = orientationVertex[j*spaceDim+i]
+    //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i]
+    //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
+    precondVertexL = 0.0;
+    for (int kDim=0; kDim < spaceDim; ++kDim) {
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	precondVertexL[kDim] -= 
+          orientationVertex[kDim*spaceDim+iDim] * 
+          orientationVertex[kDim*spaceDim+iDim] * 
+          (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+    } // for
+    
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    // Set global preconditioner index associated with Lagrange constraint vertex.
+    const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
+    
+    // Set diagonal entries in preconditioned matrix.
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      MatSetValue(*precondMatrix,
+		  indexLprecond + iDim,
+		  indexLprecond + iDim,
+		  precondVertexL[iDim],
+		  INSERT_VALUES);
+    
+#if defined(DETAILED_EVENT_LOGGING)
+    PetscLogFlops(spaceDim*spaceDim*4);
+    _logger->eventEnd(updateEvent);
+#endif
+  }
+  err = MatDestroyMatrices(1, localMat); CHECK_PETSC_ERROR(err);
+#else
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -785,6 +895,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #endif
 
   } // for
+#endif
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
