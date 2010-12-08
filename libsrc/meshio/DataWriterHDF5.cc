@@ -93,6 +93,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
+      sieveMesh->hasRealSection("coordinates_dimensioned") ?
+      sieveMesh->getRealSection("coordinates_dimensioned") :
       sieveMesh->getRealSection("coordinates");
     assert(!coordinatesSection.isNull());
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
