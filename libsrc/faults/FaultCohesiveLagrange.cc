@@ -697,12 +697,19 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   const int numVertices = _cohesiveVertices.size();
 #if 1
+  // :BUG: MatGetSubMatrices() needs sorted indices.  We need to
+  // create an array of sorted indices along with a map from the
+  // Lagrange vertex to the sorted indices.
+  //
+  // Note: This is messy because one side of the fault will have much
+  // indices than the other side where we created new nodes when we
+  // adjusted the topology to create the cohesive cells.
   int numConstraintVertices = 0;
-
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    if (globalOrder->isLocal(v_lagrange)) ++numConstraintVertices;
-  }
+    if (globalOrder->isLocal(v_lagrange))
+      ++numConstraintVertices;
+  } // for
   int_array indices(2*numConstraintVertices*spaceDim);
 
   for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
@@ -718,20 +725,25 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     for(int d = 0; d < spaceDim; ++d) {
       indices[(cV*2 + 0)*spaceDim+d] = d + globalOrder->getIndex(v_negative);
       indices[(cV*2 + 1)*spaceDim+d] = d + globalOrder->getIndex(v_positive);
-    }
+    } // for
     ++cV;
-  }
-  Mat *localMat[1];
-  IS   indicesIS[1];
+  } // for
+  std::sort(&indices[0], &indices[indices.size()]);
+  Mat* localMat[1];
+  IS indicesIS[1];
   PetscErrorCode err = 0;
 
-  err = ISCreateGeneral(PETSC_COMM_SELF, indices.size(), &indices[0], PETSC_USE_POINTER, &indicesIS[0]); CHECK_PETSC_ERROR(err);
-  err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS, indicesIS, MAT_INITIAL_MATRIX, localMat); CHECK_PETSC_ERROR(err);
+  err = ISCreateGeneral(PETSC_COMM_SELF, indices.size(), &indices[0],
+			PETSC_USE_POINTER, &indicesIS[0]);
+  CHECK_PETSC_ERROR(err);
+  err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS,
+			  indicesIS, MAT_INITIAL_MATRIX, localMat);
+  CHECK_PETSC_ERROR(err);
   err = ISDestroy(indicesIS[0]); CHECK_PETSC_ERROR(err);
   for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
     PetscErrorCode err = 0;
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    const int v_fault    = _cohesiveVertices[iVertex].fault;
+    const int v_fault = _cohesiveVertices[iVertex].fault;
 
     // Compute contribution only if Lagrange constraint is local.
     if (!globalOrder->isLocal(v_lagrange))

@@ -20,24 +20,26 @@ CURRENT ISSUES/PRIORITIES
     Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
-  MATT * write cells as ints
-       * censor vertices/cells
-       * Adjust PetscViewerBinary so it can dump just values, no size info
-  BRAD * write cells as ints
-       * censor vertices/cells
+  MATT * Adjust PetscViewerBinary so it can dump just values, no size info
+  BRAD * finish censoring vertices/cells for DataWriterHDF5Ext
+          PetscViewerBinarySetSkipHeader(PETSC_TRUE);
+       * Finish unit tests
 
 * Reimplement Fields to use a single section.
 
     Fields -> SolutionFields
     FieldsNew -> Fields
 
-  
-
 * Reformulate solves in terms of Schur complement
 
   MATT - 
   Get indices and then call MatGetSubMatrix() in FaultCohesiveLagrange.cc
     
+  need unit test for calcPreconditioner
+
+  propagate SolverLinear to SolverNonlinear
+    get KSP from SNES
+
   + adjustSolnLumped()
     Compute Lagrange multipliers then displacements
   + form C as sparse matrix, use PETSc operations for computation
@@ -54,6 +56,8 @@ CURRENT ISSUES/PRIORITIES
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
 
+  * write cells as ints in HDF5
+       
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
   + Specialized elasticity integrator objects for Quad4, Hex8
