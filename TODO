@@ -3,27 +3,15 @@ CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 * Unform global refinement
-  MATT
-    tests_auto/2d/tri3
-      pylith sheardisp_refine.cfg --nodes=3  causes new nonzero malloc
-
   quad4, level 2 (works in serial)
   tet4, level 2 (works in serial)
-
   hex8, level 2
-  tet4, level 4
-  tri3, level 4
-  hex8, level 4
-  quad4, level 4
 
   Python unit tests
     Can't test result (no cohesive cells in MeshIOAscii).
 
 * Output to HDF5 files.
-  MATT * Adjust PetscViewerBinary so it can dump just values, no size info
-  BRAD * finish censoring vertices/cells for DataWriterHDF5Ext
-          PetscViewerBinarySetSkipHeader(PETSC_TRUE);
-       * Finish unit tests
+  BRAD * Finish unit tests
 
 * Reimplement Fields to use a single section.
 
