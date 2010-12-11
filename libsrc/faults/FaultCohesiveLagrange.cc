@@ -664,7 +664,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   int_array indicesN(spaceDim);
   int_array indicesP(spaceDim);
   int_array indicesRel(spaceDim);
-  for (int i=0; i < spaceDim; ++i) {indicesRel[i] = i;}
+  for (int i=0; i < spaceDim; ++i)
+    indicesRel[i] = i;
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -681,10 +682,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
         solutionSection);
   assert(!globalOrder.isNull());
 
-  // Get Jacobian matrix
-  const PetscMat jacobianMatrix = jacobian->matrix();
-  assert(0 != jacobianMatrix);
-
   const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
       sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
         solutionSection, spaceDim);
@@ -695,55 +692,18 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   _logger->eventBegin(computeEvent);
 #endif
 
-  const int numVertices = _cohesiveVertices.size();
-#if 1
-  // :BUG: MatGetSubMatrices() needs sorted indices.  We need to
-  // create an array of sorted indices along with a map from the
-  // Lagrange vertex to the sorted indices.
-  //
-  // Note: This is messy because one side of the fault will have much
-  // indices than the other side where we created new nodes when we
-  // adjusted the topology to create the cohesive cells.
-  int numConstraintVertices = 0;
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    if (globalOrder->isLocal(v_lagrange))
-      ++numConstraintVertices;
-  } // for
-  int_array indices(2*numConstraintVertices*spaceDim);
-
-  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
-
-    // Compute contribution only if Lagrange constraint is local.
-    if (!globalOrder->isLocal(v_lagrange))
-      continue;
-
-    // Set global order indices
-    for(int d = 0; d < spaceDim; ++d) {
-      indices[(cV*2 + 0)*spaceDim+d] = d + globalOrder->getIndex(v_negative);
-      indices[(cV*2 + 1)*spaceDim+d] = d + globalOrder->getIndex(v_positive);
-    } // for
-    ++cV;
-  } // for
-  std::sort(&indices[0], &indices[indices.size()]);
-  Mat* localMat[1];
-  IS indicesIS[1];
+#if 1 // USING SUBMATRICES
+  PetscMat jacobianNP;
+  std::map<int, int> indicesMatToSubmat;
+  _getJacobianSubmatrixNP(&jacobianNP, &indicesMatToSubmat, *jacobian, *fields);
+  
   PetscErrorCode err = 0;
-
-  err = ISCreateGeneral(PETSC_COMM_SELF, indices.size(), &indices[0],
-			PETSC_USE_POINTER, &indicesIS[0]);
-  CHECK_PETSC_ERROR(err);
-  err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS,
-			  indicesIS, MAT_INITIAL_MATRIX, localMat);
-  CHECK_PETSC_ERROR(err);
-  err = ISDestroy(indicesIS[0]); CHECK_PETSC_ERROR(err);
+  const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
-    PetscErrorCode err = 0;
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Compute contribution only if Lagrange constraint is local.
     if (!globalOrder->isLocal(v_lagrange))
@@ -756,18 +716,18 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
 				      orientationVertex.size());
 
-    indicesN = indicesRel + (cV*2 + 0)*spaceDim;
-    indicesP = indicesRel + (cV*2 + 1)*spaceDim;
-    err = MatGetValues(*localMat[0],
+    indicesN = 
+      indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_negative)];
+    err = MatGetValues(jacobianNP,
 		       indicesN.size(), &indicesN[0],
 		       indicesN.size(), &indicesN[0],
 		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
-    jacobianVertexP = 1.0;
-    err = MatGetValues(*localMat[0],
+    indicesP = 
+      indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_positive)];
+    err = MatGetValues(jacobianNP,
 		       indicesP.size(), &indicesP[0],
 		       indicesP.size(), &indicesP[0],
 		       &jacobianVertexP[0]); CHECK_PETSC_ERROR(err);
-    ++cV;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -816,8 +776,13 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventEnd(updateEvent);
 #endif
   }
-  err = MatDestroyMatrices(1, localMat); CHECK_PETSC_ERROR(err);
+  err = MatDestroy(jacobianNP); CHECK_PETSC_ERROR(err);
+
 #else
+  const PetscMat jacobianMatrix = jacobian->matrix();
+  assert(0 != jacobianMatrix);
+
+  const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -2137,6 +2102,105 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
 
   logger.stagePop();
 } // _allocateBufferScalarField
+
+// ----------------------------------------------------------------------
+//  Get submatrix of Jacobian matrix associated with the negative and
+//  positive sides of the fault.
+void
+pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(
+				PetscMat* jacobianSub,
+				std::map<int,int>* indicesMatToSubmat,
+				const topology::Jacobian& jacobian,
+				const topology::SolutionFields& fields)
+{ // _getJacobianSubmatrixNP
+  assert(jacobianSub);
+  assert(indicesMatToSubmat);
+
+  // Get global order
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+					    solutionSection);
+  assert(!globalOrder.isNull());
+
+  // Get Jacobian matrix
+  const PetscMat jacobianMatrix = jacobian.matrix();
+  assert(0 != jacobianMatrix);
+
+  const spatialdata::geocoords::CoordSys* cs = fields.mesh().coordsys();
+  assert(0 != cs);
+  const int spaceDim = cs->spaceDim();
+
+  const int numVertices = _cohesiveVertices.size();
+  int numIndicesNP = 0;
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    if (globalOrder->isLocal(v_lagrange))
+      numIndicesNP += 2;
+  } // for
+  int_array indicesNP(numIndicesNP*spaceDim);
+
+  for (int iVertex=0, indexNP=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
+    const int v_negative = _cohesiveVertices[iVertex].negative;
+    const int v_positive = _cohesiveVertices[iVertex].positive;
+    
+    // Compute contribution only if Lagrange constraint is local.
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+    
+    // Set global order indices
+    for(int iDim=0; iDim < spaceDim; ++iDim)
+      indicesNP[indexNP*spaceDim+iDim] = 
+	globalOrder->getIndex(v_negative) + iDim;
+    ++indexNP;
+    for(int iDim=0; iDim < spaceDim; ++iDim)
+      indicesNP[indexNP*spaceDim+iDim] = 
+	globalOrder->getIndex(v_positive) + iDim;
+    ++indexNP;
+  } // for
+  
+  // MatGetSubMatrices requires sorted indices
+  std::sort(&indicesNP[0], &indicesNP[indicesNP.size()]);
+  
+  PetscMat* subMat[1];
+  IS indicesIS[1];
+  PetscErrorCode err = 0;
+  err = ISCreateGeneral(PETSC_COMM_SELF, indicesNP.size(), &indicesNP[0],
+			PETSC_USE_POINTER, &indicesIS[0]);
+  CHECK_PETSC_ERROR(err);
+  err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS,
+			  indicesIS, MAT_INITIAL_MATRIX, subMat);
+  CHECK_PETSC_ERROR(err);
+  err = ISDestroy(indicesIS[0]); CHECK_PETSC_ERROR(err);
+
+  *jacobianSub = *subMat[0];
+  err = PetscObjectReference((PetscObject) *subMat[0]); 
+  CHECK_PETSC_ERROR(err);
+  err = MatDestroyMatrices(1, &subMat[0]); CHECK_PETSC_ERROR(err);
+
+  // Create map from global indices to local indices (using only the
+  // first index as to match the global order.
+  indicesMatToSubmat->clear();
+  for (int i=0; i < numIndicesNP; i+=spaceDim)
+    (*indicesMatToSubmat)[indicesNP[i]] = i;
+
+#if 0 // DEBUGGING
+  //std::cout << "FULL JACOBIAN" << std::endl;
+  //jacobian.view();
+  globalOrder->view("GLOBAL ORDER");
+  std::cout << "Mapping:" << std::endl;
+  for (std::map<int,int>::const_iterator m_iter = indicesMatToSubmat->begin();
+       m_iter != indicesMatToSubmat->end();
+       ++m_iter)
+    std::cout << "  Global: " << m_iter->first << " -> local: " << m_iter->second << std::endl;
+  //std::cout << "JACOBIAN SUBMATRIX" << std::endl;
+  //MatView(*jacobianSub, PETSC_VIEWER_STDOUT_WORLD);
+#endif
+} // _getJacobianSubmatrixNP
 
 // ----------------------------------------------------------------------
 // Adjust solution in lumped formulation to match slip for 1-D.
