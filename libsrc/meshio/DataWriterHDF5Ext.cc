@@ -90,7 +90,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    PetscErrorCode err = 0;
     
     _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
@@ -101,6 +100,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     _h5->createGroup("/cell_fields");
 
     PetscViewer binaryViewer;
+    PetscErrorCode err = 0;
     
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
@@ -139,6 +139,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 				FILE_MODE_WRITE,
 				&binaryViewer);
     CHECK_PETSC_ERROR(err);
+    err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
+    CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, binaryViewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerDestroy(binaryViewer); CHECK_PETSC_ERROR(err);
     binaryViewer = 0;
@@ -150,7 +152,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     dims[1] = cs->spaceDim();
     _h5->createDatasetRawExternal("/geometry", "vertices", 
 				  filenameVertices.c_str(),
-				  dims, ndims, H5T_NATIVE_DOUBLE);
+				  dims, ndims, H5T_IEEE_F64BE);
     
     // Write cells
 
@@ -201,7 +203,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
             tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
 
-    Vec elemVec;
+    PetscVec elemVec;
     err = VecCreateMPIWithArray(sieveMesh->comm(), conesSize, PETSC_DETERMINE,
 				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec,
@@ -214,6 +216,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 				FILE_MODE_WRITE,
 				&binaryViewer);
     CHECK_PETSC_ERROR(err);
+    err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
+    CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, binaryViewer); CHECK_PETSC_ERROR(err);
     err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices); CHECK_PETSC_ERROR(err);
@@ -224,7 +228,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     dims[0] = cNumbering->getGlobalSize();
     dims[1] = numCorners;
     _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
-				  dims, ndims, H5T_NATIVE_DOUBLE);
+				  dims, ndims, H5T_IEEE_F64BE);
     
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -283,16 +287,21 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     assert(vector);
 
     PetscViewer binaryViewer;
+    PetscErrorCode err = 0;
 
     // Create external dataset if necessary
     bool createdExternalDataset = false;
     if (_datasets.find(field.label()) != _datasets.end()) {
       binaryViewer = _datasets[field.label()].viewer;
     } else {
-      PetscViewerBinaryCreate(sieveMesh->comm(), &binaryViewer);
-      PetscViewerBinaryOpen(sieveMesh->comm(), 
+      err = PetscViewerBinaryCreate(sieveMesh->comm(), &binaryViewer);
+      CHECK_PETSC_ERROR(err);
+      err = PetscViewerBinaryOpen(sieveMesh->comm(), 
 			    _datasetFilename(field.label()).c_str(),
 			    FILE_MODE_WRITE, &binaryViewer);
+      CHECK_PETSC_ERROR(err);
+      err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
+      CHECK_PETSC_ERROR(err);
       ExternalDataset dataset;
       dataset.numTimeSteps = 0;
       dataset.viewer = binaryViewer;
@@ -301,7 +310,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
       createdExternalDataset = true;
     } // else
 
-    PetscErrorCode err = VecView(vector, binaryViewer);
+    err = VecView(vector, binaryViewer);
     CHECK_PETSC_ERROR(err);
     ++_datasets[field.label()].numTimeSteps;
 
@@ -333,7 +342,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
       } // else
       _h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
-				    dims, ndims, H5T_NATIVE_DOUBLE);
+				    dims, ndims, H5T_IEEE_F64BE);
       delete[] dims; dims = 0;
     } else {
       // Update number of time steps in external dataset info in HDF5 file.
@@ -394,16 +403,21 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     assert(!sieveMesh.isNull());
 
     PetscViewer binaryViewer;
+    PetscErrorCode err = 0;
 
     // Create external dataset if necessary
     bool createdExternalDataset = false;
     if (_datasets.find(field.label()) != _datasets.end()) {
       binaryViewer = _datasets[field.label()].viewer;
     } else {
-      PetscViewerBinaryCreate(sieveMesh->comm(), &binaryViewer);
-      PetscViewerBinaryOpen(sieveMesh->comm(),
-			    _datasetFilename(field.label()).c_str(),
-			    FILE_MODE_WRITE, &binaryViewer);
+      err = PetscViewerBinaryCreate(sieveMesh->comm(), &binaryViewer);
+      CHECK_PETSC_ERROR(err);
+      err = PetscViewerBinaryOpen(sieveMesh->comm(),
+				  _datasetFilename(field.label()).c_str(),
+				  FILE_MODE_WRITE, &binaryViewer);
+      CHECK_PETSC_ERROR(err);
+      err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
+      CHECK_PETSC_ERROR(err);
       ExternalDataset dataset;
       dataset.numTimeSteps = 0;
       dataset.viewer = binaryViewer;
@@ -412,7 +426,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
       createdExternalDataset = true;
     } // else
 
-    PetscErrorCode err = VecView(vector, binaryViewer);
+    err = VecView(vector, binaryViewer);
     CHECK_PETSC_ERROR(err);
     ++_datasets[field.label()].numTimeSteps;
 
@@ -455,7 +469,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
       } // else
       _h5->createDatasetRawExternal("/cell_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
-				    dims, ndims, H5T_NATIVE_DOUBLE);
+				    dims, ndims, H5T_IEEE_F64BE);
       delete[] dims; dims = 0;
     } // else
 
