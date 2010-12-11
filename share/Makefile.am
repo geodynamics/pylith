@@ -17,7 +17,8 @@
 #
 
 EXTRA_DIST = \
-	valgrind-python.supp
+	valgrind-python.supp \
+	generateetags.py
 
 
 # End of file 
