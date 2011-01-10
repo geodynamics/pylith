@@ -416,11 +416,16 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
 			      stress[5] };
   const double devStressProd =
     pylith::materials::ElasticMaterial::scalarProduct3D(devStress, devStress);
-  const double effStress = (devStressProd <= 0.0) ? referenceStress :
-    sqrt(0.5 * devStressProd);
-  const double dtStable = 0.05 *
+  const double effStress = sqrt(0.5 * devStressProd);
+  double dtTest = 0.0;
+  if (effStress <= 0.0) {
+    dtTest = 1.0e30;
+  } else {
+    dtTest = 0.05 *
     pow((referenceStress/effStress), (powerLawExp - 1.0)) *
     (referenceStress/mu)/referenceStrainRate;
+  } //else
+  const double dtStable = dtTest;
 
 #if 0 // DEBUGGING
   double maxwellTime = 10.0 * dtStable;
