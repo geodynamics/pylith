@@ -17,21 +17,21 @@
 //
 
 /**
- * @file libsrc/topology/CellRefinerQuad4.hh
+ * @file libsrc/topology/CellRefinerHex8.hh
  *
- * @brief Object for quad4 refinement of cells.
+ * @brief Object for hex8 refinement of cells.
  */
 
-#if !defined(pylith_topology_cellrefinerquad4_hh)
-#define pylith_topology_cellrefinerquad4_hh
+#if !defined(pylith_topology_cellrefinerhex8_hh)
+#define pylith_topology_cellrefinerhex8_hh
 
 // Include directives ---------------------------------------------------
-#include "RefineFace4Edges2.hh" // ISA RefineFace4Edges2
+#include "RefineVol8Face4Edges2.hh" // ISA RefineVol8Face4Edges2
 
-// CellRefinerQuad4 ------------------------------------------------------
-/// Object for quad4 refinement of cells.
-class ALE::CellRefinerQuad4 : public RefineFace4Edges2
-{ // CellRefinerQuad4
+// CellRefinerHex8 ------------------------------------------------------
+/// Object for hex8 refinement of cells.
+class ALE::CellRefinerHex8 : public RefineVol8Face4Edges2
+{ // CellRefinerHex8
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -39,10 +39,10 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  CellRefinerQuad4(const mesh_type& mesh);
+  CellRefinerHex8(const mesh_type& mesh);
 
   /// Destructor
-  ~CellRefinerQuad4(void);
+  ~CellRefinerHex8(void);
 
   /** Get number of refined cells for each original cell.
    *
@@ -99,8 +99,8 @@ public :
 private :
 
   enum CellEnum { 
-    QUADRILATERAL, // Normal quadrilateral cell
-    LINE_COHESIVE_LAGRANGE, // Cohesive cell with Lagrange multiplier vertices
+    HEXAHEDRON, // Normal hexahedral cell
+    QUAD_COHESIVE_LAGRANGE, // Cohesive cell with Lagrange multiplier vertices
   };
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
@@ -113,19 +113,20 @@ private :
    */
   CellEnum _cellType(const point_type cell);
   
-  /** Get edges of quadrilateral cell.
+  /** Get edges of hexahedral cell.
    *
    * @param edges Edges of cell.
    * @param numEdges Number of edges.
    * @param cone Vertices in cell (original mesh).
    * @param coneSize Number of vertices in cell.
    */
-  void _edges_QUADRILATERAL(const EdgeType** edges,
-			    int* numEdges,
-			    const point_type cone[],
-			    const int coneSize);
+  void _edges_HEXAHEDRON(const EdgeType** edges,
+			 int* numEdges,
+			 const point_type cone[],
+			 const int coneSize);
   
-  /** Get edges of line cohesive cell with Lagrange multipler vertices.
+  /** Get edges of quadrilateral cohesive cell with Lagrange multipler
+   * vertices.
    *
    * @param edges Edges of cell.
    * @param numEdges Number of edges.
@@ -133,25 +134,52 @@ private :
    * @param coneSize Number of vertices in cell.
    * @param uncensored True if including edges with censored vertices.
    */
-  void _edges_LINE_COHESIVE_LAGRANGE(const EdgeType** edges,
+  void _edges_QUAD_COHESIVE_LAGRANGE(const EdgeType** edges,
 				     int* numEdges,
 				     const point_type cone[],
 				     const int coneSize,
 				     const bool uncensored =false);
   
-  /** Get faces of quadrilateral cell.
+  /** Get faces of hexahedral cell.
    *
    * @param faces Faces of cell.
    * @param numFaces Number of faces.
    * @param cone Vertices in cell (original mesh).
    * @param coneSize Number of vertices in cell.
    */
-  void _faces_QUADRILATERAL(const FaceType** faces,
-			    int* numFaces,
-			    const point_type cone[],
-			    const int coneSize);
+  void _faces_HEXAHEDRON(const FaceType** faces,
+			 int* numFaces,
+			 const point_type cone[],
+			 const int coneSize);
   
-  /** Get new cells from refinement of a quadrilateral cell.
+  /** Get faces of quadrilateral cohesive cell with Lagrange multipler
+   * vertices.
+   *
+   * @param faces Faces of cell.
+   * @param numFaces Number of faces.
+   * @param cone Vertices in cell (original mesh).
+   * @param coneSize Number of vertices in cell.
+   * @param uncensored True if including faces with censored vertices.
+   */
+  void _faces_QUAD_COHESIVE_LAGRANGE(const FaceType** faces,
+				     int* numFaces,
+				     const point_type cone[],
+				     const int coneSize,
+				     const bool uncensored =false);
+  
+  /** Get volumes of hexahedral cell.
+   *
+   * @param volumes Volumes of cell.
+   * @param numFaces Number of faces.
+   * @param cone Vertices in cell (original mesh).
+   * @param coneSize Number of vertices in cell.
+   */
+  void _volumes_HEXAHEDRON(const VolumeType** volumes,
+			   int* numVoplumes,
+			   const point_type cone[],
+			   const int coneSize);
+  
+  /** Get new cells from refinement of a hexahedral cell.
    *
    * @param cells Vertices in refined cells (refined mesh).
    * @param numCells Number of refined cells.
@@ -159,14 +187,14 @@ private :
    * @param coneSize Number of vertices in cell.
    * @param coneVertexOffset Offset for cone vertices.
    */
-  void _newCells_QUADRILATERAL(const point_type** cells,
-			       int *numCells,
-			       const point_type cone[],
-			       const int coneSize,
-			       const int coneVertexOffset);
+  void _newCells_HEXAHEDRON(const point_type** cells,
+			    int *numCells,
+			    const point_type cone[],
+			    const int coneSize,
+			    const int coneVertexOffset);
   
-  /** Get new cells from refinement of a line cohseive cell with
-   * Lagrange multiplier vertices.
+  /** Get new cells from refinement of a quadrilateral cohseive cell
+   * with Lagrange multiplier vertices.
    *
    * @param cells Vertices in refined cells (refined mesh).
    * @param numCells Number of refined cells.
@@ -175,7 +203,7 @@ private :
    * @param coneVertexOffsetNormal Offset for normal cone vertices.
    * @param coneVertexOffset Offset for censored cone vertices.
    */
-  void _newCells_LINE_COHESIVE_LAGRANGE(const point_type** cells,
+  void _newCells_QUAD_COHESIVE_LAGRANGE(const point_type** cells,
 					int *numCells,
 					const point_type cone[],
 					const int coneSize,
@@ -187,21 +215,23 @@ private :
 
   static const int _edgesSize;
   static const int _facesSize;
+  static const int _volumesSize;
   static const int _cellsSize;
-  EdgeType _edges[4]; ///< Buffer for edges
-  FaceType _faces[1]; ///< Buffer for faces
-  point_type _cells[16]; ///< Buffer for cells
+  EdgeType _edges[12]; ///< Buffer for edges
+  FaceType _faces[6]; ///< Buffer for faces
+  VolumeType _volumes[1]; ///< Buffer for volumes
+  point_type _cells[64]; ///< Buffer for cells
   
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  CellRefinerQuad4(const CellRefinerQuad4&); ///< Not implemented
-  const CellRefinerQuad4& operator=(const CellRefinerQuad4&); ///< Not implemented
+  CellRefinerHex8(const CellRefinerHex8&); ///< Not implemented
+  const CellRefinerHex8& operator=(const CellRefinerHex8&); ///< Not implemented
 
-}; // CellRefinerQuad4
+}; // CellRefinerHex8
 
-#endif // pylith_topology_cellrefinerquad4_hh
+#endif // pylith_topology_cellrefinerhex8_hh
 
  
 // End of file 

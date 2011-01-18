@@ -54,11 +54,14 @@ class pylith::topology::TestRefineUniform : public CppUnit::TestFixture
   CPPUNIT_TEST( testRefineTri3Level2 );
   CPPUNIT_TEST( testRefineTri3Level2Fault1 );
 
+  CPPUNIT_TEST( testRefineQuad4Level2 );
+  CPPUNIT_TEST( testRefineQuad4Level2Fault1 );
+
   CPPUNIT_TEST( testRefineTet4Level2 );
   CPPUNIT_TEST( testRefineTet4Level2Fault1 );
 
-  CPPUNIT_TEST( testRefineQuad4Level2 );
-  CPPUNIT_TEST( testRefineQuad4Level2Fault1 );
+  CPPUNIT_TEST( testRefineHex8Level2 );
+  CPPUNIT_TEST( testRefineHex8Level2Fault1 );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -74,17 +77,23 @@ public :
   /// Test refine() with level 2, tri3 cells, and one fault.
   void testRefineTri3Level2Fault1(void);
 
+  /// Test refine() with level 2, quad4 cells, and no fault.
+  void testRefineQuad4Level2(void);
+
+  /// Test refine() with level 2, quad4 cells, and one fault.
+  void testRefineQuad4Level2Fault1(void);
+
   /// Test refine() with level 2, tet4 cells, and no fault.
   void testRefineTet4Level2(void);
 
   /// Test refine() with level 2, tet4 cells, and one fault.
   void testRefineTet4Level2Fault1(void);
 
-  /// Test refine() with level 2, quad4 cells, and no fault.
-  void testRefineQuad4Level2(void);
+  /// Test refine() with level 2, hex8 cells, and no fault.
+  void testRefineHex8Level2(void);
 
-  /// Test refine() with level 2, quad4 cells, and one fault.
-  void testRefineQuad4Level2Fault1(void);
+  /// Test refine() with level 2, hex8 cells, and one fault.
+  void testRefineHex8Level2Fault1(void);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

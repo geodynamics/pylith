@@ -23,8 +23,9 @@
 #include "Mesh.hh" // USES Mesh
 
 #include "CellRefinerTri3.hh" // USES CellRefinerTri3
-#include "CellRefinerTet4.hh" // USES CellRefinerTet4
 #include "CellRefinerQuad4.hh" // USES CellRefinerQuad4
+#include "CellRefinerTet4.hh" // USES CellRefinerTet4
+#include "CellRefinerHex8.hh" // USES CellRefinerHex8
 #include "MeshRefiner.hh" // USES MeshRefiner
 
 #include <stdexcept> // USES std::runtime_error
@@ -106,10 +107,13 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
       break;
     } // case 4
     case 8: {
-      throw std::logic_error("Not implemented.");
+      ALE::CellRefinerHex8 cellSplitter(*sieveMesh);
+      ALE::MeshRefiner<ALE::CellRefinerHex8> refinement;
+      refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
       break;
     } // case 4
     default :
+      assert(0);
       throw std::runtime_error("Unknown number of corners for cells.");
     } // switch
     break;
