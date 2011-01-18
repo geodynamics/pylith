@@ -269,30 +269,29 @@ ALE::CellRefinerQuad4::_faces_QUADRILATERAL(const FaceType** faces,
   for (int i=0; i < 4; ++i)
     sortedCone[i] = cone[i];
   std::sort(sortedCone, sortedCone+coneSize);
-  const point_type pMin = sortedCone[0];
 
-  if (pMin == cone[0]) {
+  if (sortedCone[0] == cone[0]) {
     if (cone[1] < cone[3]) {
       _faces[0] = FaceType(cone[0], cone[1], cone[2], cone[3]);
     } else {
       _faces[0] = FaceType(cone[0], cone[3], cone[2], cone[1]);
     } // if/else
 
-  } else if (pMin == cone[1]) {
+  } else if (sortedCone[0] == cone[1]) {
     if (cone[2] < cone[0]) {
       _faces[0] = FaceType(cone[1], cone[2], cone[3], cone[0]);
     } else {
       _faces[0] = FaceType(cone[1], cone[0], cone[3], cone[2]);
     } // if/else
 
-  } else if (pMin == cone[2]) {
+  } else if (sortedCone[0] == cone[2]) {
     if (cone[3] < cone[1]) {
       _faces[0] = FaceType(cone[2], cone[3], cone[0], cone[1]);
     } else {
       _faces[0] = FaceType(cone[2], cone[1], cone[3], cone[0]);
     } // if/else
 
-  } else if (pMin == cone[3]) {
+  } else if (sortedCone[0] == cone[3]) {
     if (cone[0] < cone[2]) {
       _faces[0] = FaceType(cone[3], cone[0], cone[1], cone[2]);
     } else {
