@@ -37,9 +37,14 @@
 #include "../src/snes/impls/ls/lsimpl.h"
 
 // ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
+
+// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverNonlinear::SolverNonlinear(void) :
-  _snes(0)
+  _snes(0),
+  _precondMatrix(0)
 { // constructor
 } // constructor
 
@@ -59,6 +64,10 @@ pylith::problems::SolverNonlinear::deallocate(void)
 
   if (0 != _snes) {
     PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  if (0 != _precondMatrix) {
+    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -97,6 +106,14 @@ pylith::problems::SolverNonlinear::initialize(
   err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
   err = SNESLineSearchSet(_snes, lineSearch, 
 			  (void*) formulation); CHECK_PETSC_ERROR(err);
+
+  if (formulation->splitFields()) {
+    PetscKSP ksp = 0;
+    PetscPC pc = 0;
+    err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
+    _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
+  } // if
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -108,6 +125,35 @@ pylith::problems::SolverNonlinear::solve(
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(0 != solution);
+
+  // Update KSP operators with custom preconditioner if necessary.
+  const ALE::Obj<RealSection>& solutionSection = solution->section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+      0 != _precondMatrix) {
+    PetscKSP ksp = 0;
+    PetscPC pc = 0;
+    PetscKSP *ksps = 0;
+    PetscMat A = 0;
+    PetscInt num = 0;
+
+    PetscErrorCode err = 0;
+    err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
+    err = KSPSetUp(ksp); CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
+    assert(solutionSection->getNumSpaces() == num);
+
+    MatStructure flag;
+    err = KSPGetOperators(ksps[num-1], &A, 
+			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(ksps[num-1], A, _precondMatrix, 
+			  flag); CHECK_PETSC_ERROR(err);
+    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+  } // if
 
   const int solveEvent = _logger->eventId("SoNl solve");
   const int scatterEvent = _logger->eventId("SoNl scatter");

@@ -147,6 +147,8 @@ libpylith_la_SOURCES += \
 	topology/CellRefinerTet4.cc \
 	topology/RefineFace4Edges2.cc \
 	topology/CellRefinerQuad4.cc \
+	topology/RefineVol8Face4Edges2.cc \
+	topology/CellRefinerHex8.cc \
 	topology/MeshOrder.cc
 
 

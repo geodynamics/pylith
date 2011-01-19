@@ -240,6 +240,22 @@ protected :
   /// Allocate buffer for scalar field.
   void _allocateBufferScalarField(void);
 
+  /** Get submatrix of Jacobian matrix associated with the negative
+   *  and positive sides of the fault.
+   *
+   *  The submatrix and the mapping from global indices to submatrix
+   *  indices are returned through the arguments.
+   *
+   * @param submatrix PETSc matrix for submatrix.
+   * @param mapGlobalToLocal Mapping from global to local indices.
+   * @param jacobian Sparse matrix for Jacobian of system.
+   * @param fields Solution fields
+   */
+  void _getJacobianSubmatrixNP(PetscMat* submatrix,
+			       std::map<int,int>* mapGlobalToLocal,
+			       const topology::Jacobian& jacobian,
+			       const topology::SolutionFields& fields);
+
   /** Adjust solution in lumped formulation to match slip for 1-D.
    *
    * @param lagrangeIncr Increment in Lagrange multiplier.

@@ -55,6 +55,8 @@ noinst_HEADERS += \
 	CellRefinerTet4.hh \
 	RefineFace4Edges2.hh \
 	CellRefinerQuad4.hh \
+	RefineVol8Face4Edges2.hh \
+	CellRefinerHex8.hh \
 	MeshOrder.hh
 
 

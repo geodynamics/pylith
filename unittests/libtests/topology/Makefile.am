@@ -60,19 +60,23 @@ testtopology_SOURCES += \
 	data/MeshDataCohesive.cc \
 	data/MeshDataCohesiveTri3Level2.cc \
 	data/MeshDataCohesiveTri3Level2Fault1.cc \
+	data/MeshDataCohesiveQuad4Level2.cc \
+	data/MeshDataCohesiveQuad4Level2Fault1.cc \
 	data/MeshDataCohesiveTet4Level2.cc \
 	data/MeshDataCohesiveTet4Level2Fault1.cc \
-	data/MeshDataCohesiveQuad4Level2.cc \
-	data/MeshDataCohesiveQuad4Level2Fault1.cc
+	data/MeshDataCohesiveHex8Level2.cc \
+	data/MeshDataCohesiveHex8Level2Fault1.cc
 
 noinst_HEADERS += \
 	data/MeshDataCohesive.hh \
 	data/MeshDataCohesiveTri3Level2.hh \
 	data/MeshDataCohesiveTri3Level2Fault1.hh \
+	data/MeshDataCohesiveQuad4Level2.hh \
+	data/MeshDataCohesiveQuad4Level2Fault1.hh \
 	data/MeshDataCohesiveTet4Level2.hh \
 	data/MeshDataCohesiveTet4Level2Fault1.hh \
-	data/MeshDataCohesiveQuad4Level2.hh \
-	data/MeshDataCohesiveQuad4Level2Fault1.hh
+	data/MeshDataCohesiveHex8Level2.hh \
+	data/MeshDataCohesiveHex8Level2Fault1.hh
 
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \

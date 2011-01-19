@@ -64,11 +64,18 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(const DataW
 // Prepare file for data at a new time step.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double t,
-						       const mesh_type& mesh,
-						       const char* label,
-						       const int labelId)
-{ // openTimeStep
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh,
+							   const int numTimeSteps,
+							   const char* label,
+							   const int labelId)
+{ // open
+  typedef typename mesh_type::SieveMesh SieveMesh;
+  typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
+  typedef typename mesh_type::SieveMesh::numbering_type numbering_type;
+  typedef typename mesh_type::SieveMesh::sieve_type sieve_type;
+
+  DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
+
   try {
     PetscErrorCode err = 0;
     
@@ -83,9 +90,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     err = PetscViewerFileSetName(_viewer, filename.c_str());
     CHECK_PETSC_ERROR(err);
 
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
+      sieveMesh->hasRealSection("coordinates_dimensioned") ?
+      sieveMesh->getRealSection("coordinates_dimensioned") :
       sieveMesh->getRealSection("coordinates");
+    assert(!coordinatesSection.isNull());
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
     assert(cs);
     topology::FieldBase::Metadata metadata;
@@ -96,28 +107,41 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    coordinates.createScatter(context);
+    ALE::Obj<numbering_type> vNumbering;
+    if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
+      vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh,
+							 "censored depth", 0);
+      coordinates.createScatter(vNumbering, context);
+    } else {
+      coordinates.createScatter(context);
+    } // if/else
     coordinates.scatterSectionToVector(context);
-    const PetscVec coordinatesVector = coordinates.vector(context);
+    PetscVec coordinatesVector = coordinates.vector(context);
+    assert(coordinatesVector);
     int blockSize = 1;
-    err = VecGetBlockSize(coordinatesVector, &blockSize);
+    err = VecGetBlockSize(coordinatesVector, &blockSize); // get block size
     CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinatesVector, cs->spaceDim());
+    err = VecSetBlockSize(coordinatesVector, cs->spaceDim()); // bs for output
     CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry"); CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinatesVector, blockSize); // reset
+    err = VecSetBlockSize(coordinatesVector, blockSize); // reset block size
     CHECK_PETSC_ERROR(err);
 
-    Vec          elemVec;
-    PetscScalar *tmpVertices;
-    PetscBool    columnMajor = PETSC_FALSE;
-
-    // :TODO: Update this to use sizes from numbering to account for
-    // censored vertices.
-    const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells =
-      sieveMesh->heightStratum(0);
+    // Account for censored cells
+    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    const int depth = (0 == label) ? cellDepth : labelId;
+    const std::string labelName = (0 == label) ?
+      ((sieveMesh->hasLabel("censored depth")) ?
+       "censored depth" : "depth") : label;
+    assert(!sieveMesh->getFactory().isNull());
+    const ALE::Obj<numbering_type>& cNumbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
+    assert(!cNumbering.isNull());
+    const ALE::Obj<label_sequence>& cells =
+      sieveMesh->getLabelStratum(labelName, depth);
+    assert(!cells.isNull());
     int numCornersLocal = 0;
     if (cells->size() > 0)
       numCornersLocal = sieveMesh->getNumCellCorners(*cells->begin());
@@ -125,50 +149,65 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::openTimeStep(const double 
     err = MPI_Reduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, 0, 
 		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
-    typedef ALE::OrientedConeSectionV<typename mesh_type::SieveMesh::sieve_type> oriented_cones_wrapper_type;
-    Obj<oriented_cones_wrapper_type> cones = new oriented_cones_wrapper_type(sieveMesh->getSieve());
+    PetscScalar* tmpVertices = 0;
+    const int ncells = cNumbering->getLocalSize();
+    const int conesSize = ncells*numCorners;
+    err = PetscMalloc(sizeof(PetscScalar)*conesSize, &tmpVertices);
+    CHECK_PETSC_ERROR(err);
 
-    // Hack right now, move to HDF5 Section viewer
-    err = PetscMalloc(sizeof(PetscScalar)*cones->size(), &tmpVertices);CHECK_PETSC_ERROR(err);
-    for(int p = sieveMesh->getSieve()->getChart().min(), i = 0; p < sieveMesh->getSieve()->getChart().max(); ++p) {
-      const int coneSize = cones->getFiberDimension(p);
-      const typename oriented_cones_wrapper_type::value_type *vertices = cones->restrictPoint(p);
+    const Obj<sieve_type>& sieve = sieveMesh->getSieve();
+    assert(!sieve.isNull());
+    ALE::ISieveVisitor::NConeRetriever<sieve_type> 
+      ncV(*sieve, (size_t) pow((double) sieve->getMaxConeSize(), 
+			       std::max(0, sieveMesh->depth())));
 
-      for(int c = 0; c < coneSize; ++c, ++i) {
-        tmpVertices[i] = vertices[c].first;
-      }
-    }
-    err = VecCreateMPIWithArray(sieveMesh->comm(), cones->size(), PETSC_DETERMINE, tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
+    int k = 0;
+    const typename label_sequence::const_iterator cellsEnd = cells->end();
+    for (typename label_sequence::iterator c_iter=cells->begin();
+	 c_iter != cellsEnd;
+	 ++c_iter)
+      if (cNumbering->isLocal(*c_iter)) {
+	ncV.clear();
+	ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+	const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
+	  ncV.getOrientedPoints();
+	const int coneSize = ncV.getOrientedSize();
+          for (int c=0; c < coneSize; ++c)
+            tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
+      } // if
+
+    Vec elemVec;
+    err = VecCreateMPIWithArray(sieveMesh->comm(), conesSize, PETSC_DETERMINE,
+				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) elemVec,
+			     "cells");CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
-#if 0 // :TODO: ONLY WORKS IF CELLS ARE CENSORED
     err = VecSetBlockSize(elemVec, numCorners); CHECK_PETSC_ERROR(err);
-#endif
-    err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
-    err = VecDestroy(elemVec);CHECK_PETSC_ERROR(err);
+    err = VecView(elemVec, _viewer); CHECK_PETSC_ERROR(err);
+    err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
+    err = PetscFree(tmpVertices); CHECK_PETSC_ERROR(err);
   } catch (const std::exception& err) {
     std::ostringstream msg;
-    msg << "Error while preparing for writing data to HDF5 file "
-	<< _filename << " at time " << t << ".\n" << err.what();
+    msg << "Error while opening HDF5 file "
+	<< _filename << ".\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
-    msg << "Unknown error while preparing for writing data to HDF5 file "
-	<< _filename << " at time " << t << ".\n";
+    msg << "Unknown error while opening HDF5 file "
+	<< _filename << ".\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // openTimeStep
 
 // ----------------------------------------------------------------------
-/// Cleanup after writing data for a time step.
+// Close output files.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5<mesh_type,field_type>::closeTimeStep(void)
-{ // closeTimeStep
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
+{ // close
   PetscViewerDestroy(_viewer); _viewer = 0;
-} // closeTimeStep
+} // close
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
