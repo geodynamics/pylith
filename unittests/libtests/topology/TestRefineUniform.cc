@@ -35,7 +35,7 @@
 #include "data/MeshDataCohesiveTet4Level2.hh"
 #include "data/MeshDataCohesiveTet4Level2Fault1.hh"
 #include "data/MeshDataCohesiveHex8Level2.hh"
-//#include "data/MeshDataCohesiveHex8Level2Fault1.hh"
+#include "data/MeshDataCohesiveHex8Level2Fault1.hh"
 
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
@@ -123,10 +123,8 @@ pylith::topology::TestRefineUniform::testRefineHex8Level2(void)
 void
 pylith::topology::TestRefineUniform::testRefineHex8Level2Fault1(void)
 { // testRefineHex8Level2Fault1
-#if 0
   MeshDataCohesiveHex8Level2Fault1 data;
   _testRefine(data);
-#endif
 } // testRefineHex8Level2Fault1
 
 // ----------------------------------------------------------------------
@@ -183,6 +181,8 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
 
   Mesh mesh(data.cellDim);
   _setupMesh(&mesh, data);
+
+  mesh.view("ORIGINAL MESH");
 
   RefineUniform refiner;
   Mesh newMesh(data.cellDim);
