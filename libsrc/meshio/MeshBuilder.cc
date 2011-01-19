@@ -205,7 +205,6 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 					    const int_array& faceCells,
 					    const int meshDim)
 { // buildFaultMesh
-  MPI_Comm comm = PETSC_COMM_WORLD;
   int dim  = meshDim;
   int rank = 0;
 
@@ -216,7 +215,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
   fault->setDebug(fault->debug());
   fault->setSieve(sieve);
 
-  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_rank(fault->comm(), &rank);
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();

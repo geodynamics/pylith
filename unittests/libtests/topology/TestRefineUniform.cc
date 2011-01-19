@@ -30,10 +30,12 @@
 
 #include "data/MeshDataCohesiveTri3Level2.hh"
 #include "data/MeshDataCohesiveTri3Level2Fault1.hh"
-#include "data/MeshDataCohesiveTet4Level2.hh"
-#include "data/MeshDataCohesiveTet4Level2Fault1.hh"
 #include "data/MeshDataCohesiveQuad4Level2.hh"
 #include "data/MeshDataCohesiveQuad4Level2Fault1.hh"
+#include "data/MeshDataCohesiveTet4Level2.hh"
+#include "data/MeshDataCohesiveTet4Level2Fault1.hh"
+#include "data/MeshDataCohesiveHex8Level2.hh"
+#include "data/MeshDataCohesiveHex8Level2Fault1.hh"
 
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
@@ -72,6 +74,24 @@ pylith::topology::TestRefineUniform::testRefineTri3Level2Fault1(void)
 } // testRefineTri3Level2Fault1
 
 // ----------------------------------------------------------------------
+// Test refine() with level 2, quad4 cells, and no fault.
+void
+pylith::topology::TestRefineUniform::testRefineQuad4Level2(void)
+{ // testRefineQuad4Level2
+  MeshDataCohesiveQuad4Level2 data;
+  _testRefine(data);
+} // testRefineQuad4Level2
+
+// ----------------------------------------------------------------------
+// Test refine() with level 2, quad4 cells, and one fault.
+void
+pylith::topology::TestRefineUniform::testRefineQuad4Level2Fault1(void)
+{ // testRefineQuad4Level2Fault1
+  MeshDataCohesiveQuad4Level2Fault1 data;
+  _testRefine(data);
+} // testRefineQuad4Level2Fault1
+
+// ----------------------------------------------------------------------
 // Test refine() with level 2, tet4 cells, and no fault.
 void
 pylith::topology::TestRefineUniform::testRefineTet4Level2(void)
@@ -90,22 +110,22 @@ pylith::topology::TestRefineUniform::testRefineTet4Level2Fault1(void)
 } // testRefineTet4Level2Fault1
 
 // ----------------------------------------------------------------------
-// Test refine() with level 2, quad4 cells, and no fault.
+// Test refine() with level 2, hex8 cells, and no fault.
 void
-pylith::topology::TestRefineUniform::testRefineQuad4Level2(void)
-{ // testRefineQuad4Level2
-  MeshDataCohesiveQuad4Level2 data;
+pylith::topology::TestRefineUniform::testRefineHex8Level2(void)
+{ // testRefineHex8Level2
+  MeshDataCohesiveHex8Level2 data;
   _testRefine(data);
-} // testRefineQuad4Level2
+} // testRefineHex8Level2
 
 // ----------------------------------------------------------------------
-// Test refine() with level 2, quad4 cells, and one fault.
+// Test refine() with level 2, hex8 cells, and one fault.
 void
-pylith::topology::TestRefineUniform::testRefineQuad4Level2Fault1(void)
-{ // testRefineQuad4Level2Fault1
-  MeshDataCohesiveQuad4Level2Fault1 data;
+pylith::topology::TestRefineUniform::testRefineHex8Level2Fault1(void)
+{ // testRefineHex8Level2Fault1
+  MeshDataCohesiveHex8Level2Fault1 data;
   _testRefine(data);
-} // testRefineQuad4Level2Fault1
+} // testRefineHex8Level2Fault1
 
 // ----------------------------------------------------------------------
 void

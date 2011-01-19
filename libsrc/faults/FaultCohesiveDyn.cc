@@ -1059,6 +1059,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 
   } else if (0 == strcasecmp("initial_traction", name)) {
     assert(0 != _dbInitialTract);
+    _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
     _getInitialTractions(&buffer);

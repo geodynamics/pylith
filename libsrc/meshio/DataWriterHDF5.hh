@@ -80,19 +80,19 @@ public :
 
   /** Prepare file for data at a new time step.
    *
-   * @param t Time stamp for new data
-   * @param mesh Finite-element mesh.
+   * @param mesh Finite-element mesh. 
+   * @param numTimeSteps Expected number of time steps for fields.
    * @param label Name of label defining cells to include in output
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void openTimeStep(const double t,
-		    const mesh_type& mesh,
-		    const char* label =0,
-		    const int labelId =0);
+  void open(const mesh_type& mesh,
+	    const int numTimeSteps,
+	    const char* label =0,
+	    const int labelId =0);
 
-  /// Cleanup after writing data for a time step.
-  void closeTimeStep(void);
+  /// Close output files.
+  void close(void);
 
   /** Write field over vertices to file.
    *
@@ -138,7 +138,6 @@ private :
 private :
 
   std::string _filename; ///< Name of HDF5 file.
-
   PetscViewer _viewer; ///< Output file
 
 }; // DataWriterHDF5

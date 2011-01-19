@@ -24,10 +24,11 @@
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 
+#include "petsc.h" // USES MPI_Comm
 #include "journal/info.h" // USES journal::info_t
 
-#include <petsc.h> // USES MPI_Comm
-
+// :KLUDGE: Prevent NetCDF from definining MPI types
+#define MPI_INCLUDED
 #include <netcdfcpp.h> // USES netcdf
 
 #include <cassert> // USES assert()
@@ -62,7 +63,7 @@ pylith::meshio::MeshIOCubit::deallocate(void)
 void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
-  MPI_Comm comm = PETSC_COMM_WORLD;
+  MPI_Comm comm = _mesh->comm();
   int rank = 0;
   int meshDim = 0;
   int spaceDim = 0;

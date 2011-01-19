@@ -1,50 +1,28 @@
 ======================================================================
-CURRENT ISSUES/PRIORITIES
+CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* Fault preconditioner
+
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
+
+  propagate use of field split from SolverLinear to SolverNonlinear [MATT]
+
+
 * Unform global refinement
-  MATT
-    tests_auto/2d/tri3
-      pylith sheardisp_refine.cfg --nodes=3  causes new nonzero malloc
 
-  quad4, level 2 (works in serial)
-  tet4, level 2 (works in serial)
-
-  hex8, level 2
-  tet4, level 4
-  tri3, level 4
-  hex8, level 4
-  quad4, level 4
-
-  Python unit tests
-    Can't test result (no cohesive cells in MeshIOAscii).
+  quad4, level 2 [need to test in parallel]
+  tet4, level 2 [need to test in parallel]
+  hex8, level 2 [implement]
 
 * Output to HDF5 files.
-  MATT * write cells as ints
-       * censor vertices/cells
-       * Adjust PetscViewerBinary so it can dump just values, no size info
-  BRAD * write cells as ints
-       * censor vertices/cells
+  
+  Finish unit tests.
 
 * Reimplement Fields to use a single section.
 
-    Fields -> SolutionFields
-    FieldsNew -> Fields
-
-  
-
-* Reformulate solves in terms of Schur complement
-
-  MATT - 
-  Get indices and then call MatGetSubMatrix() in FaultCohesiveLagrange.cc
-    
-  + adjustSolnLumped()
-    Compute Lagrange multipliers then displacements
-  + form C as sparse matrix, use PETSc operations for computation
-    (will work parallel)
-  + Refactor friction sensitivity solve, fault preconditioner, and
-    adjustSolnLumped()
-
+    Fields
+    FieldsNew -> CombinedFields
 
 * Cleanup
   + memory model
@@ -53,6 +31,20 @@ CURRENT ISSUES/PRIORITIES
 
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
+
+    Consistent use of Schur complement
+
+      + adjustSolnLumped()
+        Compute Lagrange multipliers then displacements
+      + form C as sparse matrix, use PETSc operations for computation
+        (will work parallel)
+      + Refactor friction sensitivity solve, fault preconditioner, and
+        adjustSolnLumped()
+
+
+----------------------------------------------------------------------
+SECONDARY PRIORITIES
+----------------------------------------------------------------------
 
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
@@ -68,10 +60,6 @@ CURRENT ISSUES/PRIORITIES
 
 * Add output of initial fields (initial stress and initial strain).
 
-----------------------------------------------------------------------
-SECONDARY PRIORITIES
-----------------------------------------------------------------------
-
 * Interpolated meshes + temperature field
   No fault, linear elasticity
   Benchmark memory use and speed
@@ -82,10 +70,6 @@ SECONDARY PRIORITIES
 
   Kinematic slip in confined space/time region, otherwise governed by
   fault constitutive model.
-
-* Better preconditioning [Matt/Brad]
-
-  Need field split working for both SolverLinear and SolverNonlinear.
 
 * utilities
   + pylith_eqsummary
@@ -181,6 +165,9 @@ Brad
       meshio C++, SWIG
       problems C++, SWIG
       topology C++, SWIG
+
+  * write cells as ints in HDF5
+
 
 2. Analytic BC for reverse-slip benchmark [Charles or Brad]
     a. Create BC for CUBIT mesh.
@@ -287,18 +274,11 @@ RELEASE 1.5
 4. 2-D Power-law rheology [Charles]
    2D viscoelastic models for plane strain
 
-5. Initial stress, strain, state variables for inelastic models [Charles]
+5. Initial stress, strain, state variables for inelastic models
 
   Use switch to do elastic prestep so that main time loop is all
   anelastic in the most general case. Want to generate an error if
   both initial state variables are given and using an elastic prestep.
-
-6. Manual
-
-    * Cleanup notation and discussion of inelastic materials
-
-7. Body forces? [Charles is going to discuss this with Brad Hager to
-see if this will satisfy their needs]
 
 ======================================================================
 KNOWN DEFICIENCIES
