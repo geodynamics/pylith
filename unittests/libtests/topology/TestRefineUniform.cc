@@ -182,8 +182,6 @@ pylith::topology::TestRefineUniform::_testRefine(const MeshDataCohesive& data)
   Mesh mesh(data.cellDim);
   _setupMesh(&mesh, data);
 
-  mesh.view("ORIGINAL MESH");
-
   RefineUniform refiner;
   Mesh newMesh(data.cellDim);
   refiner.refine(&newMesh, mesh, data.refineLevel);

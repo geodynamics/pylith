@@ -303,11 +303,11 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
   } // if
 
   const double mu = density * vs*vs;
-  const double k = density * vp*vp - 4.0*mu/3;
+  const double k = density * vp*vp - 4.0/3.0*mu;
 
   if (k <= 0.0) {
     std::ostringstream msg;
-    msg << "Attempted to set Bulk Modulus to nonpositive value.\n"
+    msg << "Attempted to set bulk modulus to nonpositive value.\n"
 	<< "density: " << density << "\n"
 	<< "vp: " << vp << "\n"
 	<< "vs: " << vs << "\n";
@@ -325,7 +325,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
   if (visFrac > 1.0) {
     std::ostringstream msg;
     msg << "Shear modulus ratios sum to a value greater than 1.0 for\n"
-	<< "Generalized Maxwell model.\n"
+	<< "Generalized Maxwell shear model.\n"
 	<< "Ratio 1: " << dbValues[db_shearRatio  ] << "\n"
 	<< "Ratio 2: " << dbValues[db_shearRatio+1] << "\n"
 	<< "Ratio 3: " << dbValues[db_shearRatio+2] << "\n"
@@ -339,7 +339,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
   if (bulkFrac > 1.0) {
     std::ostringstream msg;
     msg << "Bulk modulus ratios sum to a value greater than 1.0 for\n"
-	<< "Generalized Maxwell Bulk model.\n"
+	<< "Generalized Maxwell bulk model.\n"
 	<< "Ratio 1: " << dbValues[db_bulkRatio  ] << "\n"
 	<< "Ratio 2: " << dbValues[db_bulkRatio+1] << "\n"
 	<< "Ratio 3: " << dbValues[db_bulkRatio+2] << "\n"
@@ -354,11 +354,11 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
     double viscosity = dbValues[db_viscosity + imodel];
     double muFac = muRatio*mu;
     double kFac = kRatio*k;
-    double maxwellTimeShear = 1.0e30;
-    double maxwellTimeBulk = 1.0e30;
+    double maxwellTimeShear = 1.0e+30;
+    double maxwellTimeBulk = 1.0e+30;
     if (muFac > 0.0)
       maxwellTimeShear = viscosity / muFac;
-    if (muFac > 0.0)
+    if (kFac > 0.0)
       maxwellTimeBulk = viscosity / kFac;
     if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || kFac < 0.0 || 
 	maxwellTimeShear < 0.0 || maxwellTimeBulk < 0.0) {
