@@ -294,7 +294,7 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
     double muRatio = dbValues[db_shearRatio + imodel];
     double viscosity = dbValues[db_viscosity + imodel];
     double muFac = muRatio*mu;
-    double maxwellTime = 1.0e30;
+    double maxwellTime = pylith::PYLITH_MAXDOUBLE;
     if (muFac > 0.0)
       maxwellTime = viscosity / muFac;
     if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || maxwellTime < 0.0) {
@@ -680,7 +680,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   double shearRatio = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) {
     shearRatio = properties[p_shearRatio + imodel];
-    double maxwellTime = 1.0e30;
+    double maxwellTime = pylith::PYLITH_MAXDOUBLE;
     visFrac += shearRatio;
     if (shearRatio != 0.0) {
       maxwellTime = properties[p_maxwellTime + imodel];
