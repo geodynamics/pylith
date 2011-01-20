@@ -70,6 +70,40 @@ pylith::meshio::TestHDF5::testOpenClose(void)
 } // testOpenClose
 
 // ----------------------------------------------------------------------
+// Test hasGroup()
+void
+pylith::meshio::TestHDF5::testHasGroup(void)
+{ // testHasGroup
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+
+  h5.createGroup("/mygroup");
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  CPPUNIT_ASSERT(h5.hasGroup("/mygroup"));
+  CPPUNIT_ASSERT(!h5.hasGroup("/notmygroup"));
+  h5.close();
+} // testHasGroup
+
+// ----------------------------------------------------------------------
+// Test hasDataset()
+void
+pylith::meshio::TestHDF5::testHasDataset(void)
+{ // testHasDataset
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+
+  const hsize_t ndims = 1;
+  const hsize_t dims[ndims] = { 2 };
+  h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  CPPUNIT_ASSERT(h5.hasDataset("/data"));
+  CPPUNIT_ASSERT(!h5.hasDataset("/nodata"));
+  h5.close();
+} // testHasDataset
+
+// ----------------------------------------------------------------------
 // Test createGroup()
 void
 pylith::meshio::TestHDF5::testCreateGroup(void)

@@ -111,10 +111,7 @@ dist_noinst_DATA = \
 	output_cell_t12.vtk \
 	output_cell_filter_t12.vtk \
 	hex8.h5 \
-	hex8_info.h5 \
-	hex8_cell_info.h5 \
 	hex8_cell.h5 \
-	hex8_vertex_info.h5 \
 	hex8_vertex.h5
 
 noinst_TMP =

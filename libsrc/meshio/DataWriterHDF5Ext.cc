@@ -96,8 +96,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // Create groups
     _h5->createGroup("/topology");
     _h5->createGroup("/geometry");
-    _h5->createGroup("/vertex_fields");
-    _h5->createGroup("/cell_fields");
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
@@ -340,6 +338,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	dims[0] = vNumbering->getGlobalSize();
 	dims[1] = fiberDim;
       } // else
+      // Create 'vertex_fields' group if necessary.
+      if (!_h5->hasGroup("/vertex_fields"))
+	_h5->createGroup("/vertex_fields");
+      
       _h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
 				    dims, ndims, H5T_IEEE_F64BE);
@@ -467,6 +469,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	dims[0] = numbering->getGlobalSize();
 	dims[1] = fiberDim;
       } // else
+      // Create 'cell_fields' group if necessary.
+      if (!_h5->hasGroup("/cell_fields"))
+	_h5->createGroup("/cell_fields");
+
       _h5->createDatasetRawExternal("/cell_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
 				    dims, ndims, H5T_IEEE_F64BE);

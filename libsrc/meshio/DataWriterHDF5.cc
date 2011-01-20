@@ -248,12 +248,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     assert(fiberDim > 0);
 
     PetscErrorCode err = 0;
-    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields"); CHECK_PETSC_ERROR(err);
 
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");
+    CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
@@ -319,12 +320,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     assert(fiberDim > 0);
 
     PetscErrorCode err = 0;
-    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields"); CHECK_PETSC_ERROR(err);
     
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");
+    CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);

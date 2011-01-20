@@ -66,6 +66,20 @@ public :
    */
   bool isOpen(void) const;
 
+  /** Check if HDF5 file has group.
+   *
+   * @param name Full name of group.
+   * @returns True if group exists, false otherwise.
+   */
+  bool hasGroup(const char* name);
+
+  /** Check if HDF5 file has dataset.
+   *
+   * @param name Full name of dataset.
+   * @returns True if dataset exists, false otherwise.
+   */
+  bool hasDataset(const char* name);
+
   /** Create group.
    *
    * Create group and leave group open for further operations.
