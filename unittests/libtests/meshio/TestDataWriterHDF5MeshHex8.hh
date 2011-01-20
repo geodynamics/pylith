@@ -43,7 +43,7 @@ class pylith::meshio::TestDataWriterHDF5MeshHex8 : public TestDataWriterHDF5Mesh
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestDataWriterHDF5MeshHex8 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 

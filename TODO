@@ -14,9 +14,11 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   hex8, level 2 [Need to update overlap]
 
 * Output to HDF5 files.
-  
-  Finish unit tests.
 
+  Finish unit tests.
+    TestDataWriterHDF5::checkFile()
+
+  
 * Reimplement Fields to use a single section.
 
     Fields

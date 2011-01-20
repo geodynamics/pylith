@@ -69,8 +69,8 @@ public :
   /// Test filename()
   void testFilename(void);
 
-  /// Test openTimeStep() and closeTimeStep()
-  void testTimeStep(void);
+  /// Test open() and close()
+  void testOpenClose(void);
 
   /// Test writeVertexField.
   void testWriteVertexField(void);
