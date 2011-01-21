@@ -17,38 +17,38 @@
 //
 
 /**
- * @file unittests/libtests/meshio/TestDataWriterVTKMatMeshCases.hh
+ * @file unittests/libtests/meshio/TestDataWriterHDF5MatMeshCases.hh
  *
- * @brief C++ unit testing for DataWriterVTK with material mesh and
+ * @brief C++ unit testing for DataWriterHDF5 with material mesh and
  * various cell types.
  */
 
-#if !defined(pylith_meshio_testdatawritervtkmatmeshcases_hh)
-#define pylith_meshio_testdatawritervtkmatmeshcases_hh
+#if !defined(pylith_meshio_testdatawriterhdf5matmeshcases_hh)
+#define pylith_meshio_testdatawriterhdf5matmeshcases_hh
 
-#include "TestDataWriterVTKMesh.hh"
+#include "TestDataWriterHDF5Mesh.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
-    class TestDataWriterVTKMatMeshLine2;
-    class TestDataWriterVTKMatMeshTri3;
-    class TestDataWriterVTKMatMeshQuad4;
-    class TestDataWriterVTKMatMeshTet4;
-    class TestDataWriterVTKMatMeshHex8;
+    class TestDataWriterHDF5MatMeshLine2;
+    class TestDataWriterHDF5MatMeshTri3;
+    class TestDataWriterHDF5MatMeshQuad4;
+    class TestDataWriterHDF5MatMeshTet4;
+    class TestDataWriterHDF5MatMeshHex8;
   } // meshio
 } // pylith
 
 
 // ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshLine2 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshLine2
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5MatMeshLine2 : public TestDataWriterHDF5Mesh
+{ // class TestDataWriterHDF5MatMeshLine2
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshLine2 );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5MatMeshLine2 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 
@@ -60,18 +60,18 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKMatMeshLine2
+}; // class TestDataWriterHDF5MatMeshLine2
 
 
 // ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshTri3 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshTri3
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5MatMeshTri3 : public TestDataWriterHDF5Mesh
+{ // class TestDataWriterHDF5MatMeshTri3
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshTri3 );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5MatMeshTri3 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 
@@ -83,18 +83,18 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKMatMeshTri3
+}; // class TestDataWriterHDF5MatMeshTri3
 
 
 // ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshQuad4 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshQuad4
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5MatMeshQuad4 : public TestDataWriterHDF5Mesh
+{ // class TestDataWriterHDF5MatMeshQuad4
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshQuad4 );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5MatMeshQuad4 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 
@@ -106,18 +106,18 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKMatMeshQuad4
+}; // class TestDataWriterHDF5MatMeshQuad4
 
 
 // ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshTet4 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshTet4
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5MatMeshTet4 : public TestDataWriterHDF5Mesh
+{ // class TestDataWriterHDF5MatMeshTet4
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshTet4 );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5MatMeshTet4 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 
@@ -129,18 +129,18 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKMatMeshTet4
+}; // class TestDataWriterHDF5MatMeshTet4
 
 
 // ----------------------------------------------------------------------
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMatMeshHex8 : public TestDataWriterVTKMesh
-{ // class TestDataWriterVTKMatMeshHex8
+/// C++ unit testing for DataWriterHDF5
+class pylith::meshio::TestDataWriterHDF5MatMeshHex8 : public TestDataWriterHDF5Mesh
+{ // class TestDataWriterHDF5MatMeshHex8
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDataWriterVTKMatMeshHex8 );
+  CPPUNIT_TEST_SUITE( TestDataWriterHDF5MatMeshHex8 );
 
-  CPPUNIT_TEST( testTimeStep );
+  CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testWriteVertexField );
   CPPUNIT_TEST( testWriteCellField );
 
@@ -152,10 +152,10 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestDataWriterVTKMatMeshHex8
+}; // class TestDataWriterHDF5MatMeshHex8
 
 
-#endif // pylith_meshio_testdatawritervtkmatmeshcases_hh
+#endif // pylith_meshio_testdatawriterhdf5matmeshcases_hh
 
 
 // End of file 
