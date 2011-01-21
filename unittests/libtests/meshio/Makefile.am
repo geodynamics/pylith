@@ -203,7 +203,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MeshCases.cc \
 	TestDataWriterHDF5MatMeshCases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
-	TestDataWriterHDF5ExtMeshCases.cc
+	TestDataWriterHDF5ExtMeshCases.cc \
+	TestDataWriterHDF5ExtMatMeshCases.cc
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \
@@ -211,7 +212,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MeshCases.hh \
 	TestDataWriterHDF5MatMeshCases.hh \
 	TestDataWriterHDF5ExtMesh.hh \
-	TestDataWriterHDF5ExtMeshCases.hh
+	TestDataWriterHDF5ExtMeshCases.hh \
+	TestDataWriterHDF5ExtMatMeshCases.hh
 
   testmeshio_LDADD += -lhdf5
 endif
