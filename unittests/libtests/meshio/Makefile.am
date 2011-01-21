@@ -111,6 +111,15 @@ testmeshio_SOURCES += \
 	data/DataWriterHDF5DataMatMeshQuad4.cc \
 	data/DataWriterHDF5DataMatMeshTet4.cc \
 	data/DataWriterHDF5DataMatMeshHex8.cc \
+	data/DataWriterHDF5DataSubMeshLine2.cc \
+	data/DataWriterHDF5DataSubMeshTri3.cc \
+	data/DataWriterHDF5DataSubMeshQuad4.cc \
+	data/DataWriterHDF5DataSubMeshTet4.cc \
+	data/DataWriterHDF5DataSubMeshHex8.cc \
+	data/DataWriterHDF5DataFaultMeshTri3.cc \
+	data/DataWriterHDF5DataFaultMeshQuad4.cc \
+	data/DataWriterHDF5DataFaultMeshTet4.cc \
+	data/DataWriterHDF5DataFaultMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -161,6 +170,15 @@ noinst_HEADERS += \
 	data/DataWriterHDF5DataMatMeshQuad4.hh \
 	data/DataWriterHDF5DataMatMeshTet4.hh \
 	data/DataWriterHDF5DataMatMeshHex8.hh \
+	data/DataWriterHDF5DataSubMeshLine2.hh \
+	data/DataWriterHDF5DataSubMeshTri3.hh \
+	data/DataWriterHDF5DataSubMeshQuad4.hh \
+	data/DataWriterHDF5DataSubMeshTet4.hh \
+	data/DataWriterHDF5DataSubMeshHex8.hh \
+	data/DataWriterHDF5DataFaultMeshTri3.hh \
+	data/DataWriterHDF5DataFaultMeshQuad4.hh \
+	data/DataWriterHDF5DataFaultMeshTet4.hh \
+	data/DataWriterHDF5DataFaultMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -202,6 +220,10 @@ if ENABLE_HDF5
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5MeshCases.cc \
 	TestDataWriterHDF5MatMeshCases.cc \
+	TestDataWriterHDF5SubMesh.cc \
+	TestDataWriterHDF5SubMeshCases.cc \
+	TestDataWriterHDF5FaultMesh.cc \
+	TestDataWriterHDF5FaultMeshCases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
 	TestDataWriterHDF5ExtMeshCases.cc \
 	TestDataWriterHDF5ExtMatMeshCases.cc
@@ -211,6 +233,10 @@ if ENABLE_HDF5
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5MeshCases.hh \
 	TestDataWriterHDF5MatMeshCases.hh \
+	TestDataWriterHDF5SubMesh.hh \
+	TestDataWriterHDF5SubMeshCases.hh \
+	TestDataWriterHDF5FaultMesh.hh \
+	TestDataWriterHDF5FaultMeshCases.hh \
 	TestDataWriterHDF5ExtMesh.hh \
 	TestDataWriterHDF5ExtMeshCases.hh \
 	TestDataWriterHDF5ExtMatMeshCases.hh
