@@ -311,8 +311,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     assert(!numbering.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
 
-    if (sieveMesh->hasLabel("censored depth")) {
-      // Remove Lagrange vertices and cells.
+    if (0 != label || sieveMesh->hasLabel("censored depth")) {
+      // Remove Lagrange vertices and cells and cells not in label.
       field.createScatter(numbering, context);
     } else {
       field.createScatter(context);
