@@ -118,10 +118,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // SubMesh).
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    ALE::Obj<numbering_type> vNumbering;
+    ALE::Obj<numbering_type> vNumbering = 
+      sieveMesh->hasLabel("censored depth") ?
+      sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
+      sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
+    assert(!vNumbering.isNull());
     if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
-      vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh,
-							 "censored depth", 0);
       coordinates.createScatter(vNumbering, context);
     } else {
       coordinates.createScatter(context);

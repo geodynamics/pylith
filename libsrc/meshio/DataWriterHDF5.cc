@@ -81,6 +81,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     
     const std::string& filename = _hdf5Filename();
 
+    _timesteps.clear();
+
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetType(_viewer, PETSCVIEWERHDF5);
@@ -107,10 +109,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    ALE::Obj<numbering_type> vNumbering;
+    ALE::Obj<numbering_type> vNumbering = 
+      sieveMesh->hasLabel("censored depth") ?
+      sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
+      sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
+    assert(!vNumbering.isNull());
     if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
-      vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh,
-							 "censored depth", 0);
       coordinates.createScatter(vNumbering, context);
     } else {
       coordinates.createScatter(context);
@@ -207,6 +211,7 @@ void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 { // close
   PetscViewerDestroy(_viewer); _viewer = 0;
+  _timesteps.clear();
 } // close
 
 // ----------------------------------------------------------------------
@@ -249,12 +254,19 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 
     PetscErrorCode err = 0;
 
+    if (_timesteps.find(field.label()) == _timesteps.end())
+      _timesteps[field.label()] = 0;
+    else
+      _timesteps[field.label()] += 1;
+    const int istep = _timesteps[field.label()];
+
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");
     CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep); CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
@@ -321,12 +333,19 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 
     PetscErrorCode err = 0;
     
+    if (_timesteps.find(field.label()) == _timesteps.end())
+      _timesteps[field.label()] = 0;
+    else
+      _timesteps[field.label()] += 1;
+    const int istep = _timesteps[field.label()];
+
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");
     CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep); CHECK_PETSC_ERROR(err);
     err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);

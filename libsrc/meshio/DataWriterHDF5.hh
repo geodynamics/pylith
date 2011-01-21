@@ -44,6 +44,9 @@
 // Include directives ---------------------------------------------------
 #include "DataWriter.hh" // ISA DataWriter
 
+#include <string> // USES std::string
+#include <map> // HASA std::map
+
 // DataWriterHDF5 --------------------------------------------------------
 /// Object for writing finite-element data to HDF5 file.
 template<typename mesh_type, typename field_type>
@@ -139,6 +142,8 @@ private :
 
   std::string _filename; ///< Name of HDF5 file.
   PetscViewer _viewer; ///< Output file
+
+  std::map<std::string, int> _timesteps; ///< # of time steps written per field.
 
 }; // DataWriterHDF5
 

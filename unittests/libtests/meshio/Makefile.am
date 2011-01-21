@@ -38,34 +38,16 @@ testmeshio_SOURCES = \
 	TestDataWriterFaultMesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
-	TestDataWriterVTKMeshLine2.cc \
-	TestDataWriterVTKMeshTri3.cc \
-	TestDataWriterVTKMeshQuad4.cc \
-	TestDataWriterVTKMeshTet4.cc \
-	TestDataWriterVTKMeshHex8.cc \
-	TestDataWriterVTKMatMeshLine2.cc \
-	TestDataWriterVTKMatMeshTri3.cc \
-	TestDataWriterVTKMatMeshQuad4.cc \
-	TestDataWriterVTKMatMeshTet4.cc \
-	TestDataWriterVTKMatMeshHex8.cc \
+	TestDataWriterVTKMeshCases.cc \
+	TestDataWriterVTKMatMeshCases.cc \
 	TestDataWriterVTKBCMesh.cc \
-	TestDataWriterVTKBCMeshTri3.cc \
-	TestDataWriterVTKBCMeshQuad4.cc \
-	TestDataWriterVTKBCMeshTet4.cc \
-	TestDataWriterVTKBCMeshHex8.cc \
+	TestDataWriterVTKBCMeshCases.cc \
 	TestDataWriterVTKSubMesh.cc \
-	TestDataWriterVTKSubMeshLine2.cc \
-	TestDataWriterVTKSubMeshTri3.cc \
-	TestDataWriterVTKSubMeshQuad4.cc \
-	TestDataWriterVTKSubMeshTet4.cc \
-	TestDataWriterVTKSubMeshHex8.cc \
+	TestDataWriterVTKSubMeshCases.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
 	TestDataWriterVTKFaultMesh.cc \
-	TestDataWriterVTKFaultMeshTri3.cc \
-	TestDataWriterVTKFaultMeshQuad4.cc \
-	TestDataWriterVTKFaultMeshTet4.cc \
-	TestDataWriterVTKFaultMeshHex8.cc \
+	TestDataWriterVTKFaultMeshCases.cc \
 	test_meshio.cc
 
 
@@ -77,32 +59,14 @@ noinst_HEADERS = \
 	TestDataWriterBCMesh.hh \
 	TestDataWriterFaultMesh.hh \
 	TestDataWriterVTKMesh.hh \
-	TestDataWriterVTKMeshLine2.hh \
-	TestDataWriterVTKMeshTri3.hh \
-	TestDataWriterVTKMeshQuad4.hh \
-	TestDataWriterVTKMeshTet4.hh \
-	TestDataWriterVTKMeshHex8.hh \
-	TestDataWriterVTKMatMeshLine2.hh \
-	TestDataWriterVTKMatMeshTri3.hh \
-	TestDataWriterVTKMatMeshQuad4.hh \
-	TestDataWriterVTKMatMeshTet4.hh \
-	TestDataWriterVTKMatMeshHex8.hh \
+	TestDataWriterVTKMeshCases.hh \
+	TestDataWriterVTKMatMeshCases.hh \
 	TestDataWriterVTKSubMesh.hh \
-	TestDataWriterVTKSubMeshLine2.hh \
-	TestDataWriterVTKSubMeshTri3.hh \
-	TestDataWriterVTKSubMeshQuad4.hh \
-	TestDataWriterVTKSubMeshTet4.hh \
-	TestDataWriterVTKSubMeshHex8.hh \
+	TestDataWriterVTKSubMeshCases.hh \
 	TestDataWriterVTKFaultMesh.hh \
-	TestDataWriterVTKFaultMeshTri3.hh \
-	TestDataWriterVTKFaultMeshQuad4.hh \
-	TestDataWriterVTKFaultMeshTet4.hh \
-	TestDataWriterVTKFaultMeshHex8.hh \
+	TestDataWriterVTKFaultMeshCases.hh \
 	TestDataWriterVTKBCMesh.hh \
-	TestDataWriterVTKBCMeshTri3.hh \
-	TestDataWriterVTKBCMeshQuad4.hh \
-	TestDataWriterVTKBCMeshTet4.hh \
-	TestDataWriterVTKBCMeshHex8.hh \
+	TestDataWriterVTKBCMeshCases.hh \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -137,6 +101,10 @@ testmeshio_SOURCES += \
 	data/DataWriterVTKDataBCMeshQuad4.cc \
 	data/DataWriterVTKDataBCMeshTet4.cc \
 	data/DataWriterVTKDataBCMeshHex8.cc \
+	data/DataWriterHDF5DataMeshLine2.cc \
+	data/DataWriterHDF5DataMeshTri3.cc \
+	data/DataWriterHDF5DataMeshQuad4.cc \
+	data/DataWriterHDF5DataMeshTet4.cc \
 	data/DataWriterHDF5DataMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
@@ -178,6 +146,10 @@ noinst_HEADERS += \
 	data/DataWriterVTKDataBCMeshQuad4.hh \
 	data/DataWriterVTKDataBCMeshTet4.hh \
 	data/DataWriterVTKDataBCMeshHex8.hh \
+	data/DataWriterHDF5DataMeshLine2.hh \
+	data/DataWriterHDF5DataMeshTri3.hh \
+	data/DataWriterHDF5DataMeshQuad4.hh \
+	data/DataWriterHDF5DataMeshTet4.hh \
 	data/DataWriterHDF5DataMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
@@ -218,16 +190,16 @@ if ENABLE_HDF5
 	TestHDF5.cc \
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
-	TestDataWriterHDF5MeshHex8.cc \
+	TestDataWriterHDF5MeshCases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
-	TestDataWriterHDF5ExtMeshHex8.cc
+	TestDataWriterHDF5ExtMeshCases.cc
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
-	TestDataWriterHDF5MeshHex8.hh \
+	TestDataWriterHDF5MeshCases.hh \
 	TestDataWriterHDF5ExtMesh.hh \
-	TestDataWriterHDF5ExtMeshHex8.hh
+	TestDataWriterHDF5ExtMeshCases.hh
 
   testmeshio_LDADD += -lhdf5
 endif

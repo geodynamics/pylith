@@ -22,7 +22,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "hdf5.h" // USES hid_t
+#include <hdf5.h> // USES hid_t
 
 #include <string> // USES std::string
 
