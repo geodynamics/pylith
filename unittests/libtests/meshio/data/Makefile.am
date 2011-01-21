@@ -124,7 +124,22 @@ dist_noinst_DATA = \
 	tet4_vertex.h5 \
 	hex8.h5 \
 	hex8_cell.h5 \
-	hex8_vertex.h5
+	hex8_vertex.h5 \
+	line2_mat.h5 \
+	line2_mat_vertex.h5 \
+	line2_mat_cell.h5 \
+	tri3_mat.h5 \
+	tri3_mat_vertex.h5 \
+	tri3_mat_cell.h5 \
+	quad4_mat.h5 \
+	quad4_mat_vertex.h5 \
+	quad4_mat_cell.h5 \
+	tet4_mat.h5 \
+	tet4_mat_vertex.h5 \
+	tet4_mat_cell.h5 \
+	hex8_mat.h5 \
+	hex8_mat_vertex.h5 \
+	hex8_mat_cell.h5
 
 noinst_TMP =
 

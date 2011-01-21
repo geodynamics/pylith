@@ -106,6 +106,11 @@ testmeshio_SOURCES += \
 	data/DataWriterHDF5DataMeshQuad4.cc \
 	data/DataWriterHDF5DataMeshTet4.cc \
 	data/DataWriterHDF5DataMeshHex8.cc \
+	data/DataWriterHDF5DataMatMeshLine2.cc \
+	data/DataWriterHDF5DataMatMeshTri3.cc \
+	data/DataWriterHDF5DataMatMeshQuad4.cc \
+	data/DataWriterHDF5DataMatMeshTet4.cc \
+	data/DataWriterHDF5DataMatMeshHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -151,6 +156,11 @@ noinst_HEADERS += \
 	data/DataWriterHDF5DataMeshQuad4.hh \
 	data/DataWriterHDF5DataMeshTet4.hh \
 	data/DataWriterHDF5DataMeshHex8.hh \
+	data/DataWriterHDF5DataMatMeshLine2.hh \
+	data/DataWriterHDF5DataMatMeshTri3.hh \
+	data/DataWriterHDF5DataMatMeshQuad4.hh \
+	data/DataWriterHDF5DataMatMeshTet4.hh \
+	data/DataWriterHDF5DataMatMeshHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
@@ -191,6 +201,7 @@ if ENABLE_HDF5
 	TestDataWriterHDF5.cc \
 	TestDataWriterHDF5Mesh.cc \
 	TestDataWriterHDF5MeshCases.cc \
+	TestDataWriterHDF5MatMeshCases.cc \
 	TestDataWriterHDF5ExtMesh.cc \
 	TestDataWriterHDF5ExtMeshCases.cc
 
@@ -198,6 +209,7 @@ if ENABLE_HDF5
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5MeshCases.hh \
+	TestDataWriterHDF5MatMeshCases.hh \
 	TestDataWriterHDF5ExtMesh.hh \
 	TestDataWriterHDF5ExtMeshCases.hh
 
