@@ -15,8 +15,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Output to HDF5 files.
 
-  Finish unit tests.
-    TestDataWriterHDF5::checkFile()
+  HDF5 and HDF5Ext
+    BC
+    Fault
+    Submesh
 
   
 * Reimplement Fields to use a single section.
