@@ -139,7 +139,19 @@ dist_noinst_DATA = \
 	tet4_mat_cell.h5 \
 	hex8_mat.h5 \
 	hex8_mat_vertex.h5 \
-	hex8_mat_cell.h5
+	hex8_mat_cell.h5 \
+	tri3_fault.h5 \
+	tri3_fault_vertex.h5 \
+	tri3_fault_cell.h5 \
+	quad4_fault.h5 \
+	quad4_fault_vertex.h5 \
+	quad4_fault_cell.h5 \
+	tet4_fault.h5 \
+	tet4_fault_vertex.h5 \
+	tet4_fault_cell.h5 \
+	hex8_fault.h5 \
+	hex8_fault_vertex.h5 \
+	hex8_fault_cell.h5
 
 noinst_TMP =
 
