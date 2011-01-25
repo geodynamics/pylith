@@ -296,15 +296,10 @@ pylith::friction::TimeWeakening::_updateStateVars(const double slip,
   assert(numStateVars);
   assert(_TimeWeakening::numStateVars == numStateVars);
 
-  const double tolerance = 1.0e-12;
-  if (slipRate > tolerance) {
-    const double dt = _dt;
-
-    stateVars[s_time] += dt;
-  } else {
-    stateVars[s_time] = 0.0;
-  } // else
-
+  // Don't reset state variables when sliding stops
+  // (SCEC dynamic rupture branch only).
+  const double dt = _dt;
+  stateVars[s_time] += dt;
 } // _updateStateVars
 
 
