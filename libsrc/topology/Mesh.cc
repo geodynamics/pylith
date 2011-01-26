@@ -47,6 +47,7 @@ pylith::topology::Mesh::Mesh(const int dim,
   _comm(comm),
   _debug(false)
 { // constructor
+  _mesh->setName("domain");
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
 } // constructor
@@ -74,6 +75,7 @@ pylith::topology::Mesh::createSieveMesh(const int dim)
   _mesh.destroy();
   _mesh = new SieveMesh(_comm, dim);
   _mesh->setDebug(_debug);
+  _mesh->setName("domain");
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
 } // createSieveMesh
