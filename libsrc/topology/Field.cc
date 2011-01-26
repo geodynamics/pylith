@@ -847,6 +847,10 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 					    orderLabel, numbering->getChart(),
 					    _section);
   assert(!order.isNull());
+  std::cout << "CONTEXT: " << context 
+	    << ", orderLabel: " << orderLabel
+	    << ", global size: " << order->getGlobalSize()
+	    << std::endl;
 
   err = VecCreate(_mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
