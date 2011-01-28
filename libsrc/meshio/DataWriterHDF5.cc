@@ -147,14 +147,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     if (cells->size() > 0)
       numCornersLocal = sieveMesh->getNumCellCorners(*cells->begin());
     int numCorners = numCornersLocal;
-    err = MPI_Reduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, 0, 
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX,
 		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
-    PetscScalar* tmpVertices = 0;
     const int ncells = cNumbering->getLocalSize();
     const int conesSize = ncells*numCorners;
-    err = PetscMalloc(sizeof(PetscScalar)*conesSize, &tmpVertices);
-    CHECK_PETSC_ERROR(err);
+    PetscScalar* tmpVertices = (conesSize > 0) ? new PetscScalar[conesSize] : 0;
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
@@ -177,7 +175,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
             tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
 
-    Vec elemVec;
+    PetscVec elemVec;
     err = VecCreateMPIWithArray(sieveMesh->comm(), conesSize, PETSC_DETERMINE,
 				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec,
@@ -185,9 +183,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(elemVec, numCorners); CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, _viewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = PetscFree(tmpVertices); CHECK_PETSC_ERROR(err);
+    err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
+    delete[] tmpVertices; tmpVertices = 0;
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file "
@@ -207,7 +205,10 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 { // close
-  PetscViewerDestroy(_viewer); _viewer = 0;
+  if (_viewer) {
+    PetscViewerDestroy(_viewer);
+  } // if
+  _viewer = 0;
   _timesteps.clear();
 } // close
 
@@ -221,6 +222,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 					    const mesh_type& mesh)
 { // writeVertexField
   typedef typename mesh_type::SieveMesh::numbering_type numbering_type;
+
+  assert(_viewer);
 
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
@@ -242,12 +245,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    const int fiberDimLocal = 
+    int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
     int fiberDim = 0;
-    MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		  field.mesh().comm());
     assert(fiberDim > 0);
 
     PetscErrorCode err = 0;
@@ -294,6 +297,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 { // writeCellField
   typedef typename mesh_type::SieveMesh::numbering_type numbering_type;
 
+  assert(_viewer);
+  
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
@@ -317,12 +322,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());      
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
-    const int fiberDimLocal = 
+    int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
     int fiberDim = 0;
-    MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		  field.mesh().comm());
     assert(fiberDim > 0);
 
     PetscErrorCode err = 0;
