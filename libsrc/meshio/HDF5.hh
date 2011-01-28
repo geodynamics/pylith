@@ -22,7 +22,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "hdf5.h" // USES hid_t
+#include <hdf5.h> // USES hid_t
 
 #include <string> // USES std::string
 
@@ -65,6 +65,20 @@ public :
    * @returns True if HDF5 file is open, false otherwise.
    */
   bool isOpen(void) const;
+
+  /** Check if HDF5 file has group.
+   *
+   * @param name Full name of group.
+   * @returns True if group exists, false otherwise.
+   */
+  bool hasGroup(const char* name);
+
+  /** Check if HDF5 file has dataset.
+   *
+   * @param name Full name of dataset.
+   * @returns True if dataset exists, false otherwise.
+   */
+  bool hasDataset(const char* name);
 
   /** Create group.
    *

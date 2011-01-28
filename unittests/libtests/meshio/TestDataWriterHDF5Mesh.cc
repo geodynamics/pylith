@@ -72,9 +72,9 @@ pylith::meshio::TestDataWriterHDF5Mesh::testFilename(void)
 } // testFilename
 
 // ----------------------------------------------------------------------
-// Test openTimeStep() and closeTimeStep()
+// Test open() and close()
 void
-pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
+pylith::meshio::TestDataWriterHDF5Mesh::testOpenClose(void)
 { // testTimeStep
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
@@ -87,15 +87,12 @@ pylith::meshio::TestDataWriterHDF5Mesh::testTimeStep(void)
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
-    writer.openTimeStep(t, *_mesh);
   } else {
     const char* label = _data->cellsLabel;
     const int id = _data->labelId;
     writer.open(*_mesh, numTimeSteps, label, id);
-    writer.openTimeStep(t, *_mesh, label, id);
   } // else
 
-  writer.closeTimeStep();
   writer.close();
 
   checkFile(_data->timestepFilename);

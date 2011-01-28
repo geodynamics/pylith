@@ -132,6 +132,10 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   // Set data from mesh.
   _mesh->setDebug(mesh.debug());
   coordsys(mesh);
+
+  // Set name
+  std::string meshLabel = "subdomain_" + std::string(label);
+  _mesh->setName(meshLabel);
 } // createSubMesh
 
 // ----------------------------------------------------------------------

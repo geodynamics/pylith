@@ -32,6 +32,8 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/CohesiveTopology.hh" // USES CohesiveTopology
 
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+
 #include <map> // USES std::map
 
 // ----------------------------------------------------------------------
@@ -70,6 +72,10 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
   MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
   iohandler.read(_mesh);
+
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(_mesh->dimension());
+  _mesh->coordsys(&cs);
 
   faults::FaultCohesiveKin fault;
   int firstFaultVertex    = 0;

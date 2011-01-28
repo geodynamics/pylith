@@ -45,6 +45,8 @@ class pylith::meshio::TestHDF5 : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testOpenClose );
+  CPPUNIT_TEST( testHasGroup );
+  CPPUNIT_TEST( testHasDataset );
   CPPUNIT_TEST( testCreateGroup );
   CPPUNIT_TEST( testAttributeScalar );
   CPPUNIT_TEST( testAttributeString );
@@ -62,6 +64,12 @@ public :
 
   /// Test open() and close().
   void testOpenClose(void);
+
+  /// Test hasGroup().
+  void testHasGroup(void);
+
+  /// Test hasDataset().
+  void testHasDataset(void);
 
   /// Test createGroup()
   void testCreateGroup(void);

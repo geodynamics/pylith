@@ -11,14 +11,16 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Unform global refinement
 
-  quad4, level 2 [need to test in parallel]
-  tet4, level 2 [need to test in parallel]
-  hex8, level 2 [implement]
+  hex8, level 2 [Need to update overlap]
 
 * Output to HDF5 files.
-  
-  Finish unit tests.
 
+  HDF5 and HDF5Ext
+    BC
+    Fault
+    Submesh
+
+  
 * Reimplement Fields to use a single section.
 
     Fields

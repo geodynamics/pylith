@@ -96,8 +96,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // Create groups
     _h5->createGroup("/topology");
     _h5->createGroup("/geometry");
-    _h5->createGroup("/vertex_fields");
-    _h5->createGroup("/cell_fields");
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
@@ -120,10 +118,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // SubMesh).
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    ALE::Obj<numbering_type> vNumbering;
+    ALE::Obj<numbering_type> vNumbering = 
+      sieveMesh->hasLabel("censored depth") ?
+      sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
+      sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
+    assert(!vNumbering.isNull());
     if (sieveMesh->hasLabel("censored depth")) { // Remove Lagrange vertices
-      vNumbering = sieveMesh->getFactory()->getNumbering(sieveMesh,
-							 "censored depth", 0);
       coordinates.createScatter(vNumbering, context);
     } else {
       coordinates.createScatter(context);
@@ -340,6 +340,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	dims[0] = vNumbering->getGlobalSize();
 	dims[1] = fiberDim;
       } // else
+      // Create 'vertex_fields' group if necessary.
+      if (!_h5->hasGroup("/vertex_fields"))
+	_h5->createGroup("/vertex_fields");
+      
       _h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
 				    dims, ndims, H5T_IEEE_F64BE);
@@ -386,21 +390,31 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
   assert(_h5);
 
   try {
-    // :TODO: Must account for possible presence of 'censored depth'
-    // and censor the appropriate vertices.
-
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
-
-    field.createScatter(context);
-    field.scatterSectionToVector(context);
-    PetscVec vector = field.vector(context);
-    assert(vector);
-
-    // :TODO: Need to account for censored cells.
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
+    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    const int depth = (0 == label) ? cellDepth : labelId;
+    const std::string labelName = (0 == label) ?
+      ((sieveMesh->hasLabel("censored depth")) ?
+       "censored depth" : "depth") : label;
+    assert(!sieveMesh->getFactory().isNull());
+    const ALE::Obj<typename mesh_type::SieveMesh::numbering_type>& numbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
+    assert(!numbering.isNull());
+    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
+
+    if (0 != label || sieveMesh->hasLabel("censored depth")) {
+      // Remove Lagrange vertices and cells and cells not in label.
+      field.createScatter(numbering, context);
+    } else {
+      field.createScatter(context);
+    } // if/else
+    field.scatterSectionToVector(context);
+    PetscVec vector = field.vector(context);
+    assert(vector);
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
@@ -467,6 +481,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	dims[0] = numbering->getGlobalSize();
 	dims[1] = fiberDim;
       } // else
+      // Create 'cell_fields' group if necessary.
+      if (!_h5->hasGroup("/cell_fields"))
+	_h5->createGroup("/cell_fields");
+
       _h5->createDatasetRawExternal("/cell_fields", field.label(),
 				    _datasetFilename(field.label()).c_str(),
 				    dims, ndims, H5T_IEEE_F64BE);
