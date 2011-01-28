@@ -173,7 +173,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     if (cells->size() > 0)
       numCornersLocal = sieveMesh->getNumCellCorners(*cells->begin());
     int numCorners = numCornersLocal;
-    err = MPI_Reduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, 0, 
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX,
 		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
     PetscScalar* tmpVertices = 0;
@@ -318,13 +318,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
       field.section();
     assert(!section.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    const int fiberDimLocal = 
+    int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 
 							     0)->begin()) : 0;
     int fiberDim = 0;
-    MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		  field.mesh().comm());
     assert(fiberDim > 0);
 
     if (createdExternalDataset) {
@@ -462,12 +462,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
       const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
       assert(!section.isNull());
       
-      const int fiberDimLocal = 
+      int fiberDimLocal = 
 	(sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
 	section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
       int fiberDim = 0;
-      MPI_Allreduce((void *) &fiberDimLocal, (void *) &fiberDim, 1, 
-		    MPI_INT, MPI_MAX, field.mesh().comm());
+      MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		    field.mesh().comm());
       assert(fiberDim > 0);
 
       const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;

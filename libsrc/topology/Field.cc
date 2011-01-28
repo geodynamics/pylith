@@ -358,12 +358,17 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	CHECK_PETSC_ERROR(err);
       
 	// Create scatter Vec
-	assert(_section->sizeWithBC() > 0);
-	err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-				    _section->sizeWithBC(),
-				    _section->restrictSpace(),
-				    &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
-	CHECK_PETSC_ERROR(err);
+	if (_section->sizeWithBC() > 0) {
+	  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+				      _section->sizeWithBC(),
+				      _section->restrictSpace(),
+				      &sinfo.scatterVec);
+	  CHECK_PETSC_ERROR(err);
+	} else {
+	  err = VecCreateSeqWithArray(PETSC_COMM_SELF, 0, 0,
+				      &sinfo.scatterVec);
+	  CHECK_PETSC_ERROR(err);
+	} // else
 
 	// Create vector using sizes from source section
 	int vecLocalSize = 0;
@@ -771,11 +776,14 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
-  assert(_section->sizeWithBC() > 0);
-  assert(_section->restrictSpace());
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  if (_section->sizeWithBC() > 0)  {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+				_section->restrictSpace(),
+				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  } else {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, 0, 0,
+				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  } // if/else
 
   // Create vector
   const std::string& orderLabel = _section->getName();
@@ -833,11 +841,14 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
-  assert(_section->sizeWithBC() > 0);
-  assert(_section->restrictSpace());
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  if (_section->sizeWithBC() > 0)  {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+				_section->restrictSpace(),
+				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  } else {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, 0, 0,
+				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
+  } // if/else
 
   // Create vector
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
@@ -847,12 +858,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 					    orderLabel, numbering->getChart(),
 					    _section);
   assert(!order.isNull());
-#if 0
-  std::cout << "CONTEXT: " << context 
-	    << ", orderLabel: " << orderLabel
-	    << ", global size: " << order->getGlobalSize()
-	    << std::endl;
-#endif
 
   err = VecCreate(_mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
@@ -861,6 +866,15 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   err = VecSetSizes(sinfo.vector, order->getLocalSize(), order->getGlobalSize());
   CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+
+#if 0
+  std::cout << "CONTEXT: " << context 
+	    << ", orderLabel: " << orderLabel
+	    << ", section size w/BC: " << _section->sizeWithBC()
+	    << ", global numbering size: " << numbering->getGlobalSize()
+	    << ", global size: " << order->getGlobalSize()
+	    << std::endl;
+#endif
   
   logger.stagePop();
 } // createScatter
