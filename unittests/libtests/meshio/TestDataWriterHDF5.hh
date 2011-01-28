@@ -49,7 +49,7 @@ public :
    */
   static
   void checkFile(const char* filename);
-  
+
 }; // class TestDataWriterHDF5
 
 #endif // pylith_meshio_testdatawriterhdf5_hh

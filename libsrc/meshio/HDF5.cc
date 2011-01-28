@@ -116,6 +116,54 @@ pylith::meshio::HDF5::isOpen(void) const
 } // isOpen
 
 // ----------------------------------------------------------------------
+// Check if HDF5 file has group.
+bool
+pylith::meshio::HDF5::hasGroup(const char* name)
+{ // hasGroup
+  assert(isOpen());
+  assert(name);
+
+  bool exists = false;
+  if (H5Lexists(_file, name, H5P_DEFAULT)) {
+    hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
+    assert(obj >= 0);
+    H5O_info_t info;
+    herr_t err = H5Oget_info(obj, &info);
+    assert(err >= 0);
+    if (H5O_TYPE_GROUP == info.type)
+      exists = true;
+    err = H5Oclose(obj);
+    assert(err >= 0);
+  } // if
+  
+  return exists;
+} // hasGroup
+
+// ----------------------------------------------------------------------
+// Check if HDF5 file has dataset.
+bool
+pylith::meshio::HDF5::hasDataset(const char* name)
+{ // hasDataset
+  assert(isOpen());
+  assert(name);
+
+  bool exists = false;
+  if (H5Lexists(_file, name, H5P_DEFAULT)) {
+    hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
+    assert(obj >= 0);
+    H5O_info_t info;
+    herr_t err = H5Oget_info(obj, &info);
+    assert(err >= 0);
+    if (H5O_TYPE_DATASET == info.type)
+      exists = true;
+    err = H5Oclose(obj);
+    assert(err >= 0);
+  } // if
+  
+  return exists;
+} // hasDataset
+
+// ----------------------------------------------------------------------
 // Create group.
 void
 pylith::meshio::HDF5::createGroup(const char* name)

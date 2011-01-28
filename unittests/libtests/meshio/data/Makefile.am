@@ -109,7 +109,49 @@ dist_noinst_DATA = \
 	output_vertex_t12.vtk \
 	output_vertex_filter_t12.vtk \
 	output_cell_t12.vtk \
-	output_cell_filter_t12.vtk
+	output_cell_filter_t12.vtk \
+	line2.h5 \
+	line2_cell.h5 \
+	line2_vertex.h5 \
+	tri3.h5 \
+	tri3_cell.h5 \
+	tri3_vertex.h5 \
+	quad4.h5 \
+	quad4_cell.h5 \
+	quad4_vertex.h5 \
+	tet4.h5 \
+	tet4_cell.h5 \
+	tet4_vertex.h5 \
+	hex8.h5 \
+	hex8_cell.h5 \
+	hex8_vertex.h5 \
+	line2_mat.h5 \
+	line2_mat_vertex.h5 \
+	line2_mat_cell.h5 \
+	tri3_mat.h5 \
+	tri3_mat_vertex.h5 \
+	tri3_mat_cell.h5 \
+	quad4_mat.h5 \
+	quad4_mat_vertex.h5 \
+	quad4_mat_cell.h5 \
+	tet4_mat.h5 \
+	tet4_mat_vertex.h5 \
+	tet4_mat_cell.h5 \
+	hex8_mat.h5 \
+	hex8_mat_vertex.h5 \
+	hex8_mat_cell.h5 \
+	tri3_fault.h5 \
+	tri3_fault_vertex.h5 \
+	tri3_fault_cell.h5 \
+	quad4_fault.h5 \
+	quad4_fault_vertex.h5 \
+	quad4_fault_cell.h5 \
+	tet4_fault.h5 \
+	tet4_fault_vertex.h5 \
+	tet4_fault_cell.h5 \
+	hex8_fault.h5 \
+	hex8_fault_vertex.h5 \
+	hex8_fault_cell.h5
 
 noinst_TMP =
 
