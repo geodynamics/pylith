@@ -90,12 +90,16 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
+    int rank = 0;
+    MPI_Comm_rank(mesh.comm(), &rank);
     
-    _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
+    if (!rank) {
+      _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
-    // Create groups
-    _h5->createGroup("/topology");
-    _h5->createGroup("/geometry");
+      // Create groups
+      _h5->createGroup("/topology");
+      _h5->createGroup("/geometry");
+    } // if
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
@@ -146,13 +150,15 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     binaryViewer = 0;
     
     // Create external dataset for coordinates    
-    const hsize_t ndims = 2;
-    hsize_t dims[ndims];
-    dims[0] = vNumbering->getGlobalSize();
-    dims[1] = cs->spaceDim();
-    _h5->createDatasetRawExternal("/geometry", "vertices", 
-				  filenameVertices.c_str(),
-				  dims, ndims, H5T_IEEE_F64BE);
+    if (!rank) {
+      const hsize_t ndims = 2;
+      hsize_t dims[ndims];
+      dims[0] = vNumbering->getGlobalSize();
+      dims[1] = cs->spaceDim();
+      _h5->createDatasetRawExternal("/geometry", "vertices", 
+				    filenameVertices.c_str(),
+				    dims, ndims, H5T_IEEE_F64BE);
+    } // if
     
     // Write cells
 
@@ -225,10 +231,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     binaryViewer = 0;
 
     // Create external dataset for cells
-    dims[0] = cNumbering->getGlobalSize();
-    dims[1] = numCorners;
-    _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
-				  dims, ndims, H5T_IEEE_F64BE);
+    if (!rank) {
+      const hsize_t ndims = 2;
+      hsize_t dims[ndims];
+      dims[0] = cNumbering->getGlobalSize();
+      dims[1] = numCorners;
+      _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
+				    dims, ndims, H5T_IEEE_F64BE);
+    } // if
     
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -268,6 +278,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+
+    int rank = 0;
+    MPI_Comm_rank(mesh.comm(), &rank);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
@@ -327,42 +340,44 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 		  field.mesh().comm());
     assert(fiberDim > 0);
 
-    if (createdExternalDataset) {
-      // Add new external dataset to HDF5 file.
-      const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
-      const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-      hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
-      if (3 == ndims) {
-	dims[0] = 1; // external file only constains 1 time step so far.
+    if (!rank) {
+      if (createdExternalDataset) {
+	// Add new external dataset to HDF5 file.
+	const int numTimeSteps
+	  = DataWriter<mesh_type, field_type>::_numTimeSteps;
+	const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
+	hsize_t dims[3];
+	if (3 == ndims) {
+	  dims[0] = 1; // external file only constains 1 time step so far.
+	  dims[1] = vNumbering->getGlobalSize();
+	  dims[2] = fiberDim;
+	} else {
+	  dims[0] = vNumbering->getGlobalSize();
+	  dims[1] = fiberDim;
+	} // else
+	// Create 'vertex_fields' group if necessary.
+	if (!_h5->hasGroup("/vertex_fields"))
+	  _h5->createGroup("/vertex_fields");
+	
+	_h5->createDatasetRawExternal("/vertex_fields", field.label(),
+				      _datasetFilename(field.label()).c_str(),
+				      dims, ndims, H5T_IEEE_F64BE);
+      } else {
+	// Update number of time steps in external dataset info in HDF5 file.
+	const int totalNumTimeSteps = 
+	  DataWriter<mesh_type, field_type>::_numTimeSteps;
+	assert(totalNumTimeSteps > 0);
+	const int numTimeSteps = _datasets[field.label()].numTimeSteps;
+	
+	const hsize_t ndims = 3;
+	hsize_t dims[3];
+	dims[0] = numTimeSteps; // update to current value
 	dims[1] = vNumbering->getGlobalSize();
 	dims[2] = fiberDim;
-      } else {
-	dims[0] = vNumbering->getGlobalSize();
-	dims[1] = fiberDim;
-      } // else
-      // Create 'vertex_fields' group if necessary.
-      if (!_h5->hasGroup("/vertex_fields"))
-	_h5->createGroup("/vertex_fields");
-      
-      _h5->createDatasetRawExternal("/vertex_fields", field.label(),
-				    _datasetFilename(field.label()).c_str(),
-				    dims, ndims, H5T_IEEE_F64BE);
-      delete[] dims; dims = 0;
-    } else {
-      // Update number of time steps in external dataset info in HDF5 file.
-      const int totalNumTimeSteps = 
-	DataWriter<mesh_type, field_type>::_numTimeSteps;
-      assert(totalNumTimeSteps > 0);
-      const int numTimeSteps = _datasets[field.label()].numTimeSteps;
-
-      const hsize_t ndims = 3;
-      hsize_t dims[ndims];
-      dims[0] = numTimeSteps; // update to current value
-      dims[1] = vNumbering->getGlobalSize();
-      dims[2] = fiberDim;
-      _h5->extendDatasetRawExternal("/vertex_fields", field.label(),
-				    dims, ndims);
-    } // if/else
+	_h5->extendDatasetRawExternal("/vertex_fields", field.label(),
+				      dims, ndims);
+      } // if/else
+    } // if
 
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -391,6 +406,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+
+    int rank = 0;
+    MPI_Comm_rank(field.mesh().comm(), &rank);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
@@ -470,26 +488,28 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 		    field.mesh().comm());
       assert(fiberDim > 0);
 
-      const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
-      const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-      hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
-      if (3 == ndims) {
-	dims[0] = 1; // external file only constains 1 time step so far.
-	dims[1] = numbering->getGlobalSize();
-	dims[2] = fiberDim;
-      } else {
-	dims[0] = numbering->getGlobalSize();
-	dims[1] = fiberDim;
+      if (!rank) {
+	const int numTimeSteps =
+	  DataWriter<mesh_type, field_type>::_numTimeSteps;
+	const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
+	hsize_t dims[3];
+	if (3 == ndims) {
+	  dims[0] = 1; // external file only constains 1 time step so far.
+	  dims[1] = numbering->getGlobalSize();
+	  dims[2] = fiberDim;
+	} else {
+	  dims[0] = numbering->getGlobalSize();
+	  dims[1] = fiberDim;
+	} // else
+	// Create 'cell_fields' group if necessary.
+	if (!_h5->hasGroup("/cell_fields"))
+	  _h5->createGroup("/cell_fields");
+	
+	_h5->createDatasetRawExternal("/cell_fields", field.label(),
+				      _datasetFilename(field.label()).c_str(),
+				      dims, ndims, H5T_IEEE_F64BE);
       } // else
-      // Create 'cell_fields' group if necessary.
-      if (!_h5->hasGroup("/cell_fields"))
-	_h5->createGroup("/cell_fields");
-
-      _h5->createDatasetRawExternal("/cell_fields", field.label(),
-				    _datasetFilename(field.label()).c_str(),
-				    dims, ndims, H5T_IEEE_F64BE);
-      delete[] dims; dims = 0;
-    } // else
+    } // if
 
   } catch (const std::exception& err) {
     std::ostringstream msg;

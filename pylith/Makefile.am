@@ -184,7 +184,11 @@ if ENABLE_HDF5
 	meshio/DataWriterHDF5.py \
 	meshio/DataWriterHDF5Mesh.py \
 	meshio/DataWriterHDF5SubMesh.py \
-	meshio/DataWriterHDF5SubSubMesh.py
+	meshio/DataWriterHDF5SubSubMesh.py \
+	meshio/DataWriterHDF5Ext.py \
+	meshio/DataWriterHDF5ExtMesh.py \
+	meshio/DataWriterHDF5ExtSubMesh.py \
+	meshio/DataWriterHDF5ExtSubSubMesh.py
 endif
 
 if ENABLE_TETGEN

@@ -39,6 +39,7 @@
 #include "pylith/meshio/OutputSolnSubset.hh"
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
+#include "pylith/meshio/DataWriterHDF5Ext.hh"
 #endif
 
 #include "pylith/utils/arrayfwd.hh"
@@ -76,6 +77,7 @@
 %include "OutputSolnSubset.i"
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
+%include "DataWriterHDF5Ext.i"
 #endif
 
 // Template instatiation
@@ -101,10 +103,13 @@
 %template(MeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubSubMeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
+
+%template(MeshDataWriterHDF5Ext) pylith::meshio::DataWriterHDF5Ext<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubMeshDataWriterHDF5Ext) pylith::meshio::DataWriterHDF5Ext<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
+%template(SubSubMeshDataWriterHDF5Ext) pylith::meshio::DataWriterHDF5Ext<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
 #endif
 
 %template(MeshOutputManager) pylith::meshio::OutputManager<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshOutputManager) pylith::meshio::OutputManager<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
 
 // End of file
-
