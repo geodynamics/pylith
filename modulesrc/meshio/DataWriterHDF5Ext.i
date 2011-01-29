@@ -17,27 +17,27 @@
 //
 
 /**
- * @file modulesrc/meshio/DataWriterHDF5.i
+ * @file modulesrc/meshio/DataWriterHDF5Ext.i
  *
- * @brief Python interface to C++ DataWriterHDF5 object.
+ * @brief Python interface to C++ DataWriterHDF5Ext object.
  */
 
 namespace pylith {
   namespace meshio {
 
     template<typename mesh_type, typenam field_type>
-    class pylith::meshio::DataWriterHDF5 :
+    class pylith::meshio::DataWriterHDF5Ext :
       public DataWriter<mesh_type, field_type>
-    { // DataWriterHDF5  
+    { // DataWriterHDF5Ext  
       
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Constructor
-      DataWriterHDF5(void);
+      DataWriterHDF5Ext(void);
       
       /// Destructor
-      ~DataWriterHDF5(void);
+      ~DataWriterHDF5Ext(void);
       
       /** Make copy of this object.
        *
@@ -48,9 +48,9 @@ namespace pylith {
       /// Deallocate PETSc and local data structures.
       void deallocate(void);
   
-      /** Set filename for HDF5 file.
+      /** Set filename for HDF5Ext file.
        *
-       * @param filename Name of HDF5 file.
+       * @param filename Name of HDF5Ext file.
        */
       void filename(const char* filename);
       
@@ -93,7 +93,7 @@ namespace pylith {
 			  const char* label =0,
 			  const int labelId =0);
       
-    }; // DataWriterHDF5
+    }; // DataWriterHDF5Ext
 
   } // meshio
 } // pylith
