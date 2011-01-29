@@ -753,6 +753,66 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
 } // testCreateScatter
 
 // ----------------------------------------------------------------------
+// Test createScatterWithBC().
+void
+pylith::topology::TestFieldSubMesh::testCreateScatterWithBC(void)
+{ // testCreateScatterWithBC
+  const int fiberDim = 3;
+
+  Mesh mesh;
+  SubMesh submesh;
+  _buildMesh(&mesh, &submesh);
+  Field<SubMesh> field(submesh);
+  field.newSection(FieldBase::VERTICES_FIELD, fiberDim);
+  field.allocate();
+  
+  const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = submesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SubMesh::SieveMesh::label_sequence>& vertices = 
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const int sizeE = vertices->size() * fiberDim;
+
+  CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
+  field.createScatterWithBC();
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfo = field._getScatter("");
+  CPPUNIT_ASSERT(sinfo.scatter);
+  CPPUNIT_ASSERT(sinfo.scatterVec);
+  CPPUNIT_ASSERT(sinfo.vector);
+
+  int size = 0;
+  VecGetSize(sinfo.vector, &size);
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  // Make sure we can do multiple calls to createScatterWithBC().
+  field.createScatterWithBC();
+  CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
+
+  // Create another scatter.
+  field.createScatterWithBC("B");
+  CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
+  const Field<SubMesh>::ScatterInfo& sinfoB = field._getScatter("B");
+  CPPUNIT_ASSERT(sinfoB.scatter);
+  CPPUNIT_ASSERT(sinfoB.scatterVec);
+  CPPUNIT_ASSERT(sinfoB.vector);
+
+  Field<SubMesh> field2(submesh);
+  field2.cloneSection(field);
+  CPPUNIT_ASSERT_EQUAL(size_t(2), field2._scatters.size());
+
+  const Field<SubMesh>::ScatterInfo& sinfo2 = field2._getScatter("");
+  CPPUNIT_ASSERT(sinfo2.scatter);
+  CPPUNIT_ASSERT(sinfo2.scatterVec);
+  CPPUNIT_ASSERT(sinfo2.vector);
+
+  const Field<SubMesh>::ScatterInfo& sinfo2B = field2._getScatter("B");
+  CPPUNIT_ASSERT(sinfo2B.scatter);
+  CPPUNIT_ASSERT(sinfo2B.scatterVec);
+  CPPUNIT_ASSERT(sinfo2B.vector);
+} // testCreateScatterWithBC
+
+// ----------------------------------------------------------------------
 // Test vector().
 void
 pylith::topology::TestFieldSubMesh::testVector(void)
