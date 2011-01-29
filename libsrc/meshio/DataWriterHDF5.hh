@@ -81,7 +81,7 @@ public :
    */
   void filename(const char* filename);
 
-  /** Prepare file for data at a new time step.
+  /** Open output file.
    *
    * @param mesh Finite-element mesh. 
    * @param numTimeSteps Expected number of time steps for fields.
