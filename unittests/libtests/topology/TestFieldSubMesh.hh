@@ -64,6 +64,7 @@ class pylith::topology::TestFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testDimensionalize );
   CPPUNIT_TEST( testView );
   CPPUNIT_TEST( testCreateScatter );
+  CPPUNIT_TEST( testCreateScatterWithBC );
   CPPUNIT_TEST( testVector );
   CPPUNIT_TEST( testScatterSectionToVector );
   CPPUNIT_TEST( testScatterVectorToSection );
@@ -126,6 +127,9 @@ public :
 
   /// Test createScatter().
   void testCreateScatter(void);
+
+  /// Test createScatterWithBC().
+  void testCreateScatterWithBC(void);
 
   /// Test vector().
   void testVector(void);
