@@ -263,7 +263,9 @@ public :
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
-   * Sieve section view.
+   * Sieve section view. The PETSc vector does not contain constrained
+   * DOF. Use createScatterWithBC() to include the constrained DOF in
+   * the PETSc vector.
    *
    * @param context Label for context associated with vector.
    */
@@ -272,12 +274,37 @@ public :
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
-   * Sieve section view.
+   * Sieve section view. The PETSc vector does not contain constrained
+   * DOF. Use createScatterWithBC() to include the constrained DOF in
+   * the PETSc vector.
    *
    * @param numbering Numbering used to select points in section.
    * @param context Label for context associated with vector.
    */
   void createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+		     const char* context ="");
+
+  /** Create PETSc vector scatter for field. This is used to transfer
+   * information from the "global" PETSc vector view to the "local"
+   * Sieve section view. The PETSc vector includes constrained
+   * DOF. Use createScatter() if constrained DOF should be omitted
+   * from the PETSc vector.
+   *
+   * @param context Label for context associated with vector.
+   */
+  void createScatterWithBC(const char* context ="");
+
+
+  /** Create PETSc vector scatter for field. This is used to transfer
+   * information from the "global" PETSc vector view to the "local"
+   * Sieve section view. The PETSc vector includes constrained
+   * DOF. Use createScatter() if constrained DOF should be omitted
+   * from the PETSc vector.
+   *
+   * @param numbering Numbering used to select points in section.
+   * @param context Label for context associated with vector.
+   */
+  void createScatterWithBC(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 		     const char* context ="");
 
   /** Get PETSc vector associated with field.

@@ -1950,7 +1950,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
       
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[0] / tractionShearMag;
+	tractionTpdt[0] / tractionShearMag;
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = 0.0;
     } else {
@@ -1999,9 +1999,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       // traction is limited by friction, so have sliding
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[0] / tractionShearMag;
+	tractionTpdt[0] / tractionShearMag;
       const double dlq = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[1] / tractionShearMag;
+	tractionTpdt[1] / tractionShearMag;
 
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = dlq;
