@@ -37,6 +37,7 @@ swig_sources = \
 	DataWriter.i \
 	DataWriterVTK.i \
 	DataWriterHDF5.i \
+	DataWriterHDF5Ext.i \
 	OutputManager.i \
 	OutputSolnSubset.i
 
