@@ -1,0 +1,16 @@
+// -*- C++ -*- 
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 12
+  value-names =  density vs vp shear-ratio-1 shear-ratio-2 shear-ratio-3 bulk-ratio-1 bulk-ratio-2 bulk-ratio-3 viscosity-1 viscosity-2 viscosity-3
+  value-units =  kg/m**3  m/s  m/s None None None None None None Pa*s Pa*s Pa*s
+  num-locs = 1
+  data-dim = 0
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+0.0  0.0  0.0   2500.0  3000.0  5291.502622129181  0.4  0.4  0.2  0.0  0.0  0.0  7.10046e18 7.10046e19 7.10046e20
