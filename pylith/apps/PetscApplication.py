@@ -59,6 +59,12 @@ class PetscApplication(Application):
     Run the application in parallel on the compute nodes.
     """
     self.petsc.initialize()
+    try:
+      import pycuda
+      import pycuda.autoinit
+      self._info.log('Initialized CUDA')
+    except ImportError:
+      self._info.log('Could not initialize CUDA')
     self.main(*args, **kwds)
     self.cleanup()
     self.petsc.finalize()

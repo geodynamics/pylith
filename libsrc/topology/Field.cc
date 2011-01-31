@@ -909,6 +909,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
 						  _section);
   assert(!order.isNull());
+  std::cout << "Create scatter named \""<<orderLabel<<"\" of size "<< order->getGlobalSize() << std::endl;
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,

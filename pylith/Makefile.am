@@ -54,6 +54,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
 	feassemble/ElasticityImplicitLgDeform.py \
+	feassemble/ElasticityImplicitCUDA.py \
 	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
@@ -132,6 +133,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Formulation.py \
 	problems/Implicit.py \
 	problems/ImplicitLgDeform.py \
+	problems/ImplicitCUDA.py \
 	problems/Problem.py \
 	problems/Solver.py \
 	problems/SolverLinear.py \
