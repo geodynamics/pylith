@@ -953,7 +953,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   assert(!numbering.isNull());
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
   const bool createScatterOk = true;

@@ -191,6 +191,8 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
       eqsrc.finalize()
     FaultCohesive.finalize(self)
     Integrator.finalize(self)
+    self.output.close()
+    self.output.finalize()
     return
   
 

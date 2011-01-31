@@ -27,6 +27,9 @@ SUBDIRS = \
 	friction \
 	problems
 
+.cu.lo:
+       $(LIBTOOL) --tag=CC --mode=compile nvcc --compile -m64 $(NVCC_FLAGS) -o ${@F} $<
+
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
@@ -176,6 +179,15 @@ if ENABLE_CUBIT
   libpylith_la_SOURCES += \
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
+if ENABLE_CUDA
+  libpylith_la_SOURCES += \
+	feassemble/ElasticityImplicitCUDA.cc \
+	feassemble/ElasticityImplicitCUDAKernel.cu
+  libpylith_la_LIBADD += -lcudart -lcuda 
+#    -L/usr/local/cuda/lib
+# INCLUDES +=  -I/usr/local/cuda/include
 endif
 
 

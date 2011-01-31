@@ -45,8 +45,9 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
 { // deallocate
-  if (0 != _viewer)
-    PetscViewerDestroy(_viewer);
+  if (_viewer) {
+    PetscErrorCode err = PetscViewerDestroy(_viewer); CHECK_PETSC_ERROR(err);
+  } // if
   _viewer = 0;
 } // deallocate
   
@@ -83,13 +84,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     _timesteps.clear();
 
-    err = PetscViewerCreate(mesh.comm(), &_viewer);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetType(_viewer, PETSCVIEWERHDF5);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerFileSetMode(_viewer, FILE_MODE_WRITE);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerFileSetName(_viewer, filename.c_str());
+    err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE,
+			      &_viewer);
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();

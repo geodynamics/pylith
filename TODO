@@ -15,7 +15,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Output to HDF5 files.
 
-  HDF5 and HDF5Ext
+  HDF5
+    BC (tests fail)
+    Submesh (tests fail)
+  HDF5Ext
     BC
     Fault
     Submesh

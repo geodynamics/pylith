@@ -191,6 +191,12 @@ if ENABLE_HDF5
 	meshio/DataWriterHDF5ExtSubSubMesh.py
 endif
 
+if ENABLE_CUDA
+  nobase_pkgpyexec_PYTHON += \
+	feassemble/ElasticityImplicitCUDA.py \
+	problems/ImplicitCUDA.py
+endif
+
 if ENABLE_TETGEN
   nobase_pkgpyexec_PYTHON += topology/MeshGenSimple.py
 endif
