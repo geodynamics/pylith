@@ -229,14 +229,17 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MeshCases.cc \
 	TestDataWriterHDF5MatMeshCases.cc \
 	TestDataWriterHDF5SubMesh.cc \
-	TestDataWriterHDF5SubMeshCases.cc \
-	TestDataWriterHDF5BCMesh.cc \
-	TestDataWriterHDF5BCMeshCases.cc \
-	TestDataWriterHDF5FaultMesh.cc \
-	TestDataWriterHDF5FaultMeshCases.cc \
-	TestDataWriterHDF5ExtMesh.cc \
-	TestDataWriterHDF5ExtMeshCases.cc \
-	TestDataWriterHDF5ExtMatMeshCases.cc
+	TestDataWriterHDF5SubMeshCases.cc 
+
+#	TestDataWriterHDF5FaultMesh.cc \
+#	TestDataWriterHDF5FaultMeshCases.cc \
+#	TestDataWriterHDF5ExtMesh.cc \
+#	TestDataWriterHDF5ExtMeshCases.cc \
+#	TestDataWriterHDF5ExtMatMeshCases.cc
+
+#	TestDataWriterHDF5BCMesh.cc \
+#	TestDataWriterHDF5BCMeshCases.cc 
+
 
   noinst_HEADERS += \
 	TestDataWriterHDF5.hh \
