@@ -69,6 +69,8 @@ namespace pylith {
     class ElasticityImplicitLgDeform;
     class ElasticityExplicitLgDeform;
 
+    class ElasticityImplicitCUDA;
+
   } // feassemble
 } // pylith
 

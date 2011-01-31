@@ -127,6 +127,7 @@ class IntegratorElasticity(Integrator):
     """
     Integrator.finalize(self)
     self.materialObj.finalize()
+    self.output.close()
     self.output.finalize()
     self._modelMemoryUse()
     return

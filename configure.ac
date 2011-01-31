@@ -80,6 +80,16 @@ AC_ARG_ENABLE([hdf5],
 	[enable_hdf5=no])
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
+# CUDA
+AC_ARG_ENABLE([cuda],
+    [AC_HELP_STRING([--enable-cuda],
+        [enable use of CUDA @<:@default=no@:>@])],
+	[enable_cuda=yes
+	CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
+	PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
+	[enable_cuda=no])
+AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
+
 # MEMORY LOGGING
 AC_ARG_ENABLE([memory_logging],
     [AC_HELP_STRING([--enable-memory-logging],
@@ -214,6 +224,26 @@ if test "$enable_hdf5" = "yes" ; then
      AC_MSG_ERROR([hdf5 library not found.])
   ])
   CPPFLAGS=$hdf5_save_CPPFLAGS
+fi
+
+# CUDA
+if test "$enable_cuda" = "yes" ; then
+  AC_REQUIRE_CPP
+  AC_LANG(C++)
+  cuda_save_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"
+  AC_CHECK_HEADER([cuda_runtime.h], [], [
+    AC_MSG_ERROR([CUDA runtime header not found.])
+  ])
+  #AC_MSG_CHECKING([for ?? in -lcuda])
+  #AC_COMPILE_IFELSE(
+  #  [AC_LANG_PROGRAM([[#include <cuda_runtime.h>]],
+  #	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
+  #  [AC_MSG_RESULT(yes)],
+  #  [AC_MSG_RESULT(no)
+  #   AC_MSG_ERROR([cuda library not found.])
+  #])
+  CPPFLAGS=$cuda_save_CPPFLAGS
 fi
 
 # PROJ4
