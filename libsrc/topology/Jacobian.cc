@@ -43,8 +43,10 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
+#if 0
   sieveMesh->getFactory()->getGlobalOrder(sieveMesh, fieldSection->getName(), fieldSection)->view("Global Order");
   sieveMesh->setDebug(3);
+#endif
   PetscErrorCode err = MeshCreateMatrix(sieveMesh, fieldSection,
 					matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
