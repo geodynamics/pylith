@@ -48,7 +48,7 @@ class ElasticMaterial(Material):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b output Output manager associated with fault data.
+    ## @li \b output Output manager associated with material data.
     ## @li \b db_initial_stress Database for initial stress.
     ## @li \b db_initial_strain Database for initial strain.
 
