@@ -89,8 +89,6 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \
-	feassemble/ElasticityImplicitCUDA.cc \
-	feassemble/ElasticityImplicitCUDAKernel.cu \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
@@ -160,8 +158,7 @@ libpylith_la_SOURCES += \
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
-	$(PETSC_LIB) \
-    -L/usr/local/cuda/lib -lcudart -lcuda 
+	$(PETSC_LIB)
 if NO_UNDEFINED
 libpylith_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
@@ -184,5 +181,12 @@ if ENABLE_CUBIT
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 
+if ENABLE_CUDA
+  libpylith_la_SOURCES += \
+	feassemble/ElasticityImplicitCUDA.cc \
+	feassemble/ElasticityImplicitCUDAKernel.cu
+  libpylith_la_LIBADD += -lcudart -lcuda 
+#    -L/usr/local/cuda/lib
+endif
 
 # End of file 
