@@ -27,6 +27,9 @@ SUBDIRS = \
 	friction \
 	problems
 
+.cu.lo:
+       $(LIBTOOL) --tag=CC --mode=compile nvcc --compile -m64 $(NVCC_FLAGS) -o ${@F} $<
+
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
@@ -86,6 +89,8 @@ libpylith_la_SOURCES = \
 	feassemble/IntegratorElasticityLgDeform.cc \
 	feassemble/ElasticityImplicitLgDeform.cc \
 	feassemble/ElasticityExplicitLgDeform.cc \
+	feassemble/ElasticityImplicitCUDA.cc \
+	feassemble/ElasticityImplicitCUDAKernel.cu \
 	friction/FrictionModel.cc \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
@@ -155,14 +160,15 @@ libpylith_la_SOURCES += \
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+    -L/usr/local/cuda/lib -lcudart -lcuda 
 if NO_UNDEFINED
 libpylith_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES = -I$(top_builddir)/include
-INCLUDES += $(PETSC_CC_INCLUDES)
+INCLUDES += $(PETSC_CC_INCLUDES) -I/usr/local/cuda/include
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 
