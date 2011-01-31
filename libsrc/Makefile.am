@@ -165,7 +165,7 @@ libpylith_la_LIBADD += \
 endif
 
 INCLUDES = -I$(top_builddir)/include
-INCLUDES += $(PETSC_CC_INCLUDES) -I/usr/local/cuda/include
+INCLUDES += $(PETSC_CC_INCLUDES)
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 
@@ -187,6 +187,8 @@ if ENABLE_CUDA
 	feassemble/ElasticityImplicitCUDAKernel.cu
   libpylith_la_LIBADD += -lcudart -lcuda 
 #    -L/usr/local/cuda/lib
+# INCLUDES +=  -I/usr/local/cuda/include
 endif
+
 
 # End of file 
