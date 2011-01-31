@@ -177,6 +177,8 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     """
     FaultCohesive.finalize(self)
     Integrator.finalize(self)
+    self.output.close()
+    self.output.finalize()
     return
   
 

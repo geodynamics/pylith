@@ -181,6 +181,8 @@ class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
     """
     FaultCohesive.finalize(self)
     Integrator.finalize(self)
+    self.output.close()
+    self.output.finalize()
     return
   
 
