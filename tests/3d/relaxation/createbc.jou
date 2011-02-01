@@ -22,8 +22,6 @@ nodeset 16 name "face_zpos"
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
 group "face_xpos" add node in surface 6
-group "face_xpos" remove node in face_zneg
-group "face_xpos" remove node in face_zpos
 nodeset 11 group face_xpos
 nodeset 11 name "face_xpos"
 
@@ -31,8 +29,6 @@ nodeset 11 name "face_xpos"
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
 group "face_xneg" add node in surface 4
-group "face_xneg" remove node in face_zneg
-group "face_xneg" remove node in face_zpos
 nodeset 12 group face_xneg
 nodeset 12 name "face_xneg"
 
@@ -40,10 +36,6 @@ nodeset 12 name "face_xneg"
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
 group "face_ypos" add node in surface 5
-group "face_ypos" remove node in face_zneg
-group "face_ypos" remove node in face_zpos
-group "face_ypos" remove node in face_xneg
-group "face_ypos" remove node in face_xpos
 nodeset 13 group face_ypos
 nodeset 13 name "face_ypos"
 
@@ -51,10 +43,6 @@ nodeset 13 name "face_ypos"
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
 group "face_yneg" add node in surface 3
-group "face_yneg" remove node in face_zneg
-group "face_yneg" remove node in face_zpos
-group "face_yneg" remove node in face_xneg
-group "face_yneg" remove node in face_xpos
 nodeset 14 group face_yneg
 nodeset 14 name "face_yneg"
 

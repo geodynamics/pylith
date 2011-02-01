@@ -64,9 +64,9 @@ const char* pylith::materials::DruckerPrager3DTimeDepData::_dbPropertyValues[] =
 "density",
 "vs",
 "vp",
-"friction_angle",
+"friction-angle",
 "cohesion",
-"dilatation_angle",
+"dilatation-angle",
 };
 
 const char* pylith::materials::DruckerPrager3DTimeDepData::_dbStateVarValues[] = {

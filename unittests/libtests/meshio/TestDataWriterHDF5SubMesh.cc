@@ -72,8 +72,6 @@ pylith::meshio::TestDataWriterHDF5SubMesh::testOpenClose(void)
 
   DataWriterHDF5<topology::SubMesh, MeshField> writer;
 
-  _mesh->sieveMesh()->setDebug(3);
-  _submesh->sieveMesh()->setDebug(3);
   writer.filename(_data->timestepFilename);
 
   const double t = _data->time;

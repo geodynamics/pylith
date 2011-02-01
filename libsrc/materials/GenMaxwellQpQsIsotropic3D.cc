@@ -65,20 +65,23 @@ namespace pylith {
 	{ "maxwell_time_shear", numMaxwellModels, pylith::topology::FieldBase::OTHER },
 	{ "maxwell_time_bulk", numMaxwellModels, pylith::topology::FieldBase::OTHER },
       };
-      // Values expected in properties spatial database.  :KLUDGE: Not
-      // generalized over number of models.
-      const int numDBProperties = 3 + 3*numMaxwellModels;
+      // Values expected in properties spatial database.
+      // :KLUDGE: Not generalized over number of models.
+      const int numDBProperties = 3 + 4*numMaxwellModels;
       const char* dbProperties[numDBProperties] = {
 	"density", "vs", "vp",
 	"shear-ratio-1",
 	"shear-ratio-2",
 	"shear-ratio-3",
+	"shear-viscosity-1",
+	"shear-viscosity-2",
+	"shear-viscosity-3",
 	"bulk-ratio-1",
 	"bulk-ratio-2",
 	"bulk-ratio-3",
-	"viscosity-1",
-	"viscosity-2",
-	"viscosity-3",
+	"bulk-viscosity-1",
+	"bulk-viscosity-2",
+	"bulk-viscosity-3",
       };
       
       /// Number of state variables.
@@ -166,11 +169,15 @@ const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_vp =
 const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_shearRatio =
   pylith::materials::GenMaxwellQpQsIsotropic3D::db_vp + 1;
 
-const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_bulkRatio =
+const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_shearViscosity =
   pylith::materials::GenMaxwellQpQsIsotropic3D::db_shearRatio + 
   pylith::materials::_GenMaxwellQpQsIsotropic3D::numMaxwellModels;
 
-const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_viscosity =
+const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_bulkRatio =
+  pylith::materials::GenMaxwellQpQsIsotropic3D::db_shearViscosity + 
+  pylith::materials::_GenMaxwellQpQsIsotropic3D::numMaxwellModels;
+
+const int pylith::materials::GenMaxwellQpQsIsotropic3D::db_bulkViscosity =
   pylith::materials::GenMaxwellQpQsIsotropic3D::db_bulkRatio + 
   pylith::materials::_GenMaxwellQpQsIsotropic3D::numMaxwellModels;
 
@@ -348,27 +355,30 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
   } // if
 
   // Loop over number of Maxwell models.
-  for (int imodel =0; imodel < numMaxwellModels; ++imodel) {
+  for (int imodel=0; imodel < numMaxwellModels; ++imodel) {
     double muRatio = dbValues[db_shearRatio + imodel];
     double kRatio = dbValues[db_bulkRatio + imodel];
-    double viscosity = dbValues[db_viscosity + imodel];
+    double shearViscosity = dbValues[db_shearViscosity + imodel];
+    double bulkViscosity = dbValues[db_bulkViscosity + imodel];
     double muFac = muRatio*mu;
     double kFac = kRatio*k;
     double maxwellTimeShear = pylith::PYLITH_MAXDOUBLE;
     double maxwellTimeBulk = pylith::PYLITH_MAXDOUBLE;
     if (muFac > 0.0)
-      maxwellTimeShear = viscosity / muFac;
+      maxwellTimeShear = shearViscosity / muFac;
     if (kFac > 0.0)
-      maxwellTimeBulk = viscosity / kFac;
-    if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || kFac < 0.0 || 
-	maxwellTimeShear < 0.0 || maxwellTimeBulk < 0.0) {
+      maxwellTimeBulk = bulkViscosity / kFac;
+    if (muFac < 0.0 || muRatio < 0.0 || shearViscosity < 0.0 || maxwellTimeShear < 0.0 || 
+	kFac < 0.0 || kRatio < 0.0 || bulkViscosity < 0.0 || maxwellTimeBulk < 0.0) {
       std::ostringstream msg;
       msg << "Found negative value(s) for physical properties.\n"
 	  << "muRatio: " << muRatio << "\n"
-	  << "viscosity: " << viscosity << "\n"
 	  << "muFac: " << muFac << "\n"
-	  << "kFac: " << kFac << "\n"
+	  << "shear viscosity: " << shearViscosity << "\n"
 	  << "maxwellTimeShear: " << maxwellTimeShear << "\n"
+	  << "kRatio: " << kRatio << "\n"
+	  << "kFac: " << kFac << "\n"
+	  << "bulk viscosity: " << bulkViscosity << "\n"
 	  << "maxwellTimeBulk: " << maxwellTimeBulk << "\n";
       throw std::runtime_error(msg.str());
     } // if
@@ -385,7 +395,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToProperties(
 // Nondimensionalize properties.
 void
 pylith::materials::GenMaxwellQpQsIsotropic3D::_nondimProperties(double* const values,
-							 const int nvalues) const
+								const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
@@ -413,7 +423,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_nondimProperties(double* const va
 // Dimensionalize properties.
 void
 pylith::materials::GenMaxwellQpQsIsotropic3D::_dimProperties(double* const values,
-						      const int nvalues) const
+							     const int nvalues) const
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
@@ -449,7 +459,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_dbToStateVars(
   assert(_GenMaxwellQpQsIsotropic3D::numDBStateVars == numDBValues);
 
   const int numMaxwellModels = _GenMaxwellQpQsIsotropic3D::numMaxwellModels;
-  const int totalSize = (1 + numMaxwellModels) * _tensorSize + numMaxwellModels;
+  const int totalSize = _tensorSize * (numMaxwellModels+1) + numMaxwellModels;
   assert(totalSize == _numVarsQuadPt);
   assert(totalSize == numDBValues);
   for (int i=0; i < totalSize; ++i)
@@ -637,7 +647,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   volStressTpdt = elasFracK*volStrainTpdt;
   for (int model=0; model < numMaxwellModels; ++model)
     volStressTpdt += kRatio[model] * _viscousStrainBulk[model];
-  volStressTpdt = bulkModulus*volStressTpdt;
+  volStressTpdt = 3.0 * bulkModulus*volStressTpdt;
 
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
@@ -788,7 +798,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcElasticConstsViscoelastic(
       visFac +=
 	shearRatio*ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeShear);
     } // if
-    if (shearRatio != 0.0) {
+    if (bulkRatio != 0.0) {
       maxwellTimeBulk = properties[p_maxwellTimeBulk + imodel];
       visFacK +=
 	bulkRatio*ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeBulk);

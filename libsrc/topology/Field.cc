@@ -831,8 +831,9 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
-					    numbering->getChart(),
-					    _section);
+                                            numbering->getChart().begin(),
+                                            numbering->getChart().end(),
+                                            _section);
   assert(!order.isNull());
 
   // Create scatter
@@ -978,8 +979,9 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
-						  numbering->getChart(),
-						  _section);
+                                                  numbering->getChart().begin(),
+                                                  numbering->getChart().end(),
+                                                  _section);
   assert(!order.isNull());
 
   // Create scatter
@@ -1008,7 +1010,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
 
-#if 1
+#if 0
   std::cout << "CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()

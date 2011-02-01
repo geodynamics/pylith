@@ -81,18 +81,6 @@ dist_noinst_DATA = \
 	hex8_surf_t10.vtk \
 	hex8_surf_vertex_t10.vtk \
 	hex8_surf_cell_t10.vtk \
-	tri3_fault_t10.vtk \
-	tri3_fault_vertex_t10.vtk \
-	tri3_fault_cell_t10.vtk \
-	quad4_fault_t10.vtk \
-	quad4_fault_vertex_t10.vtk \
-	quad4_fault_cell_t10.vtk \
-	tet4_fault_t10.vtk \
-	tet4_fault_vertex_t10.vtk \
-	tet4_fault_cell_t10.vtk \
-	hex8_fault_t10.vtk \
-	hex8_fault_vertex_t10.vtk \
-	hex8_fault_cell_t10.vtk \
 	tri3_bc_t10.vtk \
 	tri3_bc_vertex_t10.vtk \
 	tri3_bc_cell_t10.vtk \
@@ -105,6 +93,18 @@ dist_noinst_DATA = \
 	hex8_bc_t10.vtk \
 	hex8_bc_vertex_t10.vtk \
 	hex8_bc_cell_t10.vtk \
+	tri3_fault_t10.vtk \
+	tri3_fault_vertex_t10.vtk \
+	tri3_fault_cell_t10.vtk \
+	quad4_fault_t10.vtk \
+	quad4_fault_vertex_t10.vtk \
+	quad4_fault_cell_t10.vtk \
+	tet4_fault_t10.vtk \
+	tet4_fault_vertex_t10.vtk \
+	tet4_fault_cell_t10.vtk \
+	hex8_fault_t10.vtk \
+	hex8_fault_vertex_t10.vtk \
+	hex8_fault_cell_t10.vtk \
 	output_t12.vtk \
 	output_vertex_t12.vtk \
 	output_vertex_filter_t12.vtk \
@@ -140,6 +140,33 @@ dist_noinst_DATA = \
 	hex8_mat.h5 \
 	hex8_mat_vertex.h5 \
 	hex8_mat_cell.h5 \
+	line2_surf.h5 \
+	line2_surf_vertex.h5 \
+	line2_surf_cell.h5 \
+	tri3_surf.h5 \
+	tri3_surf_vertex.h5 \
+	tri3_surf_cell.h5 \
+	quad4_surf.h5 \
+	quad4_surf_vertex.h5 \
+	quad4_surf_cell.h5 \
+	tet4_surf.h5 \
+	tet4_surf_vertex.h5 \
+	tet4_surf_cell.h5 \
+	hex8_surf.h5 \
+	hex8_surf_vertex.h5 \
+	hex8_surf_cell.h5 \
+	tri3_bc.h5 \
+	tri3_bc_vertex.h5 \
+	tri3_bc_cell.h5 \
+	quad4_bc.h5 \
+	quad4_bc_vertex.h5 \
+	quad4_bc_cell.h5 \
+	tet4_bc.h5 \
+	tet4_bc_vertex.h5 \
+	tet4_bc_cell.h5 \
+	hex8_bc.h5 \
+	hex8_bc_vertex.h5 \
+	hex8_bc_cell.h5 \
 	tri3_fault.h5 \
 	tri3_fault_vertex.h5 \
 	tri3_fault_cell.h5 \

@@ -57,7 +57,6 @@ checkObject(hid_t id,
 
   switch (info->type) {
   case H5O_TYPE_GROUP : {
-    std::cout << "Examining group '" << name << "'." << std::endl;
     hid_t group = H5Gopen2(*file, name, H5P_DEFAULT);
     CPPUNIT_ASSERT(group >= 0);
     err = H5Gclose(group);
@@ -65,8 +64,6 @@ checkObject(hid_t id,
     break;
   } // group
   case H5O_TYPE_DATASET : {
-    std::cout << "Examining dataset '" << name << "'." << std::endl;
-
     // Get expected dataset.
     hid_t datasetE = H5Dopen2(id, name, H5P_DEFAULT);
     CPPUNIT_ASSERT(datasetE >= 0);
@@ -146,8 +143,6 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 { // checkFile
 
   const std::string filenameE = "data/" + std::string(filename);
-
-  std::cout << "Checking file '" << filename << "'." << std::endl;
 
   herr_t err = 0;
 

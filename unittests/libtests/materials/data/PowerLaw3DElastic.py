@@ -53,8 +53,8 @@ class PowerLaw3DElastic(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "reference_strain_rate", "reference_stress",
-                             "power_law_exponent"]
+                             "reference-strain-rate", "reference-stress",
+                             "power-law-exponent"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1], dtype=numpy.int32)
 
     self.dbStateVarValues = ["viscous-strain-xx",
