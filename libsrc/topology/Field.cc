@@ -910,7 +910,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
 						  _section);
   assert(!order.isNull());
-  order->view("NEW GLOBAL ORDER (without numbering)");
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
@@ -984,7 +983,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
                                                   numbering->getChart().end(),
                                                   _section);
   assert(!order.isNull());
-  order->view("NEW GLOBAL ORDER (using numbering)");
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
@@ -1012,7 +1010,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
 
-#if 1
+#if 0
   std::cout << "CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()

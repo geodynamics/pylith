@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestDataWriterHDF5SubMesh.hh" // Implementation of class methods
+#include "TestDataWriterHDF5ExtSubMesh.hh" // Implementation of class methods
 
 #include "data/DataWriterData.hh" // USES DataWriterData
 
@@ -26,11 +26,11 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
+#include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5SubMesh );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMesh );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
@@ -39,7 +39,7 @@ typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::setUp(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::setUp(void)
 { // setUp
   TestDataWriterSubMesh::setUp();
 } // setUp
@@ -47,7 +47,7 @@ pylith::meshio::TestDataWriterHDF5SubMesh::setUp(void)
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::tearDown(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::tearDown(void)
 { // tearDown
   TestDataWriterSubMesh::tearDown();
 } // tearDown
@@ -55,22 +55,20 @@ pylith::meshio::TestDataWriterHDF5SubMesh::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::testConstructor(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::testConstructor(void)
 { // testConstructor
-  DataWriterHDF5<topology::SubMesh, MeshField> writer;
-
-  CPPUNIT_ASSERT(0 == writer._viewer);
+  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::testOpenClose(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::testOpenClose(void)
 { // testOpenClose
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
 
   writer.filename(_data->timestepFilename);
 
@@ -92,12 +90,12 @@ pylith::meshio::TestDataWriterHDF5SubMesh::testOpenClose(void)
 // ----------------------------------------------------------------------
 // Test writeVertexField.
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::testWriteVertexField(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::testWriteVertexField(void)
 { // testWriteVertexField
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::SubMesh, MeshField> writer;
+  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
 
   topology::Fields<MeshField> vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
@@ -130,12 +128,12 @@ pylith::meshio::TestDataWriterHDF5SubMesh::testWriteVertexField(void)
 // ----------------------------------------------------------------------
 // Test writeCellField.
 void
-pylith::meshio::TestDataWriterHDF5SubMesh::testWriteCellField(void)
+pylith::meshio::TestDataWriterHDF5ExtSubMesh::testWriteCellField(void)
 { // testWriteCellField
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5<topology::SubMesh, SubMeshField> writer;
+  DataWriterHDF5Ext<topology::SubMesh, SubMeshField> writer;
 
   topology::Fields<SubMeshField> cellFields(*_submesh);
   _createCellFields(&cellFields);
