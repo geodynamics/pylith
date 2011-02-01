@@ -647,7 +647,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   volStressTpdt = elasFracK*volStrainTpdt;
   for (int model=0; model < numMaxwellModels; ++model)
     volStressTpdt += kRatio[model] * _viscousStrainBulk[model];
-  volStressTpdt = bulkModulus*volStressTpdt;
+  volStressTpdt = 3.0 * bulkModulus*volStressTpdt;
 
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
