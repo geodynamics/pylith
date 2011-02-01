@@ -111,6 +111,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
     assert(!vNumbering.isNull());
     //vNumbering->view("VERTEX NUMBERING");
+
+    std::cout << "Numbering chart:" << std::endl;
+    const typename numbering_type::chart_type& chart = vNumbering->getChart();
+    for(typename numbering_type::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+      std::cout << "  " << *c_iter << std::endl;
+    }
+
     coordinates.createScatterWithBC(vNumbering, context);
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);

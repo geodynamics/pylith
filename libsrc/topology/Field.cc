@@ -831,8 +831,9 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
-					    numbering->getChart(),
-					    _section);
+                                            numbering->getChart().begin(),
+                                            numbering->getChart().end(),
+                                            _section);
   assert(!order.isNull());
 
   // Create scatter
@@ -909,6 +910,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
 						  _section);
   assert(!order.isNull());
+  order->view("NEW GLOBAL ORDER (without numbering)");
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
@@ -978,9 +980,11 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
-						  numbering->getChart(),
-						  _section);
+                                                  numbering->getChart().begin(),
+                                                  numbering->getChart().end(),
+                                                  _section);
   assert(!order.isNull());
+  order->view("NEW GLOBAL ORDER (using numbering)");
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
