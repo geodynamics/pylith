@@ -499,8 +499,9 @@ private :
   static const int db_vs;
   static const int db_vp;
   static const int db_shearRatio;
+  static const int db_shearViscosity;
   static const int db_bulkRatio;
-  static const int db_viscosity;
+  static const int db_bulkViscosity;
 
   static const int s_totalStrain;
   static const int s_viscousStrain1;
