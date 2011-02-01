@@ -54,9 +54,15 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
 
     self.dbPropertyValues = ["density", "vs", "vp",
                              "shear-ratio-1", "shear-ratio-2", "shear-ratio-3",
+                             "shear-viscosity-1", "shear-viscosity-2", "shear-viscosity-3",
                              "bulk-ratio-1", "bulk-ratio-2", "bulk-ratio-3",
-                             "viscosity-1", "viscosity-2", "viscosity-3"]
-    self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=numpy.int32)
+                             "bulk-viscosity-1", "bulk-viscosity-2", "bulk-viscosity-3",
+                             ]
+    self.numPropertyValues = numpy.array([1, 1, 1,
+                                          1, 1, 1,
+                                          1, 1, 1,
+                                          1, 1, 1,
+                                          1, 1, 1], dtype=numpy.int32)
 
     self.dbStateVarValues = ["total-strain-xx",
                              "total-strain-yy",
@@ -89,14 +95,19 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
 #    self.numStateVarValues = numpy.array([tensorSize]*(1+numMaxwellModels) + numMaxwellModels,
 #                                         dtype=numpy.int32)
 
-    self.numStateVarValues = numpy.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=numpy.int32)
+    self.numStateVarValues = numpy.array([1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1,
+                                          1, 1, 1, 1, 1, 1,
+                                          1, 1, 1], dtype=numpy.int32)
 
     densityA = 2500.0
     vsA = 3000.0
     vpA = vsA*3**0.5
     shearRatioA = [0.5, 0.1, 0.2]
     bulkRatioA = [0.4, 0.3, 0.1]
-    viscosityA = [1.0e18, 1.0e17, 1.0e19]
+    shearViscosityA = [1.0e+18, 1.0e+17, 1.0e+19]
+    bulkViscosityA = [2.0e+18, 2.0e+17, 2.0e+19]
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
     #initialStrainA = [3.1e-4, 3.2e-4, 3.3e-4, 3.4e-4, 3.5e-4, 3.6e-4]
@@ -109,7 +120,8 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     vpB = vsB*3**0.5
     shearRatioB = [0.2, 0.2, 0.2]
     bulkRatioB = [0.2, 0.2, 0.2]
-    viscosityB = [1.0e18, 1.0e19, 1.0e20]
+    shearViscosityB = [1.0e+18, 1.0e+19, 1.0e+20]
+    bulkViscosityB = [1.0e+18, 1.0e+19, 1.0e+20]
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
     #initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.4e-4, 6.5e-4, 6.6e-4]
@@ -137,10 +149,10 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     visStrainB = numpy.zeros( (numMaxwellModels, tensorSize), dtype=numpy.float64)
     for imodel in xrange(numMaxwellModels):
       if shearRatioA[imodel] != 0.0:
-        maxwellTimeA[imodel] = viscosityA[imodel]/(muA*shearRatioA[imodel])
+        maxwellTimeA[imodel] = shearViscosityA[imodel]/(muA*shearRatioA[imodel])
         visStrainA[imodel,:] = strainA[:] - diag[:] * meanStrainA
       if shearRatioB[imodel] != 0.0:
-        maxwellTimeB[imodel] = viscosityB[imodel]/(muB*shearRatioB[imodel])
+        maxwellTimeB[imodel] = shearViscosityB[imodel]/(muB*shearRatioB[imodel])
         visStrainB[imodel,:] = strainB[:] - diag[:] * meanStrainB
 
     maxwellTimeBulkA = [0.0, 0.0, 0.0]
@@ -149,10 +161,10 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     visStrainBulkB = numpy.zeros( (numMaxwellModels), dtype=numpy.float64)
     for i in xrange(numMaxwellModels):
       if bulkRatioA[i] != 0.0:
-        maxwellTimeBulkA[i] = viscosityA[i]/(kA*bulkRatioA[i])
+        maxwellTimeBulkA[i] = bulkViscosityA[i]/(kA*bulkRatioA[i])
         visStrainBulkA[imodel] = meanStrainB
       if bulkRatioB[i] != 0.0:
-        maxwellTimeBulkB[i] = viscosityB[i]/(kB*bulkRatioB[i])
+        maxwellTimeBulkB[i] = bulkViscosityB[i]/(kB*bulkRatioB[i])
         visStrainBulkB[imodel] = meanStrainB
 
     self.lengthScale = 1.0e+3
@@ -160,8 +172,8 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     self.timeScale = 1.0
     self.densityScale = 1.0e+3
 
-    propA = [densityA, vsA, vpA] + shearRatioA + bulkRatioA + viscosityA
-    propB = [densityB, vsB, vpB] + shearRatioB + bulkRatioB + viscosityB
+    propA = [densityA, vsA, vpA] + shearRatioA + shearViscosityA + bulkRatioA + bulkViscosityA
+    propB = [densityB, vsB, vpB] + shearRatioB + shearViscosityB + bulkRatioB + bulkViscosityB
     self.dbProperties = numpy.array([propA, propB], dtype=numpy.float64)
     propA = [densityA, muA, kA] + shearRatioA + bulkRatioA + maxwellTimeA + maxwellTimeBulkA
     propB = [densityB, muB, kB] + shearRatioB + bulkRatioB + maxwellTimeB + maxwellTimeBulkB
@@ -367,7 +379,7 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
             visStrainBulkV[imodel] + \
             dq[imodel] * deltaStrain
         volStressTpdt += bulkRatioV[imodel] * visStrainBulk
-    volStressTpdt = elasFac * volStressTpdt
+    volStressTpdt = 3.0 * elasFac * volStressTpdt
       
     # Deviatoric
     elasFac = 2.0*muV

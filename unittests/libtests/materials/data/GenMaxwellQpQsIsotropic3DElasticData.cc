@@ -29,7 +29,7 @@ const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numPropertie
 
 const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numStateVars = 27;
 
-const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numDBProperties = 12;
+const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numDBProperties = 15;
 
 const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numDBStateVars = 27;
 
@@ -102,12 +102,15 @@ const char* pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dbProperty
 "shear-ratio-1",
 "shear-ratio-2",
 "shear-ratio-3",
+"shear-viscosity-1",
+"shear-viscosity-2",
+"shear-viscosity-3",
 "bulk-ratio-1",
 "bulk-ratio-2",
 "bulk-ratio-3",
-"viscosity-1",
-"viscosity-2",
-"viscosity-3",
+"bulk-viscosity-1",
+"bulk-viscosity-2",
+"bulk-viscosity-3",
 };
 
 const char* pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dbStateVarValues[] = {
@@ -147,24 +150,30 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dbPropert
   5.00000000e-01,
   1.00000000e-01,
   2.00000000e-01,
-  4.00000000e-01,
-  3.00000000e-01,
-  1.00000000e-01,
   1.00000000e+18,
   1.00000000e+17,
   1.00000000e+19,
+  4.00000000e-01,
+  3.00000000e-01,
+  1.00000000e-01,
+  2.00000000e+18,
+  2.00000000e+17,
+  2.00000000e+19,
   2.00000000e+03,
   1.20000000e+03,
   2.07846097e+03,
   2.00000000e-01,
   2.00000000e-01,
   2.00000000e-01,
-  2.00000000e-01,
-  2.00000000e-01,
-  2.00000000e-01,
   1.00000000e+18,
   1.00000000e+19,
   1.00000000e+20,
+  2.00000000e-01,
+  2.00000000e-01,
+  2.00000000e-01,
+  2.00000000e+18,
+  2.00000000e+19,
+  2.00000000e+20,
 };
 
 const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dbStateVars[] = {
@@ -237,9 +246,9 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_propertie
   8.88888889e+07,
   4.44444444e+07,
   2.22222222e+09,
-  6.66666667e+07,
-  8.88888889e+06,
-  2.66666667e+09,
+  1.33333333e+08,
+  1.77777778e+07,
+  5.33333333e+09,
   2.00000000e+03,
   2.88000000e+09,
   4.80000000e+09,
@@ -252,9 +261,9 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_propertie
   1.73611111e+09,
   1.73611111e+10,
   1.73611111e+11,
-  1.04166667e+09,
-  1.04166667e+10,
-  1.04166667e+11,
+  2.08333333e+09,
+  2.08333333e+10,
+  2.08333333e+11,
 };
 
 const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_stateVars[] = {
@@ -327,9 +336,9 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_propertie
   8.88888889e+07,
   4.44444444e+07,
   2.22222222e+09,
-  6.66666667e+07,
-  8.88888889e+06,
-  2.66666667e+09,
+  1.33333333e+08,
+  1.77777778e+07,
+  5.33333333e+09,
   2.00000000e+00,
   1.28000000e-01,
   2.13333333e-01,
@@ -342,9 +351,9 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_propertie
   1.73611111e+09,
   1.73611111e+10,
   1.73611111e+11,
-  1.04166667e+09,
-  1.04166667e+10,
-  1.04166667e+11,
+  2.08333333e+09,
+  2.08333333e+10,
+  2.08333333e+11,
 };
 
 const double pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_stateVarsNondim[] = {
