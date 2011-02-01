@@ -156,10 +156,9 @@ pylith::materials::Material::initialize(
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
-  const int numProperties = _metadata.numProperties();
   double_array quadPtsGlobal(numQuadPts*spaceDim);
   double_array propertiesQuery(numDBProperties);
-  double_array propertiesCell(numQuadPts*numProperties);
+  double_array propertiesCell(numQuadPts*_numPropsQuadPt);
 
   // Setup database for quering for physical properties
   assert(0 != _dbProperties);
