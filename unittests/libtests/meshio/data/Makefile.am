@@ -140,6 +140,21 @@ dist_noinst_DATA = \
 	hex8_mat.h5 \
 	hex8_mat_vertex.h5 \
 	hex8_mat_cell.h5 \
+	line2_surf.h5 \
+	line2_surf_vertex.h5 \
+	line2_surf_cell.h5 \
+	tri3_surf.h5 \
+	tri3_surf_vertex.h5 \
+	tri3_surf_cell.h5 \
+	quad4_surf.h5 \
+	quad4_surf_vertex.h5 \
+	quad4_surf_cell.h5 \
+	tet4_surf.h5 \
+	tet4_surf_vertex.h5 \
+	tet4_surf_cell.h5 \
+	hex8_surf.h5 \
+	hex8_surf_vertex.h5 \
+	hex8_surf_cell.h5 \
 	tri3_fault.h5 \
 	tri3_fault_vertex.h5 \
 	tri3_fault_cell.h5 \
