@@ -359,9 +359,6 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     delete [] values;
   } // for
 
-#if 0
-  // MATT- THIS DOES NOT COMPILE
-
   // Check faces in faceToVertex for all corners sent to same process
   //   Put it in section with point being the lowest numbered vertex and value (other endpoints, new vertex)
   Obj<ALE::Section<point_type, FaceType> > newFaceVerticesSection = new ALE::Section<point_type, FaceType>(oldMesh->comm());
@@ -416,15 +413,16 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     int              v      = 0;
     value_type* values = (dim > 0) ? new value_type[dim] : 0;
     
+#if 0
     for(std::map<FaceType, std::vector<int> >::const_iterator f_iter = bndryFaceToRank.begin(); f_iter != bndryFaceToRank.end() && v < dim; ++f_iter) {
       if (std::min(f_iter->first.first, f_iter->first.second)+localOffset == p) {
         values[v++] = FaceType(std::max(f_iter->first.first, f_iter->first.second)+localOffset, _faceToVertex[f_iter->first]);
       } // if
     } // for
+#endif
     newFaceVerticesSection->updatePoint(p, values);
     delete [] values;
   } // for
-#endif
 
   // Copy across overlap
   typedef ALE::Pair<int, point_type> overlap_point_type;

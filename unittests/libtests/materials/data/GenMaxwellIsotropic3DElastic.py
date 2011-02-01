@@ -52,8 +52,8 @@ class GenMaxwellIsotropic3DElastic(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "shear_ratio_1", "shear_ratio_2", "shear_ratio_3",
-                             "viscosity_1", "viscosity_2", "viscosity_3"]
+                             "shear-ratio-1", "shear-ratio-2", "shear-ratio-3",
+                             "viscosity-1", "viscosity-2", "viscosity-3"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=numpy.int32)
 
     self.dbStateVarValues = ["total-strain-xx",
