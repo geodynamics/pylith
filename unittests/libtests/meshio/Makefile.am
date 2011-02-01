@@ -229,16 +229,20 @@ if ENABLE_HDF5
 	TestDataWriterHDF5MeshCases.cc \
 	TestDataWriterHDF5MatMeshCases.cc \
 	TestDataWriterHDF5SubMesh.cc \
-	TestDataWriterHDF5SubMeshCases.cc 
-
-#	TestDataWriterHDF5FaultMesh.cc \
-#	TestDataWriterHDF5FaultMeshCases.cc \
-#	TestDataWriterHDF5ExtMesh.cc \
-#	TestDataWriterHDF5ExtMeshCases.cc \
-#	TestDataWriterHDF5ExtMatMeshCases.cc
-
-#	TestDataWriterHDF5BCMesh.cc \
-#	TestDataWriterHDF5BCMeshCases.cc 
+	TestDataWriterHDF5SubMeshCases.cc \
+	TestDataWriterHDF5BCMesh.cc \
+	TestDataWriterHDF5BCMeshCases.cc \
+	TestDataWriterHDF5FaultMesh.cc \
+	TestDataWriterHDF5FaultMeshCases.cc \
+	TestDataWriterHDF5ExtMesh.cc \
+	TestDataWriterHDF5ExtMeshCases.cc \
+	TestDataWriterHDF5ExtMatMeshCases.cc \
+	TestDataWriterHDF5ExtSubMesh.cc \
+	TestDataWriterHDF5ExtSubMeshCases.cc \
+	TestDataWriterHDF5ExtBCMesh.cc \
+	TestDataWriterHDF5ExtBCMeshCases.cc \
+	TestDataWriterHDF5ExtFaultMesh.cc \
+	TestDataWriterHDF5ExtFaultMeshCases.cc
 
 
   noinst_HEADERS += \
@@ -254,7 +258,13 @@ if ENABLE_HDF5
 	TestDataWriterHDF5FaultMeshCases.hh \
 	TestDataWriterHDF5ExtMesh.hh \
 	TestDataWriterHDF5ExtMeshCases.hh \
-	TestDataWriterHDF5ExtMatMeshCases.hh
+	TestDataWriterHDF5ExtMatMeshCases.hh \
+	TestDataWriterHDF5ExtSubMesh.hh \
+	TestDataWriterHDF5ExtSubMeshCases.hh \
+	TestDataWriterHDF5ExtBCMesh.hh \
+	TestDataWriterHDF5ExtBCMeshCases.hh \
+	TestDataWriterHDF5ExtFaultMesh.hh \
+	TestDataWriterHDF5ExtFaultMeshCases.hh
 
   testmeshio_LDADD += -lhdf5
 endif
@@ -312,18 +322,6 @@ noinst_tmp = \
 	hex8_surf_t10.vtk \
 	hex8_surf_vertex_t10.vtk \
 	hex8_surf_cell_t10.vtk \
-	tri3_fault_t10.vtk \
-	tri3_fault_vertex_t10.vtk \
-	tri3_fault_cell_t10.vtk \
-	quad4_fault_t10.vtk \
-	quad4_fault_vertex_t10.vtk \
-	quad4_fault_cell_t10.vtk \
-	tet4_fault_t10.vtk \
-	tet4_fault_vertex_t10.vtk \
-	tet4_fault_cell_t10.vtk \
-	hex8_fault_t10.vtk \
-	hex8_fault_vertex_t10.vtk \
-	hex8_fault_cell_t10.vtk \
 	tri3_bc_t10.vtk \
 	tri3_bc_vertex_t10.vtk \
 	tri3_bc_cell_t10.vtk \
@@ -336,6 +334,18 @@ noinst_tmp = \
 	hex8_bc_t10.vtk \
 	hex8_bc_vertex_t10.vtk \
 	hex8_bc_cell_t10.vtk \
+	tri3_fault_t10.vtk \
+	tri3_fault_vertex_t10.vtk \
+	tri3_fault_cell_t10.vtk \
+	quad4_fault_t10.vtk \
+	quad4_fault_vertex_t10.vtk \
+	quad4_fault_cell_t10.vtk \
+	tet4_fault_t10.vtk \
+	tet4_fault_vertex_t10.vtk \
+	tet4_fault_cell_t10.vtk \
+	hex8_fault_t10.vtk \
+	hex8_fault_vertex_t10.vtk \
+	hex8_fault_cell_t10.vtk \
 	output_t12.vtk \
 	output_vertex_t12.vtk \
 	output_vertex_filter_t12.vtk \
@@ -343,10 +353,330 @@ noinst_tmp = \
 	output_cell_filter_t12.vtk \
 	test.h5 \
 	test.dat \
+	line2.h5 \
+	line2_cell.h5 \
+	line2_vertex.h5 \
+	tri3.h5 \
+	tri3_cell.h5 \
+	tri3_vertex.h5 \
+	quad4.h5 \
+	quad4_cell.h5 \
+	quad4_vertex.h5 \
+	tet4.h5 \
+	tet4_cell.h5 \
+	tet4_vertex.h5 \
 	hex8.h5 \
+	hex8_cell.h5 \
 	hex8_vertex.h5 \
-	hex8_cell.h5
+	line2_mat.h5 \
+	line2_mat_vertex.h5 \
+	line2_mat_cell.h5 \
+	tri3_mat.h5 \
+	tri3_mat_vertex.h5 \
+	tri3_mat_cell.h5 \
+	quad4_mat.h5 \
+	quad4_mat_vertex.h5 \
+	quad4_mat_cell.h5 \
+	tet4_mat.h5 \
+	tet4_mat_vertex.h5 \
+	tet4_mat_cell.h5 \
+	hex8_mat.h5 \
+	hex8_mat_vertex.h5 \
+	hex8_mat_cell.h5 \
+	line2_surf.h5 \
+	line2_surf_vertex.h5 \
+	line2_surf_cell.h5 \
+	tri3_surf.h5 \
+	tri3_surf_vertex.h5 \
+	tri3_surf_cell.h5 \
+	quad4_surf.h5 \
+	quad4_surf_vertex.h5 \
+	quad4_surf_cell.h5 \
+	tet4_surf.h5 \
+	tet4_surf_vertex.h5 \
+	tet4_surf_cell.h5 \
+	hex8_surf.h5 \
+	hex8_surf_vertex.h5 \
+	hex8_surf_cell.h5 \
+	tri3_bc.h5 \
+	tri3_bc_vertex.h5 \
+	tri3_bc_cell.h5 \
+	quad4_bc.h5 \
+	quad4_bc_vertex.h5 \
+	quad4_bc_cell.h5 \
+	tet4_bc.h5 \
+	tet4_bc_vertex.h5 \
+	tet4_bc_cell.h5 \
+	hex8_bc.h5 \
+	hex8_bc_vertex.h5 \
+	hex8_bc_cell.h5 \
+	tri3_fault.h5 \
+	tri3_fault_vertex.h5 \
+	tri3_fault_cell.h5 \
+	quad4_fault.h5 \
+	quad4_fault_vertex.h5 \
+	quad4_fault_cell.h5 \
+	tet4_fault.h5 \
+	tet4_fault_vertex.h5 \
+	tet4_fault_cell.h5 \
+	hex8_fault.h5 \
+	hex8_fault_vertex.h5 \
+	hex8_fault_cell.h5 \
+	hex8_cell_cells.dat \
+	hex8_cell_cells.dat.info \
+	hex8_cell_info_cells.dat.info \
+	hex8_cell_info_other.dat.info \
+	hex8_cell_info_pressure.dat.info \
+	hex8_cell_info_traction.dat.info \
+	hex8_cell_info_vertices.dat.info \
+	hex8_cell_other.dat \
+	hex8_cell_other.dat.info \
+	hex8_cell_pressure.dat \
+	hex8_cell_pressure.dat.info \
+	hex8_cells.dat \
+	hex8_cells.dat.info \
+	hex8_cell_traction.dat \
+	hex8_cell_traction.dat.info \
+	hex8_cell_vertices.dat \
+	hex8_cell_vertices.dat.info \
+	hex8_info_cells.dat.info \
+	hex8_info_vertices.dat.info \
+	hex8_mat_cell_cells.dat \
+	hex8_mat_cell_cells.dat.info \
+	hex8_mat_cell_other.dat \
+	hex8_mat_cell_other.dat.info \
+	hex8_mat_cell_pressure.dat \
+	hex8_mat_cell_pressure.dat.info \
+	hex8_mat_cells.dat \
+	hex8_mat_cells.dat.info \
+	hex8_mat_cell_traction.dat \
+	hex8_mat_cell_traction.dat.info \
+	hex8_mat_cell_vertices.dat \
+	hex8_mat_cell_vertices.dat.info \
+	hex8_mat_vertex_cells.dat \
+	hex8_mat_vertex_cells.dat.info \
+	hex8_mat_vertex_displacements.dat \
+	hex8_mat_vertex_displacements.dat.info \
+	hex8_mat_vertex_other.dat \
+	hex8_mat_vertex_other.dat.info \
+	hex8_mat_vertex_pressure.dat \
+	hex8_mat_vertex_pressure.dat.info \
+	hex8_mat_vertex_vertices.dat \
+	hex8_mat_vertex_vertices.dat.info \
+	hex8_mat_vertices.dat \
+	hex8_mat_vertices.dat.info \
+	hex8_vertex_cells.dat \
+	hex8_vertex_cells.dat.info \
+	hex8_vertex_displacements.dat \
+	hex8_vertex_displacements.dat.info \
+	hex8_vertex_info_cells.dat.info \
+	hex8_vertex_info_displacements.dat.info \
+	hex8_vertex_info_other.dat.info \
+	hex8_vertex_info_pressure.dat.info \
+	hex8_vertex_info_vertices.dat.info \
+	hex8_vertex_other.dat \
+	hex8_vertex_other.dat.info \
+	hex8_vertex_pressure.dat \
+	hex8_vertex_pressure.dat.info \
+	hex8_vertex_vertices.dat \
+	hex8_vertex_vertices.dat.info \
+	hex8_vertices.dat \
+	hex8_vertices.dat.info \
+	line2_cell_cells.dat \
+	line2_cell_cells.dat.info \
+	line2_cell_other.dat \
+	line2_cell_other.dat.info \
+	line2_cell_pressure.dat \
+	line2_cell_pressure.dat.info \
+	line2_cells.dat \
+	line2_cells.dat.info \
+	line2_cell_traction.dat \
+	line2_cell_traction.dat.info \
+	line2_cell_vertices.dat \
+	line2_cell_vertices.dat.info \
+	line2_mat_cell_cells.dat \
+	line2_mat_cell_cells.dat.info \
+	line2_mat_cell_other.dat \
+	line2_mat_cell_other.dat.info \
+	line2_mat_cell_pressure.dat \
+	line2_mat_cell_pressure.dat.info \
+	line2_mat_cells.dat \
+	line2_mat_cells.dat.info \
+	line2_mat_cell_traction.dat \
+	line2_mat_cell_traction.dat.info \
+	line2_mat_cell_vertices.dat \
+	line2_mat_cell_vertices.dat.info \
+	line2_mat_vertex_cells.dat \
+	line2_mat_vertex_cells.dat.info \
+	line2_mat_vertex_displacements.dat \
+	line2_mat_vertex_displacements.dat.info \
+	line2_mat_vertex_other.dat \
+	line2_mat_vertex_other.dat.info \
+	line2_mat_vertex_pressure.dat \
+	line2_mat_vertex_pressure.dat.info \
+	line2_mat_vertex_vertices.dat \
+	line2_mat_vertex_vertices.dat.info \
+	line2_mat_vertices.dat \
+	line2_mat_vertices.dat.info \
+	line2_vertex_cells.dat \
+	line2_vertex_cells.dat.info \
+	line2_vertex_displacements.dat \
+	line2_vertex_displacements.dat.info \
+	line2_vertex_other.dat \
+	line2_vertex_other.dat.info \
+	line2_vertex_pressure.dat \
+	line2_vertex_pressure.dat.info \
+	line2_vertex_vertices.dat \
+	line2_vertex_vertices.dat.info \
+	line2_vertices.dat \
+	line2_vertices.dat.info \
+	quad4_cell_cells.dat \
+	quad4_cell_cells.dat.info \
+	quad4_cell_other.dat \
+	quad4_cell_other.dat.info \
+	quad4_cell_pressure.dat \
+	quad4_cell_pressure.dat.info \
+	quad4_cells.dat \
+	quad4_cells.dat.info \
+	quad4_cell_traction.dat \
+	quad4_cell_traction.dat.info \
+	quad4_cell_vertices.dat \
+	quad4_cell_vertices.dat.info \
+	quad4_mat_cell_cells.dat \
+	quad4_mat_cell_cells.dat.info \
+	quad4_mat_cell_other.dat \
+	quad4_mat_cell_other.dat.info \
+	quad4_mat_cell_pressure.dat \
+	quad4_mat_cell_pressure.dat.info \
+	quad4_mat_cells.dat \
+	quad4_mat_cells.dat.info \
+	quad4_mat_cell_traction.dat \
+	quad4_mat_cell_traction.dat.info \
+	quad4_mat_cell_vertices.dat \
+	quad4_mat_cell_vertices.dat.info \
+	quad4_mat_vertex_cells.dat \
+	quad4_mat_vertex_cells.dat.info \
+	quad4_mat_vertex_displacements.dat \
+	quad4_mat_vertex_displacements.dat.info \
+	quad4_mat_vertex_other.dat \
+	quad4_mat_vertex_other.dat.info \
+	quad4_mat_vertex_pressure.dat \
+	quad4_mat_vertex_pressure.dat.info \
+	quad4_mat_vertex_vertices.dat \
+	quad4_mat_vertex_vertices.dat.info \
+	quad4_mat_vertices.dat \
+	quad4_mat_vertices.dat.info \
+	quad4_vertex_cells.dat \
+	quad4_vertex_cells.dat.info \
+	quad4_vertex_displacements.dat \
+	quad4_vertex_displacements.dat.info \
+	quad4_vertex_other.dat \
+	quad4_vertex_other.dat.info \
+	quad4_vertex_pressure.dat \
+	quad4_vertex_pressure.dat.info \
+	quad4_vertex_vertices.dat \
+	quad4_vertex_vertices.dat.info \
+	quad4_vertices.dat \
+	quad4_vertices.dat.info \
+	tet4_cell_cells.dat \
+	tet4_cell_cells.dat.info \
+	tet4_cell_other.dat \
+	tet4_cell_other.dat.info \
+	tet4_cell_pressure.dat \
+	tet4_cell_pressure.dat.info \
+	tet4_cells.dat \
+	tet4_cells.dat.info \
+	tet4_cell_traction.dat \
+	tet4_cell_traction.dat.info \
+	tet4_cell_vertices.dat \
+	tet4_cell_vertices.dat.info \
+	tet4_mat_cell_cells.dat \
+	tet4_mat_cell_cells.dat.info \
+	tet4_mat_cell_other.dat \
+	tet4_mat_cell_other.dat.info \
+	tet4_mat_cell_pressure.dat \
+	tet4_mat_cell_pressure.dat.info \
+	tet4_mat_cells.dat \
+	tet4_mat_cells.dat.info \
+	tet4_mat_cell_traction.dat \
+	tet4_mat_cell_traction.dat.info \
+	tet4_mat_cell_vertices.dat \
+	tet4_mat_cell_vertices.dat.info \
+	tet4_mat_vertex_cells.dat \
+	tet4_mat_vertex_cells.dat.info \
+	tet4_mat_vertex_displacements.dat \
+	tet4_mat_vertex_displacements.dat.info \
+	tet4_mat_vertex_other.dat \
+	tet4_mat_vertex_other.dat.info \
+	tet4_mat_vertex_pressure.dat \
+	tet4_mat_vertex_pressure.dat.info \
+	tet4_mat_vertex_vertices.dat \
+	tet4_mat_vertex_vertices.dat.info \
+	tet4_mat_vertices.dat \
+	tet4_mat_vertices.dat.info \
+	tet4_vertex_cells.dat \
+	tet4_vertex_cells.dat.info \
+	tet4_vertex_displacements.dat \
+	tet4_vertex_displacements.dat.info \
+	tet4_vertex_other.dat \
+	tet4_vertex_other.dat.info \
+	tet4_vertex_pressure.dat \
+	tet4_vertex_pressure.dat.info \
+	tet4_vertex_vertices.dat \
+	tet4_vertex_vertices.dat.info \
+	tet4_vertices.dat \
+	tet4_vertices.dat.info \
+	tri3_cell_cells.dat \
+	tri3_cell_cells.dat.info \
+	tri3_cell_other.dat \
+	tri3_cell_other.dat.info \
+	tri3_cell_pressure.dat \
+	tri3_cell_pressure.dat.info \
+	tri3_cells.dat \
+	tri3_cells.dat.info \
+	tri3_cell_traction.dat \
+	tri3_cell_traction.dat.info \
+	tri3_cell_vertices.dat \
+	tri3_cell_vertices.dat.info \
+	tri3_mat_cell_cells.dat \
+	tri3_mat_cell_cells.dat.info \
+	tri3_mat_cell_other.dat \
+	tri3_mat_cell_other.dat.info \
+	tri3_mat_cell_pressure.dat \
+	tri3_mat_cell_pressure.dat.info \
+	tri3_mat_cells.dat \
+	tri3_mat_cells.dat.info \
+	tri3_mat_cell_traction.dat \
+	tri3_mat_cell_traction.dat.info \
+	tri3_mat_cell_vertices.dat \
+	tri3_mat_cell_vertices.dat.info \
+	tri3_mat_vertex_cells.dat \
+	tri3_mat_vertex_cells.dat.info \
+	tri3_mat_vertex_displacements.dat \
+	tri3_mat_vertex_displacements.dat.info \
+	tri3_mat_vertex_other.dat \
+	tri3_mat_vertex_other.dat.info \
+	tri3_mat_vertex_pressure.dat \
+	tri3_mat_vertex_pressure.dat.info \
+	tri3_mat_vertex_vertices.dat \
+	tri3_mat_vertex_vertices.dat.info \
+	tri3_mat_vertices.dat \
+	tri3_mat_vertices.dat.info \
+	tri3_vertex_cells.dat \
+	tri3_vertex_cells.dat.info \
+	tri3_vertex_displacements.dat \
+	tri3_vertex_displacements.dat.info \
+	tri3_vertex_other.dat \
+	tri3_vertex_other.dat.info \
+	tri3_vertex_pressure.dat \
+	tri3_vertex_pressure.dat.info \
+	tri3_vertex_vertices.dat \
+	tri3_vertex_vertices.dat.info \
+	tri3_vertices.dat \
+	tri3_vertices.dat.info
+
 
 CLEANFILES = $(noinst_tmp)
+
 
 # End of file 

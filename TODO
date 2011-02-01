@@ -15,15 +15,12 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Output to HDF5 files.
 
-  HDF5
-    BC (tests fail)
-    Submesh (tests fail)
-  HDF5Ext
-    BC
-    Fault
-    Submesh
+    Add time dataset to vertex_fields and cell_fields.
 
-  
+    Add creation of .xmf metadata file for VTK. 
+    Will this work for [#timesteps, #points, fiberDim]?
+
+
 * Reimplement Fields to use a single section.
 
     Fields
