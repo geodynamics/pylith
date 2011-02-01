@@ -54,8 +54,8 @@ class DruckerPrager3DElastic(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "friction_angle", "cohesion",
-                             "dilatation_angle"]
+                             "friction-angle", "cohesion",
+                             "dilatation-angle"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1], dtype=numpy.int32)
 
     self.dbStateVarValues = ["plastic-strain-xx",

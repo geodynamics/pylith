@@ -54,8 +54,8 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "friction_angle", "cohesion",
-                             "dilatation_angle"]
+                             "friction-angle", "cohesion",
+                             "dilatation-angle"]
     self.propertyValues = ["density", "mu", "lambda",
                            "alpha_yield", "beta", "alpha_flow"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1], dtype=numpy.int32)
