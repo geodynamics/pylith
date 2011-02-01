@@ -798,7 +798,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcElasticConstsViscoelastic(
       visFac +=
 	shearRatio*ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeShear);
     } // if
-    if (shearRatio != 0.0) {
+    if (bulkRatio != 0.0) {
       maxwellTimeBulk = properties[p_maxwellTimeBulk + imodel];
       visFacK +=
 	bulkRatio*ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeBulk);
