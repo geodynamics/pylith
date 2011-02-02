@@ -66,7 +66,7 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
 				       const Obj<mesh_type>& mesh, 
 				       cellrefiner_type& refiner)
 { // _refine
-  typedef Interval<point_type>::const_iterator interval_type;
+  typedef Interval<point_type> interval_type;
 
   assert(_orderOldMesh);
   assert(_orderNewMesh);
@@ -198,7 +198,7 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
 					       const Obj<mesh_type>& mesh, 
 					       cellrefiner_type& refiner)
 { // _refineCensored
-  typedef Interval<point_type>::const_iterator interval_type;
+  typedef Interval<point_type> interval_type;
 
   assert(_orderOldMesh);
   assert(_orderNewMesh);
@@ -418,7 +418,7 @@ template<typename cellrefiner_type>
 void
 ALE::MeshRefiner<cellrefiner_type>::_stratify(const Obj<mesh_type>& mesh)
 { // _stratify
-  typedef Interval<point_type>::const_iterator interval_type;
+  typedef Interval<point_type> interval_type;
 
   assert(_orderNewMesh);
   assert(_orderOldMesh);
