@@ -28,7 +28,7 @@ SUBDIRS = \
 	problems
 
 .cu.lo:
-       $(LIBTOOL) --tag=CC --mode=compile nvcc --compile -m64 $(NVCC_FLAGS) -o ${@F} $<
+	$(LIBTOOL) --tag=CC --mode=compile nvcc --compile -m64 $(NVCC_FLAGS) -o ${@F} $<
 
 lib_LTLIBRARIES = libpylith.la
 
