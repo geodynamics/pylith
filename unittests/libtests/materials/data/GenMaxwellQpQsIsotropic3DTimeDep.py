@@ -149,10 +149,10 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     visStrainB = numpy.zeros( (numMaxwellModels, tensorSize), dtype=numpy.float64)
     for imodel in xrange(numMaxwellModels):
       if shearRatioA[imodel] != 0.0:
-        maxwellTimeA[imodel] = shearViscosityA[imodel]/(muA*shearRatioA[imodel])
+        maxwellTimeA[imodel] = shearViscosityA[imodel]/muA
         visStrainA[imodel,:] = strainA[:] - diag[:] * meanStrainA
       if shearRatioB[imodel] != 0.0:
-        maxwellTimeB[imodel] = shearViscosityB[imodel]/(muB*shearRatioB[imodel])
+        maxwellTimeB[imodel] = shearViscosityB[imodel]/muB
         visStrainB[imodel,:] = strainB[:] - diag[:] * meanStrainB
 
     maxwellTimeBulkA = [0.0, 0.0, 0.0]

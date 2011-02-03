@@ -130,17 +130,17 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     maxwellTimeB = [0.0, 0.0, 0.0]
     for i in xrange(numMaxwellModels):
       if shearRatioA[i] != 0.0:
-        maxwellTimeA[i] = shearViscosityA[i]/(muA*shearRatioA[i])
+        maxwellTimeA[i] = shearViscosityA[i]/muA
       if shearRatioB[i] != 0.0:
-        maxwellTimeB[i] = shearViscosityB[i]/(muB*shearRatioB[i])
+        maxwellTimeB[i] = shearViscosityB[i]/muB
 
     maxwellTimeBulkA = [0.0, 0.0, 0.0]
     maxwellTimeBulkB = [0.0, 0.0, 0.0]
     for i in xrange(numMaxwellModels):
       if bulkRatioA[i] != 0.0:
-        maxwellTimeBulkA[i] = bulkViscosityA[i]/(kA*bulkRatioA[i])
+        maxwellTimeBulkA[i] = bulkViscosityA[i]/kA
       if bulkRatioB[i] != 0.0:
-        maxwellTimeBulkB[i] = bulkViscosityB[i]/(kB*bulkRatioB[i])
+        maxwellTimeBulkB[i] = bulkViscosityB[i]/kB
 
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
