@@ -279,9 +279,9 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
     const int s_viscousStrain = s_totalStrain + tensorSize;
     const int s_viscousStrainBulk = s_viscousStrain + tensorSize*numMaxwellModels;
     const int p_shearRatio = 3;
-    const int p_bulkRatio = p_shearRatio + numMaxwellModels;
-    const int p_maxwellTimeShear = p_bulkRatio + numMaxwellModels;
-    const int p_maxwellTimeBulk = p_maxwellTimeShear + numMaxwellModels;
+    const int p_maxwellTimeShear = p_shearRatio + numMaxwellModels;
+    const int p_bulkRatio = p_maxwellTimeShear + numMaxwellModels;
+    const int p_maxwellTimeBulk = p_bulkRatio + numMaxwellModels;
 
     // State variable 'total_strain' should match 'strain'
     for (int i=0; i < tensorSize; ++i) 
@@ -347,10 +347,15 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < numVarsQuadPt; ++i)
-      if (stateVarsE[i] > tolerance)
+      {
+	std::cout << "stateVarE: " << stateVarsE[i]
+		  << ", stateVar: " << stateVars[i]
+		  << std::endl;
+      if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
+      }
   } // for
 } // testUpdateStateVarsTimeDep
 
