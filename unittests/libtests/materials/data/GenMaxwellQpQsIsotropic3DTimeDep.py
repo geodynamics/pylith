@@ -105,8 +105,8 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     vsA = 3000.0
     vpA = vsA*3**0.5
     shearRatioA = [0.5, 0.1, 0.2]
-    bulkRatioA = [0.4, 0.3, 0.1]
     shearViscosityA = [1.0e+18, 1.0e+17, 1.0e+19]
+    bulkRatioA = [0.4, 0.3, 0.1]
     bulkViscosityA = [2.0e+18, 2.0e+17, 2.0e+19]
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
@@ -119,8 +119,8 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     vsB = 1200.0
     vpB = vsB*3**0.5
     shearRatioB = [0.2, 0.2, 0.2]
-    bulkRatioB = [0.2, 0.2, 0.2]
     shearViscosityB = [1.0e+18, 1.0e+19, 1.0e+20]
+    bulkRatioB = [0.2, 0.2, 0.2]
     bulkViscosityB = [1.0e+18, 1.0e+19, 1.0e+20]
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -175,8 +175,8 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     propA = [densityA, vsA, vpA] + shearRatioA + shearViscosityA + bulkRatioA + bulkViscosityA
     propB = [densityB, vsB, vpB] + shearRatioB + shearViscosityB + bulkRatioB + bulkViscosityB
     self.dbProperties = numpy.array([propA, propB], dtype=numpy.float64)
-    propA = [densityA, muA, kA] + shearRatioA + bulkRatioA + maxwellTimeA + maxwellTimeBulkA
-    propB = [densityB, muB, kB] + shearRatioB + bulkRatioB + maxwellTimeB + maxwellTimeBulkB
+    propA = [densityA, muA, kA] + shearRatioA + maxwellTimeA + bulkRatioA + maxwellTimeBulkA
+    propB = [densityB, muB, kB] + shearRatioB + maxwellTimeB + bulkRatioB + maxwellTimeBulkB
     self.properties = numpy.array([propA, propB], dtype=numpy.float64)
 
     # TEMPORARY, need to determine how to use initial state variables
@@ -197,13 +197,13 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     self.propertiesNondim = \
         numpy.array([ [densityA/density0, muA/mu0, kA/mu0,
                        shearRatioA[0], shearRatioA[1], shearRatioA[2],
-                       bulkRatioA[0], bulkRatioA[1], bulkRatioA[2],
                        maxwellTimeA[0]/time0, maxwellTimeA[1]/time0, maxwellTimeA[2]/time0,
+                       bulkRatioA[0], bulkRatioA[1], bulkRatioA[2],
                        maxwellTimeBulkA[0]/time0, maxwellTimeBulkA[1]/time0, maxwellTimeBulkA[2]/time0],
                       [densityB/density0, muB/mu0, kB/mu0,
                        shearRatioB[0], shearRatioB[1], shearRatioB[2],
-                       bulkRatioB[0], bulkRatioB[1], bulkRatioB[2],
                        maxwellTimeB[0]/time0, maxwellTimeB[1]/time0, maxwellTimeB[2]/time0, 
+                       bulkRatioB[0], bulkRatioB[1], bulkRatioB[2],
                        maxwellTimeBulkB[0]/time0, maxwellTimeBulkB[1]/time0, maxwellTimeBulkB[2]/time0] ],
                     dtype=numpy.float64)
 
@@ -229,19 +229,21 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
                                         dtype=numpy.float64)
 
     (self.elasticConsts[0,:], self.stress[0,:]) = \
-        self._calcStress(strainA, muA, lambdaA, shearRatioA, bulkRatioA,
-                         maxwellTimeA, maxwellTimeBulkA, strainTA, visStrainA, visStrainBulkA,
+        self._calcStress(strainA, muA, lambdaA, shearRatioA, maxwellTimeA, 
+                         bulkRatioA, maxwellTimeBulkA, 
+                         strainTA, visStrainA, visStrainBulkA,
                          initialStressA, initialStrainA)
     (self.elasticConsts[1,:], self.stress[1,:]) = \
-        self._calcStress(strainB, muB, lambdaB, shearRatioB, bulkRatioB,
-                         maxwellTimeB, maxwellTimeBulkB, strainTB, visStrainB, visStrainBulkB,
+        self._calcStress(strainB, muB, lambdaB, shearRatioB, maxwellTimeB, 
+                         bulkRatioB, maxwellTimeBulkB, 
+                         strainTB, visStrainB, visStrainBulkB,
                          initialStressB, initialStrainB)
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB),min(maxwellTimeBulkA), min(maxwellTimeBulkB))
 
     return
 
 
-  def _calcStress(self, strainV, muV, lambdaV, shearRatioV, bulkRatioV, maxwellTimeV, maxwellTimeBulkV,
+  def _calcStress(self, strainV, muV, lambdaV, shearRatioV, maxwellTimeV, bulkRatioV, maxwellTimeBulkV,
                   strainTV, visStrainV, visStrainBulkV, initialStressV, initialStrainV):
     """
     Compute stress and derivative of elasticity matrix.
