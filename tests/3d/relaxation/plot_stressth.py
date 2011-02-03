@@ -11,7 +11,7 @@
 #
 
 sim = 'genmaxwell_QpQs'
-problem = 'shear'
+problem = 'bulk'
 dt = 1.0
 
 # ======================================================================
@@ -32,20 +32,18 @@ strain0 = numpy.array([0.0, 0.0, +1.0/10.0e+3, 0.0, 0.0, 0.0],
 if problem == 'shear':
     tm_shear = [25, 50, 100]
     tm_bulk = [25, 50, 100]
-    ratio_shear = [0.4, 0.4, 0.2]
+    ratio_shear = [0.5, 0.2, 0.0]
     ratio_shear0 = 1.0 - sum(ratio_shear)
     ratio_bulk = [0.0, 0.0, 0.0]
     ratio_bulk0 = 1.0 - sum(ratio_bulk)
 elif problem == 'bulk':
     tm_shear = [25, 50, 100]
-    tm_bulk = [25, 50, 100]
-    ratio_shear = [0.4, 0.4, 0.2]
+    tm_bulk = [20, 40, 80]
+    ratio_shear = [0.4, 0.1, 0.2]
     ratio_shear0 = 1.0 - sum(ratio_shear)
-    ratio_bulk = [0.0, 0.0, 0.0]
+    ratio_bulk = [0.1, 0.2, 0.3]
     ratio_bulk0 = 1.0 - sum(ratio_bulk)
     
-
-
 # ----------------------------------------------------------------------
 filename = "output/%s_%s-statevars.h5" % (problem, sim)
 
@@ -57,18 +55,6 @@ h5.close()
 #time =  h5.root.vertex_fields.time (not yet available)
 t = numpy.arange(0, dt*ntimesteps, dt)
 # END TEMPORARY
-
-meanStress = numpy.sum(stress[:,:,0:3], 2) / 3.0
-meanStress = meanStress.reshape( (ntimesteps, npts, 1) )
-ones = numpy.ones( (1,tensorSize), dtype=numpy.float64)
-meanStress = numpy.dot(meanStress, ones)
-    
-devStress = stress - meanStress
-#print devStress[0,0,:]
-#print meanStress[0,0]
-#print devStress[ntimesteps-1,0,:]
-#print meanStress[ntimesteps-1,0]
-    
 
 mu_t = mu0 * (ratio_shear0 + \
                   ratio_shear[0]*numpy.exp(-t/tm_shear[0]) + \
@@ -88,9 +74,10 @@ stressE[:,4] = 2.0*mu_t*strain0[4]
 stressE[:,5] = 2.0*mu_t*strain0[5]
 stressE /= 1.0e+6
 
-print stress[0,0,:]
+print stress[0:2,0,:]
 print stress[ntimesteps-1,0,:]
 print stressE[0,:]
+print stressE[1,:]
 print stressE[ntimesteps-1,:]
 
 # ----------------------------------------------------------------------
@@ -112,7 +99,7 @@ for irow in xrange(1, 3):
       ax.plot(t, stressE[:,icomp], 'r-',
               t, stress[:,0,icomp], 'b--')
       #ax.plot(t, devStress[:,0,icomp])
-      ax.set_ylim( (-6, 6) )
+      ax.set_ylim( (-2, 8) )
 
       icomp += 1
 
