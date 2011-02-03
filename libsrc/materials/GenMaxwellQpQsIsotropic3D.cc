@@ -35,6 +35,7 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <iostream> // TEMPORARY
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
@@ -579,16 +580,6 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
 
   const double mu = properties[p_muEff];
   const double bulkModulus = properties[p_kEff];
-  const double shearRatio[numMaxwellModels] = {
-    properties[p_shearRatio  ],
-    properties[p_shearRatio+1],
-    properties[p_shearRatio+2]
-  };
-  const double bulkRatio[numMaxwellModels] = {
-    properties[p_bulkRatio  ],
-    properties[p_bulkRatio+1],
-    properties[p_bulkRatio+2]
-  };
 
   const double mu2 = 2.0 * mu;
 
@@ -604,8 +595,8 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   double elasFracShear = 1.0;  // deviatoric component
   double elasFracBulk = 1.0; // volumetric component
   for (int imodel=0; imodel < numMaxwellModels; ++imodel) {
-    elasFracShear -= shearRatio[imodel];
-    elasFracBulk -= bulkRatio[imodel];
+    elasFracShear -= properties[p_shearRatio+imodel];
+    elasFracBulk -= properties[p_bulkRatio+imodel];
   } // for
   const double tolerance = 1.0e-6;
   assert(elasFracShear >= -tolerance);
@@ -637,23 +628,17 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   // Compute new stresses ( volumetric + deviatoric )
   const double volStressTpdt = 3.0 * bulkModulus * 
     (elasFracBulk * meanStrainTpdt + 
-     bulkRatio[0] * _viscousStrainBulk[0] +
-     bulkRatio[1] * _viscousStrainBulk[1] +
-     bulkRatio[2] * _viscousStrainBulk[2]);
-  std::cout << "bulkModulus: " << bulkModulus
-	    << ", meanStrainTpdt: " << meanStrainTpdt
-	    << ", elasFracBulk: " << elasFracBulk
-	    << ", bulkRatio[0]: " << bulkRatio[0]
-	    << ", viscousStrainBulk[0]: " << _viscousStrainBulk[0]
-	    << std::endl;
+     _viscousStrainBulk[0] +
+     _viscousStrainBulk[1] +
+     _viscousStrainBulk[2]);
   
   // Axial components
   for (int i=0; i < 3; ++i) {
     const double devStressTpdt = mu2 * 
       (elasFracShear * (totalStrain[i] - meanStrainTpdt) +
-       shearRatio[0] * _viscousStrain[0*tensorSize+i] +
-       shearRatio[1] * _viscousStrain[1*tensorSize+i] +
-       shearRatio[2] * _viscousStrain[2*tensorSize+i]);
+       _viscousStrain[0*tensorSize+i] +
+       _viscousStrain[1*tensorSize+i] +
+       _viscousStrain[2*tensorSize+i]);
     stress[i] = volStressTpdt + devStressTpdt + initialStress[i];
   } // for
 
@@ -661,9 +646,9 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   for (int i=3; i < 6; ++i) {
     const double devStressTpdt = mu2 * 
       (elasFracShear * totalStrain[i] +
-       shearRatio[0] * _viscousStrain[0*tensorSize+i] +
-       shearRatio[1] * _viscousStrain[1*tensorSize+i] +
-       shearRatio[2] * _viscousStrain[2*tensorSize+i]);
+       _viscousStrain[0*tensorSize+i] +
+       _viscousStrain[1*tensorSize+i] +
+       _viscousStrain[2*tensorSize+i]);
     stress[i] = devStressTpdt + initialStress[i];
   } // for
 
@@ -912,32 +897,23 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_updateStateVarsElastic(
   // Axial strains
   for (int i=0; i < 3; ++i) {
     const double devStrain = totalStrain[i] - meanStrainTpdt;
-    //if (properties[p_shearRatio  ] > 0.0)
-      stateVars[s_viscousStrain1+i] = devStrain;
-      //if (properties[p_shearRatio+1] > 0.0)
-      stateVars[s_viscousStrain2+i] = devStrain;
-      //if (properties[p_shearRatio+2] > 0.0)
-      stateVars[s_viscousStrain3+i] = devStrain;
+      stateVars[s_viscousStrain1+i] = properties[p_shearRatio  ] * devStrain;
+      stateVars[s_viscousStrain2+i] = properties[p_shearRatio+1] * devStrain;
+      stateVars[s_viscousStrain3+i] = properties[p_shearRatio+2] * devStrain;
   } // for
 
   // Shear strains
   for (int i=3; i < 6; ++i) {
     const double devStrain = totalStrain[i];
-    //if (properties[p_shearRatio  ] > 0.0)
-      stateVars[s_viscousStrain1+i] = devStrain;
-      //if (properties[p_shearRatio+1] > 0.0)
-      stateVars[s_viscousStrain2+i] = devStrain;
-      //if (properties[p_shearRatio+2] > 0.0)
-      stateVars[s_viscousStrain3+i] = devStrain;
+      stateVars[s_viscousStrain1+i] = properties[p_shearRatio  ] * devStrain;
+      stateVars[s_viscousStrain2+i] = properties[p_shearRatio+1] * devStrain;
+      stateVars[s_viscousStrain3+i] = properties[p_shearRatio+2] * devStrain;
   } // for
 
   // Bulk strains
-  //if (properties[p_bulkRatio  ] > 0.0)
-    stateVars[s_viscousStrainBulk1] = meanStrainTpdt;
-    //if (properties[p_bulkRatio+1] > 0.0)
-    stateVars[s_viscousStrainBulk2] = meanStrainTpdt;
-    //if (properties[p_bulkRatio+2] > 0.0)
-    stateVars[s_viscousStrainBulk3] = meanStrainTpdt;
+  stateVars[s_viscousStrainBulk1] = properties[p_bulkRatio  ] * meanStrainTpdt;
+  stateVars[s_viscousStrainBulk2] = properties[p_bulkRatio+1] * meanStrainTpdt;
+  stateVars[s_viscousStrainBulk3] = properties[p_bulkRatio+2] * meanStrainTpdt;
 
   PetscLogFlops(3 + 2 * tensorSize);
 
@@ -1030,7 +1006,6 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_stableTimeStepImplicit(
   return dtStable;
 } // _stableTimeStepImplicit
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Compute viscous strain for current time step.
 void
@@ -1060,27 +1035,6 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_computeStateVars(
   const int tensorSize = _tensorSize;
   const int numMaxwellModels = _GenMaxwellQpQsIsotropic3D::numMaxwellModels;
 
-  const double shearRatio[numMaxwellModels] = {
-    properties[p_shearRatio  ],
-    properties[p_shearRatio+1],
-    properties[p_shearRatio+2]
-  };
-  const double bulkRatio[numMaxwellModels] = {
-    properties[p_bulkRatio  ],
-    properties[p_bulkRatio+1],
-    properties[p_bulkRatio+2]
-  };
-  const double maxwellTimeShear[numMaxwellModels] = {
-    properties[p_maxwellTimeShear  ],
-    properties[p_maxwellTimeShear+1],
-    properties[p_maxwellTimeShear+2]
-  };
-  const double maxwellTimeBulk[numMaxwellModels] = {
-    properties[p_maxwellTimeBulk  ],
-    properties[p_maxwellTimeBulk+1],
-    properties[p_maxwellTimeBulk+2]
-  };
-
   // :TODO: Need to account for initial values for state variables
   // and the initial strain??
 
@@ -1100,85 +1054,63 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_computeStateVars(
   double dq[numMaxwellModels];
   for (int i=0; i < numMaxwellModels; ++i) {
     dq[i] = 0.0;
-    if (shearRatio[i] != 0.0)
-      dq[i] = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeShear[i]);
+    if (properties[p_shearRatio+i] != 0.0)
+      dq[i] = ViscoelasticMaxwell::viscousStrainParam(_dt, properties[p_maxwellTimeShear+i]);
   } // if
 
   // Compute new viscous strains (deviatoric)
   assert(6 == tensorSize);
   const double diag[6] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+  int imodel = 0;
   for (int i=0; i < tensorSize; ++i) {
     const double devStrainTpdt = totalStrain[i] - diag[i]*meanStrainTpdt;
     const double devStrainT = stateVars[s_totalStrain+i] - diag[i]*meanStrainT;
     const double deltaStrain = devStrainTpdt - devStrainT;
 
     // Maxwell model 1
-    int imodel = 0;
-    if (0.0 != shearRatio[imodel]) {
-      _viscousStrain[imodel*tensorSize+i] = exp(-_dt/maxwellTimeShear[imodel])*
-	stateVars[s_viscousStrain1+i] + dq[imodel] * deltaStrain;
-      PetscLogFlops(6);
-    } // if
-
+    imodel = 0;
+    _viscousStrain[imodel*tensorSize+i] = 
+      exp(-_dt/properties[p_maxwellTimeShear+imodel]) * stateVars[s_viscousStrain1+i] + 
+      properties[p_shearRatio+imodel] * dq[imodel] * deltaStrain;
+    
     // Maxwell model 2
     imodel = 1;
-    if (0.0 != shearRatio[imodel]) {
-      _viscousStrain[imodel*tensorSize+i] = exp(-_dt/maxwellTimeShear[imodel])*
-	stateVars[s_viscousStrain2+i] + dq[imodel] * deltaStrain;
-      PetscLogFlops(6);
-    } // if
+    _viscousStrain[imodel*tensorSize+i] = 
+      exp(-_dt/properties[p_maxwellTimeShear+imodel]) * stateVars[s_viscousStrain2+i] + 
+      properties[p_shearRatio+imodel] * dq[imodel] * deltaStrain;
 
     // Maxwell model 3
     imodel = 2;
-    if (0.0 != shearRatio[imodel]) {
-      _viscousStrain[imodel*tensorSize+i] = exp(-_dt/maxwellTimeShear[imodel])*
-	stateVars[s_viscousStrain3+i] + dq[imodel] * deltaStrain;
-      PetscLogFlops(6);
-    } // if
+    _viscousStrain[imodel*tensorSize+i] = 
+      exp(-_dt/properties[p_maxwellTimeShear+imodel]) * stateVars[s_viscousStrain3+i] + 
+      properties[p_shearRatio+imodel] * dq[imodel] * deltaStrain;
   } // for
-
-  PetscLogFlops(5*tensorSize);
 
   // Compute new viscous strains (volumetric)
   // Compute Prony series terms
   for (int i=0; i < numMaxwellModels; ++i) {
-    dq[i] = 0.0;
-    if (bulkRatio[i] != 0.0)
-      dq[i] = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTimeBulk[i]);
+    dq[i] = ViscoelasticMaxwell::viscousStrainParam(_dt, properties[p_maxwellTimeBulk+i]);
   } // for
 
   const double deltaStrain = meanStrainTpdt - meanStrainT;
-  std::cout << "meanStrainTpdt: " << meanStrainTpdt
-	    << ", meanStrainT: " << meanStrainT
-	    << ", deltaStrain: " << deltaStrain
-	    << ", dq[0]: " << dq[0]
-	    << std::endl;
-
-  PetscLogFlops(1);
 
   // Maxwell model 1
-  int imodel = 0;
-  if (0.0 != bulkRatio[imodel]) {
-    _viscousStrainBulk[imodel] = exp(-_dt/maxwellTimeBulk[imodel])*
-      stateVars[s_viscousStrainBulk1] + dq[imodel] * deltaStrain;
-    PetscLogFlops(6);
-  } // if
-
-    // Maxwell model 2
+  imodel=0;
+  _viscousStrainBulk[imodel] =  
+    exp(-_dt/properties[p_maxwellTimeBulk+imodel]) * stateVars[s_viscousStrainBulk1] + 
+    properties[p_bulkRatio+imodel] * dq[imodel] * deltaStrain;
+  
+  // Maxwell model 2
   imodel = 1;
-  if (0.0 != bulkRatio[imodel]) {
-    _viscousStrainBulk[imodel] = exp(-_dt/maxwellTimeBulk[imodel])*
-      stateVars[s_viscousStrainBulk2] + dq[imodel] * deltaStrain;
-    PetscLogFlops(6);
-  } // if
-
-    // Maxwell model 3
+  _viscousStrainBulk[imodel] = 
+    exp(-_dt/properties[p_maxwellTimeBulk+imodel]) * stateVars[s_viscousStrainBulk2] + 
+    properties[p_bulkRatio+imodel] * dq[imodel] * deltaStrain;
+  
+  // Maxwell model 3
   imodel = 2;
-  if (0.0 != bulkRatio[imodel]) {
-    _viscousStrainBulk[imodel] = exp(-_dt/maxwellTimeBulk[imodel])*
-      stateVars[s_viscousStrainBulk3] + dq[imodel] * deltaStrain;
-    PetscLogFlops(6);
-  } // if
+  _viscousStrainBulk[imodel] = 
+    exp(-_dt/properties[p_maxwellTimeBulk+imodel]) * stateVars[s_viscousStrainBulk3] + 
+    properties[p_bulkRatio+imodel] * dq[imodel] * deltaStrain;
 
 } // _computeStateVars
 

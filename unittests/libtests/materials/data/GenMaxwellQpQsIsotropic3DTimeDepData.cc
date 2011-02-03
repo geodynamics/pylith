@@ -434,18 +434,18 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_strain[] 
 };
 
 const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stress[] = {
-  2.61627705e+06,
-  7.55940297e+06,
-  1.25025289e+07,
-  1.97925037e+07,
-  2.47356296e+07,
-  2.96787555e+07,
-  1.40461493e+06,
-  2.03919873e+06,
-  2.67378253e+06,
-  2.64593371e+06,
-  3.28051751e+06,
-  3.91510131e+06,
+  1.50388251e+07,
+  3.08460297e+07,
+  4.66532343e+07,
+  6.32488183e+07,
+  7.90560229e+07,
+  9.48632275e+07,
+  2.53363466e+06,
+  4.68879364e+06,
+  6.84395263e+06,
+  8.86646857e+06,
+  1.10216276e+07,
+  1.31767865e+07,
 };
 
 const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_elasticConsts[] = {

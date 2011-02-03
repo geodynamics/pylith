@@ -380,7 +380,7 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
         visStrainBulk = math.exp(-self.dt/maxwellTimeBulkV[imodel]) * \
             visStrainBulkV[imodel] + \
             dq[imodel] * deltaStrain
-        volStressTpdt += bulkRatioV[imodel] * visStrainBulk
+        volStressTpdt += visStrainBulk
     volStressTpdt = 3.0 * elasFac * volStressTpdt
       
     # Deviatoric
@@ -400,7 +400,7 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
           visStrain = math.exp(-self.dt/maxwellTimeV[imodel]) * \
                       visStrainV[imodel,iComp] + \
                       dq[imodel] * deltaStrain
-          devStressTpdt += shearRatioV[imodel] * visStrain
+          devStressTpdt += visStrain
       devStressTpdt = elasFac * devStressTpdt
       stressV[iComp] = diag[iComp]*volStressTpdt + devStressTpdt + \
                        initialStressV[iComp]
