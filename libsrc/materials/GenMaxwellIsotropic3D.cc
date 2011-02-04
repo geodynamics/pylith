@@ -689,10 +689,10 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
     } // if
   } // for
   double elasFrac = 1.0 - visFrac;
-  double shearFac = mu*(elasFrac + visFac)/3.0;
+  double shearFac = elasFrac + visFac;
 
-  elasticConsts[ 0] = bulkModulus + 4.0 * shearFac; // C1111
-  elasticConsts[ 1] = bulkModulus - 2.0 * shearFac; // C1122
+  elasticConsts[ 0] = bulkModulus + 4.0*mu/3.0 * shearFac; // C1111
+  elasticConsts[ 1] = bulkModulus - 2.0*mu/3.0 * shearFac; // C1122
   elasticConsts[ 2] = elasticConsts[1]; // C1133
   elasticConsts[ 3] = 0; // C1112
   elasticConsts[ 4] = 0; // C1123
@@ -712,7 +712,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   elasticConsts[18] = 0; // C1211
   elasticConsts[19] = 0; // C1222
   elasticConsts[20] = 0; // C1233
-  elasticConsts[21] = 6.0 * shearFac; // C1212
+  elasticConsts[21] = 2.0*mu*shearFac; // C1212
   elasticConsts[22] = 0; // C1223
   elasticConsts[23] = 0; // C1213
   elasticConsts[24] = 0; // C2311

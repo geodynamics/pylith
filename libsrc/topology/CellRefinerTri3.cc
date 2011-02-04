@@ -87,7 +87,7 @@ ALE::CellRefinerTri3::splitCell(const point_type cell,
   for(int iEdge=0; iEdge < numEdges; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       // if vertex does not exist
-      std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
+      //std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
       _edgeToVertex[edges[iEdge]] = *curNewVertex;
       ++(*curNewVertex);
     } // if
@@ -123,7 +123,7 @@ ALE::CellRefinerTri3::splitCellUncensored(const point_type cell,
   for(int iEdge=0; iEdge < numEdges; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       // if vertex does not exist
-      std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
+      //std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
       _edgeToVertex[edges[iEdge]] = *curNewVertex;
       ++(*curNewVertex);
     } // if

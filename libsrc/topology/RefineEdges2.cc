@@ -110,7 +110,7 @@ ALE::RefineEdges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_section_typ
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
     } // if
   } // for
 } // groupSetNewVertices
@@ -212,7 +212,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         newVerticesSection->addFiberDimension(edgeMin+localMinOffset, 1);
         for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
           bndryEdgeToRank[e_iter->first].push_back(*r_iter);
-          std::cout << "[" << myrank << "] Added edge " << e_iter->first << " with rank " << *r_iter << std::endl;
+          //std::cout << "[" << myrank << "] Added edge " << e_iter->first << " with rank " << *r_iter << std::endl;
         } // for
       } // if
     } // if
@@ -245,8 +245,8 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   Obj<ALE::Section<overlap_point_type, EdgeType> > overlapVertices = new ALE::Section<overlap_point_type, EdgeType>(oldMesh->comm());
 
   ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection, overlapVertices);
-  newVerticesSection->view("NEW VERTICES");
-  overlapVertices->view("OVERLAP VERTICES");
+  //newVerticesSection->view("NEW VERTICES");
+  //overlapVertices->view("OVERLAP VERTICES");
 
   // Merge by translating edge to local points, finding edge in _edgeToVertex, and adding (local new vetex, remote new vertex) to overlap
   for(std::map<EdgeType, std::vector<int> >::const_iterator e_iter = bndryEdgeToRank.begin(); e_iter != bndryEdgeToRank.end(); ++e_iter) {
@@ -284,6 +284,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
+#if 0
       if (-1 == newRemotePoint) {
         std::cout << "remoteLeft: " << remoteLeft
                   << ", remoteRight: " << remoteRight
@@ -291,6 +292,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
                   << ", remoteSize: " << remoteSize
                   << std::endl;
       } // if
+#endif
       //assert(-1 != newRemotePoint);
       if (-1 != newRemotePoint) {
         newSendOverlap->addArrow(newLocalPoint, rank, newRemotePoint);
@@ -299,10 +301,12 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     } // for
   } // for
 
+#if 0
   oldSendOverlap->view("OLD SEND OVERLAP");
   oldRecvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
+#endif
 } // overlapAddNewVertces
 
 

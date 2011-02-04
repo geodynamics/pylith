@@ -468,10 +468,12 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     } // for
   } // for
 
+#if 1
   oldSendOverlap->view("OLD SEND OVERLAP");
   oldRecvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
+#endif
 } // overlapAddNewVertces
 
 
