@@ -53,12 +53,8 @@ class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D
                      "maxwell_time_shear",
                      "maxwell_time_bulk"],
             'data': ["total_strain", "stress",
-                     "viscous_strain_1", 
-                     "viscous_strain_2", 
-                     "viscous_strain_3",
-                     "viscous_strain_1_bulk", 
-                     "viscous_strain_2_bulk", 
-                     "viscous_strain_3_bulk",
+                     "viscous_deviatoric_strain", 
+                     "viscous_mean_strain", 
                      ]}}
     self._loggingPrefix = "MaMx3D "
     return
