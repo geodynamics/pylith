@@ -178,7 +178,7 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
       
   const interval_type::const_iterator oldVerticesEnd = _orderOldMesh->verticesCensored().end();
   for (interval_type::const_iterator vOld_iter=_orderOldMesh->verticesNormal().begin(), vNew_iter=_orderNewMesh->verticesNormal().begin(); vOld_iter != oldVerticesEnd; ++vOld_iter, ++vNew_iter) {
-    std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
+    //std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
     newCoordinates->updatePoint(*vNew_iter, coordinates->restrictPoint(*vOld_iter));
   } // for
 
@@ -380,12 +380,12 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
       
   interval_type::const_iterator oldVerticesEnd = _orderOldMesh->verticesNormal().end();
   for (interval_type::const_iterator vOld_iter=_orderOldMesh->verticesNormal().begin(), vNew_iter=_orderNewMesh->verticesNormal().begin(); vOld_iter != oldVerticesEnd; ++vOld_iter, ++vNew_iter) {
-    std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
+    //std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
     newCoordinates->updatePoint(*vNew_iter, coordinates->restrictPoint(*vOld_iter));
   } // for
   oldVerticesEnd = _orderOldMesh->verticesCensored().end();
   for (interval_type::const_iterator vOld_iter=_orderOldMesh->verticesCensored().begin(), vNew_iter=_orderNewMesh->verticesCensored().begin(); vOld_iter != oldVerticesEnd; ++vOld_iter, ++vNew_iter) {
-    std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
+    //std::cout << "Copy coordinates from old vertex " << *vOld_iter << " to new vertex " << *vNew_iter << std::endl;
     newCoordinates->updatePoint(*vNew_iter, coordinates->restrictPoint(*vOld_iter));
   } // for
 
@@ -492,7 +492,7 @@ ALE::MeshRefiner<cellrefiner_type>::_createIntSections(const Obj<mesh_type>& new
     newGroup->setChart(mesh_type::int_section_type::chart_type(newVerticesStart, newVerticesEnd));
     const mesh_type::int_section_type::chart_type& newChart = newGroup->getChart();
 
-    std::cout << "VERTICES start: " << newVerticesStart << ", end: " << newVerticesEnd << std::endl;
+    //std::cout << "VERTICES start: " << newVerticesStart << ", end: " << newVerticesEnd << std::endl;
 
     const point_type chartMax = chart.max();
     for (point_type pOld=chart.min(); pOld < chartMax; ++pOld) {

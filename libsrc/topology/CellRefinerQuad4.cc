@@ -92,7 +92,7 @@ ALE::CellRefinerQuad4::splitCell(const point_type cell,
   for(int iEdge=0; iEdge < numEdges; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       // if vertex does not exist
-      std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
+      //std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
       _edgeToVertex[edges[iEdge]] = *curNewVertex;
       ++(*curNewVertex);
     } // if
@@ -101,7 +101,7 @@ ALE::CellRefinerQuad4::splitCell(const point_type cell,
   for(int iFace=0; iFace < numFaces; ++iFace) {
     if (_faceToVertex.find(faces[iFace]) == _faceToVertex.end()) {
       // if vertex does not exist
-      std::cout << "Face: " << faces[iFace] << ", new vertex: " << *curNewVertex << std::endl;
+      //std::cout << "Face: " << faces[iFace] << ", new vertex: " << *curNewVertex << std::endl;
       _faceToVertex[faces[iFace]] = *curNewVertex;
       ++(*curNewVertex);
     } // if
@@ -137,7 +137,7 @@ ALE::CellRefinerQuad4::splitCellUncensored(const point_type cell,
   for(int iEdge=0; iEdge < numEdges; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
       // if vertex does not exist
-      std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
+      //std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
       _edgeToVertex[edges[iEdge]] = *curNewVertex;
       ++(*curNewVertex);
     } // if
