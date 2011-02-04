@@ -52,10 +52,18 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     self.numLocs = numLocs
 
     self.dbPropertyValues = ["density", "vs", "vp",
-                             "shear-ratio-1", "shear-ratio-2", "shear-ratio-3",
-                             "shear-viscosity-1", "shear-viscosity-2", "shear-viscosity-3",
-                             "bulk-ratio-1", "bulk-ratio-2", "bulk-ratio-3",
-                             "bulk-viscosity-1", "bulk-viscosity-2", "bulk-viscosity-3",
+                             "shear-ratio-1", 
+                             "shear-ratio-2", 
+                             "shear-ratio-3",
+                             "shear-viscosity-1", 
+                             "shear-viscosity-2", 
+                             "shear-viscosity-3",
+                             "bulk-ratio-1", 
+                             "bulk-ratio-2", 
+                             "bulk-ratio-3",
+                             "bulk-viscosity-1", 
+                             "bulk-viscosity-2", 
+                             "bulk-viscosity-3",
                              ]
     self.numPropertyValues = numpy.array([1, 1, 1,
                                           1, 1, 1,
@@ -69,27 +77,27 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
                              "total-strain-xy",
                              "total-strain-yz",
                              "total-strain-xz",
-                             "viscous-strain-1-xx",
-                             "viscous-strain-1-yy",
-                             "viscous-strain-1-zz",
-                             "viscous-strain-1-xy",
-                             "viscous-strain-1-yz",
-                             "viscous-strain-1-xz",
-                             "viscous-strain-2-xx",
-                             "viscous-strain-2-yy",
-                             "viscous-strain-2-zz",
-                             "viscous-strain-2-xy",
-                             "viscous-strain-2-yz",
-                             "viscous-strain-2-xz",
-                             "viscous-strain-3-xx",
-                             "viscous-strain-3-yy",
-                             "viscous-strain-3-zz",
-                             "viscous-strain-3-xy",
-                             "viscous-strain-3-yz",
-                             "viscous-strain-3-xz",
-                             "viscous-strain-1-bulk",
-                             "viscous-strain-3-bulk",
-                             "viscous-strain-3-bulk",
+                             "viscous-deviatoric-strain-1-xx",
+                             "viscous-deviatoric-strain-1-yy",
+                             "viscous-deviatoric-strain-1-zz",
+                             "viscous-deviatoric-strain-1-xy",
+                             "viscous-deviatoric-strain-1-yz",
+                             "viscous-deviatoric-strain-1-xz",
+                             "viscous-deviatoric-strain-2-xx",
+                             "viscous-deviatoric-strain-2-yy",
+                             "viscous-deviatoric-strain-2-zz",
+                             "viscous-deviatoric-strain-2-xy",
+                             "viscous-deviatoric-strain-2-yz",
+                             "viscous-deviatoric-strain-2-xz",
+                             "viscous-deviatoric-strain-3-xx",
+                             "viscous-deviatoric-strain-3-yy",
+                             "viscous-deviatoric-strain-3-zz",
+                             "viscous-deviatoric-strain-3-xy",
+                             "viscous-deviatoric-strain-3-yz",
+                             "viscous-deviatoric-strain-3-xz",
+                             "viscous-mean-strain-1",
+                             "viscous-mean-strain-2",
+                             "viscous-mean-strain-3",
                              ]
 
     self.numStateVarValues = numpy.array([1, 1, 1, 1, 1, 1,
@@ -102,8 +110,8 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     vsA = 3000.0
     vpA = vsA*3**0.5
     shearRatioA = [0.5, 0.1, 0.2]
-    bulkRatioA = [0.4, 0.3, 0.1] 
     shearViscosityA = [1.0e+18, 1.0e+17, 1.0e+19]
+    bulkRatioA = [0.4, 0.3, 0.1] 
     bulkViscosityA = [2.0e+18, 2.0e+17, 2.0e+19]
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
@@ -116,8 +124,8 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     vsB = 1200.0
     vpB = vsB*3**0.5
     shearRatioB = [0.2, 0.2, 0.2]
-    bulkRatioB = [0.2, 0.2, 0.2] 
     shearViscosityB = [1.0e18, 1.0e19, 1.0e20]
+    bulkRatioB = [0.2, 0.2, 0.2] 
     bulkViscosityB = [2.0e18, 2.0e19, 2.0e20]
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
@@ -130,17 +138,17 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     maxwellTimeB = [0.0, 0.0, 0.0]
     for i in xrange(numMaxwellModels):
       if shearRatioA[i] != 0.0:
-        maxwellTimeA[i] = shearViscosityA[i]/(muA*shearRatioA[i])
+        maxwellTimeA[i] = shearViscosityA[i]/muA
       if shearRatioB[i] != 0.0:
-        maxwellTimeB[i] = shearViscosityB[i]/(muB*shearRatioB[i])
+        maxwellTimeB[i] = shearViscosityB[i]/muB
 
     maxwellTimeBulkA = [0.0, 0.0, 0.0]
     maxwellTimeBulkB = [0.0, 0.0, 0.0]
     for i in xrange(numMaxwellModels):
       if bulkRatioA[i] != 0.0:
-        maxwellTimeBulkA[i] = bulkViscosityA[i]/(kA*bulkRatioA[i])
+        maxwellTimeBulkA[i] = bulkViscosityA[i]/kA
       if bulkRatioB[i] != 0.0:
-        maxwellTimeBulkB[i] = bulkViscosityB[i]/(kB*bulkRatioB[i])
+        maxwellTimeBulkB[i] = bulkViscosityB[i]/kB
 
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
@@ -150,8 +158,8 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     propA = [densityA, vsA, vpA] + shearRatioA + shearViscosityA + bulkRatioA + bulkViscosityA
     propB = [densityB, vsB, vpB] + shearRatioB + shearViscosityB + bulkRatioB + bulkViscosityB
     self.dbProperties = numpy.array([propA, propB], dtype=numpy.float64)
-    propA = [densityA, muA, kA] + shearRatioA + bulkRatioA + maxwellTimeA + maxwellTimeBulkA
-    propB = [densityB, muB, kB] + shearRatioB + bulkRatioB + maxwellTimeB + maxwellTimeBulkB
+    propA = [densityA, muA, kA] + shearRatioA + maxwellTimeA + bulkRatioA + maxwellTimeBulkA
+    propB = [densityB, muB, kB] + shearRatioB + maxwellTimeB + bulkRatioB + maxwellTimeBulkB
     self.properties = numpy.array([propA, propB], dtype=numpy.float64)
 
     # TEMPORARY, need to determine how to use initial state variables
@@ -166,13 +174,13 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
     self.propertiesNondim = \
         numpy.array([ [densityA/density0, muA/mu0, kA/mu0,
                        shearRatioA[0], shearRatioA[1], shearRatioA[2],
-                       bulkRatioA[0], bulkRatioA[1], bulkRatioA[2],
                        maxwellTimeA[0]/time0, maxwellTimeA[1]/time0, maxwellTimeA[2]/time0,
+                       bulkRatioA[0], bulkRatioA[1], bulkRatioA[2],
                        maxwellTimeBulkA[0]/time0, maxwellTimeBulkA[1]/time0, maxwellTimeBulkA[2]/time0],
                       [densityB/density0, muB/mu0, kB/mu0,
                        shearRatioB[0], shearRatioB[1], shearRatioB[2],
-                       bulkRatioB[0], bulkRatioB[1], bulkRatioB[2],
                        maxwellTimeB[0]/time0, maxwellTimeB[1]/time0, maxwellTimeB[2]/time0, 
+                       bulkRatioB[0], bulkRatioB[1], bulkRatioB[2],
                        maxwellTimeBulkB[0]/time0, maxwellTimeBulkB[1]/time0, maxwellTimeBulkB[2]/time0] ],
                     dtype=numpy.float64)
 

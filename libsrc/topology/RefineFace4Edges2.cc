@@ -145,7 +145,7 @@ ALE::RefineFace4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_sectio
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
     } // if
   } // for
 
@@ -156,7 +156,7 @@ ALE::RefineFace4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_sectio
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(faceVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on face " << f_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on face " << f_iter->first << std::endl;
     } // if
   } // for
 } // groupSetNewVertices
@@ -334,10 +334,12 @@ ALE::RefineFace4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     } // for
   } // for
 
+#if 0
   oldSendOverlap->view("OLD SEND OVERLAP");
   oldRecvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
+#endif
 } // overlapAddNewVertces
 
 

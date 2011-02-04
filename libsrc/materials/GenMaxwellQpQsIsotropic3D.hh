@@ -470,11 +470,11 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Viscous strain array. (deviatoric)
-  double_array _viscousStrain;
+  /// Viscous deviatoric strain array [numMaxwellModels*tensorSize].
+  double_array _viscousDevStrain;
 
-  /// Viscous strain array. (volumetric)
-  double_array _viscousStrainBulk;
+  /// Viscous mean strain [numMaxwellModels].
+  double_array _viscousMeanStrain;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
@@ -492,9 +492,10 @@ private :
   static const int p_muEff;
   static const int p_kEff;
   static const int p_shearRatio;
-  static const int p_bulkRatio;
   static const int p_maxwellTimeShear;
+  static const int p_bulkRatio;
   static const int p_maxwellTimeBulk;
+
   static const int db_density;
   static const int db_vs;
   static const int db_vp;
@@ -504,19 +505,16 @@ private :
   static const int db_bulkViscosity;
 
   static const int s_totalStrain;
-  static const int s_viscousStrain1;
-  static const int s_viscousStrain2;
-  static const int s_viscousStrain3;
-  static const int s_viscousStrainBulk1;
-  static const int s_viscousStrainBulk2;
-  static const int s_viscousStrainBulk3;
+  static const int s_viscousDevStrain;
+  static const int s_viscousMeanStrain;
+
   static const int db_totalStrain;
-  static const int db_viscousStrain1;
-  static const int db_viscousStrain2;
-  static const int db_viscousStrain3;
-  static const int db_viscousStrainBulk1;
-  static const int db_viscousStrainBulk2;
-  static const int db_viscousStrainBulk3;
+  static const int db_viscousDevStrain1;
+  static const int db_viscousDevStrain2;
+  static const int db_viscousDevStrain3;
+  static const int db_viscousMeanStrain1;
+  static const int db_viscousMeanStrain2;
+  static const int db_viscousMeanStrain3;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
