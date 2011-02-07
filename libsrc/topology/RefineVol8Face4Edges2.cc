@@ -180,7 +180,7 @@ ALE::RefineVol8Face4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_se
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(edgeVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on edge " << e_iter->first << std::endl;
     } // if
   } // for
 
@@ -191,7 +191,7 @@ ALE::RefineVol8Face4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_se
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(faceVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on face " << f_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on face " << f_iter->first << std::endl;
     } // if
   } // for
 
@@ -202,7 +202,7 @@ ALE::RefineVol8Face4Edges2::groupSetNewVertices(const ALE::Obj<mesh_type::int_se
 
     if (1 == newGroup->getFiberDimension(newVertex)) {
       newGroup->updatePoint(newVertex, oldGroup->restrictPoint(volumeVertex));
-      std::cout << "Adding new vertex: " << newVertex << " based on volume " << v_iter->first << std::endl;
+      //std::cout << "Adding new vertex: " << newVertex << " based on volume " << v_iter->first << std::endl;
     } // if
   } // for
 } // groupSetNewVertices
@@ -294,6 +294,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 					    const Obj<mesh_type>& oldMesh,
 					    const MeshOrder& orderOldMesh)
 { // overlapAddNewVertices
+#if 0
   assert(!newMesh.isNull());
   assert(!oldMesh.isNull());
 
@@ -473,6 +474,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   oldRecvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
+#endif
+
 #endif
 } // overlapAddNewVertces
 

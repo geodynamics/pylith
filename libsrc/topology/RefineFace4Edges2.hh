@@ -136,7 +136,8 @@ protected :
       points[3] = p3;      
     };
     ~Face(void) {};
-    friend bool operator==(const Face& a, const Face& b) {
+    friend bool operator==(const Face<Point>& a, 
+			   const Face<Point>& b) {
       const bool result = 
 	a.points[0] == b.points[0] &&
 	a.points[1] == b.points[1] &&
@@ -144,7 +145,8 @@ protected :
 	a.points[3] == b.points[3];
       return result;
     };
-    friend bool operator<(const Face& a, const Face& b) {
+    friend bool operator<(const Face<Point>& a, 
+			  const Face<Point>& b) {
       if (a.points[0] < b.points[0]) {
 	return true;
       } else if (a.points[0] == b.points[0]) {
@@ -163,7 +165,8 @@ protected :
     
       return false;
     };
-    friend std::ostream& operator<<(std::ostream& stream, const Face& face) {
+    friend std::ostream& operator<<(std::ostream& stream, 
+				    const Face<Point>& face) {
       stream << "(" << face.points[0]
 	     << ", " << face.points[1]
 	     << ", " << face.points[2]
@@ -174,8 +177,32 @@ protected :
   public:
     int points[4];
   };
+  template<typename Point>
+  class FaceCmp { // for compatibility with gcc 3.4.6
+  public :
+    bool operator() (const Face<Point>& a, 
+		     const Face<Point>& b) const {
+      if (a.points[0] < b.points[0]) {
+	return true;
+      } else if (a.points[0] == b.points[0]) {
+	if (a.points[1] < b.points[1]) {
+	  return true;
+	} else if (a.points[1] == b.points[1]) {
+	  if (a.points[2] < b.points[2]) {
+	    return true;
+	  } else if (a.points[2] == b.points[2]) {
+	    if (a.points[3] < b.points[3]) {
+	      return true;
+	    } // if
+	  } // if/else
+	} // if/else
+      } // if/else
+      
+      return false;
+    };
+  };
   typedef Face<point_type> FaceType;
-  typedef std::map<FaceType, point_type> face_map_type;
+  typedef std::map<FaceType, point_type, FaceCmp<point_type> > face_map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
