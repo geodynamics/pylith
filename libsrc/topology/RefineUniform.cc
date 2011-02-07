@@ -111,7 +111,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
       ALE::MeshRefiner<ALE::CellRefinerHex8> refinement;
       refinement.refine(newSieveMesh, sieveMesh, cellSplitter);
       break;
-    } // case 4
+    } // case 8
     default :
       assert(0);
       throw std::runtime_error("Unknown number of corners for cells.");

@@ -137,7 +137,8 @@ protected :
       points[3] = p3;      
     };
     ~Face(void) {};
-    friend bool operator==(const Face& a, const Face& b) {
+    friend bool operator==(const Face<Point>& a, 
+			   const Face<Point>& b) {
       const bool result = 
 	a.points[0] == b.points[0] &&
 	a.points[1] == b.points[1] &&
@@ -145,7 +146,8 @@ protected :
 	a.points[3] == b.points[3];
       return result;
     };
-    friend bool operator<(const Face& a, const Face& b) {
+    friend bool operator<(const Face<Point>& a, 
+			  const Face<Point>& b) {
       if (a.points[0] < b.points[0]) {
 	return true;
       } else if (a.points[0] == b.points[0]) {
@@ -164,7 +166,8 @@ protected :
     
       return false;
     };
-    friend std::ostream& operator<<(std::ostream& stream, const Face& face) {
+    friend std::ostream& operator<<(std::ostream& stream, 
+				    const Face<Point>& face) {
       stream << "(" << face.points[0]
 	     << ", " << face.points[1]
 	     << ", " << face.points[2]
@@ -175,8 +178,32 @@ protected :
   public:
     int points[4];
   };
+  template<typename Point>
+  class FaceCmp { // for compatibility with gcc 3.4.6
+  public :
+    bool operator() (const Face<Point>& a, 
+		     const Face<Point>& b) const {
+      if (a.points[0] < b.points[0]) {
+	return true;
+      } else if (a.points[0] == b.points[0]) {
+	if (a.points[1] < b.points[1]) {
+	  return true;
+	} else if (a.points[1] == b.points[1]) {
+	  if (a.points[2] < b.points[2]) {
+	    return true;
+	  } else if (a.points[2] == b.points[2]) {
+	    if (a.points[3] < b.points[3]) {
+	      return true;
+	    } // if
+	  } // if/else
+	} // if/else
+      } // if/else
+      
+      return false;
+    };
+  };
   typedef Face<point_type> FaceType;
-  typedef std::map<FaceType, point_type> face_map_type;
+  typedef std::map<FaceType, point_type, FaceCmp<point_type> > face_map_type;
 
   template<typename Point>
   class Volume {
@@ -210,7 +237,8 @@ protected :
       points[7] = p7;      
     };
     ~Volume(void) {};
-    friend bool operator==(const Volume& a, const Volume& b) {
+    friend bool operator==(const Volume<Point>& a, 
+			   const Volume<Point>& b) {
       const bool result = 
 	a.points[0] == b.points[0] &&
 	a.points[1] == b.points[1] &&
@@ -222,7 +250,8 @@ protected :
 	a.points[7] == b.points[7];
       return result;
     };
-    friend bool operator<(const Volume& a, const Volume& b) {
+    friend bool operator<(const Volume<Point>& a, 
+			  const Volume<Point>& b) {
       if (a.points[0] < b.points[0]) {
 	return true;
       } else if (a.points[0] == b.points[0]) {
@@ -253,7 +282,8 @@ protected :
     
       return false;
     };
-    friend std::ostream& operator<<(std::ostream& stream, const Volume& v) {
+    friend std::ostream& operator<<(std::ostream& stream, 
+				    const Volume<Point>& v) {
       stream << "(" << v.points[0]
 	     << ", " << v.points[1]
 	     << ", " << v.points[2]
@@ -268,8 +298,44 @@ protected :
   public:
     int points[8];
   };
+  template<typename Point>
+  class VolumeCmp { // for compatibility with gcc 3.4.6
+  public :
+    bool operator() (const Volume<Point>& a, 
+		     const Volume<Point>& b) {
+      if (a.points[0] < b.points[0]) {
+	return true;
+      } else if (a.points[0] == b.points[0]) {
+	if (a.points[1] < b.points[1]) {
+	  return true;
+	} else if (a.points[1] == b.points[1]) {
+	  if (a.points[2] < b.points[2]) {
+	    return true;
+	  } else if (a.points[2] == b.points[2]) {
+	    if (a.points[3] < b.points[3]) {
+	      return true;
+	    } else if (a.points[3] == b.points[3]) {
+	      if (a.points[4] < b.points[4]) {
+		return true;
+	      } else if (a.points[4] == b.points[4]) {
+		if (a.points[5] < b.points[5]) {
+		  return true;
+		} else if (a.points[6] == b.points[6]) {
+		  if (a.points[7] < b.points[7]) {
+		    return true;
+		  } // if
+		} // if/else
+	      } // if/else
+	    } // if/else
+	  } // if/else
+	} // if/else
+      } // if/else
+    
+      return false;
+    };
+  };
   typedef Volume<point_type> VolumeType;
-  typedef std::map<VolumeType, point_type> volume_map_type;
+  typedef std::map<VolumeType, point_type, VolumeCmp<point_type> > volume_map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
