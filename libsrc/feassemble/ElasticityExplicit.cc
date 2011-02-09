@@ -39,6 +39,7 @@
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
+#include <sstream> // USES std::ostringstream
 
 //#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
@@ -46,7 +47,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
-  _dtm1(-1.0)
+  _dtm1(-1.0),
+  _nondimViscosity(0.1)
 { // constructor
 } // constructor
 
@@ -79,6 +81,20 @@ pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
   if (0 != _material)
     _material->timeStep(_dt);
 } // timeStep
+
+// ----------------------------------------------------------------------
+// Set nondimensional viscosity for numerical damping.
+void
+pylith::feassemble::ElasticityExplicit::nondimViscosity(const double viscosity)
+{ // nondimViscosity
+  if (viscosity < 0.0) {
+    std::ostringstream msg;
+    msg << "Nondimensional viscosity (" << viscosity << ") must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _nondimViscosity = viscosity;
+} // nondimViscosity
 
 // ----------------------------------------------------------------------
 // Set flag for setting constraints for total field solution or
