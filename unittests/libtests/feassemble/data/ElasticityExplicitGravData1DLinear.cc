@@ -95,8 +95,8 @@ const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_fieldTmdt[
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsResidual[] = {
- -2.65286562e+11,
- -2.97286562e+11,
+ -2.64086562e+11,
+ -2.98486562e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobian[] = {
@@ -107,8 +107,8 @@ const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobi
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsResidualLumped[] = {
- -2.65280938e+11,
- -2.97292188e+11,
+ -2.64080938e+11,
+ -2.98492188e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobianLumped[] = {

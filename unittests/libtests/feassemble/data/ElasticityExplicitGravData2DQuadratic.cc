@@ -170,12 +170,12 @@ const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_fieldTm
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsResidual[] = {
-  1.06623444e+10,  4.79732301e+10,
- -2.93260132e+10, -4.45171190e+10,
-  4.90976768e+09,  2.18771854e+10,
-  6.30184682e+10, -1.22869786e+11,
- -6.40804431e+10, -2.36373782e+11,
-  1.48296806e+10, -1.16081713e+11,
+  1.14469580e+10,  5.67331525e+10,
+ -3.22261697e+10, -4.50853997e+10,
+  5.33382294e+09,  2.81311394e+10,
+  6.97040375e+10, -1.14320882e+11,
+ -7.00903642e+10, -2.54877652e+11,
+  1.58455201e+10, -1.20572343e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJacobian[] = {
@@ -254,12 +254,12 @@ const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJac
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsResidualLumped[] = {
-  1.06607998e+10,  4.79735069e+10,
- -2.93282002e+10, -4.45185582e+10,
-  4.90766782e+09,  2.18764757e+10,
-  6.30202202e+10, -1.22868098e+11,
- -6.40793371e+10, -2.36377010e+11,
-  1.48326542e+10, -1.16078301e+11,
+  1.14454133e+10,  5.67334294e+10,
+ -3.22283567e+10, -4.50868389e+10,
+  5.33172309e+09,  2.81304297e+10,
+  6.97057895e+10, -1.14319194e+11,
+ -7.00892582e+10, -2.54880879e+11,
+  1.58484937e+10, -1.20568932e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJacobianLumped[] = {

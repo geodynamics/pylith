@@ -55,6 +55,7 @@ class PrepMeshApp(PetscApplication):
   ##   constitutive models.
 
   import pyre.inventory
+  from pylith.utils.EmptyBin import EmptyBin
 
   from pylith.topology.MeshImporter import MeshImporter
   mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator",

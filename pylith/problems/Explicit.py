@@ -46,6 +46,28 @@ class Explicit(Formulation, ModuleExplicit):
   Factory: pde_formulation.
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(Formulation.Inventory):
+    """
+    Python object for managing Formulation facilities and properties.
+    """
+
+    ## @class Inventory
+    ## Python object for managing Formulation facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b norm_viscosity Normalized viscosity for numerical damping.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    normViscosity = pyre.inventory.float("norm_viscosity", default=0.1)
+    normViscosity.meta['tip'] = "Normalized viscosity for numerical damping."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="explicit"):
@@ -63,7 +85,9 @@ class Explicit(Formulation, ModuleExplicit):
     Get integrator for elastic material.
     """
     from pylith.feassemble.ElasticityExplicit import ElasticityExplicit
-    return ElasticityExplicit()
+    integrator = ElasticityExplicit()
+    integrator.normViscosity(self.normViscosity)
+    return integrator
 
 
   def initialize(self, dimension, normalizer):
@@ -217,6 +241,8 @@ class Explicit(Formulation, ModuleExplicit):
     Set members based using inventory.
     """
     Formulation._configure(self)
+
+    self.normViscosity = self.inventory.normViscosity
     return
 
 

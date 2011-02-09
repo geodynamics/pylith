@@ -61,7 +61,9 @@ class ExplicitLumpedTet4(ExplicitLumped):
     Get integrator for elastic material.
     """
     from pylith.feassemble.ElasticityExplicitTet4 import ElasticityExplicitTet4
-    return ElasticityExplicitTet4()
+    integrator = ElasticityExplicitTet4()
+    integrator.normViscosity(self.normViscosity)
+    return integrator
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
