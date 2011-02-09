@@ -93,6 +93,18 @@ pylith::feassemble::TestElasticityExplicit::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
+// Test nondimViscosity().
+void
+pylith::feassemble::TestElasticityExplicit::testNondimViscosity(void)
+{ // testNondimViscosity
+  ElasticityExplicit integrator;
+
+  const double viscosity = 1.234;
+  integrator.nondimViscosity(viscosity);
+  CPPUNIT_ASSERT_EQUAL(viscosity, integrator._nondimViscosity);
+} // testTimeStep
+
+// ----------------------------------------------------------------------
 // Test material().
 void
 pylith::feassemble::TestElasticityExplicit::testMaterial(void)
