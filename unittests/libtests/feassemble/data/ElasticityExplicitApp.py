@@ -43,6 +43,7 @@ class ElasticityExplicitApp(ElasticityApp):
     """
     ElasticityApp.__init__(self, name)
 
+    self.normViscosity = 0.1
     return
   
 

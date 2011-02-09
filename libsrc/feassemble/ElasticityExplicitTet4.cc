@@ -51,7 +51,8 @@ const int pylith::feassemble::ElasticityExplicitTet4::_numQuadPts = 1;
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitTet4::ElasticityExplicitTet4(void) :
-  _dtm1(-1.0)
+  _dtm1(-1.0),
+  _normViscosity(0.1)
 { // constructor
   _basisDerivArray.resize(_numQuadPts*_numBasis*_spaceDim);
 } // constructor
@@ -87,11 +88,26 @@ pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
 } // timeStep
 
 // ----------------------------------------------------------------------
+// Set normalized viscosity for numerical damping.
+void
+pylith::feassemble::ElasticityExplicitTet4::normViscosity(const double viscosity)
+{ // normViscosity
+  if (viscosity < 0.0) {
+    std::ostringstream msg;
+    msg << "Normalized viscosity (" << viscosity << ") must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _normViscosity = viscosity;
+} // normViscosity
+
+// ----------------------------------------------------------------------
 // Set flag for setting constraints for total field solution or
 // incremental field solution.
 void
 pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
 { // useSolnIncr
+  _material->useElasticBehavior(false);
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
 			   "explicit time integration of elasticity "
@@ -169,7 +185,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+
   double_array dispCell(numBasis*spaceDim);
+  double_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -190,6 +213,11 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const double gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
+
+  const double dt = _dt;
+  assert(_normViscosity > 0.0);
+  assert(dt > 0);
+  const double viscosity = dt*_normViscosity;
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -229,6 +257,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     // Restrict input fields to cell
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
+    
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
     
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -282,6 +313,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     _logger->eventBegin(stressEvent);
 #endif
 
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + viscosity * velCell;
+
     // Compute B(transpose) * sigma, first computing strains
     const double x0 = coordinatesCell[0];
     const double y0 = coordinatesCell[1];
@@ -317,21 +352,30 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
-        + b4 * dispCell[9];
-    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
-        + c1 * dispCell[1];
-    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
-        + d4 * dispCell[11];
-    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
-        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
-        * dispCell[1] + c1 * dispCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
-        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
-        * dispCell[10] + d1 * dispCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
-        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
-        * dispCell[11] + d1 * dispCell[0]) / 2.0;
+    strainCell[0] = 
+      b1 * dispAdjCell[0] + b2 * dispAdjCell[3] + 
+      b3 * dispAdjCell[6] + b4 * dispAdjCell[9];
+    strainCell[1] = 
+      c3 * dispAdjCell[7] + c2 * dispAdjCell[4] + 
+      c4 * dispAdjCell[10] + c1 * dispAdjCell[1];
+    strainCell[2] = 
+      d3 * dispAdjCell[8] + d2 * dispAdjCell[5] + 
+      d1 * dispAdjCell[2] + d4 * dispAdjCell[11];
+    strainCell[3] = 
+      (c4 * dispAdjCell[9] + b3 * dispAdjCell[7] + 
+       c3 * dispAdjCell[6] + b2 * dispAdjCell[4] + 
+       c2 * dispAdjCell[3] + b4 * dispAdjCell[10] + 
+       b1 * dispAdjCell[1] + c1 * dispAdjCell[0]) / 2.0;
+    strainCell[4] = 
+      (c3 * dispAdjCell[8] + d3 * dispAdjCell[7] + 
+       c2 * dispAdjCell[5] + d2 * dispAdjCell[4] +
+       c1 * dispAdjCell[2] + c4 * dispAdjCell[11] + 
+       d4 * dispAdjCell[10] + d1 * dispAdjCell[1]) / 2.0;
+    strainCell[5] = 
+      (d4 * dispAdjCell[9] + b3 * dispAdjCell[8] + 
+       d3 * dispAdjCell[6] + b2 * dispAdjCell[5] + 
+       d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
+       b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 
@@ -452,7 +496,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+
   double_array dispCell(numBasis*spaceDim);
+  double_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -473,6 +524,11 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   const double gravityScale =
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
             _normalizer->densityScale());
+
+  const double dt = _dt;
+  assert(_normViscosity > 0.0);
+  assert(dt > 0);
+  const double viscosity = dt*_normViscosity;
 
   // Get parameters used in integration.
   double_array valuesIJ(numBasis);
@@ -498,6 +554,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
 
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
+
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
 #else
@@ -506,6 +565,9 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 
     accVisitor.clear();
     sieve->orientedConeOpt(*c_iter, accVisitor, numBasis, spaceDim);
+
+    velVisitor.clear();
+    sieve->orientedConeOpt(*c_iter, velVisitor, numBasis, spaceDim);
 
     dispVisitor.clear();
     sieve->orientedConeOpt(*c_iter, dispVisitor, numBasis, spaceDim);
@@ -575,6 +637,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     _logger->eventBegin(stressEvent);
 #endif
 
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + viscosity * velCell;    
+
     // Compute B(transpose) * sigma, first computing strains
     const double x0 = coordinatesCell[0];
     const double y0 = coordinatesCell[1];
@@ -610,21 +676,30 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
-    strainCell[0] = b1 * dispCell[0] + b2 * dispCell[3] + b3 * dispCell[6]
-        + b4 * dispCell[9];
-    strainCell[1] = c3 * dispCell[7] + c2 * dispCell[4] + c4 * dispCell[10]
-        + c1 * dispCell[1];
-    strainCell[2] = d3 * dispCell[8] + d2 * dispCell[5] + d1 * dispCell[2]
-        + d4 * dispCell[11];
-    strainCell[3] = (c4 * dispCell[9] + b3 * dispCell[7] + c3 * dispCell[6]
-        + b2 * dispCell[4] + c2 * dispCell[3] + b4 * dispCell[10] + b1
-        * dispCell[1] + c1 * dispCell[0]) / 2.0;
-    strainCell[4] = (c3 * dispCell[8] + d3 * dispCell[7] + c2 * dispCell[5]
-        + d2 * dispCell[4] + c1 * dispCell[2] + c4 * dispCell[11] + d4
-        * dispCell[10] + d1 * dispCell[1]) / 2.0;
-    strainCell[5] = (d4 * dispCell[9] + b3 * dispCell[8] + d3 * dispCell[6]
-        + b2 * dispCell[5] + d2 * dispCell[3] + b1 * dispCell[2] + b4
-        * dispCell[11] + d1 * dispCell[0]) / 2.0;
+    strainCell[0] = 
+      b1 * dispAdjCell[0] + b2 * dispAdjCell[3] + 
+      b3 * dispAdjCell[6] + b4 * dispAdjCell[9];
+    strainCell[1] = 
+      c3 * dispAdjCell[7] + c2 * dispAdjCell[4] + 
+      c4 * dispAdjCell[10] + c1 * dispAdjCell[1];
+    strainCell[2] = 
+      d3 * dispAdjCell[8] + d2 * dispAdjCell[5] + 
+      d1 * dispAdjCell[2] + d4 * dispAdjCell[11];
+    strainCell[3] = 
+      (c4 * dispAdjCell[9] + b3 * dispAdjCell[7] + 
+       c3 * dispAdjCell[6] + b2 * dispAdjCell[4] + 
+       c2 * dispAdjCell[3] + b4 * dispAdjCell[10] + 
+       b1 * dispAdjCell[1] + c1 * dispAdjCell[0]) / 2.0;
+    strainCell[4] = 
+      (c3 * dispAdjCell[8] + d3 * dispAdjCell[7] + 
+       c2 * dispAdjCell[5] + d2 * dispAdjCell[4] +
+       c1 * dispAdjCell[2] + c4 * dispAdjCell[11] +
+       d4 * dispAdjCell[10] + d1 * dispAdjCell[1]) / 2.0;
+    strainCell[5] = 
+      (d4 * dispAdjCell[9] + b3 * dispAdjCell[8] + 
+       d3 * dispAdjCell[6] + b2 * dispAdjCell[5] +
+       d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
+       b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
 

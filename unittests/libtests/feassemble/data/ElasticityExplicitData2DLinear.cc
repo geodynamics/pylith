@@ -100,9 +100,9 @@ const double pylith::feassemble::ElasticityExplicitData2DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DLinear::_valsResidual[] = {
- -6.67199697e+10,  1.23658874e+11,
- -9.22139015e+09, -1.08848229e+11,
-  7.59317348e+10, -1.48138535e+10,
+ -7.10095578e+10,  1.36893348e+11,
+ -1.02829242e+10, -1.20976325e+11,
+  8.12828570e+10, -1.59202314e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DLinear::_valsJacobian[] = {
@@ -127,9 +127,9 @@ const double pylith::feassemble::ElasticityExplicitData2DLinear::_valsJacobian[]
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DLinear::_valsResidualLumped[] = {
- -6.67190530e+10,  1.23659943e+11,
- -9.22276515e+09, -1.08852201e+11,
-  7.59321932e+10, -1.48109508e+10,
+ -7.10086411e+10,  1.36894418e+11,
+ -1.02842992e+10, -1.20980297e+11,
+  8.12833153e+10, -1.59173286e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DLinear::_valsJacobianLumped[] = {

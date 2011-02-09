@@ -109,9 +109,9 @@ const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_fieldTmdt[]
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidual[] = {
-  5.59837500e+10,
-  1.35994063e+11,
- -1.92044375e+11,
+  6.00504167e+10,
+  1.45260729e+11,
+ -2.05377708e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobian[] = {
@@ -127,9 +127,9 @@ const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobia
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidualLumped[] = {
-  5.59896875e+10,
-  1.36000000e+11,
- -1.92056250e+11,
+  6.00563542e+10,
+  1.45266667e+11,
+ -2.05389583e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobianLumped[] = {

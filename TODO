@@ -25,10 +25,16 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
     Will this work for [#timesteps, #points, fiberDim]?
 
 
+* nondimensional viscosity in explicit (0.1 is what is in SPECFEM)
+
+* preprocess mesh
+
 * Reimplement Fields to use a single section.
 
     Fields
     FieldsNew -> CombinedFields
+    Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
+    Use Field for dispIncr(t->t+dt)?
 
 * Cleanup
   + memory model
@@ -64,10 +70,6 @@ SECONDARY PRIORITIES
     - Add for lgdeform, implicit time integration?
 
 * Incompressibility, temperature/heat
-
-* viscosity in explicit
-
-* preprocess mesh
 
 * Cleanup of materials [stable]
   Account for initial strain in viscoelastic models
