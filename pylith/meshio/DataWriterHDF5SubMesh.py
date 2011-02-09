@@ -16,17 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/DataWriterVTKSubMesh.py
+## @file pyre/meshio/DataWriterHDF5SubMesh.py
 ##
-## @brief Python object for writing finite-element data to VTK file.
+## @brief Python object for writing finite-element data to HDF5 file.
 
-from DataWriterVTK import DataWriterVTK
-from meshio import SubMeshDataWriterVTK as ModuleDataWriterVTK
+from DataWriterHDF5 import DataWriterHDF5
+from meshio import SubMeshDataWriterHDF5 as ModuleDataWriterHDF5
 
-# DataWriterVTKSubMesh class
-class DataWriterVTKSubMesh(DataWriterVTK, ModuleDataWriterVTK):
+# DataWriterHDF5SubMesh class
+class DataWriterHDF5SubMesh(DataWriterHDF5, ModuleDataWriterHDF5):
   """
-  Python object for writing finite-element data to VTK file.
+  Python object for writing finite-element data to HDF5 file.
 
   Inventory
 
@@ -35,12 +35,12 @@ class DataWriterVTKSubMesh(DataWriterVTK, ModuleDataWriterVTK):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="datawritervtksubmesh"):
+  def __init__(self, name="datawriterhdf5submesh"):
     """
     Constructor.
     """
-    DataWriterVTK.__init__(self, name)
-    ModuleDataWriterVTK.__init__(self)
+    DataWriterHDF5.__init__(self, name)
+    ModuleDataWriterHDF5.__init__(self)
     return
 
 
@@ -48,12 +48,9 @@ class DataWriterVTKSubMesh(DataWriterVTK, ModuleDataWriterVTK):
     """
     Initialize writer.
     """
-    DataWriterVTK.initialize(self, normalizer)
+    DataWriterHDF5.initialize(self, normalizer)
 
-    ModuleDataWriterVTK.filename(self, self.filename)
-    ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
-    ModuleDataWriterVTK.timeConstant(self, self.timeConstantN)
-    ModuleDataWriterVTK.precision(self, self.precision)
+    ModuleDataWriterHDF5.filename(self, self.filename)
     return
   
 
@@ -63,7 +60,7 @@ def data_writer():
   """
   Factory associated with DataWriter.
   """
-  return DataWriterVTKSubMesh()
+  return DataWriterHDF5SubMesh()
 
-
+ 
 # End of file 

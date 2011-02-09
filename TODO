@@ -65,6 +65,13 @@ SECONDARY PRIORITIES
 
 * Incompressibility, temperature/heat
 
+* viscosity in explicit
+
+* preprocess mesh
+
+* Cleanup of materials [stable]
+  Account for initial strain in viscoelastic models
+
 * Testing
   + Need full-scale test with variation in physical properties
     within a material.
