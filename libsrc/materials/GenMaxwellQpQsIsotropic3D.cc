@@ -621,7 +621,8 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_calcStressViscoelastic(
   assert(6 == tensorSize);
   const double diag[6] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   for (int i=0; i < tensorSize; ++i) {
-    double devStrain = elasFracShear * (totalStrain[i] - diag[i]*meanStrainTpdt);
+    double devStrain = elasFracShear * 
+      (totalStrain[i] - initialStrain[i] - diag[i]*meanStrainTpdt);
     for (int iModel=0; iModel < numMaxwellModels; ++iModel)
       devStrain += _viscousDevStrain[iModel*tensorSize+i];
     stress[i] = diag[i]*meanStressTpdt + mu2 * devStrain + initialStress[i];

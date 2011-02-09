@@ -61,7 +61,9 @@ class ExplicitLumpedTri3(ExplicitLumped):
     Get integrator for elastic material.
     """
     from pylith.feassemble.ElasticityExplicitTri3 import ElasticityExplicitTri3
-    return ElasticityExplicitTri3()
+    integrator = ElasticityExplicitTri3()
+    integrator.normViscosity(self.normViscosity)
+    return integrator
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

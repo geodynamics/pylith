@@ -45,11 +45,11 @@ namespace pylith {
        */
       void timeStep(const double dt);
       
-      /** Set nondimensional viscosity for numerical damping.
+      /** Set normalized viscosity for numerical damping.
        *
        * @param viscosity Nondimensional viscosity.
        */
-      void nondimViscosity(const double viscosity);
+      void normViscosity(const double viscosity);
 
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.

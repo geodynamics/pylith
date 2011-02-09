@@ -53,7 +53,7 @@ class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testNondimViscosity );
+  CPPUNIT_TEST( testNormViscosity );
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testUseSolnIncr );
@@ -79,8 +79,8 @@ public :
   /// Test timeStep().
   void testTimeStep(void);
 
-  /// Test nondimViscosity().
-  void testNondimViscosity(void);
+  /// Test normViscosity().
+  void testNormViscosity(void);
 
   /// Test material().
   void testMaterial(void);

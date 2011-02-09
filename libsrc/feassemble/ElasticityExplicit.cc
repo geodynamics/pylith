@@ -48,7 +48,7 @@
 // Constructor
 pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
   _dtm1(-1.0),
-  _nondimViscosity(0.1)
+  _normViscosity(0.1)
 { // constructor
 } // constructor
 
@@ -83,18 +83,18 @@ pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
 } // timeStep
 
 // ----------------------------------------------------------------------
-// Set nondimensional viscosity for numerical damping.
+// Set normalized viscosity for numerical damping.
 void
-pylith::feassemble::ElasticityExplicit::nondimViscosity(const double viscosity)
-{ // nondimViscosity
+pylith::feassemble::ElasticityExplicit::normViscosity(const double viscosity)
+{ // normViscosity
   if (viscosity < 0.0) {
     std::ostringstream msg;
-    msg << "Nondimensional viscosity (" << viscosity << ") must be nonnegative.";
+    msg << "Normalized viscosity (" << viscosity << ") must be nonnegative.";
     throw std::runtime_error(msg.str());
   } // if
 
-  _nondimViscosity = viscosity;
-} // nondimViscosity
+  _normViscosity = viscosity;
+} // normViscosity
 
 // ----------------------------------------------------------------------
 // Set flag for setting constraints for total field solution or
@@ -207,7 +207,14 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
   
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+  
   double_array dispCell(numBasis*spaceDim);
+  double_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
@@ -227,6 +234,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   const double gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
+
+  const double dt = _dt;
+  assert(_normViscosity > 0.0);
+  assert(dt > 0);
+  const double viscosity = dt*_normViscosity;
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -267,6 +279,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Restrict input fields to cell
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
+
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
 
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -333,8 +348,12 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _logger->eventBegin(stressEvent);
 #endif
 
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + _normViscosity*dt * velCell;
+
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
+    calcTotalStrainFn(&strainCell, basisDeriv, dispAdjCell, 
 		      numBasis, numQuadPts);
 
     const double_array& stressCell = _material->calcStress(strainCell, true);
@@ -458,7 +477,14 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
   
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+  
   double_array dispCell(numBasis*spaceDim);
+  double_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -479,6 +505,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   const double gravityScale =
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
             _normalizer->densityScale());
+
+  const double dt = _dt;
+  assert(_normViscosity > 0.0);
+  assert(dt > 0);
+  const double viscosity = dt*_normViscosity;
 
   // Get parameters used in integration.
   double_array valuesIJ(numBasis);
@@ -522,6 +553,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
     // Restrict input fields to cell
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
+
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
 
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -592,8 +626,12 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
     _logger->eventBegin(stressEvent);
 #endif
 
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + viscosity * velCell;
+
     // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispCell,
+    calcTotalStrainFn(&strainCell, basisDeriv, dispAdjCell,
           numBasis, numQuadPts);
     const double_array& stressCell = _material->calcStress(strainCell, true);
 

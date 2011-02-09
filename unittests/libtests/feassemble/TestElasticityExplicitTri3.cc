@@ -493,6 +493,7 @@ pylith::feassemble::TestElasticityExplicitTri3::_initialize(
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->add("disp(t)", "displacement");
   fields->add("disp(t-dt)", "displacement");
+  fields->add("velocity(t)", "velocity");
   fields->add("acceleration(t)", "acceleration");
   fields->solutionName("dispIncr(t->t+dt)");
   
@@ -512,13 +513,17 @@ pylith::feassemble::TestElasticityExplicitTri3::_initialize(
     fields->get("disp(t)").section();
   const ALE::Obj<RealSection>& dispTmdtSection = 
     fields->get("disp(t-dt)").section();
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
   const ALE::Obj<RealSection>& accSection = 
     fields->get("acceleration(t)").section();
   CPPUNIT_ASSERT(!dispIncrSection.isNull());
   CPPUNIT_ASSERT(!dispTSection.isNull());
   CPPUNIT_ASSERT(!dispTmdtSection.isNull());
+  CPPUNIT_ASSERT(!velSection.isNull());
   CPPUNIT_ASSERT(!accSection.isNull());
 
+  double_array velVertex(spaceDim);
   double_array accVertex(spaceDim);
 
   const int offset = _data->numCells;
@@ -530,10 +535,15 @@ pylith::feassemble::TestElasticityExplicitTri3::_initialize(
     dispTmdtSection->updatePoint(iVertex+offset, 
 				 &_data->fieldTmdt[iVertex*spaceDim]);
 
-    for (int iDim=0; iDim < spaceDim; ++iDim)
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      velVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
+			 _data->fieldT[iVertex*spaceDim+iDim] -
+			 _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2.0*dt);
       accVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] -
 			 _data->fieldT[iVertex*spaceDim+iDim] +
 			 _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt);
+    } // for
+    velSection->updatePoint(iVertex+offset, &velVertex[0]);
     accSection->updatePoint(iVertex+offset, &accVertex[0]);
   } // for
 } // _initialize
