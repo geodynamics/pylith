@@ -24,6 +24,7 @@
 #include "EffectiveStress.hh" // USES EffectiveStress
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -419,7 +420,7 @@ pylith::materials::PowerLaw3D::_stableTimeStepImplicit(
   const double effStress = sqrt(0.5 * devStressProd);
   double dtTest = 0.0;
   if (effStress <= 0.0) {
-    dtTest = 1.0e30;
+    dtTest = pylith::PYLITH_MAXDOUBLE;
   } else {
     dtTest = 0.05 *
     pow((referenceStress/effStress), (powerLawExp - 1.0)) *
