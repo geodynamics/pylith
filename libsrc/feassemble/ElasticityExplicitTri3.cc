@@ -92,6 +92,7 @@ pylith::feassemble::ElasticityExplicitTri3::timeStep(const double dt)
 void
 pylith::feassemble::ElasticityExplicitTri3::useSolnIncr(const bool flag)
 { // useSolnIncr
+  _material->useElasticBehavior(false);
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
 			   "explicit time integration of elasticity "

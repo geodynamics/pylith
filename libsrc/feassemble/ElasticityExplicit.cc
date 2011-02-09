@@ -102,6 +102,7 @@ pylith::feassemble::ElasticityExplicit::nondimViscosity(const double viscosity)
 void
 pylith::feassemble::ElasticityExplicit::useSolnIncr(const bool flag)
 { // useSolnIncr
+  _material->useElasticBehavior(false);
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
 			   "explicit time integration of elasticity "
