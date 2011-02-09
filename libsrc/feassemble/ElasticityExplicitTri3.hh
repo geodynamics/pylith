@@ -90,6 +90,12 @@ public :
    */
   void timeStep(const double dt);
 
+  /** Set normalized viscosity for numerical damping.
+   *
+   * @param viscosity Normalized viscosity (viscosity / elastic modulus).
+   */
+  void normViscosity(const double viscosity);
+
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
    *
@@ -162,6 +168,7 @@ private :
   double_array _basisDerivArray; ///< Array of basis derivatives
 
   double _dtm1; ///< Time step for t-dt1 -> t
+  double _normViscosity; ///< Normalized viscosity for numerical damping.
 
   static const int _spaceDim;
   static const int _cellDim;

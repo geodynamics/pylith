@@ -57,15 +57,15 @@ class Explicit(Formulation, ModuleExplicit):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
-    ## @li \b nondim_viscosity Nondimensional viscosity for numerical damping.
+    ## @li \b norm_viscosity Normalized viscosity for numerical damping.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
 
-    nondimViscosity = pyre.inventory.float("nondim_viscosity", default=0.1)
-    nondimViscosity.meta['tip'] = "Nondimensional viscosity for numerical damping."
+    normViscosity = pyre.inventory.float("norm_viscosity", default=0.1)
+    normViscosity.meta['tip'] = "Normalized viscosity for numerical damping."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ class Explicit(Formulation, ModuleExplicit):
     """
     from pylith.feassemble.ElasticityExplicit import ElasticityExplicit
     integrator = ElasticityExplicit()
-    integrator.nondimViscosity(self.nondimViscosity)
+    integrator.normViscosity(self.normViscosity)
     return integrator
 
 
@@ -242,7 +242,7 @@ class Explicit(Formulation, ModuleExplicit):
     """
     Formulation._configure(self)
 
-    self.nondimViscosity = self.inventory.nondimViscosity
+    self.normViscosity = self.inventory.normViscosity
     return
 
 

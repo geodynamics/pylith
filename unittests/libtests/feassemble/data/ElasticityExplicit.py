@@ -58,7 +58,8 @@ class ElasticityExplicit(Component):
 
     vel = (integrator.fieldT + integrator.fieldTIncr - integrator.fieldTmdt) / (2.0*integrator.dt)
     acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
-    residual = -numpy.dot(M, acc) - numpy.dot(K, integrator.fieldT)
+    dispAdj = integrator.fieldT + integrator.dt*integrator.normViscosity*vel
+    residual = -numpy.dot(M, acc) - numpy.dot(K, dispAdj)
     return residual.flatten()
 
 
@@ -85,11 +86,11 @@ class ElasticityExplicit(Component):
     M = integrator._calculateMassMat()
     Ml = self._lumpMatrix(M, integrator.numBasis, integrator.spaceDim)
     
-    acc = (integrator.fieldTIncr - 
-           integrator.fieldT + 
-           integrator.fieldTmdt) / (integrator.dt**2)
+    vel = (integrator.fieldT + integrator.fieldTIncr - integrator.fieldTmdt) / (2.0*integrator.dt)
+    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
     acc = acc.flatten()
-    residual = -Ml*acc - numpy.dot(K, integrator.fieldT).flatten()
+    dispAdj = integrator.fieldT + integrator.dt*integrator.normViscosity*vel
+    residual = -Ml*acc - numpy.dot(K, dispAdj).flatten()
     return residual.flatten()
 
 

@@ -45,7 +45,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitLgDeform::ElasticityExplicitLgDeform(void) :
-  _dtm1(-1.0)
+  _dtm1(-1.0),
+  _normViscosity(0.1)
 { // constructor
 } // constructor
 
@@ -78,6 +79,20 @@ pylith::feassemble::ElasticityExplicitLgDeform::timeStep(const double dt)
   if (0 != _material)
     _material->timeStep(_dt);
 } // timeStep
+
+// ----------------------------------------------------------------------
+// Set normalized viscosity for numerical damping.
+void
+pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const double viscosity)
+{ // normViscosity
+  if (viscosity < 0.0) {
+    std::ostringstream msg;
+    msg << "Normalized viscosity (" << viscosity << ") must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _normViscosity = viscosity;
+} // normViscosity
 
 // ----------------------------------------------------------------------
 // Set flag for setting constraints for total field solution or
@@ -182,6 +197,16 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
+#if 0 // Numerical damping not yet implemented
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+
+  double_array dispAdjCell(numBasis*spaceDim);
+#endif
+
   double_array dispCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -202,6 +227,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   const double gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
+
+  const double dt = _dt;
+  assert(_normViscosity > 0.0);
+  assert(dt > 0);
+  const double viscosity = dt*_normViscosity;
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -228,6 +258,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     // Restrict input fields to cell
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
+
+#if 0 // Numerical damping not yet implemented.
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
+#endif
 
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -286,6 +321,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
       } // for
     } // for
     PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(2*spaceDim))));
+
+#if 0 // Numerical damping not yet implemented. Is small strain
+      // formulation compatible with numerical damping?
+
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + viscosity * velCell;
+#endif
 
     // Compute B(transpose) * sigma, first computing strains
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
@@ -394,6 +437,16 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
+#if 0 // Numerical damping not yet implemented
+  double_array velCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& velSection = 
+    fields->get("velocity(t)").section();
+  assert(!velSection.isNull());
+  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+
+  double_array dispAdjCell(numBasis*spaceDim);
+#endif
+
   double_array dispCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -443,6 +496,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     // Restrict input fields to cell
     accVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, accVisitor);
+
+#if 0 // Numerical damping not yet implemented.
+    velVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, velVisitor);
+#endif
 
     dispVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
@@ -504,6 +562,13 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 	  accCell[iBasis*spaceDim+iDim];
     PetscLogFlops(numQuadPts*(4+numBasis*3));
 
+#if 0 // Numerical damping not yet implemented. Is small strain
+      // formulation compatible with numerical damping?
+
+    // Numerical damping. Compute displacements adjusted by velocity
+    // times normalized viscosity.
+    dispAdjCell = dispCell + viscosity * velCell;
+#endif
     // Compute B(transpose) * sigma, first computing strains
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
 		     numBasis, numQuadPts, spaceDim);
