@@ -92,6 +92,7 @@ pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
 void
 pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
 { // useSolnIncr
+  _material->useElasticBehavior(false);
   if (!flag)
     throw std::logic_error("Non-incremental solution not supported for "
 			   "explicit time integration of elasticity "
