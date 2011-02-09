@@ -98,6 +98,22 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     return
 
 
+  def test_normViscosity(self):
+    """
+    Test normViscosity().
+
+    WARNING: This is not a rigorous test of timeStep() because we
+    neither set the input fields or verify the results.
+    """
+    viscosity = 1.234
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+    integrator.normViscosity(viscosity)
+
+    # No test of result.
+    return
+
+
   def test_stableTimeStep(self):
     """
     Test stableTimeStep().

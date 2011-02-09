@@ -98,6 +98,22 @@ class TestElasticityExplicit(unittest.TestCase):
     return
 
 
+  def test_normViscosity(self):
+    """
+    Test normViscosity().
+
+    WARNING: This is not a rigorous test of timeStep() because we
+    neither set the input fields or verify the results.
+    """
+    viscosity = 1.234
+    (mesh, integrator) = self._preinitialize()
+    fields = self._initialize(mesh, integrator)
+    integrator.normViscosity(viscosity)
+
+    # No test of result.
+    return
+
+
   def test_stableTimeStep(self):
     """
     Test stableTimeStep().
@@ -292,6 +308,7 @@ class TestElasticityExplicit(unittest.TestCase):
     fields.add("dispIncr(t->t+dt)", "displacement")
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
+    fields.add("velocity(t)", "velocity")
     fields.add("acceleration(t)", "acceleration")
     fields.solutionName("dispIncr(t->t+dt)")
 
