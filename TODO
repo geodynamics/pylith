@@ -2,6 +2,11 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* error trapping
+
+  Need top-level exception handling so that exceptions thrown on one
+  processor trigger error signals on all processors.
+
 * GenMaxwellQpQs
 
   How to define viscosity and combinations?????

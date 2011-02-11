@@ -144,7 +144,7 @@ class FaultInfo(Application):
     self.strikeVec = self._getVec(self.faultInfoFile, "strike_dir")
     self.dipVec = self._getVec(self.faultInfoFile, "dip_dir")
     self.stressVec = self._getVec(self.faultResultsFile, "traction_change")
-    self.slipVec = self._getVec(self.faultResultsFile, "cumulative_slip")
+    self.slipVec = self._getVec(self.faultResultsFile, "slip")
     return
 
 
