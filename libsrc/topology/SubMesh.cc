@@ -101,8 +101,10 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   assert(!sieve.isNull());
   ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap =
     _mesh->getSendOverlap();
+  assert(!sendParallelMeshOverlap.isNull());
   ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
     _mesh->getRecvOverlap();
+  assert(!recvParallelMeshOverlap.isNull());
 
   SieveMesh::renumbering_type& renumbering = _mesh->getRenumbering();
 
