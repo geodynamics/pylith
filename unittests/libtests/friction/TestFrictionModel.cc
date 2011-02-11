@@ -131,7 +131,7 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
-  const double propertiesE[] = { 0.55, 1000000, 0.45, 1000000 };
+  const double propertiesE[] = { 0.6, 1000000, 0.4, 1000000 };
   const int numProperties = 2;
 
   topology::Mesh mesh;
@@ -184,7 +184,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
 void
 pylith::friction::TestFrictionModel::testGetField(void)
 { // testGetField
-  const double fieldE[] = { 0.55, 0.45 };
+  const double fieldE[] = { 0.6, 0.4 };
   const int fiberDim = 1;
 
   topology::Mesh mesh;
@@ -229,7 +229,7 @@ pylith::friction::TestFrictionModel::testGetField(void)
 void
 pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 { // testRetrievePropsStateVars
-  const double propertiesE[] = { 0.45, 1000000 };
+  const double propertiesE[] = { 0.4, 1000000 };
   const size_t numProperties = 2;
   const double* stateVarsE = 0;
   const size_t numStateVars = 0;
