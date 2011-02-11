@@ -361,7 +361,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	// Create scatter Vec
 	if (_section->sizeWithBC() > 0) {
 	  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-				      _section->sizeWithBC(),
+				      _section->getStorageSize(),
 				      _section->restrictSpace(),
 				      &sinfo.scatterVec);
 	  CHECK_PETSC_ERROR(err);
@@ -769,7 +769,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   
   // Create scatterVec
   if (_section->sizeWithBC() > 0)  {
-    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->getStorageSize(),
 				_section->restrictSpace(),
 				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
   } else {
@@ -843,7 +843,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 
   // Create scatterVec
   if (_section->sizeWithBC() > 0)  {
-    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->getStorageSize(),
 				_section->restrictSpace(),
 				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
   } else {
@@ -866,6 +866,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   std::cout << "CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()
+	    << ", section size: " << _section->size()
 	    << ", global numbering size: " << numbering->getGlobalSize()
 	    << ", global size: " << order->getGlobalSize()
 	    << std::endl;
@@ -918,7 +919,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   
   // Create scatterVec
   if (_section->sizeWithBC() > 0)  {
-    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->getStorageSize(),
 				_section->restrictSpace(),
 				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
   } else {
@@ -991,7 +992,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
 
   // Create scatterVec
   if (_section->sizeWithBC() > 0)  {
-    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->sizeWithBC(),
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, _section->getStorageSize(),
 				_section->restrictSpace(),
 				&sinfo.scatterVec); CHECK_PETSC_ERROR(err);
   } else {
@@ -1014,8 +1015,11 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   std::cout << "CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()
+	    << ", section size: " << _section->size()
+	    << ", section storage size: " << _section->getStorageSize()
 	    << ", global numbering size: " << numbering->getGlobalSize()
 	    << ", global size: " << order->getGlobalSize()
+	    << ", scatter from size: " << sinfo.scatter->from_n
 	    << std::endl;
 #endif
   
