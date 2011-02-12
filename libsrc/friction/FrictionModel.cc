@@ -180,6 +180,8 @@ pylith::friction::FrictionModel::initialize(
     assert(propertiesVertex.size() == propertiesDBQuery.size());
     _dbToProperties(&propertiesVertex[0], propertiesDBQuery);
 
+    _nondimProperties(&propertiesVertex[0], propertiesVertex.size());
+
     fieldsVertex = 0.0;
     for (int iProp=0; iProp < _propsFiberDim; ++iProp)
       fieldsVertex[iProp] = propertiesVertex[iProp];
@@ -223,6 +225,7 @@ pylith::friction::FrictionModel::initialize(
 	throw std::runtime_error(msg.str());
       } // if
       _dbToStateVars(&stateVarsVertex[0], stateVarsDBQuery);
+      _nondimStateVars(&stateVarsVertex[0], stateVarsVertex.size());
 
       fieldsVertex = 0.0;
       for (int iVar=0; iVar < _varsFiberDim; ++iVar)
@@ -379,7 +382,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
   double_array propertiesVertex(_propsFiberDim);
   for (int i=0; i < _propsFiberDim; ++i)
     propertiesVertex[i] = 1.0;
-  _nondimProperties(&propertiesVertex[0], propertiesVertex.size());
+  _dimProperties(&propertiesVertex[0], propertiesVertex.size());
 
   // Determine number of values needed to store state variables.
   const int numStateVars = _metadata.numStateVars();
@@ -392,7 +395,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
   double_array stateVarsVertex(_varsFiberDim);
   for (int i=0; i < _varsFiberDim; ++i)
     stateVarsVertex[i] = 1.0;
-  _nondimStateVars(&stateVarsVertex[0], stateVarsVertex.size());
+  _dimStateVars(&stateVarsVertex[0], stateVarsVertex.size());
 
   // Setup fields
   assert(_fieldsPropsStateVars);
