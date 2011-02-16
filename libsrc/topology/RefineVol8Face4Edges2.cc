@@ -294,7 +294,6 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 					    const Obj<mesh_type>& oldMesh,
 					    const MeshOrder& orderOldMesh)
 { // overlapAddNewVertices
-#if 0
   assert(!newMesh.isNull());
   assert(!oldMesh.isNull());
 
@@ -334,10 +333,10 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 			    std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
       
       if(ranks.size()) {
-	newVerticesSection->addFiberDimension(std::min(e_iter->first.first, e_iter->first.second)+localOffset, 1);
-	for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
-	  bndryEdgeToRank[e_iter->first].push_back(*r_iter);
-	} // for
+        newVerticesSection->addFiberDimension(std::min(e_iter->first.first, e_iter->first.second)+localOffset, 1);
+        for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
+          bndryEdgeToRank[e_iter->first].push_back(*r_iter);
+        } // for
       } // if
     } // if
   } // for
@@ -414,22 +413,42 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     int              v      = 0;
     value_type* values = (dim > 0) ? new value_type[dim] : 0;
     
-#if 0
     for(std::map<FaceType, std::vector<int> >::const_iterator f_iter = bndryFaceToRank.begin(); f_iter != bndryFaceToRank.end() && v < dim; ++f_iter) {
-      if (std::min(f_iter->first.first, f_iter->first.second)+localOffset == p) {
-        values[v++] = FaceType(std::max(f_iter->first.first, f_iter->first.second)+localOffset, _faceToVertex[f_iter->first]);
+      const point_type first     = f_iter->first.points[0];
+      point_type       minVertex = first;
+
+      for(int i = 1; i < 4; ++i) {
+        const point_type nextVertex = f_iter->first.points[i];
+        minVertex = std::min(nextVertex, minVertex);
+      }
+
+      if (minVertex+localOffset == p) {
+        FaceType face;
+        int      k = 0;
+
+        for(int i = 0; i < 4; ++i) {
+          if (f_iter->first.points[i] != minVertex) {
+            face.points[k++] = f_iter->first.points[i];
+          }
+        }
+        assert(k == 3);
+        std::sort(&face.points[0], &face.points[3]);
+        face.points[3] = _faceToVertex[f_iter->first];
+        values[v++] = face;
       } // if
     } // for
-#endif
+    assert(v == dim);
     newFaceVerticesSection->updatePoint(p, values);
     delete [] values;
   } // for
 
   // Copy across overlap
   typedef ALE::Pair<int, point_type> overlap_point_type;
-  Obj<ALE::Section<overlap_point_type, EdgeType> > overlapVertices = new ALE::Section<overlap_point_type, EdgeType>(oldMesh->comm());
+  Obj<ALE::Section<overlap_point_type, EdgeType> > overlapVertices     = new ALE::Section<overlap_point_type, EdgeType>(oldMesh->comm());
+  Obj<ALE::Section<overlap_point_type, FaceType> > overlapFaceVertices = new ALE::Section<overlap_point_type, FaceType>(oldMesh->comm());
   
-  ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection, overlapVertices);
+  ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection,     overlapVertices);
+  ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newFaceVerticesSection, overlapFaceVertices);
   // Merge by translating edge to local points, finding edge in _edgeToVertex, and adding (local new vetex, remote new vertex) to overlap
   for(std::map<EdgeType, std::vector<int> >::const_iterator e_iter = bndryEdgeToRank.begin(); e_iter != bndryEdgeToRank.end(); ++e_iter) {
     const point_type localPoint = _edgeToVertex[e_iter->first];
@@ -440,43 +459,84 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffset);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
-	if (rank == *lr_iter) {
-	  remoteLeft = lr_iter.color();
-	  break;
-	} // if
+        if (rank == *lr_iter) {
+          remoteLeft = lr_iter.color();
+          break;
+        } // if
       } // for
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffset);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
-	if (rank == *rr_iter) {
-	  remoteRight = rr_iter.color();
-	  break;
-	} // if
+        if (rank == *rr_iter) {
+          remoteRight = rr_iter.color();
+          break;
+        } // if
       } // for
       const point_type remoteMin   = std::min(remoteLeft, remoteRight);
       const point_type remoteMax   = std::max(remoteLeft, remoteRight);
       const int        remoteSize  = overlapVertices->getFiberDimension(overlap_point_type(rank, remoteMin));
-      const EdgeType *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
+      const EdgeType  *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
       point_type       remotePoint = -1;
       
       for(int d = 0; d < remoteSize; ++d) {
-	if (remoteVals[d].first == remoteMax) {
-	  remotePoint = remoteVals[d].second;
-	  break;
-	} // if
+        if (remoteVals[d].first == remoteMax) {
+          remotePoint = remoteVals[d].second;
+          break;
+        } // if
+      } // for
+      newSendOverlap->addArrow(localPoint, rank, remotePoint);
+      newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+    } // for
+  } // for
+  // Merge by translating face to local points, finding face in _faceToVertex, and adding (local new vetex, remote new vertex) to overlap
+  for(std::map<FaceType, std::vector<int> >::const_iterator f_iter = bndryFaceToRank.begin(); f_iter != bndryFaceToRank.end(); ++f_iter) {
+    const point_type localPoint = _faceToVertex[f_iter->first];
+    
+    for(std::vector<int>::const_iterator r_iter = f_iter->second.begin(); r_iter != f_iter->second.end(); ++r_iter) {
+      FaceType  remoteVertices(-1);
+      const int rank = *r_iter;
+
+      for(int i = 0; i < 4; ++i) {
+        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& faceRanks = newSendOverlap->support(f_iter->first.points[i]+localOffset);
+        for(mesh_type::send_overlap_type::traits::supportSequence::iterator fr_iter = faceRanks->begin(); fr_iter != faceRanks->end(); ++fr_iter) {
+          if (rank == *fr_iter) {
+            remoteVertices.points[i] = fr_iter.color();
+            break;
+          } // if
+        } // for
+      }
+      const point_type remoteMin   = std::min(std::min(std::min(remoteVertices.points[0], remoteVertices.points[1]), remoteVertices.points[2]), remoteVertices.points[3]);
+      const int        remoteSize  = overlapFaceVertices->getFiberDimension(overlap_point_type(rank, remoteMin));
+      const FaceType  *remoteVals  = overlapFaceVertices->restrictPoint(overlap_point_type(rank, remoteMin));
+      point_type       remotePoint = -1;
+      int              k           = 0;
+      FaceType         remoteMax;
+
+      for(int i = 0; i < 4; ++i) {
+        if (remoteVertices.points[i] == remoteMin) continue;
+        remoteMax.points[k++] = remoteVertices.points[i];
+      }
+      assert(k == 3);
+      std::sort(&remoteMax.points[0], &remoteMax.points[3]);
+      for(int d = 0; d < remoteSize; ++d) {
+        int i = 0;
+
+        for(i = 0; i < 3; ++i) {
+          if (remoteVals[d].points[i] != remoteMax.points[i]) break;
+        }
+        if (i == 3) {
+          remotePoint = remoteVals[d].points[3];
+          break;
+        } // if
       } // for
       newSendOverlap->addArrow(localPoint, rank, remotePoint);
       newRecvOverlap->addArrow(rank, localPoint, remotePoint);
     } // for
   } // for
 
-#if 1
   oldSendOverlap->view("OLD SEND OVERLAP");
   oldRecvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
-#endif
-
-#endif
 } // overlapAddNewVertces
 
 
