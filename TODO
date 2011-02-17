@@ -2,11 +2,6 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-* error trapping
-
-  Need top-level exception handling so that exceptions thrown on one
-  processor trigger error signals on all processors.
-
 * GenMaxwellQpQs
 
   How to define viscosity and combinations?????
@@ -29,11 +24,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
     Add creation of .xmf metadata file for ParaView/Visit. 
     Will this work for [#timesteps, #points, fiberDim]?
 
-
-* preprocess mesh
-
-    Adjust topology, reorder cells, partition
-    Write partitioned mesh.
 
 * Reimplement Fields to use a single section.
 
@@ -74,25 +64,30 @@ SECONDARY PRIORITIES
 
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
-  + Specialized elasticity integrator objects for Quad4, Hex8
+  + Specialized elasticity integrator objects for Quad4, Hex8?
     - Add for lgdeform, implicit time integration?
 
-* Incompressibility, temperature/heat
+
+* Interpolated meshes + temperature field
+  No fault, linear elasticity
+  Benchmark memory use and speed
+
+  Incompressibility, temperature/heat
+
 
 * Cleanup of materials [stable]
-  Account for initial strain in viscoelastic models
+
+  + Account for initial strain in viscoelastic models
+
+  + Cleanup documentation
+    + Move formulations not used to Appendix
+    + Cleanup notation
 
 * Testing
   + Need full-scale test with variation in physical properties
     within a material.
 
-* Lumped elasticity formulation for large deformations
-
 * Add output of initial fields (initial stress and initial strain).
-
-* Interpolated meshes + temperature field
-  No fault, linear elasticity
-  Benchmark memory use and speed
 
 * Combined kinematic and dynamic fault implementation
 
