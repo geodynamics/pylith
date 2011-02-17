@@ -25,7 +25,8 @@ subpkgpyexec_PYTHON = mpi.py
 
 swig_sources = \
 	mpi.i \
-	mpi_comm.i
+	mpi_comm.i \
+	mpi_error.i
 
 swig_generated = \
 	mpi_wrap.cxx \

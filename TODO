@@ -26,25 +26,39 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
     Add time dataset to vertex_fields and cell_fields.
 
-    Add creation of .xmf metadata file for VTK. 
+    Add creation of .xmf metadata file for ParaView/Visit. 
     Will this work for [#timesteps, #points, fiberDim]?
 
 
-* nondimensional viscosity in explicit (0.1 is what is in SPECFEM)
-
 * preprocess mesh
+
+    Adjust topology, reorder cells, partition
+    Write partitioned mesh.
 
 * Reimplement Fields to use a single section.
 
     Fields
     FieldsNew -> CombinedFields
-    Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
-    Use Field for dispIncr(t->t+dt)?
+    SolutionFields
+      Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
+      Use Field for dispIncr(t->t+dt), residual(t)
 
 * Cleanup
   + memory model
   + full-scale testing
   + Code cleanup
+
+----------------------------------------------------------------------
+SECONDARY PRIORITIES
+----------------------------------------------------------------------
+
+* Paper
+
+  General paper - focus on fault implementation
+
+  Custom preconditioner
+
+* Cleanup
 
     Add elasticPrestep() to Formulation
     Remove solnIncr, keep setField()
@@ -57,17 +71,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
         (will work parallel)
       + Refactor friction sensitivity solve, fault preconditioner, and
         adjustSolnLumped()
-
-
-----------------------------------------------------------------------
-SECONDARY PRIORITIES
-----------------------------------------------------------------------
-
-* Paper
-
-  General paper - focus on fault implementation
-
-  Custom preconditioner
 
 * Optimization
   + inline methods (what isn't getting inlined) -Winline

@@ -28,6 +28,8 @@
 
 // Interfaces
 %include "mpi_comm.i"
+%include "mpi_error.i"
+
 
 // End of file
 

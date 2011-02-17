@@ -32,6 +32,7 @@
 #include <cassert> // USES assert()
 #include <cstring> // USES memcpy()
 #include <sstream> // USES std::ostringstream
+#include <iostream> // USES std::cout
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
@@ -545,11 +546,20 @@ pylith::materials::DruckerPrager3D::_calcStressElastoplastic(
 				      strainPPTpdt[4]/ae + devStressInitial[4],
 				      strainPPTpdt[5]/ae + devStressInitial[5]};
     const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
-    const double yieldFunction = 3.0* alphaYield * trialMeanStress +
+    const double stressInvar2 =
       sqrt(0.5 *
-	   pylith::materials::ElasticMaterial::scalarProduct3D( trialDevStress,
-								trialDevStress)) -
-      beta;
+	   pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
+							       trialDevStress));
+    const double yieldFunction = 3.0 * alphaYield * trialMeanStress +
+      stressInvar2 - beta;
+#if 0 // DEBUGGING
+    std::cout << "Function _calcStressElastoPlastic: elastic" << std::endl;
+    std::cout << "  alphaYield:       " << alphaYield << std::endl;
+    std::cout << "  beta:             " << beta << std::endl;
+    std::cout << "  trialMeanStress:  " << trialMeanStress << std::endl;
+    std::cout << "  stressInvar2:     " << stressInvar2 << std::endl;
+    std::cout << "  yieldFunction:    " << yieldFunction << std::endl;
+#endif
     PetscLogFlops(76);
 
     // If yield function is greater than zero, compute elastoplastic stress.
@@ -558,11 +568,13 @@ pylith::materials::DruckerPrager3D::_calcStressElastoplastic(
 	pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
 							    devStressInitial);
       const double strainPPTpdtProd =
-	pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt, strainPPTpdt);
-      const double d = sqrt(ae * ae * devStressInitialProd +
-			    2.0 * ae *
-			    pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial, strainPPTpdt) +
-			    strainPPTpdtProd);
+	pylith::materials::ElasticMaterial::scalarProduct3D(strainPPTpdt,
+							    strainPPTpdt);
+      const double d =
+	sqrt(ae * ae * devStressInitialProd + 2.0 * ae *
+	   pylith::materials::ElasticMaterial::scalarProduct3D(devStressInitial,
+							       strainPPTpdt) +
+	     strainPPTpdtProd);
       const double plasticMult = 2.0 * ae * am *
 	(3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
 	(6.0 * alphaYield * alphaFlow * ae + am);
@@ -623,6 +635,31 @@ pylith::materials::DruckerPrager3D::_calcStressElastoplastic(
     PetscLogFlops(31);
 
   } // else
+#if 0 // DEBUGGING
+  const double alphaYield = properties[p_alphaYield];
+  const double beta = properties[p_beta];
+  const double alphaFlow = properties[p_alphaFlow];
+  const double meanStressTest = (stress[0] + stress[1] + stress[2])/3.0;
+  const double devStressTest[] = { stress[0] - meanStressTest,
+				   stress[1] - meanStressTest,
+				   stress[2] - meanStressTest,
+				   stress[3],
+				   stress[4],
+				   stress[5]};
+  const double stressInvar2Test =
+    sqrt(0.5 *
+	 pylith::materials::ElasticMaterial::scalarProduct3D(devStressTest,
+							     devStressTest));
+  
+  const double yieldFunctionTest = 3.0 * alphaYield * meanStressTest +
+      stressInvar2Test - beta;
+  std::cout << "Function _calcStressElastoPlastic: end" << std::endl;
+  std::cout << "  alphaYield:        " << alphaYield << std::endl;
+  std::cout << "  beta:              " << beta << std::endl;
+  std::cout << "  meanStressTest:    " << meanStressTest << std::endl;
+  std::cout << "  stressInvar2Test:  " << stressInvar2Test << std::endl;
+  std::cout << "  yieldFunctionTest: " << yieldFunctionTest << std::endl;
+#endif
 
 } // _calcStressElastoplastic
 
@@ -808,11 +845,20 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 				    strainPPTpdt[4]/ae + devStressInitial[4],
 				    strainPPTpdt[5]/ae + devStressInitial[5]};
   const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
-  const double yieldFunction = 3.0* alphaYield * trialMeanStress +
+  const double stressInvar2 =
     sqrt(0.5 *
 	 pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
-							     trialDevStress)) -
-    beta;
+							     trialDevStress));
+  const double yieldFunction = 3.0 * alphaYield * trialMeanStress +
+    stressInvar2 - beta;
+#if 0 // DEBUGGING
+  std::cout << "Function _calcElasticConstsElastoPlastic:" << std::endl;
+  std::cout << "  alphaYield:       " << alphaYield << std::endl;
+  std::cout << "  beta:             " << beta << std::endl;
+  std::cout << "  trialMeanStress:  " << trialMeanStress << std::endl;
+  std::cout << "  stressInvar2:     " << stressInvar2 << std::endl;
+  std::cout << "  yieldFunction:    " << yieldFunction << std::endl;
+#endif
   PetscLogFlops(76);
   
   // If yield function is greater than zero, compute elastoplastic stress and
@@ -1067,11 +1113,20 @@ pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic(
 				    strainPPTpdt[4]/ae + devStressInitial[4],
 				    strainPPTpdt[5]/ae + devStressInitial[5]};
   const double trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
-  const double yieldFunction = 3.0* alphaYield * trialMeanStress +
+  const double stressInvar2 =
     sqrt(0.5 *
 	 pylith::materials::ElasticMaterial::scalarProduct3D(trialDevStress,
-							     trialDevStress)) -
-    beta;
+							     trialDevStress));
+  const double yieldFunction = 3.0 * alphaYield * trialMeanStress +
+    stressInvar2 - beta;
+#if 0 // DEBUGGING
+  std::cout << "Function _updateStateVarsElastoPlastic:" << std::endl;
+  std::cout << "  alphaYield:       " << alphaYield << std::endl;
+  std::cout << "  beta:             " << beta << std::endl;
+  std::cout << "  trialMeanStress:  " << trialMeanStress << std::endl;
+  std::cout << "  stressInvar2:     " << stressInvar2 << std::endl;
+  std::cout << "  yieldFunction:    " << yieldFunction << std::endl;
+#endif
   PetscLogFlops(76);
 
   // If yield function is greater than zero, compute plastic strains.
