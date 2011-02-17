@@ -59,13 +59,30 @@ class PetscApplication(Application):
     Run the application in parallel on the compute nodes.
     """
     self.petsc.initialize()
+
+    # Test for CUDA
     try:
       import pycuda
       import pycuda.autoinit
       self._info.log('Initialized CUDA')
     except ImportError:
       self._info.log('Could not initialize CUDA')
-    self.main(*args, **kwds)
+      # :TODO: Set some flag here to disable CUDA. Optionally also
+      # allow user to turn off use of CUDA.
+
+    try:
+
+      self.main(*args, **kwds)
+
+    except Exception, err:
+      self.cleanup() # Attempt to clean up memory.
+      print "Fatal error while running PyLith:"
+      print err
+      print "Calling MPI_Abort() to abort PyLith application."
+      from pylith.mpi import mpi
+      errorCode = -1
+      mpi.mpi_abort(mpi.petsc_comm_world(), errorCode)
+
     self.cleanup()
     self.petsc.finalize()
     return
