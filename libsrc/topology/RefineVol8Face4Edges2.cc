@@ -363,7 +363,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   //   Put it in section with point being the lowest numbered vertex and value (other endpoints, new vertex)
   Obj<ALE::Section<point_type, FaceType> > newFaceVerticesSection = new ALE::Section<point_type, FaceType>(oldMesh->comm());
   assert(!newFaceVerticesSection.isNull());
-  std::map<FaceType, std::vector<int> > bndryFaceToRank;
+  std::map<FaceType, std::vector<int>, FaceCmp<point_type>  > bndryFaceToRank;
 
   for(std::map<FaceType, point_type>::const_iterator f_iter = _faceToVertex.begin(); f_iter != _faceToVertex.end(); ++f_iter) {
     bool isRemote = true;
