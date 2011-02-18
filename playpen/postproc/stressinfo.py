@@ -76,7 +76,7 @@ class StressInfo(Application):
     frictionAngle.meta['tip'] = "Friction angle for plasticity calculation."
 
     cohesion = pyre.inventory.dimensional("cohesion",
-                                          default=1.0*Mpa)
+                                          default=1.0*MPa)
     cohesion.meta['tip'] = "Cohesion for plasticity calculation."
     
   
@@ -105,8 +105,8 @@ class StressInfo(Application):
 
 
   def main(self):
-    # import pdb
-    # pdb.set_trace()
+    import pdb
+    pdb.set_trace()
     self._readVtkFile()
     self._getStressInfo()
     self._writeVtkFile()
@@ -120,16 +120,16 @@ class StressInfo(Application):
     Setup members using inventory.
     """
     Application._configure(self)
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
 
     # File info.
     self.vtkInputFile = self.inventory.vtkInputFile
     self.vtkOutputFile = self.inventory.vtkOutputFile
 
     # Index information
-    self.vtkTensorIndex = self.inventory.vtkTensorIndex
-    self.vtkTensorComponentsOrder = self.inventory.vtkTensorComponentsOrder
+    self.tensorIndex = self.inventory.tensorIndex
+    self.tensorComponentsOrder = self.inventory.tensorComponentsOrder
 
     # Parameters
     self.frictionAngle = self.inventory.frictionAngle.value
@@ -168,15 +168,15 @@ class StressInfo(Application):
     # Get cell fields and extract tensor.
     cellData = data._get_cell_data()
     numCellDataArrays = cellData._get_number_of_arrays()
-    tensor = cellData.get_array(self.vtkTensorIndex).to_array()
+    tensor = cellData.get_array(self.tensorIndex).to_array()
     (self.numTensorPoints, numCols) = tensor.shape
     
-    sxx = tensor[:,self.vtkTensorComponentsOrder[0]]
-    syy = tensor[:,self.vtkTensorComponentsOrder[1]]
-    szz = tensor[:,self.vtkTensorComponentsOrder[2]]
-    sxy = tensor[:,self.vtkTensorComponentsOrder[3]]
-    syz = tensor[:,self.vtkTensorComponentsOrder[4]]
-    sxz = tensor[:,self.vtkTensorComponentsOrder[5]]
+    sxx = tensor[:,self.tensorComponentsOrder[0]]
+    syy = tensor[:,self.tensorComponentsOrder[1]]
+    szz = tensor[:,self.tensorComponentsOrder[2]]
+    sxy = tensor[:,self.tensorComponentsOrder[3]]
+    syz = tensor[:,self.tensorComponentsOrder[4]]
+    sxz = tensor[:,self.tensorComponentsOrder[5]]
     self.tensorSorted = numpy.column_stack((sxx, syy, szz, sxy, syz, sxz))
 
     return
