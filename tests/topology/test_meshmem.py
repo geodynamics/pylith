@@ -60,8 +60,8 @@ class TestApp(Script):
     Run test.
     """
 
-    #filenameIn = "data/tet4.exo"
-    filenameIn = "tri3_200m_gradient.exo"
+    filenameIn = "data/tet4.exo"
+    #filenameIn = "tri3_200m_gradient.exo"
 
     from pylith.perf.MemoryLogger import MemoryLogger
     self.logger = MemoryLogger()
