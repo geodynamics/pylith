@@ -255,8 +255,7 @@ class StressInfo(Application):
     mesh.update()
 
     # Write VTK file
-    w = tvtk.UnstructuredGridWriter(file_name=self.vtkOutputFile,
-		    input=mesh)
+    w = tvtk.XMLDataSetWriter(file_name=self.vtkOutputFile, input=mesh)
     w.write()
 
     return
