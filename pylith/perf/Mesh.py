@@ -61,7 +61,8 @@ class Mesh(Memory):
     Initialize application.
     """
     try:
-      self.cellType = self.cellTypes[(self.dimension,self.coneSize)]
+      if self.coneSize > 0:
+        self.cellType = self.cellTypes[(self.dimension,self.coneSize)]
     except:
       raise ValueError("Unknown cell type '%s' for dim %d and cone size %d." % (self.cellType,self.dimension,self.coneSize))
     return
@@ -74,7 +75,11 @@ class Mesh(Memory):
     memDict['Stratification'] = 2 * self.sizeArrow * (self.nvertices + self.ncells)
     # Here we have data + atlas (could use uniform) + bc (could use Section)
     memDict['Coordinates']    = (self.sizeDouble * self.dimension * self.nvertices) + (2 * self.sizeInt * self.nvertices) + (2 * self.sizeInt * self.nvertices)
+    memDict['Overlap'] = 0 # Don't know overlap
+    memDict['RealSections'] = 0 # Real sections should be elsewhere
     return
 
 if __name__ == '__main__':
-  print 'Memory:',Mesh(2, 3, 10, 25).tabulate()
+  d = {}
+  Mesh(2, 3, 10, 25).tabulate(d)
+  print 'Memory:',d
