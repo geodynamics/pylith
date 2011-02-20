@@ -213,7 +213,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   ///logger.setDebug(2);
-  logger.stagePush("Labels");
+  logger.stagePush("MeshLabels");
   const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
     sieveMesh->createLabel("material-id");
   if (!sieveMesh->commRank()) {
@@ -311,7 +311,7 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("IntSections");
+  logger.stagePush("MeshIntSections");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
 

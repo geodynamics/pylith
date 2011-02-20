@@ -205,12 +205,12 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
   _calcNewOverlap(newMesh, mesh, refiner);
 
   logger.stagePop();
-  logger.stagePush("IntSections");
+  logger.stagePush("MeshIntSections");
 
   _createIntSections(newMesh, mesh, refiner);
 
   logger.stagePop();
-  logger.stagePush("Labels");
+  logger.stagePush("MeshLabels");
 
   _createLabels(newMesh, mesh, refiner);
 

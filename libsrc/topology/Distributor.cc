@@ -268,7 +268,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   }
 
   logger.stagePop();
-  logger.stagePush("IntSections");
+  logger.stagePush("MeshIntSections");
 
   if (origSieveMesh->getIntSections()->size() > 0) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
@@ -305,7 +305,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     throw std::logic_error("Need to distribute more arrow sections");
   
   logger.stagePop();
-  logger.stagePush("Labels");
+  logger.stagePush("MeshLabels");
 
   // Distribute labels
   info << journal::at(__HERE__)
