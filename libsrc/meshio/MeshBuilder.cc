@@ -84,9 +84,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   MPI_Comm_rank(comm, &rank);
   // Memory debugging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(mesh->debug()/2);
+  //logger.setDebug(1);
 
-  logger.stagePush("Mesh");
   logger.stagePush("MeshCreation");
   if (0 == rank) {
     assert(coordinates->size() == numVertices*spaceDim);
@@ -173,6 +172,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     } // if/else
     logger.stagePop();
   } else {
+    logger.stagePop();
     logger.stagePush("MeshStratification");
     sieveMesh->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
     sieveMesh->getSieve()->allocate();
@@ -183,9 +183,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   logger.stagePush("MeshCoordinates");
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 &(*coordinates)[0]);
-  logger.stagePop(); // MeshCoordinates
-
-  logger.stagePop(); // Mesh
+  logger.stagePop(); // Coordinates
 
   sieveMesh->getFactory()->clear();
 } // buildMesh
@@ -219,7 +217,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.setDebug(fault->debug()/2);
+  //logger.setDebug(fault->debug()/2);
   logger.stagePush("FaultCreation");
 
   if (0 == rank) {

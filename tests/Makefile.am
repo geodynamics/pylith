@@ -18,6 +18,7 @@
 
 SUBDIRS = \
 	2d \
-	3d
+	3d \
+	topology
 
 # End of file 

@@ -377,6 +377,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/threehex8/mesh/Makefile
 		tests/3d/plasticity/threehex8/results/Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
+		tests/topology/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile

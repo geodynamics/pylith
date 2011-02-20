@@ -46,7 +46,9 @@ class VertexGroup(Memory):
     return
 
 if __name__ == '__main__':
-  print 'Memory:',VertexGroup('rock', 35).tabulate()
+  d = {}
+  VertexGroup('rock', 35).tabulate(d)
+  print 'Memory:',d
 
 
 # End of file

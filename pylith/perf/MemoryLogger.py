@@ -75,7 +75,7 @@ class MemoryLogger(Logger):
                                       mesh.numVertices(), mesh.numCells())
     meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
-      self.logVertexGroup('VertexGroups', group, nvertices, mesh.numVertices())
+      self.logVertexGroup('IntSections', group, nvertices, mesh.numVertices())
     return
 
 
