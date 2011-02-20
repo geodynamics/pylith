@@ -56,10 +56,6 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 { // refine
   assert(0 != newMesh);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(2);
-  logger.stagePush("Refinement");
-
   typedef SieveMesh::point_type point_type;
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -127,9 +123,6 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
   } // switch
 
   // newMesh->view("REFINED MESH");
-
-  logger.stagePop();
-  //logger.setDebug(0);
 } // refine
     
 

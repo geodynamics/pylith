@@ -147,8 +147,8 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(1);
-  logger.stagePush("Mesh");
-  logger.stagePush("MeshCreation");
+  logger.stagePush("DistributedMesh");
+  logger.stagePush("DistributedMeshCreation");
 
   journal::info_t info("distributor");
     
@@ -222,7 +222,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   } // if
 
   logger.stagePop();
-  logger.stagePush("MeshCoordinates");
+  logger.stagePush("DistributedMeshCoordinates");
 
   // Distribute the coordinates
   info << journal::at(__HERE__)
@@ -241,7 +241,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 				      parallelCoordinates);
 
   logger.stagePop();
-  logger.stagePush("MeshRealSections");
+  logger.stagePush("DistributedMeshRealSections");
 
   // Distribute other sections
   info << journal::at(__HERE__)
@@ -268,7 +268,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   }
 
   logger.stagePop();
-  logger.stagePush("MeshIntSections");
+  logger.stagePush("DistributedMeshIntSections");
 
   if (origSieveMesh->getIntSections()->size() > 0) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
@@ -305,7 +305,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     throw std::logic_error("Need to distribute more arrow sections");
   
   logger.stagePop();
-  logger.stagePush("MeshLabels");
+  logger.stagePush("DistributedMeshLabels");
 
   // Distribute labels
   info << journal::at(__HERE__)
@@ -351,7 +351,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   } // for
 
   logger.stagePop();
-  logger.stagePush("MeshOverlap");
+  logger.stagePush("DistributedMeshOverlap");
 
   // Create the parallel overlap
   info << journal::at(__HERE__)

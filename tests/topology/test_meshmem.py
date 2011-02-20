@@ -120,9 +120,9 @@ class TestApp(Script):
       dmesh = distributor.distribute(mesh, normalizer)
       del distributor
       
-      self.logger.logMesh("Mesh", dmesh)
+      self.logger.logMesh("DistributedMesh", dmesh)
       material.ncells = MeshOps_numMaterialCells(dmesh, material.id())
-      self.logger.logMaterial("Mesh", material)
+      self.logger.logMaterial("DistributedMesh", material)
 
       self._showStatus("After distributing mesh")
 
@@ -136,9 +136,9 @@ class TestApp(Script):
     rmesh = refiner.refine(mesh)
     del refiner
     
-    self.logger.logMesh("Mesh", rmesh)
+    self.logger.logMesh("RefinedMesh", rmesh)
     material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
-    self.logger.logMaterial("Mesh", material)
+    self.logger.logMaterial("RefinedMesh", material)
 
     self._showStatus("After refining mesh")
 
