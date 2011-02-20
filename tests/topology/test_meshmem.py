@@ -92,7 +92,7 @@ class TestApp(Script):
 
     self.logger.logMesh("Mesh", mesh)
     material.ncells = MeshOps_numMaterialCells(mesh, material.id())
-    self.logger.logMaterial("Labels", material)
+    self.logger.logMaterial("Mesh", material)
     
 
     self._showStatus("After reading mesh")
@@ -122,7 +122,7 @@ class TestApp(Script):
       
       self.logger.logMesh("Mesh", dmesh)
       material.ncells = MeshOps_numMaterialCells(dmesh, material.id())
-      self.logger.logMaterial("Labels", material)
+      self.logger.logMaterial("Mesh", material)
 
       self._showStatus("After distributing mesh")
 
@@ -138,7 +138,7 @@ class TestApp(Script):
     
     self.logger.logMesh("Mesh", rmesh)
     material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
-    self.logger.logMaterial("Labels", material)
+    self.logger.logMaterial("Mesh", material)
 
     self._showStatus("After refining mesh")
 
