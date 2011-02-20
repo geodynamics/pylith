@@ -205,7 +205,7 @@ class StressInfo(Application):
       self.dpPlasPresTerm[point] = dpPlasPresTerm
       dpPlasStressTerm = dpPlasPresTerm + devInvariant2
       self.dpPlasStressTerm[point] = dpPlasStressTerm
-      self.dpPlasYieldFunc[point] = dpPlasStressTerm - self.cohesion
+      self.dpPlasYieldFunc[point] = dpPlasStressTerm - self.beta
 
     return
   
