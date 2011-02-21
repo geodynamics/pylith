@@ -105,7 +105,8 @@ class GetCoords(Application):
     lines = f.readlines()
     for line in lines:
       for entry in line.split(', '):
-        self.idList.append(int(entry.rstrip(',\n')))
+        idEntry = int(entry.rstrip(',\n')) - 1
+        self.idList.append(idEntry)
 
     self.numIds = len(self.idList)
     f.close()
@@ -118,22 +119,9 @@ class GetCoords(Application):
     Function to read a list of coordinates and output the coordinates if
     they correspond to one of the requested ID's.
     """
-    f = open(self.coordFile, 'r')
-    o = open(self.outputFile, 'w')
-    lines = f.readlines()
-    for line in lines:
-      vertexId = int(line.split(', ')[0].rstrip(',\n'))
-      for requestedId in self.idList:
-        if vertexId == requestedId:
-          x = line.split(', ')[1].rstrip(',')
-          y = line.split(', ')[2].rstrip(',')
-          z = line.split(', ')[3].rstrip(',\n')
-          outLine = x + '   ' + y + '   ' + z + '\n'
-          o.write(outLine)
-          break
-
-    f.close()
-    o.close()
+    meshCoords = numpy.loadtxt(self.coordFile, dtype=numpy.float64)
+    outputCoords = meshCoords[self.idList,:]
+    numpy.savetxt(self.outputFile, outputCoords)
 
     return
   
