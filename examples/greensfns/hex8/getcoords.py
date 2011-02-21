@@ -14,7 +14,7 @@
 
 ## @brief Python application to get the coordinates for a set of vertex
 ## ID's and output them to a file. This is a very simple code that expects
-## coordinates in Abaqus format as well as ID's in Abaqus nodeset format.
+## coordinates and ID's obtained using ncdump on the Exodus file.
 
 import math
 import numpy
@@ -30,7 +30,7 @@ class GetCoords(Application):
   """
   Python application to get the coordinates for a set of vertex
   ID's and output them to a file. This is a very simple code that expects
-  coordinates in Abaqus format as well as ID's in Abaqus nodeset format.
+  coordinates and ID's obtained using ncdump on the Exodus file.
   """
   
   class Inventory(Application.Inventory):
