@@ -160,9 +160,9 @@ class LinInvert(Application):
 
     self.numObs = self.dataVals.shape[0]
     self.numParams = self.aprioriVals.shape[0]
-    # print "Number of observations: %i" % self.numObs
-    # print "Number of parameters: %i" % self.numParams
-    # sys.stdout.flush()
+    print "Number of observations: %i" % self.numObs
+    print "Number of parameters: %i" % self.numParams
+    sys.stdout.flush()
 
     return
 
@@ -195,21 +195,29 @@ class LinInvert(Application):
     self.fData = numpy.diag(fDataVec)
     self.predicted = numpy.dot(self.dataDesign, self.solution)
     dataMisfit = self.dataVals - self.predicted
-    weightMisfit = dataMisfit * fDataVec
-    self.chiSquare = numpy.sum(weightMisfit * weightMisfit)
+    dataWeightMisfit = dataMisfit * fDataVec
+    self.chiSquare = numpy.sum(dataWeightMisfit * dataWeightMisfit)
+    dataMisfitNorm = numpy.linalg.norm(dataMisfit)
+    dataWeightMisfitNorm = numpy.linalg.norm(dataWeightMisfit)
     
     # Write out inversion info.
     string1 = "\nNumber of observations:  %i\n" % self.numObs
     string2 = "Number of parameters:  %i\n" % self.numParams
-    string3 = "Chi-square value:  %e\n" % self.chiSquare
+    string3 = "Data Chi-square value:  %e\n" % self.chiSquare
+    string4 = "Data residual norm:  %e\n" % dataMisfitNorm
+    string5 = "Weighted data residual norm:  %e\n" % dataWeightMisfitNorm
     print string1
     print string2
     print string3
+    print string4
+    print string5
     sys.stdout.flush()
     i = open(self.infoOutputFile, 'w')
     i.write(string1)
     i.write(string2)
     i.write(string3)
+    i.write(string4)
+    i.write(string5)
     i.close()
                                
     # Write out data info.
@@ -222,7 +230,7 @@ class LinInvert(Application):
     
     dataOut = numpy.transpose(numpy.vstack((self.dataVals, self.predicted,
                                             fDataVecInv, dataMisfit,
-                                            weightMisfit)))
+                                            dataWeightMisfit)))
     numpy.savetxt(self.dataOutputFile, dataOut)
 
     return

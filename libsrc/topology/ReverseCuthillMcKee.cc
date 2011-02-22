@@ -35,7 +35,9 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
   assert(0 != mesh);
 
-  //logger.stagePush("MeshReordering");
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("MeshReordering");
 
   int rank = 0;
   MPI_Comm_rank(mesh->comm(), &rank);
@@ -58,7 +60,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
     //sieveMesh->view("MESH AFTER RELABEL");
   } // if    
 
-  //logger.stagePop();
+  logger.stagePop();
 } // reorder
 
 

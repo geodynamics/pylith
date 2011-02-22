@@ -105,8 +105,8 @@ class StressInfo(Application):
 
 
   def main(self):
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     self._readVtkFile()
     self._getStressInfo()
     self._writeVtkFile()
@@ -199,13 +199,13 @@ class StressInfo(Application):
     for point in xrange(self.numTensorPoints):
       tensor = self.tensorSorted[point, :]
       pressure, devInvariant2 = self._compStressInfo(tensor)
-      self.pressure[point,:] = pressure
-      self.devInvariant2[point,:] = devInvariant2
+      self.pressure[point] = pressure
+      self.devInvariant2[point] = devInvariant2
       dpPlasPresTerm = self.alphaYield * 3.0 * pressure
-      self.dpPlasPresTerm[point,:] = dpPlasPresTerm
+      self.dpPlasPresTerm[point] = dpPlasPresTerm
       dpPlasStressTerm = dpPlasPresTerm + devInvariant2
-      self.dpPlasStressTerm[point,:] = dpPlasStressTerm
-      self.dpPlasYieldFunc[point,:] = dpPlasStressTerm - self.cohesion
+      self.dpPlasStressTerm[point] = dpPlasStressTerm
+      self.dpPlasYieldFunc[point] = dpPlasStressTerm - self.beta
 
     return
   
@@ -255,8 +255,7 @@ class StressInfo(Application):
     mesh.update()
 
     # Write VTK file
-    w = tvtk.UnstructuredGridWriter(file_name=self.vtkOutputFile,
-		    input=mesh)
+    w = tvtk.XMLDataSetWriter(file_name=self.vtkOutputFile, input=mesh)
     w.write()
 
     return

@@ -76,9 +76,10 @@ class PetscApplication(Application):
 
     except Exception, err:
       self.cleanup() # Attempt to clean up memory.
-      print "Fatal error while running PyLith:"
-      print err
-      print "Calling MPI_Abort() to abort PyLith application."
+      print "Fatal error. Calling MPI_Abort() to abort PyLith application."
+      # Print stacktrace
+      from traceback import print_exc
+      print_exc()
       from pylith.mpi import mpi
       errorCode = -1
       mpi.mpi_abort(mpi.petsc_comm_world(), errorCode)

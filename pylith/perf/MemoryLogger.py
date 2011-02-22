@@ -75,7 +75,7 @@ class MemoryLogger(Logger):
                                       mesh.numVertices(), mesh.numCells())
     meshModel.tabulate(self.memory[stage])
     for group, nvertices in mesh.groupSizes():
-      self.logVertexGroup('VertexGroups', group, nvertices, mesh.numVertices())
+      self.logVertexGroup(stage, group, nvertices, mesh.numVertices())
     return
 
 
@@ -85,10 +85,13 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.VertexGroup
 
-    if not stage in self.memory: self.memory[stage] = {}
+    if not stage in self.memory:
+      self.memory[stage] = {}
+    if not 'IntSections' in self.memory[stage]:
+      self.memory[stage]['IntSections'] = {}
     groupModel = pylith.perf.VertexGroup.VertexGroup(label, nvertices, 
                                                      nMeshVertices)
-    groupModel.tabulate(self.memory[stage])
+    groupModel.tabulate(self.memory[stage]['IntSections'])
     return
 
 
@@ -98,10 +101,13 @@ class MemoryLogger(Logger):
     """
     import pylith.perf.Material
 
-    if not stage in self.memory: self.memory[stage] = {}
+    if not stage in self.memory:
+      self.memory[stage] = {}
+    if not 'Labels' in self.memory[stage]:
+      self.memory[stage]['Labels'] = {}
     materialModel = pylith.perf.Material.Material(material.label(), 
                                                   material.ncells)
-    materialModel.tabulate(self.memory[stage])
+    materialModel.tabulate(self.memory[stage]['Labels'])
     return
 
 

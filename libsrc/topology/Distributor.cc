@@ -84,6 +84,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 	 << "', distribution mesh using dumb partitioner." << journal::endl;
     _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
   } // else
+
 } // distribute
 
 // ----------------------------------------------------------------------
@@ -112,6 +113,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   double rankReal = double(sieveMesh->commRank());
+  assert(sieveMesh->height() > 0);
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -142,6 +144,11 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   typedef typename SieveMesh::point_type point_type;
   typedef typename DistributionType::partitioner_type partitioner_type;
   typedef typename DistributionType::partition_type   partition_type;
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("DistributedMesh");
+  logger.stagePush("DistributedMeshCreation");
 
   journal::info_t info("distributor");
     
@@ -214,6 +221,9 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     throw ALE::Exception("Invalid Overlap");
   } // if
 
+  logger.stagePop();
+  logger.stagePush("DistributedMeshCoordinates");
+
   // Distribute the coordinates
   info << journal::at(__HERE__)
        << "Distribution the vertex coordinates." << journal::endl;
@@ -229,6 +239,9 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   DistributionType::distributeSection(coordinates, partition, renumbering, 
 				      sendMeshOverlap, recvMeshOverlap, 
 				      parallelCoordinates);
+
+  logger.stagePop();
+  logger.stagePush("DistributedMeshRealSections");
 
   // Distribute other sections
   info << journal::at(__HERE__)
@@ -253,6 +266,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     if (n)
       throw std::logic_error("Need to distribute more real sections");
   }
+
+  logger.stagePop();
+  logger.stagePush("DistributedMeshIntSections");
+
   if (origSieveMesh->getIntSections()->size() > 0) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
     assert(!names.isNull());
@@ -287,6 +304,9 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   if (origSieveMesh->getArrowSections()->size() > 1)
     throw std::logic_error("Need to distribute more arrow sections");
   
+  logger.stagePop();
+  logger.stagePush("DistributedMeshLabels");
+
   // Distribute labels
   info << journal::at(__HERE__)
        << "Distributing labels." << journal::endl;
@@ -330,6 +350,9 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 #endif
   } // for
 
+  logger.stagePop();
+  logger.stagePush("DistributedMeshOverlap");
+
   // Create the parallel overlap
   info << journal::at(__HERE__)
        << "Creating the parallel overlap." << journal::endl;
@@ -347,6 +370,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 					  sendParallelMeshOverlap, 
 					  recvParallelMeshOverlap);
   newSieveMesh->setCalculatedOverlap(true);
+
+  logger.stagePop();
+  logger.stagePop(); // Mesh
+  //logger.setDebug(0);
 } // distribute
 
 
