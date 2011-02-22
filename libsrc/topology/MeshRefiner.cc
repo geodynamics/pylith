@@ -71,6 +71,11 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
   assert(_orderOldMesh);
   assert(_orderNewMesh);
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("RefinedMesh");
+  logger.stagePush("RefinedMeshCreation");
+
   // Calculate order in old mesh.
   _orderOldMesh->initialize(mesh);
 
@@ -158,6 +163,11 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
   } // for
   newSieve->symmetrize();
 
+
+  logger.stagePop();
+  //logger.setDebug(0);
+  logger.stagePush("RefinedMeshCoordinates");
+
   // Set coordinates in refined mesh.
   const Obj<mesh_type::real_section_type>& coordinates = mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -184,10 +194,28 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
 
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
 
+  logger.stagePop();
+  logger.stagePush("RefinedMeshStratification");
+
   _stratify(newMesh);
+
+  logger.stagePop();
+  logger.stagePush("RefinedMeshOverlap");
+
   _calcNewOverlap(newMesh, mesh, refiner);
+
+  logger.stagePop();
+  logger.stagePush("RefinedMeshIntSections");
+
   _createIntSections(newMesh, mesh, refiner);
+
+  logger.stagePop();
+  logger.stagePush("RefinedMeshLabels");
+
   _createLabels(newMesh, mesh, refiner);
+
+  logger.stagePop();
+  logger.stagePop(); // Mesh
 } // _refine
   
 // ----------------------------------------------------------------------

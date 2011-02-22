@@ -74,9 +74,15 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
 { // read
   assert(0 == _mesh);
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("Mesh");
+
   _mesh = mesh;
   _mesh->debug(_debug);
   _read();
+
+  logger.stagePop();
 
   _mesh = 0;
 } // read
@@ -207,7 +213,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   ///logger.setDebug(2);
-  logger.stagePush("Materials");
+  logger.stagePush("MeshLabels");
   const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
     sieveMesh->createLabel("material-id");
   if (!sieveMesh->commRank()) {
@@ -305,7 +311,7 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("VertexGroups");
+  logger.stagePush("MeshIntSections");
   const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
   assert(!groupField.isNull());
 
