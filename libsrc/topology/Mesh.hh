@@ -58,8 +58,8 @@ public :
    *   (1) SieveSubMesh - SubMesh object
    */
   //@{
-  typedef ALE::IMesh<> SieveMesh;
-  typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
+  typedef ALE::IMesh<PetscInt,PetscScalar> SieveMesh;
+  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
 
   typedef SieveMesh::int_section_type IntSection;
   typedef SieveMesh::real_section_type RealSection;
