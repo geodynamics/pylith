@@ -38,7 +38,7 @@ class ALE::RefineVol8Face4Edges2
 { // RefineVol8Face4Edges2
 protected:
 
-  typedef IMesh<> mesh_type;
+  typedef IMesh<PetscInt,PetscScalar> mesh_type;
   typedef mesh_type::point_type point_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
