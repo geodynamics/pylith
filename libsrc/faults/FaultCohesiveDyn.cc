@@ -300,7 +300,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     // Compute traction by dividing force by area
     assert(*areaVertex > 0);
     tractionTVertex = lagrangeTVertex / (*areaVertex);
-      tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
+    tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -757,10 +757,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Compute contribution only if Lagrange constraint is local.
-    if (!globalOrder->isLocal(v_lagrange))
-      continue;
-
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
@@ -953,15 +949,21 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(updateEvent);
 #endif
 
-    // Adjust displacements to account for Lagrange multiplier values
-    // (assumed to be zero in perliminary solve).
-    assert(dispTIncrVertexN.size() == 
-	   dispTIncrAdjSection->getFiberDimension(v_negative));
-    dispTIncrAdjSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+    // Compute contribution to adjusting solution only if Lagrange
+    // constraint is local (the adjustment is assembled across processors).
+    if (globalOrder->isLocal(v_lagrange)) {
+      // Adjust displacements to account for Lagrange multiplier values
+      // (assumed to be zero in perliminary solve).
+      assert(dispTIncrVertexN.size() == 
+	     dispTIncrAdjSection->getFiberDimension(v_negative));
+      dispTIncrAdjSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+      
+      assert(dispTIncrVertexP.size() == 
+	     dispTIncrAdjSection->getFiberDimension(v_positive));
+      dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
+    } // if
 
-    assert(dispTIncrVertexP.size() == 
-	   dispTIncrAdjSection->getFiberDimension(v_positive));
-    dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
+    // The Lagrange multiplier and slip are NOT assembled across processors.
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry of 1.0.
@@ -1417,7 +1419,7 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(
   PetscLogFlops(numVertices * (1 + spaceDim) );
 
 #if 0 // DEBUGGING
-  tractions->view("TRACTIONS");
+  tractions->view("INITIAL TRACTIONS");
 #endif
 
 } // _getInitialTractions
