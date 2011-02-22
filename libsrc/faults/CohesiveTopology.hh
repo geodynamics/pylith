@@ -37,6 +37,7 @@ class pylith::faults::CohesiveTopology
 
 private :
   typedef pylith::topology::Mesh::SieveMesh::point_type point_type;
+  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -53,7 +54,7 @@ public :
    */
   static
   void createFault(topology::SubMesh* faultMesh,
-		   ALE::Obj<ALE::Mesh>& faultBoundary,
+		   ALE::Obj<FlexMesh>& faultBoundary,
 		   const topology::Mesh& mesh,
 		   const ALE::Obj<topology::Mesh::IntSection>& groupField,
 		   const bool flipFault =false);
@@ -75,7 +76,7 @@ public :
   static
   void create(topology::Mesh* mesh,
 	      const topology::SubMesh& faultMesh,
-              const ALE::Obj<ALE::Mesh>& faultBoundary,
+              const ALE::Obj<FlexMesh>& faultBoundary,
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
               int& firstFaultVertex,

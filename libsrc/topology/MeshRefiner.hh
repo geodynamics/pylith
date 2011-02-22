@@ -33,8 +33,9 @@
 template<typename cellrefiner_type>
 class ALE::MeshRefiner
 { // MeshRefiner
-  typedef IMesh<> mesh_type;
+  typedef IMesh<PetscInt,PetscScalar> mesh_type;
   typedef mesh_type::point_type point_type;
+  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

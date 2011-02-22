@@ -63,7 +63,7 @@ pylith::meshio::UCDFaultFile::numVertices(const char* filename)
 void
 pylith::meshio::UCDFaultFile::read(const char* filename,
 				   topology::SubMesh* faultMesh,
-				   ALE::Obj<ALE::Mesh>& faultBoundary,
+				   ALE::Obj<FlexMesh>& faultBoundary,
 				   const topology::Mesh& mesh)
 { // read
   assert(0 != faultMesh);

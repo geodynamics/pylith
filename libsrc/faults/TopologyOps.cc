@@ -129,11 +129,11 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
                                                                const int firstCell,
                                                                const PointSet& faultVertices,
                                                                const ALE::Obj<SieveMesh>& mesh,
-                                                               const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                               const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve,
+                                                               const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+                                                               const ALE::Obj<FlexMesh::sieve_type>& faultSieve,
 							       const bool flipFault)
 {
-  typedef ALE::Selection<ALE::Mesh> selection;
+  typedef ALE::Selection<FlexMesh> selection;
   const ALE::Obj<SieveMesh::sieve_type>& sieve = mesh->getSieve();
   const PointSet::const_iterator fvBegin    = faultVertices.begin();
   const PointSet::const_iterator fvEnd      = faultVertices.end();
@@ -141,7 +141,7 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
   int                            curVertex  = 0;
   int                            newElement = curCell + dim*faultVertices.size();
   int                            o          = 1;
-  ALE::Mesh::point_type          f          = firstCell;
+  FlexMesh::point_type          f          = firstCell;
   const int                      debug      = mesh->debug();
   ALE::Obj<PointSet>                  face       = new PointSet();
   int                            numCorners = 0;    // The number of vertices in a mesh cell
@@ -232,26 +232,26 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
 
           if (2 == dim && 4 == faceSize){
             if (debug) std::cout << "  Adding hex face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(
+            ALE::SieveBuilder<FlexMesh>::buildHexFaces(
 		     faultSieve, orientation, dim, curElement, 
 		     bdVertices, oFaultFaces, f, o);
           } else if ((1 == dim && 3 == faceSize) ||
 		     (2 == dim && 9 == faceSize)){
             if (debug) std::cout << "  Adding quadratic hex face " << f
 				 << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildQuadraticHexFaces(
+            ALE::SieveBuilder<FlexMesh>::buildQuadraticHexFaces(
 		     faultSieve, orientation, dim, curElement, 
 		     bdVertices, oFaultFaces, f, o);
           } else if ((1 == dim && 3 == faceSize) ||
 		     (2 == dim && 6 == faceSize)){
             if (debug) std::cout << "  Adding quadratic tri face " << f
 				 << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildQuadraticTetFaces(
+            ALE::SieveBuilder<FlexMesh>::buildQuadraticTetFaces(
 		     faultSieve, orientation, dim, curElement, 
 		     bdVertices, oFaultFaces, f, o);
           } else {
             if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
-            ALE::SieveBuilder<ALE::Mesh>::buildFaces(
+            ALE::SieveBuilder<FlexMesh>::buildFaces(
 		     faultSieve, orientation, dim, curElement,
 		     bdVertices, oFaultFaces, f, o);
           }
@@ -276,10 +276,10 @@ pylith::faults::TopologyOps::createFaultSieveFromFaces(const int dim,
                                                             const int faultVertices[],
                                                             const int faultCells[],
                                                             const ALE::Obj<SieveMesh>& mesh,
-                                                            const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                            const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve)
+                                                            const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+                                                            const ALE::Obj<FlexMesh::sieve_type>& faultSieve)
 {
-  typedef ALE::Selection<ALE::Mesh> selection;
+  typedef ALE::Selection<FlexMesh> selection;
   int                       faceSize   = 0; // The number of vertices in a mesh face
   int                       curCell    = firstCell;
   int                       curVertex  = 0;
@@ -312,10 +312,10 @@ pylith::faults::TopologyOps::createFaultSieveFromFaces(const int dim,
     // Create face
     if (faceSize != dim+1) {
       if (debug) std::cout << "  Adding hex face " << f << std::endl;
-      ALE::SieveBuilder<ALE::Mesh>::buildHexFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+      ALE::SieveBuilder<FlexMesh>::buildHexFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
     } else {
       if (debug) std::cout << "  Adding simplicial face " << f << std::endl;
-      ALE::SieveBuilder<ALE::Mesh>::buildFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
+      ALE::SieveBuilder<FlexMesh>::buildFaces(faultSieve, orientation, dim, curElement, bdVertices, oFaultFaces, f, o);
     }
     // Add arrow to cells
     faultSieve->addArrow(face, faultCells[face*2+0]);
@@ -327,21 +327,21 @@ pylith::faults::TopologyOps::createFaultSieveFromFaces(const int dim,
 void
 pylith::faults::TopologyOps::orientFaultSieve(const int dim,
                                                    const ALE::Obj<SieveMesh>& mesh,
-                                                   const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-                                                   const ALE::Obj<ALE::Mesh>& fault)
+                                                   const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+                                                   const ALE::Obj<FlexMesh>& fault)
 {
   assert(!mesh.isNull());
   assert(!orientation.isNull());
   assert(!fault.isNull());
 
-  typedef ALE::Selection<ALE::Mesh> selection;
+  typedef ALE::Selection<FlexMesh> selection;
 
   // Must check the orientation here
-  const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve = fault->getSieve();
+  const ALE::Obj<FlexMesh::sieve_type>& faultSieve = fault->getSieve();
   assert(!faultSieve.isNull());
   const SieveMesh::point_type firstFaultCell  = 
     *fault->heightStratum(1)->begin();
-  const ALE::Obj<ALE::Mesh::label_sequence>& fFaces = fault->heightStratum(2);
+  const ALE::Obj<FlexMesh::label_sequence>& fFaces = fault->heightStratum(2);
   assert(!fFaces.isNull());
   const int numFaultFaces = fFaces->size();
   const int faultDepth = fault->depth()-1; // Depth of fault cells
@@ -392,21 +392,21 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
     // Loop over new cells
     for(PointSet::iterator c_iter = loopCells->begin(); c_iter != loopCells->end(); ++c_iter) {
       // Loop over edges of this cell
-      const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>&     cone   = faultSieve->cone(*c_iter);
-      const ALE::Mesh::sieve_type::traits::coneSequence::iterator eBegin = cone->begin();
-      const ALE::Mesh::sieve_type::traits::coneSequence::iterator eEnd   = cone->end();
+      const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>&     cone   = faultSieve->cone(*c_iter);
+      const FlexMesh::sieve_type::traits::coneSequence::iterator eBegin = cone->begin();
+      const FlexMesh::sieve_type::traits::coneSequence::iterator eEnd   = cone->end();
 
-      for(ALE::Mesh::sieve_type::traits::coneSequence::iterator e_iter = eBegin; e_iter != eEnd; ++e_iter) {
+      for(FlexMesh::sieve_type::traits::coneSequence::iterator e_iter = eBegin; e_iter != eEnd; ++e_iter) {
         if (facesSeen.find(*e_iter) != facesSeen.end()) continue;
         facesSeen.insert(*e_iter);
         if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
-        const ALE::Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
-        ALE::Mesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
+        const ALE::Obj<FlexMesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
+        FlexMesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
 
         // Throw out boundary fault faces
         if (support->size() < 2) continue;
-        ALE::Mesh::point_type cellA = *s_iter; ++s_iter;
-        ALE::Mesh::point_type cellB = *s_iter;
+        FlexMesh::point_type cellA = *s_iter; ++s_iter;
+        FlexMesh::point_type cellB = *s_iter;
         bool flippedA = (flippedCells.find(cellA) != flippedCells.end());
         bool flippedB = (flippedCells.find(cellB) != flippedCells.end());
         bool seenA    = (cellsSeen.find(cellA) != cellsSeen.end());
@@ -417,10 +417,10 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
         if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
         // In 1D, just check that vertices match
         if (dim == 1) {
-          const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
-          ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
-          const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
-          ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
+          const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
+          FlexMesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
+          const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
+          FlexMesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
           int posA, posB;
 
           for(posA = 0; posA < 2; ++posA, ++iterA) if (*iterA == *e_iter) break;
@@ -444,9 +444,9 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
           }
         } else if (dim == 2) {
           // Check orientation
-          ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrowA(*e_iter, cellA);
+          ALE::MinimalArrow<FlexMesh::sieve_type::point_type,FlexMesh::sieve_type::point_type> arrowA(*e_iter, cellA);
           const int oA = orientation->restrictPoint(arrowA)[0];
-          ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrowB(*e_iter, cellB);
+          ALE::MinimalArrow<FlexMesh::sieve_type::point_type,FlexMesh::sieve_type::point_type> arrowB(*e_iter, cellB);
           const int oB = orientation->restrictPoint(arrowB)[0];
           const bool mismatch = (oA == oB);
 
@@ -484,8 +484,8 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
   for(PointSet::const_iterator f_iter = flippedCells.begin(); f_iter != flippedCells.end(); ++f_iter) {
     if (debug) std::cout << "  Reversing fault face " << *f_iter << std::endl;
     faceVertices.clear();
-    const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& cone = faultSieve->cone(*f_iter);
-    for(ALE::Mesh::sieve_type::traits::coneSequence::iterator v_iter = cone->begin(); v_iter != cone->end(); ++v_iter) {
+    const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>& cone = faultSieve->cone(*f_iter);
+    for(FlexMesh::sieve_type::traits::coneSequence::iterator v_iter = cone->begin(); v_iter != cone->end(); ++v_iter) {
       faceVertices.insert(faceVertices.begin(), *v_iter);
     }
     faultSieve->clearCone(*f_iter);
@@ -497,7 +497,7 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
     if (dim > 1) {
       // Here, they are edges, not vertices
       for(PointArray::const_iterator e_iter = faceVertices.begin(); e_iter != faceVertices.end(); ++e_iter) {
-        ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrow(*e_iter, *f_iter);
+        ALE::MinimalArrow<FlexMesh::sieve_type::point_type,FlexMesh::sieve_type::point_type> arrow(*e_iter, *f_iter);
         int o = orientation->restrictPoint(arrow)[0];
 
         if (debug) std::cout << "    Reversing orientation of " << *e_iter <<"-->"<<*f_iter << " from " << o << " to " << -(o+1) << std::endl;
@@ -507,26 +507,26 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
     }
   }
   flippedCells.clear();
-  const ALE::Mesh::label_sequence::iterator fFacesBegin = fFaces->begin();
-  const ALE::Mesh::label_sequence::iterator fFacesEnd = fFaces->end();
-  for(ALE::Mesh::label_sequence::iterator e_iter = fFacesBegin; e_iter != fFacesEnd; ++e_iter) {
+  const FlexMesh::label_sequence::iterator fFacesBegin = fFaces->begin();
+  const FlexMesh::label_sequence::iterator fFacesEnd = fFaces->end();
+  for(FlexMesh::label_sequence::iterator e_iter = fFacesBegin; e_iter != fFacesEnd; ++e_iter) {
     if (debug) std::cout << "  Checking orientation of fault face " << *e_iter << std::endl;
     // for each face get the support (2 fault cells)
-    const ALE::Obj<ALE::Mesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
-    ALE::Mesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
+    const ALE::Obj<FlexMesh::sieve_type::traits::supportSequence>& support = faultSieve->support(*e_iter);
+    FlexMesh::sieve_type::traits::supportSequence::iterator   s_iter  = support->begin();
 
     // Throw out boundary fault faces
     if (support->size() > 1) {
-      ALE::Mesh::point_type cellA = *s_iter; ++s_iter;
-      ALE::Mesh::point_type cellB = *s_iter;
+      FlexMesh::point_type cellA = *s_iter; ++s_iter;
+      FlexMesh::point_type cellB = *s_iter;
 
       if (debug) std::cout << "    neighboring cells " << cellA << " and " << cellB << std::endl;
       // In 1D, just check that vertices match
       if (dim == 1) {
-        const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
-        ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
-        const ALE::Obj<ALE::Mesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
-        ALE::Mesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
+        const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>& coneA = faultSieve->cone(cellA);
+        FlexMesh::sieve_type::traits::coneSequence::iterator   iterA = coneA->begin();
+        const ALE::Obj<FlexMesh::sieve_type::traits::coneSequence>& coneB = faultSieve->cone(cellB);
+        FlexMesh::sieve_type::traits::coneSequence::iterator   iterB = coneB->begin();
         int posA, posB;
 
         for(posA = 0; posA < 2; ++posA, ++iterA) if (*iterA == *e_iter) break;
@@ -540,9 +540,9 @@ pylith::faults::TopologyOps::orientFaultSieve(const int dim,
         }
       } else {
         // Check orientation
-        ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrowA(*e_iter, cellA);
+        ALE::MinimalArrow<FlexMesh::sieve_type::point_type,FlexMesh::sieve_type::point_type> arrowA(*e_iter, cellA);
         const int oA = orientation->restrictPoint(arrowA)[0];
-        ALE::MinimalArrow<ALE::Mesh::sieve_type::point_type,ALE::Mesh::sieve_type::point_type> arrowB(*e_iter, cellB);
+        ALE::MinimalArrow<FlexMesh::sieve_type::point_type,FlexMesh::sieve_type::point_type> arrowB(*e_iter, cellB);
         const int oB = orientation->restrictPoint(arrowB)[0];
 
         if (oA == oB) {
