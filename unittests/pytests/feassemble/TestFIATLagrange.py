@@ -1057,7 +1057,7 @@ class TestFIATLagrange(unittest.TestCase):
     cell = FIATLagrange()
     cell.inventory.dimension = 2
     cell.inventory.degree = 2
-    cell.inventory.order  = 5
+    cell.inventory.order  = 3
     cell._configure()
     cell.initialize(spaceDim=2)
 
@@ -1093,7 +1093,7 @@ class TestFIATLagrange(unittest.TestCase):
     cell = FIATLagrange()
     cell.inventory.dimension = 3
     cell.inventory.degree = 2
-    cell.inventory.order  = 5
+    cell.inventory.order  = 3
     cell._configure()
     cell.initialize(spaceDim=3)
 
