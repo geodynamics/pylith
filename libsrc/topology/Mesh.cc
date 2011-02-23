@@ -65,7 +65,7 @@ void
 pylith::topology::Mesh::deallocate(void)
 { // deallocate
   delete _coordsys; _coordsys = 0;
-  _mesh.destroy();
+  _mesh.destroy(); // check refCnt, ALE::setVerbosity()
 } // deallocate
   
 // ----------------------------------------------------------------------

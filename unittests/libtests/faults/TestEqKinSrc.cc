@@ -250,7 +250,7 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
   if (useLagrangeConstraints) {
     firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
   }
-  ALE::Obj<ALE::Mesh> faultBoundary = 0;
+  ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CohesiveTopology::createFault(faultMesh, faultBoundary,
