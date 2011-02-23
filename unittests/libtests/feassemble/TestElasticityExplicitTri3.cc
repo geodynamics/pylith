@@ -427,15 +427,15 @@ pylith::feassemble::TestElasticityExplicitTri3::_initialize(
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = 
-    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> s = 
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, 
+  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, 
 					      _data->cellDim, _data->numCells,
                                               const_cast<int*>(_data->cells), 
 					      _data->numVertices,
                                               interpolate, _data->numBasis);
-  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();

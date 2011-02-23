@@ -411,7 +411,7 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
   if (useLagrangeConstraints) {
     firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
   }
-  ALE::Obj<ALE::Mesh> faultBoundary = 0;
+  ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CohesiveTopology::createFault(faultMesh, faultBoundary,
@@ -459,8 +459,6 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
 void
 pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStruct& data)
 { // _testInitialize
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
-
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;
@@ -485,7 +483,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   if (useLagrangeConstraints) {
     firstFaultCell += mesh.sieveMesh()->getIntSection(data.faultLabel)->size();
   }
-  ALE::Obj<ALE::Mesh> faultBoundary = 0;
+  ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CohesiveTopology::createFault(&faultMesh, faultBoundary,
