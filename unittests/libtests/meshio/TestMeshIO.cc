@@ -65,14 +65,14 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = 
-    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> s = 
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, data.cellDim, data.numCells,
+  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, data.cellDim, data.numCells,
                                               const_cast<int*>(data.cells), 
 					      data.numVertices,
                                               interpolate, data.numCorners);
-  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();
