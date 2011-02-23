@@ -67,9 +67,8 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     newMesh.debug(mesh.debug())
     newMesh.coordsys(mesh.coordsys())
     ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-
-    if mesh != newMesh:
-      mesh.deallocate();
+    if not newMesh == mesh:
+      mesh.deallocate()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh

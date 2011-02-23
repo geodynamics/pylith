@@ -123,13 +123,15 @@ class MeshImporter(MeshGenerator):
         mesh.view("Distributed mesh.")
 
     # Refine mesh (if necessary)
-    mesh = self.refiner.refine(mesh)
+    newMesh = self.refiner.refine(mesh)
+    if not newMesh == mesh:
+      mesh.deallocate()
 
     # Nondimensionalize mesh (coordinates of vertices).
-    mesh.nondimensionalize(normalizer)
+    newMesh.nondimensionalize(normalizer)
 
     self._eventLogger.eventEnd(logEvent)    
-    return mesh
+    return newMesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
