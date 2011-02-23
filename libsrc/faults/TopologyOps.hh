@@ -41,6 +41,7 @@ public :
   typedef std::vector<SieveMesh::sieve_type::point_type> PointArray;
   typedef std::pair<SieveMesh::sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>  oPointArray;
+  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -79,8 +80,8 @@ public :
 				    const int firstCell,
 				    const PointSet& faultVertices,
 				    const ALE::Obj<SieveMesh>& mesh,
-				    const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-				    const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve,
+                    const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+				    const ALE::Obj<FlexMesh::sieve_type>& faultSieve,
 				    const bool flipFault);
   
   static
@@ -90,14 +91,14 @@ public :
 				 const int faultVertices[],
 				 const int faultCells[],
 				 const ALE::Obj<SieveMesh>& mesh,
-				 const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-				 const ALE::Obj<ALE::Mesh::sieve_type>& faultSieve);
+				 const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+				 const ALE::Obj<FlexMesh::sieve_type>& faultSieve);
 
   static
   void orientFaultSieve(const int dim,
 			const ALE::Obj<SieveMesh>& mesh,
-			const ALE::Obj<ALE::Mesh::arrow_section_type>& orientation,
-			const ALE::Obj<ALE::Mesh>& fault);
+			const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
+			const ALE::Obj<FlexMesh>& fault);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh
