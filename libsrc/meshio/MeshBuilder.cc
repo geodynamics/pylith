@@ -119,16 +119,16 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       sieve->symmetrize();
     } else {
       // Same old thing
-      ALE::Obj<ALE::Mesh::sieve_type> s =
-	new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+      ALE::Obj<FlexMesh::sieve_type> s =
+	new FlexMesh::sieve_type(sieve->comm(), sieve->debug());
 
-      ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
+      ALE::SieveBuilder<FlexMesh>::buildTopology(s, meshDim, 
                                                   numCells, 
                                                   const_cast<int*>(&cells[0]), 
                                                   numVertices, 
                                                   interpolate,
                                                   numCorners);
-      std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+      std::map<FlexMesh::point_type,FlexMesh::point_type> renumbering;
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     } // if/else
     logger.stagePop();
@@ -194,7 +194,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 // Set vertices and cells for fault mesh.
 void
 pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
-					    ALE::Obj<ALE::Mesh>& faultBd,
+					    ALE::Obj<FlexMesh>& faultBd,
 					    const double_array& coordinates,
 					    const int numVertices,
 					    const int spaceDim,
@@ -226,10 +226,10 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
   if (0 == rank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
-    ALE::Obj<ALE::Mesh::sieve_type> s = 
-      new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+    ALE::Obj<FlexMesh::sieve_type> s = 
+      new FlexMesh::sieve_type(sieve->comm(), sieve->debug());
     
-    ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, meshDim, 
+    ALE::SieveBuilder<FlexMesh>::buildTopology(s, meshDim, 
 						numCells, 
 						const_cast<int*>(&cells[0]), 
 						numVertices, 
@@ -245,23 +245,23 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
       s->addArrow(c+firstCell, faceCells[c*2+1]);
     } // for
     
-    ALE::Mesh::renumbering_type& renumbering = fault->getRenumbering();
+    FlexMesh::renumbering_type& renumbering = fault->getRenumbering();
     ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
     ALE::ISieveConverter::convertOrientation(*s, *sieve, renumbering,
 				fault->getArrowSection("orientation").ptr());
     
-    Obj<ALE::Mesh> tmpMesh = 
-      new ALE::Mesh(fault->comm(), dim, fault->debug());
-    faultBd = ALE::Selection<ALE::Mesh>::boundary(tmpMesh);
+    Obj<FlexMesh> tmpMesh = 
+      new FlexMesh(fault->comm(), dim, fault->debug());
+    faultBd = ALE::Selection<FlexMesh>::boundary(tmpMesh);
 
     logger.stagePop();
     logger.stagePush("FaultStratification");
     fault->stratify();
     logger.stagePop();
   } else {
-    Obj<ALE::Mesh> tmpMesh = 
-      new ALE::Mesh(fault->comm(), dim, fault->debug());
-    faultBd = ALE::Selection<ALE::Mesh>::boundary(tmpMesh);
+    Obj<FlexMesh> tmpMesh = 
+      new FlexMesh(fault->comm(), dim, fault->debug());
+    faultBd = ALE::Selection<FlexMesh>::boundary(tmpMesh);
 
     logger.stagePop();
     logger.stagePush("FaultStratification");

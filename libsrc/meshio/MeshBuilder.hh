@@ -40,6 +40,10 @@
 class pylith::meshio::MeshBuilder
 { // MeshBuilder
 
+  // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
+public :
+  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -88,7 +92,7 @@ public :
    */
   static
   void buildFaultMesh(const ALE::Obj<topology::Mesh::SieveMesh>& fault,
-		      ALE::Obj<ALE::Mesh>& faultBd,
+		      ALE::Obj<FlexMesh>& faultBd,
 		      const double_array& coordinates,
 		      const int numVertices,
 		      const int spaceDim,
