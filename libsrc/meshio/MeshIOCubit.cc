@@ -62,6 +62,8 @@ pylith::meshio::MeshIOCubit::deallocate(void)
 void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
+  assert(_mesh);
+
   int rank = 0;
   int meshDim = 0;
   int spaceDim = 0;
@@ -72,7 +74,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   int_array cells;
   int_array materialIds;
 
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+  MPI_Comm_rank(_mesh->comm(), &rank);
   if (0 == rank) {
     try {
       NcFile ncfile(_filename.c_str());
