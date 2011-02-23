@@ -8,3 +8,13 @@ svn log | less
 
 # Merge from stable branch.
 svn merge -r REV_FROM_LAST_MERGE:HEAD svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/branches/v1.5-stable .
+
+
+
+
+# ======================================================================
+# Create patch to merge trunk back to branch.
+# in trunk
+svn diff -r REVISION > rNUM.diff
+# in stable
+patch -p0 < ../pylith/rNUM.diff
