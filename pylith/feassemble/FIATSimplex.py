@@ -98,11 +98,11 @@ class FIATSimplex(ReferenceCell):
       self.cellDim = 0
       self.numCorners = 1
       self.numQuadPts = 1
-      self.basis = numpy.array([[1.0]])
-      self.basisDeriv = numpy.array([[[1.0]]])
-      self.quadPts = numpy.array([[0.0]])
-      self.quadWts = numpy.array([1.0])
-      self.vertices = numpy.array([[0.0]])
+      self.basis = numpy.array([[1.0]], dtype=numpy.float64)
+      self.basisDeriv = numpy.array([[[1.0]]], dtype=numpy.float64)
+      self.quadPts = numpy.array([[0.0]], dtype=numpy.float64)
+      self.quadWts = numpy.array([1.0], dtype=numpy.float64)
+      self.vertices = numpy.array([[0.0]], dtype=numpy.float64)
     else:
       quadrature = self._setupQuadrature()
       basisFns = self._setupBasisFns()
@@ -111,17 +111,17 @@ class FIATSimplex(ReferenceCell):
       vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
 
       # Evaluate basis functions at quadrature points
+      from FIAT.polynomial_set import mis
       quadpts = quadrature.get_points()
-      basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+      dim     = basisFns.ref_el.get_spatial_dimension()
+      evals   = basisFns.tabulate(quadpts, 1)
+      basis   = numpy.array(evals[mis(dim, 0)[0]], dtype=numpy.float64).transpose()
 
       # Evaluate derivatives of basis functions at quadrature points
-      import FIAT.shapes
-      dim = FIAT.shapes.dimension(basisFns.base.shape)
-      basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
-                                for d in range(dim)]).transpose()
+      basisDeriv = numpy.array([evals[alpha] for alpha in mis(dim, 1)], dtype=numpy.float64).transpose()
 
       self.cellDim = dim
-      self.numCorners = len(basisFns)
+      self.numCorners = basisFns.get_num_members()
       self.numQuadPts = len(quadrature.get_weights())
 
       # Permute from FIAT order to Sieve order
@@ -132,8 +132,8 @@ class FIATSimplex(ReferenceCell):
                                       basisDeriv.shape)
 
       # No permutation in order of quadrature points
-      self.quadPts = numpy.array(quadrature.get_points())
-      self.quadWts = numpy.array(quadrature.get_weights())
+      self.quadPts = numpy.array(quadrature.get_points(), dtype=numpy.float64)
+      self.quadWts = numpy.array(quadrature.get_weights(), dtype=numpy.float64)
 
 
     self._info.line("Cell geometry: ")
@@ -175,11 +175,9 @@ class FIATSimplex(ReferenceCell):
 
     Sieve: breadth search first (faces, edges, corners)
     """
-    import FIAT.shapes
-
-    basis = self.cell.function_space()
-    dim = FIAT.shapes.dimension(self._getShape())
-    ids = self.cell.Udual.entity_ids
+    basis = self.cell.get_nodal_basis()
+    dim = self._getShape().get_spatial_dimension()
+    ids = self.cell.dual.get_entity_ids()
     permutation = []
     if dim == 1:
       for vertex in ids[0]:
@@ -253,38 +251,37 @@ class FIATSimplex(ReferenceCell):
     """
     
     import FIAT.quadrature
-    return FIAT.quadrature.make_quadrature_by_degree(self._getShape(),
-                                                     self.order)
+    return FIAT.quadrature.make_quadrature(self._getShape(), self.order)
 
 
   def _setupBasisFns(self):
     """
     Setup basis functions for reference cell.
     """
-    from FIAT.Lagrange import Lagrange
+    from FIAT.lagrange import Lagrange
     self.cell = Lagrange(self._getShape(), self.degree)
-    return self.cell.function_space() 
+    return self.cell.get_nodal_basis() 
 
 
   def _setupVertices(self):
     """
     Setup evaluation functional points for reference cell.
     """
-    return self.cell.Udual.pts
+    return numpy.array([n.get_point_dict().keys()[0] for n in self.cell.dual.get_nodes()], dtype=numpy.float64)
 
 
   def _getShape(self):
     """
     Parse string into FIAT shape.
     """
-    import FIAT.shapes
+    from FIAT.reference_element import default_simplex
     name = self.shape.lower()
     if "tetrahedron" == name:
-      shape = FIAT.shapes.TETRAHEDRON
+      shape = default_simplex(3)
     elif "triangle" == name:
-      shape = FIAT.shapes.TRIANGLE
+      shape = default_simplex(2)
     elif "line" == name:
-      shape = FIAT.shapes.LINE
+      shape = default_simplex(1)
     elif "point" == name:
       shape = None
     else:

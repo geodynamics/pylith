@@ -30,7 +30,7 @@
 namespace ALE {
  
   /// PETSc mesh
-  class Mesh;
+  template class Mesh<PetscInt,PetscScalar>;
 } // ALE
 
 #endif // pylith_utils_sievefwd_hh

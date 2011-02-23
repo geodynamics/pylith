@@ -44,6 +44,7 @@
 class pylith::meshio::UCDFaultFile
 { // UCDFaultFile
   friend class TestUCDFaultFile; // unit testing
+  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -70,7 +71,7 @@ public :
   static
   void read(const char* filename,
 	    topology::SubMesh* faultMesh,
-	    ALE::Obj<ALE::Mesh>& faultBoundary,
+	    ALE::Obj<FlexMesh>& faultBoundary,
 	    const topology::Mesh& mesh);
 
 }; // UCDFaultFile

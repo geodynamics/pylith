@@ -229,7 +229,6 @@ class Tri6(object):
                            [self.N3p(q), self.N3q(q)],
                            [self.N4p(q), self.N4q(q)],
                            [self.N5p(q), self.N5q(q)]])
-      print deriv
       basisDeriv[iQuad] = deriv.reshape((6, 2))
       iQuad += 1
 
@@ -406,19 +405,19 @@ class TestFIATSimplex(unittest.TestCase):
     """
     cell = FIATSimplex()
 
-    import FIAT.shapes
+    from FIAT.reference_element import default_simplex
 
     cell.shape = "line"
     shape = cell._getShape()
-    self.assertEqual(FIAT.shapes.LINE, shape)
+    self.assertEqual(default_simplex(1).get_shape(), shape.get_shape())
 
     cell.shape = "triangle"
     shape = cell._getShape()
-    self.assertEqual(FIAT.shapes.TRIANGLE, shape)
+    self.assertEqual(default_simplex(2).get_shape(), shape.get_shape())
 
     cell.shape = "tetrahedron"
     shape = cell._getShape()
-    self.assertEqual(FIAT.shapes.TETRAHEDRON, shape)
+    self.assertEqual(default_simplex(3).get_shape(), shape.get_shape())
     return
 
 

@@ -205,14 +205,14 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = 
-    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> s = 
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
+  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, numCells,
                                               const_cast<int*>(data.cells), 
 					      data.numVertices,
                                               interpolate, numBasis);
-  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();
@@ -328,14 +328,14 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 
   // Cells and vertices
   const bool interpolate = false;
-  ALE::Obj<ALE::Mesh::sieve_type> s = 
-    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> s = 
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, numCells,
+  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, numCells,
                                               const_cast<int*>(data.cells), 
 					      data.numVertices,
                                               interpolate, numBasis);
-  std::map<ALE::Mesh::point_type,ALE::Mesh::point_type> renumbering;
+  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
   ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
   sieveMesh->setSieve(sieve);
   sieveMesh->stratify();

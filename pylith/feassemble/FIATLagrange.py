@@ -96,18 +96,19 @@ class FIATLagrange(ReferenceCell):
       dim = self.cellDim
     
       # Get coordinates of vertices (dual basis)
-      vertices = numpy.array(self._setupVertices(element))
+      vertices = numpy.array(self._setupVertices(element), dtype=numpy.float64)
 
       # Evaluate basis functions at quadrature points
-      quadpts = numpy.array(quadrature.get_points())
-      quadwts = numpy.array(quadrature.get_weights())
+      from FIAT.polynomial_set import mis
+      quadpts    = numpy.array(quadrature.get_points(), dtype=numpy.float64)
+      quadwts    = numpy.array(quadrature.get_weights(), dtype=numpy.float64)
       numQuadPts = len(quadpts)
-      basis = numpy.array(element.function_space().tabulate(quadrature.get_points())).transpose()
-      numBasis = len(element.function_space())
+      evals      = element.get_nodal_basis().tabulate(quadrature.get_points(), 1)
+      basis      = numpy.array(evals[mis(1, 0)[0]], dtype=numpy.float64).transpose()
+      numBasis   = element.get_nodal_basis().get_num_members()
 
       # Evaluate derivatives of basis functions at quadrature points
-      basisDeriv = numpy.array([element.function_space().deriv_all(d).tabulate(quadrature.get_points()) \
-                                for d in range(1)]).transpose()
+      basisDeriv = numpy.array([evals[alpha] for alpha in mis(1, 1)], dtype=numpy.float64).transpose()
 
       self.numQuadPts = numQuadPts**dim
       self.numCorners = numBasis**dim
@@ -378,10 +379,10 @@ class FIATLagrange(ReferenceCell):
       self.cellDim = 0
       self.numCorners = 1
       self.numQuadPts = 1
-      self.basis = numpy.array([1.0])
-      self.basisDeriv = numpy.array([1.0])
-      self.quadPts = numpy.array([0.0])
-      self.quadWts = numpy.array([1.0])
+      self.basis = numpy.array([1.0], dtype=numpy.float64)
+      self.basisDeriv = numpy.array([1.0], dtype=numpy.float64)
+      self.quadPts = numpy.array([0.0], dtype=numpy.float64)
+      self.quadWts = numpy.array([1.0], dtype=numpy.float64)
 
     self._info.line("Cell geometry: ")
     self._info.line(self.geometry)
@@ -405,15 +406,13 @@ class FIATLagrange(ReferenceCell):
     """
     Set members based using inventory.
     """
-    import FIAT.shapes
-
     ReferenceCell._configure(self)
     self.cellDim = self.inventory.dimension
     self.degree = self.inventory.degree
     self.order = self.inventory.order
 
     if self.order == -1:
-      self.order = 2*self.degree+1
+      self.order = self.degree+1
     return
 
 
@@ -455,25 +454,25 @@ class FIATLagrange(ReferenceCell):
     """
     Setup quadrature rule for reference cell.
     """
-    import FIAT.quadrature
-    import FIAT.shapes
-    return FIAT.quadrature.make_quadrature_by_degree(FIAT.shapes.LINE, self.order)
+    from FIAT.quadrature import make_quadrature
+    from FIAT.reference_element import default_simplex
+    return make_quadrature(default_simplex(1), self.order)
 
 
   def _setupElement(self):
     """
     Setup the finite element for reference cell.
     """
-    import FIAT.Lagrange
-    import FIAT.shapes
-    return FIAT.Lagrange.Lagrange(FIAT.shapes.LINE, self.degree)
+    from FIAT.lagrange import Lagrange
+    from FIAT.reference_element import default_simplex
+    return Lagrange(default_simplex(1), self.degree)
 
 
   def _setupVertices(self, element):
     """
     Setup evaluation functional points for reference cell.
     """
-    return element.Udual.pts
+    return [n.get_point_dict().keys()[0] for n in element.dual.get_nodes()]
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
