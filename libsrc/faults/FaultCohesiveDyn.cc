@@ -1651,7 +1651,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 								 *c_iter, ncV);
     const int coneSize = ncV.getSize();
     assert(coneSize == 3*numBasis);
-    const Mesh::point_type *cohesiveCone = ncV.getPoints();
+    const SieveMesh::point_type *cohesiveCone = ncV.getPoints();
     assert(0 != cohesiveCone);
 
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];

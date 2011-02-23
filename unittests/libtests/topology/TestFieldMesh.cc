@@ -1321,8 +1321,8 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
     new Mesh::SieveMesh::sieve_type(sieveMesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
 
-  ALE::Obj<ALE::Mesh::sieve_type> s = 
-    new ALE::Mesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> s = 
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   
   const int cellDim = _TestFieldMesh::cellDim;
   const int ncells = _TestFieldMesh::ncells;
@@ -1332,7 +1332,7 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   const int spaceDim = _TestFieldMesh::cellDim;
   const double* coordinates = _TestFieldMesh::coordinates;
   const bool interpolate = false;
-  ALE::SieveBuilder<ALE::Mesh>::buildTopology(s, cellDim, ncells, (int*) cells,
+  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, ncells, (int*) cells,
 					      nvertices, interpolate, 
 					      ncorners);
   std::map<Mesh::SieveMesh::point_type,Mesh::SieveMesh::point_type> renumbering;

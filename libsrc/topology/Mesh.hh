@@ -32,7 +32,7 @@
 
 #include "ISectionSpaces.hh" // USES ISectionSpaces
 
-#include <petscmesh.hh> // HASA ALE::IMesh
+#include "pylith/utils/sievetypes.hh" // HASA pylith::SieveMesh
 
 // Mesh -----------------------------------------------------------------
 /** @brief PyLith finite-element mesh.
@@ -58,12 +58,16 @@ public :
    *   (1) SieveSubMesh - SubMesh object
    */
   //@{
-  typedef ALE::IMesh<PetscInt,PetscScalar> SieveMesh;
-  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
+  typedef pylith::SieveMesh SieveMesh;
+  typedef pylith::SieveSubMesh SieveSubMesh;
 
-  typedef SieveMesh::int_section_type IntSection;
   typedef SieveMesh::real_section_type RealSection;
   typedef ISectionSpaces<SieveMesh::point_type, double> RealUniformSection;
+  typedef SieveMesh::int_section_type IntSection;
+  typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
+  typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
+  typedef ALE::ISieveVisitor::UpdateAllVisitor<RealSection> UpdateAllVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
   //@}
 
 

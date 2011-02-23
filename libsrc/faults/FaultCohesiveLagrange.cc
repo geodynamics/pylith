@@ -1446,7 +1446,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   assert(!faultCells.isNull());
   SieveSubMesh::label_sequence::iterator f_iter = faultCells->begin();
 
-  SubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
+  SieveSubMesh::renumbering_type& renumbering = faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator renumberingEnd =
     renumbering.end();
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
@@ -1474,7 +1474,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
     const int coneSize = ncV.getSize();
     assert(coneSize == numCorners);
-    const Mesh::point_type *cone = ncV.getPoints();
+    const SieveMesh::point_type *cone = ncV.getPoints();
     assert(0 != cone);
 
     for (int iConstraint = 0; iConstraint < numConstraintVert; ++iConstraint) {
@@ -1635,7 +1635,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
     ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve,
       *c_iter, ncV);
     const int coneSize = ncV.getSize();
-    const Mesh::point_type *cone = ncV.getPoints();
+    const SieveSubMesh::point_type *cone = ncV.getPoints();
 
     for (int v = 0; v < coneSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
