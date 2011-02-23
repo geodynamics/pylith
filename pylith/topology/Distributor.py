@@ -81,6 +81,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
+    mesh.deallocate()
 
     if self.writePartition:
       self.dataWriter.initialize(normalizer)
