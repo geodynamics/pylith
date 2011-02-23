@@ -2,6 +2,8 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* Check for FIAT during configure.
+
 * GenMaxwellQpQs
 
   How to define viscosity and combinations?????
