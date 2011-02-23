@@ -29,23 +29,14 @@
 
 namespace pylith {
 
-#if 1
-  /// Sieve mesh.
-  typedef ALE::IMesh<PetscInt,PetscScalar> Mesh;
-
-  /// Sieve submesh.
-  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, Mesh::point_type> > SubMesh;
-
-#else
   /// Sieve mesh (default, fast access with set sizes).
   typedef ALE::IMesh<PetscInt,PetscScalar> SieveMesh;
 
   /// Sieve mesh (flexible, slower access without set sizes).
-  typedef ALE::FlexMesh<PetscInt,PetscScalar> SieveFlexMesh;
+  typedef ALE::Mesh<PetscInt,PetscScalar> SieveFlexMesh;
 
   /// Sieve submesh.
-  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, Mesh::point_type> > SieveSubMesh;
-#endif
+  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
 
 } // pylith
 

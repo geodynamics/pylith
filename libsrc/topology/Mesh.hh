@@ -30,7 +30,7 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
-#include <petscmesh.hh> // HASA ALE::IMesh
+#include "pylith/utils/sievetypes.hh" // HASA pylith::SieveMesh
 
 // Mesh -----------------------------------------------------------------
 /** @brief PyLith finite-element mesh.
@@ -56,10 +56,11 @@ public :
    *   (1) SieveSubMesh - SubMesh object
    */
   //@{
-  typedef ALE::IMesh<> SieveMesh;
+  typedef pylith::SieveMesh SieveMesh;
+  typedef pylith::SieveSubMesh SieveSubMesh;
+
   typedef SieveMesh::real_section_type RealSection;
   typedef SieveMesh::int_section_type IntSection;
-  typedef ALE::IMesh<ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
   typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
   typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
   typedef ALE::ISieveVisitor::UpdateAllVisitor<RealSection> UpdateAllVisitor;
