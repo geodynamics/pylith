@@ -35,8 +35,18 @@
 int
 pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh, int materialId)
 { // numMaterialCells
-  return mesh.sieveMesh()->getLabelStratum("material-id", materialId)->size();
+  int ncells = 0;
+
+  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
+  if (!sieveMesh.isNull()) {
+    const ALE::Obj<Mesh::SieveMesh::label_sequence>& cells = 
+      sieveMesh->getLabelStratum("material-id", materialId);
+    if (!cells.isNull())
+      ncells = cells->size();
+  } // if
 } // numMaterialCells
+
+
 void
 pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,

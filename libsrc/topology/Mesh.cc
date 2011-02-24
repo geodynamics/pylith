@@ -65,7 +65,7 @@ void
 pylith::topology::Mesh::deallocate(void)
 { // deallocate
   delete _coordsys; _coordsys = 0;
-  _mesh.destroy(); // check refCnt, ALE::setVerbosity()
+  _mesh.destroy();
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -155,31 +155,37 @@ void
 pylith::topology::Mesh::groups(int* numNames, 
 			       char*** names) const
 { // groups
-  assert(!_mesh.isNull());
-  const ALE::Obj<std::set<std::string> >& sectionNames =  
-    _mesh->getIntSections();
-  assert(!sectionNames.isNull());
-  
-  *numNames = sectionNames->size();
-  *names = new char*[sectionNames->size()];
-  assert(*names);
+  if (!_mesh.isNull()) {
+    assert(!_mesh.isNull());
+    const ALE::Obj<std::set<std::string> >& sectionNames =  
+      _mesh->getIntSections();
+    assert(!sectionNames.isNull());
+    
+    *numNames = sectionNames->size();
+    *names = new char*[sectionNames->size()];
+    assert(*names);
+    
+    const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
+    int i = 0;
+    for (std::set<std::string>::const_iterator n_iter=sectionNames->begin(); 
+	 n_iter != namesEnd;
+	 ++n_iter) {
+      const char len = n_iter->length();
+      char* newName = 0;
+      if (len > 0) {
+	newName = new char[len+1];
+	strncpy(newName, n_iter->c_str(), len+1);
+      } else {
+	newName = new char[1];
+	newName[0] ='\0';
+      } // if/else
+      (*names)[i++] = newName;
+    } // for
 
-  const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
-  int i = 0;
-  for (std::set<std::string>::const_iterator n_iter=sectionNames->begin(); 
-       n_iter != namesEnd;
-       ++n_iter) {
-    const char len = n_iter->length();
-    char* newName = 0;
-    if (len > 0) {
-      newName = new char[len+1];
-      strncpy(newName, n_iter->c_str(), len+1);
-    } else {
-      newName = new char[1];
-      newName[0] ='\0';
-    } // if/else
-    (*names)[i++] = newName;
-  } // for
+  } else {
+    *numNames = 0;
+    *names = 0;
+  } // if/else
 } // groups
 
 // ----------------------------------------------------------------------

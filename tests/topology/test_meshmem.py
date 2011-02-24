@@ -66,6 +66,10 @@ class TestApp(Script):
     from pylith.perf.MemoryLogger import MemoryLogger
     self.logger = MemoryLogger()
     self.logger._configure()
+
+    from pylith.utils.petsc import MemoryLogger
+    sieveLogger =  MemoryLogger.singleton()
+
     from pylith.topology.topology import MeshOps_numMaterialCells
 
     from pylith.mpi.Communicator import petsc_comm_world
@@ -95,8 +99,7 @@ class TestApp(Script):
     self.logger.logMaterial("Mesh", material)
     
 
-    self._showStatus("After reading mesh")
-
+    self._showStatus("After reading mesh")    
 
     # ------------------------------------------------------------
     # Reorder mesh
@@ -109,6 +112,7 @@ class TestApp(Script):
     self.logger.memory["MeshReordering"] = 0
 
     self._showStatus("After reordering mesh")
+
 
     # ------------------------------------------------------------
     # Distribute mesh
@@ -142,11 +146,12 @@ class TestApp(Script):
 
     self._showStatus("After refining mesh")
 
-    if mesh != rmesh:
-      mesh.deallocate()
-    mesh = rmesh
-    self._showStatus("After refining mesh and deallocation")
-      
+    self.logger.logMesh("Mesh", mesh)
+    material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+    self.logger.logMaterial("Mesh", material)
+
+    self._showStatus("After deallocating original mesh")
+
 
     return
 
