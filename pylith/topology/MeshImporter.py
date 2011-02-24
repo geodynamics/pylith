@@ -121,11 +121,13 @@ class MeshImporter(MeshGenerator):
       mesh = self.distributor.distribute(mesh, normalizer)
       if self.debug:
         mesh.view("Distributed mesh.")
+      mesh.memLoggingStage = "DistributedMesh"
 
     # Refine mesh (if necessary)
     newMesh = self.refiner.refine(mesh)
     if not newMesh == mesh:
       mesh.deallocate()
+      newMesh.memLoggingStage = "RefinedMesh"
 
     # Nondimensionalize mesh (coordinates of vertices).
     newMesh.nondimensionalize(normalizer)

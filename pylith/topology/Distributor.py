@@ -81,7 +81,13 @@ class Distributor(PetscComponent, ModuleDistributor):
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
+
+    from pylith.utils.petsc import MemoryLogger
+    sieveLogger =  MemoryLogger.singleton()
+
+    sieveLogger.stagePush(mesh.memLoggingStage)
     mesh.deallocate()
+    sieveLogger.stagePop()
 
     if self.writePartition:
       self.dataWriter.initialize(normalizer)

@@ -40,6 +40,10 @@ class Mesh(ModuleMesh):
       ModuleMesh.__init__(self, dim)
     else:
       ModuleMesh.__init__(self, dim, comm.handle)
+
+    # Name of logging stage for mesh. We progress through various
+    # stages as we read, distribute, and refine mesh.
+    self.memLoggingStage = "Mesh"
     return
 
 

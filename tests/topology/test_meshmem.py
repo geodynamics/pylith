@@ -60,8 +60,8 @@ class TestApp(Script):
     Run test.
     """
 
-    filenameIn = "data/tet4.exo"
-    #filenameIn = "tri3_200m_gradient.exo"
+    #filenameIn = "data/tet4.exo"
+    filenameIn = "tri3_200m_gradient.exo"
 
     from pylith.perf.MemoryLogger import MemoryLogger
     self.logger = MemoryLogger()
@@ -92,11 +92,10 @@ class TestApp(Script):
     material._configure()
 
     mesh = io.read(debug=False, interpolate=False)
-    del io
 
-    self.logger.logMesh("Mesh", mesh)
+    self.logger.logMesh(mesh.memLoggingStage, mesh)
     material.ncells = MeshOps_numMaterialCells(mesh, material.id())
-    self.logger.logMaterial("Mesh", material)
+    self.logger.logMaterial(mesh.memLoggingStage, material)
     
 
     self._showStatus("After reading mesh")    
@@ -106,7 +105,6 @@ class TestApp(Script):
     from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
     ordering = ReverseCuthillMcKee()
     ordering.reorder(mesh)
-    del ordering
 
     # Expect no memory allocation
     self.logger.memory["MeshReordering"] = 0
@@ -122,35 +120,37 @@ class TestApp(Script):
       distributor = Distributor()
       normalizer = Nondimensional()
       dmesh = distributor.distribute(mesh, normalizer)
-      del distributor
-      
-      self.logger.logMesh("DistributedMesh", dmesh)
+      dmesh.memLoggingStage = "DistributedMesh"
+
+      self.logger.logMesh(mesh.memLoggingStage, mesh)
+      material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+      self.logger.logMaterial(mesh.memLoggingStage, material)
+    
+      self.logger.logMesh(dmesh.memLoggingStage, dmesh)
       material.ncells = MeshOps_numMaterialCells(dmesh, material.id())
-      self.logger.logMaterial("DistributedMesh", material)
+      self.logger.logMaterial(dmesh.memLoggingStage, material)
 
       self._showStatus("After distributing mesh")
 
-      mesh.deallocate()
       mesh = dmesh
-      self._showStatus("After distributing mesh and deallocation")
+      
       
     # Refine mesh (if necessary)
     from pylith.topology.RefineUniform import RefineUniform
     refiner = RefineUniform()
     rmesh = refiner.refine(mesh)
-    del refiner
+    rmesh.memLoggingStage = "RefinedMesh"
+
+    print "Unrefined mesh logging stage",mesh.memLoggingStage
+    self.logger.logMesh(mesh.memLoggingStage, mesh)
+    material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+    self.logger.logMaterial(mesh.memLoggingStage, material)
     
-    self.logger.logMesh("RefinedMesh", rmesh)
+    self.logger.logMesh(rmesh.memLoggingStage, rmesh)
     material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
-    self.logger.logMaterial("RefinedMesh", material)
+    self.logger.logMaterial(rmesh.memLoggingStage, material)
 
     self._showStatus("After refining mesh")
-
-    self.logger.logMesh("Mesh", mesh)
-    material.ncells = MeshOps_numMaterialCells(mesh, material.id())
-    self.logger.logMaterial("Mesh", material)
-
-    self._showStatus("After deallocating original mesh")
 
 
     return
