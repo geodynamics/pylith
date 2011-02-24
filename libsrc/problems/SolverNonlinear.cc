@@ -171,6 +171,8 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 
 // ----------------------------------------------------------------------
 // Generic C interface for customized PETSc line search.
+#undef __FUNCT__
+#define __FUNCT__ "lineSearch"
 PetscErrorCode
 pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 					      void *lsctx,
