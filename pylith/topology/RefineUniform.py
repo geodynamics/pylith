@@ -71,7 +71,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
       from pylith.utils.petsc import MemoryLogger
       sieveLogger =  MemoryLogger.singleton()
 
-      sieveLogger.stagePush("Mesh")      
+      sieveLogger.stagePush(mesh.memLoggingStage)      
       mesh.deallocate()
       sieveLogger.stagePop()
 
