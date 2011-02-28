@@ -64,9 +64,7 @@ public :
   typedef SieveMesh::real_section_type RealSection;
   typedef ISectionSpaces<SieveMesh::point_type, double> RealUniformSection;
   typedef SieveMesh::int_section_type IntSection;
-  typedef ALE::ISieveVisitor::RestrictVisitor<RealSection> RestrictVisitor;
-  typedef ALE::ISieveVisitor::UpdateAddVisitor<RealSection> UpdateAddVisitor;
-  typedef ALE::ISieveVisitor::UpdateAllVisitor<RealSection> UpdateAllVisitor;
+
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
   //@}
 
