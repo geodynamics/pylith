@@ -17,6 +17,6 @@
 #
 
 dist_noinst_DATA = \
-	doxyconfig
+	Doxyfile
 
 # End of file 
