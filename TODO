@@ -2,8 +2,6 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-* Check for FIAT during configure.
-
 * GenMaxwellQpQs
 
   How to define viscosity and combinations?????
@@ -64,19 +62,6 @@ SECONDARY PRIORITIES
       + Refactor friction sensitivity solve, fault preconditioner, and
         adjustSolnLumped()
 
-* Optimization
-  + inline methods (what isn't getting inlined) -Winline
-  + Specialized elasticity integrator objects for Quad4, Hex8?
-    - Add for lgdeform, implicit time integration?
-
-
-* Interpolated meshes + temperature field
-  No fault, linear elasticity
-  Benchmark memory use and speed
-
-  Incompressibility, temperature/heat
-
-
 * Cleanup of materials [stable]
 
   + Account for initial strain in viscoelastic models
@@ -84,6 +69,29 @@ SECONDARY PRIORITIES
   + Cleanup documentation
     + Move formulations not used to Appendix
     + Cleanup notation
+
+* Optimization
+  + inline methods (what isn't getting inlined) -Winline
+  + Specialized elasticity integrator objects for Quad4, Hex8?
+    - Add for lgdeform, implicit time integration?
+
+
+* Explicit time step
+
+  utility code
+    Compute stable explicit time step
+    Write stable time step explicit (CFL, adhoc)
+
+* Manual
+
+  Are material models consistent with governing equations discussion?
+
+* Interpolated meshes + temperature field
+  No fault, linear elasticity
+  Benchmark memory use and speed
+
+  Incompressibility, temperature/heat
+
 
 * Testing
   + Need full-scale test with variation in physical properties
@@ -142,16 +150,6 @@ SECONDARY PRIORITIES
       compute total strain (if nec)
       compute strain rate, get maximum
     
-* Explicit time step
-
-  utility code
-    Compute stable explicit time step
-    Write stable time step explicit (CFL, adhoc)
-
-* Manual
-
-  Are material models consistent with governing equations discussion?
-
 ----------------------------------------------------------------------
 CLEANUP
 ----------------------------------------------------------------------
@@ -365,11 +363,6 @@ Release 1.6
   1. HDF5 output
 
      Write data into raw binary data file, compress each time chunk
-
-       Datasets contain entire time histories (makes it possible to
-       slice along time or space)
-
-     HDF5 metadata file points to raw binary data file
 
   2. Output data at arbitrary point locations
 
