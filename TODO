@@ -2,6 +2,10 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* Memory model
+
+  Memory is not being tracked for distribution.
+
 * GenMaxwellQpQs
 
   How to define viscosity and combinations?????
@@ -11,7 +15,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
   propagate use of field split from SolverLinear to SolverNonlinear [MATT]
-    make sure we reform the preconditioner when we reform the Jacobian
+    custom fault preconditioner is not being computed
 
 * Unform global refinement
 
