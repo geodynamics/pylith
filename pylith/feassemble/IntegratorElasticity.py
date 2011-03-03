@@ -76,6 +76,7 @@ class IntegratorElasticity(Integrator):
     self._eventLogger.eventBegin(logEvent)
 
     Integrator.verifyConfiguration(self)
+    self.materialObj.verifyConfiguration()
 
     if self.mesh.dimension() != self.materialObj.dimension():
       raise ValueError("Mesh dimension is '%d' but material '%s' of type " \
