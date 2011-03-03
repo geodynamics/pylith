@@ -2,34 +2,52 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-* Memory model
+* Memory model [MATT and BRAD]
 
-  Memory is not being tracked for distribution.
+  (1) The memory logging for distribution logs Creation and Stratification
+  as Creation. Because we set the logging stages in PyLith and these
+  are lumped together within the same Sieve routine, we cannot
+  separate them.
 
-* GenMaxwellQpQs
+  (2) When we deallocate the distributed mesh, we do not deallocate all of
+  the memory. This suggests some object is leaking memory.
 
-  How to define viscosity and combinations?????
+  (3) The memory used by the distributed mesh is much greater than
+  that predicted by the memory model. MATT- Could this be related to
+  each processor having lots of gaps in the range of cells and
+  vertices it has?
 
-* Fault preconditioner
+* Field split with nonlinear solver [MATT]
 
-  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
-
-  propagate use of field split from SolverLinear to SolverNonlinear [MATT]
-    custom fault preconditioner is not being computed
+  The custom preconditioner is not being used in the nonlinear
+  solve. The error appears to be in SolverNonlinear.cc::solve where we
+  set the KSP operator. The _precondMatrix in SolverNonlinear::solve
+  matches the one used in the linear solve.
 
 * Unform global refinement
 
   hex8, level 2 [Need to update overlap]
 
-* Output to HDF5 files.
+* Output to HDF5 files. [BRAD and MATT]
 
-    Add time dataset to vertex_fields and cell_fields.
+  (1) The PETSc Vec is not created correctly for DirichletBC. If the
+  x-dof is fixed the unconstrained (y-dof) values end up in the x-dof
+  with zeros for the y-dof, the opposite of the correct behavior.
 
-    Add creation of .xmf metadata file for ParaView/Visit. 
-    Will this work for [#timesteps, #points, fiberDim]?
+  (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
+
+  (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
 
 
-* Reimplement Fields to use a single section.
+* Fault preconditioner [BRAD]
+
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
+
+* GenMaxwellQpQs [BRAD]
+
+  Need to redo Maxwell time calculation. Use ratio.
+
+* Reimplement Fields to use a single section. [BRAD]
 
     Fields
     FieldsNew -> CombinedFields
