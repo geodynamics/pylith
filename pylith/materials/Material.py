@@ -125,8 +125,6 @@ class Material(PetscComponent):
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    print "REFERENCE CELL #corners: ", self.quadrature.cell.numCorners
-    print "MESH #corners: ", self.mesh.coneSize()
     if self.quadrature.cellDim() != self.mesh.dimension() or \
        self.quadrature.spaceDim() != self.mesh.coordsys().spaceDim() or \
        self.quadrature.cell.numCorners != self.mesh.coneSize():
