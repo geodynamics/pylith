@@ -33,7 +33,8 @@
 
 // ----------------------------------------------------------------------
 int
-pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh, int materialId)
+pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
+					    int materialId)
 { // numMaterialCells
   int ncells = 0;
 
@@ -47,6 +48,7 @@ pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh, int materialId)
 } // numMaterialCells
 
 
+// ----------------------------------------------------------------------
 void
 pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,
