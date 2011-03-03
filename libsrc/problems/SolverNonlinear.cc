@@ -167,6 +167,12 @@ pylith::problems::SolverNonlinear::solve(
     err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
     assert(solutionSection->getNumSpaces() == num);
 
+#if 0 // debugging
+    std::cout << "Preconditioner Matrix" << std::endl;
+    MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+#endif
+
+
     MatStructure flag;
     err = KSPGetOperators(ksps[num-1], &A, 
 			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
