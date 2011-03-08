@@ -120,7 +120,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   assert(std::string("") != label());
   
   topology::SubMesh faultMesh;
-  ALE::Obj<FlexMesh> faultBoundary;
+  ALE::Obj<SieveFlexMesh> faultBoundary;
   
   // Get group of vertices associated with fault
   const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();

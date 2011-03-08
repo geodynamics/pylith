@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
-#include "pylith/utils/sievetypes.hh" // USE FlexMesh
+#include "pylith/utils/sievetypes.hh" // USE Obj
 
 // RefineTri3 --------------------------------------------------------
 /// Object for refinement of cells.
@@ -37,7 +37,7 @@ class ALE::MeshRefiner
 { // MeshRefiner
   typedef IMesh<PetscInt,PetscScalar> mesh_type;
   typedef mesh_type::point_type point_type;
-  typedef pylith::FlexMesh FlexMesh;
+  typedef pylith::SieveFlexMesh SieveFlexMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

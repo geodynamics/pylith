@@ -425,7 +425,7 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
   _createLabels(newMesh, mesh, refiner);
 
   // Create sensored depth
-  const ALE::Obj<FlexMesh::label_type>& censoredLabel = newMesh->createLabel("censored depth");
+  const ALE::Obj<SieveFlexMesh::label_type>& censoredLabel = newMesh->createLabel("censored depth");
   assert(!censoredLabel.isNull());
 
   mesh_type::DepthVisitor depthVisitor(*newSieve, _orderNewMesh->verticesCensored().min(), *censoredLabel);

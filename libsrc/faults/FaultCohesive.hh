@@ -31,7 +31,6 @@
 #include "pylith/topology/SubMesh.hh" // ISA Integrator<Quadrature<SubMesh> >
 #include "pylith/feassemble/Quadrature.hh" // ISA Integrator<Quadrature>
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
-#include "pylith/utils/sievetypes.hh" // USE FlexMesh
 
 // FaultCohesive --------------------------------------------------------
 /// Absract base class for fault surface implemented with cohesive cells.
@@ -39,7 +38,6 @@ class pylith::faults::FaultCohesive : public Fault,
 				      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
-  typedef pylith::FlexMesh FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

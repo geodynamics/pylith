@@ -27,6 +27,10 @@ class Memory(object):
   sizeDouble = 8
   import distutils.sysconfig
   pointerSize = distutils.sysconfig.get_config_var('SIZEOF_VOID_P')
+
+
+  import os
+
   if pointerSize is None:
     # Get pointer using sizeof(void*) in PyLith C++ library.
     pointerSize = petsc.sizeofVoidPtr()
@@ -39,7 +43,10 @@ class Memory(object):
   elif pointerSize == 8:
     sizeSetEntry = 24
     sizeMapEntry = 32
-    sizeArrow    = 68 # 64 bit, 3 ints + set entry + map entry
+    if os.uname()[0].lower() == "darwin":
+      sizeArrow = 68 # 64 bit, 3 ints + set entry + map entry
+    else:
+      sizeArrow = 56 # 64 bit, 3 ints + set entry + map entry
 
   elif pointerSize is None:
     sizeSetEntry = 0
