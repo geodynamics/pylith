@@ -28,6 +28,8 @@
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
 
+#include "pylith/utils/sievetypes.hh" // USE FlexMesh
+
 // RefineTri3 --------------------------------------------------------
 /// Object for refinement of cells.
 template<typename cellrefiner_type>
@@ -35,7 +37,7 @@ class ALE::MeshRefiner
 { // MeshRefiner
   typedef IMesh<PetscInt,PetscScalar> mesh_type;
   typedef mesh_type::point_type point_type;
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
+  typedef pylith::FlexMesh FlexMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

@@ -28,6 +28,7 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USE FlexMesh
 
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.
@@ -41,7 +42,7 @@ public :
   typedef std::vector<SieveMesh::sieve_type::point_type> PointArray;
   typedef std::pair<SieveMesh::sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>  oPointArray;
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
+  typedef pylith::FlexMesh FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

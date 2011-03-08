@@ -34,12 +34,12 @@ class Memory(object):
   if pointerSize == 4:
     sizeSetEntry = 12
     sizeMapEntry = 16
-    sizeArrow    = 40 # 32 bit
+    sizeArrow    = 40 # 32 bit, 3 ints + set entry + map entry
 
   elif pointerSize == 8:
     sizeSetEntry = 24
     sizeMapEntry = 32
-    sizeArrow    = 56 # 64 bit
+    sizeArrow    = 68 # 64 bit, 3 ints + set entry + map entry
 
   elif pointerSize is None:
     sizeSetEntry = 0
