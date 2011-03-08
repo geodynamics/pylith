@@ -34,6 +34,7 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USE FlexMesh
 
 // MeshBuilder ----------------------------------------------------------
 /// Helper class for constructing Sieve mesh data structures.
@@ -42,7 +43,7 @@ class pylith::meshio::MeshBuilder
 
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
+  typedef pylith::FlexMesh FlexMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
