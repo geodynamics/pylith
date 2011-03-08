@@ -28,7 +28,7 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/sievetypes.hh" // USE FlexMesh
+#include "pylith/utils/sievetypes.hh" // USE SieveFlexMesh
 
 // TopologyOps ----------------------------------------------------------
 /// Helper object for creation of cohesive cells.
@@ -42,7 +42,6 @@ public :
   typedef std::vector<SieveMesh::sieve_type::point_type> PointArray;
   typedef std::pair<SieveMesh::sieve_type::point_type, int> oPoint_type;
   typedef std::vector<oPoint_type>  oPointArray;
-  typedef pylith::FlexMesh FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -81,8 +80,8 @@ public :
 				    const int firstCell,
 				    const PointSet& faultVertices,
 				    const ALE::Obj<SieveMesh>& mesh,
-                    const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
-				    const ALE::Obj<FlexMesh::sieve_type>& faultSieve,
+                    const ALE::Obj<SieveFlexMesh::arrow_section_type>& orientation,
+				    const ALE::Obj<SieveFlexMesh::sieve_type>& faultSieve,
 				    const bool flipFault);
   
   static
@@ -92,14 +91,14 @@ public :
 				 const int faultVertices[],
 				 const int faultCells[],
 				 const ALE::Obj<SieveMesh>& mesh,
-				 const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
-				 const ALE::Obj<FlexMesh::sieve_type>& faultSieve);
+				 const ALE::Obj<SieveFlexMesh::arrow_section_type>& orientation,
+				 const ALE::Obj<SieveFlexMesh::sieve_type>& faultSieve);
 
   static
   void orientFaultSieve(const int dim,
 			const ALE::Obj<SieveMesh>& mesh,
-			const ALE::Obj<FlexMesh::arrow_section_type>& orientation,
-			const ALE::Obj<FlexMesh>& fault);
+			const ALE::Obj<SieveFlexMesh::arrow_section_type>& orientation,
+			const ALE::Obj<SieveFlexMesh>& fault);
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh

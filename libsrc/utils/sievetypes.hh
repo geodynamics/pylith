@@ -38,9 +38,6 @@ namespace pylith {
   /// Sieve submesh.
   typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
 
-  /// Sieve flexible mesh.
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
-
 } // pylith
 
 #endif // pylith_utils_sievetypes_hh

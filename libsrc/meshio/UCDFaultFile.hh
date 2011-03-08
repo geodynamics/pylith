@@ -30,7 +30,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 
-#include "pylith/utils/sievetypes.hh" // USES ALE::Obj, ALE::Mesh, FlexMesh
+#include "pylith/utils/sievetypes.hh" // USES ALE::Obj, SieveFlexMesh
 
 // UCDFaultFile ---------------------------------------------------------
 /** @brief C++ object for reading a fault mesh from a UCD file.
@@ -44,7 +44,6 @@
 class pylith::meshio::UCDFaultFile
 { // UCDFaultFile
   friend class TestUCDFaultFile; // unit testing
-  typedef pylith::FlexMesh FlexMesh;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -71,7 +70,7 @@ public :
   static
   void read(const char* filename,
 	    topology::SubMesh* faultMesh,
-	    ALE::Obj<FlexMesh>& faultBoundary,
+	    ALE::Obj<SieveFlexMesh>& faultBoundary,
 	    const topology::Mesh& mesh);
 
 }; // UCDFaultFile
