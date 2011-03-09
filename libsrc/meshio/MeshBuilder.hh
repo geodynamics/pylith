@@ -34,6 +34,7 @@
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USE SieveFlexMesh
 
 // MeshBuilder ----------------------------------------------------------
 /// Helper class for constructing Sieve mesh data structures.
@@ -42,7 +43,6 @@ class pylith::meshio::MeshBuilder
 
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -92,7 +92,7 @@ public :
    */
   static
   void buildFaultMesh(const ALE::Obj<topology::Mesh::SieveMesh>& fault,
-		      ALE::Obj<FlexMesh>& faultBd,
+		      ALE::Obj<SieveFlexMesh>& faultBd,
 		      const double_array& coordinates,
 		      const int numVertices,
 		      const int spaceDim,

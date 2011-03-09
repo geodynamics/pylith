@@ -223,6 +223,8 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   }
   if (origSieveMesh->getIntSections()->size() > 0) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
+    const int numVertices = newSieveMesh->depthStratum(0)->size();
+    const int numCells    = newSieveMesh->heightStratum(0)->size();
     assert(!names.isNull());
 
     std::set<std::string>::const_iterator namesBegin = names->begin();
@@ -237,11 +239,23 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 	newSieveMesh->getIntSection(*n_iter);
       assert(!newSection.isNull());
 
-      // We assume all integer sections are complete sections
-      newSection->setChart(newSieveMesh->getSieve()->getChart());
+      // We assume all integer sections are supported on either cells or vertices
+      SieveMesh::point_type firstPoint;
+      IntSection::chart_type::const_iterator chartEnd = origSection->getChart().end();
+      for(IntSection::chart_type::const_iterator c_iter = origSection->getChart().begin(); c_iter != chartEnd; ++c_iter) {
+        if (origSection->getFiberDimension(*c_iter)) {
+          firstPoint = *c_iter;
+          break;
+        } // if
+      }
+      if (origSieveMesh->height(firstPoint) == 0) {
+        newSection->setChart(IntSection::chart_type(0, numCells));
+      } else {
+        newSection->setChart(IntSection::chart_type(numCells, numCells+numVertices));
+      } // if/else
       DistributionType::distributeSection(origSection, partition, renumbering,
-					  sendMeshOverlap, recvMeshOverlap, 
-					  newSection);
+                                          sendMeshOverlap, recvMeshOverlap, 
+                                          newSection);
 #if 0 // DEBUGGING
       std::string serialName("Serial ");
       std::string parallelName("Parallel ");

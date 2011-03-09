@@ -28,7 +28,7 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh::IntSection
-#include "pylith/utils/sievetypes.hh" // USE ALE::Obj
+#include "pylith/utils/sievetypes.hh" // USE ALE::Obj and SieveFlexMesh
 
 // CohesiveTopology -----------------------------------------------------
 /// Creation of cohesive cells.
@@ -37,7 +37,6 @@ class pylith::faults::CohesiveTopology
 
 private :
   typedef pylith::topology::Mesh::SieveMesh::point_type point_type;
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -54,7 +53,7 @@ public :
    */
   static
   void createFault(topology::SubMesh* faultMesh,
-		   ALE::Obj<FlexMesh>& faultBoundary,
+		   ALE::Obj<SieveFlexMesh>& faultBoundary,
 		   const topology::Mesh& mesh,
 		   const ALE::Obj<topology::Mesh::IntSection>& groupField,
 		   const bool flipFault =false);
@@ -76,7 +75,7 @@ public :
   static
   void create(topology::Mesh* mesh,
 	      const topology::SubMesh& faultMesh,
-              const ALE::Obj<FlexMesh>& faultBoundary,
+              const ALE::Obj<SieveFlexMesh>& faultBoundary,
               const ALE::Obj<topology::Mesh::IntSection>& groupField,
               const int materialId,
               int& firstFaultVertex,
