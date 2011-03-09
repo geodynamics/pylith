@@ -38,7 +38,6 @@ class pylith::faults::FaultCohesive : public Fault,
 				      public feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
-  typedef ALE::Mesh<PetscInt,PetscScalar> FlexMesh;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

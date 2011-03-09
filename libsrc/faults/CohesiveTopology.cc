@@ -41,7 +41,7 @@ typedef pylith::topology::Mesh::IntSection IntSection;
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
-                                              ALE::Obj<FlexMesh>& faultBoundary,
+                                              ALE::Obj<SieveFlexMesh>& faultBoundary,
                                               const topology::Mesh& mesh,
                                               const ALE::Obj<topology::Mesh::IntSection>& groupField,
 					      const bool flipFault)
@@ -66,11 +66,11 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = 
     new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!ifaultSieve.isNull());
-  ALE::Obj<FlexMesh> fault =
-    new FlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+  ALE::Obj<SieveFlexMesh> fault =
+    new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
   assert(!fault.isNull());
-  ALE::Obj<FlexMesh::sieve_type> faultSieve  =
-    new FlexMesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> faultSieve  =
+    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!faultSieve.isNull());
   const int debug = mesh.debug();
 
@@ -105,7 +105,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   if (debug)
     fault->view("Fault mesh");
 
-  faultBoundary = ALE::Selection<FlexMesh>::boundary(fault);
+  faultBoundary = ALE::Selection<SieveFlexMesh>::boundary(fault);
   if (debug)
     faultBoundary->view("Fault boundary mesh");
 
@@ -126,7 +126,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 void
 pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          const topology::SubMesh& faultMesh,
-                                         const ALE::Obj<FlexMesh>& faultBoundary,
+                                         const ALE::Obj<SieveFlexMesh>& faultBoundary,
                                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
@@ -138,8 +138,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   assert(!faultBoundary.isNull());
   assert(!groupField.isNull());
 
-  typedef ALE::SieveAlg<FlexMesh> sieveAlg;
-  typedef ALE::Selection<FlexMesh> selection;
+  typedef ALE::SieveAlg<SieveFlexMesh> sieveAlg;
+  typedef ALE::Selection<SieveFlexMesh> selection;
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -424,7 +424,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   // This completes the set of cells scheduled to be replaced
   TopologyOps::PointSet replaceCellsBase(replaceCells);
 
-  const ALE::Obj<FlexMesh::label_sequence>& faultBdVerts =
+  const ALE::Obj<SieveFlexMesh::label_sequence>& faultBdVerts =
     faultBoundary->depthStratum(0);
   assert(!faultBdVerts.isNull());
   TopologyOps::PointSet faultBdVertices;
@@ -701,8 +701,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   const ALE::Obj<SieveMesh::sieve_type> ifaultSieve =
     new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!ifaultSieve.isNull());
-  ALE::Obj<FlexMesh> fault = 
-    new FlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+  ALE::Obj<SieveFlexMesh> fault = 
+    new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
   assert(!fault.isNull());
   ALE::Obj<SieveFlexMesh::sieve_type> faultSieve =
     new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
