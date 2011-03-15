@@ -30,6 +30,8 @@
 
 #include "arrayfwd.hh"
 
+#include "sievetypes.hh" // ensure we include petscsys.h BEFORE valarray to prevent clash over isinf() and isnan().
+
 #include <vector>
 #include <valarray>
 

@@ -99,7 +99,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<SieveSubMesh::sieve_type>& sieve = sieveSubMesh->getSieve();
   assert(!sieve.isNull());
-  typedef ALE::SieveAlg<Mesh> SieveAlg;
+  typedef ALE::SieveAlg<SieveMesh> SieveAlg;
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
 
