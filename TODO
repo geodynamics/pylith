@@ -17,6 +17,12 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   each processor having lots of gaps in the range of cells and
   vertices it has?
 
+  IntSections - Matt improved distribution to use allow IntSections
+  over vertices or cells rather than vertices + cells. This cuts
+  differences down to 75%.
+
+  Need to check sum, because we may not be tracking deallocation.
+
 * Field split with nonlinear solver [MATT]
 
   The custom preconditioner is not being used in the nonlinear
@@ -27,7 +33,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 * Unform global refinement
 
   (1) Unit tests (serial) fail for hex8 refinement. An exception is
-  own in the call to the simple copy on line 451 of
+  thrown in the call to the simple copy on line 451 of
   RefineVol8Face4Edges2.cc.
 
   (2) The overlap is not updated properly for hex8 refinement. Running
@@ -36,9 +42,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Output to HDF5 files. [BRAD and MATT]
 
-  (1) The PETSc Vec is not created correctly for DirichletBC. If the
-  x-dof is fixed the unconstrained (y-dof) values end up in the x-dof
-  with zeros for the y-dof, the opposite of the correct behavior.
+  (1) The Sieve section to PETSc Vec is not done correctly for
+  DirichletBC. If the x-dof is fixed the unconstrained (y-dof) values
+  end up in the x-dof with zeros for the y-dof, the opposite of the
+  correct behavior.
 
   (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
 

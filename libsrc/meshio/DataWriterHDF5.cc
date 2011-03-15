@@ -258,6 +258,11 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
 
+#if 1
+    field.view("writeVertexField");
+    VecView(vector, PETSC_VIEWER_STDOUT_WORLD);
+#endif
+
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
     err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);

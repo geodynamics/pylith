@@ -838,7 +838,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
-				_section, &sinfo.scatter); 
+				&sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -984,6 +984,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
                                                   numbering->getChart().end(),
                                                   _section);
   assert(!order.isNull());
+
+  order->view("GLOBAL ORDER");
 
   // Create scatter
   err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
