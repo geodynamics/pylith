@@ -32,10 +32,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Unform global refinement
 
-  (1) Unit tests (serial) fail for hex8 refinement. An exception is
-  thrown in the call to the simple copy on line 451 of
-  RefineVol8Face4Edges2.cc.
-
   (2) The overlap is not updated properly for hex8 refinement. Running
   examples/twocells/twohex8/axialdisp.cfg with 2 processors and
   uniform refinement is a good test case.
