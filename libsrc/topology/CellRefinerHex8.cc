@@ -1115,7 +1115,7 @@ ALE::CellRefinerHex8::_newCells_QUAD_COHESIVE_LAGRANGE(const point_type** cells,
   const int numEdgesQuad12 = 12;
   const int numFacesQuad12 = 3;
   const int numNewCells = 4;
-  const int numNewVertices = 14;
+  const int numNewVertices = 15;
 
   int numEdges = 0;
   const EdgeType *edges;
@@ -1142,6 +1142,7 @@ ALE::CellRefinerHex8::_newCells_QUAD_COHESIVE_LAGRANGE(const point_type** cells,
     } // if
     newVertices[iNewVertex++] = _faceToVertex[faces[iFace]];
   } // for
+  assert(numNewVertices == iNewVertex);
 
   // new cell 0
   _cells[0*12+ 0] = cone[0] + coneVertexOffsetNormal;
