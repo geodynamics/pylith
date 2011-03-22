@@ -20,7 +20,7 @@
 
 #include "MeshIOSieve.hh" // implementation of class methods
 
-#include "petscmesh.hh"
+#include <petscdmmesh.hh>
 
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/topology/Mesh.hh" // USES Mesh

@@ -64,8 +64,7 @@ namespace pylith {
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverNonlinear::SolverNonlinear(void) :
-  _snes(0),
-  _precondMatrix(0)
+  _snes(0)
 { // constructor
 } // constructor
 
@@ -85,10 +84,6 @@ pylith::problems::SolverNonlinear::deallocate(void)
 
   if (0 != _snes) {
     PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
-  if (0 != _precondMatrix) {
-    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -119,20 +114,18 @@ pylith::problems::SolverNonlinear::initialize(
 			(void*) formulation);
   CHECK_PETSC_ERROR(err);
 
-  PetscMat jacobianMat = jacobian.matrix();
-  err = SNESSetJacobian(_snes, jacobianMat, jacobianMat, reformJacobian,
-			(void*) formulation);
+  err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPre, reformJacobian, (void*) formulation);
   CHECK_PETSC_ERROR(err);
 
   err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSet(_snes, lineSearch, 
-			  (void*) formulation); CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSet(_snes, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
     PetscPC pc = 0;
     err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
+    _ctx.pc = pc;
     _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
   } // if
 } // initialize
@@ -147,11 +140,12 @@ pylith::problems::SolverNonlinear::solve(
 { // solve
   assert(0 != solution);
 
+#if 0
   // Update KSP operators with custom preconditioner if necessary.
   const ALE::Obj<RealSection>& solutionSection = solution->section();
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+   assert(!sieveMesh.isNull());
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
       0 != _precondMatrix) {
     PetscKSP ksp = 0;
@@ -181,6 +175,7 @@ pylith::problems::SolverNonlinear::solve(
 			  flag); CHECK_PETSC_ERROR(err);
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
   } // if
+#endif
 
   const int solveEvent = _logger->eventId("SoNl solve");
   const int scatterEvent = _logger->eventId("SoNl scatter");

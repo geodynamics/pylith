@@ -763,8 +763,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   assert(!order.isNull());
 
   // Create scatter
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
-				&sinfo.scatter);
+  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, &sinfo.scatter);
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -837,8 +836,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   assert(!order.isNull());
 
   // Create scatter
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
-				&sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -913,8 +911,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   assert(!order.isNull());
 
   // Create scatter
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
-				&sinfo.scatter);
+  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, &sinfo.scatter);
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -988,8 +985,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   order->view("GLOBAL ORDER");
 
   // Create scatter
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order,
-				&sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec

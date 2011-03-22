@@ -32,7 +32,7 @@
 #include "pylith/utils/arrayfwd.hh" // HASA int_array
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
-#include <petscmesh.hh>
+#include <petscdmmesh.hh>
 
 #include <map> // USES std::map
 #include <string> // USES std::string

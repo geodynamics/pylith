@@ -33,6 +33,14 @@
 #include "pylith/utils/utilsfwd.hh" // USES EventLogger
 #include "pylith/utils/petscfwd.h" // USES PetscMat
 
+typedef struct {
+  PetscPC     pc;
+  PetscMat    A;
+  const char *faultFieldName;
+  PetscMat    faultA;
+} FaultPreconCtx;
+
+
 // Solver ---------------------------------------------------------
 /** @brief Abstract C++ base class for using PETSc linear and
  * nonlinear solvers.
@@ -88,7 +96,9 @@ protected :
 
   Formulation* _formulation; ///< Handle to formulation for system of eqns.
   utils::EventLogger* _logger; ///< Event logger.
-
+  PetscMat _precondMatrix; ///< Preconditioning matrix for Lagrange constraints.
+  PetscMat _jacobianPre; ///< global fault preconditioning matrix
+  FaultPreconCtx _ctx; ///< Context for global fault preconditioning matrix
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
