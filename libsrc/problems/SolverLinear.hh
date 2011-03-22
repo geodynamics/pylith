@@ -85,7 +85,6 @@ private :
 private :
 
   PetscKSP _ksp; ///< PETSc KSP linear solver.
-  PetscMat _precondMatrix; ///< Preconditioning matrix for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

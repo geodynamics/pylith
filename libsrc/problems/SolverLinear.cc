@@ -36,8 +36,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
-  _ksp(0),
-  _precondMatrix(0)
+  _ksp(0)
 { // constructor
 } // constructor
 
@@ -57,11 +56,6 @@ pylith::problems::SolverLinear::deallocate(void)
 
   if (0 != _ksp) {
     PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
-
-  if (0 != _precondMatrix) {
-    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -91,6 +85,7 @@ pylith::problems::SolverLinear::initialize(
   if (formulation->splitFields()) {
     PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    _ctx.pc = pc;
     _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
   } // if
 } // initialize

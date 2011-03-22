@@ -25,7 +25,7 @@
 #if !defined(pylith_utils_sievetypes_hh)
 #define pylith_utils_sievetypes_hh
 
-#include <petscmesh.hh> // PETSc Mesh
+#include <petscdmmesh.hh> // PETSc Mesh
 
 namespace pylith {
 

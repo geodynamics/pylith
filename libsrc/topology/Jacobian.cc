@@ -47,8 +47,8 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   sieveMesh->getFactory()->getGlobalOrder(sieveMesh, fieldSection->getName(), fieldSection)->view("Global Order");
   sieveMesh->setDebug(3);
 #endif
-  PetscErrorCode err = MeshCreateMatrix(sieveMesh, fieldSection,
-					matrixType, &_matrix, blockFlag);
+  PetscErrorCode err = DMMeshCreateMatrix(sieveMesh, fieldSection,
+                                          matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
   logger.stagePop();
@@ -73,8 +73,8 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = MeshCreateMatrix(sieveMesh, fieldSection,
-          matrixType, &_matrix, blockFlag);
+  PetscErrorCode err = DMMeshCreateMatrix(sieveMesh, fieldSection,
+                                          matrixType, &_matrix, blockFlag);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
       "associated with subsystem Jacobian.");
   logger.stagePop();

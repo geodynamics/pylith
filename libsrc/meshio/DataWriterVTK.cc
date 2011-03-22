@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include <petscmesh_viewers.hh> // USES VTKViewer
+#include <petscdmmesh_viewers.hh> // USES VTKViewer
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream

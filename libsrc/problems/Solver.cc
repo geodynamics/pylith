@@ -23,6 +23,7 @@
 #include "Formulation.hh" // USES Formulation
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
@@ -32,18 +33,42 @@
 #define FIELD_SPLIT
 
 #if defined(FIELD_SPLIT)
-#include <petscmesh_solvers.hh> // USES constructFieldSplit()
+#include <petscdmmesh_solvers.hh> // USES constructFieldSplit()
 #endif
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
+EXTERN_C_BEGIN
+PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, Mat *newmat) {
+  FaultPreconCtx *ctx;
+  IS              faultIS;
+  PetscBool       isFaultRow, isFaultCol;
+  PetscErrorCode  ierr;
+
+  ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
+  ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);
+  ierr = ISEqual(isrow, faultIS, &isFaultRow);CHKERRQ(ierr);
+  ierr = ISEqual(iscol, faultIS, &isFaultCol);CHKERRQ(ierr);
+  if (isFaultRow && isFaultCol) {
+    if (reuse == MAT_INITIAL_MATRIX) {
+      ierr = PetscObjectReference((PetscObject) ctx->faultA);CHKERRQ(ierr);
+      *newmat = ctx->faultA;
+    }
+  } else {
+    ierr = MatGetSubMatrix(ctx->A, isrow, iscol, reuse, newmat);CHKERRQ(ierr);
+  }
+}
+EXTERN_C_END
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Solver::Solver(void) :
   _formulation(0),
-  _logger(0)
+  _logger(0),
+  _precondMatrix(0),
+  _jacobianPre(0)
 { // constructor
 } // constructor
 
@@ -61,6 +86,14 @@ pylith::problems::Solver::deallocate(void)
 { // deallocate
   _formulation = 0; // Handle only, do not manage memory.
   delete _logger; _logger = 0;
+  if (0 != _jacobianPre) {
+    PetscErrorCode err = MatDestroy(_jacobianPre); _jacobianPre = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
+  if (0 != _precondMatrix) {
+    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
+    CHECK_PETSC_ERROR(err);
+  } // if
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -71,6 +104,26 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 				     Formulation* const formulation)
 { // initialize
   assert(0 != formulation);
+
+  PetscMat jacobianMat = jacobian.matrix();
+  _jacobianPre = jacobianMat;
+  // Make global preconditioner matrix
+  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.solution().mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() && 0 != _precondMatrix) {
+    PetscInt M, N, m, n;
+    PetscErrorCode err;
+
+    err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
+    err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
+    err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPre);CHECK_PETSC_ERROR(err);
+    err = MatShellSetOperation(_jacobianPre, MATOP_GET_SUBMATRIX, (void (*)(void)) MyMatGetSubMatrix);
+    _ctx.A              = jacobianMat;
+    _ctx.faultFieldName = "3";
+    _ctx.faultA         = _precondMatrix;
+  }
 
   _formulation = formulation;
 } // initialize

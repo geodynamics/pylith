@@ -151,7 +151,6 @@ private :
 private :
 
   PetscSNES _snes; ///< PETSc SNES nonlinear solver.
-  PetscMat _precondMatrix; ///< Preconditioning matrix for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
