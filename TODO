@@ -41,9 +41,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Unform global refinement
 
-  (2) The overlap is not updated properly for hex8 refinement. Running
-  examples/twocells/twohex8/axialdisp.cfg with 2 processors and
-  uniform refinement is a good test case.
+  (2) The overlap is not updated properly for hex8 refinement. Run
+  examples/twocells/twohex8/axialdisp.cfg.
+
+    pylith axialdisp.cfg --mesh_generator.refiner=pylith.topology.RefineUniform 
 
   - Checking addition of MPI type
 
