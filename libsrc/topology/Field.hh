@@ -32,7 +32,7 @@
 #include "pylith/utils/arrayfwd.hh" // HASA int_array
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
-#include <petscmesh.hh>
+#include <petscdmmesh.hh>
 
 // Field ----------------------------------------------------------------
 /** @brief Vector field over the vertices or cells of a finite-element
