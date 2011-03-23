@@ -106,7 +106,6 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   assert(0 != formulation);
 
   PetscMat jacobianMat = jacobian.matrix();
-  _jacobianPre = jacobianMat;
   // Make global preconditioner matrix
   const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
   assert(!solutionSection.isNull());
@@ -123,6 +122,11 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     _ctx.A              = jacobianMat;
     _ctx.faultFieldName = "3";
     _ctx.faultA         = _precondMatrix;
+  } else {
+    PetscErrorCode err;
+
+    _jacobianPre = jacobianMat;
+    err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);
   }
 
   _formulation = formulation;
