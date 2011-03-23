@@ -676,7 +676,7 @@ pylith::topology::Field<mesh_type>::createScatter(void)
     err = VecScatterDestroy(_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
-  err = MeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
+  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
   CHECK_PETSC_ERROR(err);
 
   if (0 != _scatterVec) {

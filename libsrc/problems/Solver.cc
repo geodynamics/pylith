@@ -32,7 +32,7 @@
 #define FIELD_SPLIT
 
 #if defined(FIELD_SPLIT)
-#include <petscmesh_solvers.hh> // USES constructFieldSplit()
+#include <petscdmmesh_solvers.hh> // USES constructFieldSplit()
 #endif
 
 // ----------------------------------------------------------------------
