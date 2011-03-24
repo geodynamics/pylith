@@ -101,14 +101,18 @@ Version 1.5.2
 ----------------------------------------------------------------------
 
   * PyLith 1.5.2 requires FIAT version 0.9.9 or later and an updated
-    PETSc development version. These are included in the binary
-    distribution, but users building PyLith from source will need to
-    update FIAT and PETSc.
+    PETSc development version. It also requires users to update to the
+    latest spatialdata version for compatibility of the SWIG generated
+    files. These are included in the binary distribution, but users
+    building PyLith from source will need to update FIAT, PETSc, and
+    spatialdata.
 
   * Bug fixes
 
-    - Fixed setting of elastic constants in DruckerPrager3D. Some
-      off-diagonal constants were off by a factor of 2.0.
+    - Fixed setting of elastic constants in DruckerPrager3D and
+      computation of the yield function. Some off-diagonal elasticity
+      constants were off by a factor of 2.0 and the yield function was
+      missing a factor of 0.5 and sqrt().
 
     - Fixed computation of stable time step when using initial
       stresses with PowerLaw3D. If effective stress is zero, then
