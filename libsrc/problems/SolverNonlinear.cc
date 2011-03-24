@@ -34,7 +34,28 @@
 #define isnan std::isnan // TEMPORARY
 #define isinf std::isinf // TEMPORARY
 
-#include "../src/snes/impls/ls/lsimpl.h"
+#include <private/snesimpl.h>
+
+namespace pylith {
+  namespace problems {
+    namespace _SolverNonlinear {
+
+      typedef struct {
+	PetscErrorCode           (*LineSearch)(PetscSNES,void*,PetscVec,PetscVec,PetscVec,PetscVec,PetscVec,PetscReal,PetscReal,PetscReal*,PetscReal*,PetscBool *);
+	void                     *lsP;                              /* user-defined line-search context (optional) */
+	/* --------------- Parameters used by line search method ----------------- */
+	PetscReal                alpha;                                                                  /* used to determine sufficient reduction */
+	PetscReal                maxstep;                                                          /* maximum step size */
+	PetscReal                minlambda;                                                        /* determines smallest line search lambda used */
+	PetscErrorCode           (*precheckstep)(PetscSNES,PetscVec,PetscVec,void*,PetscBool *);                  /* step-checking routine (optional) */
+	void                     *precheck;                                                        /* user-defined step-checking context (optional) */
+	PetscErrorCode           (*postcheckstep)(PetscSNES,PetscVec,PetscVec,PetscVec,void*,PetscBool *,PetscBool *); /* step-checking routine (optional) */
+	void                     *postcheck;                                                       /* user-defined step-checking context (optional) */
+	PetscViewerASCIIMonitor  monitor;
+      } SNES_LS;
+    } // _SolverNonlinear
+  } // problems
+} // pylith
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -191,6 +212,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   // minimization problem:
   // min  z(x):  R^n -> R,
   // where z(x) = .5 * fnorm*fnorm, and fnorm = || f ||_2.
+ 
+  typedef pylith::problems::_SolverNonlinear::SNES_LS SNES_LS;
         
   PetscReal      initslope,lambdaprev,gnormprev,a,b,d,t1,t2,rellength;
   PetscReal      minlambda,lambda,lambdatemp;
