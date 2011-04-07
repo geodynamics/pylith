@@ -287,12 +287,17 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
       err = PetscObjectReference((PetscObject) _scatter);
       CHECK_PETSC_ERROR(err);
 
-      assert(_section->sizeWithBC() > 0);
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-				  _section->sizeWithBC(),
-				  _section->restrictSpace(),
-				  &_scatterVec); CHECK_PETSC_ERROR(err);
-      CHECK_PETSC_ERROR(err);
+      if (_section->sizeWithBC() > 0) {
+	err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+				    _section->getStorageSize(),
+				    _section->restrictSpace(),
+				    &_scatterVec);
+	CHECK_PETSC_ERROR(err);
+      } else {
+	err = VecCreateSeqWithArray(PETSC_COMM_SELF, 0, 0,
+				    &_scatterVec);
+	CHECK_PETSC_ERROR(err);
+      } // else
     } // if
   } // if
   logger.stagePop();
@@ -683,10 +688,19 @@ pylith::topology::Field<mesh_type>::createScatter(void)
     err = VecDestroy(_scatterVec); _scatterVec = 0;
     CHECK_PETSC_ERROR(err);
   } // if
-  assert(_section->sizeWithBC() > 0);
-  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-			      _section->sizeWithBC(), _section->restrictSpace(),
-			      &_scatterVec); CHECK_PETSC_ERROR(err);
+
+  // Create scatter Vec
+  if (_section->sizeWithBC() > 0) {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+				_section->getStorageSize(),
+				_section->restrictSpace(),
+				&_scatterVec);
+    CHECK_PETSC_ERROR(err);
+  } else {
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, 0, 0,
+				&_scatterVec);
+    CHECK_PETSC_ERROR(err);
+  } // else
 } // createScatter
 
 // ----------------------------------------------------------------------
