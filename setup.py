@@ -22,7 +22,7 @@ from merlin import setup, find_packages
 setup(
     
     name = 'PyLith', 
-    version = '1.5.1',
+    version = '1.6.0',
 
     zip_safe = False,
     packages = find_packages(),
