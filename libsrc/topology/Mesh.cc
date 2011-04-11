@@ -116,33 +116,30 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   const SieveMesh::label_sequence::iterator verticesEnd = 
     vertices->end();
 
-  assert(0 != _coordsys);
-  const int spaceDim = _coordsys->spaceDim();
-  double_array coordsVertex(spaceDim);
-  double_array coordsDimVertex(spaceDim);
-
-  int i = 0;
+  double coordsVertex[3];
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
-    coordsSection->restrictPoint(*v_iter,
-			       &coordsVertex[0], coordsVertex.size());
+    const int spaceDim = coordsSection->getFiberDimension(*v_iter);
+    assert(spaceDim <= 3);
+    const double* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
+    
+    // Update section with dimensioned coordinates
+    assert(spaceDim == 
+	   coordsDimSection->getFiberDimension(*v_iter));
+    coordsDimSection->updatePoint(*v_iter, coordsDimVertex);
 
-    // Save dimensioned coordinates in coordsDimVertex
-    coordsDimVertex = coordsVertex;
+    // Copy coordinates to array for nondimensionalization.
+    for (int i=0; i < spaceDim; ++i)
+      coordsVertex[i] = coordsDimVertex[i];
 
     // Nondimensionalize original coordinates.
     normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
-
-    // Update section with nondimensional coordinates
-    assert(coordsVertex.size() == 
-	   coordsSection->getFiberDimension(*v_iter));
-    coordsSection->updatePoint(*v_iter, &coordsVertex[0]);
     
-    // Update section with dimensioned coordinates
-    assert(coordsDimVertex.size() == 
-	   coordsDimSection->getFiberDimension(*v_iter));
-    coordsDimSection->updatePoint(*v_iter, &coordsDimVertex[0]);
+    // Update section with nondimensional coordinates
+    assert(spaceDim == 
+	   coordsSection->getFiberDimension(*v_iter));
+    coordsSection->updatePoint(*v_iter, coordsVertex);
   } // for
 } // nondimensionalize
 

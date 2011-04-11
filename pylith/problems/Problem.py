@@ -151,6 +151,12 @@ class Problem(PetscComponent):
             "for spatial dimension '%d'." % \
             (self.dimension, self.mesh.dimension())
 
+    if self.dimension != self.mesh.coordsys().spaceDim():
+      raise ValueError, \
+            "Spatial dimension of problem is '%d' but mesh coordinate system " \
+            "is  for spatial dimension '%d'." % \
+            (self.dimension, self.mesh.coordsys().spaceDim())
+
     # Check to make sure ids of materials and interfaces are unique
     materialIds = {}
     for material in self.materials.components():

@@ -445,8 +445,9 @@ class FIATLagrange(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
-      raise ValueError("Could not set shape of cell for '%s' in spatial " \
-                       "dimension '%s'." % (self.name, spaceDim))
+      raise ValueError("Could not set shape of %dD cell for "
+                       "Quadrature object '%s' in spatial " \
+                       "dimension '%d'." % (self.cellDim, self.name, spaceDim))
     return
   
 
