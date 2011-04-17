@@ -129,6 +129,7 @@ pylith::problems::SolverLinear::solve(
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
+#if 0
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
       0 != _precondMatrix) {
     
@@ -150,7 +151,7 @@ pylith::problems::SolverLinear::solve(
 			  flag); CHECK_PETSC_ERROR(err);
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
   } // if
-
+#endif
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
