@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.5.1
+We are pleased to announce release of PyLith version 1.5.2
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -95,6 +95,37 @@ left-lateral, but now the up-direction is used to enforce positive
 slip corresponds to reverse motion for dipping faults. For horizontal
 fault surfaces in 3-D a normal of (0,0,1) is assumed in determining
 the up-dip direction.
+
+----------------------------------------------------------------------
+Version 1.5.2
+----------------------------------------------------------------------
+
+  * PyLith 1.5.2 requires FIAT version 0.9.9 or later and an updated
+    PETSc development version. It also requires users to update to the
+    latest spatialdata version for compatibility of the SWIG generated
+    files. These are included in the binary distribution, but users
+    building PyLith from source will need to update FIAT, PETSc, and
+    spatialdata.
+
+  * Bug fixes
+
+    - Fixed setting of elastic constants in DruckerPrager3D and
+      computation of the yield function. Some off-diagonal elasticity
+      constants were off by a factor of 2.0 and the yield function was
+      missing a factor of 0.5 and sqrt().
+
+    - Fixed computation of stable time step when using initial
+      stresses with PowerLaw3D. If effective stress is zero, then
+      stable time step is infinite.
+
+    - Re-enabled check for compatibility of quadrature scheme and
+      cells for bulk rheologies.
+
+    - Added check to configure for compatible version of FIAT.
+
+    - Fixed bug where buffer for output of initial stresses for
+      dynamic (spontaneous) rupture.
+
 
 ----------------------------------------------------------------------
 Version 1.5.1

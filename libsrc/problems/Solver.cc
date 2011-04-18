@@ -111,9 +111,11 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = fields.solution().mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() && 0 != _precondMatrix) {
+
+  PetscErrorCode err = 0;
+  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
+      _precondMatrix) {
     PetscInt M, N, m, n;
-    PetscErrorCode err;
 
     err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
     err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
@@ -123,11 +125,9 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     _ctx.faultFieldName = "3";
     _ctx.faultA         = _precondMatrix;
   } else {
-    PetscErrorCode err;
-
     _jacobianPre = jacobianMat;
     err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);
-  }
+  } // if/else
 
   _formulation = formulation;
 } // initialize

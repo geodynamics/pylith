@@ -259,7 +259,6 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   // minimization problem:
   // min  z(x):  R^n -> R,
   // where z(x) = .5 * fnorm*fnorm, and fnorm = || f ||_2.
- 
   typedef pylith::problems::_SolverNonlinear::SNES_LS SNES_LS;
        
   PetscReal      initslope,lambdaprev,gnormprev,a,b,d,t1,t2,rellength;

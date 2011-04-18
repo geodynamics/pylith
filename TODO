@@ -2,8 +2,6 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-If dimension of problem doesn't match dimension of mesh, 
-
 Strip whitespace from UniformDB values and names.
 
 * Memory model [MATT and BRAD]

@@ -23,8 +23,6 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-
 #include "Selection.hh" // USES boundary()
 
 #include <cassert> // USES assert()
