@@ -249,9 +249,9 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
         } // if
       }
       if (origSieveMesh->height(firstPoint) == 0) {
-        newSection->setChart(IntSection::chart_type(0, numCells));
+        newSection->setChart(IntSection::chart_type(0, parallelCoordinates->getChart().min()));
       } else {
-        newSection->setChart(IntSection::chart_type(numCells, numCells+numVertices));
+        newSection->setChart(parallelCoordinates->getChart());
       } // if/else
       DistributionType::distributeSection(origSection, partition, renumbering,
                                           sendMeshOverlap, recvMeshOverlap, 
