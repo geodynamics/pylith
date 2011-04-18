@@ -67,8 +67,8 @@ EXTERN_C_END
 pylith::problems::Solver::Solver(void) :
   _formulation(0),
   _logger(0),
-  _precondMatrix(0),
-  _jacobianPre(0)
+  _jacobianPre(0),
+  _jacobianPreFault(0)
 { // constructor
 } // constructor
 
@@ -90,8 +90,8 @@ pylith::problems::Solver::deallocate(void)
     PetscErrorCode err = MatDestroy(_jacobianPre); _jacobianPre = 0;
     CHECK_PETSC_ERROR(err);
   } // if
-  if (0 != _precondMatrix) {
-    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
+  if (0 != _jacobianPreFault) {
+    PetscErrorCode err = MatDestroy(_jacobianPreFault); _jacobianPreFault = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -114,7 +114,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 
   PetscErrorCode err = 0;
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      _precondMatrix) {
+      _jacobianPreFault) {
     PetscInt M, N, m, n;
 
     err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
@@ -123,7 +123,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     err = MatShellSetOperation(_jacobianPre, MATOP_GET_SUBMATRIX, (void (*)(void)) MyMatGetSubMatrix);
     _ctx.A              = jacobianMat;
     _ctx.faultFieldName = "3";
-    _ctx.faultA         = _precondMatrix;
+    _ctx.faultA         = _jacobianPreFault;
   } else {
     _jacobianPre = jacobianMat;
     err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);

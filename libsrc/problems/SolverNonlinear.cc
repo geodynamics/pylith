@@ -126,7 +126,7 @@ pylith::problems::SolverNonlinear::initialize(
     err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
     _ctx.pc = pc;
-    _setupFieldSplit(&pc, &_precondMatrix, formulation, fields);
+    _setupFieldSplit(&pc, &_jacobianPreFault, formulation, fields);
   } // if
 } // initialize
 
@@ -147,7 +147,7 @@ pylith::problems::SolverNonlinear::solve(
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
    assert(!sieveMesh.isNull());
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      0 != _precondMatrix) {
+      0 != _jacobianPreFault) {
     PetscKSP ksp = 0;
     PetscPC pc = 0;
     PetscKSP *ksps = 0;
@@ -163,7 +163,7 @@ pylith::problems::SolverNonlinear::solve(
 
 #if 0 // debugging
     std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+    MatView(_jacobianPreFault, PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
 
@@ -171,7 +171,7 @@ pylith::problems::SolverNonlinear::solve(
     err = KSPGetOperators(ksps[num-1], &A, 
 			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
     err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, _precondMatrix, 
+    err = KSPSetOperators(ksps[num-1], A, _jacobianPreFault, 
 			  flag); CHECK_PETSC_ERROR(err);
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
   } // if

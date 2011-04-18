@@ -96,9 +96,10 @@ protected :
 
   Formulation* _formulation; ///< Handle to formulation for system of eqns.
   utils::EventLogger* _logger; ///< Event logger.
-  PetscMat _precondMatrix; ///< Preconditioning matrix for Lagrange constraints.
-  PetscMat _jacobianPre; ///< global fault preconditioning matrix
-  FaultPreconCtx _ctx; ///< Context for global fault preconditioning matrix
+  PetscMat _jacobianPre; ///< Global preconditioning matrix.
+  PetscMat _jacobianPreFault; ///< Preconditioning matrix for Lagrange constraints.
+  FaultPreconCtx _ctx; ///< Context for preconditioning matrix for Lagrange constraints.
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
