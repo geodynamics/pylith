@@ -31,15 +31,22 @@ Strip whitespace from UniformDB values and names.
 
 * Field split with nonlinear solver [MATT]
 
-  The custom preconditioner is not being used in the nonlinear
-  solve. The error appears to be in SolverNonlinear.cc::solve where we
-  set the KSP operator. The _precondMatrix in SolverNonlinear::solve
-  matches the one used in the linear solve.
+  The custom preconditioner is not being used in the linear or
+  nonlinear solvers. Matt added code to Solver.cc::initialize(). The
+  switch for detecting whether the preconditioner is to be used is not
+  correct.
 
-  - Brad verifies that _precondMatrix at line SolverNonlinear.cc:180 is correct. Check that
-    the same Mat pointer is used in ML.
+  PREVIOUS NOTES
 
-  - FOUND: This is caused by the KSPSetOperators() in SNESSolve_LS()
+    The custom preconditioner is not being used in the nonlinear
+    solve. The error appears to be in SolverNonlinear.cc::solve where
+    we set the KSP operator. The _precondMatrix in
+    SolverNonlinear::solve matches the one used in the linear solve.
+
+    - Brad verifies that _precondMatrix at line SolverNonlinear.cc:180
+    is correct. Check that the same Mat pointer is used in ML.
+
+    - FOUND: This is caused by the KSPSetOperators() in SNESSolve_LS()
 
 * Unform global refinement
 
