@@ -4,37 +4,11 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 Strip whitespace from UniformDB values and names.
 
-* Memory model [MATT and BRAD]
-
-  (1) The memory logging for distribution logs Creation and Stratification
-  as Creation. Because we set the logging stages in PyLith and these
-  are lumped together within the same Sieve routine, we cannot
-  separate them.
-
-  (2) When we deallocate the distributed mesh, we do not deallocate all of
-  the memory. This suggests some object is leaking memory.
-
-  (3) The memory used by the distributed mesh is much greater than
-  that predicted by the memory model. MATT- Could this be related to
-  each processor having lots of gaps in the range of cells and
-  vertices it has?
-
-  - Can Fusion be leaking memory?
-
-  - How do we separate parallel stratification?
-
-  IntSections - Matt improved distribution to use allow IntSections
-  over vertices or cells rather than vertices + cells. This cuts
-  differences down to 75%.
-
-  Need to check sum, because we may not be tracking deallocation.
-
 * Field split with nonlinear solver [MATT]
 
-  The custom preconditioner is not being used in the linear or
-  nonlinear solvers. Matt added code to Solver.cc::initialize(). The
-  switch for detecting whether the preconditioner is to be used is not
-  correct.
+  Matt created MyMatGetSubMatrix() in Solver.cc to retrieve the
+  preconditioner. Currently this generates a segfault when using the
+  nonlinear solver with field split.
 
   PREVIOUS NOTES
 
@@ -64,13 +38,42 @@ Strip whitespace from UniformDB values and names.
   end up in the x-dof with zeros for the y-dof, the opposite of the
   correct behavior.
 
+    cd examples/bar_shearwave/tri3/tmp
+    pylith
+
+    ERROR: Nonconforming object sizes. Invalid number of local indices
+    256, should not be greater than 140!
+
   (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
 
   (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
 
   - Need a flag to use s->GetIndicesRaw() in scatter creation
 
-  - examples/bar_shearwave/tri3
+* Memory model [MATT and BRAD]
+
+  (1) The memory logging for distribution logs Creation and Stratification
+  as Creation. Because we set the logging stages in PyLith and these
+  are lumped together within the same Sieve routine, we cannot
+  separate them.
+
+  (2) When we deallocate the distributed mesh, we do not deallocate all of
+  the memory. This suggests some object is leaking memory.
+
+  (3) The memory used by the distributed mesh is much greater than
+  that predicted by the memory model. MATT- Could this be related to
+  each processor having lots of gaps in the range of cells and
+  vertices it has?
+
+  - Can Fusion be leaking memory?
+
+  - How do we separate parallel stratification?
+
+  IntSections - Matt improved distribution to use allow IntSections
+  over vertices or cells rather than vertices + cells. This cuts
+  differences down to 75%.
+
+  Need to check sum, because we may not be tracking deallocation.
 
 * Fault preconditioner [BRAD]
 
