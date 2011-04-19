@@ -86,7 +86,7 @@ pylith::problems::SolverLinear::initialize(
     PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     _ctx.pc = pc;
-    _setupFieldSplit(&pc, &_jacobianPreFault, formulation, fields);
+    _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 } // initialize
 
@@ -131,7 +131,7 @@ pylith::problems::SolverLinear::solve(
   assert(!sieveMesh.isNull());
 #if 0
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      0 != _jacobianPreFault) {
+      0 != _jacobianPCFault) {
     
     PetscPC pc = 0;
     PetscKSP *ksps = 0;
@@ -147,7 +147,7 @@ pylith::problems::SolverLinear::solve(
     err = KSPGetOperators(ksps[num-1], &A, 
 			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
     err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, _jacobianPreFault, 
+    err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, 
 			  flag); CHECK_PETSC_ERROR(err);
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
   } // if

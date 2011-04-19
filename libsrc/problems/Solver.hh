@@ -81,14 +81,14 @@ protected :
   /** Setup preconditioner for preconditioning using split fields.
    *
    * @param pc PETSc preconditioner.
-   * @param precondMatrix Matrix for custom preconditioner.
    * @param formulation Formulation of system of equations.
+   * @param jacobian System Jacobian matrix.
    * @param fields Solution fields.
    */
   void
   _setupFieldSplit(PetscPC* const pc,
-		   PetscMat* const precondMatrix,
 		   Formulation* const formulation,
+		   const topology::Jacobian& jacobian,
 		   const topology::SolutionFields& fields);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
@@ -96,8 +96,8 @@ protected :
 
   Formulation* _formulation; ///< Handle to formulation for system of eqns.
   utils::EventLogger* _logger; ///< Event logger.
-  PetscMat _jacobianPre; ///< Global preconditioning matrix.
-  PetscMat _jacobianPreFault; ///< Preconditioning matrix for Lagrange constraints.
+  PetscMat _jacobianPC; ///< Global preconditioning matrix.
+  PetscMat _jacobianPCFault; ///< Preconditioning matrix for Lagrange constraints.
   FaultPreconCtx _ctx; ///< Context for preconditioning matrix for Lagrange constraints.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
