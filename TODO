@@ -27,9 +27,11 @@ Strip whitespace from UniformDB values and names.
   (2) The overlap is not updated properly for hex8 refinement. Run
   examples/twocells/twohex8/axialdisp.cfg.
 
-    pylith axialdisp.cfg --mesh_generator.refiner=pylith.topology.RefineUniform 
+    pylith axialdisp.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=2
 
-  - Checking addition of MPI type
+      ERROR: Multiple indices for local point 15 remote point 13 from
+      1 with index (54, 3)
+
 
 * Output to HDF5 files. [BRAD and MATT]
 
