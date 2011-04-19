@@ -204,11 +204,10 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 
-    assert(_jacobianPC);
     assert(_jacobianPCFault);
 
     _ctx.pc = *pc;
-    _ctx.A = _jacobianPC;
+    _ctx.A = jacobian.matrix();
     _ctx.faultFieldName = "3";
     _ctx.faultA = _jacobianPCFault;
   } // if
