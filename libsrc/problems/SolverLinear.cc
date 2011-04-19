@@ -85,7 +85,6 @@ pylith::problems::SolverLinear::initialize(
   if (formulation->splitFields()) {
     PetscPC pc = 0;
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    _ctx.pc = pc;
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 } // initialize
@@ -129,9 +128,10 @@ pylith::problems::SolverLinear::solve(
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-#if 0
+
+#if 1 // :TODO: Does this get replaced by the use of the MatShell like SNES?
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      0 != _jacobianPCFault) {
+      _jacobianPCFault) {
     
     PetscPC pc = 0;
     PetscKSP *ksps = 0;
@@ -152,6 +152,7 @@ pylith::problems::SolverLinear::solve(
     err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
   } // if
 #endif
+
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
