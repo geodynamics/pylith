@@ -102,6 +102,35 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 { // initialize
   assert(0 != formulation);
   _formulation = formulation;
+
+  // Make global preconditioner matrix
+  PetscMat jacobianMat = jacobian.matrix();
+
+  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
+  assert(!solutionSection.isNull());
+  const ALE::Obj<SieveMesh>& sieveMesh = fields.solution().mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+
+  if (formulation->splitFields() && 
+      formulation->useCustomConstraintPC() &&
+      solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
+    // We have split fields with a custom constraint preconditioner
+    // and constraints exist.
+
+    PetscInt M, N, m, n;
+    PetscErrorCode err = 0;
+    err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
+    err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
+    err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);
+    CHECK_PETSC_ERROR(err);
+    err = MatShellSetOperation(_jacobianPC, MATOP_GET_SUBMATRIX, 
+			       (void (*)(void)) MyMatGetSubMatrix);
+    CHECK_PETSC_ERROR(err);
+  } else {
+    _jacobianPC = jacobianMat;
+    PetscErrorCode err = PetscObjectReference((PetscObject) jacobianMat);
+    CHECK_PETSC_ERROR(err);
+  } // if/else
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -133,8 +162,12 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 		      solution.vector(), *pc);
 
   const int spaceDim = sieveMesh->getDimension();
-  if (solutionSection->getNumSpaces() > spaceDim &&
-      formulation->useCustomConstraintPC()) {
+  if (formulation->splitFields() && 
+      formulation->useCustomConstraintPC() &&
+      solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
+    // We have split fields with a custom constraint preconditioner
+    // and constraints exist.
+
     // Get total number of DOF associated with constraints field split
     const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
       sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
@@ -171,27 +204,11 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 
-    // Make global preconditioner matrix
-    PetscMat jacobianMat = jacobian.matrix();
-
-    PetscInt M, N, m, n;
-    err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
-    err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
-    err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);
-    CHECK_PETSC_ERROR(err);
-    err = MatShellSetOperation(_jacobianPC, MATOP_GET_SUBMATRIX, 
-			       (void (*)(void)) MyMatGetSubMatrix);
-    CHECK_PETSC_ERROR(err);
-    _ctx.A = jacobianMat;
+    _ctx.pc = *pc;
+    _ctx.A = jacobian.matrix();
     _ctx.faultFieldName = "3";
     _ctx.faultA = _jacobianPCFault;
-  } else {
-   // Make global preconditioner matrix
-    PetscMat jacobianMat = jacobian.matrix();
-    _jacobianPC = jacobianMat;
-    err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);
-  } // if/else
-
+  } // if
 } // _setupFieldSplit
 
 

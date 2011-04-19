@@ -125,7 +125,6 @@ pylith::problems::SolverNonlinear::initialize(
     PetscPC pc = 0;
     err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
-    _ctx.pc = pc;
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 } // initialize

@@ -192,7 +192,7 @@ protected :
   double _t; ///< Current time (nondimensional).
   double _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
-  PetscMat _precondMatrix; ///< Custom PETSc preconditioning matrix.
+  PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.
   topology::SolutionFields* _fields; ///< Handle to solution fields for system.
 

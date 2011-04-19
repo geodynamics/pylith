@@ -38,7 +38,7 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobian(0),
   _jacobianLumped(0),
   _fields(0),
-  _precondMatrix(0),
+  _customConstraintPCMat(0),
   _isJacobianSymmetric(false)
 { // constructor
 } // constructor
@@ -61,12 +61,12 @@ pylith::problems::Formulation::deallocate(void)
 
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
-  if (0 != _precondMatrix) {
-    err = PetscObjectDereference((PetscObject) _precondMatrix);
-    _precondMatrix = 0; CHECK_PETSC_ERROR(err);
+  if (0 != _customConstraintPCMat) {
+    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);
+    _customConstraintPCMat = 0; CHECK_PETSC_ERROR(err);
   } // if
 #else
-  _precondMatrix = 0;
+  _customConstraintPCMat = 0;
 #endif
 } // deallocate
   
@@ -149,7 +149,7 @@ pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrator
 void
 pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 { // preconditioner
-  _precondMatrix = mat;
+  _customConstraintPCMat = mat;
 
 #if 0 // :KLUDGE: Assume solver deallocates matrix
   PetscErrorCode err = 0;
@@ -319,23 +319,23 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
-  if (0 != _precondMatrix) {
+  if (0 != _customConstraintPCMat) {
     // Recalculate preconditioner.
     numIntegrators = _meshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _meshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+      _meshIntegrators[i]->calcPreconditioner(&_customConstraintPCMat,
 					      _jacobian, _fields);
     numIntegrators = _submeshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)
-      _submeshIntegrators[i]->calcPreconditioner(&_precondMatrix,
+      _submeshIntegrators[i]->calcPreconditioner(&_customConstraintPCMat,
 						 _jacobian, _fields);
 
-    MatAssemblyBegin(_precondMatrix, MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(_precondMatrix, MAT_FINAL_ASSEMBLY);
+    MatAssemblyBegin(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(_customConstraintPCMat, MAT_FINAL_ASSEMBLY);
 
 #if 0 // debugging
     std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_precondMatrix, PETSC_VIEWER_STDOUT_WORLD);
+    MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
 #endif
   } // if
 } // reformJacobian
