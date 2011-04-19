@@ -44,6 +44,8 @@ Strip whitespace from UniformDB values and names.
     ERROR: Nonconforming object sizes. Invalid number of local indices
     256, should not be greater than 140!
 
+    Size without BC is 140. Size with BC is 262.
+
   (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
 
   (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
