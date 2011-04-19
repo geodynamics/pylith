@@ -141,8 +141,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 					   const topology::Jacobian& jacobian,
 					   const topology::SolutionFields& fields)
 { // _setupFieldSplit
-  assert(0 != pc);
-  assert(0 != formulation);
+  assert(pc);
+  assert(formulation);
 
   PetscErrorCode err = 0;
 
@@ -204,8 +204,11 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 
+    assert(_jacobianPC);
+    assert(_jacobianPCFault);
+
     _ctx.pc = *pc;
-    _ctx.A = jacobian.matrix();
+    _ctx.A = _jacobianPC;
     _ctx.faultFieldName = "3";
     _ctx.faultA = _jacobianPCFault;
   } // if
