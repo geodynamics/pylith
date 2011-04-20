@@ -27,6 +27,10 @@ RELEASE NOTES
     building PyLith from source will need to update FIAT, PETSc, and
     spatialdata.
 
+  * Users of the Darwin 10.6 binary version must have /usr/bin/python
+    as the Python interpreter in their path. You can verify this using
+    'which python'.
+
   * Bug fixes
 
     - Fixed setting of elastic constants in DruckerPrager3D and
