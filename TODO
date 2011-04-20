@@ -4,24 +4,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 Strip whitespace from UniformDB values and names.
 
-* Field split with nonlinear solver [MATT]
-
-  Matt created MyMatGetSubMatrix() in Solver.cc to retrieve the
-  preconditioner. Currently this generates a segfault when using the
-  nonlinear solver with field split.
-
-  PREVIOUS NOTES
-
-    The custom preconditioner is not being used in the nonlinear
-    solve. The error appears to be in SolverNonlinear.cc::solve where
-    we set the KSP operator. The _precondMatrix in
-    SolverNonlinear::solve matches the one used in the linear solve.
-
-    - Brad verifies that _precondMatrix at line SolverNonlinear.cc:180
-    is correct. Check that the same Mat pointer is used in ML.
-
-    - FOUND: This is caused by the KSPSetOperators() in SNESSolve_LS()
-
 * Unform global refinement
 
   (2) The overlap is not updated properly for hex8 refinement. Run
@@ -53,6 +35,12 @@ Strip whitespace from UniformDB values and names.
   (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
 
   - Need a flag to use s->GetIndicesRaw() in scatter creation
+
+
+* Field split.
+
+  Need to check performance of custom fault preconditioner.
+
 
 * Memory model [MATT and BRAD]
 
