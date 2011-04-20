@@ -11,7 +11,7 @@ v1.5.x release series from previous versions.
 
 You can download the source code and binaries from
 
-    http://geodynamics.org/cig/software/packages/short/pylith
+    http://www.geodynamics.org/cig/software/pylith
 
 Detailed installation instructions are in the User Manual with example
 installation procedures for a few platforms in the bundled doc/install
