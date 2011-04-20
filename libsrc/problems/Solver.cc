@@ -38,11 +38,11 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
 EXTERN_C_BEGIN
-PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, Mat *newmat) {
+PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, Mat *newmat) { // MyMatGetSubMatrix
   FaultPreconCtx *ctx;
   IS              faultIS;
   PetscBool       isFaultRow, isFaultCol;
-  PetscErrorCode  ierr;
+  PetscErrorCode  ierr = 0;
 
   ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
   ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);
@@ -52,11 +52,13 @@ PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, M
     if (reuse == MAT_INITIAL_MATRIX) {
       ierr = PetscObjectReference((PetscObject) ctx->faultA);CHKERRQ(ierr);
       *newmat = ctx->faultA;
-    }
+    } // if
   } else {
     ierr = MatGetSubMatrix(ctx->A, isrow, iscol, reuse, newmat);CHKERRQ(ierr);
-  }
-}
+  } // if/else
+
+  return 0;
+} // MyMatGetSubMatrix
 EXTERN_C_END
 
 // ----------------------------------------------------------------------
