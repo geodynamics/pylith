@@ -53,7 +53,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::deallocate(void)
        d_iter != dEnd;
        ++d_iter)
     if (d_iter->second.viewer) {
-      PetscViewerDestroy(d_iter->second.viewer);
+      PetscViewerDestroy(&d_iter->second.viewer);
       d_iter->second.viewer = 0;
     } // if
 } // deallocate
@@ -142,7 +142,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
     CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, binaryViewer); CHECK_PETSC_ERROR(err);
-    err = PetscViewerDestroy(binaryViewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
     binaryViewer = 0;
     
     // Create external dataset for coordinates    
@@ -221,9 +221,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
     CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, binaryViewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
     err = PetscFree(tmpVertices); CHECK_PETSC_ERROR(err);
-    err = PetscViewerDestroy(binaryViewer); CHECK_PETSC_ERROR(err);
+    err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
     binaryViewer = 0;
 
     // Create external dataset for cells

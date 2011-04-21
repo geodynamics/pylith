@@ -775,7 +775,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = MatDestroy(jacobianNP); CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&jacobianNP); CHECK_PETSC_ERROR(err);
 
 
 #else // FULL PRECONDITIONER
@@ -2074,7 +2074,7 @@ pylith::faults::FaultCohesiveLagrange::_getJacobianSubmatrixNP(
   err = MatGetSubMatrices(jacobianMatrix, 1, indicesIS,
 			  indicesIS, MAT_INITIAL_MATRIX, subMat);
   CHECK_PETSC_ERROR(err);
-  err = ISDestroy(indicesIS[0]); CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&indicesIS[0]); CHECK_PETSC_ERROR(err);
 
   *jacobianSub = *subMat[0];
   err = PetscObjectReference((PetscObject) *subMat[0]); 

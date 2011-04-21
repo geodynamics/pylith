@@ -87,7 +87,7 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
 
   delete _jacobian; _jacobian = 0;
   if (0 != _ksp) {
-    PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
+    PetscErrorCode err = KSPDestroy(&_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
