@@ -91,7 +91,7 @@ void
 pylith::topology::Jacobian::deallocate(void)
 { // deallocate
   if (0 != _matrix) {
-    PetscErrorCode err = MatDestroy(_matrix); _matrix = 0;
+    PetscErrorCode err = MatDestroy(&_matrix); _matrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -175,7 +175,7 @@ pylith::topology::Jacobian::write(const char* filename,
   CHECK_PETSC_ERROR(err);
 
   err = MatView(_matrix, viewer); CHECK_PETSC_ERROR(err);
-  err = PetscViewerDestroy(viewer); CHECK_PETSC_ERROR(err);
+  err = PetscViewerDestroy(&viewer); CHECK_PETSC_ERROR(err);
 } // write
 
 // ----------------------------------------------------------------------
@@ -227,8 +227,8 @@ pylith::topology::Jacobian::verifySymmetry(void) const
 	  isSymmetric = false;
 	} // if
     } // for
-  MatDestroy(matDense);
-  MatDestroy(matSparseAIJ);
+  MatDestroy(&matDense);
+  MatDestroy(&matSparseAIJ);
   if (!isSymmetric)
     throw std::runtime_error("Jacobian matrix is not symmetric.");
 } // verifySymmetry

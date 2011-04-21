@@ -46,7 +46,7 @@ void
 pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
 { // deallocate
   if (_viewer) {
-    PetscErrorCode err = PetscViewerDestroy(_viewer); CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
   } // if
   _viewer = 0;
 } // deallocate
@@ -181,7 +181,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecSetBlockSize(elemVec, numCorners); CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, _viewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(elemVec); CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
   } catch (const std::exception& err) {
     std::ostringstream msg;
@@ -203,7 +203,7 @@ void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 { // close
   if (_viewer) {
-    PetscViewerDestroy(_viewer);
+    PetscViewerDestroy(&_viewer);
   } // if
   _viewer = 0;
   _timesteps.clear();

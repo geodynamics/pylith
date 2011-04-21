@@ -11,7 +11,7 @@ v1.5.x release series from previous versions.
 
 You can download the source code and binaries from
 
-    http://geodynamics.org/cig/software/packages/short/pylith
+    http://www.geodynamics.org/cig/software/pylith
 
 Detailed installation instructions are in the User Manual with example
 installation procedures for a few platforms in the bundled doc/install
@@ -26,6 +26,10 @@ RELEASE NOTES
     files. These are included in the binary distribution, but users
     building PyLith from source will need to update FIAT, PETSc, and
     spatialdata.
+
+  * Users of the Darwin 10.6 binary version must have /usr/bin/python
+    as the Python interpreter in their path. You can verify this using
+    'which python'.
 
   * Bug fixes
 

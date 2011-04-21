@@ -86,12 +86,10 @@ pylith::problems::Solver::deallocate(void)
   _formulation = 0; // Handle only, do not manage memory.
   delete _logger; _logger = 0;
   if (0 != _jacobianPC) {
-    PetscErrorCode err = MatDestroy(_jacobianPC); _jacobianPC = 0;
-    CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
   } // if
   if (0 != _jacobianPCFault) {
-    PetscErrorCode err = MatDestroy(_jacobianPCFault); _jacobianPCFault = 0;
-    CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
   
@@ -177,8 +175,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     assert(!lagrangeGlobalOrder.isNull());
 
     if (_jacobianPCFault) {
-      err = MatDestroy(_jacobianPCFault); _jacobianPCFault = 0;
-      CHECK_PETSC_ERROR(err);
+      err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
     } // if
     PetscInt nrows = lagrangeGlobalOrder->getLocalSize();
     PetscInt ncols = nrows;
