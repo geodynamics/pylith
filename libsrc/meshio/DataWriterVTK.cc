@@ -68,7 +68,7 @@ void
 pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
 { // deallocate
   if (0 != _viewer)
-    PetscViewerDestroy(_viewer);
+    PetscViewerDestroy(&_viewer);
   _viewer = 0;
 } // deallocate
   
@@ -165,7 +165,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 { // closeTimeStep
-  PetscViewerDestroy(_viewer); _viewer = 0;
+  PetscViewerDestroy(&_viewer); _viewer = 0;
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
 } // closeTimeStep

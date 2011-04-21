@@ -114,7 +114,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     assert(!lagrangeGlobalOrder.isNull());
 
     if (0 != *precondMatrix) {
-      err = MatDestroy(*precondMatrix); *precondMatrix = 0;
+      err = MatDestroy(precondMatrix); *precondMatrix = 0;
       CHECK_PETSC_ERROR(err);
     } // if
     PetscInt nrows = lagrangeGlobalOrder->getLocalSize();

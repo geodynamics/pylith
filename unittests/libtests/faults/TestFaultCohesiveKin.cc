@@ -417,8 +417,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
     } // for
-  MatDestroy(jDense);
-  MatDestroy(jSparseAIJ);
+  MatDestroy(&jDense);
+  MatDestroy(&jSparseAIJ);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 } // testIntegrateJacobian
 
