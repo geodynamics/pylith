@@ -56,12 +56,12 @@ pylith::problems::SolverLinear::deallocate(void)
   Solver::deallocate();
 
   if (0 != _ksp) {
-    PetscErrorCode err = KSPDestroy(_ksp); _ksp = 0;
+    PetscErrorCode err = KSPDestroy(&_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 
   if (0 != _precondMatrix) {
-    PetscErrorCode err = MatDestroy(_precondMatrix); _precondMatrix = 0;
+    PetscErrorCode err = MatDestroy(&_precondMatrix); _precondMatrix = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -81,7 +81,7 @@ pylith::problems::SolverLinear::initialize(
 
   PetscErrorCode err = 0;
   if (0 != _ksp) {
-    err = KSPDestroy(_ksp); _ksp = 0;
+    err = KSPDestroy(&_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
   } // if    
   err = KSPCreate(fields.mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);

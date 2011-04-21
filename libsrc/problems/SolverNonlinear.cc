@@ -79,7 +79,7 @@ pylith::problems::SolverNonlinear::deallocate(void)
   Solver::deallocate();
 
   if (0 != _snes) {
-    PetscErrorCode err = SNESDestroy(_snes); _snes = 0;
+    PetscErrorCode err = SNESDestroy(&_snes); _snes = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -99,7 +99,7 @@ pylith::problems::SolverNonlinear::initialize(
 
   PetscErrorCode err = 0;
   if (0 != _snes) {
-    err = SNESDestroy(_snes); _snes = 0;
+    err = SNESDestroy(&_snes); _snes = 0;
     CHECK_PETSC_ERROR(err);
   } // if    
   err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);

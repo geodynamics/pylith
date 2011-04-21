@@ -306,8 +306,8 @@ pylith::feassemble::TestElasticityExplicitTri3::testIntegrateJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
     } // for
-  MatDestroy(jDense);
-  MatDestroy(jSparseAIJ);
+  MatDestroy(&jDense);
+  MatDestroy(&jSparseAIJ);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------

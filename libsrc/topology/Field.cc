@@ -61,17 +61,17 @@ pylith::topology::Field<mesh_type>::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
   if (0 != _vector) {
-    err = VecDestroy(_vector); _vector = 0;
+    err = VecDestroy(&_vector); _vector = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 
   if (0 != _scatter) {
-    err = VecScatterDestroy(_scatter); _scatter = 0;
+    err = VecScatterDestroy(&_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 
   if (0 != _scatterVec) {
-    err = VecDestroy(_scatterVec); _scatterVec = 0;
+    err = VecDestroy(&_scatterVec); _scatterVec = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 } // deallocate
@@ -642,7 +642,7 @@ pylith::topology::Field<mesh_type>::createVector(void)
   PetscErrorCode err = 0;
 
   if (0 != _vector) {
-    err = VecDestroy(_vector); _vector = 0;
+    err = VecDestroy(&_vector); _vector = 0;
     CHECK_PETSC_ERROR(err);
   } // if
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -678,14 +678,14 @@ pylith::topology::Field<mesh_type>::createScatter(void)
 
   PetscErrorCode err = 0;
   if (0 != _scatter) {
-    err = VecScatterDestroy(_scatter); _scatter = 0;
+    err = VecScatterDestroy(&_scatter); _scatter = 0;
     CHECK_PETSC_ERROR(err);
   } // if
   err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, &_scatter);
   CHECK_PETSC_ERROR(err);
 
   if (0 != _scatterVec) {
-    err = VecDestroy(_scatterVec); _scatterVec = 0;
+    err = VecDestroy(&_scatterVec); _scatterVec = 0;
     CHECK_PETSC_ERROR(err);
   } // if
 
