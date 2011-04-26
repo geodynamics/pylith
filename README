@@ -20,7 +20,7 @@ command line.
 
 You can download the source code and binaries from
 
-    http://geodynamics.org/cig/software/packages/short/pylith
+    http://geodynamics.org/cig/software/pylith
 
 Installation instructions are in the bundled README and INSTALL  
 files, as well as in the User Manual on the web page.

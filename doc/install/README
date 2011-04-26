@@ -1,66 +1,8 @@
-======================================================================
-OVERVIEW
-======================================================================
+If you are new to PyLith, we recommend using the PyLith binary
+distributions to get up and running quickly. Once you are familiar
+with PyLith and want a custom installation, then we recommend that you
+use the PyLith Installer to build PyLith and its dependencies. The
+PyLith Installer is available on the PyLith website
+http://www.geodynamics.org/cig/software/pylith/. Instructions for how
+to use the installer are bundled in its distribution.
 
-This directory contains detailed instructions for building PyLith from
-source on several different platforms. You can compile all of the
-software packages from source, but, in most cases, it is much easier
-to make use of package managers to install low-level
-dependencies. Additionally, some hardware vendors supply optimized
-math libraries (BLAS/LAPACK) that will provide better performance than
-generic implementations.
-
-The degree of difficulty of the installation is closely related to how
-many binary packages are available for your platform. Most Linux
-distributions provide package managers that make installing a
-consistent suite of packages very easy. On Darwin systems, the package
-managers do a poor job of maintaining compatibility across
-packages. For example, some Fink packages use Apple gcc while others
-use Fink gcc (these two versions of gcc are not necessarily
-compatible). On Darwin systems, we recommend using MacPorts as your
-package manager. It builds everything from source and generally does a
-better job of maintaining consistency than Fink.
-
-The particular versions of several packages used in the installation
-instructions vary depending on how when the package was installed and
-how often it is updated. Unless otherwise noted, you should be able to
-install the current stable releases and not run into compatibility
-problems.
-
-======================================================================
-INSTRUCTIONS FOR VARIOUS PLATFORMS
-======================================================================
-
-We recommend setting up your source, build, and install directories as
-in the Linux_ubuntu-AMD64_Aagaard.txt, Cluster_CIT-garuda, and
-Cluster_CIT-pangu examples. These are setup for relatively stable
-installations, whereas most of the other examples are setup for
-development work and testing with multiple versions of packages. As a
-result they are unnecessarily complex for most users. The other
-examples do provide details for other systems that you may find
-helpful.
-
-FILE                             PLATFORM
-
-Linux_ubuntu-AMD64_Aagaard.txt   x86_64 desktop (gcc compilers)
-Cluster_CIT-garuda.txt           Intel cluster (Intel compilers)
-Cluster_CIT-pangu.txt            Intel cluster (Intel compilers)
-MacBookPro_Aagaard.txt           Intel Mac (Apple gcc 4.2), MacPorts
-Linux_Fedora8-AMD64_Aagaard.txt  x86_64 machine running Fedora 8 (gcc 4.1.2)
-Cluster_Rocks-4.3-AMD64.txt      x86_64 cluster running Rocks 4.3 (gcc 3.4)
-
-======================================================================
-BUILDING IN A SEPARATE DIRECTORY FROM THE SOURCE TREE
-======================================================================
-
-Software packages that conform to the GNU build system and use a
-configure script can usually be built in a different directory from
-the source tree. A notable exception to this is MPICH2, which in most
-cases must be built in the source tree. Building in a directory
-separate from the source tree makes it easy to create builds for
-different compilers, optimization levels, etc. To build in a separate
-directory, simply run the configure script from the directory you wish
-to use as the top-level build directory. Run "make", etc. in the build
-directory. In cases where you need to generate the configure script
-via autoreconf, run "autoreconf -if" in the top-level source
-directory.
