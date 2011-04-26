@@ -27,15 +27,7 @@ EXTRA_DIST = \
 	Cluster_CIT-pangu/PyLith.README \
 	Cluster_CIT-pangu/sample.bashrc \
 	Cluster_CIT-pangu/sample.bash.tools \
-	Cluster_CIT-pangu/sample.pylithapp.cfg \
-	Cluster_Rocks-4.3-AMD64.txt \
-	Cluster_Rocks-4.3-AMD64_bash.sh \
-	Linux_ubuntu-AMD64_Aagaard.txt \
-	Linux_ubuntu-AMD64_Aagaard.sh \
-	Linux_Fedora8-AMD64_Aagaard.txt \
-	Linux_Fedora8-AMD64_Aagaard_bash.sh \
-	MacBookPro_Aagaard.txt \
-	MacBookPro_Aagaard_bash.sh
+	Cluster_CIT-pangu/sample.pylithapp.cfg
 
 
 # End of file 
