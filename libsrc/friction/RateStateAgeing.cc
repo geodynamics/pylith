@@ -294,8 +294,13 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    // Using Regularized Rate and State equation
+
+    // regularized rate and state equation
     const double f0 = properties[p_coef];
+
+    // Since regulatized friction -> 0 as slipRate -> 0, limit slip
+    // rate to some minimum value
+    const double slipRateEff = std::max(1.0e-12, slipRate);
 
     const double slipRate0 = properties[p_slipRate0];
     const double a = properties[p_a];
@@ -305,7 +310,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double b = properties[p_b];
     const double bLnTerm = b * log(slipRate0 * theta / L);
     const double expTerm = exp((f0 + bLnTerm)/a);
-    const double sinhArg = 0.5 * slipRate / slipRate0 * expTerm;
+    const double sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];

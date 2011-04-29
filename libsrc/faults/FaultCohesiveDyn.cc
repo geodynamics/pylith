@@ -1922,7 +1922,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
 } // _sensitivitySolveLumped3D
 
 // ----------------------------------------------------------------------
-// Constrain solution space with lumped Jacobian in 1-D.
+// Constrain solution space in 1-D.
 void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(double_array* dLagrangeTpdt,
          const double_array& slip,
@@ -1945,7 +1945,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(double_array* dLagrangeT
 } // _constrainSolnSpace1D
 
 // ----------------------------------------------------------------------
-// Constrain solution space with lumped Jacobian in 2-D.
+// Constrain solution space in 2-D.
 void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeTpdt,
          const double_array& slip,
@@ -1970,7 +1970,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
       
       // Update slip based on value required to stick versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[0] / tractionShearMag;
+	tractionTpdt[0] / tractionShearMag;
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = 0.0;
     } else {
@@ -1987,7 +1987,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
 } // _constrainSolnSpace2D
 
 // ----------------------------------------------------------------------
-// Constrain solution space with lumped Jacobian in 3-D.
+// Constrain solution space in 3-D.
 void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeTpdt,
          const double_array& slip,

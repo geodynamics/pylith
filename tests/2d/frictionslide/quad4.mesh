@@ -67,7 +67,7 @@ mesh = {
     }
   }
   group = {
-    name = top
+    name = ypos
     type = vertices
     count = 5
     indices = {
@@ -75,11 +75,27 @@ mesh = {
     }
   }
   group = {
-    name = bottom
+    name = yneg
     type = vertices
     count = 5
     indices = {
       0  3  6  9 12
+    }
+  }
+  group = {
+    name = xpos
+    type = vertices
+    count = 3
+    indices = {
+      12 13 14
+    }
+  }
+  group = {
+    name = xneg
+    type = vertices
+    count = 3
+    indices = {
+      0  1  2
     }
   }
 }
