@@ -2,7 +2,9 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-Strip whitespace from UniformDB values and names.
+* [STABLE]
+  rate and state friction - sliding test
+  predictor/corrector scheme?
 
 * Unform global refinement
 
