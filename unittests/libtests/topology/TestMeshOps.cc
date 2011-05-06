@@ -47,15 +47,10 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void)
 
   MeshOps::checkMaterialIds(mesh, materialIds, numMaterials);
 
-  bool caughtError = false;
-  try {
-    materialIds[0] = 99;
+  materialIds[0] = 99;
     
-    MeshOps::checkMaterialIds(mesh, materialIds, numMaterials);
-  } catch (const std::runtime_error& err) {
-    caughtError = true;
-  } // try/catch
-  CPPUNIT_ASSERT(caughtError);
+  CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds, numMaterials),
+		       std::runtime_error);
 } // testCheckMaterialIds
  
 
