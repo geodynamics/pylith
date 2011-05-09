@@ -311,6 +311,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
   // Check edges in edgeToVertex for both endpoints sent to same process
   //   Put it in section with point being the lowest numbered vertex and value (other endpoint, new vertex)
+  //     Notice that points are converted to the new numbering with refined
   Obj<ALE::Section<point_type, EdgeType> > newVerticesSection = new ALE::Section<point_type, EdgeType>(oldMesh->comm());
   assert(!newVerticesSection.isNull());
   std::map<EdgeType, std::vector<int> > bndryEdgeToRank;
@@ -361,6 +362,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
   // Check faces in faceToVertex for all corners sent to same process
   //   Put it in section with point being the lowest numbered vertex and value (other endpoints, new vertex)
+  //     Notice that points are converted to the new numbering with refined
   Obj<ALE::Section<point_type, FaceType> > newFaceVerticesSection = new ALE::Section<point_type, FaceType>(oldMesh->comm());
   assert(!newFaceVerticesSection.isNull());
   std::map<FaceType, std::vector<int>, FaceCmp<point_type>  > bndryFaceToRank;
@@ -428,7 +430,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
         for(int i = 0; i < 4; ++i) {
           if (f_iter->first.points[i] != minVertex) {
-            face.points[k++] = f_iter->first.points[i];
+            face.points[k++] = f_iter->first.points[i]+localOffset;
           }
         }
         assert(k == 3);
