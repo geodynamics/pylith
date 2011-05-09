@@ -44,6 +44,7 @@ PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, M
   PetscBool       isFaultRow, isFaultCol;
   PetscErrorCode  ierr = 0;
 
+  PetscFunctionBegin;
   ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
   ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);
   ierr = ISEqual(isrow, faultIS, &isFaultRow);CHKERRQ(ierr);
@@ -57,7 +58,7 @@ PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, M
     ierr = MatGetSubMatrix(ctx->A, isrow, iscol, reuse, newmat);CHKERRQ(ierr);
   } // if/else
 
-  return 0;
+  PetscFunctionReturn(0);
 } // MyMatGetSubMatrix
 EXTERN_C_END
 
