@@ -392,6 +392,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         const Obj<mesh_type::send_overlap_type::traits::supportSequence>& nextRanksSeq = oldSendOverlap->support(nextVertex);
         assert(!nextRanksSeq.isNull());
         std::set<int> nextRanks(nextRanksSeq->begin(), nextRanksSeq->end());
+
+	ranks.clear();
         std::set_intersection(curRanks.begin(), curRanks.end(), nextRanks.begin(), nextRanks.end(),
                               std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
         curRanks = ranks;
