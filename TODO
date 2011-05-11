@@ -8,36 +8,22 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Unform global refinement
 
-  (2) The overlap is not updated properly for hex8 refinement. Run
-  examples/twocells/twohex8/axialdisp.cfg.
+  (1) The overlap is not updated properly for hex8 refinement. Run
+  examples/3d/hex8/step03.cfg.
 
-    pylith axialdisp.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=2
+  cd examples/3d/hex8
+  pylith step03.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=3
 
-      ERROR: Multiple indices for local point 15 remote point 13 from
-      1 with index (54, 3)
+  DARWIN:
 
+    RuntimeError: Error while preparing for writing data to VTK file output/step03-lower_crust.vtk at time 0.
+    [1]Multiple indices for local point 977 remote point 666 from 0 with index 314
 
 * Output to HDF5 files. [BRAD and MATT]
-
-  (1) The Sieve section to PETSc Vec is not done correctly for
-  DirichletBC. If the x-dof is fixed the unconstrained (y-dof) values
-  end up in the x-dof with zeros for the y-dof, the opposite of the
-  correct behavior.
-
-    cd examples/bar_shearwave/tri3/tmp
-    pylith
-
-    ERROR: Nonconforming object sizes. Invalid number of local indices
-    256, should not be greater than 140!
-
-    Size without BC is 140. Size with BC is 262.
 
   (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
 
   (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
-
-  - Need a flag to use s->GetIndicesRaw() in scatter creation
-
 
 * Field split.
 
