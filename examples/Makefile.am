@@ -17,6 +17,7 @@
 #
 
 SUBDIRS = \
+	2d \
 	3d \
 	bar_shearwave \
 	greensfns \
