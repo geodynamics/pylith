@@ -164,6 +164,10 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
+
+  // TEMPORARY - ASK MATT
+  formulation->constrainSolnSpace(&tmpSolutionVec);
+
   // Reform residual
   formulation->reformResidual(&tmpResidualVec, &tmpSolutionVec);
 
