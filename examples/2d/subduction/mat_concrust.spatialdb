@@ -1,0 +1,29 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the parameters for the continental
+// crust material, which is linearly elastic.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  // number of physical properties
+  num-values = 3
+    
+  // Names and units of physical properties
+  value-names =  density vs vp
+  value-units =  kg/m**3  m/s  m/s
+    
+  // 1 location -> data is uniform -> data dimension is 0
+  num-locs = 1
+  data-dim = 0
+
+  // Problem is in 2-D
+  space-dim = 2
+
+  // Coordinate system (2-D with coordinates in meters)
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+// Columns are x, y, density, vs, vp
+0.0  0.0   2700.0  3200.0  5800.0

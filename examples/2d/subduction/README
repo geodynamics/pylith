@@ -1,0 +1,101 @@
+The example in this directory simulates quasi-static post-seismic
+relaxation in the mantle following an earthquake. It is based on the
+2011 M9.0 Tohoku earthquake off the east coast of Japan.
+
+The main features of this example are:
+
+  * Generating a finite-element mesh using CUBIT
+    + Nonplanar geometry
+    + Variable mesh resolution
+  * Spatially variable coseismic slip
+  * Maxwell viscoelastic relaxation
+
+
+Step 1. Mesh generation (optional)
+
+  NOTE: The result of this step will overwrite the included file
+        tri3_mesh.exo. You may want to copy/rename this file so that
+        you have a backup copy in case you have difficulty running
+        CUBIT.
+
+  Start CUBIT and play the journal file "mesh_tri3.jou". We highly
+  recommend that you study the contents of the journal files to
+  understand the mesh generation process.
+
+
+Step 2. Run the simulation.
+
+  The PyLith parameters are contained in two .cfg files. The general
+  parameters related to the mesh and a quasi-static simulation are in
+  pylithapp.cfg, and those parameters specific to the post-seismic
+  deformation are in postseismic.cfg. This facilitates running
+  additional quasi-static simulations using this same mesh.
+
+  The parameters for the bulk constitutive models are defined in
+    mat_concrust.spatialdb
+    mat_oceancrust.spatialdb
+    mat_conmantle.spatialdb
+    mat_oceanmantle.spatialdb
+
+  The parameters for the earthquake slip are defined in
+    fault_slip.spatialdb
+
+  Run the simulation via the following command:
+    pylith postseismic.cfg.
+
+  The simulation will output the displacements on the ground surface
+  at every time step, the displacements over the entire domain every
+  5 years, the fault slip and tractions every time step, and the
+  stresses and strains for each material every 10 years.
+
+  
+Step 3. Visualize the result using ParaView.
+
+  Start ParaView and load the 
+
+
+Suggestions variations
+
+  The list below includes some suggested modifications to the problem
+  that will allow you to become more familiar with PyLith while
+  examining some interesting physics.
+
+
+  * Change the viscosity to increase/decrease the Maxwell relaxation
+    time.
+
+
+  * Add a depth dependent viscosity to the slab to permit relaxation
+    in the slab at depths below 50 km.
+
+
+  * Modify the spatial database files for the material properties to
+    use depth-dependent elastic properties based on PREM (Dziewonski
+    and Anderson, 1981, 10.1016/0031-9201(81)90046-7). See
+    http://geophysics.ou.edu/solid_earth/prem.html for a simple table
+    of values.
+
+    Add points, update num-locs accordingly, and change data-dim to be 1.
+
+
+  * Change the resolution of the mesh by editing the mesh_tri3.jou
+    journal file. Change the resolution and bias factor.
+
+
+  * Modify the CUBIT journal files to use quad4 cells rather than tri3
+    cells. This requires using the pave mesh scheme.
+
+
+  * Add steady creep to the top and bottom of the slab in the mantle. 
+
+    This requires adjusting several adjustments to the mesh:
+      (a) extend the down-dip extent of the fault on the top of the slab
+      (b) split the curve for the bottom of the slab at the desired
+          up-dip and down-dip locations
+      (c) updating the vertices/curve labels in setting the mesh size
+      (d) adding a node set for the bottom of the slab
+
+    and several adjustments to the PyLith parameters:
+      (e) create a spatial database for the creep (see examples/3d/hex8/step06)
+      (f) add the fault interface for the bottom of the slab
+      (g) add a kinematic rupture corresponding to the creep
