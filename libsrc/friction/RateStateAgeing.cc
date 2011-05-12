@@ -294,8 +294,13 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    // Using Regularized Rate and State equation
+
+    // regularized rate and state equation
     const double f0 = properties[p_coef];
+
+    // Since regulatized friction -> 0 as slipRate -> 0, limit slip
+    // rate to some minimum value
+    const double slipRateEff = std::max(1.0e-12, slipRate);
 
     const double slipRate0 = properties[p_slipRate0];
     const double a = properties[p_a];
@@ -305,7 +310,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double b = properties[p_b];
     const double bLnTerm = b * log(slipRate0 * theta / L);
     const double expTerm = exp((f0 + bLnTerm)/a);
-    const double sinhArg = 0.5 * slipRate / slipRate0 * expTerm;
+    const double sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
@@ -332,31 +337,42 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   assert(numStateVars);
   assert(_RateStateAgeing::numStateVars == numStateVars);
 
+  // d(theta)/dt = (1 - slipRate * theta / L)
+  //
+  // Use separation of variables to integrate above ODE from t->t+dt,
+  // keeping slip rate constant.
+  //
+  // thetaTpdt = thetaT * exp(-slipRate/L * dt)
+  //             + L/slipRate * (1 -  exp(-slipRate/L * dt))
+  //
+  // As slipRate --> 0, L/sliprate --> infinity and
+  // exp(-sliprate/L*dt) --> 1.  To determine, d(theta)/dt near
+  // sliprate == 0, we expand the exponential term in a Taylor series:
+  //
+  // exp(-x) = 1 - x +1/2*x**2 + 1/6*x**3
+  //
+  // This leads to (in the vicinity of slipRate == 0):
+  //
+  // thetaTpdt = thetaT * exp(-slipRate/L * dt)
+  //             + dt - 0.5*(sliprate/L)*dt**2 + 1.0/6.0*(slipRate/L)*dt**3;
+
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
   const double L = properties[p_L];
-  const double expTerm = exp(-slipRate * dt / L);
   const double vDtL = slipRate * dt / L;
+  const double expTerm = exp(-vDtL);
 
-  // Ageing law
-  // d(theta)/dt = (1 - slipRate * theta / L)
-  // Above ODE is integrated from t->t+dt keeping slipRate constant gives
-  // thetaTpdt = thetaT * exp(- slipRate * theta / L)
-  //             + L / slipRate * (1 -  exp(- slipRate * theta / L))
   double thetaTpdtVertex = 0.0;
-  if (vDtL < 0.00001)
-    // As (slipRate * dt / L) --> 0, exp(-slipRate * dt / L) --> 1
-    // So using first three terms in the Taylor series expansion of 
-    // exp(- slipRate * theta / L) i.e., exp(-x) = 1 - x + (x^2)/2;
-    thetaTpdtVertex = thetaTVertex * expTerm + 
-                        dt - 0.5 * slipRate * pow(dt,2) / L;
-  else
-    thetaTpdtVertex = thetaTVertex * expTerm +
-                       L / slipRate * (1 - expTerm);
-
+  if (vDtL > 1.0e-20) {
+    thetaTpdtVertex = thetaTVertex * expTerm + L / slipRate * (1 - expTerm);
+    PetscLogFlops(7);
+  } else {
+    thetaTpdtVertex = thetaTVertex * expTerm + dt - 0.5 * slipRate/L * dt*dt;
+    PetscLogFlops(9);
+  } // if/else
+  
   stateVars[s_state] = thetaTpdtVertex;
 
-  PetscLogFlops(6);
 } // _updateStateVars
 
 

@@ -1,0 +1,78 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file for creating blocks and nodesets associated with
+# materials and boundary conditions.
+#
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface concrust
+block 1 name "concrust"
+
+block 2 surface conmantle
+block 2 name "conmantle"
+
+block 3 surface oceancrust
+block 3 name "oceancrust"
+
+block 4 surface oceanmantle
+block 4 name "oceanmantle"
+
+# ----------------------------------------------------------------------
+# Create nodeset for fault
+# ----------------------------------------------------------------------
+group "fault" add node in slabtop@A
+group "fault" add node in slabtop@D
+nodeset 20 group fault
+nodeset 20 name "fault"
+
+# ----------------------------------------------------------------------
+# Create nodeset for topography/bathymetry
+# ----------------------------------------------------------------------
+group "groundsurf" add node in curve topobathy
+group "groundsurf" add node in curve topobathy@A
+group "groundsurf" add node in curve topobathy@B
+nodeset 10 group groundsurf
+nodeset 10 name "groundsurf"
+
+# ----------------------------------------------------------------------
+# Create nodeset for west boundary
+# ----------------------------------------------------------------------
+group "bndry_west" add node in curve edgewest
+group "bndry_west" add node in curve edgewest@A
+nodeset 11 group bndry_west
+nodeset 11 name "bndry_west"
+
+# ----------------------------------------------------------------------
+# Create nodeset for east boundary
+# ----------------------------------------------------------------------
+group "bndry_east" add node in curve edgeeast
+group "bndry_east" add node in curve edgeeast@A
+nodeset 12 group bndry_east
+nodeset 12 name "bndry_east"
+
+# ----------------------------------------------------------------------
+# Create nodeset for bottom boundary
+# ----------------------------------------------------------------------
+group "bndry_bot" add node in curve edgebot
+group "bndry_bot" add node in curve edgebot@A
+nodeset 13 group bndry_bot
+nodeset 13 name "bndry_bot"
+
+
+# End of file
+

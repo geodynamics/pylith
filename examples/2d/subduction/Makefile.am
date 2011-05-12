@@ -16,13 +16,23 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_DATA = \
+	README \
+	pylithapp.cfg \
+	postseismic.cfg \
+	geometry.jou \
+	mesh_tri3.jou \
+	createbc.jou \
+	mesh_tri3.exo \
+	fault_slip.spatialdb \
+	mat_concrust.spatialdb \
+	mat_conmantle.spatialdb \
+	mat_oceancrust.spatialdb \
+	mat_oceanmantle.spatialdb 
+
+
 SUBDIRS = \
-	2d \
-	3d \
-	bar_shearwave \
-	greensfns \
-	meshing \
-	twocells
+	output
 
 
 # End of file 

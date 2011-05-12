@@ -1,0 +1,167 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for 2-D subduction zone example
+# based on the 2011 M9.0 Tohoku earthquake.
+#
+# We use the CUBIT support for APREPRO (the expressions in braces),
+# which includes units and mathematical functions. See the APREPRO
+# section in the appendix of the CUBIT documentation for more
+# information.
+#
+# The steps in constructing the geometry are:
+# (1) Create points
+# (2) Connect the points into spline curves
+# (3) Split the splines at intersections to form bounding curves
+# (4) Form surfaces from the bounding curves
+#
+# Points have been projected from longitude/latitude into a local
+# transverse Mercator projection. PyLith uses the Proj.4 library
+# for geographic projections. The proj parameters are:
+#
+#   +proj=tmerc +datum=WGS84 +lon_0=142.0 +lat_0=38.0 +k=0.9996
+#
+# so that the local origin is at a longitude of 142.0 degrees (WGS84)
+# and a latitude of 38.0 degrees (WGS84).
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# ----------------------------------------------------------------------
+# Create points and curves defining materials
+# ----------------------------------------------------------------------
+
+# Topography/bathymetry (points from Google Earth)
+create vertex x { -600.0*km} y {-2000.0*m}
+create vertex x { -439.1*km} y { -300.0*m}
+create vertex x { -351.2*km} y { -800.0*m}
+create vertex x { -263.4*km} y {    0.0*m}
+create vertex x { -175.6*km} y {  400.0*m}
+create vertex x {  -87.7*km} y {    0.0*m}
+create vertex x {    0.0*km} y { -400.0*m}
+create vertex x {   87.7*km} y {-3000.0*m}
+create vertex x {  165.6*km} y {-6000.0*m}
+create vertex x {  263.4*km} y {-5400.0*m}
+create vertex x {  351.2*km} y {-5400.0*m}
+create vertex x {  439.1*km} y {-5400.0*m}
+create vertex x {  600.0*km} y {-5700.0*m}
+
+create curve spline vertex 1 to 13
+curve 1 name "topobathy"
+
+# Top of slab
+# Hayes and Wald, 2009
+# http://earthquake.usgs.gov/research/data/slab
+create vertex x { -600.0*km} y {-340.00*km}
+create vertex x { -422.4*km} y {-240.00*km}
+create vertex x { -331.0*km} y {-180.00*km}
+create vertex x { -261.6*km} y {-140.00*km}
+create vertex x { -223.9*km} y {-120.00*km}
+create vertex x { -182.6*km} y {-100.00*km}
+create vertex x { -134.3*km} y {-80.00*km}
+create vertex x {  -74.6*km} y {-60.00*km}
+create vertex x {   -7.9*km} y {-40.00*km}
+create vertex x {   71.1*km} y {-20.00*km}
+create vertex x {  160.5*km} y {-7.50*km}
+
+create curve spline vertex 14 to 24 9
+curve 2 name "slabtop"
+
+# Bottom of slab (translate top of slab to the east)
+#
+# Better approach would be to move points normal to slab to preserve
+# uniform thickness.
+vertex 14 to 21 copy move X {120.0*km}
+create vertex x {  175.6*km} y {-40.0*km}
+create vertex x {  600.0*km} y {-40.0*km}
+
+create curve spline vertex 25 to 34
+curve 3 name "slabbot"
+
+# Top of mantle (uniform depth of 40 km)
+create vertex x { -600.0*km} y {-40.00*km}
+
+create curve spline vertex 35 22
+curve 4 name "conmoho"
+
+# Lateral edges and bottom boundary
+create vertex x { 600.0*km} y {-340.00*km}
+
+create curve spline vertex 1 35 14
+curve 5 name "edgewest"
+
+create curve spline vertex 38 25 36
+curve 6 name "edgebot"
+
+create curve spline vertex 13 34 36
+curve 7 name "edgeeast"
+
+# ----------------------------------------------------------------------
+# Split curves to form bounding curves for each material
+# ----------------------------------------------------------------------
+split curve topobathy crossing curve slabtop
+split curve slabtop crossing curve conmoho
+split curve edgewest crossing curve conmoho
+split curve edgebot crossing curve slabbot
+split curve edgeeast crossing curve slabbot
+
+# ----------------------------------------------------------------------
+# Create surfaces using bounding curves
+# ----------------------------------------------------------------------
+# Continental crust
+create surface curve topobathy edgewest conmoho slabtop@A
+surface 1 name "concrust"
+
+# Continental mantle
+create surface curve conmoho edgewest@A slabtop
+surface 2 name "conmantle"
+
+# Oceanic crust (slab)
+create surface curve topobathy@A slabtop@A slabtop edgebot slabbot edgeeast
+surface 3 name "oceancrust"
+
+# Oceanic mantle
+create surface curve slabbot edgebot@A edgeeast@A
+surface 4 name "oceanmantle"
+
+# ----------------------------------------------------------------------
+# Imprint/merge
+# ----------------------------------------------------------------------
+delete vertex all
+imprint all
+merge all
+stitch volume all
+
+# Split top of slab for fault surface
+split curve slabtop distance {80.0*km} from end
+
+# Split topography/bathymetry to mimic same region as fault surface
+# (used in setting discretization size)
+split curve topobathy distance {190.0*km} from end
+
+# Split bottom of slab to mimic same region as fault surface
+# (used in setting discretization size)
+split curve slabbot distance {420.0*km} from end
+split curve slabbot distance {250.0*km} from end
+
+# End of file
