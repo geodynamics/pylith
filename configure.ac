@@ -43,6 +43,15 @@ AC_ARG_ENABLE([testing],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
+# Enable full-scale testing except on cygwin (need to rebase)
+if test "$enable_testing" = yes ; then
+  enable_full_testing=yes
+  case $host_os in
+    cygwin*)
+      enable_full_testing=no ;;
+  esac
+fi
+AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 
 # CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
