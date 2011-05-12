@@ -16,13 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	2d \
-	3d \
-	bar_shearwave \
-	greensfns \
-	meshing \
-	twocells
+dist_noinst_DATA =
 
 
 # End of file 
