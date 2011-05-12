@@ -28,7 +28,11 @@ SUBDIRS = \
 
 if ENABLE_TESTING
   SUBDIRS += \
-	unittests \
+	unittests 
+endif
+
+if ENABLE_FULL_TESTING
+  SUBDIRS += \
 	tests_auto
 endif
 
