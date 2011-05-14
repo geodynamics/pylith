@@ -1,17 +1,44 @@
-The example in this directory simulates quasi-static post-seismic
-relaxation in the mantle following an earthquake. It is based on the
-2011 M9.0 Tohoku earthquake off the east coast of Japan.
+The example in this directory simulates quasi-static interseismic and
+coseismic deformation for a subduction zone. It is based on the 2011
+M9.0 Tohoku earthquake off the east coast of Japan.
 
 The main features of this example are:
 
   * Generating a finite-element mesh using CUBIT
     + Nonplanar geometry
     + Variable mesh resolution
-  * Spatially variable coseismic slip
+  * Spatially variable coseismic slip and creep
   * Maxwell viscoelastic relaxation
 
+The example is broken up into three steps of increasing
+complexity. Step 1 focuses on the coseismic slip, Step 2 focuses on
+interseismic deformation, and Step 3 combines the two into a pseudo
+earthquake cycle deformation simulation. In a similar fashion as other
+examples, we place all of the general parameters in pylithapp.cfg and
+the parameters specific to each simulation in stepXX.cfg.
 
-Step 1. Mesh generation (optional)
+We model the crust with a linear elastic bulk constitutive model and
+the mantle with a linear Maxwell viscoelastic model. Both constitutive
+models use plane strain formulations in these 2-D models.
+
+The parameters for the bulk constitutive models are defined in
+  mat_concrust.spatialdb
+  mat_oceancrust.spatialdb
+  mat_conmantle.spatialdb
+  mat_oceanmantle.spatialdb
+
+The simulation will output the displacements on the ground surface at
+every time step, the displacements over the entire domain every 10
+years, the fault slip and tractions every time step, and the stresses
+and strains for each material every 10 years.
+
+For each of the simulations, we recommend examining the displacements,
+stress field, and fault slip. ParaView parses the 2-D stress tensor as
+a vector, so the tensor components sigma_xx, sigma_yy, sigma_xy are
+listed as x, y, z.
+
+
+Mesh generation (optional)
 
   NOTE: The result of this step will overwrite the included file
         tri3_mesh.exo. You may want to copy/rename this file so that
@@ -23,35 +50,40 @@ Step 1. Mesh generation (optional)
   understand the mesh generation process.
 
 
-Step 2. Run the simulation.
+Step 1. Coseismic slip simulation
 
-  The PyLith parameters are contained in two .cfg files. The general
-  parameters related to the mesh and a quasi-static simulation are in
-  pylithapp.cfg, and those parameters specific to the post-seismic
-  deformation are in postseismic.cfg. This facilitates running
-  additional quasi-static simulations using this same mesh.
-
-  The parameters for the bulk constitutive models are defined in
-    mat_concrust.spatialdb
-    mat_oceancrust.spatialdb
-    mat_conmantle.spatialdb
-    mat_oceanmantle.spatialdb
+  This simulation involves coseismic slip between the continental
+  crust and top of the subducting oceanic crust. The slip also extends
+  down into the top of the mantle below the continental crust.
 
   The parameters for the earthquake slip are defined in
-    fault_slip.spatialdb
+    fault_slip_coesismic.spatialdb
 
   Run the simulation via the following command:
-    pylith postseismic.cfg.
+    pylith step01.cfg.
 
-  The simulation will output the displacements on the ground surface
-  at every time step, the displacements over the entire domain every
-  5 years, the fault slip and tractions every time step, and the
-  stresses and strains for each material every 10 years.
 
-  
-Step 3. Visualize the result using ParaView.
+Step 2. Interseismic deformation simulation
 
-  Start ParaView and load the 
+  This simulation involves aseismic creep along the interfaces between
+  the subducting oceanic crust and the mantle. The slip rate is a
+  constant 8 cm/yr.
+
+  The parameters for the creep along the top of the slab are defined in
+    fault_creep_slabtop.spatialdb
+
+  Run the simulation via the following command:
+    pylith step02.cfg
+
+
+Step 3. Pseudo-earthquake cycle model
+
+  This simulation combines the interseismic deformation from Step 2
+  with the coseismic slip from Step 1. The earthquake rupture occurs
+  midway (150 years) through the 300 year simulation.
+
+  Run the simulation via the following command:
+    pylith step03.cfg
 
 
 Suggestions variations
@@ -60,14 +92,15 @@ Suggestions variations
   that will allow you to become more familiar with PyLith while
   examining some interesting physics.
 
+  * Change the resolution of the mesh by editing the mesh_tri3.jou
+    journal file. Change the resolution and bias factor.
 
-  * Change the viscosity to increase/decrease the Maxwell relaxation
-    time.
-
-
-  * Add a depth dependent viscosity to the slab to permit relaxation
-    in the slab at depths below 50 km.
-
+  * Add depth dependent viscosity to the mantle and crust. This
+    requires using the linear Maxwell plane strain bulk constitutive
+    model in the crust as well and creating spatial databases that
+    include viscosity for the crust. Specifying a depth dependent
+    variation in the parameters will require adding points, updating
+    num-locs accordingly, and changing data-dim to 1.
 
   * Modify the spatial database files for the material properties to
     use depth-dependent elastic properties based on PREM (Dziewonski
@@ -77,25 +110,12 @@ Suggestions variations
 
     Add points, update num-locs accordingly, and change data-dim to be 1.
 
-
-  * Change the resolution of the mesh by editing the mesh_tri3.jou
-    journal file. Change the resolution and bias factor.
-
-
   * Modify the CUBIT journal files to use quad4 cells rather than tri3
     cells. This requires using the pave mesh scheme.
 
+  * Create a simulation with multiple earthquake cycles by lengthening
+    the duration of the simulation and adding additional earthquake
+    ruptures. See examples/3d/hex8/step06.cfg for an example with
+    multiple earthquake ruptures. Examine spinup towards a
+    steady-state solution.
 
-  * Add steady creep to the top and bottom of the slab in the mantle. 
-
-    This requires adjusting several adjustments to the mesh:
-      (a) extend the down-dip extent of the fault on the top of the slab
-      (b) split the curve for the bottom of the slab at the desired
-          up-dip and down-dip locations
-      (c) updating the vertices/curve labels in setting the mesh size
-      (d) adding a node set for the bottom of the slab
-
-    and several adjustments to the PyLith parameters:
-      (e) create a spatial database for the creep (see examples/3d/hex8/step06)
-      (f) add the fault interface for the bottom of the slab
-      (g) add a kinematic rupture corresponding to the creep
