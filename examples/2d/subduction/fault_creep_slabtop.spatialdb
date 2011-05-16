@@ -1,0 +1,31 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of slip rate
+// associated with aseismic creep on the interface between the mantle
+// below the continental crust and the subducting oceanic crust.
+// 
+// We specify a uniform creep rate below a depth of 75 km, tapering to
+// 0 at a depth of 60 km.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 2
+  value-names =  left-lateral-slip  fault-opening
+  value-units =  cm/year  cm/year
+  num-locs = 4
+  data-dim = 1 // Data is specified along a line.
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
+    space-dim = 2
+  } // cs-data
+} // SimpleDB
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) reverse-slip (cm)
+// (4) fault-opening (cm)
+0.0   99.0          0.0   0.0
+0.0  -60.0          0.0   0.0
+0.0  -75.0         -8.0   0.0
+0.0  -999.0        -8.0   0.0

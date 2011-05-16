@@ -17,6 +17,10 @@
 # CUBIT journal file for creating blocks and nodesets associated with
 # materials and boundary conditions.
 #
+# NOTE: We remove the overlap between groups associated with 
+# Dirichlet BC and groups associated with faults because PyLith
+# does not allow Dirichlet BC to be applied to nodes adjacent to the fault.
+#
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
@@ -33,12 +37,25 @@ block 4 surface oceanmantle
 block 4 name "oceanmantle"
 
 # ----------------------------------------------------------------------
-# Create nodeset for fault
+# Create nodeset for fault interfaces
 # ----------------------------------------------------------------------
-group "fault" add node in slabtop@A
-group "fault" add node in slabtop@D
-nodeset 20 group fault
-nodeset 20 name "fault"
+# Fault (coseismic region only)
+group "fault_coseismic" add node in slabtop@A
+group "fault_coseismic" add node in slabtop@D
+nodeset 20 group fault_coseismic
+nodeset 20 name "fault_coseismic"
+
+group "fault_slabtop" add node in slabtop@A
+group "fault_slabtop" add node in slabtop@D
+group "fault_slabtop" add node in slabtop
+nodeset 21 group fault_slabtop
+nodeset 21 name "fault_slabtop"
+
+group "fault_slabbot" add node in slabbot@B
+group "fault_slabbot" add node in slabbot@C
+group "fault_slabbot" add node in slabbot
+nodeset 22 group fault_slabbot
+nodeset 22 name "fault_slabbot"
 
 # ----------------------------------------------------------------------
 # Create nodeset for topography/bathymetry
@@ -54,25 +71,39 @@ nodeset 10 name "groundsurf"
 # ----------------------------------------------------------------------
 group "bndry_west" add node in curve edgewest
 group "bndry_west" add node in curve edgewest@A
+group "bndry_west" remove node in group fault_slabtop
 nodeset 11 group bndry_west
 nodeset 11 name "bndry_west"
 
 # ----------------------------------------------------------------------
 # Create nodeset for east boundary
 # ----------------------------------------------------------------------
-group "bndry_east" add node in curve edgeeast
-group "bndry_east" add node in curve edgeeast@A
-nodeset 12 group bndry_east
-nodeset 12 name "bndry_east"
+# Crust
+group "bndry_east_crust" add node in curve edgeeast
+nodeset 12 group bndry_east_crust
+nodeset 12 name "bndry_east_crust"
+
+# Mantle
+group "bndry_east_mantle" add node in curve edgeeast@A
+group "bndry_east_mantle" remove node in group fault_slabbot
+nodeset 13 group bndry_east_mantle
+nodeset 13 name "bndry_east_mantle"
 
 # ----------------------------------------------------------------------
-# Create nodeset for bottom boundary
+# Create nodesets for bottom boundary
 # ----------------------------------------------------------------------
-group "bndry_bot" add node in curve edgebot
-group "bndry_bot" add node in curve edgebot@A
-nodeset 13 group bndry_bot
-nodeset 13 name "bndry_bot"
+# Slab (oceanic crust)
+group "bndry_bot_slab" add node in curve edgebot
+nodeset 14 group bndry_bot_slab
+nodeset 14 name "bndry_bot_slab"
+
+# Mantle
+group "bndry_bot_mantle" add node in curve edgebot@A
+group "bndry_bot_mantle" remove node in group fault_slabbot
+nodeset 15 group bndry_bot_mantle
+nodeset 15 name "bndry_bot_mantle"
 
 
 # End of file
+
 
