@@ -30,7 +30,6 @@ if ENABLE_TESTING
   SUBDIRS += \
 	unittests 
 endif
-
 if ENABLE_FULL_TESTING
   SUBDIRS += \
 	tests_auto
