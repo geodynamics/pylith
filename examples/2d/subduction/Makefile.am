@@ -19,12 +19,15 @@
 dist_noinst_DATA = \
 	README \
 	pylithapp.cfg \
-	postseismic.cfg \
+	step01.cfg \
+	step02.cfg \
+	step03.cfg \
 	geometry.jou \
 	mesh_tri3.jou \
 	createbc.jou \
 	mesh_tri3.exo \
-	fault_slip.spatialdb \
+	fault_slip_coseismic.spatialdb \
+	fault_creep_slabtop.spatialdb \
 	mat_concrust.spatialdb \
 	mat_conmantle.spatialdb \
 	mat_oceancrust.spatialdb \
