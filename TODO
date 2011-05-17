@@ -12,7 +12,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 * BUILDBOT
 
   (1) cygwin
-      + PETSc dlls (why are changes to bs.py being ignored? master/slave?)
       + packaging
 
   (2) linux/darwin
@@ -67,13 +66,39 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
   Need to check sum, because we may not be tracking deallocation.
 
+* Cleanup of materials [stable]
+
+  + Account for initial strain in viscoelastic models
+
+  + Cleanup documentation
+    + Move formulations not used to Appendix
+    + Cleanup notation
+    + Add more information on derivation (especially Generalize Maxwell)
+      Use impedance approach
+    + Are material models consistent with governing equations discussion?
+
 * Fault preconditioner [BRAD]
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
+* Cleanup
+  + memory model
+  + full-scale testing
+  + Code cleanup
+
+======================================================================
+CURRENT ISSUES/PRIORITIES (1.7.0)
+======================================================================
+
 * GenMaxwellQpQs [BRAD]
 
+  2-D and 3-D versions
   Need to redo Maxwell time calculation. Use ratio.
+  Create benchmark for test (compare against fk)
+
+* Make nucleation for spontaneous rupture modular [BRAD]
+
+  spatial and temporal variation in shear/normal stress for nucleation
 
 * Reimplement Fields to use a single section. [BRAD]
 
@@ -84,9 +109,17 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
       Use Field for dispIncr(t->t+dt), residual(t)
 
 * Cleanup
-  + memory model
-  + full-scale testing
-  + Code cleanup
+
+    Add elasticPrestep() to Formulation
+    Remove solnIncr, keep setField()
+
+* 2-D materials
+
+  + GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
+  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
+
+* Scalable distribution [MATT]
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
@@ -100,9 +133,6 @@ SECONDARY PRIORITIES
 
 * Cleanup
 
-    Add elasticPrestep() to Formulation
-    Remove solnIncr, keep setField()
-
     Consistent use of Schur complement
 
       + adjustSolnLumped()
@@ -112,29 +142,16 @@ SECONDARY PRIORITIES
       + Refactor friction sensitivity solve, fault preconditioner, and
         adjustSolnLumped()
 
-* Cleanup of materials [stable]
-
-  + Account for initial strain in viscoelastic models
-
-  + Cleanup documentation
-    + Move formulations not used to Appendix
-    + Cleanup notation
-
 * Optimization
   + inline methods (what isn't getting inlined) -Winline
   + Specialized elasticity integrator objects for Quad4, Hex8?
     - Add for lgdeform, implicit time integration?
-
 
 * Explicit time step
 
   utility code
     Compute stable explicit time step
     Write stable time step explicit (CFL, adhoc)
-
-* Manual
-
-  Are material models consistent with governing equations discussion?
 
 * Interpolated meshes + temperature field
   No fault, linear elasticity
@@ -153,17 +170,14 @@ SECONDARY PRIORITIES
 
   FaultCohesiveKinDyn
 
-  Kinematic slip in confined space/time region, otherwise governed by
-  fault constitutive model.
+    Add EqKinSrcs to FaultCohesiveDyn
+
+    Use kinematic slip unless fault constitutive model suggests larger slip
 
 * utilities
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
-
-* GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
-
-* DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
 
 * Lumped solver [Brad]
   + Need to finish unit tests
