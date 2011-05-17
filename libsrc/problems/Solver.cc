@@ -38,7 +38,9 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
 EXTERN_C_BEGIN
-PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, Mat *newmat) { // MyMatGetSubMatrix
+#undef __FUNCT__
+#define __FUNCT__ "MyMatGetSubMatrix"
+PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, Mat *newmat) {
   FaultPreconCtx *ctx;
   IS              faultIS;
   PetscBool       isFaultRow, isFaultCol;
