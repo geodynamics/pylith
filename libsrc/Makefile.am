@@ -171,7 +171,8 @@ AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 
 if ENABLE_HDF5
   libpylith_la_SOURCES += \
-	meshio/HDF5.cc
+	meshio/HDF5.cc \
+	meshio/Xdmf.cc
   libpylith_la_LIBADD += -lhdf5
 endif
 

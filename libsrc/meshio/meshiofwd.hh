@@ -60,6 +60,7 @@ namespace pylith {
     class UCDFaultFile;
 
     class HDF5;
+    class Xdmf;
 
   } // meshio
 } // pylith
