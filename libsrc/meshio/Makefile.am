@@ -51,6 +51,7 @@ subpkginclude_HEADERS = \
 if ENABLE_HDF5
   subpkginclude_HEADERS += \
 	HDF5.hh \
+	Xdmf.hh \
 	DataWriterHDF5.hh \
 	DataWriterHDF5.icc \
 	DataWriterHDF5.cc \
