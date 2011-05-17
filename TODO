@@ -47,6 +47,8 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * Field split.
 
+  Need to add the ability to add null space (subduction/step03).
+
   Need to check performance of custom fault preconditioner.
 
 
