@@ -335,7 +335,7 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
       throw std::runtime_error("Could not get node set.");
     const int size = node_ns->num_vals();
     info << journal::at(__HERE__)
-	 << "Reading node set '" << groupNames[iGroup] "' with id "
+	 << "Reading node set '" << groupNames[iGroup] << "' with id "
 	 << ids[iGroup] << " containing "
 	 << size << " nodes." << journal::endl;
 
