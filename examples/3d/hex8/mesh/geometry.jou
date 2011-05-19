@@ -45,3 +45,4 @@ volume 6 name "visco_xneg"
 # ----------------------------------------------------------------------
 imprint all with volume all
 merge all
+delete body all
