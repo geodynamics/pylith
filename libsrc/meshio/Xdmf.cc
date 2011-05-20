@@ -41,10 +41,13 @@ pylith::meshio::Xdmf::~Xdmf(void)
 // ----------------------------------------------------------------------
 // Write Xdmf file associated with HDF5 file.
 void
-pylith::meshio::Xdmf::write(const char* filenameXdfm,
+pylith::meshio::Xdmf::write(const char* filenameXdmf,
 			    const char* filenameHDF5)
 { // write
-  std::string cellType = 0;
+  assert(filenameXdmf);
+  assert(filenameHDF5);
+
+  std::string cellType;
   int numCells = 0;
   int numCorners = 0;
   int numVertices = 0;
@@ -58,12 +61,21 @@ pylith::meshio::Xdmf::write(const char* filenameXdfm,
   int_array fieldNumPoints;
   int_array fieldFiberDim;
 
-  if (spaceDim == 1) {
+  if (1 == spaceDim) {
     std::cout
       << "WARNING: Xdmf grids not defined for 1-D domains.\n"
       << "Skipping creation of Xdmf file associated with HDF5 file '"
       << filenameHDF5 << "'" << std::endl;
     return;
+  } // if
+
+  _file.open(filenameXdmf);
+  if (!_file.is_open() || !_file.good()) {
+    std::ostringstream msg;
+    msg << "Could not open Xdmf file '" << filenameXdmf
+	<< "' for writing metadata forHDF5 file '"
+	<< filenameHDF5 << "'.\n";
+    throw std::runtime_error(msg.str());
   } // if
 
   _file
@@ -84,7 +96,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdfm,
   _writeTimeStamps(timeStamps, numTimeSteps);
 
   _file
-    << "<Grid Name=\"domain\" GridType=\"Uniform\">\n";
+    << "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
   for (int iTimeStep=0; iTimeStep < numTimeSteps; ++iTimeStep) {
     _writeGridTopology(cellType.c_str(), numCells);
     _writeGridGeometry(spaceDim);
@@ -106,10 +118,10 @@ pylith::meshio::Xdmf::write(const char* filenameXdfm,
 			    iTimeStep);
       } // if/else
     } // for
+    _file << "      </Grid>\n";
   } // for
-
+  
   _file
-    << "      </Grid>\n"
     << "    </Grid>\n"
     << "  </Domain>\n"
     << "</Xdmf>\n";
@@ -122,6 +134,7 @@ void
 pylith::meshio::Xdmf::_writeDomainCells(const int numCells,
 					const int numCorners)
 { // _writeDomainCells
+  assert(_file.is_open() && _file.good());
   _file
     << "    <DataItem Name=\"cells\"\n"
     << "	      ItemType=\"Uniform\"\n"
@@ -139,6 +152,8 @@ void
 pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 					   const int spaceDim)
 { // _writeDomainVertices
+  assert(_file.is_open() && _file.good());
+
   _file
     << "    <DataItem Name=\"vertices\"\n"
     << "	      Format=\"HDF\"\n"
@@ -153,6 +168,8 @@ void
 pylith::meshio::Xdmf::_writeTimeStamps(const double* timeStamps,
 				       const int numTimeSteps)
 { // _writeTimeStamps
+  assert(_file.is_open() && _file.good());
+
   if (numTimeSteps > 0) {
     assert(timeStamps);
   } // if
@@ -164,6 +181,8 @@ void
 pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
 					 const int numCells)
 { // _writeGridTopology
+  assert(_file.is_open() && _file.good());
+
   _file
     << "	<Topology\n"
     << "	   TopologyType=\"Triangle\"\n"
@@ -179,6 +198,7 @@ pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
 void
 pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
 { // _writeGridGeometry
+  assert(_file.is_open() && _file.good());
   assert(2 == spaceDim || 3 == spaceDim);
 
   const char* geomType = (spaceDim == 3) ? "XYZ" : "XY";
@@ -203,6 +223,8 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const char* name,
 						   const int iTime,
 						   const int component)
 { // _writeGridAttribute
+  assert(_file.is_open() && _file.good());
+
   std::string componentName = "unknown";
   switch (component) {
   case 0:
@@ -260,6 +282,8 @@ pylith::meshio::Xdmf::_writeGridAttribute(const char* name,
 					  const int fiberDim,
 					  const int iTime)
 { // _writeGridAttribute
+  assert(_file.is_open() && _file.good());
+
   _file
     << "	<Attribute\n"
     << "	   Name=\"" << name << "\"\n"
