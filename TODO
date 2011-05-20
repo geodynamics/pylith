@@ -8,6 +8,12 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
  (2) Add FieldSplit null space (translations+rotations)
 
+ (3) General integrator - Add general surface and volume integrators
+
+    + General integrator does setup, gets basis stuff at quadrature
+      points, and calls function(s) to perform integrations for
+      governing eqns.
+
 * [STABLE]
   rate and state friction - sliding test
   predictor/corrector scheme?
