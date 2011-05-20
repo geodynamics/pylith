@@ -399,6 +399,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         minVertex = std::min(nextVertex, minVertex);
       }
       if (ranks.size()) {
+        assert(f_iter->second >= orderNewMesh.verticesNormal().min() && f_iter->second < orderNewMesh.verticesNormal().max());
         newFaceVerticesSection->addFiberDimension(minVertex+localOffset, 1);
         for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
           bndryFaceToRank[f_iter->first].push_back(*r_iter);
@@ -532,6 +533,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
+      assert(localPoint >= orderNewMesh.verticesNormal().min() && localPoint < orderNewMesh.verticesNormal().max());
       newSendOverlap->addArrow(localPoint, rank, remotePoint);
       newRecvOverlap->addArrow(rank, localPoint, remotePoint);
     } // for

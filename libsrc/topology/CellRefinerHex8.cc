@@ -791,36 +791,36 @@ ALE::CellRefinerHex8::_faces_QUAD_COHESIVE_LAGRANGE(const FaceType** faces,
 	cone[4] < cone[6] &&
 	cone[4] < cone[7]) {
       if (cone[5] < cone[7]) {
-	_faces[5] = FaceType(cone[4], cone[5], cone[6], cone[7]);
+	_faces[1] = FaceType(cone[4], cone[5], cone[6], cone[7]);
       } else {
-	_faces[5] = FaceType(cone[4], cone[7], cone[6], cone[5]);
+	_faces[1] = FaceType(cone[4], cone[7], cone[6], cone[5]);
       } // if/else
     
     } else if (cone[5] < cone[4] &&
 	       cone[5] < cone[6] &&
 	       cone[5] < cone[7]) {
       if (cone[4] < cone[6]) {
-	_faces[5] = FaceType(cone[5], cone[4], cone[7], cone[6]);
+	_faces[1] = FaceType(cone[5], cone[4], cone[7], cone[6]);
       } else {
-	_faces[5] = FaceType(cone[5], cone[6], cone[7], cone[4]);
+	_faces[1] = FaceType(cone[5], cone[6], cone[7], cone[4]);
       } // if/else
     
     } else if (cone[6] < cone[4] && 
 	       cone[6] < cone[5] &&
 	       cone[6] < cone[7]) {
       if (cone[5] < cone[7]) {
-	_faces[5] = FaceType(cone[6], cone[5], cone[4], cone[7]);
+	_faces[1] = FaceType(cone[6], cone[5], cone[4], cone[7]);
       } else {
-	_faces[5] = FaceType(cone[6], cone[7], cone[4], cone[5]);
+	_faces[1] = FaceType(cone[6], cone[7], cone[4], cone[5]);
       } // if/else
     
     } else if (cone[7] < cone[4] &&
 	       cone[7] < cone[5] &&
 	       cone[7] < cone[6]) {
       if (cone[4] < cone[6]) {
-	_faces[5] = FaceType(cone[7], cone[4], cone[5], cone[6]);
+	_faces[1] = FaceType(cone[7], cone[4], cone[5], cone[6]);
       } else {
-	_faces[5] = FaceType(cone[7], cone[6], cone[5], cone[4]);
+	_faces[1] = FaceType(cone[7], cone[6], cone[5], cone[4]);
       } // if/else
     } else {
       assert(0);
