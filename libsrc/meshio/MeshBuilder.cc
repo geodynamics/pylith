@@ -120,13 +120,17 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       // Same old thing
       ALE::Obj<SieveFlexMesh::sieve_type> s =
 	new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
+      ALE::Obj<SieveFlexMesh::arrow_section_type> orientation = new SieveFlexMesh::arrow_section_type(sieve->comm(), sieve->debug());
 
+      s->setDebug(2);
       ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, meshDim, 
-                                                  numCells, 
-                                                  const_cast<int*>(&cells[0]), 
-                                                  numVertices, 
-                                                  interpolate,
-                                                  numCorners);
+                                                      numCells, 
+                                                      const_cast<int*>(&cells[0]), 
+                                                      numVertices, 
+                                                      interpolate,
+                                                      numCorners,
+                                                      -1,
+                                                      orientation);
       std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     } // if/else
