@@ -72,7 +72,7 @@ private :
    * @param numCells Number of cells.
    * @param numCorners Number of vertices in a cell.
    */
-  void _writeDomainCells(const int numcells,
+  void _writeDomainCells(const int numCells,
 			 const int numCorners);
 
   /** Write domain vertices information.
@@ -83,13 +83,21 @@ private :
   void _writeDomainVertices(const int numVertices,
 			    const int spaceDim);
 
+  /** Write time stamps associated with fields.
+   *
+   * @param timeStamps Array of time stamps.
+   * @param numTimeStamps Number of time stamps.
+   */
+  void _writeTimeStamps(const double* timeStamps,
+			const int numTimeSteps);
+
   /** Write grid topology information.
    *
    * @param cellType Name for cell type.
    * @param numCells Number of cells.
    */
   void _writeGridTopology(const char* cellType,
-			  const int numells);
+			  const int numCells);
 
   /** Write Grid geometry.
    *
@@ -100,6 +108,7 @@ private :
   /** Write grid attribute.
    * 
    * @param name Name of attribute.
+   * @param vectorFieldType Type of vector field.
    * @param center Vertex/Cell center.
    * @param numTimeSteps Number of time steps.
    * @param numPoints Number of vertices or cells.
@@ -107,11 +116,32 @@ private :
    * @param iTime Index of time step.
    */
   void _writeGridAttribute(const char* name,
+			   const char* vectorFieldType,
 			   const char* center,
 			   const int numTimeSteps,
 			   const int numPoints,
 			   const int fiberDim,
 			   const int iTime);
+
+  /** Write grid attribute as single component (for 2-D vector).
+   * 
+   * @param name Name of attribute.
+   * @param vectorFieldType Type of vector field.
+   * @param center Vertex/Cell center.
+   * @param numTimeSteps Number of time steps.
+   * @param numPoints Number of vertices or cells.
+   * @param fiberDim Fiber dimension for attribute.
+   * @param iTime Index of time step.
+   * @param component Index of component.
+   */
+  void _writeGridAttributeComponent(const char* name,
+				    const char* vectorFieldType,
+				    const char* center,
+				    const int numTimeSteps,
+				    const int numPoints,
+				    const int fiberDim,
+				    const int iTime,
+				    const int component);
 
 // PRIVATE MEMBERS ------------------------------------------------------
 private :
