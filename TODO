@@ -2,6 +2,12 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* AUSTIN MEETING
+
+ (1) Fix GPU build
+
+ (2) Add FieldSplit null space (translations+rotations)
+
 * [STABLE]
   rate and state friction - sliding test
   predictor/corrector scheme?
