@@ -61,7 +61,7 @@ public :
    * @param filenameXdmf Name of Xdmf file.
    * @param filenameHDF5 Name of HDF5 file.
    */
-  void write(const char* filenameXdfm,
+  void write(const char* filenameXdmf,
 	     const char* filenameHDF5);
 
 // PRIVATE METHODS ------------------------------------------------------
