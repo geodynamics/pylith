@@ -978,8 +978,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
                                                   numbering->getChart().end(),
                                                   _section);
   assert(!order.isNull());
-
-  order->view("GLOBAL ORDER");
+  //order->view("GLOBAL ORDER"); // DEBUG
 
   // Create scatter
   err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, true, &sinfo.scatter); 
