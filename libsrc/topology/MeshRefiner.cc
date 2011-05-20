@@ -303,7 +303,20 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
   _orderNewMesh->verticesCensored(newNumCellsNormal+newNumVerticesNormal, newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored);
   _orderNewMesh->cellsCensored(newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored,
 			       newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored+newNumCellsCensored);
-  
+#if 0
+  PetscErrorCode err;
+  int oldNumCellsNormal   = _orderOldMesh->cellsNormal().max();
+  int oldNumCellsCensored = _orderOldMesh->cellsCensored().max() - _orderOldMesh->cellsCensored().min();
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]Old normal cells    [%d, %d)\n", mesh->commRank(), 0, oldNumCellsNormal);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]Old fault  cells    [%d, %d)\n", mesh->commRank(), oldNumCellsNormal+oldNumVerticesNormal+oldNumVerticesCensored, oldNumCellsNormal+oldNumVerticesNormal+oldNumVerticesCensored+oldNumCellsCensored);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]Old normal vertices [%d, %d)\n", mesh->commRank(), oldNumCellsNormal, oldNumCellsNormal+oldNumVerticesNormal);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]Old fault  vertices [%d, %d)\n", mesh->commRank(), oldNumCellsNormal+oldNumVerticesNormal, oldNumCellsNormal+oldNumVerticesNormal+oldNumVerticesCensored);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]New normal cells    [%d, %d)\n", mesh->commRank(), 0, newNumCellsNormal);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]New fault  cells    [%d, %d)\n", mesh->commRank(), newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored, newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored+newNumCellsCensored);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]New normal vertices [%d, %d)\n", mesh->commRank(), newNumCellsNormal, newNumCellsNormal+newNumVerticesNormal);
+  err = PetscSynchronizedPrintf(mesh->comm(), "[%d]New fault  vertices [%d, %d)\n", mesh->commRank(), newNumCellsNormal+newNumVerticesNormal, newNumCellsNormal+newNumVerticesNormal+newNumVerticesCensored);
+  err = PetscSynchronizedFlush(mesh->comm());
+#endif
   // Allocate chart for new sieve.
   const Obj<mesh_type::sieve_type>& newSieve = newMesh->getSieve();
   assert(!newSieve.isNull());
