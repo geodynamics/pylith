@@ -24,6 +24,7 @@
 
 #include <hdf5.h> // USES hid_t
 
+#include <vector> // USES std::vector
 #include <string> // USES std::string
 
 // HDF5 -----------------------------------------------------------------
@@ -31,6 +32,19 @@
 class pylith::meshio::HDF5
 { // HDF5
   friend class TestHDF5; // Unit testing
+
+// PUBLIC STRUCTS -------------------------------------------------------
+public :
+
+  /// Metadata associated with fields.
+  struct FieldMetadata {
+    std::string name; ///< Name of field.
+    std::string vectorFieldType; ///< Type of field.
+    std::string domain; ///< Domain over which field is given.
+    int numPoints; ///< Number of points in field.
+    int fiberDim; ///< Number of values in field at each point, time.
+    int numTimeSteps; ///< Number of time steps for field.
+  }; // FieldMetadata
 
 // PUBLIC METHODS -------------------------------------------------------
 public :
@@ -79,6 +93,30 @@ public :
    * @returns True if dataset exists, false otherwise.
    */
   bool hasDataset(const char* name);
+
+  /** Get topology metadata.
+   *
+   * @param numCells Number of cells [output]
+   * @param numCorners Number of corners [output]
+   * @param cellType Type of cell [output]
+   */
+  void getTopologyMetadata(int* numCells,
+			   int* numCorners,
+			   std::string* cellType);
+
+  /** Get geometry metadata.
+   *
+   * @param numVertices Number of vertices [output].
+   * @param spaceDim Spatial dimension [output].
+   */
+  void getGeometryMetadata(int* numVertices,
+			   int* spaceDim);
+
+  /** Get metadata for fields.
+   *
+   * @param metadata Array of metadata for fields.
+   */
+  void getFieldsMetadata(std::vector<FieldMetadata>* metadata);
 
   /** Create group.
    *

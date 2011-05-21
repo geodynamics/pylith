@@ -164,6 +164,30 @@ pylith::meshio::HDF5::hasDataset(const char* name)
 } // hasDataset
 
 // ----------------------------------------------------------------------
+// Get topology metadata.
+void
+pylith::meshio::HDF5::getTopologyMetadata(int* numCells,
+					  int* numCorners,
+					  std::string* cellType)
+{ // getTopologyMetadata
+} // getTopologyMetadata
+
+// ----------------------------------------------------------------------
+// Get geometry metadata.
+void
+pylith::meshio::HDF5::getGeometryMetadata(int* numVertices,
+					  int* spaceDim)
+{ // getGeometryMetadata
+} // getGeometryMetadata
+
+// ----------------------------------------------------------------------
+// Get metadata for fields.
+void
+pylith::meshio::HDF5::getFieldsMetadata(std::vector<FieldMetadata>* metadata)
+{ // getFieldsMetadata
+} // getFieldsMetadata
+
+// ----------------------------------------------------------------------
 // Create group.
 void
 pylith::meshio::HDF5::createGroup(const char* name)
