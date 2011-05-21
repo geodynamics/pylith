@@ -47,19 +47,32 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   assert(filenameXdmf);
   assert(filenameHDF5);
 
-  std::string cellType;
   int numCells = 0;
   int numCorners = 0;
+  std::string cellType;
   int numVertices = 0;
   int spaceDim = 0;
   int numTimeSteps = 0;
   double* timeStamps = 0;
-  int numFields = 0;
-  string_vector fieldName;
-  string_vector fieldVectorFieldType;
-  string_vector fieldType;
-  int_array fieldNumPoints;
-  int_array fieldFiberDim;
+  std::vector<HDF5::FieldMetadata> fieldsMetadata;
+
+  HDF5 h5(filenameHDF5, H5F_ACC_RDONLY);
+  h5.getTopologyMetadata(&numCells, &numCorners, &cellType);
+  h5.getGeometryMetadata(&numVertices, &spaceDim);
+  h5.getFieldsMetadata(&fieldsMetadata);
+  const int numFields = fieldsMetadata.size();
+  for (int iField=0; iField < numFields; ++iField)
+    if ("vertex_field" == fieldsMetadata[iField].domain) {
+      fieldsMetadata[iField].domain = "Node";
+    } else if ("cell_field" == fieldsMetadata[iField].domain) {
+      fieldsMetadata[iField].domain = "Cell";
+    } else {
+      std::ostringstream msg;
+      msg << "Unknown field type '" << fieldsMetadata[iField].domain
+	  << "' for field '" 
+	  << fieldsMetadata[iField].domain << "'" << std::endl;
+      throw std::runtime_error(msg.str());
+    } // if/else
 
   if (1 == spaceDim) {
     std::cout
@@ -102,19 +115,12 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     _writeGridGeometry(spaceDim);
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
-	  std::string("vector") == fieldVectorFieldType[iField]) {
+	  std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
 	for (int component=0; component < spaceDim; ++component)
-	  _writeGridAttributeComponent(fieldName[iField].c_str(),
-				       fieldVectorFieldType[iField].c_str(),
-				       fieldType[iField].c_str(),
-				       numTimeSteps, fieldNumPoints[iField],
-				       fieldFiberDim[iField],
+	  _writeGridAttributeComponent(fieldsMetadata[iField],
 				       iTimeStep, component);
       } else {
-	_writeGridAttribute(fieldName[iField].c_str(),
-			    fieldVectorFieldType[iField].c_str(),
-			    fieldType[iField].c_str(), numTimeSteps, 
-			    fieldNumPoints[iField], fieldFiberDim[iField],
+	_writeGridAttribute(fieldsMetadata[iField],
 			    iTimeStep);
       } // if/else
     } // for
@@ -214,27 +220,82 @@ pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
 // ----------------------------------------------------------------------
 // Write grid attribute.
 void
-pylith::meshio::Xdmf::_writeGridAttributeComponent(const char* name,
-						   const char* vectorFieldType,
-						   const char* center,
-						   const int numTimeSteps,
-						   const int numPoints,
-						   const int fiberDim,
+pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
+					  const int iTime)
+{ // _writeGridAttribute
+  assert(_file.is_open() && _file.good());
+
+  std::string h5FullName = "";
+  if (std::string("Vertex") == metadata.domain) {
+    h5FullName = std::string("/vertex_fields/") + metadata.name;
+  } else if (std::string("Cell") == metadata.domain) {
+    h5FullName = std::string("/cell_fields/") + metadata.name;
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown domain '" << metadata.domain << "' for field '"
+	<< metadata.name << "'." << std::endl;
+    throw std::runtime_error(msg.str());
+  } // if/else
+
+  _file
+    << "	<Attribute\n"
+    << "	   Name=\"" << metadata.name << "\"\n"
+    << "	   Type=\"" << metadata.vectorFieldType << "\"\n"
+    << "	   Center=\"" << metadata.domain << "\">\n"
+    << "          <DataItem ItemType=\"HyperSlab\"\n"
+    << "		    Dimensions=\"1 " << metadata.numPoints << " 1\"\n"
+    << "		    Type=\"HyperSlab\">\n"
+    << "            <DataItem\n"
+    << "	       Dimensions=\"3 3\"\n"
+    << "	       Format=\"XML\">\n"
+    << "              0 0 0\n"
+    << "              1 1 1\n"
+    << "              1 " << metadata.numPoints << " 1\n"
+    << "	    </DataItem>\n"
+    << "	    <DataItem\n"
+    << "	       DataType=\"Float\" Precision=\"8\"\n"
+    << "	       Dimensions=\""
+    << metadata.numTimeSteps
+    << " " << metadata.numPoints
+    << " " << metadata.fiberDim << "\"\n"
+    << "	       Format=\"HDF\">\n"
+    << "	      &HeavyData;:" << h5FullName << "\n"
+    << "	    </DataItem>\n"
+    << "	  </DataItem>\n"
+    << "	</Attribute>\n";
+} // _writeGridAttribute
+
+// ----------------------------------------------------------------------
+// Write grid attribute.
+void
+pylith::meshio::Xdmf::_writeGridAttributeComponent(const HDF5::FieldMetadata& metadata,
 						   const int iTime,
 						   const int component)
 { // _writeGridAttribute
   assert(_file.is_open() && _file.good());
 
+  std::string h5FullName = "";
+  if (std::string("Vertex") == metadata.domain) {
+    h5FullName = std::string("/vertex_fields/") + metadata.name;
+  } else if (std::string("Cell") == metadata.domain) {
+    h5FullName = std::string("/cell_fields/") + metadata.name;
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown domain '" << metadata.domain << "' for field '"
+	<< metadata.name << "'." << std::endl;
+    throw std::runtime_error(msg.str());
+  } // if/else
+
   std::string componentName = "unknown";
   switch (component) {
   case 0:
-    componentName = std::string("x-") + std::string(name);
+    componentName = std::string("x-") + std::string(metadata.name);
     break;
   case 1:
-    componentName = std::string("y-") + std::string(name);
+    componentName = std::string("y-") + std::string(metadata.name);
     break;
   case 2:
-    componentName = std::string("z-") + std::string(name);
+    componentName = std::string("z-") + std::string(metadata.name);
     break;
   default:
     { // default
@@ -245,66 +306,30 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const char* name,
     throw std::logic_error(msg.str());
     } // default
   } // switch
+
   _file
     << "	<Attribute\n"
     << "	   Name=\"" << componentName << "\"\n"
-    << "	   Type=\""<< vectorFieldType << "\"\n"
-    << "	   Center=\"" << center << "\">\n"
+    << "	   Type=\""<< metadata.vectorFieldType << "\"\n"
+    << "	   Center=\"" << metadata.domain << "\">\n"
     << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 " << numPoints << " 1\"\n"
+    << "		    Dimensions=\"1 " << metadata.numPoints << " 1\"\n"
     << "		    Type=\"HyperSlab\">\n"
     << "            <DataItem\n"
     << "	       Dimensions=\"3 3\"\n"
     << "	       Format=\"XML\">\n"
     << "              0 0 "<< component << "\n"
     << "              1 1 1\n"
-    << "              1 " << numPoints << " 1\n"
+    << "              1 " << metadata.numPoints << " 1\n"
     << "	    </DataItem>\n"
     << "	    <DataItem\n"
     << "	       DataType=\"Float\" Precision=\"8\"\n"
     << "	       Dimensions=\""
-    << numTimeSteps << " " << numPoints << " " << fiberDim << "\"\n"
+    << metadata.numTimeSteps
+    << " " << metadata.numPoints
+    << " " << metadata.fiberDim << "\"\n"
     << "	       Format=\"HDF\">\n"
-    << "	      &HeavyData;:/vertex_fields/" << name << "\n"
-    << "	    </DataItem>\n"
-    << "	  </DataItem>\n"
-    << "	</Attribute>\n";
-} // _writeGridAttribute
-
-// ----------------------------------------------------------------------
-// Write grid attribute.
-void
-pylith::meshio::Xdmf::_writeGridAttribute(const char* name,
-					  const char* vectorFieldType,
-					  const char* center,
-					  const int numTimeSteps,
-					  const int numPoints,
-					  const int fiberDim,
-					  const int iTime)
-{ // _writeGridAttribute
-  assert(_file.is_open() && _file.good());
-
-  _file
-    << "	<Attribute\n"
-    << "	   Name=\"" << name << "\"\n"
-    << "	   Type=\"" << vectorFieldType << "\"\n"
-    << "	   Center=\"" << center << "\">\n"
-    << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 " << numPoints << " 1\"\n"
-    << "		    Type=\"HyperSlab\">\n"
-    << "            <DataItem\n"
-    << "	       Dimensions=\"3 3\"\n"
-    << "	       Format=\"XML\">\n"
-    << "              0 0 0\n"
-    << "              1 1 1\n"
-    << "              1 " << numPoints << " 1\n"
-    << "	    </DataItem>\n"
-    << "	    <DataItem\n"
-    << "	       DataType=\"Float\" Precision=\"8\"\n"
-    << "	       Dimensions=\""
-    << numTimeSteps << " " << numPoints << " " << fiberDim << "\"\n"
-    << "	       Format=\"HDF\">\n"
-    << "	      &HeavyData;:/vertex_fields/" << name << "\n"
+    << "	      &HeavyData;:" << h5FullName << "\n"
     << "	    </DataItem>\n"
     << "	  </DataItem>\n"
     << "	</Attribute>\n";
