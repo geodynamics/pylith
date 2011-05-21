@@ -45,8 +45,8 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
-    # import pdb
-    # pdb.set_trace()
+    import pdb
+    pdb.set_trace()
 
     numLocs = 2
 
@@ -56,7 +56,8 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
     self.dbPropertyValues = ["density", "vs", "vp", "viscosity"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1], dtype=numpy.int32)
 
-    self.dbStateVarValues = ["total-strain-xx",
+    self.dbStateVarValues = ["stress-zz-initial",
+                             "total-strain-xx",
                              "total-strain-yy",
                              "total-strain-xy",
                              "viscous-strain-xx",
@@ -64,7 +65,7 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
                              "viscous-strain-zz",
                              "viscous-strain-xy"
                              ]
-    self.numStateVarValues = numpy.array([3, 4], dtype=numpy.int32)
+    self.numStateVarValues = numpy.array([1, 3, 4], dtype=numpy.int32)
     
     densityA = 2500.0
     vsA = 3000.0
@@ -101,9 +102,9 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
                                      dtype=numpy.float64)
 
     # TEMPORARY, need to determine how to use initial state variables
-    self.dbStateVars = numpy.zeros( (numLocs, tensorSize+4),
+    self.dbStateVars = numpy.zeros( (numLocs, tensorSize+5),
                                     dtype=numpy.float64)
-    self.stateVars = numpy.zeros( (numLocs, tensorSize+4),
+    self.stateVars = numpy.zeros( (numLocs, tensorSize+5),
                                   dtype=numpy.float64)
 
     mu0 = self.pressureScale
@@ -134,7 +135,7 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
     self.stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
     self.elasticConsts = numpy.zeros( (numLocs, numElasticConsts), \
                                       dtype=numpy.float64)
-    self.stateVarsUpdated = numpy.zeros( (numLocs, tensorSize + 4), \
+    self.stateVarsUpdated = numpy.zeros( (numLocs, tensorSize + 5), \
                                          dtype=numpy.float64)
 
     (self.elasticConsts[0,:], self.stress[0,:], self.stateVarsUpdated[0,:]) = \
@@ -179,8 +180,10 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
                                 dtype=numpy.float64)
     viscousStrainVec = numpy.ravel(viscousStrain)
     strainVec = numpy.ravel(strain)
+    stressZZInitial = numpy.zeros(1, dtype=numpy.float64)
     
-    stateVarsUpdated = numpy.concatenate((strainVec, viscousStrainVec))
+    stateVarsUpdated = numpy.concatenate((stressZZInitial, strainVec,
+                                          viscousStrainVec))
     return (elasticConsts, numpy.ravel(stress), numpy.ravel(stateVarsUpdated))
   
 

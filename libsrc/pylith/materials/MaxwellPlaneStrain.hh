@@ -102,9 +102,21 @@ protected :
   void _dbToStateVars(double* const stateValues,
 		      const double_array& dbValues);
 
-  // Note: We do not need to dimensionalize or nondimensionalize state
-  // variables because there are strains, which are dimensionless.
+  /** Nondimensionalize state variables..
+   *
+   * @param values Array of state variables.
+   * @param nvalues Number of values.
+   */
+  void _nondimStateVars(double* const values,
+                        const int nvalues) const;
 
+  /** Dimensionalize state variables.
+   *
+   * @param values Array of state variables.
+   * @param nvalues Number of values.
+   */
+  void _dimStateVars(double* const values,
+                     const int nvalues) const;
 
   /** Compute density from properties.
    *
@@ -487,8 +499,10 @@ private :
   static const int db_vp;
   static const int db_viscosity;
 
+  static const int s_stressZZInitial;
   static const int s_totalStrain;
   static const int s_viscousStrain;
+  static const int db_stressZZInitial;
   static const int db_totalStrain;
   static const int db_viscousStrain;
 
