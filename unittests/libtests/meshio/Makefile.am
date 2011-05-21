@@ -211,7 +211,7 @@ testmeshio_LDFLAGS = \
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
