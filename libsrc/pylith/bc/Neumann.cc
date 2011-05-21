@@ -21,7 +21,7 @@
 #include "Neumann.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
+#include "pylith/topology/PackedFields.hh" // HOLDSA PackedFields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -245,7 +245,7 @@ pylith::bc::Neumann::_queryDatabases(void)
 
   delete _parameters; 
   _parameters = 
-    new topology::FieldsNew<topology::SubMesh>(*_boundaryMesh);
+    new topology::PackedFields<topology::SubMesh>(*_boundaryMesh);
 
   // Create section to hold time dependent values
   _parameters->add("value", "traction", 

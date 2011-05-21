@@ -21,7 +21,7 @@
 #include "PointForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional

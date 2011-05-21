@@ -10,8 +10,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_fieldsnew_hh)
-#error "FieldsNew.icc must be included only from FieldsNew.hh"
+#if !defined(pylith_topology_packedfields_hh)
+#error "PackedFields.icc must be included only from PackedFields.hh"
 #endif
 
 // ----------------------------------------------------------------------
@@ -19,7 +19,7 @@
 template<typename mesh_type>
 inline
 bool
-pylith::topology::FieldsNew<mesh_type>::hasField(const char* name) const
+pylith::topology::PackedFields<mesh_type>::hasField(const char* name) const
 { // hasField
   typename map_type::const_iterator iter = _fields.find(name);
   return iter != _fields.end();
@@ -30,7 +30,7 @@ pylith::topology::FieldsNew<mesh_type>::hasField(const char* name) const
 template<typename mesh_type>
 inline
 const mesh_type&
-pylith::topology::FieldsNew<mesh_type>::mesh(void) const
+pylith::topology::PackedFields<mesh_type>::mesh(void) const
 { // mesh
   return _mesh;
 } // mesh
@@ -39,8 +39,8 @@ pylith::topology::FieldsNew<mesh_type>::mesh(void) const
 // Get section containing fields.
 template<typename mesh_type>
 inline
-const ALE::Obj<typename pylith::topology::FieldsNew<mesh_type>::section_type>& 
-pylith::topology::FieldsNew<mesh_type>::section(void) const
+const ALE::Obj<typename pylith::topology::PackedFields<mesh_type>::section_type>& 
+pylith::topology::PackedFields<mesh_type>::section(void) const
 { // section
   return _section;
 } // section

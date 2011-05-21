@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -119,7 +119,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   logger.stagePush("BoundaryConditions");
 
   delete _parameters;
-  _parameters = new topology::FieldsNew<topology::Mesh>(mesh);
+  _parameters = new topology::PackedFields<topology::Mesh>(mesh);
 
   _parameters->add("value", "value", numBCDOF, topology::FieldBase::OTHER,
 		   valueScale);

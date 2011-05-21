@@ -17,13 +17,13 @@
 //
 
 /**
- * @file unittests/libtests/topology/TestFieldsNewMesh.hh
+ * @file unittests/libtests/topology/TestPackedFieldsMesh.hh
  *
- * @brief C++ unit testing for FieldsNew<Mesh>.
+ * @brief C++ unit testing for PackedFields<Mesh>.
  */
 
-#if !defined(pylith_topology_testfieldsnewmesh_hh)
-#define pylith_topology_testfieldsnewmesh_hh
+#if !defined(pylith_topology_testpackedfieldsmesh_hh)
+#define pylith_topology_testpackedfieldsmesh_hh
 
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
@@ -34,17 +34,17 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace topology {
-    class TestFieldsNewMesh;
+    class TestPackedFieldsMesh;
   } // topology
 } // pylith
 
 // TestField -------------------------------------------------------------
 /// C++ unit testing for Field.
-class pylith::topology::TestFieldsNewMesh : public CppUnit::TestFixture
+class pylith::topology::TestPackedFieldsMesh : public CppUnit::TestFixture
 { // class TestField
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFieldsNewMesh );
+  CPPUNIT_TEST_SUITE( TestPackedFieldsMesh );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testHasField );
@@ -94,7 +94,7 @@ public :
   /// Test getField().
   void testGet(void);
 
-  /// Test getField() for const FieldsNew.
+  /// Test getField() for const PackedFields.
   void testGetConst(void);
 
   /// Test mesh().
@@ -123,9 +123,9 @@ private :
 
   Mesh* _mesh;
 
-}; // class TestFieldsNewMesh
+}; // class TestPackedFieldsMesh
 
-#endif // pylith_topology_testfieldsnewmesh_hh
+#endif // pylith_topology_testpackedfieldsmesh_hh
 
 
 // End of file 

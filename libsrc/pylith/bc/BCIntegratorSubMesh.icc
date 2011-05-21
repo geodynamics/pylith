@@ -24,7 +24,7 @@
 
 // Get parameter fields.
 inline
-const pylith::topology::FieldsNew<pylith::topology::SubMesh>*
+const pylith::topology::PackedFields<pylith::topology::SubMesh>*
 pylith::bc::BCIntegratorSubMesh::parameterFields(void) const {
   return _parameters;
 } // parameterFields

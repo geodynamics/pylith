@@ -17,17 +17,17 @@
 //
 
 /**
- * @file modulesrc/topology/FieldsNew.i
+ * @file modulesrc/topology/PackedFields.i
  *
- * @brief Python interface to C++ FieldsNew object.
+ * @brief Python interface to C++ PackedFields object.
  */
 
 namespace pylith {
   namespace topology {
 
     template<typename mesh_type>
-    class FieldsNew
-    { // FieldsNew
+    class PackedFields
+    { // PackedFields
 
       // PUBLIC MEMBERS /////////////////////////////////////////////////
     public :
@@ -36,11 +36,11 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh.
        */
-      FieldsNew(const mesh_type& mesh);
+      PackedFields(const mesh_type& mesh);
 
       /// Destructor.
       virtual
-      ~FieldsNew(void);
+      ~PackedFields(void);
 
       /// Deallocate PETSc and local data structures.
       virtual
@@ -142,7 +142,7 @@ namespace pylith {
        */
       void view(const char* label);
 
-    }; // FieldsNew
+    }; // PackedFields
 
   } // topology
 } // pylith

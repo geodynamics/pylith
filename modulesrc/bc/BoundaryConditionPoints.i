@@ -45,7 +45,7 @@ namespace pylith {
        *
        * @returns Parameter fields.
        */
-      const pylith::topology::FieldsNew<pylith::topology::Mesh>* parameterFields(void) const;
+      const pylith::topology::PackedFields<pylith::topology::Mesh>* parameterFields(void) const;
 
     }; // class BoundaryConditionPoints
 

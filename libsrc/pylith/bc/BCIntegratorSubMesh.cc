@@ -21,7 +21,7 @@
 #include "BCIntegratorSubMesh.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;

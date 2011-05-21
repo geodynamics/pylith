@@ -21,7 +21,7 @@
 #include "BoundaryConditionPoints.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
+#include "pylith/topology/PackedFields.hh" // HOLDSA PackedFields
 #include "pylith/topology/Field.hh" // USES Field
 
 #include <stdexcept> // USES std::runtime_error()
@@ -54,7 +54,7 @@ pylith::bc::BoundaryConditionPoints::deallocate(void)
   
 // ----------------------------------------------------------------------
 // Get parameter fields.
-const pylith::topology::FieldsNew<pylith::topology::Mesh>*
+const pylith::topology::PackedFields<pylith::topology::Mesh>*
 pylith::bc::BoundaryConditionPoints::parameterFields(void) const
 { // parameterFields
   return _parameters;

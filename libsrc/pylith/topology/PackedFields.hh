@@ -24,8 +24,8 @@
  * fiber dimension is set at compile time.
  */
 
-#if !defined(pylith_topology_fieldsnew_hh)
-#define pylith_topology_fieldsnew_hh
+#if !defined(pylith_topology_packedfields_hh)
+#define pylith_topology_packedfields_hh
 
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
@@ -37,10 +37,10 @@
 // Fields ---------------------------------------------------------------
 /// Container for managing multiple fields over a finite-element mesh.
 template<typename mesh_type>
-class pylith::topology::FieldsNew
+class pylith::topology::PackedFields
 { // Fields
-  friend class TestFieldsNewMesh; // unit testing
-  friend class TestFieldsNewSubMesh; // unit testing
+  friend class TestPackedFieldsMesh; // unit testing
+  friend class TestPackedFieldsSubMesh; // unit testing
 
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public:
@@ -59,11 +59,11 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  FieldsNew(const mesh_type& mesh);
+  PackedFields(const mesh_type& mesh);
 
   /// Destructor.
   virtual
-  ~FieldsNew(void);
+  ~PackedFields(void);
 
   /// Deallocate PETSc and local data structures.
   virtual
@@ -194,15 +194,15 @@ protected :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  FieldsNew(const FieldsNew&); ///< Not implemented
-  const FieldsNew& operator=(const FieldsNew&); ///< Not implemented
+  PackedFields(const PackedFields&); ///< Not implemented
+  const PackedFields& operator=(const PackedFields&); ///< Not implemented
 
-}; // FieldsNew
+}; // PackedFields
 
-#include "FieldsNew.icc"
-#include "FieldsNew.cc"
+#include "PackedFields.icc"
+#include "PackedFields.cc"
 
-#endif // pylith_topology_fieldsnew_hh
+#endif // pylith_topology_packedfields_hh
 
 
 // End of file 

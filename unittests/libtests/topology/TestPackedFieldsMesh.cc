@@ -18,25 +18,25 @@
 
 #include <portinfo>
 
-#include "TestFieldsNewMesh.hh" // Implementation of class methods
+#include "TestPackedFieldsMesh.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsNewMesh );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestPackedFieldsMesh );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::FieldsNew<pylith::topology::Mesh> FieldsNewMesh;
+typedef pylith::topology::PackedFields<pylith::topology::Mesh> PackedFieldsMesh;
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsNewMesh::setUp(void)
+pylith::topology::TestPackedFieldsMesh::setUp(void)
 { // setUp
   _mesh = new Mesh;
   meshio::MeshIOAscii importer;
@@ -46,7 +46,7 @@ pylith::topology::TestFieldsNewMesh::setUp(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestFieldsNewMesh::tearDown(void)
+pylith::topology::TestPackedFieldsMesh::tearDown(void)
 { // tearDown
   delete _mesh; _mesh = 0;
 } // tearDown
@@ -54,19 +54,19 @@ pylith::topology::TestFieldsNewMesh::tearDown(void)
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::topology::TestFieldsNewMesh::testConstructor(void)
+pylith::topology::TestPackedFieldsMesh::testConstructor(void)
 { // testConstructor
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 } // testConstructor
  
 // ----------------------------------------------------------------------
 // Test hasField().
 void
-pylith::topology::TestFieldsNewMesh::testHasField(void)
+pylith::topology::TestPackedFieldsMesh::testHasField(void)
 { // testHasField
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   
@@ -85,10 +85,10 @@ pylith::topology::TestFieldsNewMesh::testHasField(void)
 // ----------------------------------------------------------------------
 // Test add().
 void
-pylith::topology::TestFieldsNewMesh::testAdd(void)
+pylith::topology::TestPackedFieldsMesh::testAdd(void)
 { // testAdd
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
   
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -100,12 +100,12 @@ pylith::topology::TestFieldsNewMesh::testAdd(void)
 // ----------------------------------------------------------------------
 // Test allocate(sequence).
 void
-pylith::topology::TestFieldsNewMesh::testAllocateSequence(void)
+pylith::topology::TestPackedFieldsMesh::testAllocateSequence(void)
 { // testAllocateSequence
   const int fiberDim = 7;
 
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
   
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "other", 4, FieldBase::OTHER);
@@ -132,7 +132,7 @@ pylith::topology::TestFieldsNewMesh::testAllocateSequence(void)
 // ----------------------------------------------------------------------
 // Test allocate(array).
 void
-pylith::topology::TestFieldsNewMesh::testAllocateArray(void)
+pylith::topology::TestPackedFieldsMesh::testAllocateArray(void)
 { // testAllocateSequence
   const int fiberDim = 7;
   const int nptsIn = 3;
@@ -145,7 +145,7 @@ pylith::topology::TestFieldsNewMesh::testAllocateArray(void)
   };
 
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
   
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "other", 4, FieldBase::OTHER);
@@ -174,12 +174,12 @@ pylith::topology::TestFieldsNewMesh::testAllocateArray(void)
 // ----------------------------------------------------------------------
 // Test allocate(domain).
 void
-pylith::topology::TestFieldsNewMesh::testAllocateDomain(void)
+pylith::topology::TestPackedFieldsMesh::testAllocateDomain(void)
 { // testAllocateDomain
   const int fiberDim = 7;
 
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
   
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "other", 4, FieldBase::OTHER);
@@ -204,10 +204,10 @@ pylith::topology::TestFieldsNewMesh::testAllocateDomain(void)
 // ----------------------------------------------------------------------
 // Test get().
 void
-pylith::topology::TestFieldsNewMesh::testGet(void)
+pylith::topology::TestPackedFieldsMesh::testGet(void)
 { // testGet
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -272,10 +272,10 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
 // ----------------------------------------------------------------------
 // Test get() const.
 void
-pylith::topology::TestFieldsNewMesh::testGetConst(void)
+pylith::topology::TestPackedFieldsMesh::testGetConst(void)
 { // testGetConst
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -331,10 +331,10 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
 // ----------------------------------------------------------------------
 // Test mesh().
 void
-pylith::topology::TestFieldsNewMesh::testMesh(void)
+pylith::topology::TestPackedFieldsMesh::testMesh(void)
 { // testMesh
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   const Mesh& mesh = fields.mesh();
 } // testMesh
@@ -342,10 +342,10 @@ pylith::topology::TestFieldsNewMesh::testMesh(void)
 // ----------------------------------------------------------------------
 // Test fiberDim().
 void
-pylith::topology::TestFieldsNewMesh::testFiberDim(void)
+pylith::topology::TestPackedFieldsMesh::testFiberDim(void)
 { // testFiberDim
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -356,10 +356,10 @@ pylith::topology::TestFieldsNewMesh::testFiberDim(void)
 // ----------------------------------------------------------------------
 // Test sectionIndex().
 void
-pylith::topology::TestFieldsNewMesh::testSectionIndex(void)
+pylith::topology::TestPackedFieldsMesh::testSectionIndex(void)
 { // testSectionIndex
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -371,10 +371,10 @@ pylith::topology::TestFieldsNewMesh::testSectionIndex(void)
 // ----------------------------------------------------------------------
 // Test sectionFiberDim().
 void
-pylith::topology::TestFieldsNewMesh::testSectionFiberDim(void)
+pylith::topology::TestPackedFieldsMesh::testSectionFiberDim(void)
 { // testSectionFiberDim
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -386,10 +386,10 @@ pylith::topology::TestFieldsNewMesh::testSectionFiberDim(void)
 // ----------------------------------------------------------------------
 // Test complete().
 void
-pylith::topology::TestFieldsNewMesh::testComplete(void)
+pylith::topology::TestPackedFieldsMesh::testComplete(void)
 { // testComplete
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -401,7 +401,7 @@ pylith::topology::TestFieldsNewMesh::testComplete(void)
 // ----------------------------------------------------------------------
 // Test fieldNames() const.
 void
-pylith::topology::TestFieldsNewMesh::testFieldNames(void)
+pylith::topology::TestPackedFieldsMesh::testFieldNames(void)
 { // testFieldNames
   const int numFieldsE = 2;
   const char* namesE[2] = {
@@ -410,7 +410,7 @@ pylith::topology::TestFieldsNewMesh::testFieldNames(void)
   };
 
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -433,10 +433,10 @@ pylith::topology::TestFieldsNewMesh::testFieldNames(void)
 // ----------------------------------------------------------------------
 // Test view().
 void
-pylith::topology::TestFieldsNewMesh::testView(void)
+pylith::topology::TestPackedFieldsMesh::testView(void)
 { // testView
   CPPUNIT_ASSERT(0 != _mesh);
-  FieldsNewMesh fields(*_mesh);
+  PackedFieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);

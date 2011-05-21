@@ -28,7 +28,7 @@
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature

@@ -22,7 +22,7 @@
 
 #include "pylith/topology/SubMesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
@@ -43,7 +43,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::FieldsNew<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef pylith::topology::PackedFields<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -131,7 +131,7 @@ pylith::friction::FrictionModel::initialize(
 
   // Create fields to hold physical properties and state variables.
   delete _fieldsPropsStateVars; 
-  _fieldsPropsStateVars = new topology::FieldsNew<topology::SubMesh>(faultMesh);
+  _fieldsPropsStateVars = new topology::PackedFields<topology::SubMesh>(faultMesh);
   assert(_fieldsPropsStateVars);
   _setupPropsStateVars();
 
@@ -245,7 +245,7 @@ pylith::friction::FrictionModel::initialize(
 
 // ----------------------------------------------------------------------
 // Get the field with all properties and state variables.
-const pylith::topology::FieldsNew<pylith::topology::SubMesh>&
+const pylith::topology::PackedFields<pylith::topology::SubMesh>&
 pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
 { // fieldsPropsStateVars
   assert(_fieldsPropsStateVars);

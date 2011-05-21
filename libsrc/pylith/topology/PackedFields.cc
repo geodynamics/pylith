@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 template<typename mesh_type>
-pylith::topology::FieldsNew<mesh_type>::FieldsNew(const mesh_type& mesh) :
+pylith::topology::PackedFields<mesh_type>::PackedFields(const mesh_type& mesh) :
   _mesh(mesh)
 { // constructor
 } // constructor
@@ -24,7 +24,7 @@ pylith::topology::FieldsNew<mesh_type>::FieldsNew(const mesh_type& mesh) :
 // ----------------------------------------------------------------------
 // Destructor.
 template<typename mesh_type>
-pylith::topology::FieldsNew<mesh_type>::~FieldsNew(void)
+pylith::topology::PackedFields<mesh_type>::~PackedFields(void)
 { // destructor
   deallocate();
 } // destructor
@@ -33,7 +33,7 @@ pylith::topology::FieldsNew<mesh_type>::~FieldsNew(void)
 // Deallocate PETSc and local data structures.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::deallocate(void)
+pylith::topology::PackedFields<mesh_type>::deallocate(void)
 { // deallocate
   if (!_section.isNull())
     _section->clear();
@@ -50,7 +50,7 @@ pylith::topology::FieldsNew<mesh_type>::deallocate(void)
 // Add field.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::add(const char* name,
+pylith::topology::PackedFields<mesh_type>::add(const char* name,
 					  const char* label,
 					  const int fiberDim,
 					  const FieldBase::VectorFieldEnum vectorFieldType,
@@ -91,7 +91,7 @@ pylith::topology::FieldsNew<mesh_type>::add(const char* name,
 // Create and allocate Sieve section.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& points)
+pylith::topology::PackedFields<mesh_type>::allocate(const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& points)
 { // allocate
   typedef typename mesh_type::SieveMesh::point_type point_type;
   typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
@@ -144,7 +144,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const ALE::Obj<typename mesh_ty
 // Create and allocate Sieve section.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
+pylith::topology::PackedFields<mesh_type>::allocate(const int_array& points)
 { // allocate
   typedef typename mesh_type::SieveMesh::point_type point_type;
 
@@ -192,7 +192,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const int_array& points)
 // Create and allocate Sieve section.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::allocate(const FieldBase::DomainEnum domain,
+pylith::topology::PackedFields<mesh_type>::allocate(const FieldBase::DomainEnum domain,
 					       const int stratum)
 { // allocate
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
@@ -216,7 +216,7 @@ pylith::topology::FieldsNew<mesh_type>::allocate(const FieldBase::DomainEnum dom
 // Get field.
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>&
-pylith::topology::FieldsNew<mesh_type>::get(const char* name)
+pylith::topology::PackedFields<mesh_type>::get(const char* name)
 { // get
   typename map_type::iterator f_iter = _fields.find(name);
   if (f_iter == _fields.end()) {
@@ -244,7 +244,7 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
 // Compute total fiber dimension for section.
 template<typename mesh_type>
 int
-pylith::topology::FieldsNew<mesh_type>::fiberDim(void) const
+pylith::topology::PackedFields<mesh_type>::fiberDim(void) const
 { // fiberDim
   int fiberDim = 0;
   const typename map_type::const_iterator fieldsEnd = _fields.end();
@@ -268,7 +268,7 @@ pylith::topology::FieldsNew<mesh_type>::fiberDim(void) const
 // Get index of first value of field in section.
 template<typename mesh_type>
 int
-pylith::topology::FieldsNew<mesh_type>::sectionIndex(const char* name) const
+pylith::topology::PackedFields<mesh_type>::sectionIndex(const char* name) const
 { // sectionIndex
   typename map_type::const_iterator f_iter = _fields.find(name);
   if (f_iter == _fields.end()) {
@@ -285,7 +285,7 @@ pylith::topology::FieldsNew<mesh_type>::sectionIndex(const char* name) const
 // Get fiber dimension of field in section.
 template<typename mesh_type>
 int
-pylith::topology::FieldsNew<mesh_type>::sectionFiberDim(const char* name) const
+pylith::topology::PackedFields<mesh_type>::sectionFiberDim(const char* name) const
 { // sectionFiberDim
   typename map_type::const_iterator f_iter = _fields.find(name);
   if (f_iter == _fields.end()) {
@@ -302,7 +302,7 @@ pylith::topology::FieldsNew<mesh_type>::sectionFiberDim(const char* name) const
 // Complete section by assembling across processors.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::complete(void)
+pylith::topology::PackedFields<mesh_type>::complete(void)
 { // complete
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Completion");
@@ -322,7 +322,7 @@ pylith::topology::FieldsNew<mesh_type>::complete(void)
 // Get names of all fields
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::fieldNames(int *numNames, 
+pylith::topology::PackedFields<mesh_type>::fieldNames(int *numNames, 
 						   char*** names) const
 { // fieldNames
   assert(numNames);
@@ -353,7 +353,7 @@ pylith::topology::FieldsNew<mesh_type>::fieldNames(int *numNames,
 // View fields and section.
 template<typename mesh_type>
 void
-pylith::topology::FieldsNew<mesh_type>::view(const char* label)
+pylith::topology::PackedFields<mesh_type>::view(const char* label)
 { // view
   std::cout << "Fields '" << label << "':\n";
   const typename map_type::const_iterator fieldsEnd = _fields.end();

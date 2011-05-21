@@ -20,7 +20,7 @@
 
 #include "AbsorbingDampers.hh" // implementation of object methods
 
-#include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
+#include "pylith/topology/PackedFields.hh" // HOLDSA PackedFields
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -108,7 +108,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   delete _parameters;
   _parameters = 
-    new topology::FieldsNew<topology::SubMesh>(*_boundaryMesh);
+    new topology::PackedFields<topology::SubMesh>(*_boundaryMesh);
   assert(0 != _parameters);
   _parameters->add("damping constants", "damping_constants", fiberDim);
   _parameters->allocate(cells);

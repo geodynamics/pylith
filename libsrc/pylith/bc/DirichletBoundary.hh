@@ -107,7 +107,7 @@ private :
   topology::SubMesh* _boundaryMesh; ///< Boundary mesh.
 
   /// Fields manager (holds temporary field for output).
-  topology::FieldsNew<topology::SubMesh>* _outputFields;
+  topology::PackedFields<topology::SubMesh>* _outputFields;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

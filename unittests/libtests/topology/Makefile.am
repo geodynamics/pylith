@@ -34,7 +34,7 @@ testtopology_SOURCES = \
 	TestFieldSubMesh.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
-	TestFieldsNewMesh.cc \
+	TestPackedFieldsMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
 	TestRefineUniform.cc \
@@ -49,7 +49,7 @@ noinst_HEADERS = \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
-	TestFieldsNewMesh.hh \
+	TestPackedFieldsMesh.hh \
 	TestSolutionFields.hh \
 	TestJacobian.hh \
 	TestRefineUniform.hh
@@ -84,7 +84,7 @@ AM_CPPFLAGS = \
 
 testtopology_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 

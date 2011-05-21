@@ -23,7 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/PackedFields.hh" // USES PackedFields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -90,7 +90,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   logger.stagePush("BoundaryConditions");
 
   if (0 == _outputFields)
-    _outputFields = new topology::FieldsNew<topology::SubMesh>(*_boundaryMesh);
+    _outputFields = new topology::PackedFields<topology::SubMesh>(*_boundaryMesh);
   assert(0 != _outputFields);
   _outputFields->add("buffer (vector)", "buffer_vector", 
 		     spaceDim, 

@@ -126,10 +126,11 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 * Reimplement Fields to use a single section. [BRAD]
 
     Fields
-    FieldsNew -> CombinedFields
+    FieldsNew -> PackedFields
     SolutionFields
-      Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
-      Use Field for dispIncr(t->t+dt), residual(t)
+      Use Field for acc, vel, disp(t+dt), disp(t), etc?
+      Use Field for dispIncr(t->t+dt)
+      Use Field for residual(t)
 
 * Cleanup
 
