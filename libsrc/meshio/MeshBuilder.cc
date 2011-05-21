@@ -133,6 +133,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
                                                       orientation);
       std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
+      ALE::ISieveConverter::convertOrientation(*s, *sieve, renumbering, orientation.ptr());
     } // if/else
     logger.stagePop();
     logger.stagePush("MeshStratification");
