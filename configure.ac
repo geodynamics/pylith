@@ -264,16 +264,17 @@ AC_C_BIGENDIAN
 # ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
 		pylith/Makefile
-                libsrc/Makefile
-		libsrc/bc/Makefile
-                libsrc/feassemble/Makefile
-		libsrc/faults/Makefile
-		libsrc/friction/Makefile
-                libsrc/materials/Makefile
-                libsrc/meshio/Makefile
-                libsrc/problems/Makefile
-		libsrc/topology/Makefile
-		libsrc/utils/Makefile
+		libsrc/Makefile
+		libsrc/pylith/Makefile
+		libsrc/pylith/bc/Makefile
+                libsrc/pylith/feassemble/Makefile
+		libsrc/pylith/faults/Makefile
+		libsrc/pylith/friction/Makefile
+                libsrc/pylith/materials/Makefile
+                libsrc/pylith/meshio/Makefile
+                libsrc/pylith/problems/Makefile
+		libsrc/pylith/topology/Makefile
+		libsrc/pylith/utils/Makefile
                 modulesrc/Makefile
                 modulesrc/include/Makefile
                 modulesrc/bc/Makefile

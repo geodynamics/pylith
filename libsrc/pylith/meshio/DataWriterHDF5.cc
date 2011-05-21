@@ -207,6 +207,13 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   } // if
   _viewer = 0;
   _timesteps.clear();
+
+#if 0
+  Xdmf metafile;
+  const int indexExt = _filename.find(".h5");
+  std::string xdmfFilename = std::string(_filename, 0, indexExt) + ".xmf";
+  metadata.write(xdmfFilename, _hdfFilename());
+#endif
 } // close
 
 // ----------------------------------------------------------------------
@@ -258,7 +265,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
 
-#if 1
+#if 0 // debugging
     field.view("writeVertexField");
     VecView(vector, PETSC_VIEWER_STDOUT_WORLD);
 #endif

@@ -121,7 +121,6 @@ pylith::materials::Material::initialize(
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
-  const int numCorners = quadrature->refGeometry().numCorners();
   const int numBasis = quadrature->numBasis();
   const int spaceDim = quadrature->spaceDim();
 
@@ -148,7 +147,7 @@ pylith::materials::Material::initialize(
   assert(!propertiesSection.isNull());
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numCorners*spaceDim);
+  double_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,

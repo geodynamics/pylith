@@ -54,7 +54,7 @@ _materialsmodule_la_LDFLAGS = -module -avoid-version \
 dist__materialsmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
 _materialsmodule_la_LIBADD = \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIBS)
 if ENABLE_CUBIT

@@ -38,6 +38,9 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
+#include "HDF5.hh" // USES HDF5::FieldMetadata
+
+#include <vector> // USES std::vector
 #include <fstream> // HASA std::ofstream
 #include <string> // USES std::string
 
@@ -61,7 +64,7 @@ public :
    * @param filenameXdmf Name of Xdmf file.
    * @param filenameHDF5 Name of HDF5 file.
    */
-  void write(const char* filenameXdfm,
+  void write(const char* filenameXdmf,
 	     const char* filenameHDF5);
 
 // PRIVATE METHODS ------------------------------------------------------
@@ -107,39 +110,19 @@ private :
 
   /** Write grid attribute.
    * 
-   * @param name Name of attribute.
-   * @param vectorFieldType Type of vector field.
-   * @param center Vertex/Cell center.
-   * @param numTimeSteps Number of time steps.
-   * @param numPoints Number of vertices or cells.
-   * @param fiberDim Fiber dimension for attribute.
+   * @param metadata Metadata for field.
    * @param iTime Index of time step.
    */
-  void _writeGridAttribute(const char* name,
-			   const char* vectorFieldType,
-			   const char* center,
-			   const int numTimeSteps,
-			   const int numPoints,
-			   const int fiberDim,
+  void _writeGridAttribute(const HDF5::FieldMetadata& metadata,
 			   const int iTime);
 
   /** Write grid attribute as single component (for 2-D vector).
    * 
-   * @param name Name of attribute.
-   * @param vectorFieldType Type of vector field.
-   * @param center Vertex/Cell center.
-   * @param numTimeSteps Number of time steps.
-   * @param numPoints Number of vertices or cells.
-   * @param fiberDim Fiber dimension for attribute.
+   * @param metadata Metadata for field.
    * @param iTime Index of time step.
    * @param component Index of component.
    */
-  void _writeGridAttributeComponent(const char* name,
-				    const char* vectorFieldType,
-				    const char* center,
-				    const int numTimeSteps,
-				    const int numPoints,
-				    const int fiberDim,
+  void _writeGridAttributeComponent(const HDF5::FieldMetadata& metadata,
 				    const int iTime,
 				    const int component);
 
