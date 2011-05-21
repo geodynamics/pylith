@@ -24,6 +24,7 @@
 #include "Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -64,17 +65,19 @@ namespace pylith {
       const char* dbProperties[] = {"density", "vs", "vp" , "viscosity"};
 
       /// Number of state variables.
-      const int numStateVars = 2;
+      const int numStateVars = 3;
 
       /// State variables.
       const Metadata::ParamDescription stateVars[] = {
+	{ "stress_zz_initial", 1, pylith::topology::FieldBase::SCALAR },
 	{ "total_strain", tensorSize, pylith::topology::FieldBase::TENSOR },
-	{ "viscous_strain", 4, pylith::topology::FieldBase::TENSOR },
+	{ "viscous_strain", 4, pylith::topology::FieldBase::OTHER },
       };
 
       /// Values expected in state variables spatial database
-      const int numDBStateVars = tensorSize + 4;
-      const char* dbStateVars[] = { "total-strain-xx",
+      const int numDBStateVars = 1 + tensorSize + 4;
+      const char* dbStateVars[] = { "stress-zz-initial",
+				    "total-strain-xx",
 				    "total-strain-yy",
 				    "total-strain-xy",
 				    "viscous-strain-xx",
@@ -111,13 +114,19 @@ const int pylith::materials::MaxwellPlaneStrain::db_viscosity =
   pylith::materials::MaxwellPlaneStrain::db_vp + 1;
 
 // Indices of state variables
-const int pylith::materials::MaxwellPlaneStrain::s_totalStrain = 0;
+const int pylith::materials::MaxwellPlaneStrain::s_stressZZInitial = 0;
+
+const int pylith::materials::MaxwellPlaneStrain::s_totalStrain =
+  pylith::materials::MaxwellPlaneStrain::s_stressZZInitial + 1;
 
 const int pylith::materials::MaxwellPlaneStrain::s_viscousStrain = 
   pylith::materials::MaxwellPlaneStrain::s_totalStrain + 3;
 
 // Indices of database values (order must match dbStateVars)
-const int pylith::materials::MaxwellPlaneStrain::db_totalStrain = 0;
+const int pylith::materials::MaxwellPlaneStrain::db_stressZZInitial = 0;
+
+const int pylith::materials::MaxwellPlaneStrain::db_totalStrain =
+  pylith::materials::MaxwellPlaneStrain::db_stressZZInitial + 1;
 
 const int pylith::materials::MaxwellPlaneStrain::db_viscousStrain = 
   pylith::materials::MaxwellPlaneStrain::db_totalStrain + 3;
@@ -200,8 +209,8 @@ pylith::materials::MaxwellPlaneStrain::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  const double mu = density * vs*vs;
-  const double lambda = density * vp*vp - 2.0*mu;
+  const double mu = density * vs * vs;
+  const double lambda = density * vp * vp - 2.0 * mu;
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
@@ -285,13 +294,45 @@ pylith::materials::MaxwellPlaneStrain::_dbToStateVars(
   const int numDBValues = dbValues.size();
   assert(_MaxwellPlaneStrain::numDBStateVars == numDBValues);
 
-  const int totalSize = _tensorSize + 4;
+  const int totalSize = 1 + _tensorSize + 4;
   assert(totalSize == _numVarsQuadPt);
   assert(totalSize == numDBValues);
   memcpy(stateValues, &dbValues[0], totalSize*sizeof(double));
 
   PetscLogFlops(0);
 } // _dbToStateVars
+
+// ----------------------------------------------------------------------
+// Nondimensionalize state variables.
+void
+pylith::materials::MaxwellPlaneStrain::_nondimStateVars(double* const values,
+							const int nvalues) const
+{ // _nondimStateVars
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _numVarsQuadPt);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->nondimensionalize(&values[s_stressZZInitial], 1, pressureScale);
+
+  PetscLogFlops(1);
+} // _nondimStateVars
+
+// ----------------------------------------------------------------------
+// Dimensionalize state variables.
+void
+pylith::materials::MaxwellPlaneStrain::_dimStateVars(double* const values,
+						     const int nvalues) const
+{ // _dimStateVars
+  assert(0 != _normalizer);
+  assert(0 != values);
+  assert(nvalues == _numVarsQuadPt);
+
+  const double pressureScale = _normalizer->pressureScale();
+  _normalizer->dimensionalize(&values[s_stressZZInitial], 1, pressureScale);
+
+  PetscLogFlops(1);
+} // _dimStateVars
 
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
@@ -377,13 +418,6 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 					 const int initialStrainSize,
 					 const bool computeStateVars)
 { // _calcStressViscoelastic
-  // Note that there is a problem with the way things are presently set up.
-  // Since the stress tensor is required to have a dimension of 3 for a 2D
-  // problem, the ZZ component of stress is never computed, even though it is
-  // part of the solution.  The only way around this at present is to compute
-  // this component as part of postprocessing, which will require knowledge of
-  // the current stress, strain, and viscous strain values as well as the
-  // initial values.
   assert(0 != stress);
   assert(_MaxwellPlaneStrain::tensorSize == stressSize);
   assert(0 != properties);
@@ -402,16 +436,15 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
   const double maxwellTime = properties[p_maxwellTime];
+  const double stressZZInitial = stateVars[s_stressZZInitial];
 
   const double mu2 = 2.0 * mu;
   const double bulkModulus = lambda + mu2 / 3.0;
 
   // Initial stress and strain values
   const double meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0;
-  // :BUG:? CHARLES - Doesn't sigma_zz contribute to
-  // meanStressInitial? Isn't sigma_zz nonzero and found from sigma_xx
-  // and sigma_yy?
-  const double meanStressInitial = (initialStress[0] + initialStress[1]) / 3.0;
+  const double meanStressInitial = (initialStress[0] + initialStress[1] +
+				    stressZZInitial) / 3.0;
   const double devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
 				     initialStrain[1] - meanStrainInitial,
 				     initialStrain[2]};
@@ -444,7 +477,7 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
   stress[2] = mu2 * (_viscousStrain[3] - devStrainInitial[2]) +
     devStressInitial[2];
 
-  PetscLogFlops(28);
+  PetscLogFlops(30);
 } // _calcStressViscoelastic
 
 // ----------------------------------------------------------------------

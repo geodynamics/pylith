@@ -27,15 +27,15 @@ const int pylith::materials::MaxwellPlaneStrainElasticData::_numLocs = 2;
 
 const int pylith::materials::MaxwellPlaneStrainElasticData::_numProperties = 4;
 
-const int pylith::materials::MaxwellPlaneStrainElasticData::_numStateVars = 2;
+const int pylith::materials::MaxwellPlaneStrainElasticData::_numStateVars = 3;
 
 const int pylith::materials::MaxwellPlaneStrainElasticData::_numDBProperties = 4;
 
-const int pylith::materials::MaxwellPlaneStrainElasticData::_numDBStateVars = 7;
+const int pylith::materials::MaxwellPlaneStrainElasticData::_numDBStateVars = 8;
 
 const int pylith::materials::MaxwellPlaneStrainElasticData::_numPropsQuadPt = 4;
 
-const int pylith::materials::MaxwellPlaneStrainElasticData::_numVarsQuadPt = 7;
+const int pylith::materials::MaxwellPlaneStrainElasticData::_numVarsQuadPt = 8;
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_lengthScale =   1.00000000e+03;
 
@@ -55,6 +55,7 @@ const int pylith::materials::MaxwellPlaneStrainElasticData::_numPropertyValues[]
 };
 
 const int pylith::materials::MaxwellPlaneStrainElasticData::_numStateVarValues[] = {
+1,
 3,
 4,
 };
@@ -67,6 +68,7 @@ const char* pylith::materials::MaxwellPlaneStrainElasticData::_dbPropertyValues[
 };
 
 const char* pylith::materials::MaxwellPlaneStrainElasticData::_dbStateVarValues[] = {
+"stress-zz-initial",
 "total-strain-xx",
 "total-strain-yy",
 "total-strain-xy",
@@ -88,6 +90,8 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_dbProperties[] =
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_dbStateVars[] = {
+  0.00000000e+00,
+  0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -130,6 +134,8 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_propertiesNondim[] = {
@@ -144,6 +150,8 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_propertiesNondim
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsNondim[] = {
+  0.00000000e+00,
+  0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -223,6 +231,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_initialStrain[] 
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsUpdated[] = {
+  0.00000000e+00,
   1.10000000e-04,
   1.20000000e-04,
   1.40000000e-04,
@@ -230,6 +239,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsUpdated
   4.33333333e-05,
  -7.66666667e-05,
   1.40000000e-04,
+  0.00000000e+00,
   4.10000000e-04,
   4.20000000e-04,
   4.40000000e-04,
