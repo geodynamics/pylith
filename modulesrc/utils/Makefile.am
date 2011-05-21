@@ -57,7 +57,7 @@ _petscmodule_la_LDFLAGS = -module -avoid-version \
 dist__petscmodule_la_SOURCES = $(petsc_swig_sources) $(petsc_swig_generated)
 
 _petscmodule_la_LIBADD = \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB)
 if NO_UNDEFINED
@@ -72,7 +72,7 @@ _utilsmodule_la_LDFLAGS = -module -avoid-version \
 dist__utilsmodule_la_SOURCES = $(utils_swig_sources) $(utils_swig_generated)
 
 _utilsmodule_la_LIBADD = \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB)
 if NO_UNDEFINED

@@ -39,7 +39,7 @@ export-nobase_subpkgincludeHEADERS: $(nobase_subpkginclude_HEADERS)
 clean-nobase_subpkgincludeHEADERS:
 	$(MAKE) $(AM_MAKEFLAGS) pkgincludedir=$(export_incdir) uninstall-nobase_subpkgincludeHEADERS
 
-INCLUDES = -I$(top_builddir)/include
+INCLUDES = -I$(top_srcdir)/libsrc
 
 
 # End of file 

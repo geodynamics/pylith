@@ -60,10 +60,4 @@ noinst_HEADERS += \
 	MeshOrder.hh
 
 
-# export
-clean-local: clean-subpkgincludeHEADERS
-BUILT_SOURCES = export-subpkgincludeHEADERS
-CLEANFILES = export-subpkgincludeHEADERS
-
-
 # End of file 

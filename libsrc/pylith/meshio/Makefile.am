@@ -77,10 +77,5 @@ noinst_HEADERS = \
 	PsetFileAscii.icc \
 	PsetFileBinary.hh
 
-# export
-clean-local: clean-subpkgincludeHEADERS
-BUILT_SOURCES = export-subpkgincludeHEADERS
-CLEANFILES = export-subpkgincludeHEADERS
-
 
 # End of file 
