@@ -49,7 +49,7 @@ _bcmodule_la_LDFLAGS = -module -avoid-version \
 dist__bcmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
 _bcmodule_la_LIBADD = \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIBS)
 if ENABLE_CUBIT

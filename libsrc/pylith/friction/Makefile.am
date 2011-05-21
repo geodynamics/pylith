@@ -16,25 +16,20 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = problems
+subpackage = friction
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Formulation.hh \
-	Explicit.hh \
-	Implicit.hh \
-	Solver.hh \
-	SolverLinear.hh \
-	SolverNonlinear.hh \
-	SolverLumped.hh \
-	problemsfwd.hh
+	FrictionModel.hh \
+	FrictionModel.icc \
+	StaticFriction.hh \
+	SlipWeakening.hh \
+	RateStateAgeing.hh \
+	TimeWeakening.hh \
+	frictionfwd.hh
+
 
 noinst_HEADERS =
-
-# export
-clean-local: clean-subpkgincludeHEADERS
-BUILT_SOURCES = export-subpkgincludeHEADERS
-CLEANFILES = export-subpkgincludeHEADERS
 
 
 # End of file 

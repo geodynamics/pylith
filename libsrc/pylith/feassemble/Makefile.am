@@ -81,10 +81,5 @@ dist_noinst_DATA = \
 	tri3_elasticity.wxm \
 	tet4_elasticity.wxm
 
-# export
-clean-local: clean-subpkgincludeHEADERS
-BUILT_SOURCES = export-subpkgincludeHEADERS
-CLEANFILES = export-subpkgincludeHEADERS
-
 
 # End of file 
