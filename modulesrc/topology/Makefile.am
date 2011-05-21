@@ -30,6 +30,7 @@ swig_sources = \
 	MeshOps.i \
 	FieldBase.i \
 	Field.i \
+	MultiField.i \
 	Fields.i \
 	PackedFields.i \
 	SolutionFields.i \

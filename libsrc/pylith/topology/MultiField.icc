@@ -1,0 +1,101 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_multifield_hh)
+#error "MultiField.icc must be included only from MultiField.hh"
+#else
+
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
+// Get Sieve section.
+template<typename mesh_type, typename section_type>
+inline
+const ALE::Obj<section_type>&
+pylith::topology::MultiField<mesh_type, section_type>::section(void) const {
+  return _section;
+}
+
+// Get mesh associated with field.
+template<typename mesh_type, typename section_type>
+inline
+const
+mesh_type&
+pylith::topology::MultiField<mesh_type, section_type>::mesh(void) const {
+  return _mesh;
+}
+
+// Get label for field.
+template<typename mesh_type, typename section_type>
+inline
+const char*
+pylith::topology::MultiField<mesh_type, section_type>::label(void) const {
+  return _metadata.label.c_str();
+}
+
+// Set vector field type
+template<typename mesh_type, typename section_type>
+inline
+void
+pylith::topology::MultiField<mesh_type, section_type>::vectorFieldType(const VectorFieldEnum value) {
+  _metadata.vectorFieldType = value;
+}
+
+// Get vector field type
+template<typename mesh_type, typename section_type>
+inline
+typename pylith::topology::MultiField<mesh_type, section_type>::VectorFieldEnum
+pylith::topology::MultiField<mesh_type, section_type>::vectorFieldType(void) const {
+  return _metadata.vectorFieldType;
+}
+
+// Set scale for dimensionalizing field.
+template<typename mesh_type, typename section_type>
+inline
+void
+pylith::topology::MultiField<mesh_type, section_type>::scale(const double value) {
+  _metadata.scale = value;
+}
+
+// Get scale for dimensionalizing field.
+template<typename mesh_type, typename section_type>
+inline
+double
+pylith::topology::MultiField<mesh_type, section_type>::scale(void) const {
+  return _metadata.scale;
+}
+
+// Set flag indicating whether it is okay to dimensionalize field.
+template<typename mesh_type, typename section_type>
+inline
+void
+pylith::topology::MultiField<mesh_type, section_type>::addDimensionOkay(const bool value) {
+  _metadata.dimsOkay = value;
+}
+
+// Set flag indicating whether it is okay to dimensionalize field.
+template<typename mesh_type, typename section_type>
+inline
+bool
+pylith::topology::MultiField<mesh_type, section_type>::addDimensionOkay(void) const {
+  return _metadata.dimsOkay;
+}
+
+#endif
+
+
+// End of file

@@ -25,6 +25,9 @@ subpkginclude_HEADERS = \
 	Field.hh \
 	Field.icc \
 	Field.cc \
+	MultiField.hh \
+	MultiField.cc \
+	MultiField.icc \
 	Fields.hh \
 	Fields.icc \
 	PackedFields.hh \

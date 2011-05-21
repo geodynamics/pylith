@@ -34,6 +34,8 @@ testtopology_SOURCES = \
 	TestFieldSubMesh.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
+	TestMultiFieldMesh.cc \
+	TestMultiFieldSubMesh.cc \
 	TestPackedFieldsMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
@@ -49,6 +51,8 @@ noinst_HEADERS = \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
+	TestMultiFieldMesh.hh \
+	TestMultiFieldSubMesh.hh \
 	TestPackedFieldsMesh.hh \
 	TestSolutionFields.hh \
 	TestJacobian.hh \

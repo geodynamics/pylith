@@ -58,6 +58,8 @@ namespace pylith {
     class FieldBase;
     template<typename mesh_type, 
 	     typename section_type =ALE::IGeneralSection<pylith::SieveMesh::point_type, double> > class Field;
+    template<typename mesh_type, 
+	     typename section_type =ALE::IGeneralSection<pylith::SieveMesh::point_type, double> > class MultiField;
     template<typename field_type> class Fields;
     template<typename mesh_type> class PackedFields;
 

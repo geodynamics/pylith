@@ -27,6 +27,7 @@
 #include "pylith/topology/FieldBase.hh"
 #include "pylith/topology/Field.hh"
 #include "pylith/topology/Fields.hh"
+#include "pylith/topology/MultiField.hh"
 #include "pylith/topology/PackedFields.hh"
 #include "pylith/topology/SolutionFields.hh"
 #include "pylith/topology/Jacobian.hh"
@@ -65,6 +66,7 @@ import_array();
 %include "MeshOps.i"
 %include "FieldBase.i"
 %include "Field.i"
+%include "MultiField.i"
 %include "Fields.i"
 %include "PackedFields.i"
 %include "SolutionFields.i"
@@ -74,11 +76,20 @@ import_array();
 %include "ReverseCuthillMcKee.i"
 
 // Template instatiation
+
+ // Field
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
 %template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh>;
+
+// MultiField
+%template(MeshMultiField) pylith::topology::MultiField<pylith::topology::Mesh>;
+%template(SubMeshMultiField) pylith::topology::MultiField<pylith::topology::SubMesh>;
+
+// Fields
 %template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >;
 
+// PackedFields
 %template(MeshPackedFields) pylith::topology::PackedFields<pylith::topology::Mesh>;
 %template(SubMeshPackedFields) pylith::topology::PackedFields<pylith::topology::SubMesh>;
 
