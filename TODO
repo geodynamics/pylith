@@ -132,6 +132,13 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
 * Scalable distribution [MATT]
 
+  + It appears that topology adjustment is not currently limiting the runs
+  + Need a more memory scalable Distribution
+    + Consider simple distribution, followed by cleanup
+  + I think the Overlap structure is probably taking up all the memory
+    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
+      + Can we use a lighter-weight structure to sit in copy()?
+
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
