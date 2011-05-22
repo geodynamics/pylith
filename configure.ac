@@ -81,9 +81,11 @@ AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[enable_hdf5=yes
-	CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
-	PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
+	[if test "$enableval" = yes; then
+          enable_hdf5=yes
+	  CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+          else enable_hdf5=no; fi],
 	[enable_hdf5=no])
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
@@ -91,9 +93,11 @@ AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 AC_ARG_ENABLE([cuda],
     [AC_HELP_STRING([--enable-cuda],
         [enable use of CUDA @<:@default=no@:>@])],
-	[enable_cuda=yes
-	CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
-	PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
+	[if test "$enable_cuda" = yes; then
+          enable_cuda=yes
+          CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+          else enable_cuda=no; fi],
 	[enable_cuda=no])
 AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
 
@@ -218,22 +222,9 @@ fi
 
 # CUDA
 if test "$enable_cuda" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  cuda_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"
-  AC_CHECK_HEADER([cuda_runtime.h], [], [
-    AC_MSG_ERROR([CUDA runtime header not found.])
-  ])
-  #AC_MSG_CHECKING([for ?? in -lcuda])
-  #AC_COMPILE_IFELSE(
-  #  [AC_LANG_PROGRAM([[#include <cuda_runtime.h>]],
-  #	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
-  #  [AC_MSG_RESULT(yes)],
-  #  [AC_MSG_RESULT(no)
-  #   AC_MSG_ERROR([cuda library not found.])
-  #])
-  CPPFLAGS=$cuda_save_CPPFLAGS
+  CIT_PYTHON_MODULE([pycuda])
+  CIT_CUDA_INCDIR
+  CIT_CUDA_LIB
 fi
 
 # PROJ4
