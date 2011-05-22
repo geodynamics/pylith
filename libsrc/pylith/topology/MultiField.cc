@@ -36,23 +36,6 @@ template<typename mesh_type, typename section_type>
 pylith::topology::MultiField<mesh_type, section_type>::MultiField(const mesh_type& mesh) :
   _mesh(mesh)
 { // constructor
-  _metadata.label = "unknown";
-  _metadata.vectorFieldType = OTHER;
-  _metadata.scale = 1.0;
-  _metadata.dimsOkay = false;
-} // constructor
-
-// ----------------------------------------------------------------------
-// Constructor with mesh, section, and metadata.
-template<typename mesh_type, typename section_type>
-pylith::topology::MultiField<mesh_type, section_type>::MultiField(const mesh_type& mesh,
-					  const ALE::Obj<section_type>& section,
-					  const Metadata& metadata) :
-  _metadata(metadata),
-  _mesh(mesh),
-  _section(section)
-{ // constructor
-  assert(!section.isNull());
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -71,6 +54,9 @@ pylith::topology::MultiField<mesh_type, section_type>::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
   
+  if (!_section.isNull())
+    _section->clear();
+
   const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
   for (typename scatter_map_type::iterator s_iter=_scatters.begin();
        s_iter != scattersEnd;
@@ -87,40 +73,18 @@ pylith::topology::MultiField<mesh_type, section_type>::deallocate(void)
       err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
     } // if
   } // for
+  _scatters.clear();
 } // deallocate
 
 // ----------------------------------------------------------------------
-// Set label for field.
+// Set label of section.
 template<typename mesh_type, typename section_type>
 void
 pylith::topology::MultiField<mesh_type, section_type>::label(const char* value)
 { // label
-  _metadata.label = value;
-  if (!_section.isNull()) {
-    _section->setName(value);
-  } // if
-
-  const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
-  for (typename scatter_map_type::const_iterator s_iter=_scatters.begin();
-       s_iter != scattersEnd;
-       ++s_iter) {
-    if (s_iter->second.vector) {
-      PetscErrorCode err =
-	PetscObjectSetName((PetscObject)s_iter->second.vector, value);
-      CHECK_PETSC_ERROR(err);    
-    } // if
-  } // for
+  assert(!_section.isNull());
+  _section->setName(value);
 } // label
-
-// ----------------------------------------------------------------------
-// Get spatial dimension of domain.
-template<typename mesh_type, typename section_type>
-int
-pylith::topology::MultiField<mesh_type, section_type>::spaceDim(void) const
-{ // spaceDim
-  const spatialdata::geocoords::CoordSys* cs = _mesh.coordsys();
-  return (cs) ? cs->spaceDim() : 0;
-} // spaceDim
 
 // ----------------------------------------------------------------------
 // Get the chart size.
@@ -141,157 +105,175 @@ pylith::topology::MultiField<mesh_type, section_type>::sectionSize(void) const
 } // sectionSize
 
 // ----------------------------------------------------------------------
-// Create seive section.
+// Add field.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::MultiField<mesh_type, section_type>::newSection(void)
-{ // newSection
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
-  _section = new section_type(_mesh.comm(), _mesh.debug());  
-  assert(!_section.isNull());
-  _section->setName(_metadata.label);
-
-  logger.stagePop();
-} // newSection
-
-// ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion for a
-// sequence of points.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::MultiField<mesh_type, section_type>::newSection(
-				       const ALE::Obj<label_sequence>& points,
-				       const int fiberDim)
-{ // newSection
-  typedef typename mesh_type::SieveMesh::point_type point_type;
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-  if (fiberDim < 0) {
+pylith::topology::MultiFields<mesh_type>::add(const char* name,
+					      const char* label,
+					      const FieldBase::VectorFieldEnum vectorFieldType,
+					      const double scale,
+					      const bool dimsOkay)
+{ // add
+  if (hasField(name)) {
     std::ostringstream msg;
-    msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
-	<< "' must be nonnegative.";
+    msg << "Could not add field '" << name
+	<< "' to multiple fields object, because it already exists.";
     throw std::runtime_error(msg.str());
   } // if
 
-  _section = new section_type(_mesh.comm(), _mesh.debug());
-  assert(!_section.isNull());
-  _section->setName(_metadata.label);
-
-  if (points->size() > 0) {
-    const point_type pointMin = 
-      *std::min_element(points->begin(), points->end());
-    const point_type pointMax = 
-      *std::max_element(points->begin(), points->end());
-    _section->setChart(chart_type(pointMin, pointMax+1));
-    _section->setFiberDimension(points, fiberDim);  
-  } else // Create empty chart
-    _section->setChart(chart_type(0, 0));
-
-  logger.stagePop();
-} // newSection
-
-// ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion for a list of
-// points.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::MultiField<mesh_type, section_type>::newSection(const int_array& points,
-					       const int fiberDim)
-{ // newSection
-  typedef typename mesh_type::SieveMesh::point_type point_type;
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-  if (fiberDim < 0) {
-    std::ostringstream msg;
-    msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
-	<< "' must be nonnegative.";
-    throw std::runtime_error(msg.str());
-  } // if
+  // Set metadata
+  FieldInfo info;
+  info.metadata.label = label;
+  info.metadata.vectorFieldType = vectorFieldType;
+  info.metadata.scale = scale;
+  info.metadata.dimsOkay = dimsOkay;
   
-  _section = new section_type(_mesh.comm(), _mesh.debug());
-  assert(!_section.isNull());
-  _section->setName(_metadata.label);
+  // Set field index.
+  info.fieldIndex = _fields.size();
+  info.field = 0;
 
-  const int npts = points.size();
-  if (npts > 0) {
-    const point_type pointMin = points.min();
-    const point_type pointMax = points.max();
-    _section->setChart(chart_type(pointMin, pointMax+1));
-    for (int i=0; i < npts; ++i)
-      _section->setFiberDimension(points[i], fiberDim);
-  } else  // create empty chart
-    _section->setChart(chart_type(0, 0));
-
-  logger.stagePop();
-} // newSection
+  _fields[name] = info;
+} // add
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion.
+// Get field.
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type>&
+pylith::topology::MultiFields<mesh_type>::get(const char* name)
+{ // get
+  typename map_type::iterator f_iter = _fields.find(name);
+  if (f_iter == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in multiple fields object for retrieval.";
+    throw std::runtime_error(msg.str());
+  } // if
+  const int fibration = f_iter->second.fibration;
+  assert(fibration >= 0 && fibration < _fields.size());
+
+  if (!f_iter->second.field) {
+    delete f_iter->second.field; f_iter->second.field = 0;
+    assert(!_section.isNull());
+    f_iter->second.field = 
+      new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
+			   f_iter->second.metadata);
+    assert(0 != f_iter->second.field);
+  } // if
+
+  return *f_iter->second.field;
+} // get
+
+// ----------------------------------------------------------------------
+// Get index of field in collection of fields.
+template<typename mesh_type, typename section_type>
+int
+pylith::topology::MultiFields<mesh_type>::fieldIndex(const char* name) const
+{ // fieldIndex
+  const typename map_type::const_iterator iterTarget = _fields.find(name);
+  if (iterTarget == _fields.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name
+	<< "' in multiple fields object for retrieval of field index.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  assert(f_iter);
+  const int index = f_iter->second.fibration;
+  assert(index >= 0);
+
+  return sindex;
+} // fieldIndex
+
+// ----------------------------------------------------------------------
+// Get index of first value of field in field.
+template<typename mesh_type, typename section_type>
+int
+pylith::topology::MultiFields<mesh_type>::fieldStartIndex(const int fieldIndex,
+							  const point_type point) const
+{ // fieldStartIndex
+  assert(_section.numSpaces() > 0);
+  assert(fieldIndex >= 0 && fieldIndex < _section.numSpaces());
+  
+  int sindex = 0;
+  for (int i=0; i < fieldIndex; ++i) {
+    const ALE::Obj<RealSection>& subsection =
+      _section->getFibration(i);
+    sindex += subsection->getFiberDimension(point);
+  } // for
+
+  return sindex;
+} // fieldStartIndex
+
+// ----------------------------------------------------------------------
+// Get fiber dimension of field in section.
+template<typename mesh_type, typename section_type>
+int
+pylith::topology::MultiFields<mesh_type>::fieldFiberDim(const int fieldIndex,
+							const point_type point) const
+{ // fieldFiberDim
+  assert(_section.numSpaces() > 0);
+  assert(fieldIndex >= 0 && fieldIndex < _section.numSpaces());
+
+  const ALE::Obj<RealSection>& subsection =
+    _section->getFibration(fieldIndex);
+  const int fiberDim = subsection->getFiberDimension(point);
+
+  return fiberDim;
+} // fieldFiberDim
+
+// ----------------------------------------------------------------------
+// Compute total fiber dimension for section.
+template<typename mesh_type, typename section_type>
+int
+pylith::topology::MultiFields<mesh_type>::fiberDim(void) const
+{ // fiberDim
+  const int numSpaces = _section.numSpaces();
+  assert(numSpaces > 0);
+
+  int fiberDim = 0;
+  for (int i=0; i < numSpaces; ++i) {
+    const ALE::Obj<RealSection>& subsection =
+      _section->getFibration(i);
+    fiberDim += subsection->getFiberDimension(point);
+  } // for
+
+  return fiberDim;
+} // fiberDim
+
+// ----------------------------------------------------------------------
+// Clear variables associated with section.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::MultiField<mesh_type, section_type>::newSection(const DomainEnum domain,
-					       const int fiberDim,
-					       const int stratum)
-{ // newSection
+pylith::topology::MultiField<mesh_type, section_type>::clear(void)
+{ // clear
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
+
+  deallocate();
+  if (!_section.isNull())
+    _section->clear();
+  _fields.clear();
+
+  logger.stagePop();
+} // clear
+
+// ----------------------------------------------------------------------
+// Allocate Sieve section.
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::MultiField<mesh_type, section_type>::allocate(void)
+{ // allocate
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
+
+  assert(!_section.isNull());
+
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-
-  ALE::Obj<label_sequence> points;
-  if (VERTICES_FIELD == domain)
-    points = sieveMesh->depthStratum(stratum);
-  else if (CELLS_FIELD == domain)
-    points = sieveMesh->heightStratum(stratum);
-  else {
-    std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
-    assert(0);
-    throw std::logic_error("Bad domain enum in MultiField.");
-  } // else
-
-  newSection(points, fiberDim);
-} // newSection
-
-// ----------------------------------------------------------------------
-// Create section given chart.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::MultiField<mesh_type, section_type>::newSection(const MultiField& src,
-					       const int fiberDim)
-{ // newSection
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
-  if (_section.isNull()) {
-    logger.stagePop();
-    newSection();
-    logger.stagePush("Field");
-  } // if
-  if (fiberDim < 0) {
-    std::ostringstream msg;
-    msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
-	<< "' must be nonnegative.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  const ALE::Obj<section_type>& srcSection = src.section();
-  if (!srcSection.isNull()) {
-    _section->setChart(srcSection->getChart());
-    const chart_type& chart = _section->getChart();
-    const typename chart_type::const_iterator chartBegin = chart.begin();
-    const typename chart_type::const_iterator chartEnd = chart.end();
-
-    for (typename chart_type::const_iterator c_iter = chartBegin;
-	 c_iter != chartEnd;
-	 ++c_iter) 
-      if (srcSection->getFiberDimension(*c_iter) > 0)
-	_section->setFiberDimension(*c_iter, fiberDim);
-  } // if
+  sieveMesh->allocate(_section);
 
   logger.stagePop();
-} // newSection
+} // allocate
 
 // ----------------------------------------------------------------------
 // Create section with same layout as another section.
@@ -303,18 +285,21 @@ pylith::topology::MultiField<mesh_type, section_type>::cloneSection(const MultiF
   logger.stagePush("Field");
 
   deallocate();
-  std::string origLabel = _metadata.label;
-  _metadata = src._metadata;
-  label(origLabel.c_str());
 
+  // Copy metadata
+  _fields = src._fields;
+
+  // Section
   const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
     logger.stagePop();
     newSection();
     logger.stagePush("Field");
-  }
+  } // if
 
   if (!_section.isNull()) {
+    // Note: We retain the original label of the section.
+
     if (!srcSection->sharedStorage()) {
       _section->setAtlas(srcSection->getAtlas());
       _section->allocateStorage();
@@ -341,6 +326,7 @@ pylith::topology::MultiField<mesh_type, section_type>::cloneSection(const MultiF
     
     // Reuse scatters in clone
     PetscErrorCode err = 0;
+    const char* sectionLabel = _section->getName().c_str();
     if (src._scatters.size() > 0) {
       const typename scatter_map_type::const_iterator scattersEnd = src._scatters.end();
       for (typename scatter_map_type::const_iterator s_iter=src._scatters.begin();
@@ -376,7 +362,8 @@ pylith::topology::MultiField<mesh_type, section_type>::cloneSection(const MultiF
 	err = VecGetSize(s_iter->second.vector, &vecGlobalSize); CHECK_PETSC_ERROR(err);
 
 	err = VecCreate(_mesh.comm(), &sinfo.vector); CHECK_PETSC_ERROR(err);
-	err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata.label.c_str());
+	
+	err = PetscObjectSetName((PetscObject)sinfo.vector, sectionLabel);
 	CHECK_PETSC_ERROR(err);
 	err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize); 
 	CHECK_PETSC_ERROR(err);
@@ -390,42 +377,24 @@ pylith::topology::MultiField<mesh_type, section_type>::cloneSection(const MultiF
 } // cloneSection
 
 // ----------------------------------------------------------------------
-// Clear variables associated with section.
+// Complete section by assembling across processors.
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::MultiField<mesh_type, section_type>::clear(void)
-{ // clear
+pylith::topology::MultiField<mesh_type, section_type>::complete(void)
+{ // complete
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
+  logger.stagePush("Completion");
 
-  deallocate();
-  if (!_section.isNull())
-    _section->clear();
-
-  _metadata.scale = 1.0;
-  _metadata.vectorFieldType = OTHER;
-  _metadata.dimsOkay = false;
-
-  logger.stagePop();
-} // clear
-
-// ----------------------------------------------------------------------
-// Allocate Sieve section.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::MultiField<mesh_type, section_type>::allocate(void)
-{ // allocate
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
-  assert(!_section.isNull());
-
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
+  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = _mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  sieveMesh->allocate(_section);
+
+  if (!_section.isNull())
+    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
+					sieveMesh->getRecvOverlap(), 
+					_section, _section);
 
   logger.stagePop();
-} // allocate
+} // complete
 
 // ----------------------------------------------------------------------
 // Zero section values (excluding constrained DOF).
@@ -466,52 +435,36 @@ pylith::topology::MultiField<mesh_type, section_type>::zeroAll(void)
 } // zeroAll
 
 // ----------------------------------------------------------------------
-// Complete section by assembling across processors.
-template<typename mesh_type, typename section_type>
-void
-pylith::topology::MultiField<mesh_type, section_type>::complete(void)
-{ // complete
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Completion");
-
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  if (!_section.isNull())
-    ALE::Completion::completeSectionAdd(sieveMesh->getSendOverlap(),
-					sieveMesh->getRecvOverlap(), 
-					_section, _section);
-
-  logger.stagePop();
-} // complete
-
-// ----------------------------------------------------------------------
 // Copy field values and metadata.
 template<typename mesh_type, typename section_type>
 void
 pylith::topology::MultiField<mesh_type, section_type>::copy(const MultiField& field)
 { // copy
   // Check compatibility of sections
-  const int srcSize = field.chartSize();
-  const int dstSize = chartSize();
-  if (field.spaceDim() != spaceDim() ||
-      field._metadata.vectorFieldType != _metadata.vectorFieldType ||
-      srcSize != dstSize) {
+  const int srcChartSize = field.chartSize();
+  const int dstChartSize = chartSize();
+  const int srcSectionSize = field.sectionSize();
+  const int dstSectionSize = sectionSize();
+  if (srcChartSize != dstChartSize ||
+      srcSectionSize != dstSectionSize) {
     std::ostringstream msg;
 
-    msg << "Cannot copy values from section '" << field._metadata.label 
-	<< "' to section '" << _metadata.label
-	<< "'. Sections are incompatible.\n"
+    if (field._section.isNull())
+      msg << "Cannot copy values from null field to ";
+    else
+      msg << "Cannot copy values from field '" << field._section->getName()
+	  << "' to ";
+    if (_section.isNull())
+      msg << "null section.";
+    else
+      msg << "section '" << _section->getName() << "'.";
+    msg << " Sections are incompatible.\n"
 	<< "  Source section:\n"
-	<< "    space dim: " << field.spaceDim() << "\n"
-	<< "    vector field type: " << field._metadata.vectorFieldType << "\n"
-	<< "    scale: " << field._metadata.scale << "\n"
-	<< "    size: " << srcSize << "\n"
+	<< "    chart size: " << srcChartSize << "\n"
+	<< "    section size: " << srcSectionSize << "\n"
 	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << _metadata.vectorFieldType << "\n"
-	<< "    scale: " << _metadata.scale << "\n"
-	<< "    size: " << dstSize;
+	<< "    chart size: " << dstChartSize << "\n"
+	<< "    section size: " << dstSectionSize << "\n";
     throw std::runtime_error(msg.str());
   } // if
   assert( (_section.isNull() && field._section.isNull()) ||
@@ -545,24 +498,37 @@ void
 pylith::topology::MultiField<mesh_type, section_type>::copy(const ALE::Obj<section_type>& osection)
 { // copy
   // Check compatibility of sections
-  const int srcSize = osection->getChart().size();
-  const int dstSize = chartSize();
-  if (srcSize != dstSize) {
+  const int srcChartSize = 
+    (!osection.isNull()) ? osection->getChart().size() : 0;
+  const int srcSectionSize = 
+    (!osection.isNull()) ? osection->size() : 0;
+
+  const int dstChartSize = chartSize();
+  const int dstSectionSize = sectionSize();
+  if (srcChartSize != dstChartSize ||
+      srcSectionSize != dstSectionSize) {
     std::ostringstream msg;
 
-    msg << "Cannot copy values from Sieve section "
-	<< _metadata.label << "'. Sections are incompatible.\n"
+    if (field._section.isNull())
+      msg << "Cannot copy values from null section to ";
+    else
+      msg << "Cannot copy values from section '" << field._section->getName()
+	  << "' to ";
+    if (_section.isNull())
+      msg << "null section.";
+    else
+      msg << "section '" << _section->getName() << "'.";
+    msg << " Sections are incompatible.\n"
 	<< "  Source section:\n"
-	<< "    size: " << srcSize << "\n"
+	<< "    chart size: " << srcChartSize << "\n"
+	<< "    section size: " << srcSectionSize << "\n"
 	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << _metadata.vectorFieldType << "\n"
-	<< "    scale: " << _metadata.scale << "\n"
-	<< "    size: " << dstSize;
+	<< "    chart size: " << dstChartSize << "\n"
+	<< "    section size: " << dstSectionSize << "\n";
     throw std::runtime_error(msg.str());
   } // if
-  assert( (_section.isNull() && osection.isNull()) ||
-	  (!_section.isNull() && !osection.isNull()) );
+  assert( (_section.isNull() && field._section.isNull()) ||
+	  (!_section.isNull() && !field._section.isNull()) );
 
   if (!_section.isNull()) {
     // Copy values from field
@@ -587,27 +553,30 @@ pylith::topology::MultiField<mesh_type, section_type>&
 pylith::topology::MultiField<mesh_type, section_type>::operator+=(const MultiField& field)
 { // operator+=
   // Check compatibility of sections
-  const int srcSize = field.chartSize();
-  const int dstSize = chartSize();
-  if (field.spaceDim() != spaceDim() ||
-      field._metadata.vectorFieldType != _metadata.vectorFieldType ||
-      field._metadata.scale != _metadata.scale ||
-      srcSize != dstSize) {
+  const int srcChartSize = field.chartSize();
+  const int dstChartSize = chartSize();
+  const int srcSectionSize = field.sectionSize();
+  const int dstSectionSize = sectionSize();
+  if (srcChartSize != dstChartSize ||
+      srcSectionSize != dstSectionSize) {
     std::ostringstream msg;
 
-    msg << "Cannot add values from section '" << field._metadata.label 
-	<< "' to section '" << _metadata.label
-	<< "'. Sections are incompatible.\n"
+    if (field._section.isNull())
+      msg << "Cannot add values from null field to ";
+    else
+      msg << "Cannot add values from field '" << field._section->getName()
+	  << "' to ";
+    if (_section.isNull())
+      msg << "null section.";
+    else
+      msg << "section '" << _section->getName() << "'.";
+    msg << " Sections are incompatible.\n"
 	<< "  Source section:\n"
-	<< "    space dim: " << field.spaceDim() << "\n"
-	<< "    vector field type: " << field._metadata.vectorFieldType << "\n"
-	<< "    scale: " << field._metadata.scale << "\n"
-	<< "    size: " << srcSize << "\n"
+	<< "    chart size: " << srcChartSize << "\n"
+	<< "    section size: " << srcSectionSize << "\n"
 	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << _metadata.vectorFieldType << "\n"
-	<< "    scale: " << _metadata.scale << "\n"
-	<< "    size: " << dstSize;
+	<< "    chart size: " << dstChartSize << "\n"
+	<< "    section size: " << dstSectionSize << "\n";
     throw std::runtime_error(msg.str());
   } // if
   assert( (_section.isNull() && field._section.isNull()) ||
@@ -619,19 +588,16 @@ pylith::topology::MultiField<mesh_type, section_type>::operator+=(const MultiFie
     const typename chart_type::const_iterator chartBegin = chart.begin();
     const typename chart_type::const_iterator chartEnd = chart.end();
 
-    // Assume fiber dimension is uniform
-    const int fiberDim = (chart.size() > 0) ? 
-      _section->getFiberDimension(*chartBegin) : 0;
-    double_array values(fiberDim);
-
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
 	 ++c_iter) {
+      assert(osection->getFiberDimension(*c_iter) ==
+	     _section->getFiberDimension(*c_iter));
       if (field._section->getFiberDimension(*c_iter) > 0) {
 	assert(fiberDim == field._section->getFiberDimension(*c_iter));
 	assert(fiberDim == _section->getFiberDimension(*c_iter));
-	field._section->restrictPoint(*c_iter, &values[0], values.size());
-	_section->updatePointAllAdd(*c_iter, &values[0]);
+	_section->updatePointAllAdd(*c_iter, 
+				    field._section->restrictPoint(*c_iter));
       } // if
     } // for
   } // if
@@ -658,6 +624,7 @@ pylith::topology::MultiField<mesh_type, section_type>::dimensionalize(void) cons
     const typename chart_type::const_iterator chartEnd = chart.end();
 
     // Assume fiber dimension is uniform
+    // :FIX THIS:
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chart.begin()) : 0;
     double_array values(fiberDim);
@@ -683,46 +650,60 @@ template<typename mesh_type, typename section_type>
 void
 pylith::topology::MultiField<mesh_type, section_type>::view(const char* label) const
 { // view
-  std::string vecFieldString;
-  switch(_metadata.vectorFieldType)
-    { // switch
-    case SCALAR:
-      vecFieldString = "scalar";
-      break;
-    case VECTOR:
-      vecFieldString = "vector";
-      break;
-    case TENSOR:
-      vecFieldString = "tensor";
-      break;
-    case OTHER:
-      vecFieldString = "other";
-      break;
-    case MULTI_SCALAR:
-      vecFieldString = "multiple scalars";
-      break;
-    case MULTI_VECTOR:
-      vecFieldString = "multiple vectors";
-      break;
-    case MULTI_TENSOR:
-      vecFieldString = "multiple tensors";
-      break;
-    case MULTI_OTHER:
-      vecFieldString = "multiple other values";
-      break;
-    default :
-      std::cerr << "Unknown vector field value '" << _metadata.vectorFieldType
-		<< "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad vector field type in MultiField.");
-    } // switch
+  if (_section.isNull())
+    std::cout << "Fields in collection of fields '" << _section->getName()
+	      << "':\n";
+  else
+    std::cout << "Fields in unknown collection of fields:\n";
 
-  std::cout << "Viewing field '" << _metadata.label << "' "<< label << ".\n"
-	    << "  vector field type: " << vecFieldString << "\n"
-	    << "  scale: " << _metadata.scale << "\n"
-	    << "  dimensionalize flag: " << _metadata.dimsOkay << std::endl;
-  if (!_section.isNull())
-    _section->view(label);
+  std::string vecFieldString = "";
+  const typename map_type::const_iterator fieldsEnd = _fields.end();
+  for (typename map_type::const_iterator f_iter = _fields.begin();
+       f_iter != fieldsEnd;
+       ++f_iter) {
+    std::cout << "  Field: " << f_iter->first
+	      << ", index: " << f_iter->second.fieldIndex;
+    
+    const FieldBase::Metadata& metadata = f_iter->second.metadata;
+    switch(metadata.vectorFieldType)
+      { // switch
+      case SCALAR:
+	vecFieldString = "scalar";
+	break;
+      case VECTOR:
+	vecFieldString = "vector";
+	break;
+      case TENSOR:
+	vecFieldString = "tensor";
+	break;
+      case OTHER:
+	vecFieldString = "other";
+	break;
+      case MULTI_SCALAR:
+	vecFieldString = "multiple scalars";
+	break;
+      case MULTI_VECTOR:
+	vecFieldString = "multiple vectors";
+	break;
+      case MULTI_TENSOR:
+	vecFieldString = "multiple tensors";
+	break;
+      case MULTI_OTHER:
+	vecFieldString = "multiple other values";
+	break;
+      default :
+	std::cerr << "Unknown vector field value '" 
+		  << metadata.vectorFieldType
+		  << "'." << std::endl;
+	assert(0);
+	throw std::logic_error("Bad vector field type in MultiField.");
+      } // switch
+
+    std::cout << ",  vector field type: " << vecFieldString
+	      << ", scale: " << metadata.scale
+	      << ", dimensionalize flag: " << metadata.dimsOkay
+	      << std::endl;
+  _section->view("Section");
 } // view
 
 // ----------------------------------------------------------------------
@@ -1112,6 +1093,7 @@ template<typename mesh_type, typename section_type>
 void 
 pylith::topology::MultiField<mesh_type, section_type>::splitDefault(void)
 { // splitDefault
+#if 0
   assert(!_section.isNull());
   const int spaceDim = _mesh.dimension();
   for (int iDim=0; iDim < spaceDim; ++iDim)
@@ -1128,6 +1110,10 @@ pylith::topology::MultiField<mesh_type, section_type>::splitDefault(void)
       assert(spaceDim == _section->getFiberDimension(*c_iter));
       _section->setFiberDimension(*c_iter, 1, fibration);
     } // for
+#else
+  // :TODO: tell solver to split vector fields into pieces
+  throw std::logic_error("MultiField::splitDefault() needs updating.");
+#endif
 } // splitDefault
 
 // ----------------------------------------------------------------------

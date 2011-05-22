@@ -67,6 +67,7 @@ private:
   typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
   typedef typename section_type::chart_type chart_type;
+  typedef typename mesh_type::SieveMesh::point_type point_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -77,85 +78,29 @@ public :
    */
   MultiField(const mesh_type& mesh);
 
-  /** Constructor with mesh, section, and metadata.
-   *
-   * @param mesh Finite-element mesh.
-   */
-  MultiField(const mesh_type& mesh,
-	const ALE::Obj<section_type>& section,
-	const Metadata& metadata);
-
   /// Destructor.
   ~MultiField(void);
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Get Sieve section.
-   *
-   * @returns Sieve section.
-   */
-  const ALE::Obj<section_type>& section(void) const;
-
   /** Get mesh associated with field.
    *
    * @returns Finite-element mesh.
    */
   const mesh_type& mesh(void) const;
 
-  /** Set label for field.
+  /** Get Sieve section.
    *
-   * @param value Label for field.
+   * @returns Sieve section.
+   */
+  const ALE::Obj<section_type>& section(void) const;
+
+  /** Set label of section.
+   *
+   * @param value Label of section.
    */
   void label(const char* value);
-
-  /** Get label for field.
-   *
-   * @returns Label for field.
-   */
-  const char* label(void) const;
-
-  /** Set vector field type
-   *
-   * @param value Type of vector field.
-   */
-  void vectorFieldType(const VectorFieldEnum value);
-
-  /** Get vector field type
-   *
-   * @returns Type of vector field.
-   */
-  VectorFieldEnum vectorFieldType(void) const;
-
-  /** Set scale for dimensionalizing field.
-   *
-   * @param value Scale associated with field.
-   */
-  void scale(const double value);
-
-  /** Get scale for dimensionalizing field.
-   *
-   * @returns Scale associated with field.
-   */
-  double scale(void) const;
-
-  /** Set flag indicating whether it is okay to dimensionalize field.
-   *
-   * @param value True if it is okay to dimensionalize field.
-   */
-  void addDimensionOkay(const bool value);
-
-  /** Set flag indicating whether it is okay to dimensionalize field.
-   *
-   * @param value True if it is okay to dimensionalize field.
-   */
-  bool addDimensionOkay(void) const;
-
-  /** Get spatial dimension of domain.
-   *
-   * @returns Spatial dimension of domain.
-   */
-  int spaceDim(void) const;
 
   /** Get the number of sieve points in the chart.
    *
@@ -169,44 +114,69 @@ public :
    */
   int sectionSize(void) const;
 
-  /// Create sieve section.
-  void newSection(void);
-
-  /** Create sieve section and set chart and fiber dimesion for
-   * sequence of points.
+  /** Check if fields contains a given field.
    *
-   * @param points Points over which to define section.
-   * @param dim Fiber dimension for section.
+   * @param name Name of field.
+   * @return True if fields contains field, false otherwise.
    */
-  void newSection(const ALE::Obj<label_sequence>& points,
-		  const int fiberDim);
+  bool hasField(const char* name) const;
 
-  /** Create sieve section and set chart and fiber dimesion for a list
-   * of points.
+  /** Add field.
    *
-   * @param points Points over which to define section.
-   * @param dim Fiber dimension for section.
+   * @param name Name of field.
+   * @param label Label for field.
+   * @param fiberDim Fiber dimension for field.
    */
-  void newSection(const int_array& points,
-		  const int fiberDim);
+  void add(const char* name,
+	   const char* label,
+	   FieldBase::VectorFieldEnum vectorFieldType =FieldBase::OTHER,
+	   const double scale =1.0,
+	   const bool dimsOkay =false);
 
-  /** Create sieve section and set chart and fiber dimesion.
+  /** Get field.
    *
-   * @param domain Type of points over which to define section.
-   * @param dim Fiber dimension for section.
-   * @param stratum Stratum depth (for vertices) and height (for cells).
+   * @param name Name of field.
+   * @returns Field.
    */
-  void newSection(const DomainEnum domain,
-		  const int fiberDim,
-		  const int stratum =0);
+  Field<mesh_type>& get(const char* name);
+	   
+  /** Get index of field in collection of fields.
+   *
+   * @param name Name of field.
+   * @returns Index of field in collection of fields.
+   */
+  int fieldIndex(const char* name) const;
 
-  /** Create section using src field as template with given fiber dimension.
+  /** Get index of first value of field in field.
    *
-   * @param sec MultiField defining layout.
-   * @param fiberDim Fiber dimension.
+   * @param fieldIndex Index of field in collection.
+   * @param point Point in finite-element mesh.
+   * @returns Index of first value of field in section.
    */
-  void newSection(const MultiField& src,
-		  const int fiberDim);
+  int fieldStartIndex(const int fieldIndex,
+		      const point_type point) const;
+
+  /** Get fiber dimension of field in section.
+   *
+   * @param fieldIndex Index of field in collection.
+   * @param point Point in finite-element mesh.
+   * @returns Fiber dimension of field in section.
+   */
+  int fieldFiberDim(const int fieldIndex,
+		    const point_type point) const;
+
+  /** Compute total fiber dimension for section.
+   *
+   * @param point Point in finite-element mesh.
+   * @returns Fiber dimension.
+   */
+  int fiberDim(const point_type point) const;
+
+  /// Clear variables associated with section.
+  void clear(void);
+
+  /// Allocate field.
+  void allocate(void);
 
   /** Create section with same layout (fiber dimension and
    * constraints) as another section. This allows the layout data
@@ -217,20 +187,14 @@ public :
    */
   void cloneSection(const MultiField& src);
 
-  /// Clear variables associated with section.
-  void clear(void);
-
-  /// Allocate field.
-  void allocate(void);
+  /// Complete section by assembling across processors.
+  void complete(void);
 
   /// Zero section values (does not zero constrained values).
   void zero(void);
 
   /// Zero section values (including constrained values).
   void zeroAll(void);
-
-  /// Complete section by assembling across processors.
-  void complete(void);
 
   /** Copy field values and metadata.
    *
@@ -271,7 +235,6 @@ public :
    */
   void createScatter(const char* context ="");
 
-
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
    * Sieve section view. The PETSc vector does not contain constrained
@@ -293,7 +256,6 @@ public :
    * @param context Label for context associated with vector.
    */
   void createScatterWithBC(const char* context ="");
-
 
   /** Create PETSc vector scatter for field. This is used to transfer
    * information from the "global" PETSc vector view to the "local"
@@ -351,6 +313,12 @@ public :
 // PRIVATE STRUCTS //////////////////////////////////////////////////////
 private :
 
+  struct FieldInfo {
+    FieldBase::Metadata metadata; ///< Metadata for field.
+    int fieldIndex;  ///< Index associated with field.
+    Field<mesh_type>* field; ///< Single field.
+  }; // FieldInfo
+
   /// Data structures used in scattering to/from PETSc Vecs.
   struct ScatterInfo {
     PetscVec vector; ///< PETSc vector associated with field.
@@ -361,6 +329,7 @@ private :
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
 
+  typedef std::map<std::string, FieldInfo> metadata_map_type;
   typedef std::map<std::string, ScatterInfo> scatter_map_type;
 
 
@@ -386,9 +355,9 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  Metadata _metadata;
   const mesh_type& _mesh; ///< Mesh associated with section.
   ALE::Obj<section_type> _section; ///< Real section with data.
+  metadata_map_type _fields; ///< Metadata for fields in section.
   scatter_map_type _scatters; ///< Collection of scatters.
 
 

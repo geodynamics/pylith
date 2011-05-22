@@ -20,6 +20,15 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
     (a) Add separate objects for each field element
 
+ (5) Field split
+ 
+   + Need to tell solver to split vector fields into pieces.
+
+  ---------------------------------------
+  MultiField
+    unit tests
+
+----------------------------------------------------------------------
 * [STABLE]
   rate and state friction - sliding test
   predictor/corrector scheme?
@@ -43,19 +52,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   cd examples/3d/hex8
   pylith step03.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=3
 
-  DARWIN:
-
-  The initial problem is solved, but now with 3 procs we have this problem:
-
-    cd examples/3d/hex8
-    pylith step01.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=3
-
-    mpinemesis: /home/brad/src/cig/pylith/libsrc/topology/RefineVol8Face4Edges2.cc:520: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double, ALE::LabelSifter<int, int, ALE::malloc_allocator<ALE::NewSifterDef::Arrow<int, int> > > >, ALE::malloc_allocator<ALE::IMesh<int, double, ALE::LabelSifter<int, int, ALE::malloc_allocator<ALE::NewSifterDef::Arrow<int, int> > > > > >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double, ALE::LabelSifter<int, int, ALE::malloc_allocator<ALE::NewSifterDef::Arrow<int, int> > > >, ALE::malloc_allocator<ALE::IMesh<int, double, ALE::LabelSifter<int, int, ALE::malloc_allocator<ALE::NewSifterDef::Arrow<int, int> > > > > >&, const ALE::MeshOrder&): Assertion `k == 3' failed.
-
-  That was solved, but now
-
-    RuntimeError: Error while preparing for writing data to VTK file output/step03-lower_crust.vtk at time 0.
-    [1]Multiple indices for local point 977 remote point 666 from 0 with index 314
+    Runs but mesh connectivity/coordinates are wrong.
 
 * Output to HDF5 files. [BRAD and MATT]
 
@@ -66,6 +63,9 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 * Field split.
 
   Need to add the ability to add null space (subduction/step03).
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
 
   Need to check performance of custom fault preconditioner.
 

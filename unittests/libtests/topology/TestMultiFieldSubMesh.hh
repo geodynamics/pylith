@@ -47,22 +47,22 @@ class pylith::topology::TestMultiFieldSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestMultiFieldSubMesh );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testSection );
+  CPPUNIT_TEST( testDeallocate );
+
   CPPUNIT_TEST( testMesh );
-  CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testNewSection );
-  CPPUNIT_TEST( testNewSectionPoints );
-  CPPUNIT_TEST( testNewSectionDomain );
-  CPPUNIT_TEST( testNewSectionField );
-  CPPUNIT_TEST( testCloneSection );
+  CPPUNIT_TEST( testSection );
+
   CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testAllocate );
-  CPPUNIT_TEST( testZero );
+  CPPUNIT_TEST( testCloneSection );
   CPPUNIT_TEST( testComplete );
+
+  CPPUNIT_TEST( testZero );
   CPPUNIT_TEST( testCopy );
   CPPUNIT_TEST( testOperatorAdd );
   CPPUNIT_TEST( testDimensionalize );
   CPPUNIT_TEST( testView );
+
   CPPUNIT_TEST( testCreateScatter );
   CPPUNIT_TEST( testCreateScatterWithBC );
   CPPUNIT_TEST( testVector );
@@ -77,29 +77,14 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test section().
-  void testSection(void);
+  /// Test deallocate().
+  void testDeallocate(void);
 
   /// Test mesh().
   void testMesh(void);
 
-  /// Test spaceDim().
-  void testSpaceDim(void);
-
-  /// Test newSection().
-  void testNewSection(void);
-
-  /// Test newSection(points).
-  void testNewSectionPoints(void);
-
-  /// Test newSection(domain).
-  void testNewSectionDomain(void);
-
-  /// Test newSection(field).
-  void testNewSectionField(void);
-
-  /// Test cloneSection().
-  void testCloneSection(void);
+  /// Test section().
+  void testSection(void);
 
   /// Test clear().
   void testClear(void);
@@ -107,11 +92,14 @@ public :
   /// Test allocate().
   void testAllocate(void);
 
-  /// Test zero().
-  void testZero(void);
+  /// Test cloneSection().
+  void testCloneSection(void);
 
   /// Test complete().
   void testComplete(void);
+
+  /// Test zero().
+  void testZero(void);
 
   /// Test copy().
   void testCopy(void);

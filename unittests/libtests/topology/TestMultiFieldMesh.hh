@@ -47,27 +47,35 @@ class pylith::topology::TestMultiFieldMesh : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestMultiFieldMesh );
 
   CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testDeallocate );
+
   CPPUNIT_TEST( testMesh );
+  CPPUNIT_TEST( testSection );
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testVectorFieldType );
-  CPPUNIT_TEST( testScale );
-  CPPUNIT_TEST( testAddDimensionsOkay );
-  CPPUNIT_TEST( testSpaceDim );
-  CPPUNIT_TEST( testNewSection );
-  CPPUNIT_TEST( testNewSectionPoints );
-  CPPUNIT_TEST( testNewSectionPointsArray );
-  CPPUNIT_TEST( testNewSectionDomain );
-  CPPUNIT_TEST( testNewSectionField );
-  CPPUNIT_TEST( testCloneSection );
+  CPPUNIT_TEST( testChartSize );
+  CPPUNIT_TEST( testSectionSize );
+
+  CPPUNIT_TEST( testHasField );
+  CPPUNIT_TEST( testAdd );
+  CPPUNIT_TEST( testGet );
+
+  CPPUNIT_TEST( testFieldIndex );
+  CPPUNIT_TEST( testFieldStartIndex );
+  CPPUNIT_TEST( testFieldFiberDim );
+  CPPUNIT_TEST( testFiberDim );
+
   CPPUNIT_TEST( testClear );
   CPPUNIT_TEST( testAllocate );
+  CPPUNIT_TEST( testCloneSection );
+  CPPUNIT_TEST( testComplete );
+
   CPPUNIT_TEST( testZero );
   CPPUNIT_TEST( testZeroAll );
-  CPPUNIT_TEST( testComplete );
   CPPUNIT_TEST( testCopy );
   CPPUNIT_TEST( testOperatorAdd );
   CPPUNIT_TEST( testDimensionalize );
   CPPUNIT_TEST( testView );
+
   CPPUNIT_TEST( testCreateScatter );
   CPPUNIT_TEST( testCreateScatterWithBC );
   CPPUNIT_TEST( testVector );
@@ -84,44 +92,44 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test section().
-  void testSection(void);
+  /// Test deallocate().
+  void testDeallocate(void);
 
   /// Test mesh().
   void testMesh(void);
 
+  /// Test section().
+  void testSection(void);
+
   /// Test label().
   void testLabel(void);
 
-  /// Test vectorFieldType().
-  void testVectorFieldType(void);
+  /// Test chartSize().
+  void testChartSize(void);
 
-  /// Test scale().
-  void testScale(void);
+  /// Test sectionSize().
+  void testSectionSize(void);
 
-  /// Test addDimensionsOkay().
-  void testAddDimensionsOkay(void);
+  /// Test hasField().
+  void testHadField(void);
 
-  /// Test spaceDim().
-  void testSpaceDim(void);
+  /// Test add().
+  void testAdd(void);
 
-  /// Test newSection().
-  void testNewSection(void);
+  /// Test get().
+  void testGet(void);
 
-  /// Test newSection(points).
-  void testNewSectionPoints(void);
+  /// Test fieldIndex().
+  void testFieldIndex(void);
 
-  /// Test newSection(int_array).
-  void testNewSectionPointsArray(void);
+  /// Test fieldStartIndex().
+  void testFieldStartIndex(void);
 
-  /// Test newSection(domain).
-  void testNewSectionDomain(void);
+  /// Test fieldFiberDim().
+  void testFieldFiberDim(void);
 
-  /// Test newSection(field).
-  void testNewSectionField(void);
-
-  /// Test cloneSection().
-  void testCloneSection(void);
+  /// Test fiberDim().
+  void testFiberDim(void);
 
   /// Test clear().
   void testClear(void);
@@ -129,14 +137,17 @@ public :
   /// Test allocate().
   void testAllocate(void);
 
+  /// Test cloneSection().
+  void testCloneSection(void);
+
+  /// Test complete().
+  void testComplete(void);
+
   /// Test zero().
   void testZero(void);
 
   /// Test zeroAll().
   void testZeroAll(void);
-
-  /// Test complete().
-  void testComplete(void);
 
   /// Test copy().
   void testCopy(void);
