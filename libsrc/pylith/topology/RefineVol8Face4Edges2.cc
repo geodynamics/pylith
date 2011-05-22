@@ -315,7 +315,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   assert(!newVerticesSection.isNull());
   std::map<EdgeType, std::vector<int> > bndryEdgeToRank;
   
-  const int localOffset = orderNewMesh.verticesNormal().min() - orderOldMesh.verticesNormal().min();
+  const int localNormalOffset   = orderNewMesh.verticesNormal().min()   - orderOldMesh.verticesNormal().min();
+  const int localCensoredOffset = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
 
   for(std::map<EdgeType, point_type>::const_iterator e_iter = _edgeToVertex.begin(); e_iter != _edgeToVertex.end(); ++e_iter) {
     const point_type left  = e_iter->first.first;
@@ -333,6 +334,9 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 			    std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
       
       if(ranks.size()) {
+        const int localOffset = orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) ? localNormalOffset : localCensoredOffset;
+
+        assert(orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) == orderOldMesh.verticesNormal().hasPoint(e_iter->first.second));
         newVerticesSection->addFiberDimension(std::min(e_iter->first.first, e_iter->first.second)+localOffset, 1);
         for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
           bndryEdgeToRank[e_iter->first].push_back(*r_iter);
@@ -351,6 +355,9 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     value_type* values = (dim > 0) ? new value_type[dim] : 0;
     
     for(std::map<EdgeType, std::vector<int> >::const_iterator e_iter = bndryEdgeToRank.begin(); e_iter != bndryEdgeToRank.end() && v < dim; ++e_iter) {
+      const int localOffset = orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) ? localNormalOffset : localCensoredOffset;
+
+      assert(orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) == orderOldMesh.verticesNormal().hasPoint(e_iter->first.second));
       if (std::min(e_iter->first.first, e_iter->first.second)+localOffset == p) {
         values[v++] = EdgeType(std::max(e_iter->first.first, e_iter->first.second)+localOffset, _edgeToVertex[e_iter->first]);
       } // if
@@ -399,7 +406,9 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         minVertex = std::min(nextVertex, minVertex);
       }
       if (ranks.size()) {
-        assert(f_iter->second >= orderNewMesh.verticesNormal().min() && f_iter->second < orderNewMesh.verticesNormal().max());
+        const int localOffset = orderOldMesh.verticesNormal().hasPoint(minVertex) ? localNormalOffset : localCensoredOffset;
+
+        assert(orderNewMesh.verticesNormal().hasPoint(f_iter->second));
         newFaceVerticesSection->addFiberDimension(minVertex+localOffset, 1);
         for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
           bndryFaceToRank[f_iter->first].push_back(*r_iter);
@@ -420,11 +429,13 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     for(std::map<FaceType, std::vector<int> >::const_iterator f_iter = bndryFaceToRank.begin(); f_iter != bndryFaceToRank.end() && v < dim; ++f_iter) {
       const point_type first     = f_iter->first.points[0];
       point_type       minVertex = first;
+      int              localOffset;
 
       for(int i = 1; i < 4; ++i) {
         const point_type nextVertex = f_iter->first.points[i];
         minVertex = std::min(nextVertex, minVertex);
       }
+      localOffset = orderOldMesh.verticesNormal().hasPoint(minVertex) ? localNormalOffset : localCensoredOffset;
 
       if (minVertex+localOffset == p) {
         FaceType face;
@@ -432,6 +443,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
         for(int i = 0; i < 4; ++i) {
           if (f_iter->first.points[i] != minVertex) {
+            localOffset = orderOldMesh.verticesNormal().hasPoint(f_iter->first.points[i]) ? localNormalOffset : localCensoredOffset;
+
             face.points[k++] = f_iter->first.points[i]+localOffset;
           }
         }
@@ -458,17 +471,19 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     const point_type localPoint = _edgeToVertex[e_iter->first];
     
     for(std::vector<int>::const_iterator r_iter = e_iter->second.begin(); r_iter != e_iter->second.end(); ++r_iter) {
-      point_type remoteLeft = -1, remoteRight = -1;
-      const int  rank       = *r_iter;
+      point_type remoteLeft   = -1, remoteRight = -1;
+      const int  rank         = *r_iter;
+      const int  localOffsetL = orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) ? localNormalOffset : localCensoredOffset;
       
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffset);
+      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffsetL);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
         if (rank == *lr_iter) {
           remoteLeft = lr_iter.color();
           break;
         } // if
       } // for
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffset);
+      const int  localOffsetR = orderOldMesh.verticesNormal().hasPoint(e_iter->first.second) ? localNormalOffset : localCensoredOffset;
+      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffsetR);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
         if (rank == *rr_iter) {
           remoteRight = rr_iter.color();
@@ -487,6 +502,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
+      assert(remotePoint >= 0);
       newSendOverlap->addArrow(localPoint, rank, remotePoint);
       newRecvOverlap->addArrow(rank, localPoint, remotePoint);
     } // for
@@ -500,6 +516,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const int rank = *r_iter;
 
       for(int i = 0; i < 4; ++i) {
+        const int localOffset = orderOldMesh.verticesNormal().hasPoint(f_iter->first.points[i]) ? localNormalOffset : localCensoredOffset;
         const Obj<mesh_type::send_overlap_type::traits::supportSequence>& faceRanks = newSendOverlap->support(f_iter->first.points[i]+localOffset);
         for(mesh_type::send_overlap_type::traits::supportSequence::iterator fr_iter = faceRanks->begin(); fr_iter != faceRanks->end(); ++fr_iter) {
           if (rank == *fr_iter) {
@@ -534,6 +551,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         } // if
       } // for
       assert(localPoint >= orderNewMesh.verticesNormal().min() && localPoint < orderNewMesh.verticesNormal().max());
+      assert(remotePoint >= 0);
       newSendOverlap->addArrow(localPoint, rank, remotePoint);
       newRecvOverlap->addArrow(rank, localPoint, remotePoint);
     } // for
