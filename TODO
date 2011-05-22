@@ -4,6 +4,13 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * AUSTIN MEETING
 
+ MONDAY
+
+  * Discuss buildbot packaging (use Python rather than svn properties??)
+
+  * Nonlinear solver for friction (slip rate) 
+
+
  (1) DONE Fix GPU build
     - Need the CUDA includes and libraries (get from PyCUDA)
     - Some files need to be compiled using nvcc (*.cu)
