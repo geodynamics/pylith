@@ -49,6 +49,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
     + Are material models consistent with governing equations discussion?
 
 * Fault preconditioner [BRAD]
+    + Add code make null space for a given material and add to KSP
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
