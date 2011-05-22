@@ -31,8 +31,31 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
   Need to add the ability to add null space (subduction/step03).
 
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
   Need to check performance of custom fault preconditioner.
 
+
+* Cleanup of materials [stable]
+
+  + Account for initial strain in viscoelastic models
+
+  + Cleanup documentation
+    + Move formulations not used to Appendix
+    + Cleanup notation
+    + Add more information on derivation (especially Generalize Maxwell)
+      Use impedance approach
+    + Are material models consistent with governing equations discussion?
+
+* Fault preconditioner [BRAD]
+
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
+
+* Cleanup
+  + memory model
+  + full-scale testing
+  + Code cleanup
 
 * Memory model [MATT and BRAD]
 
@@ -59,26 +82,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
   Need to check sum, because we may not be tracking deallocation.
 
-* Cleanup of materials [stable]
-
-  + Account for initial strain in viscoelastic models
-
-  + Cleanup documentation
-    + Move formulations not used to Appendix
-    + Cleanup notation
-    + Add more information on derivation (especially Generalize Maxwell)
-      Use impedance approach
-    + Are material models consistent with governing equations discussion?
-
-* Fault preconditioner [BRAD]
-
-  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
-
-* Cleanup
-  + memory model
-  + full-scale testing
-  + Code cleanup
-
 ======================================================================
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
@@ -93,12 +96,12 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
   spatial and temporal variation in shear/normal stress for nucleation
 
-* Reimplement Fields to use a single section. [BRAD]
+* Reimplement parameters to use PackedFields. [BRAD]
 
     Fields
-    FieldsNew -> CombinedFields
-    SolutionFields
-      Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
+    FieldsNew -> PackedFields
+    SolutionFields [do this in multifields]
+      Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
 * Cleanup
