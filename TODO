@@ -4,7 +4,9 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * AUSTIN MEETING
 
- (1) Fix GPU build
+ (1) DONE Fix GPU build
+    - Need the CUDA includes and libraries (get from PyCUDA)
+    - Some files need to be compiled using nvcc (*.cu)
 
  (2) Add FieldSplit null space (translations+rotations)
 
@@ -13,6 +15,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
     + General integrator does setup, gets basis stuff at quadrature
       points, and calls function(s) to perform integrations for
       governing eqns.
+
+ (4) Generalize Quadrature object to take multiple finite element dscretizations (need for multifield)
+
+    (a) Add separate objects for each field element
 
 * [STABLE]
   rate and state friction - sliding test
