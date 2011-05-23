@@ -6,13 +6,12 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   rate and state friction - sliding test
   predictor/corrector scheme?
 
+  manual - top of pg 86 , k -> p
+
   [SPATIALDATA]
   SimpleIOAscii - check that we read all the points expected
 
 * BUILDBOT
-
-  Cleanup figs in userguide
-    Does Lyx generate eps files automatically from jpg?
 
   (1) cygwin
       + packaging
