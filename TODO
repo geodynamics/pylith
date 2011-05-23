@@ -2,19 +2,20 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-* [STABLE]
-  rate and state friction - sliding test
-  predictor/corrector scheme?
-
-  manual - top of pg 86 , k -> p
-
-  [SPATIALDATA]
+* SPATIALDATA
   SimpleIOAscii - check that we read all the points expected
 
 * BUILDBOT
 
   (1) cygwin
       + packaging
+
+* Friction
+  rate and state friction - sliding test
+  predictor/corrector scheme?
+
+* Manual
+  top of pg 86 , k -> p
 
 * Unform global refinement
 
@@ -124,11 +125,25 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
     + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
       + Can we use a lighter-weight structure to sit in copy()?
 
+  + Need ribbon around fault in order to develop algorithm
+
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
 * Paper
+
+  
+  geometry processing (adjusting topology)
+  discretization (cohesive cells)
+  model (Lagrange multipliers)
+    Slip functions
+    Fault constitutive models
+  solver
+  benchmarks
+    Savage and Prescott
+    Dynamic
+  real problem  
 
   General paper - focus on fault implementation
 
