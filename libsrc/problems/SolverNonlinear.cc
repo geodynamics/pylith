@@ -165,7 +165,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   assert(0 != formulation);
 
 
-  // TEMPORARY - ASK MATT
+  // Project solution back to admissible space.
   formulation->constrainSolnSpace(&tmpSolutionVec);
 
   // Reform residual
