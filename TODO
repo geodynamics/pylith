@@ -11,15 +11,11 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * BUILDBOT
 
-  1. Create packing list
-  2. Write to file. (tar -T file)
+  Cleanup figs in userguide
+    Does Lyx generate eps files automatically from jpg?
 
   (1) cygwin
       + packaging
-
-  (2) linux/darwin
-      + ignore all the extra junk in bin and lib
-
 
 * Unform global refinement
 
