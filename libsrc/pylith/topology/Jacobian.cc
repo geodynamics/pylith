@@ -90,10 +90,7 @@ pylith::topology::Jacobian::~Jacobian(void)
 void
 pylith::topology::Jacobian::deallocate(void)
 { // deallocate
-  if (0 != _matrix) {
-    PetscErrorCode err = MatDestroy(&_matrix); _matrix = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  PetscErrorCode err = MatDestroy(&_matrix);CHECK_PETSC_ERROR(err);
 } // deallocate
 
 // ----------------------------------------------------------------------
