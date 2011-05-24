@@ -2,9 +2,6 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
-* SPATIALDATA
-  SimpleIOAscii - check that we read all the points expected
-
 * BUILDBOT
 
   (1) cygwin

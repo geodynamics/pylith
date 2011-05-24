@@ -22,6 +22,8 @@
 
 #include "pylith/meshio/Xdmf.hh" // USES Xdmf
 
+#include <cstring> // USES strcmp()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestXdmf );
 
