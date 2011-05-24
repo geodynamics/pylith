@@ -65,6 +65,11 @@ class TestJacobian(unittest.TestCase):
     return
 
 
+  def tearDown(self):
+    self.jacobian.cleanup()
+    return
+
+
   def test_constructor(self):
     """
     Test constructor.
