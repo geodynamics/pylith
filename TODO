@@ -7,6 +7,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   (1) cygwin
       + packaging
 
+----------------------------------------
+BUGS
+----------------------------------------
+
 * Friction
   rate and state friction - sliding test
   predictor/corrector scheme?
@@ -18,6 +22,20 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
     Check refinement in parallel thoroughly.
 
+  BUG: multiple faults and refinement?
+
+    cd benchmarks/static/performance/solvertest
+    pylith hex8.cfg \
+      --mesh_generator.refiner=pylith.topology.RefineUniform \
+      --nodes=2
+
+    src/cig/pylith/libsrc/pylith/topology/RefineVol8Face4Edges2.cc:505: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&): Assertion `remotePoint >= 0' failed.
+
+
+----------------------------------------
+MISSING FEATURES
+----------------------------------------
+
 * Output to HDF5 files. [BRAD and MATT]
 
   (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
@@ -25,8 +43,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
 
 * Field split.
-
-  Need to add the ability to add null space (subduction/step03).
 
     Add flag to material [default is false] for creating null vector
     When setting up solver, create null vector, and pass it to KSP
@@ -46,7 +62,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
     + Are material models consistent with governing equations discussion?
 
 * Fault preconditioner [BRAD]
-    + Add code make null space for a given material and add to KSP
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
