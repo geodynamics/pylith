@@ -4,8 +4,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * BUILDBOT
 
-  (1) cygwin
-      + packaging
+  cygwin packaging
 
 ----------------------------------------
 BUGS
@@ -14,9 +13,6 @@ BUGS
 * Friction
   rate and state friction - sliding test
   predictor/corrector scheme?
-
-* Manual
-  top of pg 86 , k -> p
 
 * Unform global refinement
 
@@ -36,11 +32,11 @@ BUGS
 MISSING FEATURES
 ----------------------------------------
 
-* Output to HDF5 files. [BRAD and MATT]
+* Output to HDF5 files. [BRAD]
 
-  (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
+  (1) Add time dataset to vertex_fields and cell_fields.
 
-  (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
+  (2) Add creation of .xmf metadata file for ParaView/Visit.
 
 * Field split.
 
@@ -50,7 +46,7 @@ MISSING FEATURES
   Need to check performance of custom fault preconditioner.
 
 
-* Cleanup of materials [stable]
+* Cleanup of materials
 
   + Account for initial strain in viscoelastic models
 
@@ -65,10 +61,10 @@ MISSING FEATURES
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
-* Cleanup
-  + memory model
-  + full-scale testing
-  + Code cleanup
+
+----------------------------------------
+MISCELLANEOUS
+----------------------------------------
 
 * Memory model [MATT and BRAD]
 
