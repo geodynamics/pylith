@@ -14,6 +14,10 @@ BUGS
   rate and state friction - sliding test
   predictor/corrector scheme?
 
+* CUBIT 12.2 versus 13.0 file format
+
+  Get coordinates from coord_x, coord_y, and coord_z rather than coord in 13.0
+
 * Unform global refinement
 
     Check refinement in parallel thoroughly.
@@ -33,8 +37,6 @@ MISSING FEATURES
 ----------------------------------------
 
 * Output to HDF5 files. [BRAD]
-
-  (1) Add time dataset to vertex_fields and cell_fields.
 
   (2) Add creation of .xmf metadata file for ParaView/Visit.
 

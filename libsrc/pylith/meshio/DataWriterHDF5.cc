@@ -27,7 +27,9 @@
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(void) :
   _filename("output.h5"),
-  _viewer(0)
+  _viewer(0),
+  _tstamp(0),
+  _tstampIndex(0)
 { // constructor
 } // constructor
 
@@ -45,10 +47,10 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
 { // deallocate
-  if (_viewer) {
-    PetscErrorCode err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
-  } // if
-  _viewer = 0;
+  PetscErrorCode err = 0;
+
+  err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -57,7 +59,9 @@ template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::DataWriterHDF5(const DataWriterHDF5<mesh_type, field_type>& w) :
   DataWriter<mesh_type, field_type>(w),
   _filename(w._filename),
-  _viewer(0)
+  _viewer(0),
+  _tstamp(0),
+  _tstampIndex(0)
 { // copy constructor
 } // copy constructor
 
@@ -82,14 +86,22 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     
     const std::string& filename = _hdf5Filename();
 
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
+
     _timesteps.clear();
+    _tstampIndex = 0;
+    const int rank = sieveMesh->commRank();
+    const int localSize = (!rank) ? 1 : 0;
+    err = VecCreateMPI(mesh.comm(), localSize, PETSC_DETERMINE, &_tstamp);
+    CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(_tstamp, 1); CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _tstamp, "time");
 
     err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE,
 			      &_viewer);
     CHECK_PETSC_ERROR(err);
 
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
       sieveMesh->hasRealSection("coordinates_dimensioned") ?
       sieveMesh->getRealSection("coordinates_dimensioned") :
@@ -202,11 +214,12 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 { // close
-  if (_viewer) {
-    PetscViewerDestroy(&_viewer);
-  } // if
-  _viewer = 0;
+  PetscErrorCode err = 0;
+  err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
+
   _timesteps.clear();
+  _tstampIndex = 0;
 
 #if 0
   Xdmf metafile;
@@ -264,6 +277,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     else
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
+    // Add time stamp to "/vertex_fields/time" if necessary.
+    if (_tstampIndex == istep)
+      _writeTimeStamp(t, "/vertex_fields", sieveMesh->commRank());
 
 #if 0 // debugging
     field.view("writeVertexField");
@@ -346,6 +362,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     else
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
+    // Add time stamp to "/cell_fields/time" if necessary.
+    if (_tstampIndex == istep)
+      _writeTimeStamp(t, "/cell_fields", sieveMesh->commRank());
 
     // Set temporary block size that matches fiber dimension for output.
     int blockSize = 0;
@@ -388,6 +407,31 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
 
   return std::string(filename.str());
 } // _hdf5Filename
+
+
+// ----------------------------------------------------------------------
+// Write time stamp to file.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(const double t,
+								      const char* group,
+								      const int rank)
+{ // _writeTimeStamp
+  PetscErrorCode err = 0;
+
+  if (!rank) {
+    err = VecSetValue(_tstamp, 0, t, INSERT_VALUES); CHECK_PETSC_ERROR(err);
+  } // if
+  err = VecAssemblyBegin(_tstamp); CHECK_PETSC_ERROR(err);
+  err = VecAssemblyEnd(_tstamp); CHECK_PETSC_ERROR(err);
+  
+  err = PetscViewerHDF5PushGroup(_viewer, group); CHECK_PETSC_ERROR(err);
+  err = PetscViewerHDF5SetTimestep(_viewer, _tstampIndex); CHECK_PETSC_ERROR(err);
+  err = VecView(_tstamp, _viewer); CHECK_PETSC_ERROR(err);
+  err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+
+  _tstampIndex++;
+} // _writeTimeStamp
 
 
 // End of file 

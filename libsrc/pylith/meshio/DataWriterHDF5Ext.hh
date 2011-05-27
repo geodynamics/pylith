@@ -136,6 +136,14 @@ private :
   /// Generate filename for external dataset file.
   std::string _datasetFilename(const char* field) const;
 
+  /** Write time stamp to file.
+   *
+   * @param t Time in seconds.
+   * @param group Name of group ['/vertex_fields' or '/cell_fields']
+   */
+  void _writeTimeStamp(const double t,
+		       const char* group);  
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -156,6 +164,7 @@ private :
   std::string _filename; ///< Name of HDF5 file.
   HDF5* _h5; ///< HDF5 file
   dataset_type _datasets; ///< Datasets
+  int _tstampIndex; ///< Index of last time stamp written.
 
 }; // DataWriterHDF5Ext
 
