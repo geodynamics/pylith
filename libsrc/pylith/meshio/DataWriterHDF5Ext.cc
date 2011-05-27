@@ -572,27 +572,31 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   assert(_h5->hasGroup(group));
   std::string datasetFullName = std::string(group) + "/time";
 
-  const int ndims = 1;
+  const int ndims = 3;
 
   // Each time stamp has a size of 1.
-  hsize_t dimsChunk[1];
+  hsize_t dimsChunk[3]; // Use 3 dims for compatibility with PETSc viewer
   dimsChunk[0] = 1;
-
-  
+  dimsChunk[1] = 1;
+  dimsChunk[2] = 1;
 
   if (!_h5->hasDataset(datasetFullName.c_str())) {
     // Create dataset
     // Dataset has unknown size.
-    hsize_t dims[1];
+    hsize_t dims[3];
     dims[0] = H5S_UNLIMITED;
+    dims[1] = 1;
+    dims[2] = 1;
     _h5->createDataset(group, "time", dims, dimsChunk, ndims, 
 		       H5T_NATIVE_DOUBLE);
   } // if
   
   // Write time stamp as chunk to HDF5 file.
   // Current dimensions of dataset.
-  hsize_t dims[1];
+  hsize_t dims[3];
   dims[0] = _tstampIndex+1;
+  dims[1] = 1;
+  dims[2] = 1;
   _h5->writeDatasetChunk(group, "time", &t, dims, dimsChunk, ndims, 
 			 _tstampIndex, H5T_NATIVE_DOUBLE);
   
