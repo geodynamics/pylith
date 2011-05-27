@@ -132,6 +132,16 @@ private :
   /// Generate filename for HDF5 file.
   std::string _hdf5Filename(void) const;
 
+  /** Write time stamp to file.
+   *
+   * @param t Time in seconds.
+   * @param group Name of group ['/vertex_fields' or '/cell_fields']
+   * @param rank Processor rank in MPI communicator.
+   */
+  void _writeTimeStamp(const double t,
+		       const char* group,
+		       const int rank);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -141,9 +151,11 @@ private :
 private :
 
   std::string _filename; ///< Name of HDF5 file.
-  PetscViewer _viewer; ///< Output file
+  PetscViewer _viewer; ///< Output file.
+  PetscVec _tstamp; ///< Single value vector holding time stemp.
 
   std::map<std::string, int> _timesteps; ///< # of time steps written per field.
+  int _tstampIndex; ///< Index of last time stamp written.
 
 }; // DataWriterHDF5
 

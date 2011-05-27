@@ -173,7 +173,7 @@ public :
    *
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
-   * @param dims Dimensions of data.
+   * @param dims Maximum dimensions of data.
    * @param dimsChunk Dimensions of data chunks.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
@@ -190,8 +190,8 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param data Data.
-   * @param dims Dimensions of data.
-   * @param dimsChunk Dimensions of data chunks.
+   * @param dims Current total dimensions of data.
+   * @param dimsChunk Dimension of data chunk to write.
    * @param ndims Number of dimensions of data.
    * @param chunk Index of data chunk.
    * @param datatype Type of data.

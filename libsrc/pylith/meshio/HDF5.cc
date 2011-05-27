@@ -484,7 +484,7 @@ pylith::meshio::HDF5::createDataset(const char* parent,
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
-    hid_t dataspace = H5Screate_simple(ndims, dims, 0);
+    hid_t dataspace = H5Screate_simple(ndims, dimsChunk, dims);
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
       
@@ -588,6 +588,15 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
     if (dataset < 0)
       throw std::runtime_error("Could not open dataset.");
     
+#if defined(PYLITH_HDF5_USE_API_18)
+    herr_t err = H5Dset_extent(dataset, dims);
+#else
+    herr_t err = H5Dextend(dataset, dims);
+#endif
+    if (err < 0)
+      throw std::runtime_error("Could not set dataset extent.");
+
+
     hid_t dataspace = H5Dget_space(dataset);
     if (dataspace < 0)
       throw std::runtime_error("Could not get dataspace.");
@@ -596,8 +605,8 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
     if (chunkspace < 0)
       throw std::runtime_error("Could not create chunk dataspace.");
 
-    herr_t err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
-				     offset, stride, count, dimsChunk);
+    err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
+			      offset, stride, count, dimsChunk);
     delete[] count; count = 0;
     delete[] stride; stride = 0;
     delete[] offset; offset = 0;
