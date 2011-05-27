@@ -144,6 +144,43 @@ private :
 		    const int numCorners,
 		    const int meshDim);
 
+  /** Check if Cubit Exodus file constains variable.
+   *
+   * @param ncfile Cubit Exodus file.
+   * @param name Name of variable.
+   * @returns True if file contains variable, false otherwise.
+   */
+  bool _hasVar(NcFile& ncfile,
+	       const char* name) const;
+
+  /** Get values for variable as an array of doubles.
+   *
+   * @param values Array of values.
+   * @param dims Expected dimensions for variable.
+   * @param ndims Number of dimension for variable.
+   * @param ncfile Cubit Exodus file.
+   * @param name Name of variable.
+   */
+  void _getVar(double_array* values,
+	       int* dims,
+	       int ndims,
+	       NcFile& ncfile,
+	       const char* name) const;
+
+  /** Get values for variable as an array of ints.
+   *
+   * @param values Array of values.
+   * @param dims Expected dimensions for variable.
+   * @param ndims Number of dimension for variable.
+   * @param ncfile Cubit Exodus file.
+   * @param name Name of variable.
+   */
+  void _getVar(int_array* values,
+	       int* dims,
+	       int ndims,
+	       NcFile& ncfile,
+	       const char* name) const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
