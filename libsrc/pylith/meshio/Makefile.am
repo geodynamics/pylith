@@ -75,7 +75,8 @@ noinst_HEADERS = \
 	PsetFile.hh \
 	PsetFileAscii.hh \
 	PsetFileAscii.icc \
-	PsetFileBinary.hh
+	PsetFileBinary.hh \
+	ExodusII.hh
 
 
 # End of file 

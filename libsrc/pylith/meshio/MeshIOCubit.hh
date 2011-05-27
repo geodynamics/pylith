@@ -30,10 +30,6 @@
 
 #include <string> // HASA std::string
 
-// Forward declarations -------------------------------------------------
-/// C++ input/output manager for CUBIT Exodus II files.
-class NcFile; // netcdf file
-
 // MeshIOCubit ----------------------------------------------------------
 class pylith::meshio::MeshIOCubit : public MeshIO
 { // MeshIOCubit
@@ -88,7 +84,7 @@ private :
    * @param numVertices Pointer to number of vertices.
    * @param spaceDim Pointer to dimension of coordinates vector space.
    */
-  void _readVertices(NcFile& filein,
+  void _readVertices(ExodusII& filein,
 		     double_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
@@ -101,7 +97,7 @@ private :
    * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners
    */
-  void _readCells(NcFile& filein,
+  void _readCells(ExodusII& filein,
 		  int_array* pCells,
 		  int_array* pMaterialIds,
 		  int* numCells,
@@ -111,25 +107,25 @@ private :
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _readGroups(NcFile& filein);
+  void _readGroups(ExodusII& filein);
   
   /** Write mesh dimensions.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeDimensions(NcFile& ncfile) const;
+  void _writeDimensions(ExodusII& ncfile) const;
   
   /** Write mesh variables.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeVariables(NcFile& ncfile) const;
+  void _writeVariables(ExodusII& ncfile) const;
   
   /** Write mesh attributes.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeAttributes(NcFile& ncfile) const;
+  void _writeAttributes(ExodusII& ncfile) const;
 
   /** Reorder vertices in cells to match PyLith conventions.
    *
@@ -143,43 +139,6 @@ private :
 		    const int numCells,
 		    const int numCorners,
 		    const int meshDim);
-
-  /** Check if Cubit Exodus file constains variable.
-   *
-   * @param ncfile Cubit Exodus file.
-   * @param name Name of variable.
-   * @returns True if file contains variable, false otherwise.
-   */
-  bool _hasVar(NcFile& ncfile,
-	       const char* name) const;
-
-  /** Get values for variable as an array of doubles.
-   *
-   * @param values Array of values.
-   * @param dims Expected dimensions for variable.
-   * @param ndims Number of dimension for variable.
-   * @param ncfile Cubit Exodus file.
-   * @param name Name of variable.
-   */
-  void _getVar(double_array* values,
-	       int* dims,
-	       int ndims,
-	       NcFile& ncfile,
-	       const char* name) const;
-
-  /** Get values for variable as an array of ints.
-   *
-   * @param values Array of values.
-   * @param dims Expected dimensions for variable.
-   * @param ndims Number of dimension for variable.
-   * @param ncfile Cubit Exodus file.
-   * @param name Name of variable.
-   */
-  void _getVar(int_array* values,
-	       int* dims,
-	       int ndims,
-	       NcFile& ncfile,
-	       const char* name) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

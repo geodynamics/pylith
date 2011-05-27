@@ -41,21 +41,22 @@ const int pylith::meshio::MeshDataCubitTet::_cells[] = {
   1,  4,  2,  3
 };
 const int pylith::meshio::MeshDataCubitTet::_materialIds[] = {
-  1, 2
+  7, 8
 };
 
 const int pylith::meshio::MeshDataCubitTet::_numGroups = 2;
 
 const int pylith::meshio::MeshDataCubitTet::_groupSizes[] = 
-  { 3, 4 };
+  { 4, 3 };
 
 const int pylith::meshio::MeshDataCubitTet::_groups[] = {
+  0, 1, 2, 3,
   1, 2, 3,
-  0, 1, 2, 4
 };
 
 const char* pylith::meshio::MeshDataCubitTet::_groupNames[] = {
-  "100", "101"
+  "bottom_face",
+  "mid_face",
 };
 
 const char* pylith::meshio::MeshDataCubitTet::_groupTypes[] = {

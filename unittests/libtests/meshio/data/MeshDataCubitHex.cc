@@ -63,7 +63,7 @@ const int pylith::meshio::MeshDataCubitHex::_groups[] = {
 };
 
 const char* pylith::meshio::MeshDataCubitHex::_groupNames[] = {
-  "2", "4"
+  "right_face", "top_face"
 };
 
 const char* pylith::meshio::MeshDataCubitHex::_groupTypes[] = {

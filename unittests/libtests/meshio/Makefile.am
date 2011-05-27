@@ -216,8 +216,12 @@ testmeshio_LDADD = \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testmeshio_SOURCES += TestMeshIOCubit.cc
-  noinst_HEADERS += TestMeshIOCubit.hh
+  testmeshio_SOURCES += \
+	TestExodusII.cc \
+	TestMeshIOCubit.cc
+  noinst_HEADERS += \
+	TestExodusII.hh \
+	TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
 endif
 
