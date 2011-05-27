@@ -45,6 +45,7 @@ namespace pylith {
     class PsetFile;
     class PsetFileAscii;
     class PsetFileBinary;
+    class ExodusII;
     
     template<typename mesh_type, typename field_type> class OutputManager;
     template<typename mesh_type, typename field_type> class DataWriter;

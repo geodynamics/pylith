@@ -21,15 +21,12 @@
 #include "MeshIOCubit.hh" // implementation of class methods
 
 #include "MeshBuilder.hh" // USES MeshBuilder
+#include "ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 
 #include "petsc.h" // USES MPI_Comm
 #include "journal/info.h" // USES journal::info_t
-
-// :KLUDGE: Prevent NetCDF from definining MPI types
-#define MPI_INCLUDED
-#include <netcdfcpp.h> // USES netcdf
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -78,29 +75,19 @@ pylith::meshio::MeshIOCubit::_read(void)
   MPI_Comm_rank(_mesh->comm(), &rank);
   if (0 == rank) {
     try {
-      NcFile ncfile(_filename.c_str());
-      if (!ncfile.is_valid()) {
-        std::ostringstream msg;
-        msg << "Could not open Cubit Exodus file '" << _filename
-            << "' for reading.\n";
-        throw std::runtime_error(msg.str());
-      } // if
+      ExodusII exofile(_filename.c_str());
 
+      const int meshDim = exofile.getDim("num_dim");
 
-      NcDim* num_dim = ncfile.get_dim("num_dim");
-      if (0 == num_dim)
-        throw std::runtime_error("Could not get dimension 'num_dim'.");
-      meshDim = num_dim->size();
-
-      _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
-      _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
+      _readVertices(exofile, &coordinates, &numVertices, &spaceDim);
+      _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
       _orientCells(&cells, numCells, numCorners, meshDim);
       MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
 			     cells, numCells, numCorners, meshDim,
 			     _interpolate);
       _setMaterials(materialIds);
       
-      _readGroups(ncfile);
+      _readGroups(exofile);
     } catch (std::exception& err) {
       std::ostringstream msg;
       msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"
@@ -126,23 +113,17 @@ pylith::meshio::MeshIOCubit::_read(void)
 void
 pylith::meshio::MeshIOCubit::_write(void) const
 { // write
-  NcFile ncfile(_filename.c_str());
-  if (!ncfile.is_valid()) {
-    std::ostringstream msg;
-    msg << "Could not open Cubit Exodus file '" << _filename
-	<< "' for writing.\n";
-    throw std::runtime_error(msg.str());
-  } // if
+  ExodusII exofile(_filename.c_str());
 
-  _writeDimensions(ncfile);
-  _writeVariables(ncfile);
-  _writeAttributes(ncfile);
+  _writeDimensions(exofile);
+  _writeVariables(exofile);
+  _writeAttributes(exofile);
 } // write
 
 // ----------------------------------------------------------------------
 // Read mesh vertices.
 void
-pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
+pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
 					   double_array* coordinates,
 					   int* numVertices, 
 					   int* numDims) const
@@ -154,28 +135,22 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
   journal::info_t info("meshiocubit");
     
   // Space dimension
-  NcDim* num_dim = ncfile.get_dim("num_dim");
-  if (0 == num_dim)
-    throw std::runtime_error("Could not get dimension 'num_dim'.");
-  *numDims = num_dim->size();
+  *numDims = exofile.getDim("num_dim");
   
   // Number of vertices
-  NcDim* num_nodes = ncfile.get_dim("num_nodes");
-  if (0 == num_nodes)
-    throw std::runtime_error("Could not get dimension 'num_nodes'.");
-  *numVertices = num_nodes->size();
+  *numVertices = exofile.getDim("num_nodes");
 
   info << journal::at(__HERE__)
        << "Reading " << *numVertices << " vertices." << journal::endl;
 
-  if (_hasVar(ncfile, "coord")) {
+  if (exofile.hasVar("coord")) {
     const int ndims = 2;
     int dims[2];
     dims[0] = *numDims;
     dims[1] = *numVertices;
     double_array buffer(*numVertices * *numDims);
-    _getVar(&buffer, dims, ndims, ncfile, "coord");
-
+    exofile.getVar(&buffer[0], dims, ndims, "coord");
+    
     coordinates->resize(*numVertices * *numDims);
     for (int iVertex=0; iVertex < *numVertices; ++iVertex)
       for (int iDim=0; iDim < *numDims; ++iDim)
@@ -193,7 +168,7 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
     dims[0] = *numVertices;
 
     for (int i=0; i < *numDims; ++i) {
-      _getVar(&buffer, dims, ndims, ncfile, coordNames[i]);
+      exofile.getVar(&buffer[0], dims, ndims, coordNames[i]);
 
       for (int iVertex=0; iVertex < *numVertices; ++iVertex)
 	(*coordinates)[iVertex*(*numDims)+i] = buffer[iVertex];
@@ -204,7 +179,7 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
 // ----------------------------------------------------------------------
 // Read mesh cells.
 void
-pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
+pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
 					int_array* cells,
 					int_array* materialIds,
 					int* numCells, 
@@ -217,70 +192,50 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
 
   journal::info_t info("meshiocubit");
 
-  NcDim* num_elem = ncfile.get_dim("num_elem");
-  if (0 == num_elem)
-    throw std::runtime_error("Could not get dimension 'num_elem'.");
-  *numCells = num_elem->size();
-  NcDim* num_el_blk = ncfile.get_dim("num_el_blk");
-  if (0 == num_el_blk)
-    throw std::runtime_error("Could not get dimension 'num_el_blk'.");
-  const int numMaterials = num_el_blk->size();
+  *numCells = exofile.getDim("num_elem");
+  const int numMaterials = exofile.getDim("num_el_blk");
 
   info << journal::at(__HERE__)
        << "Reading " << *numCells << " cells in " << numMaterials 
        << " blocks." << journal::endl;
   
-  NcVar* eb_prop1 = ncfile.get_var("eb_prop1");
-  if (0 == eb_prop1) 
-    throw std::runtime_error("Could not get variable 'eb_prop1'.");
-  std::valarray<int> blockIds(numMaterials);
-  long* counts = eb_prop1->edges();
-  bool ok = eb_prop1->get(&blockIds[0], counts);
-  delete[] counts; counts = 0;
-  materialIds->resize(*numCells);
+  int_array blockIds(numMaterials);
+  int ndims = 1;
+  int dims[2];
+  dims[0] = numMaterials;
+  dims[1] = 0;
+  exofile.getVar(&blockIds[0], dims, ndims, "eb_prop1");
 
+  materialIds->resize(*numCells);
   *numCorners = 0;
   for (int iMaterial=0, index=0; iMaterial < numMaterials; ++iMaterial) {
     std::ostringstream varname;
     varname << "num_nod_per_el" << iMaterial+1;
-    NcDim* num_nod_per_el = ncfile.get_dim(varname.str().c_str());
-    if (0 == num_nod_per_el)
-      throw std::runtime_error("Could not get dimension 'num_nod_per_el'.");
     if (0 == *numCorners) {
-      *numCorners = num_nod_per_el->size();
+      *numCorners = exofile.getDim(varname.str().c_str());
       const int size = (*numCells) * (*numCorners);
       cells->resize(size);
-    } else if (num_nod_per_el->size() != *numCorners) {
+    } else if (exofile.getDim(varname.str().c_str()) != *numCorners) {
       std::ostringstream msg;
       msg << "All materials must have the same number of vertices per cell.\n"
 	  << "Expected " << *numCorners << " vertices per cell, but block "
-	  << blockIds[iMaterial] << " has " << num_nod_per_el->size()
+	  << blockIds[iMaterial] << " has " 
+	  << exofile.getDim(varname.str().c_str())
 	  << " vertices.";
       throw std::runtime_error(msg.str());
     } // if
 
     varname.str("");
     varname << "num_el_in_blk" << iMaterial+1;
-    NcDim* num_el_in_blk = ncfile.get_dim(varname.str().c_str());
-    if (0 == num_el_in_blk)
-      throw std::runtime_error("Could not get dimension 'num_el_in_blk'.");
-    const int blockSize = num_el_in_blk->size();
+    const int blockSize = exofile.getDim(varname.str().c_str());
 	
     varname.str("");
     varname << "connect" << iMaterial+1;
-    NcVar* connect = ncfile.get_var(varname.str().c_str());
-    if (0 == connect)
-      throw std::runtime_error("Could not get variable 'connect'.");
-    if (2 != connect->num_dims())
-      throw std::runtime_error("Number of dimensions of variable "
-			       "'connect' must be 2.");
-    const int size = connect->num_vals();
-    assert(blockSize * (*numCorners) == size);
-    long* counts = connect->edges();
-    bool ok = connect->get(&(*cells)[index * (*numCorners)], counts);
-    delete[] counts; counts = 0;
-    if (!ok)
-      throw std::runtime_error("Could not get cell values.");
+    ndims = 2;
+    dims[0] = blockSize;
+    dims[1] = *numCorners;
+    exofile.getVar(&(*cells)[index* (*numCorners)], dims, ndims,
+		   varname.str().c_str());
 	
     for (int i=0; i < blockSize; ++i)
       (*materialIds)[index+i] = blockIds[iMaterial];
@@ -294,73 +249,47 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
 // ----------------------------------------------------------------------
 // Read mesh groups.
 void
-pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
+pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
 { // _readGroups
   journal::info_t info("meshiocubit");
 
-  NcDim* num_node_sets = ncfile.get_dim("num_node_sets");
-  if (0 == num_node_sets)
-    throw std::runtime_error("Could not get dimension 'num_node_sets'.");
-  const int numGroups = num_node_sets->size();
+  const int numGroups = exofile.getDim("num_node_sets");
 
   info << journal::at(__HERE__)
        << "Found " << numGroups << " node sets." << journal::endl;
-      
-  NcVar* ns_prop1 = ncfile.get_var("ns_prop1");
-  if (0 == ns_prop1) 
-    throw std::runtime_error("Could not get variable 'ns_prop1'.");
-  std::valarray<int> ids(numGroups);
-  long* counts = ns_prop1->edges();
-  bool ok = ns_prop1->get(&ids[0], counts);
-  delete[] counts; counts = 0;
+
+  int_array ids(numGroups);
+  int ndims = 1;
+  int dims[2];
+  dims[0] = numGroups;
+  dims[1] = 0;
+  exofile.getVar(&ids[0], dims, ndims, "ns_prop1");
       
   string_vector groupNames(numGroups);
+
   if (_useNodesetNames) {
-    NcVar* ns_names = ncfile.get_var("ns_names");
-    if (0 == ns_names) 
-      throw std::runtime_error("Could not get variable 'ns_names'.");
-    long* counts = ns_names->edges();
-    if (ns_names->num_dims() != 2)
-      throw std::runtime_error("Expected variable 'ns_names' to have "
-			       "2 dimensions.");
-    const int bufferSize = counts[1];
-    char* buffer = (bufferSize > 0) ? new char[bufferSize] : 0;
-    for (int i=0; i < numGroups; ++i) {
-      ns_names->set_cur(i);
-      bool ok = ns_names->get(buffer, 1, bufferSize, 0, 0, 0);
-      if (!ok) {
-	std::ostringstream msg;
-	msg << "Could not read name of nodeset " << ids[i] << ".";
-	throw std::runtime_error(msg.str());
-      } // if
-      groupNames[i] = buffer;
-      //std::cout << "GROUP: '" << groupNames[i] << "'." << std::endl;
-    } // for
-    delete[] buffer; buffer = 0;
-    delete[] counts; counts = 0;
+    exofile.getVar(&groupNames, numGroups, "ns_names");
   } // if
 
   for (int iGroup=0; iGroup < numGroups; ++iGroup) {
-    std::valarray<int> points;
 	
     std::ostringstream varname;
+    varname << "num_nod_ns" << iGroup+1;
+    const int nodesetSize = exofile.getDim(varname.str().c_str());
+    int_array points(nodesetSize);
+
+    varname.str("");
     varname << "node_ns" << iGroup+1;
-    NcVar* node_ns = ncfile.get_var(varname.str().c_str());
-    if (0 == node_ns)
-      throw std::runtime_error("Could not get node set.");
-    const int size = node_ns->num_vals();
+    ndims = 1;
+    dims[0] = nodesetSize;
+
     info << journal::at(__HERE__)
 	 << "Reading node set '" << groupNames[iGroup] << "' with id "
-	 << ids[iGroup] << " containing "
-	 << size << " nodes." << journal::endl;
+	 << ids[iGroup] << " containing " << nodesetSize << " nodes."
+	 << journal::endl;
+    exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
 
-    points.resize(size);
-    long* counts = node_ns->edges();
-    bool ok = node_ns->get(&points[0], counts);
-    delete[] counts; counts = 0;
-    if (!ok)
-      throw std::runtime_error("Could not get node set.");
-    std::sort(&points[0], &points[size]);
+    std::sort(&points[0], &points[nodesetSize]);
     points -= 1; // use zero index
 
     GroupPtType type = VERTEX;
@@ -377,7 +306,7 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
 // ----------------------------------------------------------------------
 // Write mesh dimensions.
 void
-pylith::meshio::MeshIOCubit::_writeDimensions(NcFile& ncfile) const
+pylith::meshio::MeshIOCubit::_writeDimensions(ExodusII& exofile) const
 { // _writeDimensions
   throw std::logic_error("MeshIOCubit::_writeDimensions() not implemented.");
 } // _writeDimensions
@@ -385,7 +314,7 @@ pylith::meshio::MeshIOCubit::_writeDimensions(NcFile& ncfile) const
 // ----------------------------------------------------------------------
 // Write mesh variables.
 void
-pylith::meshio::MeshIOCubit::_writeVariables(NcFile& ncfile) const
+pylith::meshio::MeshIOCubit::_writeVariables(ExodusII& exofile) const
 { // _writeVariables
   throw std::logic_error("MeshIOCubit::_writeVariables() not implemented.");
 } // _writeVariables
@@ -393,7 +322,7 @@ pylith::meshio::MeshIOCubit::_writeVariables(NcFile& ncfile) const
 // ----------------------------------------------------------------------
 // Write mesh attributes.
 void
-pylith::meshio::MeshIOCubit::_writeAttributes(NcFile& ncfile) const
+pylith::meshio::MeshIOCubit::_writeAttributes(ExodusII& exofile) const
 { // _writeAttributes
   throw std::logic_error("MeshIOCubit::_writeAttributes() not implemented.");
 } // _writeAttributes
@@ -503,128 +432,5 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
 
 } // _orientCells
   
-// ----------------------------------------------------------------------
-// Check if Cubit Exodus file constains variable.
-bool
-pylith::meshio::MeshIOCubit::_hasVar(NcFile& ncfile,
-				     const char* name) const
-{ // _hasVar
-  bool found = false;
-
-  const int nvars = ncfile.num_vars();
-  std::cout << "NVARS: " << nvars << std::endl;
-  for (int i=0; i < nvars; ++i) {
-    NcVar* var = ncfile.get_var(i);
-    assert(var);
-    std::cout << "VAR " << i << ", name" << var->name() << std::endl;
-    if (0 == strcmp(var->name(), name)) {
-      found = true;
-      break;
-    } // if
-  } // for
-
-  return found;
-} // _hasVar
-
-// ----------------------------------------------------------------------
-// Get values for variable as an array of doubles.
-void
-pylith::meshio::MeshIOCubit::_getVar(double_array* values,
-				     int* dims,
-				     int ndims,
-				     NcFile& ncfile,
-				     const char* name) const
-{ // _getVar
-  if (!_hasVar(ncfile, name)) {
-    std::ostringstream msg;
-    msg << "Cubit Exodus file '" << _filename << "' is missing variable '"
-	<< name << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  NcVar* var = ncfile.get_var(name);
-  assert(var);
-  if (ndims != var->num_dims()) {
-    std::ostringstream msg;
-    msg << "Expecting " << ndims << " for variable '" << name << 
-      "' in Cubit Exodus file '" << _filename << "' but variable only has "
-	<< var->num_dims() << " dimensions.";
-    throw std::runtime_error(msg.str());
-  } // if
-  
-  for (int iDim=0; iDim < ndims; ++iDim) {
-    NcDim* d = var->get_dim(iDim);
-    assert(d);
-    if (dims[iDim] != d->size()) {
-      std::ostringstream msg;
-      msg << "Expecting dimension " << iDim << " of variable '" << name
-	  << "' in Cubit Exodus file '" << _filename << "' to be " << dims[iDim]
-	  << ", but dimension is " << d->size() << "." << std::endl;
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
-
-  long* counts = var->edges();
-  assert(values->size() == var->num_vals());
-  bool ok = var->get(&(*values)[0], counts);
-  delete[] counts; counts = 0;
-  if (!ok) {
-    std::ostringstream msg;
-    msg << "Coult not get values for variable '" << name << 
-      "' in Cubit Exodus file '" << _filename << ".";
-    throw std::runtime_error(msg.str());
-  } // if
-} // _getVar
-
-// ----------------------------------------------------------------------
-// Get values for variable as an array of ints.
-void
-pylith::meshio::MeshIOCubit::_getVar(int_array* values,
-				     int* dims,
-				     int ndims,
-				     NcFile& ncfile,
-				     const char* name) const
-{ // _getVar
-  if (!_hasVar(ncfile, name)) {
-    std::ostringstream msg;
-    msg << "Cubit Exodus file '" << _filename << "' is missing variable '"
-	<< name << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  NcVar* var = ncfile.get_var(name);
-  assert(var);
-  if (ndims != var->num_dims()) {
-    std::ostringstream msg;
-    msg << "Expecting " << ndims << " for variable '" << name << 
-      "' in Cubit Exodus file '" << _filename << "' but variable only has "
-	<< var->num_dims() << " dimensions.";
-    throw std::runtime_error(msg.str());
-  } // if
-  
-  for (int iDim=0; iDim < ndims; ++iDim) {
-    NcDim* d = var->get_dim(iDim);
-    assert(d);
-    if (dims[iDim] != d->size()) {
-      std::ostringstream msg;
-      msg << "Expecting dimension " << iDim << " of variable '" << name
-	  << "' in Cubit Exodus file '" << _filename << "' to be " << dims[iDim]
-	  << ", but dimension is " << d->size() << "." << std::endl;
-      throw std::runtime_error(msg.str());
-    } // if
-  } // for
-
-  long* counts = var->edges();
-  assert(values->size() == var->num_vals());
-  bool ok = var->get(&(*values)[0], counts);
-  delete[] counts; counts = 0;
-  if (!ok) {
-    std::ostringstream msg;
-    msg << "Coult not get values for variable '" << name << 
-      "' in Cubit Exodus file '" << _filename << ".";
-    throw std::runtime_error(msg.str());
-  } // if
-} // _getVar
-
 
 // End of file 

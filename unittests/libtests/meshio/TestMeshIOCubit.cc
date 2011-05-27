@@ -82,8 +82,8 @@ void
 pylith::meshio::TestMeshIOCubit::testReadTri(void)
 { // testReadTri
   MeshDataCubitTri data;
-  const char* filename = "data/twotri3.exo";
-  _testRead(data, filename);
+  _testRead(data, "data/twotri3_12.2.exo");
+  _testRead(data, "data/twotri3_13.0.exo");
 } // testReadTri
 
 // ----------------------------------------------------------------------
@@ -92,8 +92,8 @@ void
 pylith::meshio::TestMeshIOCubit::testReadQuad(void)
 { // testReadQuad
   MeshDataCubitQuad data;
-  const char* filename = "data/twoquad4.exo";
-  _testRead(data, filename);
+  _testRead(data, "data/twoquad4_12.2.exo");
+  _testRead(data, "data/twoquad4_13.0.exo");
 } // testReadQuad
 
 // ----------------------------------------------------------------------
@@ -102,8 +102,8 @@ void
 pylith::meshio::TestMeshIOCubit::testReadTet(void)
 { // testReadTet
   MeshDataCubitTet data;
-  const char* filename = "data/twotet4.exo";
-  _testRead(data, filename);
+  _testRead(data, "data/twotet4_12.2.exo");
+  _testRead(data, "data/twotet4_13.0.exo");
 } // testReadTet
 
 // ----------------------------------------------------------------------
@@ -112,8 +112,8 @@ void
 pylith::meshio::TestMeshIOCubit::testReadHex(void)
 { // testReadHex
   MeshDataCubitHex data;
-  const char* filename = "data/twohex8.exo";
-  _testRead(data, filename);
+  _testRead(data, "data/twohex8_12.2.exo");
+  _testRead(data, "data/twohex8_13.0.exo");
 } // testReadHex
 
 // ----------------------------------------------------------------------
@@ -124,7 +124,7 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
 { // _testRead
   MeshIOCubit iohandler;
   iohandler.filename(filename);
-  iohandler.useNodesetNames(false);
+  iohandler.useNodesetNames(true);
 
   // Read mesh
   topology::Mesh mesh;

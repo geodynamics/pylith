@@ -189,6 +189,7 @@ endif
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \
+	meshio/ExodusII.cc \
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
@@ -198,8 +199,6 @@ if ENABLE_CUDA
 	feassemble/ElasticityImplicitCUDA.cc \
 	feassemble/ElasticityImplicitCUDAKernel.cu
   libpylith_la_LIBADD += -lcudart -lcuda 
-#    -L/usr/local/cuda/lib
-# INCLUDES +=  -I/usr/local/cuda/include
 endif
 
 

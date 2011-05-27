@@ -26,10 +26,14 @@ dist_noinst_DATA = \
 	cube2_binary_64.gmv \
 	cube2_binary_64.pset \
 	mesh3DIndexOne.txt \
-	twotri3.exo \
-	twoquad4.exo \
-	twotet4.exo \
-	twohex8.exo \
+	twotri3_12.2.exo \
+	twotri3_13.0.exo \
+	twoquad4_12.2.exo \
+	twoquad4_13.0.exo \
+	twotet4_12.2.exo \
+	twotet4_13.0.exo \
+	twohex8_12.2.exo \
+	twohex8_13.0.exo \
 	mesh2D_comments.txt \
 	line2.mesh \
 	line2_t10.vtk \
