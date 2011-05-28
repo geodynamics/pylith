@@ -18,7 +18,9 @@
 
 #include "Xdmf.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES int_array, string_vector
+#include "HDF5.hh" // USES HDF5
+
+#include "pylith/utils/array.hh" // USES double_array
 
 #include <string> // USES std::string
 #include <stdexcept> // USES std::runtime_error
@@ -52,14 +54,45 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   std::string cellType;
   int numVertices = 0;
   int spaceDim = 0;
-  int numTimeSteps = 0;
-  double* timeStamps = 0;
-  std::vector<HDF5::FieldMetadata> fieldsMetadata;
+  double_array timeStamps;
+  std::vector<FieldMetadata> fieldsMetadata;
 
   HDF5 h5(filenameHDF5, H5F_ACC_RDONLY);
-  h5.getTopologyMetadata(&numCells, &numCorners, &cellType);
-  h5.getGeometryMetadata(&numVertices, &spaceDim);
-  h5.getFieldsMetadata(&fieldsMetadata);
+
+  int ndims = 0;
+  hsize_t* dims = 0;
+  
+  h5.getDatasetDims(&dims, &ndims, "/topology", "cells");
+  assert(2 == ndims);
+  numCells = dims[0];
+  numCorners = dims[1];
+
+  h5.getDatasetDims(&dims, &ndims, "/geometry", "vertices");
+  assert(2 == ndims);
+  numVertices = dims[0];
+  spaceDim = dims[1];
+
+  if (1 == spaceDim && 2 == numCorners)
+    cellType = "Polyline";
+  else if (2 == spaceDim && 3 == numCorners)
+    cellType = "Triangle";
+  else if (2 == spaceDim && 4 == numCorners)
+    cellType = "Quadrilateral";
+  else if (3 == spaceDim && 4 == numCorners)
+    cellType = "Tetrahedron";
+  else if (3 == spaceDim && 8 == numCorners)
+    cellType = "Hexahedron";
+  else {
+    std::ostringstream msg;
+    msg << "Unknown cell type with " << numCorners
+	<< " vertices for dimension " << spaceDim << ".";
+    throw std::runtime_error(msg.str());
+  } // else
+
+  // :TODO: Get time stamps
+
+  // :TODO: Get fields metadata
+
   const int numFields = fieldsMetadata.size();
   for (int iField=0; iField < numFields; ++iField)
     if ("vertex_field" == fieldsMetadata[iField].domain) {
@@ -104,31 +137,43 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   _writeDomainVertices(numVertices, spaceDim);
 
   _file
-    << "<!-- ============================================================ -->\n";
+    << "    <!-- ============================================================ -->\n";
 
-  _writeTimeStamps(timeStamps, numTimeSteps);
+  if (timeStamps.size() > 0) {
+    _file << "    <Grid Name=\"TimeSeries\" GridType=\"Collection\" "
+	  << "CollectionType=\"Temporal\">\n";
 
-  _file
-    << "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
-  for (int iTimeStep=0; iTimeStep < numTimeSteps; ++iTimeStep) {
+    _writeTimeStamps(timeStamps);
+
+    const int numTimeStamps = timeStamps.size();
+    for (int iTimeStep=0; iTimeStep < numTimeStamps; ++iTimeStep) {
+      _file
+	<< "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
+      _writeGridTopology(cellType.c_str(), numCells);
+      _writeGridGeometry(spaceDim);
+      for (int iField=0; iField < numFields; ++iField) {
+	if (2 == spaceDim && 
+	    std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
+	  for (int component=0; component < spaceDim; ++component)
+	    _writeGridAttributeComponent(fieldsMetadata[iField],
+					 iTimeStep, component);
+	} else {
+	  _writeGridAttribute(fieldsMetadata[iField],
+			      iTimeStep);
+	} // if/else
+      } // for
+      _file << "      </Grid>\n";
+    } // for
+    _file << "    </Grid>\n";
+  } else {
+    // No time steps or fields (just the mesh).
+    _file << "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
     _writeGridTopology(cellType.c_str(), numCells);
     _writeGridGeometry(spaceDim);
-    for (int iField=0; iField < numFields; ++iField) {
-      if (2 == spaceDim && 
-	  std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
-	for (int component=0; component < spaceDim; ++component)
-	  _writeGridAttributeComponent(fieldsMetadata[iField],
-				       iTimeStep, component);
-      } else {
-	_writeGridAttribute(fieldsMetadata[iField],
-			    iTimeStep);
-      } // if/else
-    } // for
-    _file << "      </Grid>\n";
-  } // for
+    _file << "    </Grid>\n";
+  } // if
   
   _file
-    << "    </Grid>\n"
     << "  </Domain>\n"
     << "</Xdmf>\n";
   _file.close();
@@ -171,14 +216,22 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 // ----------------------------------------------------------------------
 // Write time stamps.
 void
-pylith::meshio::Xdmf::_writeTimeStamps(const double* timeStamps,
-				       const int numTimeSteps)
+pylith::meshio::Xdmf::_writeTimeStamps(const double_array& timeStamps)
 { // _writeTimeStamps
   assert(_file.is_open() && _file.good());
 
-  if (numTimeSteps > 0) {
-    assert(timeStamps);
-  } // if
+  const int numTimeStamps = timeStamps.size();
+  _file 
+    << "      <Time TimeType=\"List\">\n"
+    << "        <DataItem Format=\"XML\" NumberType=\"Float\" "
+    << "Dimensions=\"" << numTimeStamps << "\">\n"
+    << "        ";
+  for (int i=0; i < numTimeStamps; ++i)
+    _file << "  " << timeStamps[i];
+  _file 
+    << "\n"
+    << "        </DataItem>\n"
+    << "      </Time>\n";
 } // _writeTimeStamps
 
 // ----------------------------------------------------------------------
@@ -220,7 +273,7 @@ pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
 // ----------------------------------------------------------------------
 // Write grid attribute.
 void
-pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
+pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 					  const int iTime)
 { // _writeGridAttribute
   assert(_file.is_open() && _file.good());
@@ -268,7 +321,7 @@ pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
 // ----------------------------------------------------------------------
 // Write grid attribute.
 void
-pylith::meshio::Xdmf::_writeGridAttributeComponent(const HDF5::FieldMetadata& metadata,
+pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata,
 						   const int iTime,
 						   const int component)
 { // _writeGridAttribute

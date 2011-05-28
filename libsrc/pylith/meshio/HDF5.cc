@@ -166,26 +166,74 @@ pylith::meshio::HDF5::hasDataset(const char* name)
 // ----------------------------------------------------------------------
 // Get topology metadata.
 void
-pylith::meshio::HDF5::getTopologyMetadata(int* numCells,
-					  int* numCorners,
-					  std::string* cellType)
-{ // getTopologyMetadata
-} // getTopologyMetadata
+pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
+				     int* ndims,
+				     const char* parent,
+				     const char* name)
+{ // getDatasetDims
+  assert(dims);
+  assert(ndims);
+
+  try {
+    // Open group
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t group = H5Gopen2(_file, parent, H5P_DEFAULT);
+#else
+    hid_t group = H5Gopen(_file, parent);
+#endif
+    if (group < 0)
+      throw std::runtime_error("Could not open group.");
+    
+    // Open the dataset
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
+#else
+    hid_t dataset = H5Dopen(group, name);
+#endif
+    if (dataset < 0)
+      throw std::runtime_error("Could not open dataset.");
+    
+    hid_t dataspace = H5Dget_space(dataset);
+    if (dataspace < 0)
+      throw std::runtime_error("Could not get dataspace.");
+
+    *ndims = H5Sget_simple_extent_ndims(dataspace);
+    delete[] *dims; *dims = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    H5Sget_simple_extent_dims(dataspace, *dims, 0);
+
+    herr_t err = H5Sclose(dataspace);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataspace.");
+
+    err = H5Dclose(dataset);
+    if (err < 0)
+      throw std::runtime_error("Could not close dataset.");
+    
+    err = H5Gclose(group);
+    if (err < 0)
+      throw std::runtime_error("Could not close group.");
+
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while reading dataset '" 
+	<< parent << "/" << name << "':\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) {
+    std::ostringstream msg;
+    msg << "Unknown  occurred while reading dataset '"
+	<< parent << "/" << name << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch  
+} // getDatasetDims
 
 // ----------------------------------------------------------------------
-// Get geometry metadata.
+// Get names of datasets in group.
 void
-pylith::meshio::HDF5::getGeometryMetadata(int* numVertices,
-					  int* spaceDim)
-{ // getGeometryMetadata
-} // getGeometryMetadata
-
-// ----------------------------------------------------------------------
-// Get metadata for fields.
-void
-pylith::meshio::HDF5::getFieldsMetadata(std::vector<FieldMetadata>* metadata)
-{ // getFieldsMetadata
-} // getFieldsMetadata
+pylith::meshio::HDF5::getGroupDatasets(std::string* names,
+				       const char* group)
+{ // getGroupDatasets
+} // getGroupDatasets
 
 // ----------------------------------------------------------------------
 // Create group.
