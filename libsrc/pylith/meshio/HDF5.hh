@@ -33,19 +33,6 @@ class pylith::meshio::HDF5
 { // HDF5
   friend class TestHDF5; // Unit testing
 
-// PUBLIC STRUCTS -------------------------------------------------------
-public :
-
-  /// Metadata associated with fields.
-  struct FieldMetadata {
-    std::string name; ///< Name of field.
-    std::string vectorFieldType; ///< Type of field.
-    std::string domain; ///< Domain over which field is given.
-    int numPoints; ///< Number of points in field.
-    int fiberDim; ///< Number of values in field at each point, time.
-    int numTimeSteps; ///< Number of time steps for field.
-  }; // FieldMetadata
-
 // PUBLIC METHODS -------------------------------------------------------
 public :
 
@@ -94,29 +81,25 @@ public :
    */
   bool hasDataset(const char* name);
 
-  /** Get topology metadata.
+  /** Get dimensions of dataset.
    *
-   * @param numCells Number of cells [output]
-   * @param numCorners Number of corners [output]
-   * @param cellType Type of cell [output]
+   * @param dims Array of dimensions. [output]
+   * @param ndims Number of dimensions. [output]
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
    */
-  void getTopologyMetadata(int* numCells,
-			   int* numCorners,
-			   std::string* cellType);
+  void getDatasetDims(hsize_t** dims,
+		      int* ndims,
+		      const char* parent,
+		      const char* name);
 
-  /** Get geometry metadata.
+  /** Get names of datasets in group.
    *
-   * @param numVertices Number of vertices [output].
-   * @param spaceDim Spatial dimension [output].
+   * @param names Names of datasets.
+   * @param group Name of group.
    */
-  void getGeometryMetadata(int* numVertices,
-			   int* spaceDim);
-
-  /** Get metadata for fields.
-   *
-   * @param metadata Array of metadata for fields.
-   */
-  void getFieldsMetadata(std::vector<FieldMetadata>* metadata);
+  void getGroupDatasets(std::string* names,
+			const char* group);
 
   /** Create group.
    *

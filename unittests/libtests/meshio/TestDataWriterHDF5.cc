@@ -27,25 +27,11 @@
 #endif
 
 // ----------------------------------------------------------------------
-#if 0
-namespace pylith {
-  namespace meshio {
-    namespace _TestDataWriterHDF5 {
-#endif
-      herr_t checkObject(hid_t id,
-			 const char* name,
-			 H5O_info_t* info,
-			 void* data);
-#if 0
-    } // _TestDataWriterHDF5
-  } // meshio
-} // pylith
-#endif
 herr_t
-checkObject(hid_t id, 
-						 const char* name, 
-						 const H5O_info_t* info,
-						 void* data)
+pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id, 
+					     const char* name, 
+					     const H5O_info_t* info,
+					     void* data)
 { // checkObject
   CPPUNIT_ASSERT(info);  
   CPPUNIT_ASSERT(data);
@@ -155,7 +141,8 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 #if defined(PYLITH_HDF5_USE_API_18)
 
   // Traverse recursively file with expected values.
-  err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, checkObject, (void*) &file);
+  err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, 
+		 pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);
   CPPUNIT_ASSERT(err >= 0);
 
 #else
