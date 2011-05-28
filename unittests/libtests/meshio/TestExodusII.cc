@@ -52,7 +52,7 @@ pylith::meshio::TestExodusII::testFilename(void)
 void
 pylith::meshio::TestExodusII::testOpenClose(void)
 { // testOpenClose
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
   CPPUNIT_ASSERT(exofile._file);
 
   exofile.close();
@@ -64,7 +64,7 @@ pylith::meshio::TestExodusII::testOpenClose(void)
 void
 pylith::meshio::TestExodusII::testHasDim(void)
 { // testHasDim
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasDim("num_dim"));
   CPPUNIT_ASSERT(!exofile.hasDim("abcdefghijklm"));
@@ -75,7 +75,7 @@ pylith::meshio::TestExodusII::testHasDim(void)
 void
 pylith::meshio::TestExodusII::testHasAtt(void)
 { // testHasAtt
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasAtt("version"));
   CPPUNIT_ASSERT(!exofile.hasAtt("abcdefghijklm"));
@@ -86,7 +86,7 @@ pylith::meshio::TestExodusII::testHasAtt(void)
 void
 pylith::meshio::TestExodusII::testHasVar(void)
 { // testHasVar
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasVar("connect1"));
   CPPUNIT_ASSERT(!exofile.hasVar("abcdefghijklm"));
@@ -107,7 +107,7 @@ pylith::meshio::TestExodusII::testGetVarDouble(void)
   const int size = dims[0]*dims[1];
   double_array coords(size);
 
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_12.2.exo");
   exofile.getVar(&coords[0], dims, ndims, "coord");
 
   const double tolerance = 1.0e-06;
@@ -129,7 +129,7 @@ pylith::meshio::TestExodusII::testGetVarInt(void)
   const int size = dims[0]*dims[1];
   int_array connect(size);
 
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
   exofile.getVar(&connect[0], dims, ndims, "connect2");
 
   for (int i=0; i < size; ++i)
@@ -146,7 +146,7 @@ pylith::meshio::TestExodusII::testGetVarString(void)
   const int dim = 2;
   string_vector names(2);
 
-  ExodusII exofile("data/twotri3.exo");
+  ExodusII exofile("data/twotri3_13.0.exo");
   exofile.getVar(&names, dim, "coor_names");
 
   for (int i=0; i < dim; ++i)
