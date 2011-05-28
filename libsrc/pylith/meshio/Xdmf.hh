@@ -38,7 +38,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES double_array, std::vector
 
 #include <vector> // USES std::vector
 #include <fstream> // HASA std::ofstream
@@ -82,6 +82,22 @@ public :
 
 // PRIVATE METHODS ------------------------------------------------------
 private :
+
+  /** Get timestamps from HDF5 file.
+   *
+   * @param timeStamps Array of time stamps.
+   * @param h5 HDF5 file.
+   */
+  void _getTimeStamps(double_array* timeStamps,
+		      HDF5& h5);
+
+  /** Get field metadata from HDF5 file.
+   *
+   * @param metadata Array of field metadata.
+   * @param h5 HDF5 file.
+   */
+  void _getFieldMetadata(std::vector<FieldMetadata>* metadata,
+			 HDF5& h5);
 
   /** Write domain cell information.
    *

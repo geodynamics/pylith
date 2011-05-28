@@ -22,10 +22,9 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include <hdf5.h> // USES hid_t
+#include "pylith/utils/array.hh" // USES string_vector
 
-#include <vector> // USES std::vector
-#include <string> // USES std::string
+#include <hdf5.h> // USES hid_t
 
 // HDF5 -----------------------------------------------------------------
 /// High-level interface for HDF5 operations.
@@ -98,7 +97,7 @@ public :
    * @param names Names of datasets.
    * @param group Name of group.
    */
-  void getGroupDatasets(std::string* names,
+  void getGroupDatasets(string_vector* names,
 			const char* group);
 
   /** Create group.
