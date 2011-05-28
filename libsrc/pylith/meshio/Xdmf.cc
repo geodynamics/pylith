@@ -61,16 +61,26 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 
   int ndims = 0;
   hsize_t* dims = 0;
-  
-  h5.getDatasetDims(&dims, &ndims, "/topology", "cells");
-  assert(2 == ndims);
-  numCells = dims[0];
-  numCorners = dims[1];
 
+  // Vertices
   h5.getDatasetDims(&dims, &ndims, "/geometry", "vertices");
   assert(2 == ndims);
   numVertices = dims[0];
   spaceDim = dims[1];
+
+  if (1 == spaceDim) {
+    std::cout
+      << "WARNING: Xdmf grids not defined for 1-D domains.\n"
+      << "Skipping creation of Xdmf file associated with HDF5 file '"
+      << filenameHDF5 << "'" << std::endl;
+    return;
+  } // if
+
+  // Cells
+  h5.getDatasetDims(&dims, &ndims, "/topology", "cells");
+  assert(2 == ndims);
+  numCells = dims[0];
+  numCorners = dims[1];
 
   if (1 == spaceDim && 2 == numCorners)
     cellType = "Polyline";
@@ -89,32 +99,13 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     throw std::runtime_error(msg.str());
   } // else
 
-  // :TODO: Get time stamps
+  // Time stamps
+  _getTimeStamps(&timeStamps, h5);
 
-  // :TODO: Get fields metadata
+  // Fields metadata
+  _getFieldMetadata(&fieldsMetadata, h5);
 
-  const int numFields = fieldsMetadata.size();
-  for (int iField=0; iField < numFields; ++iField)
-    if ("vertex_field" == fieldsMetadata[iField].domain) {
-      fieldsMetadata[iField].domain = "Node";
-    } else if ("cell_field" == fieldsMetadata[iField].domain) {
-      fieldsMetadata[iField].domain = "Cell";
-    } else {
-      std::ostringstream msg;
-      msg << "Unknown field type '" << fieldsMetadata[iField].domain
-	  << "' for field '" 
-	  << fieldsMetadata[iField].domain << "'" << std::endl;
-      throw std::runtime_error(msg.str());
-    } // if/else
-
-  if (1 == spaceDim) {
-    std::cout
-      << "WARNING: Xdmf grids not defined for 1-D domains.\n"
-      << "Skipping creation of Xdmf file associated with HDF5 file '"
-      << filenameHDF5 << "'" << std::endl;
-    return;
-  } // if
-
+  // Write Xdmf file.
   _file.open(filenameXdmf);
   if (!_file.is_open() || !_file.good()) {
     std::ostringstream msg;
@@ -146,11 +137,13 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     _writeTimeStamps(timeStamps);
 
     const int numTimeStamps = timeStamps.size();
+    const int numFields = fieldsMetadata.size();
     for (int iTimeStep=0; iTimeStep < numTimeStamps; ++iTimeStep) {
       _file
-	<< "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
+	<< "      <Grid Name=\"domain\" GridType=\"Uniform\">\n";
       _writeGridTopology(cellType.c_str(), numCells);
       _writeGridGeometry(spaceDim);
+
       for (int iField=0; iField < numFields; ++iField) {
 	if (2 == spaceDim && 
 	    std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
@@ -178,6 +171,110 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     << "</Xdmf>\n";
   _file.close();
 } // write
+
+// ----------------------------------------------------------------------
+// Get timestamps from HDF5 file.
+void
+pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
+				     HDF5& h5)
+{ // _getTimeStamps
+  assert(timeStamps);
+
+  hsize_t* dims = 0;
+  int ndims = 0;
+  double* t = 0;
+
+  if (h5.hasGroup("/vertex_fields")) {
+    h5.getDatasetDims(&dims, &ndims, "/vertex_fields", "time");
+    assert(3 == ndims);
+    const int numTimeStamps = dims[0];
+    assert(1 == dims[1]);
+    assert(1 == dims[2]);
+
+    // Dataset is in chunks of 1.
+    timeStamps->resize(numTimeStamps);
+    for (int i=0; i < numTimeStamps; ++i) {
+      h5.readDatasetChunk("/vertex_fields", "time", (char**)&t,
+			  &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+      assert(3 == ndims);
+      assert(1 == dims[0]);
+      assert(1 == dims[1]);
+      assert(1 == dims[2]);
+      (*timeStamps)[i] = t[0];
+    } // for
+
+    if (h5.hasGroup("/cell_fields")) {
+      // vertify time stamps in vertex and cell fields match
+      h5.getDatasetDims(&dims, &ndims, "/cell_fields", "time");
+      assert(3 == ndims);
+      if (numTimeStamps != dims[0])
+	throw std::runtime_error("Time stamps in '/vertex_fields/time' and "
+				 "'/cell_fields/time' must be identical.");
+      assert(1 == dims[1]);
+      assert(1 == dims[2]);
+
+      // Dataset is in chunks of 1.
+      for (int i=0; i < numTimeStamps; ++i) {
+	h5.readDatasetChunk("/cell_fields", "time", (char**)&t,
+			    &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+	assert(3 == ndims);
+	assert(1 == dims[0]);
+	assert(1 == dims[1]);
+	assert(1 == dims[2]);
+	if (t[0] != (*timeStamps)[i])
+	  throw std::runtime_error("Time stamps in '/vertex_fields/time' and "
+				   "'/cell_fields/time' must be identical.");
+      } // for
+    } // if
+    
+  } // if
+  if (h5.hasGroup("/cell_fields")) {
+    h5.getDatasetDims(&dims, &ndims, "/cell_fields", "time");
+    assert(3 == ndims);
+    const int numTimeStamps = dims[0];
+    assert(1 == dims[1]);
+    assert(1 == dims[2]);
+
+    // Dataset is in chunks of 1.
+    timeStamps->resize(numTimeStamps);
+    for (int i=0; i < numTimeStamps; ++i) {
+      h5.readDatasetChunk("/cell_fields", "time", (char**)&t,
+			  &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+      assert(3 == ndims);
+      assert(1 == dims[0]);
+      assert(1 == dims[1]);
+      assert(1 == dims[2]);
+      (*timeStamps)[i] = t[0];
+    } // for
+  } // if
+} // _getTimeStamps
+
+// ----------------------------------------------------------------------
+// Get field metadata from HDF5 file.
+void
+pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
+					HDF5& h5)
+{ // _getFieldMetadata
+  assert(metadata);
+
+  string_vector fieldNames;
+
+  int fieldOffset = 0;
+  if (h5.hasGroup("/vertex_fields")) {
+    h5.getGroupDatasets(&fieldNames, "/vertex_fields");
+    metadata->resize(fieldOffset+fieldNames.size());
+
+    // ADD STUFF HERE
+
+    fieldOffset += fieldNames.size();
+  } // if
+  if (h5.hasGroup("/cell_fields")) {
+    h5.getGroupDatasets(&fieldNames, "/cell_fields");
+    metadata->resize(fieldOffset+fieldNames.size());
+
+    // ADD STUFF HERE
+  } // if
+} // _getFieldMetadata
 
 // ----------------------------------------------------------------------
 // Write domain cell information.

@@ -230,7 +230,7 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 // ----------------------------------------------------------------------
 // Get names of datasets in group.
 void
-pylith::meshio::HDF5::getGroupDatasets(std::string* names,
+pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
 				       const char* group)
 { // getGroupDatasets
 } // getGroupDatasets
