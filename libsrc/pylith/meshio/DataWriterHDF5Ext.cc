@@ -237,6 +237,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       dims[1] = numCorners;
       _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
 				    dims, ndims, H5T_IEEE_F64BE);
+      const int cellDim = mesh.dimension();
+      _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim,
+			  H5T_NATIVE_INT);
     } // if
     
   } catch (const std::exception& err) {
@@ -361,6 +364,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	_h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
 				      dims, ndims, H5T_IEEE_F64BE);
+	const int vectorFieldType = field.vectorFieldType();
+	std::string fullName = std::string("/vertex_fields/") + field.label();
+	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
+			    (void*)&vectorFieldType, H5T_NATIVE_INT);
+
       } else {
 	// Update number of time steps in external dataset info in HDF5 file.
 	const int totalNumTimeSteps = 

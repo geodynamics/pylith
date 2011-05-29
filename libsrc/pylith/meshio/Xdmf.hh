@@ -95,9 +95,11 @@ private :
    *
    * @param metadata Array of field metadata.
    * @param h5 HDF5 file.
+   * @param spaceDim Spatial dimension.
    */
   void _getFieldMetadata(std::vector<FieldMetadata>* metadata,
-			 HDF5& h5);
+			 HDF5& h5,
+			 const int spaceDim);
 
   /** Write domain cell information.
    *

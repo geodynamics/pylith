@@ -95,10 +95,10 @@ public :
   /** Get names of datasets in group.
    *
    * @param names Names of datasets.
-   * @param group Name of group.
+   * @param group Name of parent.
    */
   void getGroupDatasets(string_vector* names,
-			const char* group);
+			const char* parent);
 
   /** Create group.
    *
@@ -116,6 +116,22 @@ public :
    * @param datatype Datatype of scalar.
    */
   void writeAttribute(const char* parent,
+		      const char* name,
+		      const void* value,
+		      hid_t datatype);
+
+  /** Set scalar attribute (used with external handle to HDF5 file,
+   * such as PetscHDF5Viewer).
+   *
+   * @param h5 HDF5 file.
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
+   * @param value Attribute value.
+   * @param datatype Datatype of scalar.
+   */
+  static
+  void writeAttribute(hid_t h5,
+		      const char* parent,
 		      const char* name,
 		      const void* value,
 		      hid_t datatype);
@@ -139,6 +155,20 @@ public :
    * @param value String value
    */
   void writeAttribute(const char* parent,
+		      const char* name,
+		      const char* value);
+
+  /** Set string attribute (used with external handle to HDF5 file,
+   * such as PetscHDF5Viewer).
+   *
+   * @param h5 HDF5 file.
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
+   * @param value String value
+   */
+  static
+  void writeAttribute(hid_t h5,
+		      const char* parent,
 		      const char* name,
 		      const char* value);
 

@@ -81,21 +81,23 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   assert(2 == ndims);
   numCells = dims[0];
   numCorners = dims[1];
-
-  if (1 == spaceDim && 2 == numCorners)
+  int cellDim = 0;
+  h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, 
+		  H5T_NATIVE_INT);
+  if (1 == cellDim && 2 == numCorners)
     cellType = "Polyline";
-  else if (2 == spaceDim && 3 == numCorners)
+  else if (2 == cellDim && 3 == numCorners)
     cellType = "Triangle";
-  else if (2 == spaceDim && 4 == numCorners)
+  else if (2 == cellDim && 4 == numCorners)
     cellType = "Quadrilateral";
-  else if (3 == spaceDim && 4 == numCorners)
+  else if (3 == cellDim && 4 == numCorners)
     cellType = "Tetrahedron";
-  else if (3 == spaceDim && 8 == numCorners)
+  else if (3 == cellDim && 8 == numCorners)
     cellType = "Hexahedron";
   else {
     std::ostringstream msg;
     msg << "Unknown cell type with " << numCorners
-	<< " vertices for dimension " << spaceDim << ".";
+	<< " vertices and dimension " << cellDim << ".";
     throw std::runtime_error(msg.str());
   } // else
 
@@ -103,7 +105,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   _getTimeStamps(&timeStamps, h5);
 
   // Fields metadata
-  _getFieldMetadata(&fieldsMetadata, h5);
+  _getFieldMetadata(&fieldsMetadata, h5, spaceDim);
 
   // Write Xdmf file.
   _file.open(filenameXdmf);
@@ -146,7 +148,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 
       for (int iField=0; iField < numFields; ++iField) {
 	if (2 == spaceDim && 
-	    std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
+	    std::string("Vector") == fieldsMetadata[iField].vectorFieldType) {
 	  for (int component=0; component < spaceDim; ++component)
 	    _writeGridAttributeComponent(fieldsMetadata[iField],
 					 iTimeStep, component);
@@ -253,27 +255,77 @@ pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
 // Get field metadata from HDF5 file.
 void
 pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
-					HDF5& h5)
+					HDF5& h5,
+					const int spaceDim)
 { // _getFieldMetadata
   assert(metadata);
 
   string_vector fieldNames;
+  hsize_t* dims = 0;
+  int ndims = 0;
 
   int fieldOffset = 0;
   if (h5.hasGroup("/vertex_fields")) {
-    h5.getGroupDatasets(&fieldNames, "/vertex_fields");
-    metadata->resize(fieldOffset+fieldNames.size());
+    const char* parent = "/vertex_fields";
+    h5.getGroupDatasets(&fieldNames, parent);
+    const int numFields = fieldNames.size();
 
-    // ADD STUFF HERE
+    metadata->resize(fieldOffset+numFields);
+    for (int i=0; i < numFields; ++i) {
+      h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
+      (*metadata)[i].name = fieldNames[i];
+      (*metadata)[i].domain = "Node";
+      if (2 == ndims) {
+	(*metadata)[i].numTimeSteps = 1;
+	(*metadata)[i].numPoints = dims[0];
+	(*metadata)[i].fiberDim = dims[1];
+      } else {
+	assert(3 == ndims);
+	(*metadata)[i].numTimeSteps = dims[0];
+	(*metadata)[i].numPoints = dims[1];
+	(*metadata)[i].fiberDim = dims[2];
+      } // if/else
+    } // for
 
     fieldOffset += fieldNames.size();
   } // if
   if (h5.hasGroup("/cell_fields")) {
-    h5.getGroupDatasets(&fieldNames, "/cell_fields");
-    metadata->resize(fieldOffset+fieldNames.size());
+    const char* parent = "/cell_fields";
+    h5.getGroupDatasets(&fieldNames, parent);
+    const int numFields = fieldNames.size();
 
-    // ADD STUFF HERE
+    metadata->resize(fieldOffset+numFields);
+    for (int i=0; i < numFields; ++i) {
+      h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
+      (*metadata)[i].name = fieldNames[i];
+      (*metadata)[i].domain = "Cell";
+      if (2 == ndims) {
+	(*metadata)[i].numTimeSteps = 1;
+	(*metadata)[i].numPoints = dims[0];
+	(*metadata)[i].fiberDim = dims[1];
+      } else {
+	assert(3 == ndims);
+	(*metadata)[i].numTimeSteps = dims[0];
+	(*metadata)[i].numPoints = dims[1];
+	(*metadata)[i].fiberDim = dims[2];
+      } // if/else
+    } // for
+
+    fieldOffset += fieldNames.size();
   } // if
+
+  const int numFields = metadata->size();
+  for (int i=0; i < numFields; ++i) {
+    const int fiberDim = (*metadata)[i].fiberDim;
+    if (1 == fiberDim)
+      (*metadata)[i].vectorFieldType = "Scalar";
+    else if (fiberDim == spaceDim)
+      (*metadata)[i].vectorFieldType = "Vector";
+    else if (6 == fiberDim)
+      (*metadata)[i].vectorFieldType = "Tensor";
+    else
+      (*metadata)[i].vectorFieldType = "Matrix";
+  } // for
 } // _getFieldMetadata
 
 // ----------------------------------------------------------------------
@@ -376,7 +428,7 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
-  if (std::string("Vertex") == metadata.domain) {
+  if (std::string("Node") == metadata.domain) {
     h5FullName = std::string("/vertex_fields/") + metadata.name;
   } else if (std::string("Cell") == metadata.domain) {
     h5FullName = std::string("/cell_fields/") + metadata.name;
@@ -425,7 +477,7 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
-  if (std::string("Vertex") == metadata.domain) {
+  if (std::string("Node") == metadata.domain) {
     h5FullName = std::string("/vertex_fields/") + metadata.name;
   } else if (std::string("Cell") == metadata.domain) {
     h5FullName = std::string("/cell_fields/") + metadata.name;
@@ -439,13 +491,13 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
   std::string componentName = "unknown";
   switch (component) {
   case 0:
-    componentName = std::string("x-") + std::string(metadata.name);
+    componentName = std::string("x_") + std::string(metadata.name);
     break;
   case 1:
-    componentName = std::string("y-") + std::string(metadata.name);
+    componentName = std::string("y_") + std::string(metadata.name);
     break;
   case 2:
-    componentName = std::string("z-") + std::string(metadata.name);
+    componentName = std::string("z_") + std::string(metadata.name);
     break;
   default:
     { // default
