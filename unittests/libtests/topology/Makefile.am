@@ -30,6 +30,7 @@ testtopology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	TestSubMesh.cc \
+	TestFieldBase.cc \
 	TestFieldMesh.cc \
 	TestFieldSubMesh.cc \
 	TestFieldsMesh.cc \
@@ -45,6 +46,7 @@ noinst_HEADERS = \
 	TestMesh.hh \
 	TestSubMesh.hh \
 	TestMeshOps.hh \
+	TestFieldBase.hh \
 	TestFieldMesh.hh \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \

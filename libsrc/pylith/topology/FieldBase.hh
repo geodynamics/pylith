@@ -74,6 +74,24 @@ public :
   FieldBase(void); ///< Default constructor.
   ~FieldBase(void); ///< Default destructor.
 
+  /** Get string associated with vector field type.
+   *
+   * @param value Vector field type.
+   * @returns String associated with vector field type.
+   */
+  static
+  const char*
+  vectorFieldString(VectorFieldEnum value);
+
+  /** Get string associated with vector field type.
+   *
+   * @param value String associated with vector field type.
+   * @returns Vector field type.
+   */
+  static
+  VectorFieldEnum
+  parseVectorFieldString(const char* value);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
