@@ -90,6 +90,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_dbProperties[] =
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_dbStateVars[] = {
+  1.50000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -97,8 +98,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_dbStateVars[] = 
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  4.50000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -120,6 +120,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_properties[] = {
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVars[] = {
+  1.50000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -127,8 +128,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  4.50000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -150,6 +150,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_propertiesNondim
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsNondim[] = {
+  6.66666667e-07,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -157,8 +158,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsNondim[
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
-  0.00000000e+00,
-  0.00000000e+00,
+  2.00000000e-06,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -231,7 +231,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_initialStrain[] 
 };
 
 const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsUpdated[] = {
-  0.00000000e+00,
+  1.50000000e+04,
   1.10000000e-04,
   1.20000000e-04,
   1.40000000e-04,
@@ -239,7 +239,7 @@ const double pylith::materials::MaxwellPlaneStrainElasticData::_stateVarsUpdated
   4.33333333e-05,
  -7.66666667e-05,
   1.40000000e-04,
-  0.00000000e+00,
+  4.50000000e+04,
   4.10000000e-04,
   4.20000000e-04,
   4.40000000e-04,

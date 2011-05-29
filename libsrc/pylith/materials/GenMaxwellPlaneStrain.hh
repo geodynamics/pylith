@@ -16,23 +16,21 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/GenMaxwellIsotropic3D.hh
+/** @file libsrc/materials/GenMaxwellPlaneStrain.hh
  *
- * @brief C++ GenMaxwellIsotropic3D object
+ * @brief 2-D, isotropic, generalized linear Maxwell viscoelastic material for
+ * plane strain.  
  */
 
-// :TODO: Rewrite as template over the number of Maxwell models?
-// We could instatiate for 2 and 3 models and provide example for how to
-// instantiate over other numbers of Maxwell models.
-
-#if !defined(pylith_materials_genmaxwellisotropic3d_hh)
-#define pylith_materials_genmaxwellisotropic3d_hh
+#if !defined(pylith_materials_genmaxwellplanestrain_hh)
+#define pylith_materials_genmaxwellplanestrain_hh
 
 // Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-// GenMaxwellIsotropic3D ------------------------------------------------
-/** @brief 3-D, isotropic, generalized linear Maxwell viscoelastic material.
+// GenMaxwellPlaneStrain ---------------------------------------------------
+/** @brief 2-D, isotropic, generalized linear Maxwell viscoelastic material for
+ * plane strain.
  *
  * This consists of several Maxwell models in parallel. At present,
  * the number of models is fixed at 3, but this will be changed in the
@@ -50,18 +48,18 @@
  * (viscosity/mu), and the shear ratio is also stored for each Maxwell
  * model.
  */
-class pylith::materials::GenMaxwellIsotropic3D : public ElasticMaterial
-{ // class GenMaxwellIsotropic3D
-  friend class TestGenMaxwellIsotropic3D; // unit testing
+class pylith::materials::GenMaxwellPlaneStrain : public ElasticMaterial
+{ // class GenMaxwellPlaneStrain
+  friend class TestGenMaxwellPlaneStrain; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  GenMaxwellIsotropic3D(void);
+  GenMaxwellPlaneStrain(void);
 
   /// Destructor
-  ~GenMaxwellIsotropic3D(void);
+  ~GenMaxwellPlaneStrain(void);
 
   /** Set current time step.
    *
@@ -113,16 +111,28 @@ protected :
   void _dbToStateVars(double* const stateValues,
 		      const double_array& dbValues);
 
-  // Note: We do not need to dimensionalize or nondimensionalize state
-  // variables because there are strains, which are dimensionless.
+  /** Nondimensionalize state variables..
+   *
+   * @param values Array of state variables.
+   * @param nvalues Number of values.
+   */
+  void _nondimStateVars(double* const values,
+                        const int nvalues) const;
 
+  /** Dimensionalize state variables.
+   *
+   * @param values Array of state variables.
+   * @param nvalues Number of values.
+   */
+  void _dimStateVars(double* const values,
+                     const int nvalues) const;
 
   /** Compute density from properties.
    *
    * @param density Array for density.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
-   * @param stateVars State variables at location.
+   * @param stateVars Number of state variables.
    * @param numStateVars Number of state variables.
    */
   void _calcDensity(double* const density,
@@ -144,9 +154,9 @@ protected :
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state variables.
    */
@@ -174,9 +184,9 @@ protected :
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConsts(double* const elasticConsts,
@@ -200,9 +210,9 @@ protected :
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _updateStateVars(double* const stateVars,
@@ -234,7 +244,7 @@ protected :
 private :
 
   /// Member prototype for _calcStress()
-  typedef void (pylith::materials::GenMaxwellIsotropic3D::*calcStress_fn_type)
+  typedef void (pylith::materials::GenMaxwellPlaneStrain::*calcStress_fn_type)
     (double* const,
      const int,
      const double*,
@@ -250,7 +260,7 @@ private :
      const bool);
 
   /// Member prototype for _calcElasticConsts()
-  typedef void (pylith::materials::GenMaxwellIsotropic3D::*calcElasticConsts_fn_type)
+  typedef void (pylith::materials::GenMaxwellPlaneStrain::*calcElasticConsts_fn_type)
     (double* const,
      const int,
      const double*,
@@ -265,7 +275,7 @@ private :
      const int);
 
   /// Member prototype for _updateStateVars()
-  typedef void (pylith::materials::GenMaxwellIsotropic3D::*updateStateVars_fn_type)
+  typedef void (pylith::materials::GenMaxwellPlaneStrain::*updateStateVars_fn_type)
     (double* const,
      const int,
      const double*,
@@ -290,9 +300,9 @@ private :
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
@@ -310,7 +320,7 @@ private :
 			  const int initialStrainSize,
 			  const bool computeStateVars);
 
-  /** Compute stress tensor from properties as an viscoelastic material.
+  /** Compute stress tensor from properties as a viscoelastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
@@ -320,9 +330,9 @@ private :
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at locations.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
@@ -347,13 +357,13 @@ private :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
-   * @param stateVars State variables at locations.
+   * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConstsElastic(double* const elasticConsts,
@@ -364,10 +374,10 @@ private :
 				 const int numStateVars,
 				 const double* totalStrain,
 				 const int strainSize,
-				 const double* initialStress,
-				 const int initialStressSize,
-				 const double* initialStrain,
-				 const int initialStrainSize);
+			         const double* initialStress,
+			         const int initialStressSize,
+			         const double* initialStrain,
+			         const int initialStrainSize);
 
   /** Compute derivatives of elasticity matrix from properties as a
    * viscoelastic material.
@@ -376,13 +386,13 @@ private :
    * @param numElasticConsts Number of elastic constants.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
-   * @param stateVars State variables at locations.
+   * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _calcElasticConstsViscoelastic(double* const elasticConsts,
@@ -393,22 +403,22 @@ private :
 				      const int numStateVars,
 				      const double* totalStrain,
 				      const int strainSize,
-				      const double* initialStress,
-				      const int initialStressSize,
-				      const double* initialStrain,
-				      const int initialStrainSize);
+			              const double* initialStress,
+			              const int initialStressSize,
+			              const double* initialStrain,
+			              const int initialStrainSize);
 
   /** Update state variables after solve as an elastic material.
    *
-   * @param stateVars State variables at locations.
+   * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialStress Initial stress values.
+   * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _updateStateVarsElastic(double* const stateVars,
@@ -432,7 +442,7 @@ private :
    * @param strainSize Size of strain tensor.
    * @param initialStress Initial stress tensor at location.
    * @param initialStressSize Size of initial stress array.
-   * @param initialStrain Initial strain values.
+   * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
   void _updateStateVarsViscoelastic(double* const stateVars,
@@ -500,10 +510,12 @@ private :
   static const int db_shearRatio;
   static const int db_viscosity;
 
+  static const int s_stressZZInitial;
   static const int s_totalStrain;
   static const int s_viscousStrain1;
   static const int s_viscousStrain2;
   static const int s_viscousStrain3;
+  static const int db_stressZZInitial;
   static const int db_totalStrain;
   static const int db_viscousStrain1;
   static const int db_viscousStrain2;
@@ -513,16 +525,16 @@ private :
 private :
 
   /// Not implemented
-  GenMaxwellIsotropic3D(const GenMaxwellIsotropic3D&);
+  GenMaxwellPlaneStrain(const GenMaxwellPlaneStrain&);
 
   /// Not implemented
-  const GenMaxwellIsotropic3D& operator=(const GenMaxwellIsotropic3D&);
+  const GenMaxwellPlaneStrain& operator=(const GenMaxwellPlaneStrain&);
 
-}; // class GenMaxwellIsotropic3D
+}; // class GenMaxwellPlaneStrain
 
-#include "GenMaxwellIsotropic3D.icc" // inline methods
+#include "GenMaxwellPlaneStrain.icc" // inline methods
 
-#endif // pylith_materials_genmaxwellisotropic3d_hh
+#endif // pylith_materials_genmaxwellplanestrain_hh
 
 
 // End of file 

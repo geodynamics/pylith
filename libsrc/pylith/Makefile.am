@@ -115,6 +115,7 @@ libpylith_la_SOURCES = \
 	materials/ElasticIsotropic3D.cc \
 	materials/ViscoelasticMaxwell.cc \
 	materials/GenMaxwellIsotropic3D.cc \
+	materials/GenMaxwellPlaneStrain.cc \
 	materials/GenMaxwellQpQsIsotropic3D.cc \
 	materials/MaxwellIsotropic3D.cc \
 	materials/MaxwellPlaneStrain.cc \
