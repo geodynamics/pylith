@@ -18,6 +18,9 @@
 
 #include <portinfo>
 
+#include "HDF5.hh" // USES HDF5
+#include "Xdmf.hh" // USES Xdmf
+
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -195,6 +198,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
+
+    if (!rank) {
+      hid_t h5 = -1;
+      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+      assert(h5 >= 0);
+      const int cellDim = mesh.dimension();
+      HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim,
+			   H5T_NATIVE_INT);
+    } // if
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file "
@@ -206,7 +218,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 	<< _filename << ".\n";
     throw std::runtime_error(msg.str());
   } // try/catch
-} // openTimeStep
+} // open
 
 // ----------------------------------------------------------------------
 // Close output files.
@@ -221,12 +233,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   _timesteps.clear();
   _tstampIndex = 0;
 
-#if 0
   Xdmf metafile;
   const int indexExt = _filename.find(".h5");
   std::string xdmfFilename = std::string(_filename, 0, indexExt) + ".xmf";
-  metadata.write(xdmfFilename, _hdfFilename());
-#endif
+  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
 } // close
 
 // ----------------------------------------------------------------------
@@ -278,8 +288,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
     // Add time stamp to "/vertex_fields/time" if necessary.
+    const int rank = sieveMesh->commRank();
     if (_tstampIndex == istep)
-      _writeTimeStamp(t, "/vertex_fields", sieveMesh->commRank());
+      _writeTimeStamp(t, "/vertex_fields", rank);
 
 #if 0 // debugging
     field.view("writeVertexField");
@@ -297,6 +308,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
 
+    if (!rank && 0 == istep) {
+      hid_t h5 = -1;
+      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+      assert(h5 >= 0);
+      const int vectorFieldType = field.vectorFieldType();
+      std::string fullName = std::string("/vertex_fields/") + field.label();
+      HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
+			   (void*)&vectorFieldType, H5T_NATIVE_INT);
+    } // if
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 

@@ -173,6 +173,7 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 { // getDatasetDims
   assert(dims);
   assert(ndims);
+  assert(isOpen());
 
   try {
     // Open group
@@ -231,8 +232,54 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 // Get names of datasets in group.
 void
 pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
-				       const char* group)
+				       const char* parent)
 { // getGroupDatasets
+  assert(names);
+  assert(isOpen());
+
+  try {
+    // Open group
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t group = H5Gopen2(_file, parent, H5P_DEFAULT);
+#else
+    hid_t group = H5Gopen(_file, parent);
+#endif
+    if (group < 0)
+      throw std::runtime_error("Could not open group.");
+    
+    H5G_info_t ginfo;
+    herr_t err = H5Gget_info(group, &ginfo);
+    if (err < 0)
+      throw std::runtime_error("Could not get group info.");
+    const int gsize = ginfo.nlinks;
+    
+    names->resize(gsize-1);
+    for (int i=0, index=0; i < gsize; ++i) {
+      char buffer[256];
+      ssize_t namelen = 
+	H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE,
+			   i, buffer, 256, H5P_DEFAULT);
+      if (0 == strcmp("time", buffer))
+	continue;
+      (*names)[index++] = buffer;
+    } // for
+    
+    err = H5Gclose(group);
+    if (err < 0)
+      throw std::runtime_error("Could not close group.");
+    
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while getting names of datasets for group '" 
+	<< parent << "':\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) {
+    std::ostringstream msg;
+    msg << "Unknown occurred while getting names of datasets for group '"
+	<< parent << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch  
 } // getGroupDatasets
 
 // ----------------------------------------------------------------------
@@ -282,6 +329,65 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     hid_t dataset = H5Dopen2(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
+#endif
+    if (dataset < 0)
+      throw std::runtime_error("Could not open parent dataset for");
+
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t attribute = H5Acreate2(dataset, name,
+				datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+#else
+    hid_t attribute = H5Acreate(dataset, name,
+				datatype, dataspace, H5P_DEFAULT);
+#endif
+    if (attribute < 0)
+      throw std::runtime_error("Could not create");
+
+    hid_t err = H5Awrite(attribute, datatype, value);
+    if (err < 0)
+      throw std::runtime_error("Could not write");
+
+    err = H5Aclose(attribute);
+    if (err < 0) 
+      throw std::runtime_error("Could not close");
+
+    err = H5Dclose(dataset);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataset for");
+
+    err = H5Sclose(dataspace);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataspace for");
+
+  } catch (std::exception& err) {
+    std::ostringstream msg;
+    msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // writeAttribute
+
+// ----------------------------------------------------------------------
+// Write scalar attribute (external HDF5 handle).
+void
+pylith::meshio::HDF5::writeAttribute(hid_t h5,
+				     const char* parent,
+				     const char* name,
+				     const void* value,
+				     hid_t datatype)
+{ // writeAttribute
+  assert(parent);
+  assert(name);
+  assert(value);
+
+  try {
+    hid_t dataspace = H5Screate(H5S_SCALAR);
+    if (dataspace < 0)
+      throw std::runtime_error("Could not create dataspace for");
+
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t dataset = H5Dopen2(h5, parent, H5P_DEFAULT);
+#else
+    hid_t dataset = H5Dopen(h5, parent);
 #endif
     if (dataset < 0)
       throw std::runtime_error("Could not open parent dataset for");
@@ -394,6 +500,76 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     hid_t dataset = H5Dopen2(_file, parent, H5P_DEFAULT);
 #else
     hid_t dataset = H5Dopen(_file, parent);
+#endif
+    if (dataset < 0) 
+      throw std::runtime_error("Could not open parent dataset for");
+
+    hid_t datatype = H5Tcopy(H5T_C_S1);
+    if (datatype < 0) 
+      throw std::runtime_error("Could not create datatype for");
+
+    herr_t err = H5Tset_size(datatype, strlen(value)+1);
+    if (err < 0) 
+      throw std::runtime_error("Could not set size of");
+
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t attribute = H5Acreate2(dataset, name,
+				datatype, dataspace, H5P_DEFAULT, H5P_DEFAULT);
+#else
+    hid_t attribute = H5Acreate(dataset, name,
+				datatype, dataspace, H5P_DEFAULT);
+#endif
+    if (attribute < 0) 
+      throw std::runtime_error("Could not create");
+
+    err = H5Awrite(attribute, datatype, value);
+    if (err < 0) 
+      throw std::runtime_error("Could not write");
+
+    err = H5Aclose(attribute);
+    if (err < 0) 
+      throw std::runtime_error("Could not close");
+
+    err = H5Tclose(datatype);
+    if (err < 0) 
+      throw std::runtime_error("Could not close datatype for");
+
+    err = H5Dclose(dataset);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataset for");
+
+    err = H5Sclose(dataspace);
+    if (err < 0) 
+      throw std::runtime_error("Could not close dataspace for");
+
+  } catch (std::exception& err) {
+    std::ostringstream msg;
+    msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // writeAttribute
+
+// ----------------------------------------------------------------------
+// Write string attribute (external handle to HDF5 file).
+void
+pylith::meshio::HDF5::writeAttribute(hid_t h5,
+				     const char* parent,
+				     const char* name,
+				     const char* value)
+{ // writeAttribute
+  assert(parent);
+  assert(name);
+  assert(value);
+
+  try {
+    hid_t dataspace = H5Screate(H5S_SCALAR);
+    if (dataspace < 0) 
+      throw std::runtime_error("Could not create dataspace for");
+
+#if defined(PYLITH_HDF5_USE_API_18)
+    hid_t dataset = H5Dopen2(h5, parent, H5P_DEFAULT);
+#else
+    hid_t dataset = H5Dopen(h5, parent);
 #endif
     if (dataset < 0) 
       throw std::runtime_error("Could not open parent dataset for");
