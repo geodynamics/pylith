@@ -312,10 +312,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       hid_t h5 = -1;
       err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
       assert(h5 >= 0);
-      const int vectorFieldType = field.vectorFieldType();
       std::string fullName = std::string("/vertex_fields/") + field.label();
       HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type",
-			   (void*)&vectorFieldType, H5T_NATIVE_INT);
+			   topology::FieldBase::vectorFieldString(field.vectorFieldType()));
     } // if
   } catch (const std::exception& err) {
     std::ostringstream msg;
