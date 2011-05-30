@@ -74,7 +74,7 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
+
   /** Set filename for HDF5 file.
    *
    * @param filename Name of HDF5 file.

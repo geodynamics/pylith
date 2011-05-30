@@ -119,13 +119,17 @@ dist_noinst_DATA = \
 	line2_vertex.h5 \
 	tri3.h5 \
 	tri3_cell.h5 \
+	tri3_cell.xmf \
 	tri3_vertex.h5 \
+	tri3_vertex.xmf \
 	quad4.h5 \
 	quad4_cell.h5 \
 	quad4_vertex.h5 \
 	tet4.h5 \
 	tet4_cell.h5 \
+	tet4_cell.xmf \
 	tet4_vertex.h5 \
+	tet4_vertex.xmf \
 	hex8.h5 \
 	hex8_cell.h5 \
 	hex8_vertex.h5 \
