@@ -706,7 +706,13 @@ pylith::meshio::HDF5::createDataset(const char* parent,
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
-    hid_t dataspace = H5Screate_simple(ndims, dimsChunk, dims);
+    hsize_t *maxDims = (ndims > 0) ? new hsize_t[ndims] : 0;
+    if (ndims > 0)
+      maxDims[0] = H5S_UNLIMITED;
+    for (int i=1; i < ndims; ++i)
+      maxDims[i] = dims[i];
+    hid_t dataspace = H5Screate_simple(ndims, dims, maxDims);
+    delete[] maxDims; maxDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
       
@@ -1011,10 +1017,12 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 
     // Create the dataspace
     hsize_t* maxDims = (ndims > 0) ? new hsize_t[ndims] : 0;
-    maxDims[0] = H5S_UNLIMITED;
+    if (ndims > 0)
+      maxDims[0] = H5S_UNLIMITED;
     for (int i=1; i < ndims; ++i)
       maxDims[i] = dims[i];
     hid_t dataspace = H5Screate_simple(ndims, dims, maxDims);
+    delete[] maxDims; maxDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
       
