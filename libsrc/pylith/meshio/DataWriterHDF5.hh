@@ -135,11 +135,9 @@ private :
   /** Write time stamp to file.
    *
    * @param t Time in seconds.
-   * @param group Name of group ['/vertex_fields' or '/cell_fields']
    * @param rank Processor rank in MPI communicator.
    */
   void _writeTimeStamp(const double t,
-		       const char* group,
 		       const int rank);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
