@@ -253,14 +253,12 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
       throw std::runtime_error("Could not get group info.");
     const int gsize = ginfo.nlinks;
     
-    names->resize(gsize-1);
+    names->resize(gsize);
     for (int i=0, index=0; i < gsize; ++i) {
       char buffer[256];
       ssize_t namelen = 
 	H5Lget_name_by_idx(group, ".", H5_INDEX_NAME, H5_ITER_NATIVE,
 			   i, buffer, 256, H5P_DEFAULT);
-      if (0 == strcmp("time", buffer))
-	continue;
       (*names)[index++] = buffer;
     } // for
     
@@ -878,7 +876,7 @@ void
 pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 				       const char* name,
 				       char** const data,
-				       hsize_t** const dims,
+				       hsize_t** const dimsChunk,
 				       int* const ndims,
 				       const int chunk,
 				       hid_t datatype)
@@ -886,7 +884,7 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
   assert(parent);
   assert(name);
   assert(data);
-  assert(dims);
+  assert(dimsChunk);
   assert(_file > 0);
 
   try {
@@ -914,30 +912,30 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 
     *ndims = H5Sget_simple_extent_ndims(dataspace);
     assert(*ndims > 0);
-    delete[] *dims; *dims = (*ndims > 0) ? new hsize_t[*ndims] : 0;
-    H5Sget_simple_extent_dims(dataspace, *dims, 0);
+    hsize_t* dims = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    H5Sget_simple_extent_dims(dataspace, dims, 0);
 
     // Select hyperslab in file
-    hsize_t* dimsChunk = (*ndims > 0) ? new hsize_t[*ndims] : 0;
+    delete[] *dimsChunk; *dimsChunk = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     hsize_t* count = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     hsize_t* stride = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     hsize_t* offset = (*ndims > 0) ? new hsize_t[*ndims] : 0;
     
     for (int i=0; i < *ndims; ++i) {
-      dimsChunk[i] = (*dims)[i];
+      (*dimsChunk)[i] = dims[i];
       count[i] = 1;
       stride[i] = 1;
       offset[i] = 0;
     } // for
-    dimsChunk[0] = 1;
+    (*dimsChunk)[0] = 1;
     offset[0] = chunk;
 
-    hid_t chunkspace = H5Screate_simple(*ndims, dimsChunk, 0);
+    hid_t chunkspace = H5Screate_simple(*ndims, *dimsChunk, 0);
     if (chunkspace < 0)
       throw std::runtime_error("Could not create chunk dataspace.");
 
     herr_t err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
-				     offset, stride, count, dimsChunk);
+				     offset, stride, count, *dimsChunk);
     delete[] count; count = 0;
     delete[] stride; stride = 0;
     delete[] offset; offset = 0;
@@ -946,9 +944,9 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 
     int sizeBytes = H5Tget_size(datatype);
     for (int i=0; i < *ndims; ++i)
-      sizeBytes *= (dimsChunk)[i];
+      sizeBytes *= (*dimsChunk)[i];
     delete[] *data; *data = (sizeBytes > 0) ? new char[sizeBytes] : 0;
-    delete[] dimsChunk; dimsChunk = 0;
+    delete[] dims; dims = 0;
 
     err = H5Dread(dataset, datatype, chunkspace, dataspace, 
 		  H5P_DEFAULT, (void*)*data);

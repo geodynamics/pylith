@@ -139,10 +139,8 @@ private :
   /** Write time stamp to file.
    *
    * @param t Time in seconds.
-   * @param group Name of group ['/vertex_fields' or '/cell_fields']
    */
-  void _writeTimeStamp(const double t,
-		       const char* group);  
+  void _writeTimeStamp(const double t);  
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

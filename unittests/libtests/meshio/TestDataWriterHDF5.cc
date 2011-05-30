@@ -137,7 +137,6 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 
   hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
   CPPUNIT_ASSERT(file >= 0);
-
 #if defined(PYLITH_HDF5_USE_API_18)
 
   // Traverse recursively file with expected values.
@@ -147,7 +146,6 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 
 #else
 #endif
-
   err = H5Fclose(fileE);
   CPPUNIT_ASSERT(err >= 0);
 

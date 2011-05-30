@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include "HDF5.hh" // USES HDF5
+#include "Xdmf.hh" // USES Xdmf
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -266,6 +267,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
   } // if
   _tstampIndex = 0;
   deallocate();
+
+  Xdmf metafile;
+  const std::string& hdf5filename = _hdf5Filename();
+  const int indexExt = hdf5filename.find(".h5");
+  std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
+  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
 } // close
 
 // ----------------------------------------------------------------------
@@ -383,8 +390,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	_h5->extendDatasetRawExternal("/vertex_fields", field.label(),
 				      dims, ndims);
       } // if/else
+      // Update time stamp in "/time, if necessary.
       if (_tstampIndex+1 == _datasets[field.label()].numTimeSteps)
-	_writeTimeStamp(t, "/vertex_fields");
+	_writeTimeStamp(t);
     } // if
 
   } catch (const std::exception& err) {
@@ -501,6 +509,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	_h5->createDatasetRawExternal("/cell_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
 				      dims, ndims, H5T_IEEE_F64BE);
+	std::string fullName = std::string("/cell_fields/") + field.label();
+	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
+			    topology::FieldBase::vectorFieldString(field.vectorFieldType()));
       } else {
 	// Update number of time steps in external dataset info in HDF5 file.
 	const int totalNumTimeSteps = 
@@ -516,9 +527,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	_h5->extendDatasetRawExternal("/cell_fields", field.label(),
 				      dims, ndims);
       } // if/else
-      // Update time stamp in "/cell_fields/time, if necessary.
+      // Update time stamp in "/time, if necessary.
       if (_tstampIndex+1 == _datasets[field.label()].numTimeSteps)
-	_writeTimeStamp(t, "/cell_fields");
+	_writeTimeStamp(t);
     } // if
 
   } catch (const std::exception& err) {
@@ -571,13 +582,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_datasetFilename(const 
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
-						  const double t,
-						  const char* group)
+						  const double t)
 { // _writeTimeStamp
   assert(_h5);
-
-  assert(_h5->hasGroup(group));
-  std::string datasetFullName = std::string(group) + "/time";
 
   const int ndims = 3;
 
@@ -587,14 +594,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dimsChunk[1] = 1;
   dimsChunk[2] = 1;
 
-  if (!_h5->hasDataset(datasetFullName.c_str())) {
+  if (!_h5->hasDataset("/time")) {
     // Create dataset
     // Dataset has unknown size.
     hsize_t dims[3];
     dims[0] = H5S_UNLIMITED;
     dims[1] = 1;
     dims[2] = 1;
-    _h5->createDataset(group, "time", dims, dimsChunk, ndims, 
+    _h5->createDataset("/", "time", dims, dimsChunk, ndims, 
 		       H5T_NATIVE_DOUBLE);
   } // if
   
@@ -604,7 +611,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dims[0] = _tstampIndex+1;
   dims[1] = 1;
   dims[2] = 1;
-  _h5->writeDatasetChunk(group, "time", &t, dims, dimsChunk, ndims, 
+  _h5->writeDatasetChunk("/", "time", &t, dims, dimsChunk, ndims, 
 			 _tstampIndex, H5T_NATIVE_DOUBLE);
   
   _tstampIndex++;

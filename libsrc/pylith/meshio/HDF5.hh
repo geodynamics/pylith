@@ -224,15 +224,15 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param data Data.
-   * @param dims Dimensions of data.
-   * @param ndims Number of dimensions of data.
+   * @param dims Dimensions of chunk.
+   * @param ndims Number of dimensions of chunk.
    * @param islice Index of data slice.
    * @param datatype Type of data.
    */
   void readDatasetChunk(const char* parent,
 			const char* name,
 			char** const data,
-			hsize_t** const dims,
+			hsize_t** const dimsChunk,
 			int* const ndims,
 			const int chunk,
 			hid_t datatype);
