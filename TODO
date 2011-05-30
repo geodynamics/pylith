@@ -37,11 +37,6 @@ MISSING FEATURES
   Unit tests
     HDF5::getDatasetDims()
     HDF5::getGroupDatasets()
-    Xdmf
-
-  (2) Add creation of .xmf metadata file for ParaView/Visit.
-    Add cell_dim attribute to cells
-    Add cell_type attribute to cells
 
 * Field split.
 

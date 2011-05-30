@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" [
+<!ENTITY HeavyData "tet4_vertex.h5">
+]>
+
+<Xdmf>
+  <Domain Name="domain">
+    <DataItem Name="cells"
+	      ItemType="Uniform"
+	      Format="HDF"
+	      NumberType="Float" Precision="8"
+	      Dimensions="2 4">
+      &HeavyData;:/topology/cells
+    </DataItem>
+    <DataItem Name="vertices"
+	      Format="HDF"
+	      Dimensions="8 3">
+      &HeavyData;:/geometry/vertices
+    </DataItem>
+    <!-- ============================================================ -->
+    <Grid Name="domain" GridType="Uniform">
+	<Topology
+	   TopologyType="Triangle"
+	   NumberOfElements="2">
+	  <DataItem Reference="XML">
+	    /Xdmf/Domain/DataItem[@Name="cells"]
+	  </DataItem>
+	</Topology>
+	<Geometry GeometryType="XYZ">
+	  <DataItem Reference="XML">
+	    /Xdmf/Domain/DataItem[@Name="vertices"]
+	  </DataItem>
+	</Geometry>
+	<Attribute
+	   Name="displacements"
+	   Type="Vector"
+	   Center="Node">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 8 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 0
+              1 1 1
+              1 8 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 8 3"
+	       Format="HDF">
+	      &HeavyData;:/vertex_fields/displacements
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="other"
+	   Type="Matrix"
+	   Center="Node">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 8 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 0
+              1 1 1
+              1 8 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 8 2"
+	       Format="HDF">
+	      &HeavyData;:/vertex_fields/other
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="pressure"
+	   Type="Scalar"
+	   Center="Node">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 8 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 0
+              1 1 1
+              1 8 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 8 1"
+	       Format="HDF">
+	      &HeavyData;:/vertex_fields/pressure
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+    </Grid>
+  </Domain>
+</Xdmf>
