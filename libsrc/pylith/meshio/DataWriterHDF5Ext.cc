@@ -598,7 +598,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
     // Create dataset
     // Dataset has unknown size.
     hsize_t dims[3];
-    dims[0] = 1;
+    dims[0] = H5S_UNLIMITED;
     dims[1] = 1;
     dims[2] = 1;
     _h5->createDataset("/", "time", dims, dimsChunk, ndims, 

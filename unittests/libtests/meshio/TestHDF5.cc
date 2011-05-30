@@ -330,7 +330,7 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
   fout.close();
 
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
-  dims[0] = 2;
+  dims[0] = H5S_UNLIMITED;
   dims[1] = dimsE[1];
   h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndimsE,
 			      H5T_NATIVE_INT);

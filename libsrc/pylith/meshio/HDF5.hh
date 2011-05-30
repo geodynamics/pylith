@@ -185,14 +185,14 @@ public :
    *
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
-   * @param dims Maximum dimensions of data.
+   * @param maxDims Maximum dimensions of data.
    * @param dimsChunk Dimensions of data chunks.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
   void createDataset(const char* parent,
 		     const char* name,
-		     const hsize_t* dims,
+		     const hsize_t* maxDims,
 		     const hsize_t* dimsChunk,
 		     const int ndims,
 		     hid_t datatype);
@@ -243,14 +243,14 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param filename Name of external raw data file.
-   * @param dims Dimensions of data.
+   * @param maxDims Maximum dimensions of data.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
   void createDatasetRawExternal(const char* parent,
 				const char* name,
 				const char* filename,
-				const hsize_t* dims,
+				const hsize_t* maxDims,
 				const int ndims,
 				hid_t datatype);
   

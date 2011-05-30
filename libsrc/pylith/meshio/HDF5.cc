@@ -686,14 +686,15 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
 void
 pylith::meshio::HDF5::createDataset(const char* parent,
 				    const char* name,
-				    const hsize_t* dims,
+				    const hsize_t* maxDims,
 				    const hsize_t* dimsChunk,
 				    const int ndims,
 				    hid_t datatype)
 { // createDataset
   assert(parent);
   assert(name);
-  assert(dims);
+  assert(maxDims);
+  assert(dimsChunk);
 
   try {
     // Open group
@@ -706,13 +707,13 @@ pylith::meshio::HDF5::createDataset(const char* parent,
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
-    hsize_t *maxDims = (ndims > 0) ? new hsize_t[ndims] : 0;
+    hsize_t *curDims = (ndims > 0) ? new hsize_t[ndims] : 0;
     if (ndims > 0)
-      maxDims[0] = H5S_UNLIMITED;
+      curDims[0] = (maxDims[0] == H5S_UNLIMITED) ? 1 : maxDims[0];
     for (int i=1; i < ndims; ++i)
-      maxDims[i] = dims[i];
-    hid_t dataspace = H5Screate_simple(ndims, dims, maxDims);
-    delete[] maxDims; maxDims = 0;
+      curDims[i] = maxDims[i];
+    hid_t dataspace = H5Screate_simple(ndims, curDims, maxDims);
+    delete[] curDims; curDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
       
@@ -996,14 +997,14 @@ void
 pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 					       const char* name,
 					       const char* filename,
-					       const hsize_t* dims,
+					       const hsize_t* maxDims,
 					       const int ndims,
 					       hid_t datatype)
 { // createDatasetRawExternal
   assert(parent);
   assert(name);
   assert(filename);
-  assert(dims);
+  assert(maxDims);
 
   try {
     // Open group
@@ -1016,13 +1017,13 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
       throw std::runtime_error("Could not open group.");
 
     // Create the dataspace
-    hsize_t* maxDims = (ndims > 0) ? new hsize_t[ndims] : 0;
+    hsize_t* curDims = (ndims > 0) ? new hsize_t[ndims] : 0;
     if (ndims > 0)
-      maxDims[0] = H5S_UNLIMITED;
+      curDims[0] = (maxDims[0] == H5S_UNLIMITED) ? 1 : maxDims[0];
     for (int i=1; i < ndims; ++i)
-      maxDims[i] = dims[i];
-    hid_t dataspace = H5Screate_simple(ndims, dims, maxDims);
-    delete[] maxDims; maxDims = 0;
+      curDims[i] = maxDims[i];
+    hid_t dataspace = H5Screate_simple(ndims, curDims, maxDims);
+    delete[] curDims; curDims = 0;
     if (dataspace < 0)
       throw std::runtime_error("Could not create dataspace.");
       
