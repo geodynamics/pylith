@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-sim = "ratestate_stable"
+sim = "ratestate_weak"
 
 # ======================================================================
 import tables
@@ -12,8 +12,14 @@ from math import exp
 dt = 0.01
 t = numpy.arange(0.0, 12.001, dt)
 mu0 = 0.6
-a = 0.016
-b = 0.012
+if sim == "ratestate_stable":
+    a = 0.016
+    b = 0.012
+elif sim == "ratestate_weak":
+    a = 0.008
+    b = 0.012
+else:
+    raise ValueError("Unknown sim '%s'." % sim)
 L = 2.0e-6
 V0 = 1.0e-6
 
@@ -40,7 +46,7 @@ V3 = 5.0e-6
 integrateStateVar(theta, V3, 4.0)
 
 mask4 = numpy.bitwise_and(t >= 8.0, t < 12.0)
-V4 = 2.0e-7
+V4 = 1.0e-7
 integrateStateVar(theta, V4, 8.0)
 
 slipRateE = mask1*V1 + mask2*V2 + mask3*V3 + mask4*V4
