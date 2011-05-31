@@ -189,7 +189,7 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
                                                plasStrainB,
                                                initialStressB, initialStrainB)
 
-    self.dtStableImplicit = 1.0e10
+    self.dtStableImplicit = 1.0e30
 
     return
 
