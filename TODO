@@ -10,10 +10,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 BUGS
 ----------------------------------------
 
-* Friction
-  rate and state friction - sliding test
-  predictor/corrector scheme?
-
 * Unform global refinement
 
     Check refinement in parallel thoroughly.
@@ -28,15 +24,16 @@ BUGS
     src/cig/pylith/libsrc/pylith/topology/RefineVol8Face4Edges2.cc:505: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&): Assertion `remotePoint >= 0' failed.
 
 
+* Rate and state friction
+
+  Line search diverges, but errors are relatively small.
+
+  cd tests/2d/frictionslide
+  pylith ratestate_stable.cfg
+
 ----------------------------------------
 MISSING FEATURES
 ----------------------------------------
-
-* Output to HDF5 files. [BRAD]
-
-  Unit tests
-    HDF5::getDatasetDims()
-    HDF5::getGroupDatasets()
 
 * Field split.
 
