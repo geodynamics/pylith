@@ -432,8 +432,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 				     initialStress[4],
 				     initialStress[5]};
 
-  // :TODO: Need to determine how to incorporate initial strain and
-  // state variables
+  // :TODO: Need to determine how to incorporate state variables
   const double meanStrainTpdt = (totalStrain[0] +
 				 totalStrain[1] +
 				 totalStrain[2]) / 3.0;

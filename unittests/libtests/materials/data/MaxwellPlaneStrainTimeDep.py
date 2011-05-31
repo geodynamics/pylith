@@ -46,8 +46,8 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
 
     numLocs = 2
 

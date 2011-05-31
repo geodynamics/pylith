@@ -48,8 +48,8 @@ class GenMaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
 
     numLocs = 2
     self.dt = 2.0e5
@@ -113,8 +113,8 @@ class GenMaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     strainTA = [strainA[0], strainA[1], 0.0, strainA[2]]
     strainTB = [strainB[0], strainB[1], 0.0, strainB[2]]
     
-    maxwellTimeA = [0.0, 0.0, 0.0]
-    maxwellTimeB = [0.0, 0.0, 0.0]
+    maxwellTimeA = [1.0e30, 1.0e30, 1.0e30]
+    maxwellTimeB = [1.0e30, 1.0e30, 1.0e30]
     visStrainA = numpy.zeros( (numMaxwellModels, 4), dtype=numpy.float64)
     visStrainB = numpy.zeros( (numMaxwellModels, 4), dtype=numpy.float64)
     for imodel in xrange(numMaxwellModels):

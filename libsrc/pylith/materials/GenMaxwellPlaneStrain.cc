@@ -305,7 +305,7 @@ pylith::materials::GenMaxwellPlaneStrain::_dbToProperties(
     propValues[p_maxwellTime + imodel] = maxwellTime;
   } // for
 
-  PetscLogFlops(6 + 2 * numMaxwellModels);
+  PetscLogFlops(6 + 3 * numMaxwellModels);
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
@@ -944,7 +944,7 @@ pylith::materials::GenMaxwellPlaneStrain::_computeStateVars(
 
   } // for
 
-  PetscLogFlops(numMaxwellModels * (4 * (5 + 18)));
+  PetscLogFlops(5 * 4);
 } // _computeStateVars
 
 
