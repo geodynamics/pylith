@@ -80,14 +80,14 @@
 	   Type="Matrix"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 6 1"
+		    Dimensions="1 6 2"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 6 1
+              1 6 2
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"

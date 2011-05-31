@@ -20,7 +20,7 @@
     <!-- ============================================================ -->
     <Grid Name="domain" GridType="Uniform">
 	<Topology
-	   TopologyType="Triangle"
+	   TopologyType="Tetrahedron"
 	   NumberOfElements="2">
 	  <DataItem Reference="XML">
 	    /Xdmf/Domain/DataItem[@Name="cells"]
@@ -36,14 +36,14 @@
 	   Type="Tensor"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
+		    Dimensions="1 2 6"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 1
+              1 2 6
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
@@ -80,14 +80,14 @@
 	   Type="Vector"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 1"
+		    Dimensions="1 2 3"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 1
+              1 2 3
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
