@@ -86,6 +86,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
   try {
     PetscErrorCode err = 0;
+
+    deallocate();
     
     const std::string& filename = _hdf5Filename();
 
