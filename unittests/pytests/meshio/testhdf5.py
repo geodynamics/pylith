@@ -69,6 +69,9 @@ class TestApp(Script):
     from TestDataWriterHDF5 import TestDataWriterHDF5SubSubMesh
     suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubSubMesh))
 
+    from TestXdmf import TestXdmf
+    suite.addTest(unittest.makeSuite(TestXdmf))
+
     return suite
 
 
