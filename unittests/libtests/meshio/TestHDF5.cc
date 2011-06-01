@@ -125,6 +125,8 @@ pylith::meshio::TestHDF5::testGetDatasetDims(void)
 
   for (int i=0; i < ndimsE; ++i)
     CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+
+  delete[] dims; dims = 0;
 } // testGetDatasetDims
 
 // ----------------------------------------------------------------------

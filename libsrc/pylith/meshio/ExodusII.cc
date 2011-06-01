@@ -133,8 +133,10 @@ pylith::meshio::ExodusII::hasAtt(const char* name) const
     assert(att);
     if (0 == strcmp(att->name(), name)) {
       found = true;
+      delete att; att = 0;
       break;
     } // if
+    delete att; att = 0;
   } // for
   
   return found;
