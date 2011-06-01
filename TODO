@@ -2,6 +2,17 @@
 CURRENT ISSUES/PRIORITIES (1.6.0)
 ======================================================================
 
+* Workshop
+
+  Upload presentations
+  Python scripts
+    - Email to participants
+      * planning to participate?
+      * schedule A or B?
+      * Adobe Connect test
+      * Cubit - get trial 1 week before workshop (some lead time is nec)
+      * Download PyLith 1.6.0 and Paraview 3.10.1
+
 * BUILDBOT
 
   cygwin packaging
@@ -53,6 +64,10 @@ MISSING FEATURES
     + Add more information on derivation (especially Generalize Maxwell)
       Use impedance approach
     + Are material models consistent with governing equations discussion?
+
+  + Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples)
+
+  + Use field split and global refinement (optional) for 3d/tet4.
 
 * Fault preconditioner [BRAD]
 
