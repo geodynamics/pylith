@@ -16,8 +16,10 @@
 # ----------------------------------------------------------------------
 #
 
-dist_bin_SCRIPTS = pylithinfo \
-		   powerlaw_gendb.py
+dist_bin_SCRIPTS = \
+	pylithinfo \
+	pylith_genxdmf \
+	powerlaw_gendb.py
 
 
 # End of file 

@@ -189,7 +189,8 @@ if ENABLE_HDF5
 	meshio/DataWriterHDF5Ext.py \
 	meshio/DataWriterHDF5ExtMesh.py \
 	meshio/DataWriterHDF5ExtSubMesh.py \
-	meshio/DataWriterHDF5ExtSubSubMesh.py
+	meshio/DataWriterHDF5ExtSubSubMesh.py \
+	meshio/Xdmf.py
 endif
 
 if ENABLE_CUDA
