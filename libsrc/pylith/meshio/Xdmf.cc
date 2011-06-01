@@ -68,6 +68,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   assert(2 == ndims);
   numVertices = dims[0];
   spaceDim = dims[1];
+  delete[] dims; dims = 0;
 
   if (1 == spaceDim) {
     std::cout
@@ -82,6 +83,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   assert(2 == ndims);
   numCells = dims[0];
   numCorners = dims[1];
+  delete[] dims; dims = 0;
   int cellDim = 0;
   h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, 
 		  H5T_NATIVE_INT);
@@ -223,6 +225,9 @@ pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
       (*timeStamps)[i] = t[0];
     } // for
   } // if
+
+  delete[] dims; dims = 0;
+  delete[] t; t = 0;
 } // _getTimeStamps
 
 // ----------------------------------------------------------------------
@@ -276,6 +281,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 	(*metadata)[iOffset+i].numPoints = dims[1];
 	(*metadata)[iOffset+i].fiberDim = dims[2];
       } // if/else
+      delete[] dims; dims = 0;
     } // for
 
     iOffset += fieldNames.size();
@@ -318,6 +324,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 	(*metadata)[iOffset+i].numPoints = dims[1];
 	(*metadata)[iOffset+i].fiberDim = dims[2];
       } // if/else
+      delete[] dims; dims = 0;
     } // for
 
     iOffset += fieldNames.size();

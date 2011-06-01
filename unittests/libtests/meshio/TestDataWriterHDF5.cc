@@ -113,6 +113,11 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], data[i], tolerance);
 
+    delete[] dimsE; dimsE = 0;
+    delete[] dataE; dataE = 0;
+    delete[] dims; dims = 0;
+    delete[] data; data = 0;
+
     break;
   } // dataset
   default :
