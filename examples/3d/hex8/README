@@ -23,75 +23,24 @@ PyLith).
 You can examine the Exodus file exported from CUBIT using the ncdump
 command.
 
-The examples are all described in the PyLith manual. Results of each
-example are put in the stepxx directories after running the simulation.
-Each simulation may be run by typing:
 
-pylith stepxx.cfg
+The examples are all described in the PyLith manual. Output from each
+example is put in the output directory. Each simulation may be run by
+typing:
+
+  pylith stepxx.cfg
 
 where xx is the number of the desired example.
 
 
+----------------------------------------------------------------------
 DESCRIPTION OF FILES
+----------------------------------------------------------------------
 
 README - This file.
 
 pylithapp.cfg - PyLith configuration file containing parameters common to
 all simulations.
-
-figures/hex8-mesh.jpg - JPEG image showing mesh (generated with ParaView).
-
-mesh/box_hex8_1000m.exo - Exodus file containing mesh exported from Cubit.
-
-mesh/geometry.jou - Cubit journal file (script) to generate solid model
-geometry
-
-mesh/mesh_hex8_1000m.jou - Cubit journal file (script) to run geometry
-script, generate the mesh, create blocks and nodesets, and export the
-mesh to an Exodus file
-
-spatialdb/finalslip.spatialdb - Spatial database defining fault slip for
-example step03.
-
-spatialdb/finalslip_rupture.spatialdb - Spatial database defining fault
-rupture for examples step06, step07, step08, and step09.
-
-spatialdb/initial_stress.spatialdb - Spatial database defining initial
-stresses for example step16.
-
-spatialdb/mat_druckerprager.spatialdb - Spatial database defining
-Drucker-Prager elastoplastic material properties for example step09.
-
-spatialdb/mat_elastic.spatialdb - Spatial database defining elastic
-material properties for all examples.
-
-spatialdb/mat_genmaxwell.spatialdb - Spatial database defining
-generalized Maxwell viscoelastic material properties for examples step15,
-step16, and step17.
-
-spatialdb/mat_maxwell.spatialdb - Spatial database defining Maxwell
-viscoelastic material properties for examples step04, step05, step06,
-and step07.
-
-spatialdb/mat_powerlaw.spatialdb - Spatial database defining power-law
-viscoelastic material properties for example step08.
-
-spatialdb/sliprate_creep.spatialdb - Spatial database defining slip on the
-creeping portion of the fault for examples step06, step07, step08, and
-step09.
-
-spatialdb/sliptime.spatialdb - Spatial database defining the distribution
-of slip initial time over the fault for examples step03, step06, step07,
-step08, and step09.
-
-spatialdb/tractions_axial_shear.spatialdb - Spatial database defining
-axial and shear tractions for example step02.
-
-spatialdb/powerlaw - This directory contains files needed to generate
-power-law properties for PyLith, given the power-law parameters, a
-temperature distribution, and a set of points for which properties are
-desired. The powerlaw_gendb.py utility code is used from this directory
-to create spatialdb/mat_powerlaw.spatialdb.
 
 stepxx.cfg - PyLith configuration file containing parameters for a
 particular example. The example problems are briefly described below:
@@ -117,3 +66,87 @@ step16: Gravitational body forces + initial stresses with generalized
         Maxwell rheology (quasi-static)
 step17: Gravitational body forces + finite strain with generalized Maxwell
         rheology (quasi-static)
+
+----------------------------------------
+mesh directory
+----------------------------------------
+
+box_hex8_1000m.exo
+
+  Exodus file containing mesh exported from Cubit.
+
+geometry.jou
+
+  Cubit journal file (script) to generate solid model geometry
+
+mesh_hex8_1000m.jou
+
+  Cubit journal file (script) to run geometry script, generate the
+  mesh, create blocks and nodesets, and export the mesh to an Exodus
+  file
+
+----------------------------------------
+spatialdb directory
+----------------------------------------
+
+finalslip.spatialdb
+
+  Spatial database defining fault slip for example step03.
+
+finalslip_rupture.spatialdb
+
+  Spatial database defining fault rupture for examples step06, step07,
+  step08, and step09.
+
+initial_stress.spatialdb
+
+  Spatial database defining initial stresses for example step16.
+
+mat_druckerprager.spatialdb
+
+  Spatial database defining Drucker-Prager elastoplastic material
+  properties for example step09.
+
+mat_elastic.spatialdb
+
+  Spatial database defining elastic material properties for all
+  examples.
+
+mat_genmaxwell.spatialdb
+	
+  Spatial database defining generalized Maxwell viscoelastic material
+  properties for examples step15, step16, and step17.
+
+mat_maxwell.spatialdb
+
+  Spatial database defining Maxwell viscoelastic material properties
+  for examples step04, step05, step06, and step07.
+
+mat_powerlaw.spatialdb
+
+  Spatial database defining power-law viscoelastic material properties
+  for example step08.
+
+sliprate_creep.spatialdb
+
+  Spatial database defining slip on the creeping portion of the fault
+  for examples step06, step07, step08, and step09.
+
+sliptime.spatialdb
+
+  Spatial database defining the distribution of slip initial time over
+  the fault for examples step03, step06, step07, step08, and step09.
+
+tractions_axial_shear.spatialdb
+
+  Spatial database defining axial and shear tractions for example
+  step02.
+
+powerlaw directory
+
+  This directory contains files needed to generate power-law
+  properties for PyLith, given the power-law parameters, a temperature
+  distribution, and a set of points for which properties are
+  desired. The powerlaw_gendb.py utility code is used from this
+  directory to create spatialdb/mat_powerlaw.spatialdb.
+
