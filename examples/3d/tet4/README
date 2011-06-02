@@ -51,6 +51,10 @@ figures directory
 
 tet4-mesh.jpg - JPEG image showing mesh (from ParaView)
 
+step01.jpg - JPEG showing solution for step01 (from ParaView)
+
+step03.jpg - JPEG showing solution for step03 (from ParaView)
+
 
 ----------------------------------------
 mesh directory
