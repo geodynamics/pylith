@@ -21,19 +21,19 @@ dist_noinst_DATA = \
 	pylithapp.cfg \
 	step01.cfg \
 	step03.cfg \
-	step01.jpg \
-	step03.jpg \
 	mesh/mesh_tet4_1000m.lagrit \
 	mesh/tet4_1000m_ascii.gmv \
 	mesh/tet4_1000m_ascii.pset \
 	mesh/tet4_1000m_binary.gmv \
 	mesh/tet4_1000m_binary.pset \
-	mesh/tet4-mesh.jpg \
 	spatialdb/finalslip.spatialdb \
 	spatialdb/fixeddisp_shear.spatialdb \
 	spatialdb/mat_elastic.spatialdb \
 	spatialdb/mat_viscoelastic.spatialdb \
-	spatialdb/sliptime.spatialdb
+	spatialdb/sliptime.spatialdb \
+	figures/tet4-mesh.jpg \
+	figures/step01.jpg \
+	figures/step03.jpg
 
 SUBDIRS = \
 	output

@@ -354,6 +354,7 @@ AC_CONFIG_FILES([Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
+		examples/3d/tet4/output/Makefile
 		examples/3d/hex8/Makefile
 		examples/3d/hex8/output/Makefile
 		examples/2d/Makefile

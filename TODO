@@ -23,6 +23,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * BUILDBOT
 
+  don't run tests_auto
   cygwin packaging
 
 ----------------------------------------
