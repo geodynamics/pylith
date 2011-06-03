@@ -7,6 +7,6 @@ TimeHistory {
  2.0  2.0e-6 // slip rate = 1.0e-6
  4.0  4.2e-5 // slip rate = 2.0e-5
  8.0  6.2e-05 // slip rate = 5.0e-6
-12.0  6.24e-05 // slip rate = 1.0e-7
+12.0  6.28e-05 // slip rate = 2.0e-7
 16.0  6.244e-05 // slip rate = 1.0e-8
 99.9  6.244e-05 // slip rate = 0

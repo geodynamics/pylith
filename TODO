@@ -8,6 +8,19 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   Python scripts
     survey
 
+  Practice
+    Margarete
+    Jeff Thompson
+    Vanessa Heckman
+    Francisco Ortega
+    Susan
+    Surendra
+    Brendan Meade's students
+    Eric Hetland's students
+    Rowena Lohman's students
+    Andy Freed's students
+    Louise's student/postdoc
+
 * BUILDBOT
 
   cygwin packaging
@@ -16,7 +29,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 BUGS
 ----------------------------------------
 
-* Unform global refinement
+* Unform global refinement [MATT]
 
     Check refinement in parallel thoroughly.
 
@@ -29,40 +42,35 @@ BUGS
 
     src/cig/pylith/libsrc/pylith/topology/RefineVol8Face4Edges2.cc:505: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&): Assertion `remotePoint >= 0' failed.
 
+* Account for initial strain in viscoelastic models (code) [CHARLES]
 
-* Rate and state friction
-
-  Line search diverges, but errors are relatively small.
-
-  cd tests/2d/frictionslide
-  pylith ratestate_stable.cfg
+  Already done?
 
 ----------------------------------------
-MISSING FEATURES
+MANUAL
 ----------------------------------------
-
-* Field split.
-
-    Add flag to material [default is false] for creating null vector
-    When setting up solver, create null vector, and pass it to KSP
-
-  Need to check performance of custom fault preconditioner.
-
 
 * Cleanup of materials
 
-  + Account for initial strain in viscoelastic models
+  + Account for initial strain in viscoelastic models [CHARLES]
 
   + Cleanup documentation
-    + Move formulations not used to Appendix
-    + Cleanup notation
-    + Add more information on derivation (especially Generalize Maxwell)
+    + Move formulations not used to Appendix [CHARLES]
+    + Add more information on derivation (especially Generalize Maxwell) [CHARLES]
       Use impedance approach
-    + Are material models consistent with governing equations discussion?
+    + Are material models consistent with governing equations discussion? [CHARLES]
 
-  + Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples)
+* Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples) [CHARLES]
 
-  + Use field split and global refinement (optional) for 3d/tet4.
+* Use field split and global refinement for 3d/tet4. [BRAD]
+
+* HDF5 [BRAD]
+
+* global refinement [BRAD]
+
+* field split [BRAD]
+
+    document what happens with field split and the null space
 
 * Fault preconditioner [BRAD]
 
@@ -101,6 +109,14 @@ MISCELLANEOUS
 ======================================================================
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
+
+* Field split.
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
+  Need to check performance of custom fault preconditioner.
+
 
 * GenMaxwellQpQs [BRAD]
 
@@ -141,6 +157,10 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
       + Can we use a lighter-weight structure to sit in copy()?
 
   + Need ribbon around fault in order to develop algorithm
+
+* Line search [MATT]
+
+  Line search should be improved to include the inequality constraints.
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
