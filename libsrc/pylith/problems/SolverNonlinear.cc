@@ -210,7 +210,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  // Project solution back to admissible space.
+  // Make sure we have an admissible Lagrange force (\lambda)
   formulation->constrainSolnSpace(&tmpSolutionVec);
 
   // Reform residual
@@ -377,7 +377,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 			"initial slope=%18.16e\n",
 			fnorm,*gnorm,*ynorm,minlambda,lambda,initslope);
       CHKERRQ(ierr);
-      *flag = PETSC_FALSE; 
+      ierr = PetscInfo1(snes,"Using last lambda tried %g\n",lambda);CHKERRQ(ierr);
       break;
     }
     t1 = .5*((*gnorm)*(*gnorm) - fnorm*fnorm) - lambda*initslope;
