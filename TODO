@@ -50,17 +50,21 @@ MANUAL
 
 * Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples) [CHARLES]
 
-* Use field split and global refinement for 3d/tet4. [BRAD]
-
 * HDF5 [BRAD]
 
 * global refinement [BRAD]
+  Add figure.
 
 * field split [BRAD]
-
     document what happens with field split and the null space
 
+* numerical damping
+
 * subduction example
+
+* Proofread
+  + 3d/tet4 (split into steps with field split and global refinement)
+
 
 
 ----------------------------------------

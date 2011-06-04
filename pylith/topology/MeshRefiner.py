@@ -81,4 +81,13 @@ class MeshRefiner(PetscComponent):
     return
   
 
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def mesh_refiner():
+  """
+  Factory associated with MeshRefiner.
+  """
+  return MeshRefiner()
+
+
 # End of file 
