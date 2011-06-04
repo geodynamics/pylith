@@ -1,0 +1,77 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.6.0, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release adds several new features to PyLith, including (1)
+parallel binary output via HDF5 files, (2) a 2-D generalized Maxwell
+viscoelastic bulk constitutive model, (3) global uniform parallel mesh
+refinement, (4) a custom algebraic multigrid preconditioner to improve
+the efficiency of the solver for quasi-static problems, and (4) a new
+installation utility for building from source. We encourage all users
+of previous PyLith releases to switch to this latest release.
+
+We strongly recommend all users of previous PyLith releases to switch
+to this latest release. In addition to adding features this release
+also fixes a number of bugs related to fault friction and initial
+strains for viscoelastic models and includes a few more consistency
+checks and some additional optimization. Parameter file used with v1.5
+are fully compatible with this release (no changes are necessary).
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions are in the User Manual with example
+installation procedures for a few platforms in the bundled doc/install
+directory.
+
+
+RELEASE NOTES
+
+  * Parallel binary output via HDF5
+
+    Provides must faster output by writing HDF5 files in parallel,
+    which can be accessed directly from Matlab or indirectly from
+    ParaView or Visit via automatically created Xdmf files. Temporal
+    data is stored in 3-D arrays, permitting slicing in time and/or
+    space.
+
+ * 2-D generalized Maxwell viscoelastic bulk rheology
+
+    Added a 2-D generalized Maxwell viscoelastic bulk rheology
+    corresponding to the plane strain version of the 3-D generalized
+    Maxwell viscoelastic model.
+
+ * Global uniform parallel mesh refinement
+
+    Permits running larger problems through uniform global refinement
+    of the mesh by a factor of 2 (reduces the node spacing by a factor
+    of 2) after the mesh is distributed among processors. This allows
+    running problems that are 4x larger in 2-D and 8x larger in 3-D.
+  
+ * Custom algebraic multigrid preconditioner
+
+    Adds a custom preconditioner for Lagrange multiplier degrees of
+    freedom associated with fault slip via prescribed slip or
+    spontaneous ruptures with algebraic multigrid preconditioning for
+    quasi-static solutions. In most cases, this results in fewer
+    iterations in the linear solve and the number of iterations is
+    independent of problem size.
+
+  * PyLith installer utility
+
+    A special utility provides a much more robust method for building
+    PyLith and all of its dependencies from source, including
+    dependency checking, installation to a central location, and
+    creation of a shell script to set environment variables. 
+
+ * Bug fixes
+
+    - Fixed the fault friction implementation to correctly update Lagrange
+      multiplier values when the slip is overestimated in an iteration.
+
+    - Corrected viscoelastic rheologies to properly account for a
+      nonzero initial strain tensor.
+
