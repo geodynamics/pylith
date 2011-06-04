@@ -1,5 +1,5 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -268,7 +286,7 @@ Pyre supported units.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0.9in">
 <column alignment="left" valignment="top" width="4in">
 <row>
@@ -1104,6 +1122,11 @@ reader Reader for a given type of mesh (default is MeshIOAscii).
 distributor Handles distribution of the mesh among processors.
 \end_layout
 
+\begin_layout Description
+refiner Perform global uniform mesh refinement after distribution among
+ processors (default is False).
+\end_layout
+
 \begin_layout Standard
 Reordering the mesh so that vertices and cells connected topologically also
  reside close together in memory improves overall performance and can improve
@@ -1276,6 +1299,106 @@ data_writer Writer for partition information (default is DataWriterVTKMesh
 
 \begin_layout Standard
 ParMETIS is not included in the PyLith binaries due to licensing issues.
+\end_layout
+
+\begin_layout Subsubsection
+Refiner
+\end_layout
+
+\begin_layout Standard
+Decrease node spacing by a factor of two by refining each cell.
+ In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
+ splitting each cell into four cells (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:uniform:refinement:2x"
+
+\end_inset
+
+).
+ In a 2-D quadrilateral mesh a node is inserted at the midpoint of each
+ edge and at the centroid of the cell, splitting each cell into four cells.
+ In a 3-D tetrahedral mesh a node is inserted at the midpoint of each edge,
+ splitting each cell into eight cells.
+ In a 3-D hexahedral mesh a node is inserted at the midpoint of each edge,
+ the centroid of each face, and at the centroid of the cell, splitting each
+ cell into eight cells.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+ADD FIGURES HERE
+\begin_inset Graphics
+	filename figs/tet4.eps
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace*{0.5in}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figs/hex8.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Global uniform mesh refinement of 2-D and 3-D linear cells.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:uniform:refinement:2x"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The refinement occurs after distribution of the mesh among processors.
+ This allows one to run much large simulations by (1) permitting the mesh
+ generator to generate a mesh with a node spacing twice as large as that
+ needed in the simulation and (2) the mesh setup phase involving adjustment
+ of the topology to insert cohesive cells and distribution among processors
+ uses this coarse mesh.
+ For 2-D problems the global mesh refinement increases the maximum problem
+ size by a factor of four, and for 3-D problems it increases the maximum
+ problem size by a factor of eight.
 \end_layout
 
 \begin_layout Subsection
@@ -1493,9 +1616,23 @@ petsc
 \end_layout
 
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations, including linear
- Krylov subspace solvers and nonlinear solvers.
- PETSc options can be set in 
+In quasti-static problems with implicit time-stepping, PyLith relies on
+ PETSc for the linear algebra computations, including linear Krylov subspace
+ solvers and nonlinear solvers.
+ For dynamic problems, lumping the mass matrix and using explicit time-stepping
+ is much more efficient; this permits solving the linear system with a trivial
+ solver so we do not use a PETSc solver in this case (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:solvers"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+PETSc options can be set in 
 \family typewriter
 .cfg
 \family default
@@ -1526,9 +1663,9 @@ reference "sec:solvers"
 \end_inset
 
 .
- In many quasi-static or dynamic elasticity simulations, runtime can be
- reduced by replacing the Jacobi preconditioner with additive Schwarz with
- Gram-Schmidt orthogonalization (see Table
+ A very wide range of elasticity problems in quasi-static simulations can
+ be solved with reasonable runtimes by replacing the default Jacobi precondition
+er with additive Schwarz with Gram-Schmidt orthogonalization (see Table
 \begin_inset space ~
 \end_inset
 
@@ -1540,6 +1677,39 @@ reference "tab:petsc:options:recommended"
 \end_inset
 
 ).
+ A more advanced set of solver settings that may provide better performance
+ in many elasticity problems are given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:petsc:options:advanced"
+
+\end_inset
+
+.
+ These settings are limited to a nonsymmetric sparse matrix and require
+ additional settings for the formulation,
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+use_custom_constraint_pc = True ; Use only if problem contains a fault
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout Standard
+In simulations with fault slip, the degrees of freedom associated with the
+ Lagrange multipliers should be preconditioned with a custom preconditioner
+ that uses a diagonal approximation of the Schur complement.
 \end_layout
 
 \begin_layout Standard
@@ -1569,8 +1739,8 @@ Useful command-line arguments for setting PETSc options.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
-<features>
+<lyxtabular version="3" rows="10" columns="3">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="1.2in">
 <column alignment="center" valignment="middle" width="0.6in">
 <column alignment="left" valignment="top" width="3.8in">
@@ -1658,6 +1828,8 @@ ksp_monitor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 false
 \end_layout
 
@@ -1689,6 +1861,8 @@ ksp_view
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 false
 \end_layout
 
@@ -1739,7 +1913,106 @@ Convergence tolerance for relative decrease in residual norm.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_monitor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dump residual norm to stdout for each nonlinear solve iteration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_view
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Print nonlinear solver paremeters.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+1.0e-5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Convergence tolerance for releative decrease in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1750,7 +2023,7 @@ pc_type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1761,13 +2034,46 @@ jacobi
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Set preconditioner type to block Jacobi.
  See PETSc documentation for a list of all preconditioner types.
  
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+gmres
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Linear iterative solver with classical Gram-Schmidt orthogonalization
 \end_layout
 
 \end_inset
@@ -1800,16 +2106,16 @@ name "tab:petsc:options:recommended"
 
 \end_inset
 
-PETSc options that often result in improved performance in quasi-static
- and dynamic elasticity problems.
+PETSc options that provide moderate performance in a wide range of quasi-static
+ elasticity problems.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="9" columns="3">
-<features>
+<lyxtabular version="3" rows="13" columns="3">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2in">
 <column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
@@ -1886,6 +2192,35 @@ Additive Schwarz method.
 \begin_inset Text
 
 \begin_layout Plain Layout
+ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+gmres
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Linear iterative solver with classical Gram-Schmidt orthogonalization
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 
 \family typewriter
 sub_pc_factor_shift_type
@@ -1941,7 +2276,7 @@ ksp_max_it
 \begin_inset Text
 
 \begin_layout Plain Layout
-Maximum number of iterations.
+Maximum number of iterations permitted in linear solve.
  Depends on problem size.
 \end_layout
 
@@ -2006,7 +2341,7 @@ ksp_rtol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Convergence tolerance for relative decrease in residual norm.
+Linear solve convergence tolerance for relative decrease in residual norm.
 \end_layout
 
 \end_inset
@@ -2017,6 +2352,8 @@ Convergence tolerance for relative decrease in residual norm.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 ksp_atol
 \end_layout
 
@@ -2028,7 +2365,7 @@ ksp_atol
 \begin_layout Plain Layout
 
 \emph on
-1.0e-15
+1.0e-12
 \end_layout
 
 \end_inset
@@ -2037,7 +2374,7 @@ ksp_atol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Convergence tolerance for absolute value in residual norm.
+Linear solve convergence tolerance for absolute value in residual norm.
 \end_layout
 
 \end_inset
@@ -2077,6 +2414,101 @@ Indicate why iterating stopped in linear solve.
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_max_it
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Maximum number of iterations permitted in nonlinear solve.
+ Depends on how nonlinear the problem is.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.0e-08
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nonlinear solve convergence tolerance for relative decrease in residual
+ norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_atol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.0e-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nonlinear solve convergence tolerance for absolute value in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -2104,6 +2536,250 @@ true
 
 \begin_layout Plain Layout
 Indicate why iterating stopped in nonlinear solve.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:petsc:options:advanced"
+
+\end_inset
+
+PETSc options used with split fields algebraic multigrid preconditioing
+ that often provide improved performance in quasi-static elasticity problems.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="2in">
+<column alignment="center" valignment="middle" width="0.75in">
+<column alignment="left" valignment="top" width="3in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Property
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+field_split
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Precondition fields separately.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_fieldsplit_real_diagonal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+??
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_fieldsplit_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+multiplicative
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+??
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_X_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+ml
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Multilevel algebraic multi-grid preconditioning using Trilinos/ML via PETSc.
+ X=0,1,2, ..., N
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_X_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+??, X=0, ..., N
 \end_layout
 
 \end_inset

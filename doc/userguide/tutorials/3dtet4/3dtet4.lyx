@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 0
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -107,6 +125,14 @@ SimpleDB spatial database
 ZeroDispDB spatial database
 \end_layout
 
+\begin_layout Itemize
+Custom algebraic multigrid preconditioner with split fields
+\end_layout
+
+\begin_layout Itemize
+Global uniform mesh refinement
+\end_layout
+
 \begin_layout Subsection
 Overview
 \end_layout
@@ -130,7 +156,10 @@ lagrit.lanl.gov
  to create a mesh, as well as describing how to use a LaGriT-generated mesh
  in PyLith.
  In this tutorial, we will walk through the steps necessary to construct,
- run, and view two problems that use the same mesh.
+ run, and visualzie the results for two problems that use the same mesh.
+ For each of these problems we also consider a simulation using a custom
+ algebraic multigrid preconditioner with a globally uniformly refined mesh
+ that reduces the node spacing by a factor of two.
  In addition to this manual, each of the files for the example problems
  includes extensive comments.
 \end_layout
@@ -408,11 +437,11 @@ reader = pylith.meshio.MeshIOLagrit
 \end_layout
 
 \begin_layout LyX-Code
-filename_gmv = tet4_1000m_binary.gmv
+filename_gmv = mesh/tet4_1000m_binary.gmv
 \end_layout
 
 \begin_layout LyX-Code
-filename_pset = tet4_1000m_binary.pset
+filename_pset = mesh/tet4_1000m_binary.pset
 \end_layout
 
 \begin_layout LyX-Code
@@ -475,7 +504,7 @@ id = 1
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_elastic.spatialdb
+db.iohandler.filename = spatialdb/mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -503,7 +532,7 @@ id = 2
 \end_layout
 
 \begin_layout LyX-Code
-db.iohandler.filename = mat_viscoelastic.spatialdb
+db.iohandler.filename = spatialdb/mat_viscoelastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -557,7 +586,7 @@ pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-shearxy.cfg
+step01.cfg
 \family default
 .
  These settings are:
@@ -660,7 +689,7 @@ pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
  the subdomain corresponding to the ground surface (
 \family typewriter
-shearxy-groundsurf.vtk
+step01-groundsurf.vtk
 \family default
 ).
 \end_layout
@@ -673,7 +702,7 @@ elastic
 \family default
  material set (
 \family typewriter
-shearxy-elastic.vtk
+step01-elastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -687,7 +716,7 @@ viscoelastic
 \family default
  material set (
 \family typewriter
-shearxy-viscoelastic.vtk
+step01-viscoelastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -701,7 +730,7 @@ fixeddisp_shear.spatialdb
 \family default
 , as specified in 
 \family typewriter
-shearxy.cfg
+step01.cfg
 \family default
 .
  The format of all spatial database files is similar.
@@ -747,14 +776,14 @@ fixeddisp_shear.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-pylith shearxy.cfg
+pylith step01.cfg
 \end_layout
 
 \begin_layout Standard
 Once the problem has run, six files will be produced.
  The first file is named 
 \family typewriter
-shearxy_t0000000.vtk
+step01_t0000000.vtk
 \family default
 .
  The 
@@ -767,7 +796,7 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
-shearxy-statevars-elastic_t0000000.vtk
+step01-statevars-elastic_t0000000.vtk
 \family default
 .
  This file contains the state variables for each cell in the material group
@@ -783,7 +812,7 @@ elastic
  each linear tetrahedron, this will have no effect.
  The third file (
 \family typewriter
-shearxy-statevars-viscoelastic_info.vtk
+step01-statevars-viscoelastic_info.vtk
 \family default
 ) gives the material properties used for the 
 \family typewriter
@@ -808,18 +837,18 @@ density
  of the material sets.
  The final file (
 \family typewriter
-shearxy-groundsurf_t0000000.vtk
+step01-groundsurf_t0000000.vtk
 \family default
 ) is analogous to 
 \family typewriter
-shearxy_t0000000.vtk
+step01_t0000000.vtk
 \family default
 , but in this case the results are only given for a subset of the mesh correspon
 ding to the ground surface.
  Also, the cells in this file are one dimension lower than the cells described
  in 
 \family typewriter
-shearxy_t0000000.vtk
+step01_t0000000.vtk
 \family default
 , so they are triangles rather than tetrahedra.
  All of the 
@@ -882,6 +911,546 @@ name "fig:3dtet4-shear"
 
 \end_layout
 
+\begin_layout Subsubsection
+Alternative solver and discretization settings
+\end_layout
+
+\begin_layout Standard
+Example 
+\family typewriter
+step01.cfg
+\family default
+ uses the additive Schwarz preconditioner in conjunction with a classical
+ Gram-Schmidt orthogonalization iterative solver.
+ This preconditioner works reasonably well but the number of iterations
+ generally scales with problem size.
+ Even this small, simple problem requires 24 iterations.
+ In this example (
+\family typewriter
+step02.cfg
+\family default
+), we use a more sophisticated preconditioner that preconditions the degrees
+ of freedom associated with the three Cartesian coordinates separately while
+ using an algebraic multigrid algorithm (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+for details).
+ Additionally, we illustrate the use of global uniform mesh refinement to
+ increase the resolution of the solution by a factor of two.
+ Because the mesh is refined in parallel after distribution, this allows
+ technique can be used to run a larger problem than would be possible if
+ the full resolution mesh had to be generated by the mesh generator.
+ LaGriT runs only in serial and CUBIT has extremely limited parallel mesh
+ generation capabilities.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3dtet4:solver:cmp"
+
+\end_inset
+
+ shows the improved efficiency of the solver using the split fields with
+ the algebraic multigrid preconditioner, especially as the problem size
+ becomes larger.
+ We have found similar results for other problems.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3dtet4:solver:cmp"
+
+\end_inset
+
+Number of iterations in linear solve for the Shear Displacement and Kinematic
+ Fault Slip problems discussed in this section.
+ The preconditioner using split fields and an algebriac multigrid algorithm
+ solves the linear system with fewer iterations with only a small to moderate
+ increase as the problem size grows.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="1.5in">
+<column alignment="center" valignment="top" width="1.8in">
+<column alignment="center" valignment="top" width="1.5in">
+<column alignment="center" valignment="top" width="1.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Problem
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Preconditioner
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Refinement
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+# Iterations in Solve
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Shear Displacement
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+additive Schwarz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+none (546 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+24 (step01)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2x refinement
+\end_layout
+
+\begin_layout Plain Layout
+(3890 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+48
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+split fields with algebraic multigrid
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+none (546 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2x refinement
+\end_layout
+
+\begin_layout Plain Layout
+(3890 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17 (step02)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Kinematic Fault Slip
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+additive Schwarz
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+none (735 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+35 (step03)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2x refinement
+\end_layout
+
+\begin_layout Plain Layout
+(4527 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+83
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+split fields with algebraic multigrid
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+none (735 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+33
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2x refinement
+\end_layout
+
+\begin_layout Plain Layout
+(4527 DOF)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+53 (step04)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The field splitting and algebraic multigrid preconditioning are setup in
+ 
+\family typewriter
+step02.cfg
+\family default
+ with the following parameters:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_type = fieldsplit
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_real_diagonal = 
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_type = multiplicative
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_2_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_type = preonly
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_type = preonly
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_2_ksp_type = preonly
+\end_layout
+
+\begin_layout Standard
+The uniform global refinement requires changing just a single parameter:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.mesh_generator]
+\end_layout
+
+\begin_layout LyX-Code
+refiner = pylith.topology.RefineUniform
+\end_layout
+
 \begin_layout Subsection
 Kinematic Fault Slip Example
 \end_layout
@@ -912,7 +1481,7 @@ pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-dislocation.cfg
+step03.cfg
 \family default
 .
  These settings are:
@@ -995,7 +1564,7 @@ pset) defining the points on the fault, provides quadrature information,
 pylithapp.problem.formulation.output.output.writer Gives the base filename for
  VTK output over the entire domain (
 \family typewriter
-dislocation.vtk
+step03.vtk
 \family default
 ).
 \end_layout
@@ -1005,7 +1574,7 @@ pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
  the subdomain corresponding to the ground surface (
 \family typewriter
-dislocation-groundsurf.vtk
+step03-groundsurf.vtk
 \family default
 ).
 \end_layout
@@ -1014,7 +1583,7 @@ dislocation-groundsurf.vtk
 pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
  for cohesive cell output files (
 \family typewriter
-dislocation-fault.vtk
+step03-fault.vtk
 \family default
 ).
 \end_layout
@@ -1027,7 +1596,7 @@ elastic
 \family default
  material set (
 \family typewriter
-dislocation-statevars-elastic.vtk
+step03-statevars-elastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -1041,7 +1610,7 @@ viscoelastic
 \family default
  material set (
 \family typewriter
-dislocation-statevars-viscoelastic.vtk
+step03-statevars-viscoelastic.vtk
 \family default
 ), and causes state variables to be averaged over all quadrature points
  in each cell.
@@ -1123,14 +1692,14 @@ sliptime.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-pylith dislocation.cfg
+pylith step03.cfg
 \end_layout
 
 \begin_layout Standard
 Once the problem has run, eight files will be produced.
  The first file is named 
 \family typewriter
-dislocation_t0000000.vtk
+step03_t0000000.vtk
 \family default
 .
  The 
@@ -1143,7 +1712,7 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
-dislocation-statevars-elastic_t0000000.vtk
+step03-statevars-elastic_t0000000.vtk
 \family default
 .
  This file contains the state variables for each cell in the material group
@@ -1158,7 +1727,7 @@ elastic
  each linear tetrahedron, this will have no effect.
  The third file (
 \family typewriter
-dislocation-statevars-viscoelastic_info.vtk
+step03-statevars-viscoelastic_info.vtk
 \family default
 ) gives the material properties used for the 
 \family typewriter
@@ -1183,29 +1752,29 @@ density
  of the material sets.
  The file 
 \family typewriter
-dislocation-groundsurf_t0000000.vtk
+step03-groundsurf_t0000000.vtk
 \family default
  is analogous to 
 \family typewriter
-dislocation_t0000000.vtk
+step03_t0000000.vtk
 \family default
 , but in this case the results are only given for a subset of the mesh correspon
 ding to the ground surface.
  Also, the cells in this file are one dimension lower than the cells described
  in 
 \family typewriter
-dislocation_t0000000.vtk
+step03_t0000000.vtk
 \family default
 , so they are triangles rather than tetrahedra.
  The file 
 \family typewriter
-dislocation-fault_t0000000.vtk
+step03-fault_t0000000.vtk
 \family default
  gives the specified fault slip for each vertex on the fault, along with
  the computed traction change for the cohesive cell.
  The final file, 
 \family typewriter
-dislocation-fault_info.vtk
+step03-fault_info.vtk
 \family default
 , provides information such as the normal direction, final slip, and slip
  time for each vertex on the fault.
@@ -1268,6 +1837,117 @@ name "fig:3dtet-disloc"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Alternative solver and discretization settings
+\end_layout
+
+\begin_layout Standard
+As we did for the Shear Dislocation examples, in 
+\family typewriter
+step04.cfg
+\family default
+ we switch to using the splits fields and algebraic multigrid preconditioner
+ along with global uniform mesh refinement.
+ Because PyLith implements fault slip using Lagrange multipliers, we make
+ a few small adjusments to the solver settings.
+ As discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+, we use a custom preconditioner for the Lagrange multiplier degrees of
+ freedom when preconditioning with field splitting.
+ Within 
+\family typewriter
+step04.cfg
+\family default
+ we turn on the use of the custom preconditioner for the Lagrange multiplier
+ degrees of freedom and add the corresponding settings for the fourth field
+ for the algebraic multigrid algorithm,
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+use_custom_constraint_pc = True
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_type = fieldsplit
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_real_diagonal =
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_type = multiplicative
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_2_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_3_pc_type = ml
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_type = preonly
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_type = preonly
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_2_ksp_type = preonly
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_3_ksp_type = preonly
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3dtet4:solver:cmp"
+
+\end_inset
+
+ shows the improved efficiency of the solver using the split fields with
+ the algebraic multigrid preconditioner.
 \end_layout
 
 \end_body
