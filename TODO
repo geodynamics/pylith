@@ -8,23 +8,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   Python scripts
     survey
 
-  Practice
-    Margarete
-    Jeff Thompson
-    Vanessa Heckman
-    Francisco Ortega
-    Susan
-    Surendra
-    Brendan Meade's students
-    Eric Hetland's students
-    Rowena Lohman's students
-    Andy Freed's students
-    Louise's student/postdoc
-
 * BUILDBOT
 
   don't run tests_auto
-  cygwin packaging
+  rebase of gcc_eh.dll?
 
 ----------------------------------------
 BUGS
@@ -73,9 +60,7 @@ MANUAL
 
     document what happens with field split and the null space
 
-* Fault preconditioner [BRAD]
-
-  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
+* subduction example
 
 
 ----------------------------------------
@@ -111,14 +96,6 @@ MISCELLANEOUS
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
-* Field split.
-
-    Add flag to material [default is false] for creating null vector
-    When setting up solver, create null vector, and pass it to KSP
-
-  Need to check performance of custom fault preconditioner.
-
-
 * GenMaxwellQpQs [BRAD]
 
   2-D and 3-D versions
@@ -137,6 +114,14 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
       Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
+* Field split.
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
+  Need to check performance of custom fault preconditioner.
+
+
 * Cleanup
 
     Add elasticPrestep() to Formulation
@@ -144,7 +129,6 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
 * 2-D materials
 
-  + GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
   + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
   + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
@@ -184,6 +168,10 @@ SECONDARY PRIORITIES
   General paper - focus on fault implementation
 
   Custom preconditioner
+
+* Fault preconditioner [BRAD]
+
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
 * Cleanup
 
