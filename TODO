@@ -52,18 +52,17 @@ MANUAL
 
 * HDF5 [BRAD]
 
-* global refinement [BRAD]
-  Add figure.
-
 * field split [BRAD]
     document what happens with field split and the null space
 
-* numerical damping
+* numerical damping [BRAD]
 
-* subduction example
+* subduction example [BRAD]
 
 * Proofread
   + 3d/tet4 (split into steps with field split and global refinement)
+  + global refinement
+
 
 
 
