@@ -1337,28 +1337,8 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-ADD FIGURES HERE
 \begin_inset Graphics
-	filename figs/tet4.eps
-
-\end_inset
-
-
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace*{0.5in}
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figs/hex8.eps
+	filename figs/refinement2x.eps
 
 \end_inset
 
