@@ -266,6 +266,9 @@ filename "materials/materials.lyx"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand input
 filename "boundaryconditions/boundaryconditions.lyx"
@@ -532,7 +535,45 @@ Int.
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "9"
+key "Knopoff:Ni:2001"
+
+\end_inset
+
+Knopoff, L.
+ and X.X.
+ Ni (2001), Numerical instability at the edge of a dynamic fracture, 
+\emph on
+Geophysical Journal International, 
+\emph default
+147(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "Day:Ely:2002"
+
+\end_inset
+
+Day, S.M.
+ and G.P.
+ Ely (2002), Effct of a shallow weak zone on fault rupture: Numerical simulation
+ of scale-model experiments, 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 92(8), 3022-3041, doi: 10.1785/0120010273.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "10"
 key "Zienkiewicz:Taylor:2000"
 
 \end_inset
@@ -550,7 +591,7 @@ The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "10"
+label "11"
 key "Taylor:2003"
 
 \end_inset
