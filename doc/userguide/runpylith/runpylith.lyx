@@ -1350,6 +1350,10 @@ status open
 
 \begin_layout Plain Layout
 Global uniform mesh refinement of 2-D and 3-D linear cells.
+ The blue lines and orange curcles identify the edges and vertices in the
+ original cells.
+ The purple lines and green circles identify the new edges and vertices
+ added to the original cells to refine the mesh by a factor of two.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:uniform:refinement:2x"
@@ -2950,6 +2954,77 @@ matrix_type = sbaij ; Non-symmetric sparse matrix is aij
 
 \begin_layout LyX-Code
 view_jacobian = false
+\end_layout
+
+\begin_layout Subsection
+Numerical Damping in Explicit Time Stepping
+\end_layout
+
+\begin_layout Standard
+In explicit time-stepping formulations for elasticity, boundary conditions
+ and fault slip can excite short waveform elastic waves that are not accurately
+ resolved by the discretization.
+ We use numerical damping via an artificial viscosity
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Knopoff:Ni:2001,Day:Ely:2002"
+
+\end_inset
+
+ to reduce these high frequency oscillations.
+ In computing the strains for the elasticity term equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:elasticity:integral:dynamic:t"
+
+\end_inset
+
+, we use an adjusted displacement, 
+\begin_inset Formula 
+\begin{equation}
+\vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vec{u}^{adj}(t)$
+\end_inset
+
+ is the adjusted displacement at time t, 
+\begin_inset Formula $\vec{u}(t)$
+\end_inset
+
+is the original displacement at time (t), 
+\begin_inset Formula $\eta^{*}$
+\end_inset
+
+is the normalized artificial viscosity, 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ is the time step, and 
+\begin_inset Formula $\vec{\dot{u}}(t)$
+\end_inset
+
+ is the velocity at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ The default values for the normalized artificial viscosity is 0.1.
+ We have found values in the range 0.1-0.4 sufficiently suppress numerical
+ noise while not excessively reducing the peak velocity.
+ An example of setting the normalized artificial viscosity in a .cfg file
+ is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+norm_viscosity = 0.2
 \end_layout
 
 \begin_layout Subsection
