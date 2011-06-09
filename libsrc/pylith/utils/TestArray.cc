@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "TestArray.hh" // implementation of class methods
 
 #include "array.hh" // USES double_array

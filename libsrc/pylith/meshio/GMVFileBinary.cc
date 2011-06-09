@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "GMVFileBinary.hh" // implementation of class methods
 
 #include "BinaryIO.hh" // USES readString()

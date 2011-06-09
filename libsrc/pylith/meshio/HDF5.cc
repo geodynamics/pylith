@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "HDF5.hh" // implementation of class methods
 
 #include <cstring> // USES strlen()

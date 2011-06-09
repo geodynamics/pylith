@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "Xdmf.hh" // implementation of class methods
 
 #include "HDF5.hh" // USES HDF5
