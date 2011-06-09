@@ -653,23 +653,25 @@ pylith::materials::MaxwellIsotropic3D::_updateStateVarsElastic(
   const int tensorSize = _tensorSize;
   const double maxwellTime = properties[p_maxwellTime];
 
-  const double e11 = totalStrain[0];
-  const double e22 = totalStrain[1];
-  const double e33 = totalStrain[2];
+  const double strainTpdt[] = {totalStrain[0] - initialStrain[0],
+			       totalStrain[1] - initialStrain[1],
+			       totalStrain[2] - initialStrain[2],
+			       totalStrain[3] - initialStrain[3],
+			       totalStrain[4] - initialStrain[4],
+			       totalStrain[5] - initialStrain[5]};
 
-  const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt / 3.0;
+  const double meanStrainTpdt =
+    (strainTpdt[0] + strainTpdt[1] + strainTpdt[2]) / 3.0;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  // :TODO: Need to account for initial values for state variables
-  // and the initial strain??
+  // Initialize all viscous strains to deviatoric elastic strains.
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     stateVars[s_totalStrain+iComp] = totalStrain[iComp];
     stateVars[s_viscousStrain+iComp] =
-      totalStrain[iComp] - diag[iComp] * meanStrainTpdt;
+      strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
   } // for
-  PetscLogFlops(3 + 2 * _tensorSize);
+  PetscLogFlops(9 + 2 * _tensorSize);
 
   _needNewJacobian = true;
 } // _updateStateVarsElastic

@@ -814,7 +814,7 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
     // Maxwell model 3
     stateVars[s_viscousStrain3+iComp] = devStrain;
   } // for
-  PetscLogFlops(6 + 2 * tensorSize);
+  PetscLogFlops(9 + 2 * tensorSize);
 
   _needNewJacobian = true;
 } // _updateStateVarsElastic

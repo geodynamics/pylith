@@ -612,13 +612,12 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
   const int tensorSize = _tensorSize;
   const double maxwellTime = properties[p_maxwellTime];
 
-  const double strainTpdt[] = {totalStrain[0],
-			       totalStrain[1],
+  const double strainTpdt[] = {totalStrain[0] - initialStrain[0],
+			       totalStrain[1] - initialStrain[1],
 			       0.0,
-			       totalStrain[2]};
+			       totalStrain[2] - initialStrain[2]};
 
-  const double traceStrainTpdt = strainTpdt[0] + strainTpdt[1] + strainTpdt[2];
-  const double meanStrainTpdt = traceStrainTpdt / 3.0;
+  const double meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0 };
 
@@ -630,7 +629,7 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
     stateVars[s_viscousStrain + iComp] =
       strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
   } // for
-  PetscLogFlops(11);
+  PetscLogFlops(13);
 
   _needNewJacobian = true;
 } // _updateStateVarsElastic
