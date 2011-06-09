@@ -382,7 +382,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/pyre_overview.png
-	scale 75
+	width 4in
 
 \end_inset
 
