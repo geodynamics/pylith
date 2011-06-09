@@ -10,8 +10,10 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
 * BUILDBOT
 
-  don't run tests_auto
-  rebase of gcc_eh.dll?
+  32bit linux (nix)
+    HDF5Ext unit tests fail due to large file support missing in meshio::HDF5.cc
+  cygwin
+    don't run tests_auto
 
 ----------------------------------------
 BUGS

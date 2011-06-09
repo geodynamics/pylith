@@ -156,6 +156,9 @@ CIT_CHECK_LIB_PETSC_SIEVE
 # Check for Python modules and packages.
 CIT_PYTHON_EGG_SETUP
 
+# Large file support
+AC_SYS_LARGEFILE
+
 # NUMPY
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
