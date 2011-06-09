@@ -1649,7 +1649,8 @@ reference "sec:solvers"
 .
  A very wide range of elasticity problems in quasi-static simulations can
  be solved with reasonable runtimes by replacing the default Jacobi precondition
-er with additive Schwarz with Gram-Schmidt orthogonalization (see Table
+er with the Additive Schwarz Method (ASM) using Incomplete LU (ILU) factorizatio
+n by default (see Table
 \begin_inset space ~
 \end_inset
 
@@ -1691,8 +1692,11 @@ matrix_type = aij
 \end_layout
 
 \begin_layout Standard
-In simulations with fault slip, the degrees of freedom associated with the
- Lagrange multipliers should be preconditioned with a custom preconditioner
+These more advanced settings allow each component of displacement, as well
+ as Lagrange multipliers for fault tractions, to be preconditioned separately.
+ This usually results is a much stronger preconditioner.
+ In simulations with fault slip, the degrees of freedom associated with
+ the Lagrange multipliers should be preconditioned with a custom preconditioner
  that uses a diagonal approximation of the Schur complement.
 \end_layout
 
@@ -2022,8 +2026,16 @@ jacobi
 \begin_inset Text
 
 \begin_layout Plain Layout
-Set preconditioner type to block Jacobi.
- See PETSc documentation for a list of all preconditioner types.
+Set preconditioner type.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "PETSc documentation"
+target "http://www.mcs.anl.gov/petsc/petsc-as/documentation/linearsolvertable.html"
+
+\end_inset
+
+ for a list of all preconditioner types.
  
 \end_layout
 
@@ -2057,7 +2069,16 @@ gmres
 \begin_inset Text
 
 \begin_layout Plain Layout
-Linear iterative solver with classical Gram-Schmidt orthogonalization
+Set linear solver type.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "PETSc documentation"
+target "http://www.mcs.anl.gov/petsc/petsc-as/documentation/linearsolvertable.html"
+
+\end_inset
+
+ for a list of all solver types.
 \end_layout
 
 \end_inset
@@ -2194,7 +2215,7 @@ gmres
 \begin_inset Text
 
 \begin_layout Plain Layout
-Linear iterative solver with classical Gram-Schmidt orthogonalization
+GMRES method from Saad and Schultz.
 \end_layout
 
 \end_inset
@@ -2227,7 +2248,7 @@ nonzero
 \begin_inset Text
 
 \begin_layout Plain Layout
-Turn on nonzero shifting.
+Turn on nonzero shifting for factorization.
 \end_layout
 
 \end_inset
@@ -2358,7 +2379,7 @@ ksp_atol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Linear solve convergence tolerance for absolute value in residual norm.
+Linear solve convergence tolerance for absolute value of residual norm.
 \end_layout
 
 \end_inset
@@ -2486,7 +2507,7 @@ snes_atol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Nonlinear solve convergence tolerance for absolute value in residual norm.
+Nonlinear solve convergence tolerance for absolute value of residual norm.
 \end_layout
 
 \end_inset
@@ -2639,7 +2660,7 @@ Precondition fields separately.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2650,7 +2671,7 @@ fs_pc_fieldsplit_real_diagonal
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2663,7 +2684,7 @@ fs_pc_fieldsplit_real_diagonal
 \begin_inset Text
 
 \begin_layout Plain Layout
-??
+Use diagonal blocks from the true operator, rather than the preconditioner
 \end_layout
 
 \end_inset
@@ -2696,7 +2717,7 @@ multiplicative
 \begin_inset Text
 
 \begin_layout Plain Layout
-??
+Apply each field PC in sequence, which is stronger than all-at-once (additive)
 \end_layout
 
 \end_inset
@@ -2729,7 +2750,7 @@ ml
 \begin_inset Text
 
 \begin_layout Plain Layout
-Multilevel algebraic multi-grid preconditioning using Trilinos/ML via PETSc.
+Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
  X=0,1,2, ..., N
 \end_layout
 
@@ -2754,7 +2775,7 @@ fs_fieldsplit_X_ksp_type
 \begin_layout Plain Layout
 
 \shape italic
-preonly
+jacobi
 \end_layout
 
 \end_inset
@@ -2763,7 +2784,8 @@ preonly
 \begin_inset Text
 
 \begin_layout Plain Layout
-??, X=0, ..., N
+Jacobi is sometimes the best option for fault preconditioning, however we
+ often use ML, X=N+1
 \end_layout
 
 \end_inset
