@@ -762,7 +762,7 @@ pylith::materials::GenMaxwellPlaneStrain::_updateStateVarsElastic(
     // Maxwell model 3
     stateVars[s_viscousStrain3+iComp] = devStrain;
   } // for
-  PetscLogFlops(2 + 2 * 4);
+  PetscLogFlops(5 + 2 * 4);
 
   _needNewJacobian = true;
 } // _updateStateVarsElastic
