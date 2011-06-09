@@ -4058,20 +4058,23 @@ PyLith Output
 \end_layout
 
 \begin_layout Standard
-PyLith currently supports output to VTK files, which can be imported directly
- into a number of visualization tools, such as ParaView, Visit, and MayaVi.
+PyLith currently supports output to VTK and HDF5/Xdmf files, which can be
+ imported directly into a number of visualization tools, such as ParaView,
+ Visit, and MayaVi.
+ The HDF5 files can also be directly accessed via Matlab and PyTables.
  PyLith 1.1 significantly expanded the information available for output,
  including fault information and state variables.
  Output of solution information for the domain, faults, materials, and boundary
  conditions is controlled by an output manager for each module.
  This allows the user to tailor the output to the problem.
- By default PyLith will write a number of VTK files: one VTK file for the
- solution over the entire domain, two VTK files for each fault, and two
- VTK files for each material.
- One of the files for each fault and material includes diagnostic  information.
- For a fault the fields include the final slip, the slip initiation  time,
- and the fault normal vector.
- For a material the fields include the density and the elastic constants.
+ By default PyLith will write a number of files.
+ Diagnostic information for each fault and material is written into a separate
+ file as are the solution and state variables for the domain, each fault,
+ and each material.
+ For a fault the diagnostic fields include the final slip, the slip initiation
+ time, and the fault normal vector.
+ For a material the diagnostic fields include the density and the elastic
+ constants.
  Additional diagnostic information can be included by setting the appropriate
  output parameters.
  See Chapters 
@@ -4090,13 +4093,17 @@ reference "cha:boundary:interface:conditions"
 
  for more information on the available fields and the next section for output
  parameters.
- The second file for each fault and material includes solution information
+ The other files for each fault and material include solution information
  at each time step where output was requested (also customizable by the
  user).
  For a fault the solution information includes the slip and the change in
  tractions on the fault surface.
  For a material the solution information includes the total strain and stress.
  For some materials fields for additional state variables may be available.
+ For output via VTK files, each time step is written to a separate file,
+ whereas for HDF5 files all of the time steps for a given domain, fault,
+ or material are written into the same file.
+ A single Xdmf metadata file is created for each HDF5 file.
 \end_layout
 
 \begin_layout Subsection
@@ -4148,7 +4155,7 @@ output_freq
 \end_layout
 
 \begin_layout Description
-writer Writer for data (currently limited to VTK writer).
+writer Writer for data (VTK writer or HDF5 writer).
 \end_layout
 
 \begin_layout Description
@@ -4314,6 +4321,104 @@ VTK Output
 
 \begin_layout Standard
 PyLith writes legacy (non-XML) VTK files.
+ These are simple files with vertex coordinates, the mesh topology, and
+ fields over vertices and/or cells.
+ Each time step is written to a different file.
+ The time stamp is included in the filename with the decimal point removed.
+ This allows automatic generation of animations with many visualization
+ packages that use VTK files.
+ The default time stamp is the time in seconds, but this can be changed
+ using the normalization constant to give a time stamp in years, tens of
+ years, or any other value.
+\end_layout
+
+\begin_layout Subsubsection
+VTKWriter Parameters
+\end_layout
+
+\begin_layout Standard
+The parameters for the VTKWriter are:
+\end_layout
+
+\begin_layout Description
+filename Name of VTK file
+\end_layout
+
+\begin_layout Description
+time_format C-style format string for time stamp in filename.
+ The decimal point in the time stamp will be removed for compatibility with
+ VTK visualization packages that provide seamless animation of data from
+ multiple VTK files.
+\end_layout
+
+\begin_layout Description
+time_constant Value used to normalize time stamp in VTK files (default is
+ 1.0 s).
+\end_layout
+
+\begin_layout Subsection
+HDF5/Xdmf Output
+\end_layout
+
+\begin_layout Standard
+HDF5 files provide a flexible framework for storing simulation data with
+ datasets in groups logically organized in a tree structure analogous to
+ files in directories.
+ HDF5 output offers parallel, multi-dimensional array output in binary files,
+ so it is much faster than the VTK output.
+ Standards for organization of datasets and groups in HDF5 files do not
+ exist for general finite-element software in geodynamics.
+ Consequently, PyLith uses its own simple layout show in Figure ??.
+ In order for visualization tools, such as ParaView, to be able to know
+ which datasets to read and where to find them in hiearchy of groups within
+ the file, we create an Xdmf (eXtensible Data Model and Format, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+www.xdmf.org
+\end_layout
+
+\end_inset
+
+) metadata file that provides this information.
+ In order to visualize the datasets in an HDF5 file, one simply opens the
+ corresponding Xdmf file (the extension is 
+\family typewriter
+.xmf
+\family default
+) in ParaView or Visit.
+ The Xdmf file contains the relative path to the HDF5 file so the files
+ can be move but must be located together in the same direstory.
+ 
+\end_layout
+
+\begin_layout Standard
+HDF5 files do not contain self-correcting features that allow a file to
+ be read if part of a dataset is corrupted.
+ This type of error can occur if a job terminates abnornally in the middle
+ or ed of a simulation on a large cluster or other parallel machine.
+ Fortunately, HDF5 also offers writing datasets to external binary files
+ with the locations specified by links in the HDF5 file.
+ Note that the use of external data files results in one data file per dataset
+ in addition to the HDF5 file and Xdmf file.
+ The HDF5 files include relative paths to the external data files, so these
+ files can also be moved, bu they, too, must be kept together in the same
+ directory.
+ This provides a more robust method because one can create an HDF5 file
+ from the uncorrupted portions of the external data files should an error
+ occur.
+ Currently, PyLith does not include a utility to do this, but we plan to
+ add one in a future release.
+ Thus, there are two options when writing PyLith output to HDF5 files: (1)
+ including the datasets directly in the HDF5 files themselves or (2) storing
+ the 
+\end_layout
+
+\begin_layout Standard
+We developed our own simple oganization of datasets and groups PyLith writes
+ legacy (non-XML) VTK files.
  These are simple files with vertex coordinates, the mesh topology, and
  fields over vertices and/or cells.
  Each time step is written to a different file.
