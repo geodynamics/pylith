@@ -197,9 +197,9 @@ class MaxwellIsotropic3DElastic(ElasticMaterialApp):
                                  C1311, C1322, C1333, C1312, C1323, C1313],
 				 dtype=numpy.float64)
 
-    strain = numpy.reshape(strainV, (6,1))
     initialStress = numpy.reshape(initialStressV, (tensorSize,1))
     initialStrain = numpy.reshape(initialStrainV, (tensorSize,1))
+    strain = numpy.reshape(strainV, (6,1)) - initialStrain
     elastic = numpy.array([ [C1111, C1122, C1133, C1112, C1123, C1113],
                             [C2211, C2222, C2233, C2212, C2223, C2213],
                             [C3311, C3322, C3333, C3312, C3323, C3313],
@@ -207,15 +207,16 @@ class MaxwellIsotropic3DElastic(ElasticMaterialApp):
                             [C2311, C2322, C2333, C2312, C2323, C2313],
                             [C1311, C1322, C1333, C1312, C1323, C1313] ],
                           dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain-initialStrain) + initialStress
+    stress = numpy.dot(elastic, strain) + initialStress
     meanStrain = (strain[0] + strain[1] + strain[2])/3.0
+    strainVec = numpy.array(strainV, dtype=numpy.float64)
     viscousStrain = [strain[0] - meanStrain,
                      strain[1] - meanStrain,
                      strain[2] - meanStrain,
                      strain[3],
                      strain[4],
                      strain[5]]
-    stateVarsUpdated = numpy.array( [strain, viscousStrain],
+    stateVarsUpdated = numpy.array( [strainVec, viscousStrain],
                                     dtype=numpy.float64)
     return (elasticConsts, numpy.ravel(stress), numpy.ravel(stateVarsUpdated))
   

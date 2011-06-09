@@ -185,23 +185,23 @@ class MaxwellPlaneStrainElastic(ElasticMaterialApp):
                                  C2211, C2222, C2212,
                                  C1211, C1222, C1212], dtype=numpy.float64)
 
-    strain = numpy.reshape(strainV, (tensorSize,1))
     initialStress = numpy.reshape(initialStressV, (tensorSize,1))
     initialStrain = numpy.reshape(initialStrainV, (tensorSize,1))
+    strain = numpy.reshape(strainV, (tensorSize,1)) - initialStrain
     stressZZInitial = numpy.array([stateVars[0]], dtype=numpy.float64)
     
     elastic = numpy.array([ [C1111, C1122, C1112],
                             [C2211, C2222, C2212],
                             [C1211, C1222, C1212] ], dtype=numpy.float64)
-    stress = numpy.dot(elastic, strain-initialStrain) + initialStress
+    stress = numpy.dot(elastic, strain) + initialStress
     meanStrain = (strain[0,0] + strain[1,0])/3.0
+    strainVec = numpy.array(strainV, dtype=numpy.float64)
     viscousStrain = numpy.array([strain[0,0] - meanStrain,
                                  strain[1,0] - meanStrain,
                                  -meanStrain,
                                  strain[2,0]],
                                 dtype=numpy.float64)
     viscousStrainVec = numpy.ravel(viscousStrain)
-    strainVec = numpy.ravel(strain)
     
     stateVarsUpdated = numpy.concatenate((stressZZInitial, strainVec,
                                           viscousStrainVec))
