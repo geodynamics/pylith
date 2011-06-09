@@ -15,6 +15,7 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   cygwin
     don't run tests_auto
 
+
 ----------------------------------------
 BUGS
 ----------------------------------------
@@ -57,13 +58,13 @@ MANUAL
 * field split [BRAD]
     document what happens with field split and the null space
 
-* numerical damping [BRAD]
 
 * subduction example [BRAD]
 
 * Proofread
   + 3d/tet4 (split into steps with field split and global refinement)
   + global refinement
+  + numerical damping
 
 
 

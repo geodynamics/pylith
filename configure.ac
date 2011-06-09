@@ -86,7 +86,7 @@ AC_ARG_ENABLE([hdf5],
 	  CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
 	  PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
           else enable_hdf5=no; fi],
-	[enable_hdf5=no])
+	[enable_hdf5=yes])
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
 # CUDA
@@ -205,22 +205,9 @@ fi
 
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  hdf5_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"  
-  AC_CHECK_HEADER([hdf5.h], [], [
-    AC_MSG_ERROR([HDF5 header not found.])
-  ])
-  AC_MSG_CHECKING([for H5Fopen in -lhdf5])
-  AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <hdf5.h>]],
-	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
-    [AC_MSG_RESULT(yes)],
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([hdf5 library not found.])
-  ])
-  CPPFLAGS=$hdf5_save_CPPFLAGS
+  CIT_HDF5_HEADER
+  CIT_HDF5_LIB
+  CIT_HDF5_LIB_PARALLEL
 fi
 
 # CUDA
