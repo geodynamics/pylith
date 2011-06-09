@@ -132,7 +132,7 @@ PyLith User Manual
 \end_layout
 
 \begin_layout Author
-© California Institute of Technology
+© University of California, Davis
 \begin_inset Newline newline
 \end_inset
 
@@ -358,54 +358,7 @@ filename "license.lyx"
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "1"
-key "Williams:etal:2005"
-
-\end_inset
-
-Williams, C.A., B.
- Aagaard, and M.G.
- Knepley (2005), Development of software for studying earthquakes across
- multiple spatial and temporal scales by coupling quasi-static and dynamic
- simulations, 
-\emph on
-Eos Trans.
- AGU, 86
-\emph default
-(52), Fall Meet.
- Suppl., Abstract S53A-1072.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "2"
-key "Williams:2006"
-
-\end_inset
-
-Williams, C.A.
- (2006), Development of a package for modeling stress in the lithosphere,
- 
-\emph on
-Eos Trans.
- AGU,
-\emph default
- 
-\emph on
-87
-\emph default
-(36), Jt.
- Assem.
- Suppl., Abstract T24A-01 Invited.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "3"
+label "Aagaard et al., 2001a"
 key "Aagaard:etal:2001a"
 
 \end_inset
@@ -424,7 +377,7 @@ Earthquake Spectra, 17
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "4"
+label "Aagaard et al., 2001b"
 key "Aagaard:etal:2001b"
 
 \end_inset
@@ -444,7 +397,7 @@ Bulletin of the Seismological Society of America, 91
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "5"
+label "Aagaard et al., 2007"
 key "Aagaard:etal:2007"
 
 \end_inset
@@ -465,7 +418,7 @@ Eos Trans.
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "6"
+label "Aagaard et al., 2008"
 key "Aagaard:etal:2008"
 
 \end_inset
@@ -490,7 +443,41 @@ Eos Trans.
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "7"
+label "Bathe, 1995"
+key "Bathe:1995"
+
+\end_inset
+
+Bathe, K.-J.
+ (1995), 
+\shape italic
+Finite-Element Procedures
+\shape default
+, Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Ben-Zion and Rice, 1997"
+key "BenZion:Rice:1997"
+
+\end_inset
+
+Ben-Zion, Y.
+ and J.R.
+ Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
+ solid, J.
+ Geophys.
+ Res., 102, 17,771–17,784.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Brune, 1970"
 key "Brune:1970"
 
 \end_inset
@@ -508,7 +495,134 @@ Journal of Geophysical Research, 75
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "8"
+label "Day and Ely, 2002"
+key "Day:Ely:2002"
+
+\end_inset
+
+Day, S.M.
+ and G.P.
+ Ely (2002), Effct of a shallow weak zone on fault rupture: Numerical simulation
+ of scale-model experiments, 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 92(8), 3022-3041, doi: 10.1785/0120010273.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Drucker and Prager, 1952"
+key "Drucker:Prager:1952"
+
+\end_inset
+
+Drucker, D.
+ C.
+ and Prager, W.
+ (1952).
+ Soil mechanics and plastic analysis for limit design, 
+\shape italic
+Quarterly of Applied Mathematics
+\shape default
+, 
+\shape italic
+10
+\shape default
+, 157–165.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Liu et al., 2006"
+key "Liu:etal:2006"
+
+\end_inset
+
+Liu, P., R.J.
+ Archuleta, S.H.
+ Hartzell (2006), Prediction of broadband ground-motion time histories:
+ Hybrid low/high-frequency method with correlated random source parameters,
+ 
+\shape italic
+Bull.
+ Seismol.
+ Soc.
+ Am.
+\shape default
+, 96, 2118-2130.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Kaneko et al., 2008"
+key "Kaneko:etal:2008"
+
+\end_inset
+
+Kaneko, Y., N.
+ Lapusta, and J.-P.
+ Ampuero (2008), Spectral element modeling of spontaneous earthquake rupture
+ on rate and state faults: Effect of velocity-strengthening friction at
+ shallow depths, 
+\shape italic
+Journal of Geophysical Research
+\shape default
+, 113, B09317, doi:10.1029/2007JB005553.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Kirby and Kronenberg, 1987"
+key "Kirby:Kronenberg:1987"
+
+\end_inset
+
+Kirby, S.
+ H.
+ and A.
+ K.
+ Kronenberg (1987), Rheology of the lithosphere: Selected topics, 
+\shape italic
+Reviews of Geophysics, 25
+\shape default
+, 1219-1244.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Knopoff and Ni, 2001"
+key "Knopoff:Ni:2001"
+
+\end_inset
+
+Knopoff, L.
+ and X.X.
+ Ni (2001), Numerical instability at the edge of a dynamic fracture, 
+\emph on
+Geophysical Journal International, 
+\emph default
+147(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Kojic and Bathe, 1987"
 key "Kojic:Bathe:1987"
 
 \end_inset
@@ -535,98 +649,29 @@ Int.
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-key "Knopoff:Ni:2001"
+label "McGarr, 1988"
+key "McGarr:1988"
 
 \end_inset
 
-Knopoff, L.
- and X.X.
- Ni (2001), Numerical instability at the edge of a dynamic fracture, 
-\emph on
-Geophysical Journal International, 
-\emph default
-147(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "Day:Ely:2002"
-
-\end_inset
-
-Day, S.M.
- and G.P.
- Ely (2002), Effct of a shallow weak zone on fault rupture: Numerical simulation
- of scale-model experiments, 
+McGarr, A.
+ (1988), On the state of lithospheric stress in the absence of applied tectonic
+ forces, 
 \shape italic
-Bull.
- Seismol.
- Soc.
- Am.
+Journal of Geophysical Research
 \shape default
-, 92(8), 3022-3041, doi: 10.1785/0120010273.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "10"
-key "Zienkiewicz:Taylor:2000"
-
-\end_inset
-
-Zienkiewicz, O.C.
- and R.L.
- Taylor (2000), 
+, 
 \shape italic
-The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
+93
 \shape default
-, Butterworth-Heinemann, Oxford, 459 pp.
+, 13,609-13,617.
 \end_layout
 
 \begin_layout Bibliography
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "11"
-key "Taylor:2003"
-
-\end_inset
-
-Taylor, R.L.
- (2003), `FEAP--A Finite Element Analysis Program', 
-\shape italic
-Version 7.5 Theory Manual
-\shape default
-, 154 pp.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "11"
-key "Timoshenko:Goodier:1987"
-
-\end_inset
-
-Timoshenko, S.P.
- and J.N.
- Goodier (1987), 
-\shape italic
-Theory of Elasticity, Third Edition
-\shape default
-, McGraw-Hill, New York, 567 pp.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "12"
+label "Okada, 1992"
 key "Okada:1992"
 
 \end_inset
@@ -650,7 +695,47 @@ Bull.
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "13"
+label "Paterson, 1994"
+key "Paterson:1994"
+
+\end_inset
+
+Paterson, W.
+ S.
+ B.
+ (1994), 
+\shape italic
+The Physics of Glaciers, Third Edition
+\shape default
+, Elsevier Science Ltd., Oxford, 480 pp.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Prentice, 1968"
+key "Prentice:1968"
+
+\end_inset
+
+Prentice, J.
+ H, (1968), Dimensional problem of the power law in rheology, 
+\shape italic
+Nature
+\shape default
+, 
+\shape italic
+217
+\shape default
+, 157.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Savage and Prescott, 1978"
 key "Savage:Prescott:1978"
 
 \end_inset
@@ -677,183 +762,100 @@ Research
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "14"
-key "Kirby:Kronenberg:1987"
+label "Taylor, 2003"
+key "Taylor:2003"
 
 \end_inset
 
-Kirby, S.
- H.
- and A.
- K.
- Kronenberg (1987), Rheology of the lithosphere: Selected topics, 
+Taylor, R.L.
+ (2003), `FEAP--A Finite Element Analysis Program', 
 \shape italic
-Reviews of Geophysics, 25
+Version 7.5 Theory Manual
 \shape default
-, 1219-1244.
+, 154 pp.
 \end_layout
 
 \begin_layout Bibliography
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "15"
-key "Paterson:1994"
+label "Timoshenko and Goodier, 1987"
+key "Timoshenko:Goodier:1987"
 
 \end_inset
 
-Paterson, W.
- S.
- B.
- (1994), 
+Timoshenko, S.P.
+ and J.N.
+ Goodier (1987), 
 \shape italic
-The Physics of Glaciers, Third Edition
+Theory of Elasticity, Third Edition
 \shape default
-, Elsevier Science Ltd., Oxford, 480 pp.
+, McGraw-Hill, New York, 567 pp.
 \end_layout
 
 \begin_layout Bibliography
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "16"
-key "Prentice:1968"
+label "Williams et al., 2005"
+key "Williams:etal:2005"
 
 \end_inset
 
-Prentice, J.
- H, (1968), Dimensional problem of the power law in rheology, 
-\shape italic
-Nature
-\shape default
-, 
-\shape italic
-217
-\shape default
-, 157.
+Williams, C.A., B.
+ Aagaard, and M.G.
+ Knepley (2005), Development of software for studying earthquakes across
+ multiple spatial and temporal scales by coupling quasi-static and dynamic
+ simulations, 
+\emph on
+Eos Trans.
+ AGU, 86
+\emph default
+(52), Fall Meet.
+ Suppl., Abstract S53A-1072.
 \end_layout
 
 \begin_layout Bibliography
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "17"
-key "Drucker:Prager:1952"
+label "Williams, 2006"
+key "Williams:2006"
 
 \end_inset
 
-Drucker, D.
- C.
- and Prager, W.
- (1952).
- Soil mechanics and plastic analysis for limit design, 
-\shape italic
-Quarterly of Applied Mathematics
-\shape default
-, 
-\shape italic
-10
-\shape default
-, 157–165.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "18"
-key "Bathe:1995"
-
-\end_inset
-
-Bathe, K.-J.
- (1995), 
-\shape italic
-Finite-Element Procedures
-\shape default
-, Prentice Hall, Upper Saddle River, New Jersey, 1037 pp.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "19"
-key "Liu:etal:2006"
-
-\end_inset
-
-Liu, P., R.J.
- Archuleta, S.H.
- Hartzell (2006), Prediction of broadband ground-motion time histories:
- Hybrid low/high-frequency method with correlated random source parameters,
+Williams, C.A.
+ (2006), Development of a package for modeling stress in the lithosphere,
  
-\shape italic
-Bull.
- Seismol.
- Soc.
- Am.
-\shape default
-, 96, 2118-2130.
+\emph on
+Eos Trans.
+ AGU,
+\emph default
+ 
+\emph on
+87
+\emph default
+(36), Jt.
+ Assem.
+ Suppl., Abstract T24A-01 Invited.
 \end_layout
 
 \begin_layout Bibliography
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
-label "20"
-key "BenZion:Rice:1997"
+label "Zienkiewicz and Taylor, 2000"
+key "Zienkiewicz:Taylor:2000"
 
 \end_inset
 
-Ben-Zion, Y.
- and J.R.
- Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
- solid, J.
- Geophys.
- Res., 102, 17,771–17,784.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "21"
-key "Kaneko:etal:2008"
-
-\end_inset
-
-Kaneko, Y., N.
- Lapusta, and J.-P.
- Ampuero (2008), Spectral element modeling of spontaneous earthquake rupture
- on rate and state faults: Effect of velocity-strengthening friction at
- shallow depths, 
+Zienkiewicz, O.C.
+ and R.L.
+ Taylor (2000), 
 \shape italic
-Journal of Geophysical Research
+The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \shape default
-, 113, B09317, doi:10.1029/2007JB005553.
-\end_layout
-
-\begin_layout Bibliography
-\labelwidthstring Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-label "22"
-key "McGarr:1988"
-
-\end_inset
-
-McGarr, A.
- (1988), On the state of lithospheric stress in the absence of applied tectonic
- forces, 
-\shape italic
-Journal of Geophysical Research
-\shape default
-, 
-\shape italic
-93
-\shape default
-, 13,609-13,617.
+, Butterworth-Heinemann, Oxford, 459 pp.125
 \end_layout
 
 \end_body
