@@ -1694,7 +1694,7 @@ matrix_type = aij
 \begin_layout Standard
 These more advanced settings allow each component of displacement, as well
  as Lagrange multipliers for fault tractions, to be preconditioned separately.
- This usually results is a much stronger preconditioner.
+ This usually results in a much stronger preconditioner.
  In simulations with fault slip, the degrees of freedom associated with
  the Lagrange multipliers should be preconditioned with a custom preconditioner
  that uses a diagonal approximation of the Schur complement.
@@ -2206,6 +2206,8 @@ ksp_type
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 gmres
 \end_layout
 
@@ -2304,6 +2306,8 @@ ksp_gmres_restart
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 50
 \end_layout
 
@@ -2369,6 +2373,7 @@ ksp_atol
 
 \begin_layout Plain Layout
 
+\shape italic
 \emph on
 1.0e-12
 \end_layout
@@ -2434,6 +2439,8 @@ snes_max_it
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 100
 \end_layout
 
@@ -2466,6 +2473,8 @@ snes_rtol
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 1.0e-08
 \end_layout
 
@@ -2498,6 +2507,8 @@ snes_atol
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 1.0e-12
 \end_layout
 
@@ -2578,7 +2589,7 @@ name "tab:petsc:options:advanced"
 
 \end_inset
 
-PETSc options used with split fields algebraic multigrid preconditioing
+PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems.
 \end_layout
 
@@ -2684,7 +2695,7 @@ fs_pc_fieldsplit_real_diagonal
 \begin_inset Text
 
 \begin_layout Plain Layout
-Use diagonal blocks from the true operator, rather than the preconditioner
+Use diagonal blocks from the true operator, rather than the preconditioner.
 \end_layout
 
 \end_inset
@@ -2717,7 +2728,8 @@ multiplicative
 \begin_inset Text
 
 \begin_layout Plain Layout
-Apply each field PC in sequence, which is stronger than all-at-once (additive)
+Apply each field preconditioning in sequence, which is stronger than all-at-once
+ (additive).
 \end_layout
 
 \end_inset
@@ -2751,7 +2763,7 @@ ml
 
 \begin_layout Plain Layout
 Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
- X=0,1,2, ..., N
+ X=0,1,2, ..., N+1.
 \end_layout
 
 \end_inset
@@ -2785,7 +2797,7 @@ jacobi
 
 \begin_layout Plain Layout
 Jacobi is sometimes the best option for fault preconditioning, however we
- often use ML, X=N+1
+ often use ML, X=0,1,2,...,N+1
 \end_layout
 
 \end_inset
