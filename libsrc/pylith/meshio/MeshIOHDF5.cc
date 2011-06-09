@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "MeshIO.hh" // MeshIOHDF5 ISA MeshIO
 #include "MeshIOHDF5.hh" // implementation of class methods
 

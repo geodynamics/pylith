@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "GMVFileAscii.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES double_array, int_array

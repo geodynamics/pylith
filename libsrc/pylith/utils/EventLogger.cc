@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "EventLogger.hh" // Implementation of class methods
 
 
