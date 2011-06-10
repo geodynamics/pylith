@@ -340,7 +340,7 @@ filename "fileformats/fileformats.lyx"
 
 \begin_inset CommandInset include
 LatexCommand include
-filename "alternativeformul/alternativeformul.lyx"
+filename "materials/altformulations.lyx"
 
 \end_inset
 
