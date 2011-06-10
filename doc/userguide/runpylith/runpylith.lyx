@@ -1691,6 +1691,50 @@ use_custom_constraint_pc = True ; Use only if problem contains a fault
 matrix_type = aij
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+These settings are only available if you build PETSc with Fortran enabled
+ and the ML package.
+ These features are included in the PyLith binary packages.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+The split fields and algebraic multigrid preconditioning currently fails
+ when in problems with a nonzero null space.
+ This most often occurs when a problem contains multiple faults that extend
+ through the entire domain and create subdomains without any Dirichlet boundary
+ conditions.
+ The current workaround is to use the 
+\color inherit
+Additive Schwarz 
+\color none
+preconditioner without split fields.
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Troubleshooting"
+
+\end_inset
+
+ for the error message encountered in this situation.
+ 
+\end_layout
+
 \begin_layout Standard
 These more advanced settings allow each component of displacement, as well
  as Lagrange multipliers for fault tractions, to be preconditioned separately.
@@ -4471,13 +4515,31 @@ HDF5 files do not contain self-correcting features that allow a file to
  the datasets in external binary files with just metadata in the HDF5 files.
  Both methods provide similar performance because they will use MPI I/O
  if it is available.
- Storing the datasets within the HDF5 file in a parallel simulation, however,
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Storing the datasets within the HDF5 file in a parallel simulation, however,
  requires that the HDF5 library be configured with the 
 \family typewriter
 --enable-parallel
 \family default
  option.
- Accessing the datasets for additional analysis or visualiation is identical
+ 
+\color none
+The binary PyLith packages include this feature and it is a default setting
+ in building HDF5 via the PyLith Installer.
+\end_layout
+
+\begin_layout Standard
+Accessing the datasets for additional analysis or visualiation is identical
  in the two methods because the use of external data files is completely
  transparent to the user except for the presence of the additional files.
 \end_layout
@@ -4589,6 +4651,13 @@ writer.filename = dislocation.h5
 
 \begin_layout Section
 Tips and Hints
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Tips:Hints"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -4673,6 +4742,13 @@ Turn on the journals (see the examples) to monitor the progress of the code.
 
 \begin_layout Subsection
 Troubleshooting
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Troubleshooting"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -4754,19 +4830,19 @@ If it is not, adjust your PATH environment variable accordingly.
 \end_layout
 
 \begin_layout Quote
-This error occurs when trying to use the 32-bit linux binary on 64-bit linux
- systems.
+This error occurs when trying to use the 32-bit linux binary on some 64-bit
+ linux systems.
  One of the Python packages PyLith uses does not know how to determine the
  system architecture at runtime.
  The workaround is:
 \end_layout
 
 \begin_layout Enumerate
-Go to the lib/python2.5/site-packages directory.
+Go to the lib/python2.6/site-packages directory.
 \end_layout
 
 \begin_layout Enumerate
-Unzip merlin-1.7-py2.5.egg (if it is a file and not a directory).
+Unzip merlin-1.7-py2.6.egg (if it is a file and not a directory).
 \end_layout
 
 \begin_layout Enumerate
@@ -4779,8 +4855,45 @@ Edit __init__.py.
 \end_layout
 
 \begin_layout Enumerate
-If merlin-1.7-py2.5.egg is a file, rezip merlin.
- Go to the site-packages directory and enter "zip -r merlin-1.7-py2.5.egg merlin".
+If merlin-1.7-py2.6.egg is a file, rezip merlin.
+ Go to the site-packages directory and enter "zip -r merlin-1.7-py2.6.egg merlin".
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-- Solving equations.
+\begin_inset Newline newline
+\end_inset
+
+[0]PETSC ERROR: ---------------- Error Message -------------------------------
+ 
+\begin_inset Newline newline
+\end_inset
+
+[0]PETSC ERROR: Detected zero pivot in LU factorization
+\begin_inset Newline newline
+\end_inset
+
+ see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html#ZeroPivot!
+\end_layout
+
+\begin_layout Quote
+This usually occurs when the null space of the system Jacobian is nonzero,
+ such as the case of a problem without Dirichlet boundary conditions on
+ any boundary.
+ If this arises when using the split fields and algebraic multigrid precondition
+ing and no additional Dirichlet boundary conditions are desired, then the
+ workaround is to revert to using the Additive Schwarz preconditioning without
+ split fields as discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Itemize
