@@ -31,10 +31,6 @@ BUGS
 
     src/cig/pylith/libsrc/pylith/topology/RefineVol8Face4Edges2.cc:505: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&): Assertion `remotePoint >= 0' failed.
 
-* Account for initial strain in viscoelastic models (code) [CHARLES]
-
-  Already done?
-
 ----------------------------------------
 MANUAL
 ----------------------------------------
@@ -44,12 +40,9 @@ MANUAL
   + Account for initial strain in viscoelastic models [CHARLES]
 
   + Cleanup documentation
-    + Move formulations not used to Appendix [CHARLES]
     + Add more information on derivation (especially Generalize Maxwell) [CHARLES]
       Use impedance approach
     + Are material models consistent with governing equations discussion? [CHARLES]
-
-* Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples) [CHARLES]
 
 * HDF5 [BRAD]
   figure
@@ -59,14 +52,12 @@ MANUAL
 
 * subduction example [BRAD]
 
-* Add new components to list of components
-
-* Update release notes
-
 * Proofread
   + 3d/tet4 (split into steps with field split and global refinement)
   + global refinement
   + numerical damping
+  + HDF5
+  + Update release notes
 
 
 
