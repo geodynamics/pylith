@@ -56,7 +56,7 @@ class Distributor(PetscComponent, ModuleDistributor):
   
   from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
   dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTKMesh,
-                                       family="output_data_writer")
+                                       family="data_writer")
   dataWriter.meta['tip'] = "Data writer for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
