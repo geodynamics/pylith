@@ -30,6 +30,8 @@ in the INSTALL file bundled with the PyLith Installer utility.
 
 RELEASE NOTES
 
+* New features
+
   * Parallel binary output via HDF5
 
     Provides must faster output by writing HDF5 files in parallel,
