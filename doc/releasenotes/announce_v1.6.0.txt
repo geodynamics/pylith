@@ -6,26 +6,26 @@ viscoelastic problems in tectonic deformation.
 
 This release adds several new features to PyLith, including (1)
 parallel binary output via HDF5 files, (2) a 2-D generalized Maxwell
-viscoelastic bulk constitutive model, (3) global uniform parallel mesh
-refinement, (4) a custom algebraic multigrid preconditioner to improve
-the efficiency of the solver for quasi-static problems, and (4) a new
-installation utility for building from source. We encourage all users
-of previous PyLith releases to switch to this latest release.
+viscoelastic bulk constitutive model, (3) a time-weakening fault
+constitutive model, (4) global uniform parallel mesh refinement, (5) a
+custom algebraic multigrid preconditioner to improve the efficiency of
+the solver for quasi-static problems, and (6) a new installation
+utility for building from source.
 
-We strongly recommend all users of previous PyLith releases to switch
+We strongly recommend all users of previous PyLith releases switch
 to this latest release. In addition to adding features this release
 also fixes a number of bugs related to fault friction and initial
-strains for viscoelastic models and includes a few more consistency
-checks and some additional optimization. Parameter file used with v1.5
+strains for viscoelastic models. We have added a few more consistency
+checks and optimized some data structures. Parameter files used with v1.5
 are fully compatible with this release (no changes are necessary).
 
 You can download the source code and binaries from
 
     http://geodynamics.org/cig/software/packages/short/pylith
 
-Detailed installation instructions are in the User Manual with example
-installation procedures for a few platforms in the bundled doc/install
-directory.
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms
+in the INSTALL file bundled with the PyLith Installer utility.
 
 
 RELEASE NOTES
@@ -44,6 +44,13 @@ RELEASE NOTES
     corresponding to the plane strain version of the 3-D generalized
     Maxwell viscoelastic model.
 
+ * Time-weakening fault constitutive model
+
+    Added a linear time-weakening fault constitutive model. Some
+    spontaneous rupture models prefer this model over linear
+    slip-weakening because it is easier to maintain resolution of the
+    cohesive zone.
+
  * Global uniform parallel mesh refinement
 
     Permits running larger problems through uniform global refinement
@@ -57,21 +64,22 @@ RELEASE NOTES
     freedom associated with fault slip via prescribed slip or
     spontaneous ruptures with algebraic multigrid preconditioning for
     quasi-static solutions. In most cases, this results in fewer
-    iterations in the linear solve and the number of iterations is
-    independent of problem size.
+    iterations in the linear solve and the number of iterations
+    increases much less with problem size.
 
   * PyLith installer utility
 
-    A special utility provides a much more robust method for building
+    This utility provides a much more robust method for building
     PyLith and all of its dependencies from source, including
     dependency checking, installation to a central location, and
     creation of a shell script to set environment variables. 
 
- * Bug fixes
+* Bug fixes
 
     - Fixed the fault friction implementation to correctly update Lagrange
-      multiplier values when the slip is overestimated in an iteration.
+      multiplier values when the slip is overestimated in an
+      iteration. This primary fixes problems encountered with the use
+      of the Dieterich-Ruine rate and state fault constitutive model.
 
     - Corrected viscoelastic rheologies to properly account for a
       nonzero initial strain tensor.
-
