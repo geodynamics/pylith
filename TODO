@@ -52,12 +52,16 @@ MANUAL
 * Step 6-9 in 3d/hex8 switch to HDF5 (update manual and examples) [CHARLES]
 
 * HDF5 [BRAD]
+  figure
 
 * field split [BRAD]
     document what happens with field split and the null space
 
-
 * subduction example [BRAD]
+
+* Add new components to list of components
+
+* Update release notes
 
 * Proofread
   + 3d/tet4 (split into steps with field split and global refinement)

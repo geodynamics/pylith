@@ -4333,11 +4333,11 @@ PyLith writes legacy (non-XML) VTK files.
 \end_layout
 
 \begin_layout Subsubsection
-VTKWriter Parameters
+DataWriterVTK Parameters
 \end_layout
 
 \begin_layout Standard
-The parameters for the VTKWriter are:
+The parameters for the VTK writer are:
 \end_layout
 
 \begin_layout Description
@@ -4365,13 +4365,21 @@ HDF5 files provide a flexible framework for storing simulation data with
  datasets in groups logically organized in a tree structure analogous to
  files in directories.
  HDF5 output offers parallel, multi-dimensional array output in binary files,
- so it is much faster than the VTK output.
+ so it is much faster and more convenient than the VTK output which uses
+ ASCII files and separate files for each time step.
  Standards for organization of datasets and groups in HDF5 files do not
  exist for general finite-element software in geodynamics.
- Consequently, PyLith uses its own simple layout show in Figure ??.
- In order for visualization tools, such as ParaView, to be able to know
- which datasets to read and where to find them in hiearchy of groups within
- the file, we create an Xdmf (eXtensible Data Model and Format, 
+ Consequently, PyLith uses its own simple layout show in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:hdf5:layout"
+
+\end_inset
+
+.
+ In order for visualization tools, such as ParaView, to determine which
+ datasets to read and where to find them in the hiearchy of groups within
+ the HDF5 file, we create an Xdmf (eXtensible Data Model and Format, 
 \begin_inset Flex URL
 status open
 
@@ -4383,6 +4391,8 @@ www.xdmf.org
 \end_inset
 
 ) metadata file that provides this information.
+ This file is written when PyLith closes the HDF5 file at the end of the
+ simulation.
  In order to visualize the datasets in an HDF5 file, one simply opens the
  corresponding Xdmf file (the extension is 
 \family typewriter
@@ -4390,68 +4400,191 @@ www.xdmf.org
 \family default
 ) in ParaView or Visit.
  The Xdmf file contains the relative path to the HDF5 file so the files
- can be move but must be located together in the same direstory.
+ can be moved but must be located together in the same direstory.
  
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+REPLACE THIS FIGURE, hiearchy of groups and datasets; dimensions of datasets
+\begin_inset Graphics
+	filename figs/refinement2x.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Layout of PyLith HDF5 file.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:hdf5:layout"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 HDF5 files do not contain self-correcting features that allow a file to
  be read if part of a dataset is corrupted.
  This type of error can occur if a job terminates abnornally in the middle
- or ed of a simulation on a large cluster or other parallel machine.
- Fortunately, HDF5 also offers writing datasets to external binary files
- with the locations specified by links in the HDF5 file.
+ or at the end of a simulation on a large cluster or other parallel machine.
+ Fortunately, HDF5 also offers the ability to store datasets in external
+ binary files with the locations specified by links in the HDF5 file.
  Note that the use of external data files results in one data file per dataset
  in addition to the HDF5 file and Xdmf file.
  The HDF5 files include relative paths to the external data files, so these
- files can also be moved, bu they, too, must be kept together in the same
+ files can also be moved, but they, too, must be kept together in the same
  directory.
- This provides a more robust method because one can create an HDF5 file
- from the uncorrupted portions of the external data files should an error
- occur.
+ This provides a more robust method because one can generate an HDF5 file
+ associated with the uncorrupted portions of the external data files should
+ an error occur.
  Currently, PyLith does not include a utility to do this, but we plan to
  add one in a future release.
  Thus, there are two options when writing PyLith output to HDF5 files: (1)
  including the datasets directly in the HDF5 files themselves or (2) storing
- the 
-\end_layout
-
-\begin_layout Standard
-We developed our own simple oganization of datasets and groups PyLith writes
- legacy (non-XML) VTK files.
- These are simple files with vertex coordinates, the mesh topology, and
- fields over vertices and/or cells.
- Each time step is written to a different file.
- The time stamp is included in the filename with the decimal point removed.
- This allows automatic generation of animations with many visualization
- packages that use VTK files.
- The default time stamp is the time in seconds, but this can be changed
- using the normalization constant to give a time stamp in years, tens of
- years, or any other value.
+ the datasets in external binary files with just metadata in the HDF5 files.
+ Both methods provide similar performance because they will use MPI I/O
+ if it is available.
+ Storing the datasets within the HDF5 file in a parallel simulation, however,
+ requires that the HDF5 library be configured with the 
+\family typewriter
+--enable-parallel
+\family default
+ option.
+ Accessing the datasets for additional analysis or visualiation is identical
+ in the two methods because the use of external data files is completely
+ transparent to the user except for the presence of the additional files.
 \end_layout
 
 \begin_layout Subsubsection
-VTKWriter Parameters
+HDF5 utilities
 \end_layout
 
 \begin_layout Standard
-The parameters for the VTKWriter are:
+HDF5 includes several utilities for examining the contents of HDF5 files.
+ 
+\family typewriter
+h5dump
+\family default
+ is very handy for displaying the hierarchy, dimensions of datasets, attributes,
+ and even the dataset values.
+ Dump the entire HDF5 file to stdout (not practical or useful for large
+ files):
+\end_layout
+
+\begin_layout LyX-Code
+h5dump mydata.h5
+\end_layout
+
+\begin_layout Standard
+Dump the hierarchy of an HDF5 file to stdout:
+\end_layout
+
+\begin_layout LyX-Code
+h5dump -n mydata.h5
+\end_layout
+
+\begin_layout Standard
+Dump the hierarchy with dataset dimensions and attributes to stdout:
+\end_layout
+
+\begin_layout LyX-Code
+h5dump -H mydata.h5
+\end_layout
+
+\begin_layout Standard
+Dump dataset 'vertices' in group '/geometry' to stdout:
+\end_layout
+
+\begin_layout LyX-Code
+h5dump -d /geometry/vertices mydata.h5
+\end_layout
+
+\begin_layout Subsubsection
+DataWriterHDF5 Parameters
+\end_layout
+
+\begin_layout Standard
+This HDF5 writer stores the datasets inside the HDF5 file and the parameters
+ are:
 \end_layout
 
 \begin_layout Description
-filename Name of VTK file
+filename Name of HDF5 file (the Xdmf filename is generated from the same
+ prefix).
+\end_layout
+
+\begin_layout Subsubsection
+DataWriterHDF5Ext Parameters
+\end_layout
+
+\begin_layout Standard
+This HDF5 writer stores the datasets using external data files (a more robust
+ method for parallel runs) and the parameters are:
 \end_layout
 
 \begin_layout Description
-time_format C-style format string for time stamp in filename.
- The decimal point in the time stamp will be removed for compatibility with
- VTK visualization packages that provide seamless animation of data from
- multiple VTK files.
+filename Name of HDF5 file (the external dataset filenames and the Xdmf
+ filename are generated from the same prefix).
 \end_layout
 
-\begin_layout Description
-time_constant Value used to normalize time stamp in VTK files (default is
- 1.0 s).
+\begin_layout Standard
+An example of changing the writer from the default VTK writer to the HDF5
+ writer with external datasets for output over the domain in a 
+\family typewriter
+.cfg
+\family default
+ file is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.domain.output]
+\end_layout
+
+\begin_layout LyX-Code
+output_freq = time_step
+\end_layout
+
+\begin_layout LyX-Code
+time_step = 1.0*yr
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [displacement,velocity]
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5ExtMesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = dislocation.h5
 \end_layout
 
 \begin_layout Section
