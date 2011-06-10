@@ -4460,9 +4460,8 @@ status open
 \begin_layout Plain Layout
 \noindent
 \align center
-REPLACE THIS FIGURE, hiearchy of groups and datasets; dimensions of datasets
 \begin_inset Graphics
-	filename figs/refinement2x.eps
+	filename figs/hdf5layout.eps
 
 \end_inset
 
@@ -4474,6 +4473,19 @@ REPLACE THIS FIGURE, hiearchy of groups and datasets; dimensions of datasets
 
 \begin_layout Plain Layout
 Layout of PyLith HDF5 file.
+ The orange rectangles with rounded corners identify the groups and the
+ blue rectangles with sharp corners identify the datasets.
+ The dimensions of the data sets are shown in parantheses.
+ Most HDF5 files will contain either 
+\family typewriter
+vertex_fields
+\family default
+ or 
+\family typewriter
+cell_fields
+\family default
+ but not both.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:hdf5:layout"
