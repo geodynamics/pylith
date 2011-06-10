@@ -319,6 +319,8 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
 		tests/2d/slipdir/Makefile
+		tests/2d/frictionslide/Makefile
+		tests/2d/refinefaulttip/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile

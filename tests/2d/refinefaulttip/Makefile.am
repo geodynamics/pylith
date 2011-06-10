@@ -16,11 +16,9 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	slipdir \
-	frictionslide \
-	refinefaulttip
+dist_noinst_DATA =\
+	pylithapp.cfg \
+	quad4.mesh
 
 
 # End of file 

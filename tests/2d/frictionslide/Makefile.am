@@ -16,11 +16,13 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	slipdir \
-	frictionslide \
-	refinefaulttip
+dist_noinst_DATA =\
+	pylithapp.cfg \
+	quad4.mesh \
+	ratestate_stable.cfg \
+	ratestate_weak.cfg \
+	velocitysteps.timedb \
+	plot_friction.py
 
 
 # End of file 
