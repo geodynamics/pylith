@@ -339,6 +339,13 @@ filename "fileformats/fileformats.lyx"
 
 
 \begin_inset CommandInset include
+LatexCommand include
+filename "alternativeformul/alternativeformul.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
 LatexCommand input
 filename "analyticalsolns/analyticalsolns.lyx"
 

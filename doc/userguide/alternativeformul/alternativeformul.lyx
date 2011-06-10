@@ -1,0 +1,320 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:Alternative-Formulations"
+
+\end_inset
+
+Alternative Material Model Formulations
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:ViscoelasticFormulations"
+
+\end_inset
+
+Viscoelastic Formulations
+\end_layout
+
+\begin_layout Standard
+The viscoelastic formulations presently used in PyLith are described in
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Viscoelastic-Materials"
+
+\end_inset
+
+.
+ In some cases there are alternative formulations that may be used in future
+ versions of PyLith, and those are described here.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Effective-Stress-Formulation-Maxwell"
+
+\end_inset
+
+Effective Stress Formulation for a Linear Maxwell Viscoelastic Material
+\end_layout
+
+\begin_layout Standard
+An alternative technique for solving the equations for a Maxwell viscoelastic
+ material is based on the effective stress formulation described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Effective-Stress-Formulations-Viscoelastic"
+
+\end_inset
+
+.
+ A linear Maxwell viscoelastic material may be characterized by the same
+ elastic parameters as an isotropic elastic material (
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $\nu$
+\end_inset
+
+), as well as the viscosity, 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
+ The creep strain increment is
+\begin_inset Formula 
+\begin{gather}
+\underline{\Delta e}^{C}=\frac{\Delta t\phantom{}^{\tau}\underline{S}}{2\eta}\,\,.\label{eq:D1}
+\end{gather}
+
+\end_inset
+
+Therefore,
+\begin_inset Formula 
+\begin{gather}
+\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}}{\sqrt{3\eta}}=\frac{\Delta t\phantom{}^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.\label{eq:D2}
+\end{gather}
+
+\end_inset
+
+Substituting Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:46"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:D1"
+
+\end_inset
+
+, and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:D2"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:43"
+
+\end_inset
+
+, we obtain
+\begin_inset Formula 
+\begin{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}}\left\{ ^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha\phantom{}^{t+\Delta t}\underline{S}\right]\right\} +\underline{S}^{I}\,\,.\label{eq:D3}
+\end{gather}
+
+\end_inset
+
+Solving for 
+\begin_inset Formula $^{t+\Delta t}\underline{S}$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{a_{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\underline{S}^{I}\right]\,\,.\label{eq:D4}
+\end{gather}
+
+\end_inset
+
+In this case it is possible to solve directly for the deviatoric stresses,
+ and the effective stress function approach is not needed.
+ To obtain the total stress, we simply use
+\begin_inset Formula 
+\begin{gather}
+^{t+\Delta t}\sigma_{ij}=\phantom{}^{t+\Delta t}S_{ij}+\frac{\mathit{1}}{a_{m}}\left(\,^{t+\Delta t}\theta-\theta^{I}\right)\delta_{ij}+P^{I}\delta_{ij}\,\,.\label{eq:D5}
+\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To compute the viscoelastic tangent material matrix relating stress and
+ strain, we need to compute the first term in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:58"
+
+\end_inset
+
+.
+ From Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:D4"
+
+\end_inset
+
+, we have
+\begin_inset Formula 
+\begin{gather}
+\frac{\partial\phantom{}^{t+\Delta t}S_{i}}{\partial\phantom{}^{t+\Delta t}e_{k}^{\prime}}=\frac{\delta_{ik}}{a_{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:D12}
+\end{gather}
+
+\end_inset
+
+Using this, along with 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:58"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:59"
+
+\end_inset
+
+, and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:60"
+
+\end_inset
+
+, the final material matrix relating stress and tensor strain is
+\begin_inset Formula 
+\begin{gather}
+C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0
+\end{array}\right]+\frac{1}{3\left(a_{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+2 & -1 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0 & 0\\
+-1 & -1 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 0 & 3 & 0\\
+0 & 0 & 0 & 0 & 0 & 3
+\end{array}\right]\,.\label{eq:D13}
+\end{gather}
+
+\end_inset
+
+Note that the coefficient of the second matrix approaches 
+\begin_inset Formula $E/3(1+\nu)=1/3a_{E}$
+\end_inset
+
+ as 
+\begin_inset Formula $\eta$
+\end_inset
+
+ goes to infinity.
+ To check the results we make sure that the regular elastic constitutive
+ matrix is obtained for selected terms in the case where 
+\begin_inset Formula $\eta$
+\end_inset
+
+ goes to infinity.
+\begin_inset Formula 
+\begin{gather}
+C_{11}^{E}=\frac{E(1-\nu)}{(1+\nu)(1-2\nu)}\,\,\nonumber \\
+C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:D14}\\
+C_{44}^{E}=\frac{E}{1+\nu}\,\,\nonumber 
+\end{gather}
+
+\end_inset
+
+This is consistent with the regular elasticity matrix, and Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:D13"
+
+\end_inset
+
+ should thus be used when forming the stiffness matrix.
+ We do not presently use this formulation, but it may be included in future
+ versions.
+\end_layout
+
+\end_body
+\end_document
