@@ -39,24 +39,21 @@ MANUAL
 
 * Cleanup of materials
 
-  + Account for initial strain in viscoelastic models [CHARLES]
-
   + Cleanup documentation
     + Add more information on derivation (especially Generalize Maxwell) [CHARLES]
       Use impedance approach
     + Are material models consistent with governing equations discussion? [CHARLES]
 
-* HDF5 [BRAD]
-  figure
-
 * subduction example [BRAD]
 
 * Proofread
   + 3d/tet4 (split into steps with field split and global refinement)
+  + ed/hex8 (steps 6-9 use HDF5)
   + global refinement
   + numerical damping
   + HDF5
-  + Update release notes
+  + Release notes
+  + Viscoelastic materials
 
 
 
