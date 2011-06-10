@@ -13,6 +13,8 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   cygwin
     don't run tests_auto
 
+* INSTALLER
+  Update to 1.6.0
 
 ----------------------------------------
 BUGS
