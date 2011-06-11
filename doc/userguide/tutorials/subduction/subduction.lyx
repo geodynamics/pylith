@@ -1,0 +1,1066 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Tutorial-Subduction"
+
+\end_inset
+
+Tutorial for Slip on a Subduction Zone
+\end_layout
+
+\begin_layout Standard
+PyLith features discussed in this tutorial:
+\end_layout
+
+\begin_layout Itemize
+Static solution
+\end_layout
+
+\begin_layout Itemize
+Quasi-static solution
+\end_layout
+
+\begin_layout Itemize
+CUBIT mesh generation
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Nonplanar geometry
+\end_layout
+
+\begin_layout Itemize
+Variable mesh resolution
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Linear triangular cells
+\end_layout
+
+\begin_layout Itemize
+HDF5 output
+\end_layout
+
+\begin_layout Itemize
+Dirichlet displacement and velocity boundary conditions
+\end_layout
+
+\begin_layout Itemize
+ZeroDispDB spatial database
+\end_layout
+
+\begin_layout Itemize
+SimpleDB spatial database
+\end_layout
+
+\begin_layout Itemize
+UniformDB spatial database
+\end_layout
+
+\begin_layout Itemize
+Multiple materials
+\end_layout
+
+\begin_layout Itemize
+Nonlinear solver
+\end_layout
+
+\begin_layout Itemize
+Plane strain linearly elastic material
+\end_layout
+
+\begin_layout Itemize
+Plane Maxwell linear viscoelastic material
+\end_layout
+
+\begin_layout Itemize
+Kinematic fault interface conditions
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Static fault rupture
+\end_layout
+
+\begin_layout Itemize
+Multiple faults
+\end_layout
+
+\begin_layout Itemize
+Spatially variable coseismic slip
+\end_layout
+
+\begin_layout Itemize
+Spatially variable aseismic creep
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+This tutorial examines quasi-static interseismic and coseismic deformation
+ in 2-D for a subduction zone (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:overview"
+
+\end_inset
+
+).
+ It is based on the 2011 M9.0 Tohoku earthquake off the east coast of Japan.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:steps"
+
+\end_inset
+
+ shows the three step of increasing complexity.
+ Step 1 focuses on the coseismic slip, Step 2 focuses on interseismic deformatio
+n, and Step 3 combines the two into a pseudo-earthquake cycle deformation
+ simulation.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Cartoon of subduction zone with nonplanar fault geometry and topography.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:overview"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Diagram of steps and boundary conditions in subduction zone tutorial.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:steps"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mesh Description
+\end_layout
+
+\begin_layout Standard
+ADD STUFF HERE
+\end_layout
+
+\begin_layout Enumerate
+Create geometry.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Create point.
+\end_layout
+
+\begin_layout Enumerate
+Connect points into spline curves.
+\end_layout
+
+\begin_layout Enumerate
+Split curves to form bounding curves.
+\end_layout
+
+\begin_layout Enumerate
+Connect curves into surfaces.
+\end_layout
+
+\begin_layout Enumerate
+Stitch surfaces together.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Define meshing scheme and cell size variation.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Define cell size along curves near fault.
+\end_layout
+
+\begin_layout Enumerate
+Increase cell size away from fault at a geometric rate (bias).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Generate mesh.
+\end_layout
+
+\begin_layout Enumerate
+Create blocks for materials and nodesets for boundary conditions.
+\end_layout
+
+\begin_layout Enumerate
+Export mesh.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Variable resolution finite-element mesh with triangular cells.
+ The nominal cell size increases at a geometric rate of 1.2 away from the
+ region of coseismic slip.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:mesh"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Common Information
+\end_layout
+
+\begin_layout Standard
+ADD STUFF HERE
+\end_layout
+
+\begin_layout Standard
+The settings contained in 
+\family typewriter
+pylithapp.cfg
+\family default
+ for this problem consist of:
+\end_layout
+
+\begin_layout Description
+pylithapp.journal.info Settings that control the verbosity of the output for
+ the different components.
+\end_layout
+
+\begin_layout Description
+pylithapp.mesh_generator Settings that control mesh importing, such as the
+ importer type, the filename, and the spatial dimension of the mesh.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent Settings that control the problem, such as the total
+ time, time step size, and spatial dimension.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials Settings that control the material type,
+ specify which material IDs are to be associated with a particular material
+ type, and give the name of the spatial database containing the physical
+  properties for the material.
+ The quadrature information is also given.
+\end_layout
+
+\begin_layout Description
+pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
+ type.
+\end_layout
+
+\begin_layout Standard
+All of the problems in this directory use the same material database, as
+ specified under 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+pylithapp.timedependent.materials
+\family default
+ 
+\end_layout
+
+\begin_layout Standard
+in 
+\family typewriter
+pylithapp.cfg
+\family default
+.
+ This information is contained in the file 
+\family typewriter
+matprops.spatialdb
+\family default
+.
+ Although the material model is specified in 
+\family typewriter
+pylithapp.cfg
+\family default
+, the values for the physical properties of the material are given in 
+\family typewriter
+matprops.spatialdb
+\family default
+.
+ For this example, values describing elastic plane strain material properties
+ are given at a single point, resulting in uniform material properties.
+\end_layout
+
+\begin_layout Subsection
+Step 1: Coseismic Slip Simulation
+\end_layout
+
+\begin_layout Standard
+The first example problem is extension of the mesh along the diagonal extending
+ from the lower left to the upper right of the square mesh.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+axialdisp.cfg
+\family default
+.
+ These settings are:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent Specifies an implicit formulation for the problem
+ and specifies the array of boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
+d (x and y), gives the label (defined in 
+\family typewriter
+twotri3.mesh
+\family default
+) defining the points desired, assigns a label to the boundary condition
+ set, and gives the name of the spatial database with the values for the
+ Dirichlet boundary condition (
+\family typewriter
+axialdisp.spatialdb
+\family default
+).
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.output.writer Gives the base filename for
+ VTK output 
+\begin_inset Newline newline
+\end_inset
+
+(
+\family typewriter
+axialdisp.vtk
+\family default
+).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.material.output Gives the base filename for
+ state variable output files (
+\family typewriter
+axialdisp-statevars.vtk
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+The values for the Dirichlet boundary condition are given in the file 
+\family typewriter
+axialdisp.spatialdb
+\family default
+, as specified in 
+\family typewriter
+axialdisp.cfg
+\family default
+.
+ The format of all spatial database files is similar.
+ In this case, the desired displacement values are given at two points (lower
+ left and upper right).
+ Since data are being specified at points (rather than being uniform over
+ the mesh, for example), the data dimension is one.
+\end_layout
+
+\begin_layout Standard
+The files containing common information (
+\family typewriter
+twotri3.mesh
+\family default
+, 
+\family typewriter
+pylithapp.cfg
+\family default
+, 
+\family typewriter
+matprops.spatialdb
+\family default
+) along with the problem-specific files (
+\family typewriter
+axialdisp.cfg
+\family default
+, 
+\family typewriter
+axialdisp.spatialdb
+\family default
+) provide a complete description of the problem, and we can then run this
+ example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith step01.cfg
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, three files will be produced.
+ The first file is named 
+\family typewriter
+axialdisp_t0000000.vtk
+\family default
+.
+ The 
+\family typewriter
+t0000000
+\family default
+ indicates that the output is for the first (and only) time step, corresponding
+ to an elastic solution.
+ This file contains mesh information as well as displacement values at the
+ mesh vertices.
+ The second file is named 
+\family typewriter
+axialdisp-statevars_t0000000.vtk
+\family default
+.
+ This file contains the state variables for each cell.
+ The default fields are the total strain and stress fields.
+ Since the cells are linear triangles, there is a single quadrature point
+ for each cell and thus a single set of stress and strain values for each
+ cell.
+ The final file (
+\family typewriter
+axialdisp-statevars_info.vtk
+\family default
+) gives the material properties used for the problem.
+ Since we have not specified which properties to write, the default properties
+ (
+\family typewriter
+mu
+\family default
+, 
+\family typewriter
+lambda
+\family default
+, 
+\family typewriter
+density
+\family default
+) are written.
+ All of the 
+\family typewriter
+.vtk
+\family default
+ files may be used with a number of visualization packages.
+ If the problem ran correctly, you should be able to generate a figure such
+ as Figure 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "fig:tutorial:subduction:step01"
+
+\end_inset
+
+, which was generated using ParaView.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/axialdisp.jpg
+	lyxscale 50
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Color contours and vectors of displacement for the axial displacement example
+ using a mesh composed of two linear triangular cells.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:step01"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 2: Interseismic Deformation Simulation
+\end_layout
+
+\begin_layout Standard
+The next example problem is shearing of the mesh in the y direction using
+ displacements applied along the positive and negative x boundaries.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+sheardisp.cfg
+\family default
+.
+ These settings include:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
+ left side of the mesh, defining which degrees of freedom are being constrained
+ (x and y), giving the label (
+\family typewriter
+x_neg
+\family default
+, defined in 
+\family typewriter
+twotri3.mesh
+\family default
+) defining the points desired, assigning a label to the boundary condition
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
+\family typewriter
+sheardisp.spatialdb
+\family default
+).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
+ left side of the mesh, defining which degrees of freedom are being constrained
+ (y only), giving the label (
+\family typewriter
+x_
+\family default
+pos, defined in 
+\family typewriter
+twotri3.mesh
+\family default
+) defining the points desired, assigning a label to the boundary condition
+ set, and giving the name of the spatial database with the values for the
+ Dirichlet boundary condition (
+\family typewriter
+sheardisp.spatialdb
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+The files containing common information (
+\family typewriter
+twotri3.mesh
+\family default
+, 
+\family typewriter
+pylithapp.cfg
+\family default
+, 
+\family typewriter
+matprops.spatialdb
+\family default
+) along with the problem-specific files (
+\family typewriter
+sheardisp.cfg
+\family default
+, 
+\family typewriter
+sheardisp.spatialdb
+\family default
+) provide a complete description of the problem, and we can then run this
+ example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith step02.cfg
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, three files will be produced as in the previous
+ example.
+ If the problem ran correctly, you should be able to generate a figure such
+ as Figure 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "fig:tutorial:subduction:step02"
+
+\end_inset
+
+, which was generated using ParaView.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/sheardisp.jpg
+	lyxscale 50
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Color contours and vectors of displacement for the shear displacement example
+ using a mesh composed of two linear triangular cells.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:step02"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 3: Pseudo-earthquake Cycle Model
+\end_layout
+
+\begin_layout Standard
+The next example problem is left-lateral fault slip applied between the
+ two triangular cells using kinematic cohesive cells.
+ The lower left and upper right boundaries are held fixed in the x and y
+ directions.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+dislocation.cfg
+\family default
+.
+ The solution corresponds to rigid body rotation of each triangular cell.
+ As a result, the tractions on the fault are zero.
+ These settings include:
+\end_layout
+
+\begin_layout Description
+pylithapp.journal.info Turns on journaling for 1D quadrature (used for 2D
+ faults) and for cohesive kinematic faults.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
+d (x and y), gives the label (defined in 
+\family typewriter
+twotri3.mesh
+\family default
+) defining the points desired, and assigns a label to the boundary condition
+ set.
+ In this case, rather than specifying a spatial database file with the values
+ for the Dirichlet boundary condition.
+ The default database (ZeroDispDB) for Dirichlet boundary conditions is
+ used, which sets the displacements to zero.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces Gives the label (defined in 
+\family typewriter
+twotri3.mesh
+\family default
+) defining the points on the fault, provides quadrature information, and
+ then gives database names for material properties (needed for conditioning),
+ fault slip, peak fault slip rate, and fault slip time.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
+ for cohesive cell output files (
+\family typewriter
+dislocation-fault.vtk
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+Rather than specifying the displacement boundary conditions in a spatial
+ database file, we use the default behavior for Dirichlet boundary conditions,
+ which is a uniform, constant displacement of zero.
+\end_layout
+
+\begin_layout Standard
+The fault example requires three additional database files that were not
+ needed for the simple displacement examples.
+ The first file (
+\family typewriter
+dislocation_slip.spatialdb
+\family default
+) specifies 0.01 m of left-lateral fault slip for the entire fault.
+ The data dimension is zero since the same data are applied to all points
+ in the set.
+ The default slip time function is a step-function, so we also must provide
+ the time at which slip begins.
+ The elastic solution is associated with advancing from 
+\begin_inset Formula $t=-dt$
+\end_inset
+
+ to 
+\begin_inset Formula $t=0$
+\end_inset
+
+, so we set the slip initiation time for the step-function to 0 in 
+\family typewriter
+dislocation_sliptime.spatialdb
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The files containing common information (
+\family typewriter
+twotri3.mesh
+\family default
+, 
+\family typewriter
+pylithapp.cfg
+\family default
+, 
+\family typewriter
+matprops.spatialdb
+\family default
+) along with the problem-specific files (
+\family typewriter
+\size small
+dislocation.cfg
+\family default
+, 
+\family typewriter
+dislocation_slip.spatialdb
+\family default
+, 
+\family typewriter
+dislocation_sliptime.spatialdb
+\family default
+\size default
+) provide a complete description of the problem, and we can then run this
+ example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith step03.cfg
+\end_layout
+
+\begin_layout Standard
+Once the problem has run, five files are produced.
+ In addition to the files produced in the previous two examples, this example
+ produces two files associated with the fault interface.
+ The file 
+\family typewriter
+dislocation-fault_t0000000.vtk
+\family default
+ gives the fault slip for each vertex on the fault along with the computed
+ traction change for the cohesive cell.
+ The file 
+\family typewriter
+dislocation-fault_info.vtk
+\family default
+ provides information such as the normal direction, final slip, and slip
+ time for each vertex on the fault.
+ If the problem ran correctly, you should be able to generate a figure such
+ as Figure 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "fig:tutorial:subduction:step03"
+
+\end_inset
+
+, which was generated using ParaView.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/dislocation.jpg
+	lyxscale 50
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Color contours and vectors of displacement for the kinematic fault example
+ using a mesh composed of two linear triangular cells.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:step03"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Suggestions Variations
+\end_layout
+
+\begin_layout Standard
+The list below includes some suggested modifications to the problem that
+ will allow you to become more familiar with PyLith while examining some
+ interesting physics.
+\end_layout
+
+\begin_layout Itemize
+Change the resolution of the mesh by editing the mesh_tri3.jou journal file.
+ Change the resolution and bias factor.
+\end_layout
+
+\begin_layout Itemize
+Add depth dependent viscosity to the mantle and crust.
+ This requires using the linear Maxwell plane strain bulk constitutive model
+ in the crust as well and creating spatial databases that include viscosity
+ for the crust.
+ Specifying a depth dependent variation in the parameters will require adding
+ points, updating num-locs accordingly, and changing data-dim to 1.
+\end_layout
+
+\begin_layout Itemize
+Modify the spatial database files for the material properties to use depth-depen
+dent elastic properties based on PREM (Dziewonski and Anderson, 1981, 10.1016/003
+1-9201(81)90046-7).
+ See http://geophysics.ou.edu/solid_earth/prem.html for a simple table of values.
+ Add points, update num-locs accordingly, and change data-dim to be 1.
+\end_layout
+
+\begin_layout Itemize
+Modify the CUBIT journal files to use quad4 cells rather than tri3 cells.
+ This requires using the pave mesh scheme.
+\end_layout
+
+\begin_layout Itemize
+Create a simulation with multiple earthquake cycles by lengthening the duration
+ of the simulation and adding additional earthquake ruptures.
+ See examples/3d/hex8/step06.cfg for an example with multiple earthquake
+ ruptures.
+ Examine spinup towards a steady-state solution.
+\end_layout
+
+\end_body
+\end_document
