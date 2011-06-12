@@ -596,6 +596,11 @@ step01.cfg
 \end_layout
 
 \begin_layout Description
+pylithapp.timedependent.formulation.time_step Adjust the total simulation time
+ to 0 years (static simulation).
+\end_layout
+
+\begin_layout Description
 pylithapp.timedependent Specifies the array of boundary conditions.
 \end_layout
 
@@ -618,16 +623,18 @@ BOUNDARY
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
- output 
-\begin_inset Newline newline
-\end_inset
+pylithapp.timedependent.interfaces.fault Specify the coseismic slip along the
+ interface between the oceanic crust and continental crust with a small
+ amount of slip penetrating into the upper mantle.
+\end_layout
 
-(
+\begin_layout Description
+pylithapp.problem.formulation.output.domain Gives the base filenames for HDF5
+ output (
 \family typewriter
-step01.
+for example, step01.h5
 \family default
-h5).
+).
 \end_layout
 
 \begin_layout Standard
@@ -643,8 +650,10 @@ The problem will produce twelve pairs of HDF5/Xdmf files.
  The HDF5 files contain the data and the Xdmf files contain the metadata
  required by ParaView and Visit (and possibly other visualization tools
  that use Xdmf files) to access the mesh and data sets in the HDF5 files.
- The files include the solution over the domain and ground surface, the
- stress and strain within each material, and the fault slip.
+ The files include the solution over the domain and ground surface (two
+ pairs of files), physical properties, stress, and strain within each material
+ (eight pairs of files), and fault parameters, slip, and traction (two pairs
+ of files).
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -669,7 +678,7 @@ status open
 \begin_inset Graphics
 	filename figs/step01_soln.png
 	lyxscale 50
-	scale 33
+	width 3in
 
 \end_inset
 
@@ -680,7 +689,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The colors indicate the magnitude of the displacement and the deformation
+Solution for Step 1.
+ The colors indicate the magnitude of the displacement and the deformation
  is exaggerated by a factor of 1000.
  
 \begin_inset CommandInset label
@@ -707,86 +717,78 @@ Step 2: Interseismic Deformation Simulation
 \end_layout
 
 \begin_layout Standard
-In this example we simulated the interseismic deformation associated with
+In this example we simulate the interseismic deformation associated with
  the oceanic crust subducting beneath the contiental crust and into the
  mantle.
- The next example problem is shearing of the mesh in the y direction using
- displacements applied along the positive and negative x boundaries.
+ We prescribe steady aseismic slip of 8 cm/yr along the interfaces between
+ the oceanic crust and mantle with the interface between the oceanic crust
+ and continental crust locked as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:steps"
+
+\end_inset
+
+.
+ We adjust the Dirichlet boundary conditions on the lateral edges and bottom
+ of the domain by pinning only the portions of the boundaries in the mantle
+ and continental crust (i.e., not part of the oceanic crust).
  Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-sheardisp.cfg
+step02.cfg
 \family default
 .
  These settings include:
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (x and y), giving the label (
-\family typewriter
-x_neg
-\family default
-, defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-sheardisp.spatialdb
-\family default
-).
+pylithapp.timedependent.formulation.time_step Adjust the total simulation time
+ to 100 years.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (y only), giving the label (
+pylithapp.timedependent Specifies the array of boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.
+\shape italic
+BOUNDARY
+\shape default
+ Defines the settings for boundary 
+\shape italic
+BOUNDARY
+\shape default
+, including which degrees of freedom are being constrained (x or y), the
+ label (defined in
 \family typewriter
-x_
+ mesh_tri3.exo
 \family default
-pos, defined in 
+) corresponding to the nodeset in Cubit, and a label to the boundary condition
+ used in any error messages.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces Specify the steady aseismic slip as a constant
+ slip rate on the fault surfaces.
+ 
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
+ output (
 \family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-sheardisp.spatialdb
+for example, step02.h5
 \family default
 ).
 \end_layout
 
 \begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-sheardisp.cfg
-\family default
-, 
-\family typewriter
-sheardisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing
+We run this example by typing
 \end_layout
 
 \begin_layout LyX-Code
@@ -794,17 +796,21 @@ pylith step02.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced as in the previous
- example.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
+The simulation will produce pairs of HDF5/Xdmf files with separate files
+ for each material and fault interface.
+ Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:tutorial:subduction:step02"
 
 \end_inset
 
-, which was generated using ParaView.
+, which was created using ParaView, displays the magnitude of the displacement
+ field with the deformation exaggerated by a factor of 1000.
+ Using the animation features within ParaView or Visit you can illustrate
+ how the continental crust near the trench subsides during the interseismic
+ deformation.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -818,9 +824,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/sheardisp.jpg
+	filename figs/step02_soln.png
 	lyxscale 50
-	scale 33
+	width 3in
 
 \end_inset
 
@@ -831,8 +837,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours and vectors of displacement for the shear displacement example
- using a mesh composed of two linear triangular cells.
+Solution for Step 2 at 100 years.
+ The colors indicate the magnitude of the displacement and the deformation
+ is exaggerated by a factor of 1000.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:step02"
@@ -857,124 +864,59 @@ Step 3: Pseudo-earthquake Cycle Model
 \end_layout
 
 \begin_layout Standard
-The next example problem is left-lateral fault slip applied between the
- two triangular cells using kinematic cohesive cells.
- The lower left and upper right boundaries are held fixed in the x and y
- directions.
+This simulation combines 300 years of interseismic deformation from Step
+ 2 with the coseismic deformation from Step 1 applied at 150 years to create
+ a simple model of the earthquake cycle.
  Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-dislocation.cfg
+step03.cfg
 \family default
 .
- The solution corresponds to rigid body rotation of each triangular cell.
- As a result, the tractions on the fault are zero.
  These settings include:
 \end_layout
 
 \begin_layout Description
-pylithapp.journal.info Turns on journaling for 1D quadrature (used for 2D
- faults) and for cohesive kinematic faults.
+pylithapp.timedependent.formulation.time_step Adjust the total simulation time
+ to 300 years.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (x and y), gives the label (defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, and assigns a label to the boundary condition
- set.
- In this case, rather than specifying a spatial database file with the values
- for the Dirichlet boundary condition.
- The default database (ZeroDispDB) for Dirichlet boundary conditions is
- used, which sets the displacements to zero.
+pylithapp.timedependent Specifies the array of boundary conditions.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.interfaces Gives the label (defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points on the fault, provides quadrature information, and
- then gives database names for material properties (needed for conditioning),
- fault slip, peak fault slip rate, and fault slip time.
+pylithapp.timedependent.bc.
+\shape italic
+BOUNDARY
+\shape default
+ The Dirichlet boundary conditions match those in Step 2.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
+pylithapp.timedependent.interfaces On the interface between the subducting
+ oceanic crust and the mantle, we prescribe the same steady, aseismic slip
+ as that in Step 2.
+ On the interface along the top of the subducting oceanic crust and the
+ continental crust and mantle we create two earthquake ruptures, The first
+ rupture applies the coseismic slip form Step 1 at 150 years, while the
+ second rupture prescribes the same steady, asismic slip as in Step 2.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
+ output (
 \family typewriter
-dislocation-fault.vtk
+for example, step03.h5
 \family default
 ).
 \end_layout
 
 \begin_layout Standard
-Rather than specifying the displacement boundary conditions in a spatial
- database file, we use the default behavior for Dirichlet boundary conditions,
- which is a uniform, constant displacement of zero.
-\end_layout
-
-\begin_layout Standard
-The fault example requires three additional database files that were not
- needed for the simple displacement examples.
- The first file (
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data are applied to all points
- in the set.
- The default slip time function is a step-function, so we also must provide
- the time at which slip begins.
- The elastic solution is associated with advancing from 
-\begin_inset Formula $t=-dt$
-\end_inset
-
- to 
-\begin_inset Formula $t=0$
-\end_inset
-
-, so we set the slip initiation time for the step-function to 0 in 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-\size small
-dislocation.cfg
-\family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-\size default
-) provide a complete description of the problem, and we can then run this
- example by typing
+We run this example by typing
 \end_layout
 
 \begin_layout LyX-Code
@@ -982,30 +924,21 @@ pylith step03.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, five files are produced.
- In addition to the files produced in the previous two examples, this example
- produces two files associated with the fault interface.
- The file 
-\family typewriter
-dislocation-fault_t0000000.vtk
-\family default
- gives the fault slip for each vertex on the fault along with the computed
- traction change for the cohesive cell.
- The file 
-\family typewriter
-dislocation-fault_info.vtk
-\family default
- provides information such as the normal direction, final slip, and slip
- time for each vertex on the fault.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
+The simulation will produce pairs of HDF5/Xdmf files with separate files
+ for each material and fault interface.
+ Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:tutorial:subduction:step03"
 
 \end_inset
 
-, which was generated using ParaView.
+, which was created using ParaView, displays the magnitude of the displacement
+ field with the deformation exaggerated by a factor of 1000.
+ Using the animation features within ParaView or Visit you can illustrate
+ how the continental crust near the trench rebounds during the earthquake
+ after subsiding during the interseismic deformation.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1019,9 +952,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/dislocation.jpg
+	filename figs/step03_soln.png
 	lyxscale 50
-	scale 33
+	width 3in
 
 \end_inset
 
@@ -1032,8 +965,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours and vectors of displacement for the kinematic fault example
- using a mesh composed of two linear triangular cells.
+Solution for Step 3 at 150 years (immediately following the earthquake rupture).
+ The colors indicate the magnitude of the displacement and the deformation
+ is exaggerated by a factor of 1000.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:step03"
