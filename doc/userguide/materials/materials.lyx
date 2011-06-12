@@ -1604,6 +1604,22 @@ reference "cha:Alternative-Formulations"
  Note that both 2D and 3D viscoelastic models are described, but we present
  below only the 3D formulations.
  The 2D formulations are easily obtained from the plane strain definition.
+ The one aspect of the 2D formulations that is different is the specification
+ of initial stresses.
+ Since 2D models only have three tensor components, it is not possible to
+ specify the normal stress in the out-of-plane direction (
+\begin_inset Formula $\sigma_{33}$
+\end_inset
+
+), which is generally nonzero.
+ To allow for the specification of this initial stress component, an additional
+ state variable corresponding to 
+\begin_inset Formula $\sigma_{33}^{I}$
+\end_inset
+
+ is provided.
+ Note that this is not an issue for the 2D elastic models, since this initial
+ stress component is not needed.
 \end_layout
 
 \begin_layout Standard
@@ -2452,7 +2468,7 @@ reference "eq:28"
 , we obtain
 \begin_inset Formula 
 \begin{equation}
-\underline{S}\left(t\right)=2\mu_{tot}\left[\mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\lambda_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)-\underline{e}^{I}\right]+\underline{S}^{I}\,.\label{eq:29}
+\underline{S}\left(t\right)=2\mu_{tot}\left\{ \mu_{0}\underline{e}\left(t\right)+\sum_{i=1}^{N}\left[\mu_{i}\exp\frac{-t}{\lambda_{i}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{i}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)\right]-\underline{e}^{I}\right\} +\underline{S}^{I}\,.\label{eq:29}
 \end{equation}
 
 \end_inset
@@ -5223,11 +5239,14 @@ In many problems of interest, the state variables describing a material
  In a more general sense, initial values for state variables may be used
  to provide values that are consistent with any set of conditions that occurred
  prior to the beginning of a simulation.
- The current release of PyLith allows the specification of initial stresses
- and strains for elastic materials, but only initial stresses for anelastic
- materials.
- The next release will support initial stresses, strains, and state variables
- for all materials.
+ The current release of PyLith allows the specification of initial stresses,
+ strains, and state variables for all materials; however, the initial state
+ variables are not presently used.
+ The reason for this is that the present version of PyLith always performs
+ an elastic solution prior to performing the time-dependent solution, and
+ the state variables are not used in the elastic solution.
+ In future versions of PyLith, the solution of the elastic problem will
+ be optional, so that initial state variables may be used.
 \end_layout
 
 \begin_layout Subsection
@@ -5279,6 +5298,15 @@ status open
 \begin_layout Plain Layout
 Values in spatial database for initial state variables for 3D problems.
  2D problems use only the relevant values.
+ Note that initial stress and strain are available for all material models.
+ Some models have additional state variables (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+) and initial values for these may also be provided.
 \end_layout
 
 \end_inset
