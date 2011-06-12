@@ -55,12 +55,18 @@ run_examples
 # ----------------------------------------------------------------------
 # 3d/tet4
 dir="3d/tet4"
-examples="shearxy.cfg dislocation.cfg"
+examples="step01.cfg step02.cfg step03.cfg step04.cfg"
 run_examples
 
 # 3d/hex8
 dir="3d/hex8"
 examples="step01.cfg step02.cfg step03.cfg step04.cfg step05.cfg step06.cfg step07.cfg step08.cfg step09.cfg step10.cfg step11.cfg step12.cfg step13.cfg step14.cfg step15.cfg step16.cfg step17.cfg"
+run_examples
+
+# ----------------------------------------------------------------------
+# subduction
+dir="2d/subduction"
+examples="step01.cfg step02.cfg step03.cfg"
 run_examples
 
 # ----------------------------------------------------------------------
