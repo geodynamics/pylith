@@ -102,6 +102,10 @@ Nonplanar geometry
 Variable mesh resolution
 \end_layout
 
+\begin_layout Itemize
+AREPRO programming language
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Linear triangular cells
@@ -187,7 +191,7 @@ reference "fig:tutorial:subduction:steps"
 
 \end_inset
 
- shows the three step of increasing complexity.
+ shows the three steps of increasing complexity.
  Step 1 focuses on the coseismic slip, Step 2 focuses on interseismic deformatio
 n, and Step 3 combines the two into a pseudo-earthquake cycle deformation
  simulation.
@@ -203,7 +207,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/cartoon_general.eps
 
 \end_inset
 
@@ -214,7 +218,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Cartoon of subduction zone with nonplanar fault geometry and topography.
+Cartoon of subduction zone example.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:overview"
@@ -242,8 +246,92 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Step 1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Step 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Step 3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/step01.eps
+	lyxscale 66
+	width 2in
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/step02.eps
+	lyxscale 66
+	width 2in
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/step03.eps
+	lyxscale 66
+	width 2in
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
@@ -254,7 +342,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Diagram of steps and boundary conditions in subduction zone tutorial.
+Diagram of fault slip and boundary conditions for each step in the subduction
+ zone tutorial.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:steps"
@@ -279,16 +368,28 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
+We construct the mesh in Cubit by constructing the geometry, prescribing
+ the discretization, runnig the mesher, and then grouping cells and vertices
+ for boundary conditions and materials.
+ We use the APREPRO programming language within the journal files to enable
+ use of units and setting variables for values used many times.
+ An appendix in the Cubit documentation discusses the features available
+ with APREPRO in Cubit.
+ The Cubit commands are in three separate journal files.
+ The main driver is in the journal file mesh_tri3.jou.
+ It calls the journal file geometry.jou to construct the geometry and createbc.jou
+ to setup the groups associated with boundary conditions and materials.
+ The journal files are documented and describe the various steps outlined
+ below.
 \end_layout
 
 \begin_layout Enumerate
-Create geometry.
+Create the geometry defining the domain.
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-Create point.
+Create points.
 \end_layout
 
 \begin_layout Enumerate
@@ -296,7 +397,8 @@ Connect points into spline curves.
 \end_layout
 
 \begin_layout Enumerate
-Split curves to form bounding curves.
+Split curves to separate them into sections bounding surfaces.
+ 
 \end_layout
 
 \begin_layout Enumerate
@@ -343,7 +445,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/subduction_tri3.png
+	lyxscale 50
+	width 3in
 
 \end_inset
 
@@ -381,11 +485,13 @@ Common Information
 \end_layout
 
 \begin_layout Standard
-ADD STUFF HERE
-\end_layout
-
-\begin_layout Standard
-The settings contained in 
+As in the examples discussed in previous sections of these tutorials, we
+ place parameters common to among the three steps in the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file so that we do not have to duplicate them for each step.
+ The settings contained in 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -393,8 +499,8 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout Description
-pylithapp.journal.info Settings that control the verbosity of the output for
- the different components.
+pylithapp.journal.info Settings that control the verbosity of the output written
+ to stdout for the different components.
 \end_layout
 
 \begin_layout Description
@@ -416,45 +522,36 @@ pylithapp.timedependent.materials Settings that control the material type,
 \end_layout
 
 \begin_layout Description
+pylithapp.problem.formuation.output Settings related output of the solution
+ over the domain and subdomain (ground surface).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.materials.
+\shape italic
+MATERIAL
+\shape default
+.output Settings related to output of the state variables for material 
+\shape italic
+MATERIAL
+\shape default
+.
+\end_layout
+
+\begin_layout Description
 pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
  type.
 \end_layout
 
 \begin_layout Standard
-All of the problems in this directory use the same material database, as
- specified under 
-\end_layout
-
-\begin_layout LyX-Code
-
-\family typewriter
-pylithapp.timedependent.materials
-\family default
- 
-\end_layout
-
-\begin_layout Standard
-in 
-\family typewriter
-pylithapp.cfg
-\family default
-.
- This information is contained in the file 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- Although the material model is specified in 
-\family typewriter
-pylithapp.cfg
-\family default
-, the values for the physical properties of the material are given in 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- For this example, values describing elastic plane strain material properties
- are given at a single point, resulting in uniform material properties.
+The physical properties for each material are specified in spatial database
+ files.
+ For example, the elastic properties for the continental crust are in mat_concru
+st.spatialdb.
+ The provided spatial database files all use just a single point to specify
+ uniform physical properties within each material.
+ A good exercise is to alter the spatial database files with the physical
+ properties to match PREM.
 \end_layout
 
 \begin_layout Subsection
@@ -462,102 +559,79 @@ Step 1: Coseismic Slip Simulation
 \end_layout
 
 \begin_layout Standard
-The first example problem is extension of the mesh along the diagonal extending
- from the lower left to the upper right of the square mesh.
- Parameter settings that augment those in 
+The first example problem is earthquake rupture involving coseismic slip
+ along the interface between the subducting slab and the continental crust
+ and upper most portion of the mantle below the continental crust.
+ The spatial variation of slip comes from a cross-section of Gavin Hayes
+ finite-source model 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php
+\end_layout
+
+\end_inset
+
+.
+ On the lateral and bottom boundaries of the domain, we fix the degrees
+ of freedom perpendicular to the boundary as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:steps"
+
+\end_inset
+
+.Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-axialdisp.cfg
+step01.cfg
 \family default
 .
  These settings are:
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
+pylithapp.timedependent Specifies the array of boundary conditions.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (x and y), gives the label (defined in 
+pylithapp.timedependent.bc.
+\shape italic
+BOUNDARY
+\shape default
+ Defines the settings for boundary 
+\shape italic
+BOUNDARY
+\shape default
+, including which degrees of freedom are being constrained (x or y), the
+ label (defined in
 \family typewriter
-twotri3.mesh
+ mesh_tri3.exo
 \family default
-) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-axialdisp.spatialdb
-\family default
-).
+) corresponding to the nodeset in Cubit, and a label to the boundary condition
+ used in any error messages.
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
+pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
+ output 
 \begin_inset Newline newline
 \end_inset
 
 (
 \family typewriter
-axialdisp.vtk
+step01.
 \family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-axialdisp-statevars.vtk
-\family default
-).
+h5).
 \end_layout
 
 \begin_layout Standard
-The values for the Dirichlet boundary condition are given in the file 
-\family typewriter
-axialdisp.spatialdb
-\family default
-, as specified in 
-\family typewriter
-axialdisp.cfg
-\family default
-.
- The format of all spatial database files is similar.
- In this case, the desired displacement values are given at two points (lower
- left and upper right).
- Since data are being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-axialdisp.cfg
-\family default
-, 
-\family typewriter
-axialdisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing
+We run this example by typing
 \end_layout
 
 \begin_layout LyX-Code
@@ -565,63 +639,21 @@ pylith step01.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced.
- The first file is named 
-\family typewriter
-axialdisp_t0000000.vtk
-\family default
-.
- The 
-\family typewriter
-t0000000
-\family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
-\family typewriter
-axialdisp-statevars_t0000000.vtk
-\family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear triangles, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
- The final file (
-\family typewriter
-axialdisp-statevars_info.vtk
-\family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
-\family typewriter
-mu
-\family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
+The problem will produce twelve pairs of HDF5/Xdmf files.
+ The HDF5 files contain the data and the Xdmf files contain the metadata
+ required by ParaView and Visit (and possibly other visualization tools
+ that use Xdmf files) to access the mesh and data sets in the HDF5 files.
+ The files include the solution over the domain and ground surface, the
+ stress and strain within each material, and the fault slip.
+ Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
+LatexCommand ref
 reference "fig:tutorial:subduction:step01"
 
 \end_inset
 
-, which was generated using ParaView.
+, which was created using ParaView, displays the magnitude of the displacement
+ field with the deformation exaggerated by a factor of 1000.
 \end_layout
 
 \begin_layout Standard
@@ -635,7 +667,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/axialdisp.jpg
+	filename figs/step01_soln.png
 	lyxscale 50
 	scale 33
 
@@ -648,8 +680,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours and vectors of displacement for the axial displacement example
- using a mesh composed of two linear triangular cells.
+The colors indicate the magnitude of the displacement and the deformation
+ is exaggerated by a factor of 1000.
+ 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:step01"
@@ -674,7 +707,10 @@ Step 2: Interseismic Deformation Simulation
 \end_layout
 
 \begin_layout Standard
-The next example problem is shearing of the mesh in the y direction using
+In this example we simulated the interseismic deformation associated with
+ the oceanic crust subducting beneath the contiental crust and into the
+ mantle.
+ The next example problem is shearing of the mesh in the y direction using
  displacements applied along the positive and negative x boundaries.
  Parameter settings that augment those in 
 \family typewriter

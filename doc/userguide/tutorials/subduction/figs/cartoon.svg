@@ -644,7 +644,7 @@
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Mend);display:inline" />
   </g>
   <g
-     style="display:none"
+     style="display:inline"
      inkscape:label="Annotation (coseismic)"
      id="layer4"
      inkscape:groupmode="layer"
@@ -663,7 +663,7 @@
        style="fill:none;stroke:#c90003;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2MendL)" />
   </g>
   <g
-     style="display:inline"
+     style="display:none"
      inkscape:label="Annotation (interseismic)"
      id="layer5"
      inkscape:groupmode="layer"
@@ -771,7 +771,7 @@
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="BC (coseismic only)"
-     style="display:none"
+     style="display:inline"
      transform="translate(-3.25,-13.5)">
     <use
        x="0"
@@ -960,7 +960,7 @@
      inkscape:groupmode="layer"
      id="layer9"
      inkscape:label="Annotation (step01)"
-     style="display:none"
+     style="display:inline"
      transform="translate(-3.25,-13.5)">
     <text
        xml:space="preserve"
@@ -978,7 +978,7 @@
      inkscape:groupmode="layer"
      id="layer8"
      inkscape:label="Annotation (step02)"
-     style="display:inline"
+     style="display:none"
      transform="translate(-3.25,-13.5)">
     <text
        xml:space="preserve"
