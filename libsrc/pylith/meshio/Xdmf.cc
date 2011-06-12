@@ -158,8 +158,10 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 
       for (int iField=0; iField < numFields; ++iField) {
 	if (2 == spaceDim && 
-	    std::string("Vector") == fieldsMetadata[iField].vectorFieldType) {
-	  for (int component=0; component < spaceDim; ++component)
+	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
+	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	  const int fiberDim = fieldsMetadata[iField].fiberDim;
+	  for (int component=0; component < fiberDim; ++component)
 	    _writeGridAttributeComponent(fieldsMetadata[iField],
 					 iTimeStep, component);
 	} else {
@@ -178,8 +180,10 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     const int iTimeStep = 0;
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
-	  std::string("Vector") == fieldsMetadata[iField].vectorFieldType) {
-	for (int component=0; component < spaceDim; ++component)
+	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
+	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	const int fiberDim = fieldsMetadata[iField].fiberDim;
+	for (int component=0; component < fiberDim; ++component)
 	  _writeGridAttributeComponent(fieldsMetadata[iField],
 				       iTimeStep, component);
       } else {
@@ -511,26 +515,52 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
   } // if/else
 
   std::string componentName = "unknown";
-  switch (component) {
-  case 0:
-    componentName = std::string("x_") + std::string(metadata.name);
-    break;
-  case 1:
-    componentName = std::string("y_") + std::string(metadata.name);
-    break;
-  case 2:
-    componentName = std::string("z_") + std::string(metadata.name);
-    break;
-  default:
-    { // default
-      std::ostringstream msg;
-      msg << "Unknown component " << component << " while writing Xdmf file.";
-      std::cerr << msg.str() << std::endl;
-      assert(0);
+  if (std::string("Vector") == metadata.vectorFieldType) {
+    switch (component) {
+    case 0:
+      componentName = std::string(metadata.name) + std::string("_x");
+      break;
+    case 1:
+      componentName = std::string(metadata.name) + std::string("_y");
+      break;
+    default:
+      { // default
+	std::ostringstream msg;
+	msg << "Unknown component " << component << " while writing Xdmf file.";
+	std::cerr << msg.str() << std::endl;
+	assert(0);
+	throw std::logic_error(msg.str());
+      } // default
+    } // switch
+  } else if (std::string("Tensor") == metadata.vectorFieldType) {
+    switch (component) {
+    case 0:
+      componentName = std::string(metadata.name) + std::string("_xx");
+      break;
+    case 1:
+      componentName = std::string(metadata.name) + std::string("_yy");
+      break;
+    case 2:
+      componentName = std::string(metadata.name) + std::string("_xy");
+      break;
+    default:
+      { // default
+	std::ostringstream msg;
+	msg << "Unknown component " << component << " while writing Xdmf file.";
+	std::cerr << msg.str() << std::endl;
+	assert(0);
+	throw std::logic_error(msg.str());
+      } // default
+    } // switch
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown vector field type " << metadata.vectorFieldType
+	<< " while writing Xdmf file.";
+    std::cerr << msg.str() << std::endl;
+    assert(0);
     throw std::logic_error(msg.str());
-    } // default
-  } // switch
-
+  } // else
+    
   _file
     << "	<Attribute\n"
     << "	   Name=\"" << componentName << "\"\n"

@@ -32,18 +32,62 @@
 	  </DataItem>
 	</Geometry>
 	<Attribute
-	   Name="other"
-	   Type="Tensor"
+	   Name="other_xx"
+	   Type="Scalar"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 3"
+		    Dimensions="1 2 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 3
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 3"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/other
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="other_yy"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 1
+              1 1 1
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 3"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/other
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="other_xy"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 2
+              1 1 1
+              1 2 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
@@ -76,7 +120,7 @@
 	  </DataItem>
 	</Attribute>
 	<Attribute
-	   Name="x_traction"
+	   Name="traction_x"
 	   Type="Scalar"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
@@ -98,7 +142,7 @@
 	  </DataItem>
 	</Attribute>
 	<Attribute
-	   Name="y_traction"
+	   Name="traction_y"
 	   Type="Scalar"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
