@@ -4448,6 +4448,27 @@ www.xdmf.org
  
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Note:
+\color inherit
+ 
+\series default
+The Xdmf format supports representation of two- and three-dimensional coordinate
+s of points, scalar vector field types, and three-dimensional vector and
+ tensor vector field types but not two-dimensional vector or tensor vector
+ field types.
+ As a result, we separate the components of two-dimensional vector and tensor
+ vector field objects and add the component as a suffix to the name of the
+ field.
+ The vector can be reconstructed within ParaView using the Calculator.
+ Accessing the datasets in the HDF5 files using tools such as PyTables with
+ visualization through MayaVi circumvents this problem, but requires writing
+ Python scripts and a deeper knowledge of the visualization interface.
+\end_layout
+
 \begin_layout Standard
 \noindent
 \align center
