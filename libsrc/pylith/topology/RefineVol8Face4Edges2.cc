@@ -313,7 +313,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   //     Notice that points are converted to the new numbering with refined cells
   Obj<ALE::Section<point_type, EdgeType> > newVerticesSection = new ALE::Section<point_type, EdgeType>(oldMesh->comm());
   assert(!newVerticesSection.isNull());
-  std::map<EdgeType, std::vector<int> > bndryEdgeToRank;
+  std::map<EdgeType, std::vector<int> > bndryEdgeToRank; // Maps an edge to a set of ranks who share it
   
   const int localNormalOffset   = orderNewMesh.verticesNormal().min()   - orderOldMesh.verticesNormal().min();
   const int localCensoredOffset = orderNewMesh.verticesCensored().min() - orderOldMesh.verticesCensored().min();
@@ -461,20 +461,27 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
   // Copy across overlap
   typedef ALE::Pair<int, point_type> overlap_point_type;
+  // This maps (remote rank, remote min point) --> (remote max point, new remote vertex)
   Obj<ALE::Section<overlap_point_type, EdgeType> > overlapVertices     = new ALE::Section<overlap_point_type, EdgeType>(oldMesh->comm());
+  // This maps (remote rank, remote min point) --> (other remote points..., new remote vertex)
   Obj<ALE::Section<overlap_point_type, FaceType> > overlapFaceVertices = new ALE::Section<overlap_point_type, FaceType>(oldMesh->comm());
   
   ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection,     overlapVertices);
   ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newFaceVerticesSection, overlapFaceVertices);
   // Merge by translating edge to local points, finding edge in _edgeToVertex, and adding (local new vetex, remote new vertex) to overlap
+  //   Loop over all shared edges
   for(std::map<EdgeType, std::vector<int> >::const_iterator e_iter = bndryEdgeToRank.begin(); e_iter != bndryEdgeToRank.end(); ++e_iter) {
+    // Point added on this edge by refinement
     const point_type localPoint = _edgeToVertex[e_iter->first];
-    
+
+    // Loop over all ranks which share this edge
     for(std::vector<int>::const_iterator r_iter = e_iter->second.begin(); r_iter != e_iter->second.end(); ++r_iter) {
       point_type remoteLeft   = -1, remoteRight = -1;
       const int  rank         = *r_iter;
+      // Offset for left edge point in the new mesh (check whether edge is between Lagrange vertices)
       const int  localOffsetL = orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) ? localNormalOffset : localCensoredOffset;
-      
+
+      // Find the rank which owns the left edge point, and return the remotePoint in the new mesh
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffsetL);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
         if (rank == *lr_iter) {
@@ -482,7 +489,10 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
+      // Offset for right edge point in the new mesh (check whether edge is between Lagrange vertices)
       const int  localOffsetR = orderOldMesh.verticesNormal().hasPoint(e_iter->first.second) ? localNormalOffset : localCensoredOffset;
+
+      // Find the rank which owns the right edge point, and return the remotePoint in the new mesh
       const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffsetR);
       for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
         if (rank == *rr_iter) {
@@ -496,15 +506,42 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const EdgeType  *remoteVals  = overlapVertices->restrictPoint(overlap_point_type(rank, remoteMin));
       point_type       remotePoint = -1;
       
+      // Loop over all shared edges from rank with endpoint remoteMin
       for(int d = 0; d < remoteSize; ++d) {
         if (remoteVals[d].first == remoteMax) {
           remotePoint = remoteVals[d].second;
           break;
         } // if
       } // for
+#if 0
+      // Debugging for fault edge problem
+      if (remotePoint < 0) {
+        std::cout << "["<<oldMesh->commRank()<<"]Failed to find remote partner for edge " << e_iter->first << " from rank " << rank << std::endl;
+        std::cout << "["<<oldMesh->commRank()<<"]   remote edge ("<<remoteLeft<<","<<remoteRight<<") had remoteSize " << remoteSize << std::endl;
+        for(int d = 0; d < remoteSize; ++d) {
+          std::cout << "["<<oldMesh->commRank()<<"]     remote val " << remoteVals[d] << std::endl;
+        }
+        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks2 = oldSendOverlap->support(e_iter->first.first);
+        for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks2->begin(); lr_iter != leftRanks2->end(); ++lr_iter) {
+          if (rank == *lr_iter) {
+            std::cout << "["<<oldMesh->commRank()<<"]     left match:  old vertex " << lr_iter.color() << std::endl;
+            break;
+          }
+        }
+        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks2 = oldSendOverlap->support(e_iter->first.second);
+        for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks2->begin(); rr_iter != rightRanks2->end(); ++rr_iter) {
+          if (rank == *rr_iter) {
+            std::cout << "["<<oldMesh->commRank()<<"]     right match: old vertex " << rr_iter.color() << std::endl;
+            break;
+          }
+        }
+      }
       assert(remotePoint >= 0);
-      newSendOverlap->addArrow(localPoint, rank, remotePoint);
-      newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+#endif
+      if (remotePoint >= 0) {
+        newSendOverlap->addArrow(localPoint, rank, remotePoint);
+        newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+      }
     } // for
   } // for
   // Merge by translating face to local points, finding face in _faceToVertex, and adding (local new vetex, remote new vertex) to overlap
@@ -551,9 +588,14 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         } // if
       } // for
       assert(localPoint >= orderNewMesh.verticesNormal().min() && localPoint < orderNewMesh.verticesNormal().max());
+#if 0
+      // Debugging for fault edge problem
       assert(remotePoint >= 0);
-      newSendOverlap->addArrow(localPoint, rank, remotePoint);
-      newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+#endif
+      if (remotePoint >= 0) {
+        newSendOverlap->addArrow(localPoint, rank, remotePoint);
+        newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+      }
     } // for
   } // for
 
