@@ -156,6 +156,8 @@ This set of examples describes a set of quasi-static problems for PyLith.
  Some of the examples also demonstrate the usage of the nonlinear solver,
  which is required by the nonlinear rheologies (power-law viscoelastic and
  Drucker-Prager elastoplastic).
+ Some of the examples also demonstrate the usage of HDF5 output, which is
+ an alternative to the default VTK output.
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
