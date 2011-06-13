@@ -273,7 +273,7 @@ meshes/spbm_hex8_graded4_20km.exo
 ), the resolution at the outer boundaries is 20 km.
  An inner region is then put through one level of refinement, so that near
  the center of the mesh the resolution is 10 km.
- All meshes were generated with Cubit.
+ All meshes were generated with CUBIT.
 \end_layout
 
 \begin_layout Description
