@@ -20,7 +20,9 @@ dist_noinst_DATA = \
 	README \
 	pylithapp.cfg \
 	step01.cfg \
+	step02.cfg \
 	step03.cfg \
+	step04.cfg \
 	mesh/mesh_tet4_1000m.lagrit \
 	mesh/tet4_1000m_ascii.gmv \
 	mesh/tet4_1000m_ascii.pset \

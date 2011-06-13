@@ -37,7 +37,8 @@ noinst_PYTHON = \
 	TestOutputSolnSubset.py \
 	TestDataWriterVTK.py \
 	TestDataWriterHDF5.py \
-	TestSingleOutput.py
+	TestSingleOutput.py \
+	TestXdmf.py
 
 
 if ENABLE_HDF5
