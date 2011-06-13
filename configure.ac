@@ -46,6 +46,7 @@ AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 # Enable full-scale testing except on cygwin (need to rebase)
 if test "$enable_testing" = yes ; then
   enable_full_testing=yes
+  AC_CANONICAL_HOST
   case $host_os in
     cygwin*)
       enable_full_testing=no ;;
