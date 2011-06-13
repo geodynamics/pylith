@@ -54,7 +54,7 @@ public:
 
   /// @name Parameter information
   //@{
-  char* spatialDBFilename; ///< Filename for database of parameters.
+  const char* spatialDBFilename; ///< Filename for database of parameters.
   int id; ///< Identifier for boundary condition
   char* label; ///< Label for boundary condition
   //@}
