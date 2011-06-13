@@ -44,7 +44,7 @@ public :
 public:
 
   struct FieldStruct {
-    char* name; ///< Name of field
+    const char* name; ///< Name of field
     topology::FieldBase::VectorFieldEnum field_type; ///< Type of field.
     int fiber_dim; ///< Fiber dimension for field.
   }; // FieldStruct

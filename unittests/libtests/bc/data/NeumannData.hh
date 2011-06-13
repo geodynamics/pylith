@@ -40,7 +40,7 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  char* meshFilename; ///< Filename for input mesh.
+  const char* meshFilename; ///< Filename for input mesh.
 
   /// @name Quadrature information
   //@{
@@ -54,9 +54,9 @@ public:
 
   /// @name Parameter information
   //@{
-  char* spatialDBFilename; ///< Filename of simple spatial database.
+  const char* spatialDBFilename; ///< Filename of simple spatial database.
   int id; ///< Boundary condition identifier
-  char* label; ///< Label for boundary condition group
+  const char* label; ///< Label for boundary condition group
   //@}
 
   /// @name Boundary mesh information
