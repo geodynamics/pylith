@@ -8,11 +8,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   Python scripts
     survey
 
-* BUILDBOT
-
-  cygwin
-    don't run tests_auto
-
 * INSTALLER
   Update to 1.6.0
 
