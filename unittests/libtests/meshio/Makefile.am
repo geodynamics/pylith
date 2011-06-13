@@ -251,6 +251,7 @@ if ENABLE_HDF5
 
 
   noinst_HEADERS += \
+	TestHDF5.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5MeshCases.hh \
