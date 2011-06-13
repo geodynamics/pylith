@@ -368,14 +368,14 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-We construct the mesh in Cubit by constructing the geometry, prescribing
+We construct the mesh in CUBIT by constructing the geometry, prescribing
  the discretization, runnig the mesher, and then grouping cells and vertices
  for boundary conditions and materials.
  We use the APREPRO programming language within the journal files to enable
  use of units and setting variables for values used many times.
- An appendix in the Cubit documentation discusses the features available
- with APREPRO in Cubit.
- The Cubit commands are in three separate journal files.
+ An appendix in the CUBIT documentation discusses the features available
+ with APREPRO in CUBIT.
+ The CUBIT commands are in three separate journal files.
  The main driver is in the journal file mesh_tri3.jou.
  It calls the journal file geometry.jou to construct the geometry and createbc.jou
  to setup the groups associated with boundary conditions and materials.
@@ -618,7 +618,7 @@ BOUNDARY
 \family typewriter
  mesh_tri3.exo
 \family default
-) corresponding to the nodeset in Cubit, and a label to the boundary condition
+) corresponding to the nodeset in CUBIT, and a label to the boundary condition
  used in any error messages.
 \end_layout
 
@@ -783,7 +783,7 @@ BOUNDARY
 \family typewriter
  mesh_tri3.exo
 \family default
-) corresponding to the nodeset in Cubit, and a label to the boundary condition
+) corresponding to the nodeset in CUBIT, and a label to the boundary condition
  used in any error messages.
 \end_layout
 
