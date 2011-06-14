@@ -1,55 +1,4 @@
 ======================================================================
-CURRENT ISSUES/PRIORITIES (1.6.0)
-======================================================================
-
-* Workshop
-
-  Upload presentations
-  Python scripts
-    survey
-
-* INSTALLER
-  Update to 1.6.0
-
-----------------------------------------
-BUGS
-----------------------------------------
-
-* Unform global refinement [MATT]
-
-    Check refinement in parallel thoroughly.
-
-  BUG: multiple faults and refinement?
-
-    cd benchmarks/static/performance/solvertest
-    pylith hex8.cfg \
-      --mesh_generator.refiner=pylith.topology.RefineUniform \
-      --nodes=2
-
-    src/cig/pylith/libsrc/pylith/topology/RefineVol8Face4Edges2.cc:505: void ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&, const ALE::Obj<ALE::IMesh<int, double> >&, const ALE::MeshOrder&): Assertion `remotePoint >= 0' failed.
-
-----------------------------------------
-MANUAL
-----------------------------------------
-
-* Cleanup of materials
-
-  + Cleanup documentation
-    + Add more information on derivation (especially Generalize Maxwell) [CHARLES]
-      Use impedance approach
-    + Are material models consistent with governing equations discussion? [CHARLES]
-
-* Proofread
-  + 3d/tet4 (split into steps with field split and global refinement)
-  + ed/hex8 (steps 6-9 use HDF5)
-  + global refinement
-  + numerical damping
-  + HDF5
-  + Release notes
-  + Viscoelastic materials
-  + subduction example [BRAD]
-
-======================================================================
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
@@ -449,24 +398,20 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.6
-----------------------------------------------------------------------
-
-  1. HDF5 output
-
-     Write data into raw binary data file, compress each time chunk
-
-  2. Output data at arbitrary point locations
-
-     Interpolate solution to desired location
-     Solution field (time history)
-
-  4. Uniform global refinement
-
-  6. FaultCohesiveTract (dikes)
-
-----------------------------------------------------------------------
 Release 1.7
+----------------------------------------------------------------------
+
+  1. Damping for Q
+    Generalized Maxwell approach for attenuation
+
+  2. 2-D materials
+    + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
+    + PowerLawPlaneStrain (power law plane strain )
+
+  3. Scalable mesh distribution
+
+----------------------------------------------------------------------
+Release 2.0
 ----------------------------------------------------------------------
 
   1. Restart / checkpointing
@@ -478,15 +423,6 @@ Release 1.7
 
   3. Coupling of quasi-static and dynamic simulations
 
-  4. Damping for Q
-    Mass/stiffness proportional damping for attenuation
-
-  4. Improved support for spherical geometry in user-interface
-
-----------------------------------------------------------------------
-Release 2.0
-----------------------------------------------------------------------
-
   1. Higher order cells
 
      Nonisoparametric cells
@@ -495,7 +431,18 @@ Release 2.0
        Update quadrature to use CellGeometry refPtsToGlobal() and
        jacobian() Remove CellGeometry jacobian(double_array)
 
-  2. XFEM fault implementation
+  2. Output data at arbitrary point locations
+
+     Interpolate solution to desired location
+     Solution field (time history)
+
+----------------------------------------------------------------------
+Low-priority items (release unknown)
+----------------------------------------------------------------------
+
+  6. FaultCohesiveTract (dikes)
+
+  4. Improved support for spherical geometry in user-interface
 
 ----------------------------------------------------------------------
 LONG TERM WISH LIST
