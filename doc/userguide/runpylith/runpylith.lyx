@@ -832,7 +832,7 @@ mesher
 
 \begin_layout Standard
 Geometrical and topological information for the finite element mesh may
- be provided by exporting an EXODUS format file from CUBIT, by exporting
+ be provided by exporting an Exodus II format file from CUBIT, by exporting
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
  the information in PyLith mesh ASCII format.
  See Chapter 

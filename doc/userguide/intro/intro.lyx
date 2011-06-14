@@ -89,7 +89,7 @@ History
 \begin_layout Standard
 PyLith 1.0 was the first version to allow the solution of both implicit (quasi-st
 atic) and explicit (dynamic) problems and was a complete rewrite of the
- original PyLith.
+ original PyLith (version 0.8).
  PyLith 1.0 combines the functionality of EqSim 
 \begin_inset CommandInset citation
 LatexCommand cite
