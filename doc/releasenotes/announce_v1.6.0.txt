@@ -34,7 +34,7 @@ RELEASE NOTES
 
   * Parallel binary output via HDF5
 
-    Provides must faster output by writing HDF5 files in parallel,
+    Provides much faster output by writing HDF5 files in parallel,
     which can be accessed directly from Matlab or indirectly from
     ParaView or Visit via automatically created Xdmf files. Temporal
     data is stored in 3-D arrays, permitting slicing in time and/or
