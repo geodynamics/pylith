@@ -81,7 +81,7 @@ RELEASE NOTES
     - Fixed the fault friction implementation to correctly update Lagrange
       multiplier values when the slip is overestimated in an
       iteration. This primary fixes problems encountered with the use
-      of the Dieterich-Ruine rate and state fault constitutive model.
+      of the Dieterich-Ruina rate and state fault constitutive model.
 
     - Corrected viscoelastic rheologies to properly account for a
       nonzero initial strain tensor.
