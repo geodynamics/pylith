@@ -31,8 +31,12 @@ class Dem2Lines(Application):
     ## \b Properties
     ## @li \b input_dem Input DEM file (ASCII).
     ## @li \b vtk_output_file Filename of VTK output file.
+    ## @li \b master_journal Output master journal file.
     ## @li \b u_line_prefix Prefix for u (east) output lines.
+    ## @li \b u_line_journal Output journal file for u (east) output lines.
     ## @li \b v_line_prefix Prefix for v (north) output lines.
+    ## @li \b v_line_journal Output journal file for v (north) output lines.
+    ## @li \b acis_filename Name of ACIS output file created by Cubit.
     ## @li \b x_min Minimum x-value for full resolution.
     ## @li \b x_max Maximum x-value for full resolution.
     ## @li \b y_min Minimum y-value for full resolution.
@@ -48,11 +52,23 @@ class Dem2Lines(Application):
     vtkOutputFile = pyre.inventory.str("vtk_output_file", default="DEM.vtk")
     vtkOutputFile.meta['tip'] = "VTK output file."
     
+    masterJournal = pyre.inventory.str("master_journal", default="mktopo.jou")
+    masterJournal.meta['tip'] = "Filename of output master journal file."
+    
     uLinePrefix = pyre.inventory.str("u_line_prefix", default="u_lines")
     uLinePrefix.meta['tip'] = "Prefix for u (east) lines."
     
+    uLineJournal = pyre.inventory.str("u_line_journal", default="u_lines.jou")
+    uLineJournal.meta['tip'] = "Outputjournal file for u (east) lines."
+    
     vLinePrefix = pyre.inventory.str("v_line_prefix", default="v_lines")
     vLinePrefix.meta['tip'] = "Prefix for v (north) lines."
+    
+    vLineJournal = pyre.inventory.str("v_line_journal", default="v_lines.jou")
+    vLineJournal.meta['tip'] = "Outputjournal file for v (north) lines."
+    
+    acisFilename = pyre.inventory.str("acis_filename", default="topo.sab")
+    acisFilename.meta['tip'] = "Name of ACIS output file created by Cubit."
     
     xMin = pyre.inventory.float("x_min", default=-1.0)
     xMin.meta['tip'] = "Minimum x-value for full resolution."
@@ -94,7 +110,7 @@ class Dem2Lines(Application):
     # pdb.set_trace()
     self._readDem()
     self._resampleDem()
-    self._writeDemLines()
+    self._writeCubitJournals()
     self._writeDemVtk()
 
     return
@@ -111,8 +127,12 @@ class Dem2Lines(Application):
     # Filenames
     self.inputDem = self.inventory.inputDem
     self.vtkOutputFile = self.inventory.vtkOutputFile
+    self.masterJournal = self.inventory.masterJournal
     self.uLinePrefix = self.inventory.uLinePrefix
+    self.uLineJournal = self.inventory.uLineJournal
     self.vLinePrefix = self.inventory.vLinePrefix
+    self.vLineJournal = self.inventory.vLineJournal
+    self.acisFilename = self.inventory.acisFilename
 
     # Parameters
     self.xMin = self.inventory.xMin
@@ -292,19 +312,60 @@ class Dem2Lines(Application):
     return zAvg
 
 
-  def _writeDemLines(self):
+  def _writeCubitJournals(self):
     """
-    Writes lines of the DEM as sets of Cubit journal files.
+    Writes lines of the DEM as sets of Cubit journal files and write master
+    journal file.
     """
 
     numWidth = 4
     fmt = " location %15.11e %15.11e %15.11e"
+    newLine = "\n"
+    masterPref = "playback '"
+    separator = "# ----------------------------------------------------------\n"
+    comment = "#"
+
+    # Write master journal file.
+    playCmd = \
+            "reset\n" + \
+            "# This is a simple Cubit journal file to create an ACIS\n" + \
+            "# NURBS surface from a set of intersecting lines.\n" + \
+            comment + newLine + separator + \
+            "# Create u-lines and v-lines, then create a net surface.\n" + \
+            separator + \
+            "playback 'ulines.jou'\n" + \
+            "playback 'vlines.jou'\n"
+    m = open(self.masterJournal, 'w')
+    m.write(playCmd)
+    c1 = 1
+    c2 = self.numYOut
+    c3 = c2 + 1
+    c4 = c2 + self.numXOut
+    netCmd = "create surface net u curve " + repr(c1) + " to " + repr(c2) + \
+             " v curve " + repr(c3) + " to " + repr(c4) + newLine
+    m.write(netCmd)
+    comment2 = comment + newLine + separator + \
+               "# Delete curves and any extra vertices.\n" + \
+               separator
+    m.write(comment2)
+    delCmd = "delete curve " + repr(c1) + " to " + repr(c4) + newLine + \
+             "delete vertex all\n"
+    m.write(delCmd)
+    comment3 = comment + newLine + separator + \
+               "# Export binary ACIS file.\n" + separator
+    m.write(comment3)
+    exportCmd = "export Acis '" + self.acisFilename + "'\n"
+    m.write(exportCmd)
+    m.close()
 
     # Write out u (east) lines.
+    um = open(self.uLineJournal, 'w')
     for row in range(self.numYOut):
       y = self.yOut[row]
       uString = repr(row + 1).rjust(numWidth, '0')
       outputFileName = self.uLinePrefix + "_u" + uString + ".jou"
+      masterString = masterPref + outputFileName + "'" + newLine
+      um.write(masterString)
       u = open(outputFileName, 'w')
       u.write('create curve spline')
       for column in range(self.numXOut):
@@ -312,13 +373,17 @@ class Dem2Lines(Application):
 
       u.close()
 
+    um.close()
     print "Number of u-lines = " + repr(self.numYOut)
 
     # Write out v (north) lines.
+    vm = open(self.vLineJournal, 'w')
     for column in range(self.numXOut):
       x = self.xOut[column]
       vString = repr(column + 1).rjust(numWidth, '0')
       outputFileName = self.vLinePrefix + "_v" + vString + ".jou"
+      masterString = masterPref + outputFileName + "'" + newLine
+      vm.write(masterString)
       v = open(outputFileName, 'w')
       v.write('create curve spline')
       for row in range(self.numYOut):
@@ -326,6 +391,7 @@ class Dem2Lines(Application):
 
       v.close()
 
+    vm.close()
     print "Number of v-lines = " + repr(self.numXOut)
 
     return
