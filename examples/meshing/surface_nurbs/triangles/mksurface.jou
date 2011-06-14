@@ -10,6 +10,7 @@ import facets "ruapehu-nzmg-1km.fac" feature_angle 100 spline merge stitch
 
 # Create a mapped mesh, using a size of 4 km.
 surface 1 size 4000.0
+surface 1 scheme map
 mesh surface 1
 
 # Smooth the mesh.
@@ -23,4 +24,5 @@ create surface net from mapped surface 1 heal
 # Export the surface in binary ACIS format.
 set geometry engine acis
 export acis "ruapehu-nzmg-1km.sab" surface 2 binary overwrite
+
 
