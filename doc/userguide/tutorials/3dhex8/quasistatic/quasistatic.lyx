@@ -280,9 +280,13 @@ SimpleDB
 
 \begin_layout LyX-Code
 materials.lower_crust = pylith.materials.MaxwellIsotropic3D
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -411,9 +415,13 @@ db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
 
 \begin_layout LyX-Code
 db_rate.data = [0.0*cm/year,1.0*cm/year,0.0*year]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -515,9 +523,13 @@ writer.time_format = %04.0f
 
 \begin_layout LyX-Code
 writer.time_constant = 1.0*year
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -721,6 +733,14 @@ db_initial.values = [traction-shear-horiz,traction-shear-vert,traction-normal]
 
 \begin_layout LyX-Code
 db_initial.data = [0.0*MPa,0.0*MPa,-1.0*MPa]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -768,6 +788,14 @@ bc_dof = [0, 1]
 
 \begin_layout LyX-Code
 label = face_xneg
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -788,6 +816,14 @@ db_initial.values = [displacement-x,displacement-y]
 
 \begin_layout LyX-Code
 db_initial.data = [0.0*cm,-0.5*cm]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -944,9 +980,13 @@ stability_factor
 
 \begin_layout LyX-Code
 time_step = pylith.problems.TimeStepAdapt
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -993,7 +1033,10 @@ In this example and the remainder of the examples in this section, we also
 
 \begin_layout LyX-Code
 # Give basename for output of solution over domain.
- [pylithapp.problem.formulation.output.domain]
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.domain]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1010,9 +1053,13 @@ output_freq = time_step
 
 \begin_layout LyX-Code
 time_step = 50.0*year
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1049,7 +1096,10 @@ We also set the writer for other output as well, since it is not the default.
 
 \begin_layout LyX-Code
 # Give basename for output of solution over ground surface.
- [pylithapp.problem.formulation.output.subdomain]
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.subdomain]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1058,9 +1108,13 @@ We also set the writer for other output as well, since it is not the default.
 
 \begin_layout LyX-Code
 label = face_zpos
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1098,7 +1152,10 @@ For fault output we use:
 
 \begin_layout LyX-Code
 # Give basename for fault rupture output.
- [pylithapp.problem.interfaces.fault.output]
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.output]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1134,8 +1191,12 @@ Note the usage of
 \family typewriter
 pylith.meshio.DataWriterHDF5SubMesh
 \family default
- for subdomain output and 
+ for subdomain output and
 \family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
 pylith.meshio.DataWriterHDF5SubSubMesh
 \family default
  for fault output.
@@ -1224,9 +1285,13 @@ slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
 
 \begin_layout LyX-Code
 slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1244,9 +1309,13 @@ slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
 
 \begin_layout LyX-Code
 slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1477,9 +1546,13 @@ db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
 
 \begin_layout LyX-Code
 db_rate.data = [0.0*cm/year,1.0*cm/year,0.0*year]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1538,7 +1611,10 @@ vertex_data_fields
 
 \begin_layout LyX-Code
 # Give basename for output of solution over domain.
- [pylithapp.problem.formulation.output.domain]
+\begin_inset Newline newline
+\end_inset
+
+[pylithapp.problem.formulation.output.domain]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1551,7 +1627,10 @@ vertex_data_fields
 
 \begin_layout LyX-Code
 # We also request velocity output in addition to displacements.
- vertex_data_fields = [displacement,velocity]
+\begin_inset Newline newline
+\end_inset
+
+vertex_data_fields = [displacement,velocity]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1560,9 +1639,13 @@ output_freq = time_step
 
 \begin_layout LyX-Code
 time_step = 50.0*year
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1576,15 +1659,22 @@ writer = pylith.meshio.DataWriterHDF5Mesh
 
 \begin_layout LyX-Code
 writer.filename = output/step07.h5
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
 \begin_layout LyX-Code
 # Give basename for output of solution over ground surface.
- [pylithapp.problem.formulation.output.subdomain]
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.subdomain]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1593,15 +1683,22 @@ writer.filename = output/step07.h5
 
 \begin_layout LyX-Code
 label = face_zpos
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
 \begin_layout LyX-Code
 # We also request velocity output in addition to displacements.
- vertex_data_fields = [displacement,velocity]
+\end_layout
+
+\begin_layout LyX-Code
+vertex_data_fields = [displacement,velocity]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1614,9 +1711,13 @@ label = face_zpos
 
 \begin_layout LyX-Code
 skip = 0
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 

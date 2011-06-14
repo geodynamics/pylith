@@ -437,10 +437,14 @@ MeshIOCubit
 
 \begin_layout LyX-Code
 reader = pylith.meshio.MeshIOCubit
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
- 
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -462,9 +466,13 @@ This example differs from some earlier examples, because we specify two
 
 \begin_layout LyX-Code
 materials = [upper_crust,lower_crust]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -490,10 +498,14 @@ quadrature.cell = pylith.feassemble.FIATLagrange
 
 \begin_layout LyX-Code
 quadrature.cell.dimension = 3
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
- 
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code

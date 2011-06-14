@@ -1030,7 +1030,18 @@ Add depth dependent viscosity to the mantle and crust.
 Modify the spatial database files for the material properties to use depth-depen
 dent elastic properties based on PREM (Dziewonski and Anderson, 1981, 10.1016/003
 1-9201(81)90046-7).
- See http://geophysics.ou.edu/solid_earth/prem.html for a simple table of values.
+ See 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+geophysics.ou.edu/solid_earth/prem.html
+\end_layout
+
+\end_inset
+
+ for a simple table of values.
  Add points, update num-locs accordingly, and change data-dim to be 1.
 \end_layout
 
@@ -1042,8 +1053,11 @@ Modify the CUBIT journal files to use quad4 cells rather than tri3 cells.
 \begin_layout Itemize
 Create a simulation with multiple earthquake cycles by lengthening the duration
  of the simulation and adding additional earthquake ruptures.
- See examples/3d/hex8/step06.cfg for an example with multiple earthquake
- ruptures.
+ See 
+\family typewriter
+examples/3d/hex8/step06.cfg
+\family default
+ for an example with multiple earthquake ruptures.
  Examine spinup towards a steady-state solution.
 \end_layout
 

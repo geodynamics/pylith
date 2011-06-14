@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 0
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -153,8 +171,10 @@ step15.cfg
  zero.
  Because all of the materials in the example have the same density, the
  elastic solution for loading via gravitational body forces is
-\begin_inset Formula \begin{equation}
-\sigma_{zz}=\rho gh;\:\sigma_{xx}=\sigma_{yy}=\frac{\nu\rho gh}{1-\nu}\:.\label{eq:1-1}\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\sigma_{zz}=\rho gh;\:\sigma_{xx}=\sigma_{yy}=\frac{\nu\rho gh}{1-\nu}\:.\label{eq:1-1}
+\end{equation}
 
 \end_inset
 
@@ -204,9 +224,13 @@ We use adaptive time stepping, set the simulation time to 200 years, and
 
 \begin_layout LyX-Code
 time_step = pylith.problems.TimeStepAdapt
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -340,6 +364,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step15-displ-t200.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -451,9 +476,13 @@ db_initial_stress.iohandler.filename = spatialdb/initial_stress.spatialdb
 
 \begin_layout LyX-Code
 db_initial_stress.query_type = linear
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -517,6 +546,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step16-stress_xx-t200.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -661,6 +691,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step17-displ-t200.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
