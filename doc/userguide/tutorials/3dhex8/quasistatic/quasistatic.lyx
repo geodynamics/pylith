@@ -604,6 +604,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step04-displ-t200.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -839,6 +840,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step05-displ-t40.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -975,14 +977,13 @@ stability_factor = 1.0 ; use time step equal to stable value from materials
 \begin_layout Standard
 In this example and the remainder of the examples in this section, we also
  make use of HDF5 output rather than the default VTK output.
- HDF5 output is a new feature beginning with PyLith version 1.6.0, and it
- provides a more efficient output method (smaller files that take less time
- to write) with the additional advantage that multiple time steps can be
- contained in a single file.
- PyLith also produces XDMF files describing the contents of the HDF5 files,
+ HDF5 output is a new feature beginning with PyLith version 1.6, and it is
+ much more efficient with the additional advantage that multiple time steps
+ can be contained in a single file.
+ PyLith also produces Xdmf files describing the contents of the HDF5 files,
  which allows the files to be read easily by applications such as ParaView.
- Since VTK output is still the default, we must explicitly define the writer
- to use.
+ Since VTK output is still the default, we must change the value from the
+ default.
  Also note that the filename suffix is 
 \family typewriter
 .h5
@@ -1042,11 +1043,7 @@ writer.time_constant
 \end_layout
 
 \begin_layout Standard
-We need to explicitly define the HDF5 writer for other output as well, since
- it is not the default.
- When specifying output for a subdomain or a fault, this also means we must
- explicitly provide the appropriate writer, which was not necessary for
- VTK output.
+We also set the writer for other output as well, since it is not the default.
  For subdomain output we use:
 \end_layout
 
@@ -1347,7 +1344,7 @@ step06-fault_info.
 h5.
  It will contain final slip information for each earthquake source along
  with slip time information.
- When we have run the simulation, the output HDF5 and XDMF files will be
+ When we have run the simulation, the output HDF5 and Xdmf files will be
  contained in 
 \family typewriter
 examples/3d/hex8/output
@@ -1357,7 +1354,7 @@ examples/3d/hex8/output
 step06
 \family default
 ).
- To open the files in ParaView, the XDMF (
+ To open the files in ParaView, the Xdmf (
 \family typewriter
 .xmf
 \family default
@@ -1379,6 +1376,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step06-displ-t300.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -1639,7 +1637,7 @@ writer.filename = output/step07-groundsurf.h5
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output HDF5 and XDMF files will be
+When we have run the simulation, the output HDF5 and Xdmf files will be
  contained in 
 \family typewriter
 examples/3d/hex8/output
@@ -1679,6 +1677,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step07-displ-vel-t300.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -2050,7 +2049,7 @@ output.cell_data_fields = [total_strain,stress,viscous_strain]
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output HDF5 and XDMF files will be
+When we have run the simulation, the output HDF5 and Xdmf files will be
  contained in 
 \family typewriter
 examples/3d/hex8/output
@@ -2077,6 +2076,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step08-strain-displ-t150.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -2316,7 +2316,7 @@ output.cell_data_fields = [total_strain,stress,plastic_strain]
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output HDF5 and XDMF files will be
+When we have run the simulation, the output HDF5 and Xdmf files will be
  contained in 
 \family typewriter
 examples/3d/hex8/output
@@ -2343,6 +2343,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step08-strain-displ-t150.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
