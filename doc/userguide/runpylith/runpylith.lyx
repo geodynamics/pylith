@@ -1306,7 +1306,8 @@ Refiner
 \end_layout
 
 \begin_layout Standard
-Decrease node spacing by a factor of two by refining each cell.
+The refiner is used to decrease node spacing by a factor of two by subdividing
+ each cell.
  In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
@@ -1375,12 +1376,13 @@ name "fig:uniform:refinement:2x"
 \end_layout
 
 \begin_layout Standard
-The refinement occurs after distribution of the mesh among processors.
+Refinement occurs after distribution of the mesh among processors.
  This allows one to run much large simulations by (1) permitting the mesh
- generator to generate a mesh with a node spacing twice as large as that
- needed in the simulation and (2) the mesh setup phase involving adjustment
- of the topology to insert cohesive cells and distribution among processors
- uses this coarse mesh.
+ generator to construct a mesh with a node spacing twice as large as that
+ needed in the simulation and (2) operations performed in serial during
+ the simulation setup phase, such as, adjusting the topology to insert cohesive
+ cells and distribution of the mesh among processors uses this much smaller
+ coarse mesh.
  For 2-D problems the global mesh refinement increases the maximum problem
  size by a factor of four, and for 3-D problems it increases the maximum
  problem size by a factor of eight.
@@ -1716,7 +1718,7 @@ Warning:
 \series default
 \color none
 The split fields and algebraic multigrid preconditioning currently fails
- when in problems with a nonzero null space.
+ in problems with a nonzero null space.
  This most often occurs when a problem contains multiple faults that extend
  through the entire domain and create subdomains without any Dirichlet boundary
  conditions.
@@ -2636,6 +2638,8 @@ name "tab:petsc:options:advanced"
 
 PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems.
+ N is the dimension of the problem.
+ For simulations with faults, the number of split fields is N+1.
 \end_layout
 
 \end_inset
@@ -2998,8 +3002,7 @@ view_jacobian Flag to indicate if system Jacobian (sparse matrix) should
 \begin_layout Description
 split_fields Split solution field into a displacement portion (fields 0..ndim-1)
  and a Lagrange multiplier portion (field ndim) to permit application of
- sophisticated PETSc preconditioners (default is false; for expert users
- only).
+ sophisticated PETSc preconditioners (default is false).
 \end_layout
 
 \begin_layout Standard
@@ -3028,7 +3031,7 @@ output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
-matrix_type = sbaij ; Non-symmetric sparse matrix is aij
+matrix_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij
 \end_layout
 
 \begin_layout LyX-Code
@@ -3051,14 +3054,15 @@ key "Knopoff:Ni:2001,Day:Ely:2002"
 \end_inset
 
  to reduce these high frequency oscillations.
- In computing the strains for the elasticity term equation 
+ In computing the strains for the elasticity term in equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:elasticity:integral:dynamic:t"
 
 \end_inset
 
-, we use an adjusted displacement, 
+, we use an adjusted displacement rather than the actual displacement, where
+ 
 \begin_inset Formula 
 \begin{equation}
 \vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
@@ -3066,7 +3070,7 @@ reference "eq:elasticity:integral:dynamic:t"
 
 \end_inset
 
-where 
+
 \begin_inset Formula $\vec{u}^{adj}(t)$
 \end_inset
 
@@ -3091,11 +3095,14 @@ is the normalized artificial viscosity,
 \end_inset
 
 .
- The default values for the normalized artificial viscosity is 0.1.
+ The default value for the normalized artificial viscosity is 0.1.
  We have found values in the range 0.1-0.4 sufficiently suppress numerical
  noise while not excessively reducing the peak velocity.
- An example of setting the normalized artificial viscosity in a .cfg file
- is
+ An example of setting the normalized artificial viscosity in a 
+\family typewriter
+.cfg
+\family default
+ file is
 \end_layout
 
 \begin_layout LyX-Code
@@ -4412,8 +4419,8 @@ HDF5 files provide a flexible framework for storing simulation data with
  HDF5 output offers parallel, multi-dimensional array output in binary files,
  so it is much faster and more convenient than the VTK output which uses
  ASCII files and separate files for each time step.
- Standards for organization of datasets and groups in HDF5 files do not
- exist for general finite-element software in geodynamics.
+ Standards for organizing datasets and groups in HDF5 files do not exist
+ for general finite-element software in geodynamics.
  Consequently, PyLith uses its own simple layout show in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4543,13 +4550,23 @@ HDF5 files do not contain self-correcting features that allow a file to
  Fortunately, HDF5 also offers the ability to store datasets in external
  binary files with the locations specified by links in the HDF5 file.
  Note that the use of external data files results in one data file per dataset
- in addition to the HDF5 file and Xdmf file.
+ in addition to the HDF5 and Xdmf files.
+ The external data files use the name of the HDF5 file with the dataset
+ name added to the prefix and the 
+\family typewriter
+.h5
+\family default
+ suffix replaced by 
+\family typewriter
+.dat
+\family default
+).
  The HDF5 files include relative paths to the external data files, so these
  files can also be moved, but they, too, must be kept together in the same
  directory.
- This provides a more robust method because one can generate an HDF5 file
- associated with the uncorrupted portions of the external data files should
- an error occur.
+ This provides a more robust method of output because one can generate an
+ HDF5 file associated with the uncorrupted portions of the external data
+ files should an error occur.
  Currently, PyLith does not include a utility to do this, but we plan to
  add one in a future release.
  Thus, there are two options when writing PyLith output to HDF5 files: (1)
@@ -4568,8 +4585,8 @@ Warning:
 \color inherit
  
 \series default
-Storing the datasets within the HDF5 file in a parallel simulation, however,
- requires that the HDF5 library be configured with the 
+Storing the datasets within the HDF5 file in a parallel simulation requires
+ that the HDF5 library be configured with the 
 \family typewriter
 --enable-parallel
 \family default
@@ -4598,38 +4615,49 @@ h5dump
 \family default
  is very handy for displaying the hierarchy, dimensions of datasets, attributes,
  and even the dataset values.
- Dump the entire HDF5 file to stdout (not practical or useful for large
- files):
+ 
 \end_layout
 
+\begin_layout Quote
+Dump the entire HDF5 file to stdout (not practical or useful for large files):
+\end_layout
+
+\begin_deeper
 \begin_layout LyX-Code
 h5dump mydata.h5
 \end_layout
 
-\begin_layout Standard
+\end_deeper
+\begin_layout Quote
 Dump the hierarchy of an HDF5 file to stdout:
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 h5dump -n mydata.h5
 \end_layout
 
-\begin_layout Standard
+\end_deeper
+\begin_layout Quote
 Dump the hierarchy with dataset dimensions and attributes to stdout:
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 h5dump -H mydata.h5
 \end_layout
 
-\begin_layout Standard
+\end_deeper
+\begin_layout Quote
 Dump dataset 'vertices' in group '/geometry' to stdout:
 \end_layout
 
+\begin_deeper
 \begin_layout LyX-Code
 h5dump -d /geometry/vertices mydata.h5
 \end_layout
 
+\end_deeper
 \begin_layout Subsubsection
 DataWriterHDF5 Parameters
 \end_layout
