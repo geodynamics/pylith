@@ -17,7 +17,9 @@
 #
 
 dist_noinst_DATA =\
-	pylithapp.cfg \
+	tri3.cfg \
+	tri3.mesh \
+	quad4.cfg \
 	quad4.mesh
 
 

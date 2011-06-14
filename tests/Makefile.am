@@ -19,6 +19,7 @@
 SUBDIRS = \
 	2d \
 	3d \
-	topology
+	topology \
+	refinefaulttip
 
 # End of file 

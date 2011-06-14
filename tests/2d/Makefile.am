@@ -19,8 +19,7 @@
 SUBDIRS = \
 	maxwell \
 	slipdir \
-	frictionslide \
-	refinefaulttip
+	frictionslide
 
 
 # End of file 
