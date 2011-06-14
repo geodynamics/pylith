@@ -447,7 +447,7 @@ status open
 \begin_inset Graphics
 	filename figs/subduction_tri3.png
 	lyxscale 50
-	width 3in
+	width 4.5in
 
 \end_inset
 
@@ -693,7 +693,7 @@ status open
 \begin_inset Graphics
 	filename figs/step01_soln.png
 	lyxscale 50
-	width 3in
+	width 4.5in
 
 \end_inset
 
@@ -841,7 +841,7 @@ status open
 \begin_inset Graphics
 	filename figs/step02_soln.png
 	lyxscale 50
-	width 3in
+	width 4.5in
 
 \end_inset
 
@@ -969,7 +969,7 @@ status open
 \begin_inset Graphics
 	filename figs/step03_soln.png
 	lyxscale 50
-	width 3in
+	width 4.5in
 
 \end_inset
 
