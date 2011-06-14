@@ -205,30 +205,19 @@ Support
 \end_layout
 
 \begin_layout Standard
-Current PyLith development is supported by the Southern California Earthquake
- Center 
+Current PyLith development is supported by the CIG, and internal GNS Science
+ 
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
-www.scec.org
+www.gns.cri.nz
 \end_layout
 
 \end_inset
 
-, the National Science Foundation 
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-www.nsf.gov
-\end_layout
-
-\end_inset
-
-, the CIG, and internal U.S.
+ and U.S.
  Geological Survey 
 \begin_inset Flex URL
 status collapsed
@@ -241,7 +230,7 @@ www.usgs.gov
 \end_inset
 
  funding.
- Pyre development is funded by the Department of Energy's 
+ Pyre development was funded by the Department of Energy's 
 \begin_inset Flex URL
 status collapsed
 
@@ -259,7 +248,7 @@ www.doe.gov/engine/content.do
 \begin_layout Standard
 This material is based upon work supported by the National Science Foundation
  under Grants No.
- 0313238 and 0745391.
+ 0313238, 0745391, and EAR-0949446.
  Any opinions, findings, and conclusions or recommendations expressed in
  this material are those of the author(s) and do not necessarily reflect
  the views of the National Science Foundation.
