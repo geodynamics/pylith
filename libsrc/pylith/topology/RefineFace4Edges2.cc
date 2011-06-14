@@ -338,8 +338,11 @@ ALE::RefineFace4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
-      newSendOverlap->addArrow(localPoint, rank, remotePoint);
-      newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+      // TODO: Remove this when we fix refinement along fault boundaries
+      if (remotePoint >= 0) {
+        newSendOverlap->addArrow(localPoint, rank, remotePoint);
+        newRecvOverlap->addArrow(rank, localPoint, remotePoint);
+      }
     } // for
   } // for
 
