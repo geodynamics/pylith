@@ -1339,6 +1339,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/refinement2x.eps
+	scale 125
 
 \end_inset
 

@@ -207,9 +207,9 @@ Time-Dependent Boundary Conditions
 Several boundary conditions use a common formulation for the spatial and
  temporal variation of the boundary condition parameters,
 \begin_inset Formula 
-\[
+\begin{equation}
 f(\vec{x})=f_{0}(\vec{x})+\dot{f}_{0}(\vec{x})(t-t_{0}(\vec{x}))+f_{1}(\vec{x})a(t-t_{1}(\vec{x})),
-\]
+\end{equation}
 
 \end_inset
 
@@ -1813,9 +1813,9 @@ Substituting into our integral over the absorbing boundaries yields
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
+\begin{equation}
 \int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\sum_{m}\dot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\, dS.
-\]
+\end{equation}
 
 \end_inset
 
@@ -1830,9 +1830,9 @@ In the derivation of the governing equations, we recognized that the weighting
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
+\begin{equation}
 r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q})\sum_{m}\dot{a}_{i}^{m}N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cell}(x_{q})|,
-\]
+\end{equation}
 
 \end_inset
 
@@ -1861,9 +1861,9 @@ The appearance of velocity in the expression for the residual means that
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
+\begin{equation}
 \dot{u}_{i}(t)=\frac{1}{2\Delta t}(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)).
-\]
+\end{equation}
 
 \end_inset
 
@@ -1892,9 +1892,9 @@ Expressing the displacement at time
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
+\begin{equation}
 \dot{u}_{i}(t)=\frac{1}{2\Delta t}(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t))
-\]
+\end{equation}
 
 \end_inset
 
@@ -1906,9 +1906,9 @@ The terms contributing to the system Jacobian are associated with the increment
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
+\begin{equation}
 A_{ij}^{nm}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}\delta_{ij}\frac{1}{2\Delta t}\rho(x_{q})v_{i}(x_{q})N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cells}(x_{q})|,
-\]
+\end{equation}
 
 \end_inset
 
@@ -2555,17 +2555,17 @@ We do not allow overlap between the fault interface and the absorbing boundary,
  is the same for all components at a vertex.
  As a result the matrix on the left hand side simplifies to
 \begin_inset Formula 
-\[
+\begin{equation}
 S_{ik}^{pn}=\delta_{ik}\left(\frac{1}{A^{nm+}}+\frac{1}{A^{nm-}}\right),
-\]
+\end{equation}
 
 \end_inset
 
 and
 \begin_inset Formula 
-\[
+\begin{equation}
 dl_{k}^{p}=(S_{ik}^{pn})^{-1}\left(d_{i}^{p}-R_{ij}^{pn}(u_{j}^{n+}-u_{j}^{n-})+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right)\right).
-\]
+\end{equation}
 
 \end_inset
 
@@ -2588,10 +2588,10 @@ Now that we know the value of the increment in the Lagrange multiplier from
 
  using
 \begin_inset Formula 
-\begin{gather*}
+\begin{gather}
 \Delta du_{j}^{n-}=(A_{ij}^{nm-})^{-1}C_{ki}^{pn}dl_{k}^{p}\text{ and}\\
 \Delta du_{j}^{n+}=-(A_{ij}^{nm+})^{-1}C_{ki}^{pn}dl_{k}^{p}.
-\end{gather*}
+\end{gather}
 
 \end_inset
 
