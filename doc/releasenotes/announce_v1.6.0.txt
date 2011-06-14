@@ -49,7 +49,7 @@ RELEASE NOTES
  * Time-weakening fault constitutive model
 
     Added a linear time-weakening fault constitutive model. Some
-    spontaneous rupture models prefer this model over linear
+    spontaneous rupture modelers prefer this model over linear
     slip-weakening because it is easier to maintain resolution of the
     cohesive zone.
 
