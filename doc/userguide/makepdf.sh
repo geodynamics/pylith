@@ -1,4 +1,4 @@
-# -*- Makefile -*-
+#!/bin/bash
 #
 # ----------------------------------------------------------------------
 #
@@ -16,15 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-dist_noinst_DATA = \
-	tri3.cfg \
-	tri3.mesh \
-	quad4.cfg \
-	quad4.mesh \
-	tet4.cfg \
-	tet4.mesh \
-	hex8.cfg \
-	hex8.mesh
+for i in `find . -name "*.eps"`; do epstopdf $i; done
+lyx -e pdf userguide.lyx
 
-
-# End of file 
+# End of file
