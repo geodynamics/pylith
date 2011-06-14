@@ -541,7 +541,7 @@ cell_data_fields
 <column alignment="center" valignment="top" width="1.5in">
 <column alignment="center" valignment="top" width="1.8in">
 <column alignment="center" valignment="top" width="1.5in">
-<column alignment="center" valignment="top" width="1.5in">
+<column alignment="center" valignment="top" width="1in">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
