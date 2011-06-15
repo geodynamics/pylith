@@ -1352,7 +1352,7 @@ status open
 
 \begin_layout Plain Layout
 Global uniform mesh refinement of 2-D and 3-D linear cells.
- The blue lines and orange curcles identify the edges and vertices in the
+ The blue lines and orange circles identify the edges and vertices in the
  original cells.
  The purple lines and green circles identify the new edges and vertices
  added to the original cells to refine the mesh by a factor of two.
@@ -1377,7 +1377,7 @@ name "fig:uniform:refinement:2x"
 
 \begin_layout Standard
 Refinement occurs after distribution of the mesh among processors.
- This allows one to run much large simulations by (1) permitting the mesh
+ This allows one to run much larger simulations by (1) permitting the mesh
  generator to construct a mesh with a node spacing twice as large as that
  needed in the simulation and (2) operations performed in serial during
  the simulation setup phase, such as, adjusting the topology to insert cohesive
@@ -1628,7 +1628,7 @@ PETSc options can be set in
 [pylithapp.petsc]
 \family default
 .
- The ones of primary interest in the case of PyLith are shown in Table
+ The options of primary interest in the case of PyLith are shown in Table
 \begin_inset space ~
 \end_inset
 
@@ -1674,8 +1674,9 @@ reference "tab:petsc:options:advanced"
 \end_inset
 
 .
- These settings are limited to a nonsymmetric sparse matrix and require
- additional settings for the formulation,
+ These settings are limited to problems where we store the stiffness matrix
+ as a nonsymmetric sparse matrix and require additional settings for the
+ formulation,
 \end_layout
 
 \begin_layout LyX-Code
@@ -2007,7 +2008,7 @@ false
 \begin_inset Text
 
 \begin_layout Plain Layout
-Print nonlinear solver paremeters.
+Print nonlinear solver parameters.
 \end_layout
 
 \end_inset
@@ -2040,7 +2041,7 @@ snes_rtol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Convergence tolerance for releative decrease in residual norm.
+Convergence tolerance for relative decrease in residual norm.
 \end_layout
 
 \end_inset
@@ -3130,7 +3131,8 @@ PyLith supports three types of solvers.
 ve models and kinematic fault ruptures.
  The nonlinear solver, SolverNonlinear, corresponds to the PETSc SNES solver
  and is used in nonlinear problems with nonlinear viscoelastic or elastoplastic
- bulk constitutive models or dynamic fault ruptures.
+ bulk constitutive models, dynamic fault ruptures, or problems involving
+ finite strain (small strain formulation).
  The lumped solver (SolverLumped) is a specialized solver used with the
  lumped system Jacobian matrix.
  The options for the PETSc KSP and SNES solvers are set via the top-level
@@ -4430,7 +4432,7 @@ reference "fig:hdf5:layout"
 
 .
  In order for visualization tools, such as ParaView, to determine which
- datasets to read and where to find them in the hiearchy of groups within
+ datasets to read and where to find them in the hierarchy of groups within
  the HDF5 file, we create an Xdmf (eXtensible Data Model and Format, 
 \begin_inset Flex URL
 status open
@@ -4452,7 +4454,7 @@ www.xdmf.org
 \family default
 ) in ParaView or Visit.
  The Xdmf file contains the relative path to the HDF5 file so the files
- can be moved but must be located together in the same direstory.
+ can be moved but must be located together in the same directory.
  
 \end_layout
 
@@ -4512,7 +4514,7 @@ status open
 Layout of PyLith HDF5 file.
  The orange rectangles with rounded corners identify the groups and the
  blue rectangles with sharp corners identify the datasets.
- The dimensions of the data sets are shown in parantheses.
+ The dimensions of the data sets are shown in parentheses.
  Most HDF5 files will contain either 
 \family typewriter
 vertex_fields
@@ -4545,7 +4547,7 @@ name "fig:hdf5:layout"
 \begin_layout Standard
 HDF5 files do not contain self-correcting features that allow a file to
  be read if part of a dataset is corrupted.
- This type of error can occur if a job terminates abnornally in the middle
+ This type of error can occur if a job terminates abnormally in the middle
  or at the end of a simulation on a large cluster or other parallel machine.
  Fortunately, HDF5 also offers the ability to store datasets in external
  binary files with the locations specified by links in the HDF5 file.
@@ -4598,7 +4600,7 @@ The binary PyLith packages include this feature and it is a default setting
 \end_layout
 
 \begin_layout Standard
-Accessing the datasets for additional analysis or visualiation is identical
+Accessing the datasets for additional analysis or visualization is identical
  in the two methods because the use of external data files is completely
  transparent to the user except for the presence of the additional files.
 \end_layout
