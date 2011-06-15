@@ -103,7 +103,7 @@ Variable mesh resolution
 \end_layout
 
 \begin_layout Itemize
-AREPRO programming language
+APREPRO programming language
 \end_layout
 
 \end_deeper
@@ -369,10 +369,10 @@ Mesh Description
 
 \begin_layout Standard
 We construct the mesh in CUBIT by constructing the geometry, prescribing
- the discretization, runnig the mesher, and then grouping cells and vertices
+ the discretization, running the mesher, and then grouping cells and vertices
  for boundary conditions and materials.
  We use the APREPRO programming language within the journal files to enable
- use of units and setting variables for values used many times.
+ use of units and to set variables for values used many times.
  An appendix in the CUBIT documentation discusses the features available
  with APREPRO in CUBIT.
  The CUBIT commands are in three separate journal files.
@@ -486,7 +486,7 @@ Common Information
 
 \begin_layout Standard
 As in the examples discussed in previous sections of these tutorials, we
- place parameters common to among the three steps in the 
+ place parameters common to the three steps in the 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -522,7 +522,7 @@ pylithapp.timedependent.materials Settings that control the material type,
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formuation.output Settings related output of the solution
+pylithapp.problem.formulation.output Settings related output of the solution
  over the domain and subdomain (ground surface).
 \end_layout
 
@@ -562,7 +562,7 @@ Step 1: Coseismic Slip Simulation
 The first example problem is earthquake rupture involving coseismic slip
  along the interface between the subducting slab and the continental crust
  and upper most portion of the mantle below the continental crust.
- The spatial variation of slip comes from a cross-section of Gavin Hayes
+ The spatial variation of slip comes from a cross-section of Gavin Hayes'
  finite-source model 
 \begin_inset Flex URL
 status collapsed
@@ -583,7 +583,8 @@ reference "fig:tutorial:subduction:steps"
 
 \end_inset
 
-.Parameter settings that augment those in 
+.
+ Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -733,7 +734,7 @@ Step 2: Interseismic Deformation Simulation
 
 \begin_layout Standard
 In this example we simulate the interseismic deformation associated with
- the oceanic crust subducting beneath the contiental crust and into the
+ the oceanic crust subducting beneath the continental crust and into the
  mantle.
  We prescribe steady aseismic slip of 8 cm/yr along the interfaces between
  the oceanic crust and mantle with the interface between the oceanic crust
@@ -918,7 +919,7 @@ pylithapp.timedependent.interfaces On the interface between the subducting
  On the interface along the top of the subducting oceanic crust and the
  continental crust and mantle we create two earthquake ruptures, The first
  rupture applies the coseismic slip form Step 1 at 150 years, while the
- second rupture prescribes the same steady, asismic slip as in Step 2.
+ second rupture prescribes the same steady, aseismic slip as in Step 2.
 \end_layout
 
 \begin_layout Description
@@ -1003,7 +1004,7 @@ name "fig:tutorial:subduction:step03"
 \end_layout
 
 \begin_layout Subsection
-Suggestions Variations
+Suggested Variations
 \end_layout
 
 \begin_layout Standard

@@ -2250,8 +2250,8 @@ reference "fig:Material-models"
  models.
  As described in the previous paragraph, a number of common material models
  may be obtained from this model by setting the shear moduli of various
- springs to zero, such as the Maxwell model, the Kelvin model, and the standard
- linear solid.
+ springs to zero or infinity (or a large number), such as the Maxwell model,
+ the Kelvin model, and the standard linear solid.
  We follow formulations similar to those used by Zienkiewicz and Taylor
  
 \begin_inset CommandInset citation

@@ -156,7 +156,7 @@ lagrit.lanl.gov
  to create a mesh, as well as describing how to use a LaGriT-generated mesh
  in PyLith.
  In this tutorial, we will walk through the steps necessary to construct,
- run, and visualzie the results for two problems that use the same mesh.
+ run, and visualize the results for two problems that use the same mesh.
  For each of these problems we also consider a simulation using a custom
  algebraic multigrid preconditioner with a globally uniformly refined mesh
  that reduces the node spacing by a factor of two.
@@ -978,7 +978,7 @@ name "tab:3dtet4:solver:cmp"
 
 Number of iterations in linear solve for the Shear Displacement and Kinematic
  Fault Slip problems discussed in this section.
- The preconditioner using split fields and an algebriac multigrid algorithm
+ The preconditioner using split fields and an algebraic multigrid algorithm
  solves the linear system with fewer iterations with only a small to moderate
  increase as the problem size grows.
 \end_layout

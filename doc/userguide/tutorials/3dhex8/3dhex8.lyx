@@ -549,7 +549,7 @@ reference "fig:3dhex8-mesh"
 ElasticIsotropic3D
 \family default
  material type for both materials.
- This behavior will be overriden by example-specific
+ This behavior will be overridden by example-specific
 \family typewriter
 .cfg
 \family default
