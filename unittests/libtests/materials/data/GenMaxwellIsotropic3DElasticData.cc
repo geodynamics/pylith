@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -342,18 +342,18 @@ const double pylith::materials::GenMaxwellIsotropic3DElasticData::_strain[] = {
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DElasticData::_stress[] = {
- -1.57290000e+07,
- -1.12280000e+07,
- -6.72700000e+06,
-  4.52400000e+06,
-  9.02500000e+06,
-  1.35260000e+07,
- -6.14100000e+06,
- -5.56400000e+06,
- -4.98700000e+06,
- -1.04040000e+06,
- -4.63400000e+05,
-  1.13600000e+05,
+  1.62660000e+07,
+  2.11720000e+07,
+  2.60780000e+07,
+  1.82940000e+07,
+  2.32000000e+07,
+  2.81060000e+07,
+  1.84236000e+06,
+  2.47120000e+06,
+  3.10004000e+06,
+  2.27736000e+06,
+  2.90620000e+06,
+  3.53504000e+06,
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DElasticData::_elasticConsts[] = {
@@ -447,21 +447,70 @@ const double pylith::materials::GenMaxwellIsotropic3DElasticData::_initialStress
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DElasticData::_initialStrain[] = {
-  3.10000000e-04,
-  3.20000000e-04,
-  3.30000000e-04,
-  3.40000000e-04,
-  3.50000000e-04,
-  3.60000000e-04,
-  6.10000000e-04,
-  6.20000000e-04,
-  6.30000000e-04,
-  6.40000000e-04,
-  6.50000000e-04,
-  6.60000000e-04,
+  3.10000000e-05,
+  3.20000000e-05,
+  3.30000000e-05,
+  3.40000000e-05,
+  3.50000000e-05,
+  3.60000000e-05,
+  6.10000000e-05,
+  6.20000000e-05,
+  6.30000000e-05,
+  6.40000000e-05,
+  6.50000000e-05,
+  6.60000000e-05,
 };
 
-const double* pylith::materials::GenMaxwellIsotropic3DElasticData::_stateVarsUpdated = 0;
+const double pylith::materials::GenMaxwellIsotropic3DElasticData::_stateVarsUpdated[] = {
+  1.10000000e-04,
+  2.20000000e-04,
+  3.30000000e-04,
+  4.40000000e-04,
+  5.50000000e-04,
+  6.60000000e-04,
+ -1.09000000e-04,
+  0.00000000e+00,
+  1.09000000e-04,
+  4.06000000e-04,
+  5.15000000e-04,
+  6.24000000e-04,
+ -1.09000000e-04,
+  0.00000000e+00,
+  1.09000000e-04,
+  4.06000000e-04,
+  5.15000000e-04,
+  6.24000000e-04,
+ -1.09000000e-04,
+  0.00000000e+00,
+  1.09000000e-04,
+  4.06000000e-04,
+  5.15000000e-04,
+  6.24000000e-04,
+  1.20000000e-04,
+  2.30000000e-04,
+  3.40000000e-04,
+  4.50000000e-04,
+  5.60000000e-04,
+  6.70000000e-04,
+ -1.09000000e-04,
+  2.71050543e-20,
+  1.09000000e-04,
+  3.86000000e-04,
+  4.95000000e-04,
+  6.04000000e-04,
+ -1.09000000e-04,
+  2.71050543e-20,
+  1.09000000e-04,
+  3.86000000e-04,
+  4.95000000e-04,
+  6.04000000e-04,
+ -1.09000000e-04,
+  2.71050543e-20,
+  1.09000000e-04,
+  3.86000000e-04,
+  4.95000000e-04,
+  6.04000000e-04,
+};
 
 pylith::materials::GenMaxwellIsotropic3DElasticData::GenMaxwellIsotropic3DElasticData(void)
 { // constructor

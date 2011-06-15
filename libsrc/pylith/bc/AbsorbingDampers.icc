@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_absorbingdampers_hh)
+#error "AbsorbingDampers.icc can only be included from AbsorbingDampers.hh"
+#endif
+
+// Set database for boundary condition parameters.
+inline
+void
+pylith::bc::AbsorbingDampers::db(spatialdata::spatialdb::SpatialDB* const db) {
+  _db = db;
+}
+
+
+// End of file 

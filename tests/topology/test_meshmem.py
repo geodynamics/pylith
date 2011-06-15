@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -66,6 +66,10 @@ class TestApp(Script):
     from pylith.perf.MemoryLogger import MemoryLogger
     self.logger = MemoryLogger()
     self.logger._configure()
+
+    from pylith.utils.petsc import MemoryLogger
+    sieveLogger =  MemoryLogger.singleton()
+
     from pylith.topology.topology import MeshOps_numMaterialCells
 
     from pylith.mpi.Communicator import petsc_comm_world
@@ -88,27 +92,25 @@ class TestApp(Script):
     material._configure()
 
     mesh = io.read(debug=False, interpolate=False)
-    del io
 
-    self.logger.logMesh("Mesh", mesh)
+    self.logger.logMesh(mesh.memLoggingStage, mesh)
     material.ncells = MeshOps_numMaterialCells(mesh, material.id())
-    self.logger.logMaterial("Mesh", material)
+    self.logger.logMaterial(mesh.memLoggingStage, material)
     
 
-    self._showStatus("After reading mesh")
-
+    self._showStatus("After reading mesh")    
 
     # ------------------------------------------------------------
     # Reorder mesh
     from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
     ordering = ReverseCuthillMcKee()
     ordering.reorder(mesh)
-    del ordering
 
     # Expect no memory allocation
     self.logger.memory["MeshReordering"] = 0
 
     self._showStatus("After reordering mesh")
+
 
     # ------------------------------------------------------------
     # Distribute mesh
@@ -118,35 +120,38 @@ class TestApp(Script):
       distributor = Distributor()
       normalizer = Nondimensional()
       dmesh = distributor.distribute(mesh, normalizer)
-      del distributor
-      
-      self.logger.logMesh("DistributedMesh", dmesh)
+      dmesh.memLoggingStage = "DistributedMesh"
+
+      self.logger.logMesh(mesh.memLoggingStage, mesh)
+      material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+      self.logger.logMaterial(mesh.memLoggingStage, material)
+    
+      self.logger.logMesh(dmesh.memLoggingStage, dmesh)
       material.ncells = MeshOps_numMaterialCells(dmesh, material.id())
-      self.logger.logMaterial("DistributedMesh", material)
+      self.logger.logMaterial(dmesh.memLoggingStage, material)
 
       self._showStatus("After distributing mesh")
 
-      mesh.deallocate()
       mesh = dmesh
-      self._showStatus("After distributing mesh and deallocation")
+      
       
     # Refine mesh (if necessary)
     from pylith.topology.RefineUniform import RefineUniform
     refiner = RefineUniform()
     rmesh = refiner.refine(mesh)
-    del refiner
+    rmesh.memLoggingStage = "RefinedMesh"
+
+    print "Unrefined mesh logging stage",mesh.memLoggingStage
+    self.logger.logMesh(mesh.memLoggingStage, mesh)
+    material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+    self.logger.logMaterial(mesh.memLoggingStage, material)
     
-    self.logger.logMesh("RefinedMesh", rmesh)
+    self.logger.logMesh(rmesh.memLoggingStage, rmesh)
     material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
-    self.logger.logMaterial("RefinedMesh", material)
+    self.logger.logMaterial(rmesh.memLoggingStage, material)
 
     self._showStatus("After refining mesh")
 
-    if mesh != rmesh:
-      mesh.deallocate()
-    mesh = rmesh
-    self._showStatus("After refining mesh and deallocation")
-      
 
     return
 

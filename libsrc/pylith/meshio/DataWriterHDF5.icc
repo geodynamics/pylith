@@ -1,0 +1,42 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_datawriterhdf5_hh)
+#error "DataWriterHDF5.icc must be included only from DataWriterHDF5.hh"
+#else
+
+// Make copy of this object.
+template<typename mesh_type, typename field_type>
+inline
+pylith::meshio::DataWriter<mesh_type, field_type>*
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::clone(void) const {
+  return new DataWriterHDF5(*this);
+}
+
+// Set filename for HDF5 file.
+template<typename mesh_type, typename field_type>
+inline
+void
+pylith::meshio::DataWriterHDF5<mesh_type,field_type>::filename(const char* filename) {
+  _filename = filename;
+}
+
+
+#endif
+
+// End of file

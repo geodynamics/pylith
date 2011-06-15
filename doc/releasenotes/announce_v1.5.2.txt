@@ -1,0 +1,53 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.5.2, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release fixes several bugs in v1.5.1. We strongly recommend
+all users of previous PyLith releases to switch to this latest
+release. See the README file for changes required to switch to the
+v1.5.x release series from previous versions.
+
+You can download the source code and binaries from
+
+    http://www.geodynamics.org/cig/software/pylith
+
+Detailed installation instructions are in the User Manual with example
+installation procedures for a few platforms in the bundled doc/install
+directory.
+
+
+RELEASE NOTES
+
+  * PyLith 1.5.2 requires FIAT version 0.9.9 or later and an updated
+    PETSc development version. It also requires users to update to the
+    latest spatialdata version for compatibility of the SWIG generated
+    files. These are included in the binary distribution, but users
+    building PyLith from source will need to update FIAT, PETSc, and
+    spatialdata.
+
+  * Users of the Darwin 10.6 binary version must have /usr/bin/python
+    as the Python interpreter in their path. You can verify this using
+    'which python'.
+
+  * Bug fixes
+
+    - Fixed setting of elastic constants in DruckerPrager3D and
+      computation of the yield function. Some off-diagonal elasticity
+      constants were off by a factor of 2.0 and the yield function was
+      missing a factor of 0.5 and sqrt().
+
+    - Fixed computation of stable time step when using initial
+      stresses with PowerLaw3D. If effective stress is zero, then
+      stable time step is infinite.
+
+    - Re-enabled check for compatibility of quadrature scheme and
+      cells for bulk rheologies.
+
+    - Added check to configure for compatible version of FIAT.
+
+    - Fixed bug where buffer for output of initial stresses for
+      dynamic (spontaneous) rupture.
+
+

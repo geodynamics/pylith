@@ -1,3 +1,5 @@
+See INSTALL for suggested methods for installing PyLith.
+
 REQUIRED DEPENDENCIES
 
 MPI
@@ -13,6 +15,7 @@ SWIG (if building from repository)
 OPTIONAL DEPENDENCIES
 
 cppunit
+HDF5
 CUBIT
   netcdf
 PETSc (development version) w/TetGen and ParMetis

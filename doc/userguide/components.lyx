@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -304,6 +322,21 @@ MemoryLogger pylith.perf.MemoryLogger
 Memory model logger for reporting memory use by Sieve.
 \end_layout
 
+\begin_layout Description
+
+\family typewriter
+VTKDataReader pylith.utils.
+\family default
+VTKDataReader
+\begin_inset Newline newline
+\end_inset
+
+Data reader for VTK files, requires TVTK Enthought package available from
+ 
+\family typewriter
+https://github.com/enthought/mayavi.
+\end_layout
+
 \begin_layout Subsection
 Topology components
 \end_layout
@@ -354,6 +387,43 @@ MeshImporter pylith.topology.MeshImporter
 \end_inset
 
 Mesh importer/reader.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+MeshRefiner pylith.topology.Mesh
+\family default
+Refiner
+\begin_inset Newline newline
+\end_inset
+
+Default (null) mesh refinement object that does not refine the mesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+RefineUniform pylith.topology.
+\family default
+RefineUniform
+\begin_inset Newline newline
+\end_inset
+
+Uniform global mesh refinement.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+ReverseCuthillMcKee pylith.topology.
+\family default
+ReverseCuthillMcKee
+\begin_inset Newline newline
+\end_inset
+
+Object used to manage reordering cells and vertices using the reverse Cuthill-Mc
+Kee algorithm.
 \end_layout
 
 \begin_layout Subsection
@@ -427,6 +497,31 @@ Linearly elastic 2-D bulk constitutive model with plane stress (
 \begin_layout Description
 
 \family typewriter
+MaxwellPlaneStrain pylith.materials.MaxwellPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear Maxwell viscoelastic bulk constitutive model for plane strain problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GenMaxwellPlaneStrain pylith.materials.GenMaxwellPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Generalized Maxwell viscoelastic bulk constitutive model for plane strain
+ problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 ElasticIsotropic3D pylith.materials.ElasticIsotropic3D
 \family default
 
@@ -446,18 +541,6 @@ MaxwellIsotropic3D pylith.materials.MaxwellIsotropic3D
 \end_inset
 
 Linear Maxwell viscoelastic bulk constitutive model.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-MaxwellPlaneStrain pylith.materials.MaxwellPlaneStrain
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Linear Maxwell viscoelastic bulk constitutive model for plane strain problems.
 \end_layout
 
 \begin_layout Description
@@ -687,7 +770,18 @@ LiuCosSlipFn pylith.faults.LiuCosSlipFn
 Slip-time function composed of three sine/cosine functions.
  Similar to Brune's far-field time function but with more abrupt termination
  of slip.
- 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeHistorySlipFn pylith.faults.TimeHistorySlipFn
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Slip-time function with a user-defined slip time function.
 \end_layout
 
 \begin_layout Subsection
@@ -728,6 +822,18 @@ RateStateAgeing pylith.friction.RateStateAgeing
 \end_inset
 
 Dieterich-Ruina rate and state friction with ageing law state variable evolution.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TimeWeakening pylith.friction.TimeWeakening
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear time-weakening friction fault constitutive model.
 \end_layout
 
 \begin_layout Subsection
@@ -956,6 +1062,81 @@ DataWriterVTKSubSubMesh pylith.meshio.DataWriterVTKSubSubMesh
 \end_inset
 
 Writer for output to VTK files with submesh information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5Mesh pylith.meshio.DataWriterHDF5Mesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with mesh information.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5SubMesh pylith.meshio.DataWriterHDF5SubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with mesh information over a submesh.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5ExtSubSubMesh pylith.meshio.DataWriterHDF5ExtSubSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with submesh information over a submesh
+ with datasets written to external raw binary files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5ExtMesh pylith.meshio.DataWriterHDF5ExtMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with mesh information with datasets written
+ to external raw binary files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5ExtSubMesh pylith.meshio.DataWriterHDF5ExtSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with mesh information over a submesh with
+ datasets written to external raw binary files.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DataWriterHDF5SubSubMesh pylith.meshio.DataWriterHDF5SubSubMesh
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Writer for output to HDF5 files with submesh information over a submesh.
 \end_layout
 
 \begin_layout Description

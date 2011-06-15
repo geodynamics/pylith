@@ -1,0 +1,146 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_elasticmaterial_hh)
+#error "ElasticMaterial.icc can only be included from ElasticMaterial.hh"
+#endif
+
+#include <cassert>
+
+// Compute 2D deviatoric stress/strain from vector and mean value.
+// 2 FLOPs per call
+inline
+void
+pylith::materials::ElasticMaterial::calcDeviatoric2D(
+					double* const deviatoric,
+					const double* vec,
+					const double vecMean)
+{
+  deviatoric[0] = vec[0] - vecMean;
+  deviatoric[1] = vec[1] - vecMean;
+  deviatoric[2] = vec[2];
+} // calcDeviatoric2D
+
+// Compute 3D deviatoric stress/strain from vector and mean value.
+// 3 FLOPs per call
+inline
+void
+pylith::materials::ElasticMaterial::calcDeviatoric3D(
+					double* const deviatoric,
+					const double* vec,
+					const double vecMean)
+{
+  deviatoric[0] = vec[0] -vecMean;
+  deviatoric[1] = vec[1] -vecMean;
+  deviatoric[2] = vec[2] -vecMean;
+  deviatoric[3] = vec[3];
+  deviatoric[4] = vec[4];
+  deviatoric[5] = vec[5];
+} // calcDeviatoric3D
+
+
+// Compute 2D scalar product of two tensors represented as vectors.
+// 6 FLOPs per call.
+inline
+double
+pylith::materials::ElasticMaterial::scalarProduct2D(const double* tensor1,
+						    const double* tensor2) const
+{ // scalarProduct2D
+  const double scalarProduct = tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] + 2.0 * tensor1[2] * tensor2[2];
+  return scalarProduct;
+
+} // scalarProduct2D
+
+
+// Compute 3D scalar product of two tensors represented as vectors.
+// 12 FLOPs per call.
+inline
+double
+pylith::materials::ElasticMaterial::scalarProduct3D(const double* tensor1,
+						    const double* tensor2) const
+{ // scalarProduct3D
+  const double scalarProduct = tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] +
+    tensor1[2] * tensor2[2] +
+    2.0 * (tensor1[3] * tensor2[3] +
+	   tensor1[4] * tensor2[4] +
+	   tensor1[5] * tensor2[5]);
+  return scalarProduct;
+
+} // scalarProduct3D
+
+
+// Set database for initial stress state.
+inline
+void
+pylith::materials::ElasticMaterial::dbInitialStress(spatialdata::spatialdb::SpatialDB* db) {
+  _dbInitialStress = db;
+}
+
+// Set database for initial strain state.
+inline
+void
+pylith::materials::ElasticMaterial::dbInitialStrain(spatialdata::spatialdb::SpatialDB* db) {
+  _dbInitialStrain = db;
+}
+
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::ElasticMaterial::useElasticBehavior(const bool flag) {
+} // useElasticBehavior
+
+// Get flag indicating whether material implements an empty
+// _updateProperties() method.
+inline
+bool
+pylith::materials::ElasticMaterial::hasStateVars(void) const {
+  return _numVarsQuadPt > 0;
+} // usesUpdateProperties
+
+// Get initial stress/strain fields.
+inline
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >*
+pylith::materials::ElasticMaterial::initialFields(void) const {
+  return _initialFields;
+} // initialFields
+
+// ----------------------------------------------------------------------
+// Compute density for cell at quadrature points.
+inline
+const pylith::double_array&
+pylith::materials::ElasticMaterial::calcDensity(void)
+{ // calcDensity
+  const int numQuadPts = _numQuadPts;
+  const int numPropsQuadPt = _numPropsQuadPt;
+  const int numVarsQuadPt = _numVarsQuadPt;
+  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
+  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
+  assert(_densityCell.size() == numQuadPts*1);
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+    _calcDensity(&_densityCell[iQuad],
+     &_propertiesCell[iQuad*numPropsQuadPt], numPropsQuadPt,
+     &_stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt);
+
+  return _densityCell;
+} // calcDensity
+
+
+// End of file 

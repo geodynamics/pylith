@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -306,8 +306,8 @@ pylith::feassemble::TestElasticityExplicitTet4::testIntegrateJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
     } // for
-  MatDestroy(jDense);
-  MatDestroy(jSparseAIJ);
+  MatDestroy(&jDense);
+  MatDestroy(&jSparseAIJ);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------

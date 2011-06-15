@@ -1,0 +1,74 @@
+#!/usr/bin/env nemesis
+#
+# ======================================================================
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ======================================================================
+#
+
+# This script creates a metadata file (.xmf) from an HDF5 file written
+# by PyLith permitting the data to be viewed in VTK visualization
+# software, such as ParaView and Visit.
+#
+# Usage: pylith_genxdmf --file=FILE
+
+__requires__ = "PyLith"
+
+
+# ======================================================================
+class GenXdmfApp(object):
+  """
+  Application for generating an Xdmf file for an HDF5 file.
+  """
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="pylith_genxdmf"):
+    """
+    Constructor.
+    """
+    self.filename = "output.h5"
+    return
+
+
+  def main(self, *args, **kwds):
+    """
+    Main entry point for application.
+    """
+    from pylith.meshio.Xdmf import Xdmf
+    writer = Xdmf()
+    filenameHDF5 = self.filename
+    filenameXdmf = filenameHDF5.replace(".h5", ".xmf")
+    writer.write(filenameXdmf, filenameHDF5)
+    return
+
+
+# ----------------------------------------------------------------------
+if __name__ == "__main__":
+
+  usage = "%prog --file=FILE"
+  from optparse import OptionParser
+  parser = OptionParser(usage=usage)
+  parser.add_option("-f", "--file", 
+                    dest="filename",
+                    type="string", metavar="FILE",
+                    help="Create Xdmf file for HDF5 file FILE. [output.h5]",
+                    default="output.h5")
+  (options, args) = parser.parse_args()
+
+  app = GenXdmfApp()
+  app.filename = options.filename
+  app.main()
+
+
+# End of file 

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -125,18 +125,23 @@ class Material(PetscComponent):
     logEvent = "%sverify" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    if self.quadrature.cellDim != self.mesh.dimension() or \
-       self.quadrature.spaceDim != self.mesh.coordsys.spaceDim():
+    if self.quadrature.cellDim() != self.mesh.dimension() or \
+       self.quadrature.spaceDim() != self.mesh.coordsys().spaceDim() or \
+       self.quadrature.cell.numCorners != self.mesh.coneSize():
         raise ValueError, \
               "Quadrature scheme for material '%s' and mesh are incompatible.\n" \
-              "Quadrature cell dimension: %d\n" \
-              "Quadrature spatial dimension: %d\n" \
-              "Mesh cell dimension: %d\n" \
-              "Mesh spatial dimension: %d" % \
+              "  Quadrature reference cell:\n" \
+              "    dimension: %d\n" \
+              "    spatial dimension: %d\n" \
+              "    number of corners: %d\n" \
+              "  Mesh cells:\n" \
+              "    dimension: %d\n" \
+              "    spatial dimension: %d\n" \
+              "    number of corners: %d" % \
               (self.label(),
-               self.quadrature.cellDim, self.quadrature.spaceDim,
-               self.mesh.dimension(), self.mesh.coordsys().spaceDim())
-    
+               self.quadrature.cellDim(), self.quadrature.spaceDim(),
+               self.mesh.dimension(), self.mesh.coordsys().spaceDim(),
+               self.quadrature.cell.numCorners, self.mesh.coneSize())
     self._eventLogger.eventEnd(logEvent)
     return
   

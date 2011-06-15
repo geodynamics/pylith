@@ -1,44 +1,86 @@
 ======================================================================
-CURRENT ISSUES/PRIORITIES (1.6.0)
+CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
-* Check for FIAT during configure.
+* GenMaxwellQpQs [BRAD]
 
-* GenMaxwellQpQs
+  2-D and 3-D versions
+  Need to redo Maxwell time calculation. Use ratio.
+  Create benchmark for test (compare against fk)
 
-  How to define viscosity and combinations?????
+* Make nucleation for spontaneous rupture modular [BRAD]
 
-* Fault preconditioner
+  spatial and temporal variation in shear/normal stress for nucleation
 
-  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
-
-  propagate use of field split from SolverLinear to SolverNonlinear [MATT]
-    make sure we reform the preconditioner when we reform the Jacobian
-
-* Unform global refinement
-
-  hex8, level 2 [Need to update overlap]
-
-* Output to HDF5 files.
-
-    Add time dataset to vertex_fields and cell_fields.
-
-    Add creation of .xmf metadata file for ParaView/Visit. 
-    Will this work for [#timesteps, #points, fiberDim]?
-
-
-* Reimplement Fields to use a single section.
+* Reimplement parameters to use PackedFields. [BRAD]
 
     Fields
-    FieldsNew -> CombinedFields
-    SolutionFields
-      Use CombinedFields for acc, vel, disp(t+dt), disp(t), etc?
+    FieldsNew -> PackedFields
+    SolutionFields [do this in multifields]
+      Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
+* Field split.
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
+  Need to check performance of custom fault preconditioner.
+
+
 * Cleanup
-  + memory model
-  + full-scale testing
-  + Code cleanup
+
+    Add elasticPrestep() to Formulation
+    Remove solnIncr, keep setField()
+
+* 2-D materials
+
+  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
+
+* Scalable distribution [MATT]
+
+  + It appears that topology adjustment is not currently limiting the runs
+  + Need a more memory scalable Distribution
+    + Consider simple distribution, followed by cleanup
+  + I think the Overlap structure is probably taking up all the memory
+    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
+      + Can we use a lighter-weight structure to sit in copy()?
+
+  + Need ribbon around fault in order to develop algorithm
+
+* Line search [MATT]
+
+  Line search should be improved to include the inequality constraints.
+
+----------------------------------------
+MISCELLANEOUS
+----------------------------------------
+
+* Memory model [MATT and BRAD]
+
+  (1) The memory logging for distribution logs Creation and Stratification
+  as Creation. Because we set the logging stages in PyLith and these
+  are lumped together within the same Sieve routine, we cannot
+  separate them.
+
+  (2) When we deallocate the distributed mesh, we do not deallocate all of
+  the memory. This suggests some object is leaking memory.
+
+  (3) The memory used by the distributed mesh is much greater than
+  that predicted by the memory model. MATT- Could this be related to
+  each processor having lots of gaps in the range of cells and
+  vertices it has?
+
+  - Can Fusion be leaking memory?
+
+  - How do we separate parallel stratification?
+
+  IntSections - Matt improved distribution to use allow IntSections
+  over vertices or cells rather than vertices + cells. This cuts
+  differences down to 75%.
+
+  Need to check sum, because we may not be tracking deallocation.
 
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
@@ -46,14 +88,27 @@ SECONDARY PRIORITIES
 
 * Paper
 
+  
+  geometry processing (adjusting topology)
+  discretization (cohesive cells)
+  model (Lagrange multipliers)
+    Slip functions
+    Fault constitutive models
+  solver
+  benchmarks
+    Savage and Prescott
+    Dynamic
+  real problem  
+
   General paper - focus on fault implementation
 
   Custom preconditioner
 
-* Cleanup
+* Fault preconditioner [BRAD]
 
-    Add elasticPrestep() to Formulation
-    Remove solnIncr, keep setField()
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
+
+* Cleanup
 
     Consistent use of Schur complement
 
@@ -69,6 +124,11 @@ SECONDARY PRIORITIES
   + Specialized elasticity integrator objects for Quad4, Hex8?
     - Add for lgdeform, implicit time integration?
 
+* Explicit time step
+
+  utility code
+    Compute stable explicit time step
+    Write stable time step explicit (CFL, adhoc)
 
 * Interpolated meshes + temperature field
   No fault, linear elasticity
@@ -76,14 +136,6 @@ SECONDARY PRIORITIES
 
   Incompressibility, temperature/heat
 
-
-* Cleanup of materials [stable]
-
-  + Account for initial strain in viscoelastic models
-
-  + Cleanup documentation
-    + Move formulations not used to Appendix
-    + Cleanup notation
 
 * Testing
   + Need full-scale test with variation in physical properties
@@ -95,17 +147,14 @@ SECONDARY PRIORITIES
 
   FaultCohesiveKinDyn
 
-  Kinematic slip in confined space/time region, otherwise governed by
-  fault constitutive model.
+    Add EqKinSrcs to FaultCohesiveDyn
+
+    Use kinematic slip unless fault constitutive model suggests larger slip
 
 * utilities
   + pylith_eqsummary
     Calculate eq statistics for given slip model (VTK output).
     Ability to get shear modulus on both sides of the fault (use fault normal).
-
-* GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
-
-* DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
 
 * Lumped solver [Brad]
   + Need to finish unit tests
@@ -142,16 +191,6 @@ SECONDARY PRIORITIES
       compute total strain (if nec)
       compute strain rate, get maximum
     
-* Explicit time step
-
-  utility code
-    Compute stable explicit time step
-    Write stable time step explicit (CFL, adhoc)
-
-* Manual
-
-  Are material models consistent with governing equations discussion?
-
 ----------------------------------------------------------------------
 CLEANUP
 ----------------------------------------------------------------------
@@ -359,29 +398,20 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.6
-----------------------------------------------------------------------
-
-  1. HDF5 output
-
-     Write data into raw binary data file, compress each time chunk
-
-       Datasets contain entire time histories (makes it possible to
-       slice along time or space)
-
-     HDF5 metadata file points to raw binary data file
-
-  2. Output data at arbitrary point locations
-
-     Interpolate solution to desired location
-     Solution field (time history)
-
-  4. Uniform global refinement
-
-  6. FaultCohesiveTract (dikes)
-
-----------------------------------------------------------------------
 Release 1.7
+----------------------------------------------------------------------
+
+  1. Damping for Q
+    Generalized Maxwell approach for attenuation
+
+  2. 2-D materials
+    + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
+    + PowerLawPlaneStrain (power law plane strain )
+
+  3. Scalable mesh distribution
+
+----------------------------------------------------------------------
+Release 2.0
 ----------------------------------------------------------------------
 
   1. Restart / checkpointing
@@ -393,15 +423,6 @@ Release 1.7
 
   3. Coupling of quasi-static and dynamic simulations
 
-  4. Damping for Q
-    Mass/stiffness proportional damping for attenuation
-
-  4. Improved support for spherical geometry in user-interface
-
-----------------------------------------------------------------------
-Release 2.0
-----------------------------------------------------------------------
-
   1. Higher order cells
 
      Nonisoparametric cells
@@ -410,7 +431,18 @@ Release 2.0
        Update quadrature to use CellGeometry refPtsToGlobal() and
        jacobian() Remove CellGeometry jacobian(double_array)
 
-  2. XFEM fault implementation
+  2. Output data at arbitrary point locations
+
+     Interpolate solution to desired location
+     Solution field (time history)
+
+----------------------------------------------------------------------
+Low-priority items (release unknown)
+----------------------------------------------------------------------
+
+  6. FaultCohesiveTract (dikes)
+
+  4. Improved support for spherical geometry in user-interface
 
 ----------------------------------------------------------------------
 LONG TERM WISH LIST

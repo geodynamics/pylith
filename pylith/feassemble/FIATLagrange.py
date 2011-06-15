@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -445,8 +445,9 @@ class FIATLagrange(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
-      raise ValueError("Could not set shape of cell for '%s' in spatial " \
-                       "dimension '%s'." % (self.name, spaceDim))
+      raise ValueError("Could not set shape of %dD cell for "
+                       "Quadrature object '%s' in spatial " \
+                       "dimension '%d'." % (self.cellDim, self.name, spaceDim))
     return
   
 

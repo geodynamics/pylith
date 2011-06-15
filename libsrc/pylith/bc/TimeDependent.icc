@@ -1,0 +1,52 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_timedependent_hh)
+#error "TimeDependent.icc can only be included from TimeDependent.hh"
+#endif
+
+// Set database for initial values.
+inline
+void
+pylith::bc::TimeDependent::dbInitial(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbInitial = db;
+}
+
+// Set database for rate of change of values.
+inline
+void
+pylith::bc::TimeDependent::dbRate(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRate = db;
+}
+
+// Set database for change in values.
+inline
+void
+pylith::bc::TimeDependent::dbChange(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbChange = db;
+}
+
+// Set database for temporal evolution of change in value.
+inline
+void
+pylith::bc::TimeDependent::dbTimeHistory(spatialdata::spatialdb::TimeHistory* const db) {
+  _dbTimeHistory = db;
+}
+
+
+// End of file 

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -24,6 +24,7 @@
 from ElasticMaterialApp import ElasticMaterialApp
 
 import numpy
+import math
 
 # ----------------------------------------------------------------------
 dimension = 3
@@ -47,6 +48,9 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
+    # import pdb
+    # pdb.set_trace()
+
     numLocs = 2
     self.dt = 2.0e5
     self.dimension = dimension
@@ -55,7 +59,8 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     self.dbPropertyValues = ["density", "vs", "vp",
                              "shear-ratio-1", "shear-ratio-2", "shear-ratio-3",
                              "viscosity-1", "viscosity-2", "viscosity-3"]
-    self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1, 1, 1, 1], dtype=numpy.int32)
+    self.numPropertyValues = numpy.array([1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                         dtype=numpy.int32)
 
     self.dbStateVarValues = ["total-strain-xx",
                              "total-strain-yy",
@@ -92,9 +97,10 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     viscosityA = [1.0e18, 1.0e17, 1.0e19]
     strainA = [1.1e-4, 2.2e-4, 3.3e-4, 4.4e-4, 5.5e-4, 6.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
-    #initialStrainA = [3.1e-4, 3.2e-4, 3.3e-4, 3.4e-4, 3.5e-4, 3.6e-4]
+    initialStrainA = [3.1e-5, 3.2e-5, 3.3e-5, 3.4e-5, 3.5e-5, 3.6e-5]
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
+    meanStrainA = (strainA[0] + strainA[1] + strainA[2])/3.0
 
     densityB = 2000.0
     vsB = 1200.0
@@ -103,57 +109,46 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     viscosityB = [1.0e18, 1.0e19, 1.0e20]
     strainB = [1.2e-4, 2.3e-4, 3.4e-4, 4.5e-4, 5.6e-4, 6.7e-4]
     initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
-    #initialStrainB = [6.1e-4, 6.2e-4, 6.3e-4, 6.4e-4, 6.5e-4, 6.6e-4]
+    initialStrainB = [6.1e-5, 6.2e-5, 6.3e-5, 6.4e-5, 6.5e-5, 6.6e-5]
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
-
-    # TEMPORARY, need to determine how to use initial strain
-    initialStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    
-    # Simplest approach for now is to assume this is the first step after the
-    # elastic solution. In that case, both the total strain from the last step
-    # (strainT) and the total viscous strain (visStrain) are defined by the
-    # assigned elastic strain.
-    diag = numpy.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0], dtype=numpy.float64)
-    strainTA = numpy.array(strainA)
-    strainTB = numpy.array(strainB)
-    meanStrainA = (strainA[0] + strainA[1] + strainA[2])/3.0
     meanStrainB = (strainB[0] + strainB[1] + strainB[2])/3.0
 
-    maxwellTimeA = [0.0, 0.0, 0.0]
-    maxwellTimeB = [0.0, 0.0, 0.0]
-    visStrainA = numpy.zeros( (numMaxwellModels, tensorSize), dtype=numpy.float64)
-    visStrainB = numpy.zeros( (numMaxwellModels, tensorSize), dtype=numpy.float64)
+    # Compute Maxwell time and viscous strain.
+    diag = numpy.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0], dtype=numpy.float64)
+    strainTA = numpy.array(strainA, dtype=numpy.float64)
+    strainTB = numpy.array(strainB, dtype=numpy.float64)
+
+    maxwellTimeA = [1.0e30, 1.0e30, 1.0e30]
+    maxwellTimeB = [1.0e30, 1.0e30, 1.0e30]
+    visStrainA = numpy.zeros( (numMaxwellModels, tensorSize),
+                              dtype=numpy.float64)
+    visStrainB = numpy.zeros( (numMaxwellModels, tensorSize),
+                              dtype=numpy.float64)
     for imodel in xrange(numMaxwellModels):
       if shearRatioA[imodel] != 0.0:
         maxwellTimeA[imodel] = viscosityA[imodel]/(muA*shearRatioA[imodel])
-        visStrainA[imodel,:] = strainA[:] - diag[:] * meanStrainA
+        visStrainA[imodel,:] = strainTA[:] - diag[:] * meanStrainA
       if shearRatioB[imodel] != 0.0:
         maxwellTimeB[imodel] = viscosityB[imodel]/(muB*shearRatioB[imodel])
-        visStrainB[imodel,:] = strainB[:] - diag[:] * meanStrainB
+        visStrainB[imodel,:] = strainTB[:] - diag[:] * meanStrainB
 
-    self.lengthScale = 1.0e+3
-    self.pressureScale = muA
-    self.timeScale = 1.0
-    self.densityScale = 1.0e+3
-
-    propA = [densityA, vsA, vpA] + shearRatioA + viscosityA
-    propB = [densityB, vsB, vpB] + shearRatioB + viscosityB
-    self.dbProperties = numpy.array([propA, propB], dtype=numpy.float64)
+    dbPropA = [densityA, vsA, vpA] + shearRatioA + viscosityA
+    dbPropB = [densityB, vsB, vpB] + shearRatioB + viscosityB
+    self.dbProperties = numpy.array([dbPropA, dbPropB], dtype=numpy.float64)
     propA = [densityA, muA, lambdaA] + shearRatioA + maxwellTimeA
     propB = [densityB, muB, lambdaB] + shearRatioB + maxwellTimeB
     self.properties = numpy.array([propA, propB], dtype=numpy.float64)
 
     # TEMPORARY, need to determine how to use initial state variables
-    self.dbStateVars = numpy.zeros( (numLocs, tensorSize+numMaxwellModels*tensorSize),
-                                    dtype=numpy.float64)
-    self.stateVars = numpy.zeros( (numLocs, tensorSize+numMaxwellModels*tensorSize),
-                                  dtype=numpy.float64)
-    self.stateVars[0,0:tensorSize] = strainTA
-    self.stateVars[0,tensorSize:(1+numMaxwellModels)*tensorSize] = visStrainA.ravel()
-    self.stateVars[1,0:tensorSize] = strainTB
-    self.stateVars[1,tensorSize:(1+numMaxwellModels)*tensorSize] = visStrainB.ravel()
+    self.dbStateVars = numpy.zeros(
+      (numLocs, tensorSize + numMaxwellModels * tensorSize),
+      dtype=numpy.float64)
+
+    self.lengthScale = 1.0e+3
+    self.pressureScale = muA
+    self.timeScale = 1.0
+    self.densityScale = 1.0e+3
 
     mu0 = self.pressureScale
     density0 = self.densityScale
@@ -161,13 +156,13 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     self.propertiesNondim = \
         numpy.array([ [densityA/density0, muA/mu0, lambdaA/mu0,
                        shearRatioA[0], shearRatioA[1], shearRatioA[2],
-                       maxwellTimeA[0]/time0, maxwellTimeA[1]/time0, maxwellTimeA[2]/time0],
+                       maxwellTimeA[0]/time0, maxwellTimeA[1]/time0,
+                       maxwellTimeA[2]/time0],
                       [densityB/density0, muB/mu0, lambdaB/mu0,
                        shearRatioB[0], shearRatioB[1], shearRatioB[2],
-                       maxwellTimeB[0]/time0, maxwellTimeB[1]/time0, maxwellTimeB[2]/time0] ],
+                       maxwellTimeB[0]/time0, maxwellTimeB[1]/time0,
+                       maxwellTimeB[2]/time0] ],
                     dtype=numpy.float64)
-
-    self.stateVarsNondim = self.stateVars # no scaling
 
     self.initialStress = numpy.array([initialStressA,
                                       initialStressB],
@@ -180,142 +175,228 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                 densityB],
                                dtype=numpy.float64)
 
-    self.strain = numpy.array([strainA,
-                               strainB],
-                               dtype=numpy.float64)
-    
+    # Simplest approach for now is to assume this is the first step
+    # after the elastic solution.  In that case, both the total strain
+    # from the last step (total_strain) and the total viscous strain
+    # (viscous_strain) are defined by the assigned elastic strain.
+    # Revised approach.  For a better test, I am setting the total strain
+    # for the current time step to be equal to the strain from the previous
+    # time step plus a constant amount.
+    totalStrainA = strainTA + 1.0e-5
+    totalStrainB = strainTB + 1.0e-5
+    visStrainVecA = numpy.ravel(visStrainA)
+    visStrainVecB = numpy.ravel(visStrainB)
+    stateVarsA = numpy.concatenate((strainTA, visStrainVecA))
+    stateVarsB = numpy.concatenate((strainTB, visStrainVecB))
+    self.stateVars = numpy.array([stateVarsA, stateVarsB], dtype=numpy.float64)
+    self.stateVarsNondim = self.stateVars # no scaling
+
+    self.strain = numpy.array([totalStrainA, totalStrainB], dtype=numpy.float64)
     self.stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
+    self.stateVarsUpdated = numpy.zeros(
+      (numLocs, tensorSize + numMaxwellModels * tensorSize),
+      dtype=numpy.float64)
+                                         
     self.elasticConsts = numpy.zeros( (numLocs, numElasticConsts), \
                                         dtype=numpy.float64)
 
-    (self.elasticConsts[0,:], self.stress[0,:]) = \
-        self._calcStress(strainA, muA, lambdaA, shearRatioA, maxwellTimeA,
-                         strainTA, visStrainA,
-                         initialStressA, initialStrainA)
-    (self.elasticConsts[1,:], self.stress[1,:]) = \
-        self._calcStress(strainB, muB, lambdaB, shearRatioB, maxwellTimeB,
-                         strainTB, visStrainB,
-                         initialStressB, initialStrainB)
+    (self.elasticConsts[0,:], self.stress[0,:], self.stateVarsUpdated[0,:]) = \
+                              self._calcStress(strainA, muA, lambdaA,
+                                               shearRatioA, maxwellTimeA,
+                                               totalStrainA, visStrainA,
+                                               initialStressA, initialStrainA,
+                                               stateVarsA)
+    (self.elasticConsts[1,:], self.stress[1,:], self.stateVarsUpdated[1,:]) = \
+                              self._calcStress(strainB, muB, lambdaB,
+                                               shearRatioB, maxwellTimeB,
+                                               totalStrainB, visStrainB,
+                                               initialStressB, initialStrainB,
+                                               stateVarsB)
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB))
 
     return
 
 
+  def _calcStressComponent(self, strainVal, strainComp, stressComp, strainTpdt,
+                           muV, lambdaV, shearRatioV, maxwellTimeV, dqV,
+                           totalStrainT, viscousStrainT,
+                           initialStress, initialStrain,
+                           stateVars):
+    """
+    Function to compute a particular stress component as a function of a
+    strain component.
+    """
+    strainTest = numpy.array(strainTpdt, dtype=numpy.float64)
+    strainTest[strainComp] = strainVal
+    stressTpdt, viscousStrainTpdt = self._computeStress(strainTest,
+                                                        muV,
+                                                        lambdaV,
+                                                        shearRatioV,
+                                                        maxwellTimeV,
+                                                        dqV,
+                                                        totalStrainT,
+                                                        viscousStrainT,
+                                                        initialStress,
+                                                        initialStrain,
+                                                        stateVars)
+    return stressTpdt[stressComp]
+
+
+  def _computeStress(self, strainTpdt, muV, lambdaV, shearRatioV, maxwellTimeV,
+                     dqV, strainT, viscousStrainT,
+                     initialStress, initialStrain, stateVars):
+    """
+    Function to compute stresses and viscous strains for a given strain.
+    """
+    
+    bulkModulus = lambdaV + 2.0 * muV / 3.0
+    diag = numpy.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0], dtype=numpy.float64)
+
+    # Initial stresses and strains
+    meanStrainInitial = numpy.dot(diag, initialStrain) / 3.0
+    meanStressInitial = numpy.dot(diag, initialStress) / 3.0
+
+    devStrainInitial = initialStrain - diag * meanStrainInitial
+    devStressInitial = initialStress - diag * meanStressInitial
+
+    # Strains from previous time step
+    meanStrainT = numpy.dot(diag, strainT) / 3.0
+    devStrainT = strainT - diag * meanStrainT - devStrainInitial
+
+    # Strains and mean stress for current time step
+    meanStrainTpdt = numpy.dot(diag, strainTpdt) / 3.0
+    devStrainTpdt = strainTpdt - diag * meanStrainTpdt - devStrainInitial
+    meanStressTpdt = 3.0 * bulkModulus * \
+                     (meanStrainTpdt - meanStrainInitial) + meanStressInitial
+
+    # Compute viscous factors
+    visFrac = 0.0
+    visFac = 0.0
+    expFac = numpy.zeros((numMaxwellModels), dtype=numpy.float64)
+    for model in range(numMaxwellModels):
+      visFrac += shearRatioV[model]
+      visFac += shearRatioV[model] * dqV[model]
+      expFac[model] = math.exp(-self.dt/maxwellTimeV[model])
+                      
+    elasFrac = 1.0 - visFrac
+    stressTpdt = numpy.zeros( (tensorSize), dtype=numpy.float64)
+    viscousStrainTpdt = numpy.zeros( (numMaxwellModels, tensorSize),
+                                     dtype=numpy.float64)
+    elasFac = 2.0 * muV
+
+    # Compute viscous strain and stress
+    for iComp in range(tensorSize):
+      deltaStrain = devStrainTpdt[iComp] - devStrainT[iComp]
+      devStressTpdt = elasFrac * devStrainTpdt[iComp]
+      for model in range(numMaxwellModels):
+        if shearRatioV[model] != 0.0:
+          viscousStrainTpdt[model, iComp] = expFac[model] * \
+                                            viscousStrainT[model, iComp] + \
+                                            dqV[model] * deltaStrain
+          devStressTpdt += shearRatioV[model] * viscousStrainTpdt[model, iComp]
+      devStressTpdt = elasFac * devStressTpdt + devStressInitial[iComp]
+      stressTpdt[iComp] = diag[iComp] * (meanStressTpdt + meanStressInitial) + \
+                          devStressTpdt
+    
+    return stressTpdt, viscousStrainTpdt
+
+
+  def _computeViscousFactor(self, maxwellTime):
+    """
+    Compute viscous strain factor for a given Maxwell time.
+    """
+    
+    timeFrac = 1.0e-5
+    numTerms = 5
+    dq = 0.0
+    if maxwellTime < timeFrac*self.dt:
+      fSign = 1.0
+      factorial = 1.0
+      fraction = 1.0
+      dq = 1.0
+      for iTerm in range(2, numTerms + 1):
+        factorial *= iTerm
+        fSign *= -1.0
+        fraction *= self.dt/maxwellTime
+        dq += fSign*fraction/factorial
+    else:
+      dq = maxwellTime*(1.0-math.exp(-self.dt/maxwellTime))/self.dt
+
+    return dq
+
+
   def _calcStress(self, strainV, muV, lambdaV, shearRatioV, maxwellTimeV,
-                  strainTV, visStrainV, initialStressV, initialStrainV):
+                  totalStrainV, viscousStrainV, initialStressV, initialStrainV,
+                  stateVars):
     """
     Compute stress and derivative of elasticity matrix.
     This assumes behavior is always viscoelastic.
     """
-    import math
-    # import pdb
+    import scipy.misc
     
-    bulkModulus = lambdaV + 2.0 * muV/3.0
+    # Define some numpy arrays
+    strainTpdt = numpy.array(totalStrainV, dtype=numpy.float64)
+    strainT = numpy.array(strainV, dtype=numpy.float64)
+    viscousStrainT = numpy.array(viscousStrainV, dtype=numpy.float64)
+    initialStress = numpy.array(initialStressV, dtype=numpy.float64)
+    initialStrain = numpy.array(initialStrainV, dtype=numpy.float64)
 
-    diag = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
-    traceStrainT = strainTV[0] + strainTV[1] + strainTV[2]
-    traceStrainTpdt = strainV[0] + strainV[1] + strainV[2]
-    meanStrainT = traceStrainT/3.0
-    meanStrainTpdt = traceStrainTpdt/3.0
-    meanStressTpdt = bulkModulus * traceStrainTpdt
+    # Compute viscous factors for each Maxwell model
+    dqV = numpy.zeros(numMaxwellModels, dtype=numpy.float64)
+    for model in range(numMaxwellModels):
+      dqV[model] = self._computeViscousFactor(maxwellTimeV[model])
 
-    timeFrac = 1.0e-10
-    numTerms = 5
-    visFrac = 0.0
-    visFac = 0.0
-    dq = [0.0, 0.0, 0.0]
-    for imodel in range(numMaxwellModels):
-      visFrac += shearRatioV[imodel]
-      if shearRatioV[imodel] != 0.0:
-        if self.dt < timeFrac*maxwellTimeV[imodel]:
-          fSign = 1.0
-          factorial = 1.0
-          fraction = 1.0
-          dq[imodel] = 1.0
-          for iTerm in range(2, numTerms + 1):
-            factorial *= iTerm
-            fSign *= -1.0
-            fraction *= self.dt/maxwellTimeV[imodel]
-            dq[imodel] += fSign*fraction/factorial
-        elif maxwellTimeV[imodel] < timeFrac*self.dt:
-          dq[imodel] = maxwellTimeV[imodel]/dt
-        else:
-          dq[imodel] = maxwellTimeV[imodel] * \
-          (1.0-math.exp(-self.dt/maxwellTimeV[imodel]))/self.dt
-        visFac += shearRatioV[imodel] * dq[imodel]
+    # Compute current stress and viscous strain
+    stressTpdt, viscousStrainTpdt = self._computeStress(strainTpdt,
+                                                        muV,
+                                                        lambdaV,
+                                                        shearRatioV,
+                                                        maxwellTimeV,
+                                                        dqV,
+                                                        strainT,
+                                                        viscousStrainT,
+                                                        initialStress,
+                                                        initialStrain,
+                                                        stateVars)
 
-    elasFrac = 1.0 - visFrac
-    shearFac = muV*(elasFrac + visFac)/3.0
+    # Form updated state variables
+    strainTpdtVec = numpy.ravel(strainTpdt)
+    viscousStrainTpdtVec = numpy.ravel(viscousStrainTpdt)
+    stateVarsUpdated = numpy.concatenate((strainTpdtVec, viscousStrainTpdtVec))
 
-    C1111 = bulkModulus + 4.0*shearFac
-    C1122 = bulkModulus - 2.0*shearFac
-    C1133 = C1122
-    C1112 = 0.0
-    C1123 = 0.0
-    C1113 = 0.0
-    C2211 = C1122
-    C2222 = C1111
-    C2233 = C1122
-    C2212 = 0.0
-    C2223 = 0.0
-    C2213 = 0.0
-    C3311 = C1133
-    C3322 = C2233
-    C3333 = C1111
-    C3312 = 0.0
-    C3323 = 0.0
-    C3313 = 0.0
-    C1211 = 0.0
-    C1222 = 0.0
-    C1233 = 0.0
-    C1212 = 6.0*shearFac
-    C1223 = 0.0
-    C1213 = 0.0
-    C2311 = 0.0
-    C2322 = 0.0
-    C2333 = 0.0
-    C2312 = 0.0
-    C2323 = C1212
-    C2313 = 0.0
-    C1311 = 0.0
-    C1322 = 0.0
-    C1333 = 0.0
-    C1312 = 0.0
-    C1323 = 0.0
-    C1313 = C1212
-    elasticConsts = numpy.array([C1111, C1122, C1133, C1112, C1123, C1113,
-                                 C2211, C2222, C2233, C2212, C2223, C2213,
-                                 C3311, C3322, C3333, C3312, C3323, C3313,
-                                 C1211, C1222, C1233, C1212, C1223, C1213,
-                                 C2311, C2322, C2333, C2312, C2323, C2313,
-                                 C1311, C1322, C1333, C1312, C1323, C1313], dtype=numpy.float64)
+    # Compute components of tangent constitutive matrix using numerical
+    # derivatives.
+    derivDx = 1.0e-12
+    derivOrder = 3
+    elasticConstsList = []
 
-    stressV = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    for stressComp in range(tensorSize):
+      for strainComp in range(tensorSize):
+        dStressDStrain = stressComp + strainComp
+        dStressDStrain = scipy.misc.derivative(self._calcStressComponent,
+                                               strainTpdt[strainComp],
+                                               dx=derivDx,
+                                               args=(strainComp,
+                                                     stressComp,
+                                                     strainTpdt,
+                                                     muV,
+                                                     lambdaV,
+                                                     shearRatioV,
+                                                     maxwellTimeV,
+                                                     dqV,
+                                                     strainT,
+                                                     viscousStrainT,
+                                                     initialStress,
+                                                     initialStrain,
+                                                     stateVars),
+                                               order=derivOrder)
+        elasticConstsList.append(dStressDStrain)
 
-    elasFac = 2.0*muV
-    devStrainTpdt = 0.0
-    devStrainT = 0.0
-    deltaStrain = 0.0
-    devStressTpdt = 0.0
-    visStrain = 0.0
-    for iComp in xrange(tensorSize):
-      devStrainTpdt = strainV[iComp] - diag[iComp]*meanStrainTpdt
-      devStrainT = strainTV[iComp] - diag[iComp]*meanStrainT
-      deltaStrain = devStrainTpdt - devStrainT
-      devStressTpdt = elasFrac*devStrainTpdt
-      for imodel in range(numMaxwellModels):
-        if shearRatioV[imodel] != 0.0:
-          visStrain = math.exp(-self.dt/maxwellTimeV[imodel]) * \
-                      visStrainV[imodel,iComp] + \
-                      dq[imodel] * deltaStrain
-          devStressTpdt += shearRatioV[imodel] * visStrain
-      devStressTpdt = elasFac * devStressTpdt
-      stressV[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt + \
-                       initialStressV[iComp]
-      
-    stress = numpy.reshape(stressV, (6,1))
-    return (elasticConsts, numpy.ravel(stress))
-  
+    elasticConsts = numpy.array(elasticConstsList, dtype=numpy.float64)
+
+    return (elasticConsts, numpy.ravel(stressTpdt),
+            numpy.ravel(stateVarsUpdated))
+
 
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":

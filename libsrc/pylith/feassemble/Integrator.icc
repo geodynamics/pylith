@@ -1,0 +1,165 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_integrator_hh)
+#error "Integrator.icc must be included only from Integrator.hh"
+#else
+
+// Set time step for advancing from time t to time t+dt.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::timeStep(const double dt) {
+  _dt = dt;
+} // timeStep
+
+// Check whether Jacobian needs to be recomputed.
+template<typename quadrature_type>
+inline
+bool
+pylith::feassemble::Integrator<quadrature_type>::needNewJacobian(void) const {
+  return _needNewJacobian;
+} // needNewJacobian
+
+// Check whether integrator needs velocity.
+template<typename quadrature_type>
+inline
+bool
+pylith::feassemble::Integrator<quadrature_type>::isJacobianSymmetric(void) const {
+  return _isJacobianSymmetric;
+} // needsVelocity
+
+// Set flag for setting constraints for total field solution or
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::useSolnIncr(const bool flag) {
+  _useSolnIncr = flag;
+} // useSolnIncr
+
+// Initialize integrator.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::initialize(const topology::Mesh& mesh) {
+} // initialize
+
+// Split solution field for separate preconditioning.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::splitField(topology::Field<topology::Mesh>* field) {
+} // splitField
+  
+// Integrate contributions to residual term (r) for operator.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::integrateResidual(
+			     const topology::Field<topology::Mesh>& residual,
+			     const double t,
+			     topology::SolutionFields* const fields) {
+} // integrateResidual
+
+// Integrate contributions to residual term (r) for operator.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::integrateResidualLumped(
+           const topology::Field<topology::Mesh>& residual,
+           const double t,
+           topology::SolutionFields* const fields) {
+  integrateResidual(residual, t, fields);
+} // integrateResidual
+
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
+				     topology::Jacobian* jacobian,
+				     const double t,
+				     topology::SolutionFields* const fields) {
+  _needNewJacobian = false;
+} // integrateJacobian
+
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
+				     topology::Field<topology::Mesh>* jacobian,
+				     const double t,
+				     topology::SolutionFields* const fields) {
+  _needNewJacobian = false;
+} // integrateJacobian
+
+// Integrate contributions to Jacobian matrix (A) associated with
+// operator.
+template<typename quadrature_type>
+inline
+void 
+pylith::feassemble::Integrator<quadrature_type>::calcPreconditioner(
+			          PetscMat* const precondMatrix,
+				  topology::Jacobian* const jacobian,
+				  topology::SolutionFields* const fields) {
+} // calcPreconditioner
+
+// Update state variables as needed.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::updateStateVars(
+				     const double t,
+				     topology::SolutionFields* const fields) {
+} // updateState
+
+// Constrain solution space.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::constrainSolnSpace(
+			       topology::SolutionFields* const fields,
+			       const double t,
+			       const topology::Jacobian& jacobian) {
+} // constrainSolnSpace
+
+// Adjust solution from solver with lumped Jacobian to match Lagrange
+//  multiplier constraints.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::adjustSolnLumped(
+			topology::SolutionFields* fields,
+			const topology::Field<topology::Mesh>& jacobian) {
+} // adjustSolnLumped
+
+// Verify constraints are acceptable.
+template<typename quadrature_type>
+inline
+void
+pylith::feassemble::Integrator<quadrature_type>::checkConstraints(const topology::Field<topology::Mesh>& solution) const {
+} // checkConstraints
+
+
+
+#endif
+
+// End of file

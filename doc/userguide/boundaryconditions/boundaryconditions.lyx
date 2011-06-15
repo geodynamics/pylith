@@ -1,21 +1,29 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding auto
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -23,9 +31,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -33,15 +50,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -188,8 +206,10 @@ Time-Dependent Boundary Conditions
 \begin_layout Standard
 Several boundary conditions use a common formulation for the spatial and
  temporal variation of the boundary condition parameters,
-\begin_inset Formula \[
-f(\vec{x})=f_{0}(\vec{x})+\dot{f}_{0}(\vec{x})(t-t_{0}(\vec{x}))+f_{1}(\vec{x})a(t-t_{1}(\vec{x})),\]
+\begin_inset Formula 
+\begin{equation}
+f(\vec{x})=f_{0}(\vec{x})+\dot{f}_{0}(\vec{x})(t-t_{0}(\vec{x}))+f_{1}(\vec{x})a(t-t_{1}(\vec{x})),
+\end{equation}
 
 \end_inset
 
@@ -415,7 +435,7 @@ Fields available in output of DirichletBoundary boundary condition information.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="3in">
@@ -673,7 +693,7 @@ Values in the spatial databases used for Dirichlet boundary conditions.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="4in">
 <row>
@@ -972,7 +992,7 @@ Fields available in output of Neumann boundary condition information.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -1153,7 +1173,7 @@ Values in the spatial databases used for Dirichlet boundary conditions in
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="4in">
 <row>
@@ -1423,7 +1443,7 @@ Values in the spatial databases used for point force boundary conditions.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="4in">
 <row>
@@ -1602,8 +1622,10 @@ Consider a plane wave propagating at a velocity
 
 .
  We can write the displacement field as
-\begin_inset Formula \begin{equation}
-\vec{u}(\vec{x},t)=\vec{u^{t}}(t-\frac{\vec{x}}{c}),\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\vec{u}(\vec{x},t)=\vec{u^{t}}(t-\frac{\vec{x}}{c}),
+\end{equation}
 
 \end_inset
 
@@ -1644,10 +1666,12 @@ where
 
  is the vertical direction tangent to the boundary, the tractions on the
  boundary are
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 T_{s_{h}}=\sigma_{s_{h}n}\\
 T_{s_{v}}=\sigma_{s_{v}n}\\
-T_{n}=\sigma_{nn}.\end{gather}
+T_{n}=\sigma_{nn}.
+\end{gather}
 
 \end_inset
 
@@ -1658,10 +1682,12 @@ In the case of a horizontal boundary, we can define an auxiliary direction
 \end_inset
 
  and we can write the tractions as 
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 T_{s_{h}}=2\mu\epsilon_{s_{h}n}\\
 T_{s_{v}}=2\epsilon_{s_{v}n}\\
-T_{n}=(\lambda+2\mu)\epsilon_{nn}+\lambda(\epsilon_{s_{h}s_{h}}+\epsilon_{s_{v}s_{v}}).\end{gather}
+T_{n}=(\lambda+2\mu)\epsilon_{nn}+\lambda(\epsilon_{s_{h}s_{h}}+\epsilon_{s_{v}s_{v}}).
+\end{gather}
 
 \end_inset
 
@@ -1670,23 +1696,29 @@ For infinitesimal strains,
 \end_inset
 
  and we have
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 \epsilon_{s_{h}n}=\frac{1}{2}(u_{s_{h},n}+u_{n,s_{h}})\\
 \epsilon_{s_{v}n}=\frac{1}{2}(u_{s_{v},n}+u_{n,s_{v}})\\
-\epsilon_{nn}=u_{n,n}.\end{gather}
+\epsilon_{nn}=u_{n,n}.
+\end{gather}
 
 \end_inset
 
 For our propagating plane wave, we recognize that
-\begin_inset Formula \begin{equation}
-\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial x_{i}}=-\frac{1}{c}\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial t},\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial x_{i}}=-\frac{1}{c}\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial t},
+\end{equation}
 
 \end_inset
 
 so that our expressions for the tractions become
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 T_{s_{h}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right),\\
-T_{s_{v}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
+T_{s_{v}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).
+\end{gather}
 
 \end_inset
 
@@ -1732,16 +1764,20 @@ For the normal traction, consider a dilatational wave propagating normal
 
 .
  This leads to the following expressions for the tractions:
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 T_{s_{h}}=-\rho v_{s}\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
 T_{s_{v}}=-\rho v_{s}\frac{\partial u_{v}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
-T_{n}=-\rho v_{p}\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
+T_{n}=-\rho v_{p}\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}
+\end{gather}
 
 \end_inset
 
 We write the weak form of the boundary condition as
-\begin_inset Formula \[
-\int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\frac{\partial u_{i}}{\partial t}\phi_{i}\, dS,\]
+\begin_inset Formula 
+\[
+\int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\frac{\partial u_{i}}{\partial t}\phi_{i}\, dS,
+\]
 
 \end_inset
 
@@ -1764,9 +1800,11 @@ where
  is our weighting function.
  We express the trial solution and weighting function as linear combinations
  of basis functions,
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 u_{i}=\sum_{m}a_{i}^{m}N^{m},\\
-\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.\end{gather}
+\phi_{i}=\sum_{n}c_{i}^{n}N^{n}.
+\end{gather}
 
 \end_inset
 
@@ -1774,8 +1812,10 @@ Substituting into our integral over the absorbing boundaries yields
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-\int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\sum_{m}\dot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\, dS.\]
+\begin_inset Formula 
+\begin{equation}
+\int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\sum_{m}\dot{a}_{i}^{m}N^{m}\sum_{n}c_{i}^{n}N^{n}\, dS.
+\end{equation}
 
 \end_inset
 
@@ -1789,8 +1829,10 @@ In the derivation of the governing equations, we recognized that the weighting
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q})\sum_{m}\dot{a}_{i}^{m}N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cell}(x_{q})|,\]
+\begin_inset Formula 
+\begin{equation}
+r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q})\sum_{m}\dot{a}_{i}^{m}N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cell}(x_{q})|,
+\end{equation}
 
 \end_inset
 
@@ -1818,8 +1860,10 @@ The appearance of velocity in the expression for the residual means that
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-\dot{u}_{i}(t)=\frac{1}{2\Delta t}(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)).\]
+\begin_inset Formula 
+\begin{equation}
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)).
+\end{equation}
 
 \end_inset
 
@@ -1847,8 +1891,10 @@ Expressing the displacement at time
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-\dot{u}_{i}(t)=\frac{1}{2\Delta t}(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t))\]
+\begin_inset Formula 
+\begin{equation}
+\dot{u}_{i}(t)=\frac{1}{2\Delta t}(du_{i}(t)+u_{i}(t)-u_{i}(t-\Delta t))
+\end{equation}
 
 \end_inset
 
@@ -1859,8 +1905,10 @@ The terms contributing to the system Jacobian are associated with the increment
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \[
-A_{ij}^{nm}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}\delta_{ij}\frac{1}{2\Delta t}\rho(x_{q})v_{i}(x_{q})N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cells}(x_{q})|,\]
+\begin_inset Formula 
+\begin{equation}
+A_{ij}^{nm}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}\delta_{ij}\frac{1}{2\Delta t}\rho(x_{q})v_{i}(x_{q})N^{m}(x_{q})N^{n}(x_{q})w_{q}|J_{cells}(x_{q})|,
+\end{equation}
 
 \end_inset
 
@@ -2296,20 +2344,27 @@ reference "fig:fault:cohesive:quad4"
  to impose the relative motions, so they are related to the change in stress
  on the fault surface associated with fault slip.
  If we write the algebraic system of equations we are solving in the form
-\begin_inset Formula \begin{equation}
-\underline{A}\overrightarrow{u}=\overrightarrow{b}\,,\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\underline{A}\overrightarrow{u}=\overrightarrow{b}\,,
+\end{equation}
 
 \end_inset
 
 then including the Lagrange multiplier constraints results in
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 \left[\begin{array}{cc}
 \underline{A} & \underline{C}^{T}\\
-\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
+\underline{C} & 0
+\end{array}\right]\left[\begin{array}{c}
 \overrightarrow{u}\\
-\overrightarrow{l}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{l}
+\end{array}\right]=\left[\begin{array}{c}
 \overrightarrow{b}\\
-\overrightarrow{d}\end{array}\right]\,,\label{eq:fault:cohesive:lagrange}\end{equation}
+\overrightarrow{d}
+\end{array}\right]\,,\label{eq:fault:cohesive:lagrange}
+\end{equation}
 
 \end_inset
 
@@ -2348,9 +2403,11 @@ The Lagrange multipliers contribute to both the system Jacobian matrix and
  Because we enforce the constraints in a strong sense, the terms do not
  involve integrals over the fault surface.
  The additional terms in the residual are
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 r_{i}^{n}=-C_{ji}^{pn}l_{j}^{p},\\
-r_{i}^{p}=d_{i}^{p}-C_{ij}^{pn}u_{j}^{n},\end{gather}
+r_{i}^{p}=d_{i}^{p}-C_{ij}^{pn}u_{j}^{n},
+\end{gather}
 
 \end_inset
 
@@ -2359,15 +2416,17 @@ where
 \end_inset
 
  denotes a conventional degree of freedom and 
-\begin_inset Formula $k$
+\begin_inset Formula $p$
 \end_inset
 
  denotes a degree of freedom associated with a Lagrange multiplier.
  The additional terms in the system Jacobian matrix are simply the direction
  cosines,
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 J_{ij}^{np}=C_{ji}^{pn},\\
-J_{ij}^{pn}=C_{ij}^{pn}.\end{gather}
+J_{ij}^{pn}=C_{ij}^{pn}.
+\end{gather}
 
 \end_inset
 
@@ -2390,8 +2449,10 @@ When we use a lumped system Jacobian matrix, we cannot lump the terms associated
 \end_inset
 
 , we have
-\begin_inset Formula \begin{equation}
-r_{i}^{n}(t+\Delta t)=A_{ij}^{nm}(u_{j}^{m}(t)+du_{j}^{m}(t))+C_{ki}^{pn}(l_{k}^{p}(t)+dl_{k}^{p}(t)),\end{equation}
+\begin_inset Formula 
+\begin{equation}
+r_{i}^{n}(t+\Delta t)=A_{ij}^{nm}(u_{j}^{m}(t)+du_{j}^{m}(t))+C_{ki}^{pn}(l_{k}^{p}(t)+dl_{k}^{p}(t)),
+\end{equation}
 
 \end_inset
 
@@ -2433,9 +2494,11 @@ where we have written the displacements and Lagrange multipliers at time
 
 , and by setting the residual with all terms included to zero; thus, we
  have
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 A_{ij}^{nm}(u_{j}^{m}(t)+du_{j}^{m}(t))+C_{ki}^{pn}(l_{k}^{p}(t)+dl_{k}^{p}(t))=0\text{ subject to}\\
-C_{ij}^{pn}(u_{j}^{n}(t)+du_{j}^{n}(t))=d_{i}^{p}.\end{gather}
+C_{ij}^{pn}(u_{j}^{n}(t)+du_{j}^{n}(t))=d_{i}^{p}.
+\end{gather}
 
 \end_inset
 
@@ -2448,18 +2511,22 @@ Making use of the residual computed with
 \end_inset
 
 ,
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 r_{i}^{n}+A_{ij}^{nm}du_{j}^{m}+C_{ki}^{pn}dl_{k}^{p}=0\text{ subject to}\\
-C_{ij}^{pn}(u_{j}^{n}(t)+du_{j}^{n}(t))=d_{i}^{p}.\end{gather}
+C_{ij}^{pn}(u_{j}^{n}(t)+du_{j}^{n}(t))=d_{i}^{p}.
+\end{gather}
 
 \end_inset
 
 Explicitly writing the equations for the vertices on the negative and positive
  sides of the fault yields
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 r_{i}^{n-}+A_{ij}^{nm-}du_{j}^{m-}+R_{ki}^{pn}dl_{k}^{p}=0,\\
 r_{i}^{n+}+A_{ij}^{nm+}du_{j}^{m+}+R_{ki}^{pn}dl_{k}^{p}=0,\\
-R_{ij}^{pn}(u_{j}^{n+}+du_{j}^{n+}-u_{j}^{n-}-du_{j}^{n-})=d_{i}^{p}.\end{gather}
+R_{ij}^{pn}(u_{j}^{n+}+du_{j}^{n+}-u_{j}^{n-}-du_{j}^{n-})=d_{i}^{p}.
+\end{gather}
 
 \end_inset
 
@@ -2472,9 +2539,11 @@ Solving the first two equations for
 \end_inset
 
  and combining them using the third equation leads to
-\begin_inset Formula \begin{multline}
+\begin_inset Formula 
+\begin{multline}
 R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}+(A_{ij}^{nm+})^{-1}\right)R_{ki}^{pn}dl_{k}^{p}=d_{i}^{p}-R_{ij}^{pn}(u_{j}^{n+}-u_{j}^{n-})\\
-+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right).\end{multline}
++R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right).
+\end{multline}
 
 \end_inset
 
@@ -2485,14 +2554,18 @@ We do not allow overlap between the fault interface and the absorbing boundary,
 
  is the same for all components at a vertex.
  As a result the matrix on the left hand side simplifies to
-\begin_inset Formula \[
-S_{ik}^{pn}=\delta_{ik}\left(\frac{1}{A^{nm+}}+\frac{1}{A^{nm-}}\right),\]
+\begin_inset Formula 
+\begin{equation}
+S_{ik}^{pn}=\delta_{ik}\left(\frac{1}{A^{nm+}}+\frac{1}{A^{nm-}}\right),
+\end{equation}
 
 \end_inset
 
 and
-\begin_inset Formula \[
-dl_{k}^{p}=(S_{ik}^{pn})^{-1}\left(d_{i}^{p}-R_{ij}^{pn}(u_{j}^{n+}-u_{j}^{n-})+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right)\right).\]
+\begin_inset Formula 
+\begin{equation}
+dl_{k}^{p}=(S_{ik}^{pn})^{-1}\left(d_{i}^{p}-R_{ij}^{pn}(u_{j}^{n+}-u_{j}^{n-})+R_{ij}^{pn}\left((A_{ij}^{nm+})^{-1}r_{i}^{n+}-(A_{ij}^{nm-})^{-1}r_{i}^{n-}\right)\right).
+\end{equation}
 
 \end_inset
 
@@ -2514,9 +2587,11 @@ Now that we know the value of the increment in the Lagrange multiplier from
 \end_inset
 
  using
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula 
+\begin{gather}
 \Delta du_{j}^{n-}=(A_{ij}^{nm-})^{-1}C_{ki}^{pn}dl_{k}^{p}\text{ and}\\
-\Delta du_{j}^{n+}=-(A_{ij}^{nm+})^{-1}C_{ki}^{pn}dl_{k}^{p}.\end{gather*}
+\Delta du_{j}^{n+}=-(A_{ij}^{nm+})^{-1}C_{ki}^{pn}dl_{k}^{p}.
+\end{gather}
 
 \end_inset
 
@@ -2616,7 +2691,7 @@ Fields available in output of fault information.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="3.5in">
@@ -2979,10 +3054,13 @@ This slip function prescribes a step in slip at a given time at a point:
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 D(t)=\left\{ \begin{array}{cc}
 0 & 0\leq t<t_{r}\\
-D_{final} & t\ge t_{r}\end{array}\right.\,,\end{gather}
+D_{final} & t\ge t_{r}
+\end{array}\right.\,,
+\end{gather}
 
 \end_inset
 
@@ -3098,7 +3176,7 @@ Values in spatial database used as parameters in the step function slip
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -3296,10 +3374,13 @@ This slip function prescribes a constant slip rate for the evolution of
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 D(t)=\left\{ \begin{array}{cc}
 0 & 0\leq t<t_{r}\\
-V(t-t_{r}) & t\ge t_{r}\end{array}\right.\,,\end{gather}
+V(t-t_{r}) & t\ge t_{r}
+\end{array}\right.\,,
+\end{gather}
 
 \end_inset
 
@@ -3416,7 +3497,7 @@ Values in spatial database used as parameters in the constant slip rate
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -3620,11 +3701,14 @@ key "Brune:1970"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 D(t)=\left\{ \begin{array}{cc}
 0 & 0\leq t<t_{r}\\
-D_{final}\left(1-exp\left(-\frac{t-t_{r}}{t_{0}}\right)\left(1+\frac{t-t_{r}}{t_{0}}\right)\right) & t\ge t_{r}\end{array}\right.\,,\\
-t_{0}=0.6195t_{\mathit{rise}}\,,\end{gather}
+D_{final}\left(1-exp\left(-\frac{t-t_{r}}{t_{0}}\right)\left(1+\frac{t-t_{r}}{t_{0}}\right)\right) & t\ge t_{r}
+\end{array}\right.\,,\\
+t_{0}=0.6195t_{\mathit{rise}}\,,
+\end{gather}
 
 \end_inset
 
@@ -3754,7 +3838,7 @@ Values in spatial database used as parameters in the Brune slip time function.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -4003,15 +4087,18 @@ key "Liu:etal:2006"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 D(t)=\left\{ \begin{array}{cc}
 D_{\mathit{final}}C_{n}\left(0.7t-0.7\frac{t_{1}}{\pi}\sin\frac{\pi t}{t_{1}}-1.2\frac{t_{1}}{\pi}\left(\cos\frac{\pi t}{2t_{1}}-1\right)\right) & 0\leq t<t_{1}\\
 D_{\mathit{final}}C_{n}\left(1.0t-0.7\frac{t1}{\pi}\sin\frac{\pi t}{t_{1}}+0.3\frac{t2}{\pi}\sin\frac{\pi(t-t1)}{t_{2}}+\frac{1.2}{\pi}t_{1}-0.3t_{1}\right) & t_{1}\leq t<2t_{1}\\
-D_{\mathit{final}}C_{n}\left(0.7-0.7\cos\frac{\pi t}{t_{1}}+0.6\sin\frac{\pi t}{2t_{1}}\right) & 2t_{1}\leq t\leq t_{0}\end{array}\right.\,,\\
+D_{\mathit{final}}C_{n}\left(0.7-0.7\cos\frac{\pi t}{t_{1}}+0.6\sin\frac{\pi t}{2t_{1}}\right) & 2t_{1}\leq t\leq t_{0}
+\end{array}\right.\,,\\
 C_{n}=\frac{\pi}{1.4\pi t_{1}+1.2t_{1}+0.3\pi t_{2}},\\
 t_{0}=1.525t_{\mathit{rise}},\\
 t_{1}=0.13t_{0},\\
-t_{2}=t_{0}-t_{1},\end{gather}
+t_{2}=t_{0}-t_{1},
+\end{gather}
 
 \end_inset
 
@@ -4185,7 +4272,7 @@ Values in spatial database used as parameters in the Brune slip time function.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -4441,14 +4528,19 @@ Governing Equations
 \begin_layout Standard
 The algebraic systems of equations for dynamic earthquake rupture are the
  same as those for kinematic rupture
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 \left[\begin{array}{cc}
 \underline{A} & \underline{C}^{T}\\
-\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
+\underline{C} & 0
+\end{array}\right]\left[\begin{array}{c}
 \overrightarrow{u}\\
-\overrightarrow{l}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{l}
+\end{array}\right]=\left[\begin{array}{c}
 \overrightarrow{b}\\
-\overrightarrow{d}\end{array}\right].\end{equation}
+\overrightarrow{d}
+\end{array}\right].
+\end{equation}
 
 \end_inset
 
@@ -4459,14 +4551,18 @@ ve model requires determining the increment in slip for an increment in
  value computed for the current slip (either zero or the slip at the previous
  time step) and the value computed from the fault constitutive model.
  Starting from our system of algebraic equations,
-\begin_inset Formula \begin{equation}
-A_{ij}^{nm}u_{j}^{m}+C_{ji}^{pn}l_{j}^{p}=b_{i}^{n},\end{equation}
+\begin_inset Formula 
+\begin{equation}
+A_{ij}^{nm}u_{j}^{m}+C_{ji}^{pn}l_{j}^{p}=b_{i}^{n},
+\end{equation}
 
 \end_inset
 
 we compute the sensitivity for the given loading and boundary conditions,
-\begin_inset Formula \begin{equation}
-A_{ij}^{nm}\partial u_{j}^{m}=-C_{ji}^{pn}\partial l_{j}^{p}.\end{equation}
+\begin_inset Formula 
+\begin{equation}
+A_{ij}^{nm}\partial u_{j}^{m}=-C_{ji}^{pn}\partial l_{j}^{p}.
+\end{equation}
 
 \end_inset
 
@@ -4484,11 +4580,14 @@ Non-diagonal A
 
 \begin_layout Standard
 In general A is a sparse matrix with off-diagonal terms of the form
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 A=\left(\begin{array}{ccc}
 A_{0} & A_{1} & A_{2}\\
 A_{3} & A_{n-} & 0\\
-A_{4} & 0 & A_{n+}\end{array}\right),\end{equation}
+A_{4} & 0 & A_{n+}
+\end{array}\right),
+\end{equation}
 
 \end_inset
 
@@ -4496,9 +4595,11 @@ where the degrees of freedom on either side of the fault are uncoupled.
  We formulate two small linear systems involving just the degrees of freedom
  associated with vertices on either the positive or negative sides of the
  fault,
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 A_{ij}^{nm-}\partial u_{j}^{m-}=-R_{ij}^{pn}\partial l_{j}^{p},\\
-A_{ij}^{nm+}\partial u_{j}^{m+}=R_{ij}^{pn}\partial l_{j}^{p},\end{gather}
+A_{ij}^{nm+}\partial u_{j}^{m+}=R_{ij}^{pn}\partial l_{j}^{p},
+\end{gather}
 
 \end_inset
 
@@ -4525,8 +4626,10 @@ where we have replace
 ) sides of the fault.
  After solving these two linear systems of equations, we compute the increment
  in slip using
-\begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=R_{ij}^{pn}(\partial u_{j}^{n+}-\partial u_{j}^{n-}).\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\partial d_{i}^{p}=R_{ij}^{pn}(\partial u_{j}^{n+}-\partial u_{j}^{n-}).
+\end{equation}
 
 \end_inset
 
@@ -4584,8 +4687,10 @@ Diagonal A
 
 \begin_layout Standard
 With a lumped Jacobian matrix, we can solve for the increment in slip directly,
-\begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=-C_{ij}^{pn}(A_{jk}^{nm})^{-1}C_{lk}^{pm}\partial l_{l}^{p}.\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\partial d_{i}^{p}=-C_{ij}^{pn}(A_{jk}^{nm})^{-1}C_{lk}^{pm}\partial l_{l}^{p}.
+\end{equation}
 
 \end_inset
 
@@ -4596,8 +4701,10 @@ By not allowing the fault interface to overlap with the absorbing boundary,
 
  for a given vertex are identical and the expression on the right-hand side
  reduces to
-\begin_inset Formula \begin{equation}
-\partial d_{i}^{p}=-\left(\frac{1}{A^{n+}}+\frac{1}{A^{n-}}\right)\partial l_{i}^{p}.\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\partial d_{i}^{p}=-\left(\frac{1}{A^{n+}}+\frac{1}{A^{n-}}\right)\partial l_{i}^{p}.
+\end{equation}
 
 \end_inset
 
@@ -4700,7 +4807,7 @@ Values in spatial databases for initial tractions.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -4949,9 +5056,9 @@ name "sub:Fault-Constitutive-Models"
 \end_layout
 
 \begin_layout Standard
-PyLith provides three fault constitutive models.
+PyLith provides four fault constitutive models.
  Future releases may contain additional models and a template is provided
- for you to construct your own fault constitutive models (see Section 
+ for you to construct your own (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Extending:FaultConstitutiveModels"
@@ -4989,10 +5096,13 @@ Static Friction
 \begin_layout Standard
 The static friction model produces shear tractions proportional to the fault
  normal traction plus a cohesive stress,
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 T_{f}=\begin{cases}
 T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
-0 & T_{n}>0\end{cases}.\end{equation}
+0 & T_{n}>0
+\end{cases}.
+\end{equation}
 
 \end_inset
 
@@ -5040,7 +5150,7 @@ Values in the spatial database for constant friction parameters.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
 <row>
@@ -5140,11 +5250,14 @@ The linear slip-weakening friction model produces shear tractions equal
  to the cohesive stress plus a contribution proportional to the fault normal
  traction that decreases from a static value to a dynamic value as slip
  progresses,
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 T_{f}=\begin{cases}
 T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{d}{d_{0}})T_{n} & d\leq d_{0}\text{ and }T_{n}\leq0\\
 T_{c}-\mu_{d}T_{n} & d>d_{0}\text{ and }T_{n}\leq0\\
-0 & T_{n}>0\end{cases}\end{equation}
+0 & T_{n}>0
+\end{cases}
+\end{equation}
 
 \end_inset
 
@@ -5159,7 +5272,7 @@ reference "tab:slip:weakening:properties:statevars"
 
 .
  As long as the fault is locked, the initial state variables are zero, so
- specifying the initial state variables for slip-weakening friction is rate.
+ specifying the initial state variables for slip-weakening friction is rare.
 \end_layout
 
 \begin_layout Standard
@@ -5195,7 +5308,7 @@ Values in spatial databases for slip-weakening friction.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -5457,6 +5570,300 @@ Slip at previous time step,
 \end_layout
 
 \begin_layout Paragraph
+Time-Weakening Friction
+\end_layout
+
+\begin_layout Standard
+The linear time-weakening friction model is analogous to the linear slip-weakeni
+ng friction model with time replacing slip.
+ It produces shear tractions equal to the cohesive stress plus a contribution
+ proportional to the fault normal traction that decreases from a static
+ value to a dynamic value as time progresses,
+\begin_inset Formula 
+\begin{equation}
+T_{f}=\begin{cases}
+T_{c}-(\mu_{s}-(\mu_{s}-\mu_{d})\frac{t}{t_{0}})T_{n} & t\leq t_{0}\text{ and }T_{n}\leq0\\
+T_{c}-\mu_{d}T_{n} & t>t_{0}\text{ and }T_{n}\leq0\\
+0 & T_{n}>0
+\end{cases}
+\end{equation}
+
+\end_inset
+
+The spatial database files for the time-weakening friction model properties
+ and state variables specify the spatial variation of the fault constitutive
+ model parameters given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:time:weakening:properties:statevars"
+
+\end_inset
+
+.
+ As long as the fault is locked, the initial state variable is zero, so
+ specifying the initial state variable for time-weakening friction is rare.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:time:weakening:properties:statevars"
+
+\end_inset
+
+Values in spatial databases for time-weakening friction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="2.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_properties
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+static-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Static coefficient of friction, 
+\begin_inset Formula $\mu_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dynamic-coefficient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dynamic coefficient of friction, 
+\begin_inset Formula $\mu_{d}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+time-weakening-parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time-weakening parameter, 
+\begin_inset Formula $t_{0}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+cohesion
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cohesive stress, 
+\begin_inset Formula $T_{c}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+db_initial_state
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+elapsed-time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Elasped time of slip, 
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
 Rate- and State-Friction with Ageing Law
 \end_layout
 
@@ -5464,12 +5871,15 @@ Rate- and State-Friction with Ageing Law
 The Dietrich-Ruina rate and state friction model produces shear tractions
  equal to the cohesive stress plus a contribution proportional to the fault
  normal traction that depends on a state variable,
-\begin_inset Formula \begin{gather}
+\begin_inset Formula 
+\begin{gather}
 T_{f}=\begin{cases}
 T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
-0 & T_{n}>0\end{cases}\\
+0 & T_{n}>0
+\end{cases}\\
 \mu_{f}=a\sinh^{-1}\left(\frac{1}{2}\frac{V}{V_{0}}\exp\left(\frac{1}{a}\left(\mu_{0}+b\ln\left(\frac{V_{0}\theta}{L}\right)\right)\right)\right)\\
-\frac{d\theta}{dt}=1-\frac{V\theta}{L}\end{gather}
+\frac{d\theta}{dt}=1-\frac{V\theta}{L}
+\end{gather}
 
 \end_inset
 
@@ -5517,8 +5927,10 @@ key "Kaneko:etal:2008"
 
 , we integrate the evolution equation for the state variable keeping slip
  rate constant to get
-\begin_inset Formula \begin{equation}
-\theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right).\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right).
+\end{equation}
 
 \end_inset
 
@@ -5526,10 +5938,13 @@ As the slip rate approaches zero, the first exponential term approaches
  1.
  Using the first three terms of the Taylor series expansion of the second
  exponential yields
-\begin_inset Formula \begin{equation}
+\begin_inset Formula 
+\begin{equation}
 \theta(t+\Delta t)=\begin{cases}
 \theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\Delta t-\frac{1}{2}\frac{V(t)\Delta t^{2}}{L} & \frac{V(t)\Delta t}{L}<0.00001\\
-\theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right) & \frac{V(t)\Delta t}{L}\ge0.00001\end{cases}.\end{equation}
+\theta(t)\exp\left(-\frac{V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right) & \frac{V(t)\Delta t}{L}\ge0.00001
+\end{cases}.
+\end{equation}
 
 \end_inset
 
@@ -5582,7 +5997,7 @@ Values in spatial databases for slip-weakening friction.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="8" columns="3">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
@@ -5910,8 +6325,10 @@ reference "cha:Governing-Equations"
 \end_inset
 
 , the body forces contribute to the residual,
-\begin_inset Formula \begin{equation}
-r_{i}^{n}=\int_{V}f_{i}N^{n}\: dV.\end{equation}
+\begin_inset Formula 
+\begin{equation}
+r_{i}^{n}=\int_{V}f_{i}N^{n}\: dV.
+\end{equation}
 
 \end_inset
 
@@ -5932,8 +6349,10 @@ For gravitational body forces the body force per unit volume,
 \end_inset
 
 :
-\begin_inset Formula \begin{equation}
-f_{i}=\rho ga_{i}.\end{equation}
+\begin_inset Formula 
+\begin{equation}
+f_{i}=\rho ga_{i}.
+\end{equation}
 
 \end_inset
 

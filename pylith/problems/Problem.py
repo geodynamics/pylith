@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -150,6 +150,12 @@ class Problem(PetscComponent):
             "Spatial dimension of problem is '%d' but mesh contains cells " \
             "for spatial dimension '%d'." % \
             (self.dimension, self.mesh.dimension())
+
+    if self.dimension != self.mesh.coordsys().spaceDim():
+      raise ValueError, \
+            "Spatial dimension of problem is '%d' but mesh coordinate system " \
+            "is  for spatial dimension '%d'." % \
+            (self.dimension, self.mesh.coordsys().spaceDim())
 
     # Check to make sure ids of materials and interfaces are unique
     materialIds = {}

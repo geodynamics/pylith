@@ -1,0 +1,63 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_bruneslipfn_hh)
+#error "BruneSlipFn.icc can only be included from BruneSlipFn.hh"
+#endif
+
+#include <math.h> // USES exp()
+#include <assert.h> // USES assert()
+
+// Set spatial database for final slip.
+inline
+void
+pylith::faults::BruneSlipFn::dbFinalSlip(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbFinalSlip = db;
+} // dbFinalSlip
+
+// Set spatial database for slip initiation time.
+inline
+void
+pylith::faults::BruneSlipFn::dbSlipTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbSlipTime = db;
+} // dbSlipTime
+
+// Set spatial database for rise time.
+inline
+void
+pylith::faults::BruneSlipFn::dbRiseTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbRiseTime = db;
+} // dbPeakRate
+
+// Compute slip using slip time function.
+inline
+double
+pylith::faults::BruneSlipFn::_slipFn(const double t,
+				     const double finalSlip,
+				     const double riseTime) {
+  double slip = 0.0;
+  if (t > 0.0) {
+    assert(riseTime > 0.0);
+    const double tau = 0.21081916*riseTime;
+    slip = finalSlip * (1.0 - exp(-t/tau) * (1.0 + t/tau));
+  } // if
+  return slip;
+} // _slip
+
+
+// End of file 

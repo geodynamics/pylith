@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -99,7 +99,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void)
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<SieveSubMesh::sieve_type>& sieve = sieveSubMesh->getSieve();
   assert(!sieve.isNull());
-  typedef ALE::SieveAlg<Mesh> SieveAlg;
+  typedef ALE::SieveAlg<SieveMesh> SieveAlg;
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
 

@@ -1,0 +1,45 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_timehistoryslipfn_hh)
+#error "TimeHistorySlipFn.icc can only be included from TimeHistorySlipFn.hh"
+#endif
+
+// Set spatial database for final slip.
+inline
+void
+pylith::faults::TimeHistorySlipFn::dbAmplitude(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbAmplitude = db;
+} // dbFinalSlip
+
+// Set spatial database for slip initiation time.
+inline
+void
+pylith::faults::TimeHistorySlipFn::dbSlipTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbSlipTime = db;
+} // dbSlipTime
+
+// Set time history.
+inline
+void
+pylith::faults::TimeHistorySlipFn::dbTimeHistory(spatialdata::spatialdb::TimeHistory* const th) {
+  _dbTimeHistory = th;
+} // dbTimeHistory
+
+
+// End of file 

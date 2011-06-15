@@ -1,0 +1,138 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_material_hh)
+#error "Material.icc can only be included from Material.hh"
+#endif
+
+// Get spatial dimension of material.
+inline
+int
+pylith::materials::Material::dimension(void) const {
+  return _dimension;
+}
+
+// Set database for material parameters.
+inline
+void
+pylith::materials::Material::dbProperties(spatialdata::spatialdb::SpatialDB* value) {
+  _dbProperties = value;
+}
+
+// Set database for initial state variables.
+inline
+void
+pylith::materials::Material::dbInitialState(spatialdata::spatialdb::SpatialDB* value) {
+  _dbInitialState = value;
+}
+
+// Set identifier of material.
+inline
+void
+pylith::materials::Material::id(const int value) {
+  _id = value;
+}
+
+// Get identifier of material.
+inline
+int
+pylith::materials::Material::id(void) const {
+  return _id;
+}
+
+// Set name of material.
+inline
+void
+pylith::materials::Material::label(const char* value) {
+  _label = value;
+}
+
+// Get label of material.
+inline
+const char*
+pylith::materials::Material::label(void) const {
+  return _label.c_str();
+}
+
+// Set current time step.
+inline
+void
+pylith::materials::Material::timeStep(const double dt) {
+  _dt = dt;
+}
+
+// Get current time step.
+inline
+double
+pylith::materials::Material::timeStep(void) const {
+  return _dt;
+} // timeStep
+
+// Get size of stress/strain tensor associated with material.
+inline
+int
+pylith::materials::Material::tensorSize(void) const {
+  return _tensorSize;
+}
+
+// Get flag indicating whether Jacobian matrix must be reformed for
+// current state.
+inline
+bool
+pylith::materials::Material::needNewJacobian(void) const {
+  return _needNewJacobian;
+} // needNewJacobian
+
+// Reset flag indicating whether Jacobian matrix must be reformed for
+// current state.
+inline
+void
+pylith::materials::Material::resetNeedNewJacobian(void) {
+  _needNewJacobian = false;
+} // resetNeedNewJacobian
+
+// Check whether material generates a symmetric Jacobian.
+inline
+bool
+pylith::materials::Material::isJacobianSymmetric(void) const {
+  return _isJacobianSymmetric;
+} // isJacobianSymmetric
+
+// Compute initial state variables from values in spatial database.
+inline
+void
+pylith::materials::Material::_dbToStateVars(double* const stateValues,
+					    const double_array& dbValues)
+{}
+
+// Nondimensionalize state variables.
+inline
+void
+pylith::materials::Material::_nondimStateVars(double* const values,
+					      const int nvalues) const
+{}
+  
+// Dimensionalize state variables.
+inline
+void
+pylith::materials::Material::_dimStateVars(double* const values,
+					   const int nvalues) const
+{}
+
+
+// End of file 

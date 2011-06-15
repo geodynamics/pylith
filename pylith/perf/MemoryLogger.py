@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -64,13 +64,14 @@ class MemoryLogger(Logger):
     return
 
 
-  def logMesh(self, stage, mesh):
+  def logMesh(self, stage, mesh, reset=True):
     """
     Read mesh parameters to determine memory from our model.
     """
     import pylith.perf.Mesh
 
-    if not stage in self.memory: self.memory[stage] = {}
+    if not stage in self.memory or reset:
+      self.memory[stage] = {}
     meshModel = pylith.perf.Mesh.Mesh(mesh.dimension(), mesh.coneSize(), 
                                       mesh.numVertices(), mesh.numCells())
     meshModel.tabulate(self.memory[stage])
@@ -256,6 +257,7 @@ class MemoryLogger(Logger):
         mem -= logger.getDeallocationTotal()
     if mem == 0:
       mem = codeTotal
+    output.append(self.prefix(indent)+'-'*(60-indent))
     output.append(self.memLine('Model', 'Total', total, indent))
     output.append(self.memLine('Code',  'Total', mem, indent))
     if mem:
