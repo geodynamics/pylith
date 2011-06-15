@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -68,7 +68,12 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     newMesh.coordsys(mesh.coordsys())
     ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
     if not newMesh == mesh:
+      from pylith.utils.petsc import MemoryLogger
+      sieveLogger =  MemoryLogger.singleton()
+
+      sieveLogger.stagePush(mesh.memLoggingStage)      
       mesh.deallocate()
+      sieveLogger.stagePop()
 
     self._eventLogger.eventEnd(logEvent)
     return newMesh

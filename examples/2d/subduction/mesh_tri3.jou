@@ -1,0 +1,80 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file for generating a 2-D finite-element mesh with
+# triangular cells.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size and scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+curve all scheme default
+surface all sizing function none
+
+# Discretization size on fault (finest resolution)
+#{dx=8.0*km}
+# Bias factor corresponding to geometric rate at which discretization size will
+# increase away from fault.
+#{bias_factor=1.2}
+
+# Set size on faults (and bottom of slab corresponding to fault section)
+curve slabtop@A slabtop@D size {dx}
+curve topobathy size {dx}
+curve slabbot@C size {1.0*dx}
+
+# Set bias on curves extending from faults
+curve topobathy@B scheme bias fine size {dx} factor {bias_factor} start vertex 75
+curve topobathy@A scheme bias fine size {dx} factor {bias_factor} start vertex 68
+curve conmoho scheme bias fine size {dx} factor {bias_factor} start vertex 67
+curve slabtop scheme bias fine size {dx} factor {bias_factor} start vertex 74
+curve slabbot@B scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 76
+curve slabbot scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 77
+
+# Set bias on boundaries (use constant size)
+curve edgewest@A size {50*km}
+curve edgebot size {50*km}
+curve edgeeast@A size {50*km}
+curve edgebot@A size {50*km}
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.7 cpu 10
+smooth surface all
+
+# ----------------------------------------------------------------------
+# Setup boundary conditions.
+# ----------------------------------------------------------------------
+playback 'createbc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tri3.exo" dimension 2 overwrite
+
+# End of file
+
+

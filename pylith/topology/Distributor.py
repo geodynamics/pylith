@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -56,7 +56,7 @@ class Distributor(PetscComponent, ModuleDistributor):
   
   from pylith.meshio.DataWriterVTKMesh import DataWriterVTKMesh
   dataWriter = pyre.inventory.facility("data_writer", factory=DataWriterVTKMesh,
-                                       family="output_data_writer")
+                                       family="data_writer")
   dataWriter.meta['tip'] = "Data writer for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -81,7 +81,13 @@ class Distributor(PetscComponent, ModuleDistributor):
     from pylith.topology.Mesh import Mesh
     newMesh = Mesh(mesh.dimension())
     ModuleDistributor.distribute(newMesh, mesh, self.partitioner)
+
+    from pylith.utils.petsc import MemoryLogger
+    sieveLogger =  MemoryLogger.singleton()
+
+    sieveLogger.stagePush(mesh.memLoggingStage)
     mesh.deallocate()
+    sieveLogger.stagePop()
 
     if self.writePartition:
       self.dataWriter.initialize(normalizer)

@@ -16,11 +16,6 @@
 # ----------------------------------------------------------------------
 #
 
-dist_noinst_DATA =
-
-default: userguide.pdf
-
-userguide.pdf:
-	lyx -e pdf userguide.lyx
+dist_noinst_DATA = makepdf.sh
 
 # End of file 

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -62,6 +62,11 @@ class TestJacobian(unittest.TestCase):
 
     self.fields = fields
     self.jacobian = Jacobian(solution)
+    return
+
+
+  def tearDown(self):
+    self.jacobian.cleanup()
     return
 
 

@@ -7,7 +7,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -22,7 +22,7 @@ from merlin import setup, find_packages
 setup(
     
     name = 'PyLith', 
-    version = '1.5.1',
+    version = '1.6.0',
 
     zip_safe = False,
     packages = find_packages(),

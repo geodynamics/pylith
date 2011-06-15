@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -27,6 +27,10 @@ class Memory(object):
   sizeDouble = 8
   import distutils.sysconfig
   pointerSize = distutils.sysconfig.get_config_var('SIZEOF_VOID_P')
+
+
+  import os
+
   if pointerSize is None:
     # Get pointer using sizeof(void*) in PyLith C++ library.
     pointerSize = petsc.sizeofVoidPtr()
@@ -34,12 +38,15 @@ class Memory(object):
   if pointerSize == 4:
     sizeSetEntry = 12
     sizeMapEntry = 16
-    sizeArrow    = 40 # 32 bit
+    sizeArrow    = 40 # 32 bit, 3 ints + set entry + map entry
 
   elif pointerSize == 8:
     sizeSetEntry = 24
     sizeMapEntry = 32
-    sizeArrow    = 56 # 64 bit
+    if os.uname()[0].lower() == "darwin":
+      sizeArrow = 68 # 64 bit, 3 ints + set entry + map entry
+    else:
+      sizeArrow = 56 # 64 bit, 3 ints + set entry + map entry
 
   elif pointerSize is None:
     sizeSetEntry = 0

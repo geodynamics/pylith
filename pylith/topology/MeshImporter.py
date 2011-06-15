@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -121,11 +121,13 @@ class MeshImporter(MeshGenerator):
       mesh = self.distributor.distribute(mesh, normalizer)
       if self.debug:
         mesh.view("Distributed mesh.")
+      mesh.memLoggingStage = "DistributedMesh"
 
     # Refine mesh (if necessary)
     newMesh = self.refiner.refine(mesh)
     if not newMesh == mesh:
       mesh.deallocate()
+      newMesh.memLoggingStage = "RefinedMesh"
 
     # Nondimensionalize mesh (coordinates of vertices).
     newMesh.nondimensionalize(normalizer)

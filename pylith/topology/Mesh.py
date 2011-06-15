@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -40,6 +40,10 @@ class Mesh(ModuleMesh):
       ModuleMesh.__init__(self, dim)
     else:
       ModuleMesh.__init__(self, dim, comm.handle)
+
+    # Name of logging stage for mesh. We progress through various
+    # stages as we read, distribute, and refine mesh.
+    self.memLoggingStage = "Mesh"
     return
 
 

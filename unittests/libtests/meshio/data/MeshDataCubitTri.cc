@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -46,15 +46,15 @@ const int pylith::meshio::MeshDataCubitTri::_materialIds[] = {
 const int pylith::meshio::MeshDataCubitTri::_numGroups = 2;
 
 const int pylith::meshio::MeshDataCubitTri::_groupSizes[] = 
-  { 1, 1 };
+  { 1, 2 };
 
 const int pylith::meshio::MeshDataCubitTri::_groups[] = {
   0,
-  3
+  2, 3
 };
 
 const char* pylith::meshio::MeshDataCubitTri::_groupNames[] = {
-  "5", "6"
+  "left_vertex", "right_vertex"
 };
 
 const char* pylith::meshio::MeshDataCubitTri::_groupTypes[] = {

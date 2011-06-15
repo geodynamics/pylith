@@ -1,8 +1,9 @@
-The examples in this directory include (1) simple shearing of a box,
-(2) slip on a through-going, vertical, strike-slip fault in a
-box, (3) a box subjected to body forces, and (4) a box subjected to body
-forces where initial stresses are used to prevent deformation. In each
-problem the domain is 6 km x 6 km x 4 km and is discretized with linear
+The examples in this directory form a step-by-step sequence of 4
+problems, each building on the one before. All of the examples use the
+same mesh, which was created using LaGriT. The first two problems
+involve simple shearing of a box, and the second two problems involve
+slip on a through-going, vertical, strike-slip fault in a box. The
+domain is 6 km x 6 km x 4 km and is discretized with linear
 tetrahedral cells that have edges nominally 1.0 km long.
 
 The box spans the volume:
@@ -11,44 +12,88 @@ The box spans the volume:
   -3 km <= y <= +3 km
   -6 km <= z <= 0  km.
 
-The mesh is generated using LaGrit. A LaGrit script is included and is
-annotated to guide you through the process of generating the mesh.
+A LaGrit script is included and is annotated to guide you through the
+process of generating the mesh.
 
-See the configuration files shearxy.cfg and dislocation.cfg for
+See the configuration files step01.cfg and dislocation.cfg for
 instructions on how to run these simulations. The configuration files
 also contain information about the simulation parameters.
 
+The examples are all described in the PyLith manual. Output from each
+example is put in the output directory. Each simulation may be run by
+typing:
 
+  pylith stepxx.cfg
+
+where xx is the number of the desired example.
+
+
+----------------------------------------------------------------------
 DESCRIPTION OF FILES
+----------------------------------------------------------------------
 
-dislocation.cfg - Simulation parameters for strike-slip fault problem.
+README - This file.
 
-finalslip.spatialdb - Spatial database for spatial variation of final slip
+pylithapp.cfg - PyLith configuration file containing parameters common to
+all simulations.
 
-fixeddisp_shear.spatialdb - Spatial database for spatial variation of
-the displacement field in the Dirichlet (prescribed displacement)
-boundary conditions for the shear problem
+stepxx.cfg - PyLith configuration file containing parameters for a
+particular example. The example problems are briefly described below:
 
-mat_elastic.spatialdb - Spatial database for spatial variation of the
-elastic material properties
+step01: Dirichlet BC (static) causing shear.
+step02: step01 with mesh refinement and field split preconditioning.
+step03: DirichletBC with fault slip (static) Slip on a vertical fault
+step04: step03 with mesh refinement and field split preconditioning.
 
-mesh_tet4_1000m.lagrit - LaGriT script to generate the mesh
+----------------------------------------
+figures directory
+----------------------------------------
 
-pylithapp.cfg - General simulation parameters for the mesh
+tet4-mesh.jpg - JPEG image showing mesh (from ParaView)
 
-shearxy.cfg - Simulation parameters for the shear problem
+step01.jpg - JPEG showing solution for step01 (from ParaView)
 
-sliprate.spatialdb - Spatial database for spatial variation of peak slip rate
+step03.jpg - JPEG showing solution for step03 (from ParaView)
 
-sliptime.spatialdb - Spatial database for spatial variation of slip
-initiation time
 
-tet4_1000m_ascii.gmv - ASCII GMV file containing the finite-element mesh
+----------------------------------------
+mesh directory
+----------------------------------------
 
-tet4_1000m_ascii.pset - ASCII Pset file containing the psets in the
-finite-element mesh
+mesh/mesh_tet4_1000m.lagrit - LaGriT script used to generate mesh
 
-tet4_1000m_binary.gmv - Binary GMV file containing the finite-element mesh
+mesh/tet4_1000m_ascii.gmv - ASCII GMV file containing node and elements
+mesh/tet4_1000m_ascii.pset - ASCII file containing point sets
 
-tet4_1000m_binary.pset - ASCII Pset file containing the psets in the
-finite-element mesh
+mesh/tet4_1000m_binary.gmv - Binary GMV file containing node and elements
+mesh/tet4_1000m_binary.pset - Binary file containing point sets
+
+----------------------------------------
+spatialdb directory
+----------------------------------------
+
+fixeddisp_shear.spatialdb
+
+  Spatial database for spatial variation of the displacement field in
+  the Dirichlet (prescribed displacement) boundary conditions for the
+  shear problem (step01 and step02).
+
+mat_elastic.spatialdb
+
+  Spatial database for spatial variation of the elastic material
+  properties
+
+mat_viscoelastic.spatialdb
+
+  Spatial database for spatial variation of the Maxwell viscoelastic
+  properties.
+
+finalslip.spatialdb
+
+  Spatial database for spatial variation of final slip (step03 and
+  step04)
+
+sliptime.spatialdb
+
+  Spatial database for spatial variation of slip initiation time
+  (step03 and step04)

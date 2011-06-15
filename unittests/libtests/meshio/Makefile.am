@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -211,13 +211,17 @@ testmeshio_LDFLAGS = \
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
-  testmeshio_SOURCES += TestMeshIOCubit.cc
-  noinst_HEADERS += TestMeshIOCubit.hh
+  testmeshio_SOURCES += \
+	TestExodusII.cc \
+	TestMeshIOCubit.cc
+  noinst_HEADERS += \
+	TestExodusII.hh \
+	TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
 endif
 
@@ -242,10 +246,12 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtBCMesh.cc \
 	TestDataWriterHDF5ExtBCMeshCases.cc \
 	TestDataWriterHDF5ExtFaultMesh.cc \
-	TestDataWriterHDF5ExtFaultMeshCases.cc
+	TestDataWriterHDF5ExtFaultMeshCases.cc \
+	TestXdmf.cc
 
 
   noinst_HEADERS += \
+	TestHDF5.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5MeshCases.hh \
@@ -264,7 +270,8 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtBCMesh.hh \
 	TestDataWriterHDF5ExtBCMeshCases.hh \
 	TestDataWriterHDF5ExtFaultMesh.hh \
-	TestDataWriterHDF5ExtFaultMeshCases.hh
+	TestDataWriterHDF5ExtFaultMeshCases.hh \
+	TestXdmf.hh
 
   testmeshio_LDADD += -lhdf5
 endif

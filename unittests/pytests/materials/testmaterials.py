@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -85,6 +85,9 @@ class TestApp(Script):
 
     from TestGenMaxwellIsotropic3D import TestGenMaxwellIsotropic3D
     suite.addTest(unittest.makeSuite(TestGenMaxwellIsotropic3D))
+
+    from TestGenMaxwellPlaneStrain import TestGenMaxwellPlaneStrain
+    suite.addTest(unittest.makeSuite(TestGenMaxwellPlaneStrain))
 
     from TestGenMaxwellQpQsIsotropic3D import TestGenMaxwellQpQsIsotropic3D
     suite.addTest(unittest.makeSuite(TestGenMaxwellQpQsIsotropic3D))

@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -24,6 +24,7 @@
 from ElasticMaterialApp import ElasticMaterialApp
 
 import numpy
+import math
 
 # ----------------------------------------------------------------------
 dimension = 2
@@ -57,7 +58,8 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     self.propertyValues = ["density", "mu", "lambda", "maxwellTime"]
     self.numPropertyValues = numpy.array([1, 1, 1, 1], dtype=numpy.int32)
 
-    self.dbStateVarValues = ["total-strain-xx",
+    self.dbStateVarValues = ["stress-zz-initial",
+                             "total-strain-xx",
                              "total-strain-yy",
                              "total-strain-xy",
                              "viscous-strain-xx",
@@ -65,8 +67,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                              "viscous-strain-zz",
                              "viscous-strain-xy"
                              ]
-    self.stateVarValues = ["total-strain", "viscous-strain"]
-    self.numStateVarValues = numpy.array([3, 4], dtype=numpy.int32)
+    self.numStateVarValues = numpy.array([1, 3, 4], dtype=numpy.int32)
 
     self.dt = 2.0e5
 
@@ -81,6 +82,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     lambdaA = vpA*vpA*densityA - 2.0*muA
     maxwellTimeA = viscosityA / muA
     meanStrainA = (strainA[0] + strainA[1])/3.0
+    stressInitialZZA = numpy.array([2.0e4], dtype=numpy.float64)
 
     densityB = 2000.0
     vsB = 1200.0
@@ -93,9 +95,9 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     lambdaB = vpB*vpB*densityB - 2.0*muB
     maxwellTimeB = viscosityB / muB
     meanStrainB = (strainB[0] + strainB[1])/3.0
+    stressInitialZZB = numpy.array([5.0e4], dtype=numpy.float64)
 
-    diag = numpy.array([1.0, 1.0, 1.0, 0.0],
-                       dtype=numpy.float64)
+    diag = numpy.array([1.0, 1.0, 1.0, 0.0], dtype=numpy.float64)
 
     strainTA = [strainA[0], strainA[1], 0.0, strainA[2]]
     strainTB = [strainB[0], strainB[1], 0.0, strainB[2]]
@@ -113,8 +115,11 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                                      dtype=numpy.float64)
 
     # TEMPORARY, need to determine how to use initial state variables
-    self.dbStateVars = numpy.zeros( (numLocs, tensorSize+4),
+    # At present, only the first (stressInitialZZ) is being used.
+    self.dbStateVars = numpy.zeros( (numLocs, 1 + tensorSize + 4),
                                     dtype=numpy.float64)
+    self.dbStateVars[0, 0] = stressInitialZZA
+    self.dbStateVars[1, 0] = stressInitialZZB
 
     mu0 = self.pressureScale
     density0 = self.densityScale
@@ -150,23 +155,32 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     totalStrainB = [strainB[0] + 1.0e-5,
                     strainB[1] + 1.0e-5,
                     strainB[2] + 1.0e-5]
+
     viscousStrainA = numpy.array(strainTA) - diag * meanStrainA
     viscousStrainB = numpy.array(strainTB) - diag * meanStrainB
     viscousStrainVecA = numpy.ravel(viscousStrainA)
     viscousStrainVecB = numpy.ravel(viscousStrainB)
     strainVecA = numpy.array(strainA, dtype=numpy.float64)
     strainVecB = numpy.array(strainB, dtype=numpy.float64)
-    stateVarsA = numpy.concatenate((strainVecA, viscousStrainVecA))
-    stateVarsB = numpy.concatenate((strainVecB, viscousStrainVecB))
-    self.stateVars = numpy.array([ [stateVarsA],
-                                   [stateVarsB] ],
-                                 dtype=numpy.float64)
-    self.stateVarsNondim = self.stateVars # no scaling
+
+    stateVarsA = numpy.concatenate((stressInitialZZA, strainVecA,
+                                    viscousStrainVecA))
+    stateVarsB = numpy.concatenate((stressInitialZZB, strainVecB,
+                                    viscousStrainVecB))
+    self.stateVars = numpy.array([stateVarsA, stateVarsB], dtype=numpy.float64)
+
+    stressInitialZZANondim = stressInitialZZA/mu0
+    stressInitialZZBNondim = stressInitialZZB/mu0
+    self.stateVarsNondim = numpy.zeros( (numLocs, 1 + tensorSize + 4),
+                                        dtype=numpy.float64)
+    self.stateVarsNondim[:] = self.stateVars[:] # no scaling
+    # Scale stressInitialZZ
+    self.stateVarsNondim[0, 0] = stressInitialZZANondim
+    self.stateVarsNondim[1, 0] = stressInitialZZBNondim
     
-    self.strain = numpy.array([totalStrainA, totalStrainB],
-                               dtype=numpy.float64)
+    self.strain = numpy.array([totalStrainA, totalStrainB], dtype=numpy.float64)
     self.stress = numpy.zeros( (numLocs, tensorSize), dtype=numpy.float64)
-    self.stateVarsUpdated = numpy.zeros( (numLocs, tensorSize + 4),
+    self.stateVarsUpdated = numpy.zeros( (numLocs, 1 + tensorSize + 4),
                                          dtype=numpy.float64)
     self.elasticConsts = numpy.zeros( (numLocs, numElasticConsts),
                                       dtype=numpy.float64)
@@ -175,20 +189,23 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                      self._calcStress(strainA, 
                                       muA, lambdaA, maxwellTimeA,
                                       totalStrainA, viscousStrainA,
-                                      initialStressA, initialStrainA)
+                                      initialStressA, initialStrainA,
+                                      stateVarsA)
     (self.elasticConsts[1,:], self.stress[1,:], self.stateVarsUpdated[1,:]) = \
                               self._calcStress(strainB, 
                                                muB, lambdaB, maxwellTimeB, 
                                                totalStrainB, viscousStrainB,
-                                               initialStressB, initialStrainB)
+                                               initialStressB, initialStrainB,
+                                               stateVarsB)
 
     self.dtStableImplicit = 0.2*min(maxwellTimeA, maxwellTimeB)
     return
 
 
   def _calcStressComponent(self, strainVal, strainComp, stressComp, strainTpdt,
-                         muV, lambdaV, maxwellTimeV, dqV, totalStrainT,
-                         viscousStrainT, initialStress, initialStrain):
+                           muV, lambdaV, maxwellTimeV, dqV, totalStrainT,
+                           viscousStrainT, initialStress, initialStrain,
+                           stateVars):
     """
     Function to compute a particular stress component as a function of a
     strain component.
@@ -203,26 +220,25 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                                                         totalStrainT,
                                                         viscousStrainT,
                                                         initialStress,
-                                                        initialStrain)
+                                                        initialStrain,
+                                                        stateVars)
     return stressTpdt[stressComp]
 
 
   def _computeStress(self, strainTpdt, muV, lambdaV, maxwellTimeV, dqV,
                      strainT, viscousStrainT,
-                     initialStress, initialStrain):
+                     initialStress, initialStrain, stateVars):
     """
     Function to compute stresses and viscous strains for a given strain.
     """
-    import math
     
     bulkModulus = lambdaV + 2.0 * muV / 3.0
     diag = [1.0, 1.0, 0.0]
 
     # Initial stresses and strains
-    meanStrainInitial = \
-    (initialStrain[0] + initialStrain[1]) / 3.0
+    meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0
     meanStressInitial = \
-    (initialStress[0] + initialStress[1]) / 3.0
+    (initialStress[0] + initialStress[1] + stateVars[0]) / 3.0
 
     devStrainInitial = initialStrain - numpy.array(diag) * meanStrainInitial
     devStressInitial = initialStress - numpy.array(diag) * meanStressInitial
@@ -263,9 +279,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     devStressTpdt22 = elasFac * \
                       (viscousStrainTpdt[1] - devStrainInitial[1]) + \
                       devStressInitial[1]
-    # This is somewhat messed up, since we can't specify initial stresses or
-    # strains in the out-of-plane direction.
-    devStressTpdt33 = elasFac * viscousStrainTpdt[2]
+    devStressTpdt33 = elasFac * viscousStrainTpdt[2] + stateVars[0]
     devStressTpdt12 = elasFac * \
                       (viscousStrainTpdt[3] - devStrainInitial[2]) + \
                       devStressInitial[2]
@@ -281,7 +295,6 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     """
     Compute viscous strain factor for a given Maxwell time.
     """
-    import math
     
     timeFrac = 1.0e-5
     numTerms = 5
@@ -303,7 +316,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
 
   
   def _calcStress(self, strainV, muV, lambdaV, maxwellTimeV, totalStrainV,
-                  viscousStrainV, initialStressV, initialStrainV):
+                  viscousStrainV, initialStressV, initialStrainV, stateVars):
     """
     Compute stress, derivative of elasticity matrix, and updated state
     variables. This assumes behavior is always viscoelastic.
@@ -316,6 +329,7 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
     viscousStrainT = numpy.array(viscousStrainV, dtype=numpy.float64)
     initialStress = numpy.array(initialStressV, dtype=numpy.float64)
     initialStrain = numpy.array(initialStrainV, dtype=numpy.float64)
+    stressZZInitial = numpy.array([stateVars[0]], dtype=numpy.float64)
     
     # Compute current stress and viscous strain.
     dqV = self._computeViscousFactor(maxwellTimeV)
@@ -327,12 +341,14 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                                                         strainT,
                                                         viscousStrainT,
                                                         initialStress,
-                                                        initialStrain)
+                                                        initialStrain,
+                                                        stateVars)
                                                         
     # Form updated state variables
     strainTpdtVec = numpy.ravel(strainTpdt)
     viscousStrainTpdtVec = numpy.ravel(viscousStrainTpdt)
-    stateVarsUpdated = numpy.concatenate((strainTpdtVec, viscousStrainTpdtVec))
+    stateVarsUpdated = numpy.concatenate((stressZZInitial, strainTpdtVec,
+                                          viscousStrainTpdtVec))
 
     # Compute components of tangent constitutive matrix using numerical
     # derivatives.
@@ -356,7 +372,8 @@ class MaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                                                      strainT,
                                                      viscousStrainT,
                                                      initialStress,
-                                                     initialStrain),
+                                                     initialStrain,
+                                                     stateVars),
                                                order=derivOrder)
         elasticConstsList.append(dStressDStrain)
 

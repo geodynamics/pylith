@@ -1,5 +1,5 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -268,7 +286,7 @@ Pyre supported units.
 
 \begin_inset Tabular
 <lyxtabular version="3" rows="5" columns="2">
-<features>
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0.9in">
 <column alignment="left" valignment="top" width="4in">
 <row>
@@ -814,7 +832,7 @@ mesher
 
 \begin_layout Standard
 Geometrical and topological information for the finite element mesh may
- be provided by exporting an EXODUS format file from CUBIT, by exporting
+ be provided by exporting an Exodus II format file from CUBIT, by exporting
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
  the information in PyLith mesh ASCII format.
  See Chapter 
@@ -1104,6 +1122,11 @@ reader Reader for a given type of mesh (default is MeshIOAscii).
 distributor Handles distribution of the mesh among processors.
 \end_layout
 
+\begin_layout Description
+refiner Perform global uniform mesh refinement after distribution among
+ processors (default is False).
+\end_layout
+
 \begin_layout Standard
 Reordering the mesh so that vertices and cells connected topologically also
  reside close together in memory improves overall performance and can improve
@@ -1276,6 +1299,93 @@ data_writer Writer for partition information (default is DataWriterVTKMesh
 
 \begin_layout Standard
 ParMETIS is not included in the PyLith binaries due to licensing issues.
+\end_layout
+
+\begin_layout Subsubsection
+Refiner
+\end_layout
+
+\begin_layout Standard
+The refiner is used to decrease node spacing by a factor of two by subdividing
+ each cell.
+ In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
+ splitting each cell into four cells (see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:uniform:refinement:2x"
+
+\end_inset
+
+).
+ In a 2-D quadrilateral mesh a node is inserted at the midpoint of each
+ edge and at the centroid of the cell, splitting each cell into four cells.
+ In a 3-D tetrahedral mesh a node is inserted at the midpoint of each edge,
+ splitting each cell into eight cells.
+ In a 3-D hexahedral mesh a node is inserted at the midpoint of each edge,
+ the centroid of each face, and at the centroid of the cell, splitting each
+ cell into eight cells.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figs/refinement2x.eps
+	scale 125
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Global uniform mesh refinement of 2-D and 3-D linear cells.
+ The blue lines and orange circles identify the edges and vertices in the
+ original cells.
+ The purple lines and green circles identify the new edges and vertices
+ added to the original cells to refine the mesh by a factor of two.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:uniform:refinement:2x"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Refinement occurs after distribution of the mesh among processors.
+ This allows one to run much larger simulations by (1) permitting the mesh
+ generator to construct a mesh with a node spacing twice as large as that
+ needed in the simulation and (2) operations performed in serial during
+ the simulation setup phase, such as, adjusting the topology to insert cohesive
+ cells and distribution of the mesh among processors uses this much smaller
+ coarse mesh.
+ For 2-D problems the global mesh refinement increases the maximum problem
+ size by a factor of four, and for 3-D problems it increases the maximum
+ problem size by a factor of eight.
 \end_layout
 
 \begin_layout Subsection
@@ -1493,9 +1603,23 @@ petsc
 \end_layout
 
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations, including linear
- Krylov subspace solvers and nonlinear solvers.
- PETSc options can be set in 
+In quasti-static problems with implicit time-stepping, PyLith relies on
+ PETSc for the linear algebra computations, including linear Krylov subspace
+ solvers and nonlinear solvers.
+ For dynamic problems, lumping the mass matrix and using explicit time-stepping
+ is much more efficient; this permits solving the linear system with a trivial
+ solver so we do not use a PETSc solver in this case (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:solvers"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+PETSc options can be set in 
 \family typewriter
 .cfg
 \family default
@@ -1504,7 +1628,7 @@ PyLith relies on PETSc for the linear algebra computations, including linear
 [pylithapp.petsc]
 \family default
 .
- The ones of primary interest in the case of PyLith are shown in Table
+ The options of primary interest in the case of PyLith are shown in Table
 \begin_inset space ~
 \end_inset
 
@@ -1526,9 +1650,10 @@ reference "sec:solvers"
 \end_inset
 
 .
- In many quasi-static or dynamic elasticity simulations, runtime can be
- reduced by replacing the Jacobi preconditioner with additive Schwarz with
- Gram-Schmidt orthogonalization (see Table
+ A very wide range of elasticity problems in quasi-static simulations can
+ be solved with reasonable runtimes by replacing the default Jacobi precondition
+er with the Additive Schwarz Method (ASM) using Incomplete LU (ILU) factorizatio
+n by default (see Table
 \begin_inset space ~
 \end_inset
 
@@ -1540,6 +1665,87 @@ reference "tab:petsc:options:recommended"
 \end_inset
 
 ).
+ A more advanced set of solver settings that may provide better performance
+ in many elasticity problems are given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:petsc:options:advanced"
+
+\end_inset
+
+.
+ These settings are limited to problems where we store the stiffness matrix
+ as a nonsymmetric sparse matrix and require additional settings for the
+ formulation,
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+use_custom_constraint_pc = True ; Use only if problem contains a fault
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+These settings are only available if you build PETSc with Fortran enabled
+ and the ML package.
+ These features are included in the PyLith binary packages.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+The split fields and algebraic multigrid preconditioning currently fails
+ in problems with a nonzero null space.
+ This most often occurs when a problem contains multiple faults that extend
+ through the entire domain and create subdomains without any Dirichlet boundary
+ conditions.
+ The current workaround is to use the 
+\color inherit
+Additive Schwarz 
+\color none
+preconditioner without split fields.
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Troubleshooting"
+
+\end_inset
+
+ for the error message encountered in this situation.
+ 
+\end_layout
+
+\begin_layout Standard
+These more advanced settings allow each component of displacement, as well
+ as Lagrange multipliers for fault tractions, to be preconditioned separately.
+ This usually results in a much stronger preconditioner.
+ In simulations with fault slip, the degrees of freedom associated with
+ the Lagrange multipliers should be preconditioned with a custom preconditioner
+ that uses a diagonal approximation of the Schur complement.
 \end_layout
 
 \begin_layout Standard
@@ -1569,8 +1775,8 @@ Useful command-line arguments for setting PETSc options.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
-<features>
+<lyxtabular version="3" rows="10" columns="3">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="1.2in">
 <column alignment="center" valignment="middle" width="0.6in">
 <column alignment="left" valignment="top" width="3.8in">
@@ -1658,6 +1864,8 @@ ksp_monitor
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 false
 \end_layout
 
@@ -1689,6 +1897,8 @@ ksp_view
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 false
 \end_layout
 
@@ -1739,7 +1949,106 @@ Convergence tolerance for relative decrease in residual norm.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_monitor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dump residual norm to stdout for each nonlinear solve iteration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_view
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Print nonlinear solver parameters.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+1.0e-5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Convergence tolerance for relative decrease in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1750,7 +2059,7 @@ pc_type
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1761,13 +2070,63 @@ jacobi
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Set preconditioner type.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "PETSc documentation"
+target "http://www.mcs.anl.gov/petsc/petsc-as/documentation/linearsolvertable.html"
+
+\end_inset
+
+ for a list of all preconditioner types.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+gmres
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-Set preconditioner type to block Jacobi.
- See PETSc documentation for a list of all preconditioner types.
- 
+Set linear solver type.
+ See 
+\begin_inset CommandInset href
+LatexCommand href
+name "PETSc documentation"
+target "http://www.mcs.anl.gov/petsc/petsc-as/documentation/linearsolvertable.html"
+
+\end_inset
+
+ for a list of all solver types.
 \end_layout
 
 \end_inset
@@ -1800,16 +2159,16 @@ name "tab:petsc:options:recommended"
 
 \end_inset
 
-PETSc options that often result in improved performance in quasi-static
- and dynamic elasticity problems.
+PETSc options that provide moderate performance in a wide range of quasi-static
+ elasticity problems.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="9" columns="3">
-<features>
+<lyxtabular version="3" rows="13" columns="3">
+<features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2in">
 <column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
@@ -1886,6 +2245,37 @@ Additive Schwarz method.
 \begin_inset Text
 
 \begin_layout Plain Layout
+ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+gmres
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GMRES method from Saad and Schultz.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 
 \family typewriter
 sub_pc_factor_shift_type
@@ -1908,7 +2298,7 @@ nonzero
 \begin_inset Text
 
 \begin_layout Plain Layout
-Turn on nonzero shifting.
+Turn on nonzero shifting for factorization.
 \end_layout
 
 \end_inset
@@ -1941,7 +2331,7 @@ ksp_max_it
 \begin_inset Text
 
 \begin_layout Plain Layout
-Maximum number of iterations.
+Maximum number of iterations permitted in linear solve.
  Depends on problem size.
 \end_layout
 
@@ -1964,6 +2354,8 @@ ksp_gmres_restart
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\shape italic
 50
 \end_layout
 
@@ -2006,7 +2398,7 @@ ksp_rtol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Convergence tolerance for relative decrease in residual norm.
+Linear solve convergence tolerance for relative decrease in residual norm.
 \end_layout
 
 \end_inset
@@ -2017,6 +2409,8 @@ Convergence tolerance for relative decrease in residual norm.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 ksp_atol
 \end_layout
 
@@ -2027,8 +2421,9 @@ ksp_atol
 
 \begin_layout Plain Layout
 
+\shape italic
 \emph on
-1.0e-15
+1.0e-12
 \end_layout
 
 \end_inset
@@ -2037,7 +2432,7 @@ ksp_atol
 \begin_inset Text
 
 \begin_layout Plain Layout
-Convergence tolerance for absolute value in residual norm.
+Linear solve convergence tolerance for absolute value of residual norm.
 \end_layout
 
 \end_inset
@@ -2077,6 +2472,107 @@ Indicate why iterating stopped in linear solve.
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_max_it
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+100
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Maximum number of iterations permitted in nonlinear solve.
+ Depends on how nonlinear the problem is.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+1.0e-08
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nonlinear solve convergence tolerance for relative decrease in residual
+ norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+snes_atol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+1.0e-12
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Nonlinear solve convergence tolerance for absolute value of residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -2104,6 +2600,254 @@ true
 
 \begin_layout Plain Layout
 Indicate why iterating stopped in nonlinear solve.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:petsc:options:advanced"
+
+\end_inset
+
+PETSc options used with split fields algebraic multigrid preconditioning
+ that often provide improved performance in quasi-static elasticity problems.
+ N is the dimension of the problem.
+ For simulations with faults, the number of split fields is N+1.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="2in">
+<column alignment="center" valignment="middle" width="0.75in">
+<column alignment="left" valignment="top" width="3in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Property
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+field_split
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Precondition fields separately.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_fieldsplit_real_diagonal
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Use diagonal blocks from the true operator, rather than the preconditioner.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_pc_fieldsplit_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+multiplicative
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply each field preconditioning in sequence, which is stronger than all-at-once
+ (additive).
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_X_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+ml
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
+ X=0,1,2, ..., N+1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_X_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+jacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jacobi is sometimes the best option for fault preconditioning, however we
+ often use ML, X=0,1,2,...,N+1
 \end_layout
 
 \end_inset
@@ -2259,8 +3003,7 @@ view_jacobian Flag to indicate if system Jacobian (sparse matrix) should
 \begin_layout Description
 split_fields Split solution field into a displacement portion (fields 0..ndim-1)
  and a Lagrange multiplier portion (field ndim) to permit application of
- sophisticated PETSc preconditioners (default is false; for expert users
- only).
+ sophisticated PETSc preconditioners (default is false).
 \end_layout
 
 \begin_layout Standard
@@ -2289,11 +3032,86 @@ output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
-matrix_type = sbaij ; Non-symmetric sparse matrix is aij
+matrix_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij
 \end_layout
 
 \begin_layout LyX-Code
 view_jacobian = false
+\end_layout
+
+\begin_layout Subsection
+Numerical Damping in Explicit Time Stepping
+\end_layout
+
+\begin_layout Standard
+In explicit time-stepping formulations for elasticity, boundary conditions
+ and fault slip can excite short waveform elastic waves that are not accurately
+ resolved by the discretization.
+ We use numerical damping via an artificial viscosity
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Knopoff:Ni:2001,Day:Ely:2002"
+
+\end_inset
+
+ to reduce these high frequency oscillations.
+ In computing the strains for the elasticity term in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:elasticity:integral:dynamic:t"
+
+\end_inset
+
+, we use an adjusted displacement rather than the actual displacement, where
+ 
+\begin_inset Formula 
+\begin{equation}
+\vec{u}^{adj}(t)=\vec{u}(t)+\eta^{*}\Delta t\vec{\dot{u}}(t),
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula $\vec{u}^{adj}(t)$
+\end_inset
+
+ is the adjusted displacement at time t, 
+\begin_inset Formula $\vec{u}(t)$
+\end_inset
+
+is the original displacement at time (t), 
+\begin_inset Formula $\eta^{*}$
+\end_inset
+
+is the normalized artificial viscosity, 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ is the time step, and 
+\begin_inset Formula $\vec{\dot{u}}(t)$
+\end_inset
+
+ is the velocity at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ The default value for the normalized artificial viscosity is 0.1.
+ We have found values in the range 0.1-0.4 sufficiently suppress numerical
+ noise while not excessively reducing the peak velocity.
+ An example of setting the normalized artificial viscosity in a 
+\family typewriter
+.cfg
+\family default
+ file is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+norm_viscosity = 0.2
 \end_layout
 
 \begin_layout Subsection
@@ -2313,7 +3131,8 @@ PyLith supports three types of solvers.
 ve models and kinematic fault ruptures.
  The nonlinear solver, SolverNonlinear, corresponds to the PETSc SNES solver
  and is used in nonlinear problems with nonlinear viscoelastic or elastoplastic
- bulk constitutive models or dynamic fault ruptures.
+ bulk constitutive models, dynamic fault ruptures, or problems involving
+ finite strain (small strain formulation).
  The lumped solver (SolverLumped) is a specialized solver used with the
  lumped system Jacobian matrix.
  The options for the PETSc KSP and SNES solvers are set via the top-level
@@ -3293,20 +4112,23 @@ PyLith Output
 \end_layout
 
 \begin_layout Standard
-PyLith currently supports output to VTK files, which can be imported directly
- into a number of visualization tools, such as ParaView, Visit, and MayaVi.
+PyLith currently supports output to VTK and HDF5/Xdmf files, which can be
+ imported directly into a number of visualization tools, such as ParaView,
+ Visit, and MayaVi.
+ The HDF5 files can also be directly accessed via Matlab and PyTables.
  PyLith 1.1 significantly expanded the information available for output,
  including fault information and state variables.
  Output of solution information for the domain, faults, materials, and boundary
  conditions is controlled by an output manager for each module.
  This allows the user to tailor the output to the problem.
- By default PyLith will write a number of VTK files: one VTK file for the
- solution over the entire domain, two VTK files for each fault, and two
- VTK files for each material.
- One of the files for each fault and material includes diagnostic  information.
- For a fault the fields include the final slip, the slip initiation  time,
- and the fault normal vector.
- For a material the fields include the density and the elastic constants.
+ By default PyLith will write a number of files.
+ Diagnostic information for each fault and material is written into a separate
+ file as are the solution and state variables for the domain, each fault,
+ and each material.
+ For a fault the diagnostic fields include the final slip, the slip initiation
+ time, and the fault normal vector.
+ For a material the diagnostic fields include the density and the elastic
+ constants.
  Additional diagnostic information can be included by setting the appropriate
  output parameters.
  See Chapters 
@@ -3325,13 +4147,17 @@ reference "cha:boundary:interface:conditions"
 
  for more information on the available fields and the next section for output
  parameters.
- The second file for each fault and material includes solution information
+ The other files for each fault and material include solution information
  at each time step where output was requested (also customizable by the
  user).
  For a fault the solution information includes the slip and the change in
  tractions on the fault surface.
  For a material the solution information includes the total strain and stress.
  For some materials fields for additional state variables may be available.
+ For output via VTK files, each time step is written to a separate file,
+ whereas for HDF5 files all of the time steps for a given domain, fault,
+ or material are written into the same file.
+ A single Xdmf metadata file is created for each HDF5 file.
 \end_layout
 
 \begin_layout Subsection
@@ -3383,7 +4209,7 @@ output_freq
 \end_layout
 
 \begin_layout Description
-writer Writer for data (currently limited to VTK writer).
+writer Writer for data (VTK writer or HDF5 writer).
 \end_layout
 
 \begin_layout Description
@@ -3561,11 +4387,11 @@ PyLith writes legacy (non-XML) VTK files.
 \end_layout
 
 \begin_layout Subsubsection
-VTKWriter Parameters
+DataWriterVTK Parameters
 \end_layout
 
 \begin_layout Standard
-The parameters for the VTKWriter are:
+The parameters for the VTK writer are:
 \end_layout
 
 \begin_layout Description
@@ -3584,8 +4410,326 @@ time_constant Value used to normalize time stamp in VTK files (default is
  1.0 s).
 \end_layout
 
+\begin_layout Subsection
+HDF5/Xdmf Output
+\end_layout
+
+\begin_layout Standard
+HDF5 files provide a flexible framework for storing simulation data with
+ datasets in groups logically organized in a tree structure analogous to
+ files in directories.
+ HDF5 output offers parallel, multi-dimensional array output in binary files,
+ so it is much faster and more convenient than the VTK output which uses
+ ASCII files and separate files for each time step.
+ Standards for organizing datasets and groups in HDF5 files do not exist
+ for general finite-element software in geodynamics.
+ Consequently, PyLith uses its own simple layout show in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:hdf5:layout"
+
+\end_inset
+
+.
+ In order for visualization tools, such as ParaView, to determine which
+ datasets to read and where to find them in the hierarchy of groups within
+ the HDF5 file, we create an Xdmf (eXtensible Data Model and Format, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+www.xdmf.org
+\end_layout
+
+\end_inset
+
+) metadata file that provides this information.
+ This file is written when PyLith closes the HDF5 file at the end of the
+ simulation.
+ In order to visualize the datasets in an HDF5 file, one simply opens the
+ corresponding Xdmf file (the extension is 
+\family typewriter
+.xmf
+\family default
+) in ParaView or Visit.
+ The Xdmf file contains the relative path to the HDF5 file so the files
+ can be moved but must be located together in the same directory.
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Note:
+\color inherit
+ 
+\series default
+The Xdmf format supports representation of two- and three-dimensional coordinate
+s of points, scalar vector field types, and three-dimensional vector and
+ tensor vector field types but not two-dimensional vector or tensor vector
+ field types.
+ As a result, we separate the components of two-dimensional vector and tensor
+ vector field objects and add the component as a suffix to the name of the
+ field.
+ The vector can be reconstructed within ParaView using the Calculator (see
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Tutorial-Subduction"
+
+\end_inset
+
+ for an example).
+ Accessing the datasets in the HDF5 files using tools such as PyTables with
+ visualization through MayaVi circumvents this problem, but requires writing
+ Python scripts and a deeper knowledge of the visualization interface.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename figs/hdf5layout.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Layout of PyLith HDF5 file.
+ The orange rectangles with rounded corners identify the groups and the
+ blue rectangles with sharp corners identify the datasets.
+ The dimensions of the data sets are shown in parentheses.
+ Most HDF5 files will contain either 
+\family typewriter
+vertex_fields
+\family default
+ or 
+\family typewriter
+cell_fields
+\family default
+ but not both.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:hdf5:layout"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+HDF5 files do not contain self-correcting features that allow a file to
+ be read if part of a dataset is corrupted.
+ This type of error can occur if a job terminates abnormally in the middle
+ or at the end of a simulation on a large cluster or other parallel machine.
+ Fortunately, HDF5 also offers the ability to store datasets in external
+ binary files with the locations specified by links in the HDF5 file.
+ Note that the use of external data files results in one data file per dataset
+ in addition to the HDF5 and Xdmf files.
+ The external data files use the name of the HDF5 file with the dataset
+ name added to the prefix and the 
+\family typewriter
+.h5
+\family default
+ suffix replaced by 
+\family typewriter
+.dat
+\family default
+).
+ The HDF5 files include relative paths to the external data files, so these
+ files can also be moved, but they, too, must be kept together in the same
+ directory.
+ This provides a more robust method of output because one can generate an
+ HDF5 file associated with the uncorrupted portions of the external data
+ files should an error occur.
+ Currently, PyLith does not include a utility to do this, but we plan to
+ add one in a future release.
+ Thus, there are two options when writing PyLith output to HDF5 files: (1)
+ including the datasets directly in the HDF5 files themselves or (2) storing
+ the datasets in external binary files with just metadata in the HDF5 files.
+ Both methods provide similar performance because they will use MPI I/O
+ if it is available.
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+Storing the datasets within the HDF5 file in a parallel simulation requires
+ that the HDF5 library be configured with the 
+\family typewriter
+--enable-parallel
+\family default
+ option.
+ 
+\color none
+The binary PyLith packages include this feature and it is a default setting
+ in building HDF5 via the PyLith Installer.
+\end_layout
+
+\begin_layout Standard
+Accessing the datasets for additional analysis or visualization is identical
+ in the two methods because the use of external data files is completely
+ transparent to the user except for the presence of the additional files.
+\end_layout
+
+\begin_layout Subsubsection
+HDF5 utilities
+\end_layout
+
+\begin_layout Standard
+HDF5 includes several utilities for examining the contents of HDF5 files.
+ 
+\family typewriter
+h5dump
+\family default
+ is very handy for displaying the hierarchy, dimensions of datasets, attributes,
+ and even the dataset values.
+ 
+\end_layout
+
+\begin_layout Quote
+Dump the entire HDF5 file to stdout (not practical or useful for large files):
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+h5dump mydata.h5
+\end_layout
+
+\end_deeper
+\begin_layout Quote
+Dump the hierarchy of an HDF5 file to stdout:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+h5dump -n mydata.h5
+\end_layout
+
+\end_deeper
+\begin_layout Quote
+Dump the hierarchy with dataset dimensions and attributes to stdout:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+h5dump -H mydata.h5
+\end_layout
+
+\end_deeper
+\begin_layout Quote
+Dump dataset 'vertices' in group '/geometry' to stdout:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+h5dump -d /geometry/vertices mydata.h5
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+DataWriterHDF5 Parameters
+\end_layout
+
+\begin_layout Standard
+This HDF5 writer stores the datasets inside the HDF5 file and the parameters
+ are:
+\end_layout
+
+\begin_layout Description
+filename Name of HDF5 file (the Xdmf filename is generated from the same
+ prefix).
+\end_layout
+
+\begin_layout Subsubsection
+DataWriterHDF5Ext Parameters
+\end_layout
+
+\begin_layout Standard
+This HDF5 writer stores the datasets using external data files (a more robust
+ method for parallel runs) and the parameters are:
+\end_layout
+
+\begin_layout Description
+filename Name of HDF5 file (the external dataset filenames and the Xdmf
+ filename are generated from the same prefix).
+\end_layout
+
+\begin_layout Standard
+An example of changing the writer from the default VTK writer to the HDF5
+ writer with external datasets for output over the domain in a 
+\family typewriter
+.cfg
+\family default
+ file is
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.domain.output]
+\end_layout
+
+\begin_layout LyX-Code
+output_freq = time_step
+\end_layout
+
+\begin_layout LyX-Code
+time_step = 1.0*yr
+\end_layout
+
+\begin_layout LyX-Code
+cell_data_fields = [displacement,velocity]
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5ExtMesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = dislocation.h5
+\end_layout
+
 \begin_layout Section
 Tips and Hints
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Tips:Hints"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3670,6 +4814,13 @@ Turn on the journals (see the examples) to monitor the progress of the code.
 
 \begin_layout Subsection
 Troubleshooting
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Troubleshooting"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -3751,19 +4902,19 @@ If it is not, adjust your PATH environment variable accordingly.
 \end_layout
 
 \begin_layout Quote
-This error occurs when trying to use the 32-bit linux binary on 64-bit linux
- systems.
+This error occurs when trying to use the 32-bit linux binary on some 64-bit
+ linux systems.
  One of the Python packages PyLith uses does not know how to determine the
  system architecture at runtime.
  The workaround is:
 \end_layout
 
 \begin_layout Enumerate
-Go to the lib/python2.5/site-packages directory.
+Go to the lib/python2.6/site-packages directory.
 \end_layout
 
 \begin_layout Enumerate
-Unzip merlin-1.7-py2.5.egg (if it is a file and not a directory).
+Unzip merlin-1.7-py2.6.egg (if it is a file and not a directory).
 \end_layout
 
 \begin_layout Enumerate
@@ -3776,8 +4927,45 @@ Edit __init__.py.
 \end_layout
 
 \begin_layout Enumerate
-If merlin-1.7-py2.5.egg is a file, rezip merlin.
- Go to the site-packages directory and enter "zip -r merlin-1.7-py2.5.egg merlin".
+If merlin-1.7-py2.6.egg is a file, rezip merlin.
+ Go to the site-packages directory and enter "zip -r merlin-1.7-py2.6.egg merlin".
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+-- Solving equations.
+\begin_inset Newline newline
+\end_inset
+
+[0]PETSC ERROR: ---------------- Error Message -------------------------------
+ 
+\begin_inset Newline newline
+\end_inset
+
+[0]PETSC ERROR: Detected zero pivot in LU factorization
+\begin_inset Newline newline
+\end_inset
+
+ see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html#ZeroPivot!
+\end_layout
+
+\begin_layout Quote
+This usually occurs when the null space of the system Jacobian is nonzero,
+ such as the case of a problem without Dirichlet boundary conditions on
+ any boundary.
+ If this arises when using the split fields and algebraic multigrid precondition
+ing and no additional Dirichlet boundary conditions are desired, then the
+ workaround is to revert to using the Additive Schwarz preconditioning without
+ split fields as discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:petsc:options"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Itemize

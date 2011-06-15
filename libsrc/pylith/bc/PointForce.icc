@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_pointforce_hh)
+#error "PointForce.icc can only be included from PointForce.hh"
+#endif
+
+#include <cassert> // USES assert()
+
+// Get manager of scales used to nondimensionalize problem.
+inline
+const spatialdata::units::Nondimensional&
+pylith::bc::PointForce::_getNormalizer(void) const {
+  assert(0 != _normalizer);
+  return *_normalizer;
+}
+
+
+// End of file 

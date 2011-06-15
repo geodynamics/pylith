@@ -1,0 +1,38 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_boundarycondition_hh)
+#error "BoundaryCondition.icc can only be included from BoundaryCondition.hh"
+#endif
+
+// Set name of boundary condition surface.
+inline
+void
+pylith::bc::BoundaryCondition::label(const char* value) {
+  _label = value;
+}
+
+// Get label of boundary condition surface.
+inline
+const char*
+pylith::bc::BoundaryCondition::label(void) const {
+  return _label.c_str();
+}
+
+
+// End of file 

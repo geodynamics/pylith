@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -26,10 +26,14 @@ dist_noinst_DATA = \
 	cube2_binary_64.gmv \
 	cube2_binary_64.pset \
 	mesh3DIndexOne.txt \
-	twotri3.exo \
-	twoquad4.exo \
-	twotet4.exo \
-	twohex8.exo \
+	twotri3_12.2.exo \
+	twotri3_13.0.exo \
+	twoquad4_12.2.exo \
+	twoquad4_13.0.exo \
+	twotet4_12.2.exo \
+	twotet4_13.0.exo \
+	twohex8_12.2.exo \
+	twohex8_13.0.exo \
 	mesh2D_comments.txt \
 	line2.mesh \
 	line2_t10.vtk \
@@ -115,13 +119,17 @@ dist_noinst_DATA = \
 	line2_vertex.h5 \
 	tri3.h5 \
 	tri3_cell.h5 \
+	tri3_cell.xmf \
 	tri3_vertex.h5 \
+	tri3_vertex.xmf \
 	quad4.h5 \
 	quad4_cell.h5 \
 	quad4_vertex.h5 \
 	tet4.h5 \
 	tet4_cell.h5 \
+	tet4_cell.xmf \
 	tet4_vertex.h5 \
+	tet4_vertex.xmf \
 	hex8.h5 \
 	hex8_cell.h5 \
 	hex8_vertex.h5 \

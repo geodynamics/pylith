@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -47,15 +47,10 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void)
 
   MeshOps::checkMaterialIds(mesh, materialIds, numMaterials);
 
-  bool caughtError = false;
-  try {
-    materialIds[0] = 99;
+  materialIds[0] = 99;
     
-    MeshOps::checkMaterialIds(mesh, materialIds, numMaterials);
-  } catch (const std::runtime_error& err) {
-    caughtError = true;
-  } // try/catch
-  CPPUNIT_ASSERT(caughtError);
+  CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds, numMaterials),
+		       std::runtime_error);
 } // testCheckMaterialIds
  
 
