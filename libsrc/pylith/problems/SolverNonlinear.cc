@@ -55,7 +55,7 @@ namespace pylith {
 	void                     *precheck;                                                        /* user-defined step-checking context (optional) */
 	PetscErrorCode           (*postcheckstep)(PetscSNES,PetscVec,PetscVec,PetscVec,void*,PetscBool *,PetscBool *); /* step-checking routine (optional) */
 	void                     *postcheck;                                                       /* user-defined step-checking context (optional) */
-	PetscViewerASCIIMonitor  monitor;
+	PetscViewer  monitor;
       } SNES_LS;
     } // _SolverNonlinear
   } // problems
