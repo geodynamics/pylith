@@ -38,7 +38,8 @@ RELEASE NOTES
     which can be accessed directly from Matlab or indirectly from
     ParaView or Visit via automatically created Xdmf files. Temporal
     data is stored in 3-D arrays, permitting slicing in time and/or
-    space.
+    space. See examples/3d/hex8 Steps 6-9 and examples/2d/subduction
+    in the tutorials for examples.
 
  * 2-D generalized Maxwell viscoelastic bulk rheology
 
@@ -58,7 +59,8 @@ RELEASE NOTES
     Permits running larger problems through uniform global refinement
     of the mesh by a factor of 2 (reduces the node spacing by a factor
     of 2) after the mesh is distributed among processors. This allows
-    running problems that are 4x larger in 2-D and 8x larger in 3-D.
+    running problems that are 4x larger in 2-D and 8x larger in
+    3-D. See examples/3d/tet4 Steps 2 and 4 for examples.
   
  * Custom algebraic multigrid preconditioner
 
@@ -67,7 +69,8 @@ RELEASE NOTES
     spontaneous ruptures with algebraic multigrid preconditioning for
     quasi-static solutions. In most cases, this results in fewer
     iterations in the linear solve and the number of iterations
-    increases much less with problem size.
+    increases much less with problem size. See examples/3d/tet4 Steps
+    2 and 4 for examples.
 
   * PyLith installer utility
 
