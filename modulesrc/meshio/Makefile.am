@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -36,8 +36,6 @@ swig_sources = \
 	CellFilterAvg.i \
 	DataWriter.i \
 	DataWriterVTK.i \
-	DataWriterHDF5.i \
-	DataWriterHDF5Ext.i \
 	OutputManager.i \
 	OutputSolnSubset.i
 
@@ -67,6 +65,13 @@ INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_
 if ENABLE_SWIG
 $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
 	$(SWIG) $(PYLITH_SWIG_CPPFLAGS) -Wall -c++ -python $<
+endif
+
+if ENABLE_HDF5
+  swig_sources += \
+	DataWriterHDF5.i \
+	DataWriterHDF5Ext.i \
+	Xdmf.i
 endif
 
 

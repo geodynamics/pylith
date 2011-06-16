@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -35,6 +35,7 @@
 #include "pylith/materials/MaxwellIsotropic3D.hh"
 #include "pylith/materials/MaxwellPlaneStrain.hh"
 #include "pylith/materials/GenMaxwellIsotropic3D.hh"
+#include "pylith/materials/GenMaxwellPlaneStrain.hh"
 #include "pylith/materials/GenMaxwellQpQsIsotropic3D.hh"
 #include "pylith/materials/PowerLaw3D.hh"
 #include "pylith/materials/DruckerPrager3D.hh"
@@ -77,6 +78,7 @@ import_array();
 %include "MaxwellIsotropic3D.i"
 %include "MaxwellPlaneStrain.i"
 %include "GenMaxwellIsotropic3D.i"
+%include "GenMaxwellPlaneStrain.i"
 %include "GenMaxwellQpQsIsotropic3D.i"
 %include "PowerLaw3D.i"
 %include "DruckerPrager3D.i"

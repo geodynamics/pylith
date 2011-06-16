@@ -1,33 +1,24 @@
 ======================================================================
-CURRENT ISSUES/PRIORITIES (1.6.0)
+CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
 * AUSTIN MEETING
-
- MONDAY
-
-  * Discuss buildbot packaging (use Python rather than svn properties??)
-
-  * Nonlinear solver for friction (slip rate) 
-
 
  (1) DONE Fix GPU build
     - Need the CUDA includes and libraries (get from PyCUDA)
     - Some files need to be compiled using nvcc (*.cu)
 
- (2) Add FieldSplit null space (translations+rotations)
-
- (3) General integrator - Add general surface and volume integrators
+ (2) General integrator - Add general surface and volume integrators
 
     + General integrator does setup, gets basis stuff at quadrature
       points, and calls function(s) to perform integrations for
       governing eqns.
 
- (4) Generalize Quadrature object to take multiple finite element dscretizations (need for multifield)
+ (3) Generalize Quadrature object to take multiple finite element dscretizations (need for multifield)
 
     (a) Add separate objects for each field element
 
- (5) Field split
+ (4) Field split
  
    + Need to tell solver to split vector fields into pieces.
 
@@ -35,47 +26,59 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   MultiField
     unit tests
 
-----------------------------------------------------------------------
-* [STABLE]
-  rate and state friction - sliding test
-  predictor/corrector scheme?
+* GenMaxwellQpQs [BRAD]
 
-  [SPATIALDATA]
-  SimpleIOAscii - check that we read all the points expected
+  2-D and 3-D versions
+  Need to redo Maxwell time calculation. Use ratio.
+  Create benchmark for test (compare against fk)
 
-* BUILDBOT
+* Make nucleation for spontaneous rupture modular [BRAD]
 
-  (1) cygwin
-      + packaging
+  spatial and temporal variation in shear/normal stress for nucleation
 
-  (2) linux/darwin
-      + ignore all the extra junk in bin and lib
+* Reimplement parameters to use PackedFields. [BRAD]
 
-* Unform global refinement
-
-  (1) The overlap is not updated properly for hex8 refinement. Run
-  examples/3d/hex8/step03.cfg.
-
-  cd examples/3d/hex8
-  pylith step03.cfg --mesh_generator.refiner=pylith.topology.RefineUniform --nodes=3
-
-    Runs but mesh connectivity/coordinates are wrong.
-
-* Output to HDF5 files. [BRAD and MATT]
-
-  (2) Add time dataset to vertex_fields and cell_fields. [BRAD]
-
-  (3) Add creation of .xmf metadata file for ParaView/Visit.  [BRAD]
+    Fields
+    FieldsNew -> PackedFields
+    SolutionFields [do this in multifields]
+      Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
+      Use Field for dispIncr(t->t+dt), residual(t)
 
 * Field split.
-
-  Need to add the ability to add null space (subduction/step03).
 
     Add flag to material [default is false] for creating null vector
     When setting up solver, create null vector, and pass it to KSP
 
   Need to check performance of custom fault preconditioner.
 
+* Cleanup
+
+    Add elasticPrestep() to Formulation
+    Remove solnIncr, keep setField()
+
+* 2-D materials
+
+  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
+
+* Scalable distribution [MATT]
+
+  + It appears that topology adjustment is not currently limiting the runs
+  + Need a more memory scalable Distribution
+    + Consider simple distribution, followed by cleanup
+  + I think the Overlap structure is probably taking up all the memory
+    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
+      + Can we use a lighter-weight structure to sit in copy()?
+
+  + Need ribbon around fault in order to develop algorithm
+
+* Line search [MATT]
+
+  Line search should be improved to include the inequality constraints.
+
+----------------------------------------
+MISCELLANEOUS
+----------------------------------------
 
 * Memory model [MATT and BRAD]
 
@@ -102,17 +105,6 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
 
   Need to check sum, because we may not be tracking deallocation.
 
-* Cleanup of materials [stable]
-
-  + Account for initial strain in viscoelastic models
-
-  + Cleanup documentation
-    + Move formulations not used to Appendix
-    + Cleanup notation
-    + Add more information on derivation (especially Generalize Maxwell)
-      Use impedance approach
-    + Are material models consistent with governing equations discussion?
-
 * Fault preconditioner [BRAD]
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
@@ -122,51 +114,31 @@ CURRENT ISSUES/PRIORITIES (1.6.0)
   + full-scale testing
   + Code cleanup
 
-======================================================================
-CURRENT ISSUES/PRIORITIES (1.7.0)
-======================================================================
-
-* GenMaxwellQpQs [BRAD]
-
-  2-D and 3-D versions
-  Need to redo Maxwell time calculation. Use ratio.
-  Create benchmark for test (compare against fk)
-
-* Make nucleation for spontaneous rupture modular [BRAD]
-
-  spatial and temporal variation in shear/normal stress for nucleation
-
-* Reimplement Fields to use a single section. [BRAD]
-
-    Fields
-    FieldsNew -> PackedFields
-    SolutionFields
-      Use Field for acc, vel, disp(t+dt), disp(t), etc?
-      Use Field for dispIncr(t->t+dt)
-      Use Field for residual(t)
-
-* Cleanup
-
-    Add elasticPrestep() to Formulation
-    Remove solnIncr, keep setField()
-
-* 2-D materials
-
-  + GenMaxwellPlaneStrain (plane strain Generalize Maxwell model) [Charles]
-  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
-
-* Scalable distribution [MATT]
-
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
 * Paper
 
+  
+  geometry processing (adjusting topology)
+  discretization (cohesive cells)
+  model (Lagrange multipliers)
+    Slip functions
+    Fault constitutive models
+  solver
+  benchmarks
+    Savage and Prescott
+    Dynamic
+  real problem  
+
   General paper - focus on fault implementation
 
   Custom preconditioner
+
+* Fault preconditioner [BRAD]
+
+  FaultCohesiveLagrange::calcPreconditioner() [need unit test]
 
 * Cleanup
 
@@ -458,24 +430,20 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.6
-----------------------------------------------------------------------
-
-  1. HDF5 output
-
-     Write data into raw binary data file, compress each time chunk
-
-  2. Output data at arbitrary point locations
-
-     Interpolate solution to desired location
-     Solution field (time history)
-
-  4. Uniform global refinement
-
-  6. FaultCohesiveTract (dikes)
-
-----------------------------------------------------------------------
 Release 1.7
+----------------------------------------------------------------------
+
+  1. Damping for Q
+    Generalized Maxwell approach for attenuation
+
+  2. 2-D materials
+    + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
+    + PowerLawPlaneStrain (power law plane strain )
+
+  3. Scalable mesh distribution
+
+----------------------------------------------------------------------
+Release 2.0
 ----------------------------------------------------------------------
 
   1. Restart / checkpointing
@@ -487,15 +455,6 @@ Release 1.7
 
   3. Coupling of quasi-static and dynamic simulations
 
-  4. Damping for Q
-    Mass/stiffness proportional damping for attenuation
-
-  4. Improved support for spherical geometry in user-interface
-
-----------------------------------------------------------------------
-Release 2.0
-----------------------------------------------------------------------
-
   1. Higher order cells
 
      Nonisoparametric cells
@@ -504,7 +463,18 @@ Release 2.0
        Update quadrature to use CellGeometry refPtsToGlobal() and
        jacobian() Remove CellGeometry jacobian(double_array)
 
-  2. XFEM fault implementation
+  2. Output data at arbitrary point locations
+
+     Interpolate solution to desired location
+     Solution field (time history)
+
+----------------------------------------------------------------------
+Low-priority items (release unknown)
+----------------------------------------------------------------------
+
+  6. FaultCohesiveTract (dikes)
+
+  4. Improved support for spherical geometry in user-interface
 
 ----------------------------------------------------------------------
 LONG TERM WISH LIST

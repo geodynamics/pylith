@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -73,6 +73,24 @@ public :
 
   FieldBase(void); ///< Default constructor.
   ~FieldBase(void); ///< Default destructor.
+
+  /** Get string associated with vector field type.
+   *
+   * @param value Vector field type.
+   * @returns String associated with vector field type.
+   */
+  static
+  const char*
+  vectorFieldString(VectorFieldEnum value);
+
+  /** Get string associated with vector field type.
+   *
+   * @param value String associated with vector field type.
+   * @returns Vector field type.
+   */
+  static
+  VectorFieldEnum
+  parseVectorFieldString(const char* value);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

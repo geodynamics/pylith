@@ -1,0 +1,36 @@
+# CUBIT script to generate simple Exodus files for testing ExodusII
+# and MeshIOCubit.
+
+reset
+
+create node location -2.0 -1.0  1.0
+create node location -2.0 -1.0 -1.0
+create node location -2.0  1.0 -1.0
+create node location -2.0  1.0  1.0
+create node location  0.0 -1.0  1.0
+create node location  0.0 -1.0 -1.0
+create node location  0.0  1.0 -1.0
+create node location  0.0  1.0  1.0
+create node location  2.0 -1.0  1.0
+create node location  2.0 -1.0 -1.0
+create node location  2.0  1.0 -1.0
+create node location  2.0  1.0  1.0
+
+
+create hex node 1 2 3 4 5 6 7 8
+create hex node 5 6 7 8 9 10 11 12
+
+block 7 hex 1
+block 8 hex 2
+
+nodeset 1 node 9 10 11 12
+nodeset 1 name "right_face"
+
+nodeset 2 node 1 4 5 8 9 12
+nodeset 2 name "top_face"
+
+#{filename=Quote("twohex8_"//VERSION//".exo")}
+export mesh {filename} dimension 3 overwrite
+
+
+

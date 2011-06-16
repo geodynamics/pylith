@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -63,7 +63,7 @@ const int pylith::meshio::MeshDataCubitHex::_groups[] = {
 };
 
 const char* pylith::meshio::MeshDataCubitHex::_groupNames[] = {
-  "2", "4"
+  "right_face", "top_face"
 };
 
 const char* pylith::meshio::MeshDataCubitHex::_groupTypes[] = {

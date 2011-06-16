@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -48,15 +48,15 @@ const int pylith::meshio::MeshDataCubitQuad::_materialIds[] = {
 const int pylith::meshio::MeshDataCubitQuad::_numGroups = 2;
 
 const int pylith::meshio::MeshDataCubitQuad::_groupSizes[] = 
-  { 2, 2 };
+  { 2, 3 };
 
 const int pylith::meshio::MeshDataCubitQuad::_groups[] = {
   0, 3,
-  4, 5
+  2, 3, 5
 };
 
 const char* pylith::meshio::MeshDataCubitQuad::_groupNames[] = {
-  "100", "101"
+  "left_edge", "top_edge"
 };
 
 const char* pylith::meshio::MeshDataCubitQuad::_groupTypes[] = {

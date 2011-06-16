@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -38,7 +38,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "HDF5.hh" // USES HDF5::FieldMetadata
+#include "pylith/utils/array.hh" // USES double_array, std::vector
 
 #include <vector> // USES std::vector
 #include <fstream> // HASA std::ofstream
@@ -67,8 +67,37 @@ public :
   void write(const char* filenameXdmf,
 	     const char* filenameHDF5);
 
+// PRIVATE STRUCTS ------------------------------------------------------
+public :
+
+  /// Metadata associated with fields.
+  struct FieldMetadata {
+    std::string name; ///< Name of field.
+    std::string vectorFieldType; ///< Type of field.
+    std::string domain; ///< Domain over which field is given.
+    int numPoints; ///< Number of points in field.
+    int fiberDim; ///< Number of values in field at each point, time.
+    int numTimeSteps; ///< Number of time steps for field.
+  }; // FieldMetadata
+
 // PRIVATE METHODS ------------------------------------------------------
 private :
+
+  /** Get timestamps from HDF5 file.
+   *
+   * @param timeStamps Array of time stamps.
+   * @param h5 HDF5 file.
+   */
+  void _getTimeStamps(double_array* timeStamps,
+		      HDF5& h5);
+
+  /** Get field metadata from HDF5 file.
+   *
+   * @param metadata Array of field metadata.
+   * @param h5 HDF5 file.
+   */
+  void _getFieldMetadata(std::vector<FieldMetadata>* metadata,
+			 HDF5& h5);
 
   /** Write domain cell information.
    *
@@ -89,10 +118,8 @@ private :
   /** Write time stamps associated with fields.
    *
    * @param timeStamps Array of time stamps.
-   * @param numTimeStamps Number of time stamps.
    */
-  void _writeTimeStamps(const double* timeStamps,
-			const int numTimeSteps);
+  void _writeTimeStamps(const double_array& timeStamps);
 
   /** Write grid topology information.
    *
@@ -113,7 +140,7 @@ private :
    * @param metadata Metadata for field.
    * @param iTime Index of time step.
    */
-  void _writeGridAttribute(const HDF5::FieldMetadata& metadata,
+  void _writeGridAttribute(const FieldMetadata& metadata,
 			   const int iTime);
 
   /** Write grid attribute as single component (for 2-D vector).
@@ -122,7 +149,7 @@ private :
    * @param iTime Index of time step.
    * @param component Index of component.
    */
-  void _writeGridAttributeComponent(const HDF5::FieldMetadata& metadata,
+  void _writeGridAttributeComponent(const FieldMetadata& metadata,
 				    const int iTime,
 				    const int component);
 

@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -102,6 +102,63 @@ pylith::meshio::TestHDF5::testHasDataset(void)
   CPPUNIT_ASSERT(!h5.hasDataset("/nodata"));
   h5.close();
 } // testHasDataset
+
+// ----------------------------------------------------------------------
+// Test getDatasetDims().
+void
+pylith::meshio::TestHDF5::testGetDatasetDims(void)
+{ // testGetDatasetDims
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+
+  const int ndimsE = 2;
+  const hsize_t dimsE[ndimsE] = { 3, 2 };
+  const hsize_t dimsChunkE[ndimsE] = { 1, 2 };
+  h5.createDataset("/", "data", dimsE, dimsChunkE, ndimsE, H5T_NATIVE_INT);
+  h5.close();
+
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  hsize_t* dims = 0;
+  int ndims = 0;
+  h5.getDatasetDims(&dims, &ndims, "/", "data");
+  h5.close();
+  CPPUNIT_ASSERT_EQUAL(ndimsE, ndims);
+
+  for (int i=0; i < ndimsE; ++i)
+    CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
+
+  delete[] dims; dims = 0;
+} // testGetDatasetDims
+
+// ----------------------------------------------------------------------
+// Test getGroupDatasets().
+void
+pylith::meshio::TestHDF5::testGetGroupDatasets(void)
+{ // testGetGroupDatasets
+  const int ngroupsE = 3;
+  const char* namesE[3] = { "dataA",
+			    "dataB",
+			    "dataC" };
+  const hsize_t ndims = 2;
+  const hsize_t dims[ndims] = { 3, 2 };
+  const hsize_t dimsChunk[ndims] = { 1, 2 };
+
+  HDF5 h5("test.h5", H5F_ACC_TRUNC);
+  h5.createGroup("/mygroup");
+  for (int i=0; i < ngroupsE; ++i)
+    h5.createDataset("/mygroup", namesE[i], dims, dimsChunk, ndims,
+		     H5T_NATIVE_INT);
+  h5.close();
+
+  string_vector names;
+  h5.open("test.h5", H5F_ACC_RDONLY);
+  h5.getGroupDatasets(&names, "/mygroup");
+  h5.close();
+
+  const int ngroups = names.size();
+  CPPUNIT_ASSERT_EQUAL(ngroupsE, ngroups);
+  for (int i=0; i < ngroups; ++i)
+    CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), names[i]);
+} // testGetGroupDatasets
 
 // ----------------------------------------------------------------------
 // Test createGroup()
@@ -275,7 +332,7 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
   fout.close();
 
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
-  dims[0] = 2;
+  dims[0] = H5S_UNLIMITED;
   dims[1] = dimsE[1];
   h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndimsE,
 			      H5T_NATIVE_INT);

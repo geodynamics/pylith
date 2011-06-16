@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -81,6 +81,28 @@ ALE::CellRefinerHex8::splitCell(const point_type cell,
   int numVolumes = 0;
   const VolumeType* volumes;
 
+#if 0
+  // Debugging for the solvertest benchmark
+  bool hasA = false, hasB = false;
+  bool hasC = false, hasD = false;
+  for(int i = 0; i < coneSize; ++i) {
+    if      (cone[i] == 5708) {hasA = true;}
+    else if (cone[i] == 8187) {hasB = true;}
+    else if (cone[i] == 4262) {hasC = true;}
+    else if (cone[i] == 8246) {hasD = true;}
+  }
+  if ((hasA && hasB) || (hasC && hasD)) {
+    const char *rankname = hasC && hasD ? "[1]" : "[0]";
+    const char *typeName = _cellType(cell) == HEXAHEDRON ? "hex" : "quadLag";
+
+    std::cout << rankname<<"Refined cell " << cell << " of type " << typeName << " with cone:" << std::endl;
+    for(int i = 0; i < coneSize; ++i) {
+      std::cout << "  " << cone[i];
+    }
+    std::cout << std::endl;
+  }
+#endif
+
   switch (_cellType(cell)) {
   case HEXAHEDRON:
     _edges_HEXAHEDRON(&edges, &numEdges, cone, coneSize);
@@ -98,8 +120,21 @@ ALE::CellRefinerHex8::splitCell(const point_type cell,
 
   for(int iEdge=0; iEdge < numEdges; ++iEdge) {
     if (_edgeToVertex.find(edges[iEdge]) == _edgeToVertex.end()) {
+#if 0
+      // Debugging for the solvertest benchmark
+      point_type min = std::min(edges[iEdge].first, edges[iEdge].second);
+      point_type max = std::max(edges[iEdge].first, edges[iEdge].second);
+
+      if (min == 5708 && max == 8187) {
+        std::cout << "Refined cell " << cell << " with cone:" << std::endl;
+        for(int i = 0; i < coneSize; ++i) {
+          std::cout << "  " << cone[i];
+        }
+        std::cout << std::endl;
+        std::cout << "  edge " << edges[iEdge] << " new vertex " << *curNewVertex << std::endl;
+      }
+#endif
       // if vertex does not exist
-      //std::cout << "Edge: " << edges[iEdge] << ", new vertex: " << *curNewVertex << std::endl;
       _edgeToVertex[edges[iEdge]] = *curNewVertex;
       ++(*curNewVertex);
     } // if

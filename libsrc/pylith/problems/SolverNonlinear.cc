@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -55,7 +55,7 @@ namespace pylith {
 	void                     *precheck;                                                        /* user-defined step-checking context (optional) */
 	PetscErrorCode           (*postcheckstep)(PetscSNES,PetscVec,PetscVec,PetscVec,void*,PetscBool *,PetscBool *); /* step-checking routine (optional) */
 	void                     *postcheck;                                                       /* user-defined step-checking context (optional) */
-	PetscViewerASCIIMonitor  monitor;
+	PetscViewer  monitor;
       } SNES_LS;
     } // _SolverNonlinear
   } // problems
@@ -210,8 +210,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-
-  // TEMPORARY - ASK MATT
+  // Make sure we have an admissible Lagrange force (\lambda)
   formulation->constrainSolnSpace(&tmpSolutionVec);
 
   // Reform residual
@@ -378,7 +377,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 			"initial slope=%18.16e\n",
 			fnorm,*gnorm,*ynorm,minlambda,lambda,initslope);
       CHKERRQ(ierr);
-      *flag = PETSC_FALSE; 
+      ierr = PetscInfo1(snes,"Using last lambda tried %g\n",lambda);CHKERRQ(ierr);
       break;
     }
     t1 = .5*((*gnorm)*(*gnorm) - fnorm*fnorm) - lambda*initslope;

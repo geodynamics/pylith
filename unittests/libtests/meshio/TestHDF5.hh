@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -47,6 +47,8 @@ class pylith::meshio::TestHDF5 : public CppUnit::TestFixture
   CPPUNIT_TEST( testOpenClose );
   CPPUNIT_TEST( testHasGroup );
   CPPUNIT_TEST( testHasDataset );
+  CPPUNIT_TEST( testGetDatasetDims );
+  CPPUNIT_TEST( testGetGroupDatasets );
   CPPUNIT_TEST( testCreateGroup );
   CPPUNIT_TEST( testAttributeScalar );
   CPPUNIT_TEST( testAttributeString );
@@ -70,6 +72,12 @@ public :
 
   /// Test hasDataset().
   void testHasDataset(void);
+
+  /// Test getDatasetDims().
+  void testGetDatasetDims(void);
+
+  /// Test getGroupDatasets().
+  void testGetGroupDatasets(void);
 
   /// Test createGroup()
   void testCreateGroup(void);

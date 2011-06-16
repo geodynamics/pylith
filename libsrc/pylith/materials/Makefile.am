@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -30,6 +30,8 @@ subpkginclude_HEADERS = \
 	ElasticPlaneStress.hh \
 	GenMaxwellIsotropic3D.hh \
 	GenMaxwellIsotropic3D.icc \
+	GenMaxwellPlaneStrain.hh \
+	GenMaxwellPlaneStrain.icc \
 	GenMaxwellQpQsIsotropic3D.hh \
 	GenMaxwellQpQsIsotropic3D.icc \
 	MaxwellIsotropic3D.hh \

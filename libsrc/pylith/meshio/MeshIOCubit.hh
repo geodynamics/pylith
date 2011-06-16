@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -29,10 +29,6 @@
 #include "MeshIO.hh" // ISA MeshIO
 
 #include <string> // HASA std::string
-
-// Forward declarations -------------------------------------------------
-/// C++ input/output manager for CUBIT Exodus II files.
-class NcFile; // netcdf file
 
 // MeshIOCubit ----------------------------------------------------------
 class pylith::meshio::MeshIOCubit : public MeshIO
@@ -88,7 +84,7 @@ private :
    * @param numVertices Pointer to number of vertices.
    * @param spaceDim Pointer to dimension of coordinates vector space.
    */
-  void _readVertices(NcFile& filein,
+  void _readVertices(ExodusII& filein,
 		     double_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
@@ -101,7 +97,7 @@ private :
    * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners
    */
-  void _readCells(NcFile& filein,
+  void _readCells(ExodusII& filein,
 		  int_array* pCells,
 		  int_array* pMaterialIds,
 		  int* numCells,
@@ -111,25 +107,25 @@ private :
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _readGroups(NcFile& filein);
+  void _readGroups(ExodusII& filein);
   
   /** Write mesh dimensions.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeDimensions(NcFile& ncfile) const;
+  void _writeDimensions(ExodusII& ncfile) const;
   
   /** Write mesh variables.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeVariables(NcFile& ncfile) const;
+  void _writeVariables(ExodusII& ncfile) const;
   
   /** Write mesh attributes.
    *
    * @param ncfile Cubit Exodus file.
    */
-  void _writeAttributes(NcFile& ncfile) const;
+  void _writeAttributes(ExodusII& ncfile) const;
 
   /** Reorder vertices in cells to match PyLith conventions.
    *

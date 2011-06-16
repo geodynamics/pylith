@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -74,7 +74,7 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
+
   /** Set filename for HDF5 file.
    *
    * @param filename Name of HDF5 file.
@@ -132,6 +132,14 @@ private :
   /// Generate filename for HDF5 file.
   std::string _hdf5Filename(void) const;
 
+  /** Write time stamp to file.
+   *
+   * @param t Time in seconds.
+   * @param rank Processor rank in MPI communicator.
+   */
+  void _writeTimeStamp(const double t,
+		       const int rank);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -141,9 +149,11 @@ private :
 private :
 
   std::string _filename; ///< Name of HDF5 file.
-  PetscViewer _viewer; ///< Output file
+  PetscViewer _viewer; ///< Output file.
+  PetscVec _tstamp; ///< Single value vector holding time stemp.
 
   std::map<std::string, int> _timesteps; ///< # of time steps written per field.
+  int _tstampIndex; ///< Index of last time stamp written.
 
 }; // DataWriterHDF5
 

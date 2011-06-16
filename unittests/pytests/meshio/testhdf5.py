@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -68,6 +68,9 @@ class TestApp(Script):
 
     from TestDataWriterHDF5 import TestDataWriterHDF5SubSubMesh
     suite.addTest(unittest.makeSuite(TestDataWriterHDF5SubSubMesh))
+
+    from TestXdmf import TestXdmf
+    suite.addTest(unittest.makeSuite(TestXdmf))
 
     return suite
 

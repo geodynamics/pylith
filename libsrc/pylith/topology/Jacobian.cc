@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -90,10 +90,7 @@ pylith::topology::Jacobian::~Jacobian(void)
 void
 pylith::topology::Jacobian::deallocate(void)
 { // deallocate
-  if (0 != _matrix) {
-    PetscErrorCode err = MatDestroy(&_matrix); _matrix = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  PetscErrorCode err = MatDestroy(&_matrix);CHECK_PETSC_ERROR(err);
 } // deallocate
 
 // ----------------------------------------------------------------------

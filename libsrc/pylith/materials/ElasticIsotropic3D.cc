@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -223,7 +223,6 @@ pylith::materials::ElasticIsotropic3D::_calcStress(double* const stress,
   assert(0 != initialStrain);
   assert(_ElasticIsotropic3D::tensorSize == initialStrainSize);
 
-  const double density = properties[p_density];
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
 
@@ -277,7 +276,6 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
   assert(0 != initialStrain);
   assert(_ElasticIsotropic3D::tensorSize == initialStrainSize);
  
-  const double density = properties[p_density];
   const double mu = properties[p_mu];
   const double lambda = properties[p_lambda];
 

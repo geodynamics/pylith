@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -673,21 +673,28 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   // Create the parallel overlap
 
   // Get offsets for points across processors and add points in overlap from original mesh to new overlap
-  int* oldVerticesStartP = (mesh->commSize() > 0) ? new int[mesh->commSize()] : 0;
-  int* newVerticesStartP = (newMesh->commSize() > 0) ? new int[newMesh->commSize()] : 0;
+  int* oldVerticesStartNormalP = (mesh->commSize() > 0) ? new int[mesh->commSize()] : 0;
+  int* oldVerticesStartFaultP  = (mesh->commSize() > 0) ? new int[mesh->commSize()] : 0;
+  int* newVerticesStartNormalP = (newMesh->commSize() > 0) ? new int[newMesh->commSize()] : 0;
+  int* newVerticesStartFaultP  = (newMesh->commSize() > 0) ? new int[newMesh->commSize()] : 0;
   int ierr = 0;
   
-  const int oldVerticesStart = _orderOldMesh->verticesNormal().min();
-  const int newVerticesStart = _orderNewMesh->verticesNormal().min();
+  const int oldVerticesStartNormal = _orderOldMesh->verticesNormal().min();
+  const int oldVerticesStartFault  = _orderOldMesh->verticesCensored().min();
+  const int newVerticesStartNormal = _orderNewMesh->verticesNormal().min();
+  const int newVerticesStartFault  = _orderNewMesh->verticesCensored().min();
 
-  ierr = MPI_Allgather((void *) &oldVerticesStart, 1, MPI_INT, oldVerticesStartP, 1, MPI_INT, mesh->comm());CHKERRXX(ierr);
-  ierr = MPI_Allgather((void *) &newVerticesStart, 1, MPI_INT, newVerticesStartP, 1, MPI_INT, newMesh->comm());CHKERRXX(ierr);
+  ierr = MPI_Allgather((void *) &oldVerticesStartNormal, 1, MPI_INT, oldVerticesStartNormalP, 1, MPI_INT, mesh->comm());CHKERRXX(ierr);
+  ierr = MPI_Allgather((void *) &oldVerticesStartFault,  1, MPI_INT, oldVerticesStartFaultP,  1, MPI_INT, mesh->comm());CHKERRXX(ierr);
+  ierr = MPI_Allgather((void *) &newVerticesStartNormal, 1, MPI_INT, newVerticesStartNormalP, 1, MPI_INT, newMesh->comm());CHKERRXX(ierr);
+  ierr = MPI_Allgather((void *) &newVerticesStartFault,  1, MPI_INT, newVerticesStartFaultP,  1, MPI_INT, newMesh->comm());CHKERRXX(ierr);
   Obj<mesh_type::send_overlap_type> newSendOverlap = newMesh->getSendOverlap();
   Obj<mesh_type::recv_overlap_type> newRecvOverlap = newMesh->getRecvOverlap();
   const Obj<mesh_type::send_overlap_type>& sendOverlap = mesh->getSendOverlap();
   const Obj<mesh_type::recv_overlap_type>& recvOverlap = mesh->getRecvOverlap();
   Obj<mesh_type::send_overlap_type::traits::capSequence> sendPoints  = sendOverlap->cap();
-  const mesh_type::send_overlap_type::source_type localOffset = newVerticesStart - oldVerticesStart;
+  const mesh_type::send_overlap_type::source_type localOffsetNormal = newVerticesStartNormal - oldVerticesStartNormal;
+  const mesh_type::send_overlap_type::source_type localOffsetFault  = newVerticesStartFault  - oldVerticesStartFault;
   
   for(mesh_type::send_overlap_type::traits::capSequence::iterator p_iter = sendPoints->begin(); p_iter != sendPoints->end(); ++p_iter) {
     const Obj<mesh_type::send_overlap_type::traits::supportSequence>& ranks      = sendOverlap->support(*p_iter);
@@ -696,9 +703,17 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     for(mesh_type::send_overlap_type::traits::supportSequence::iterator r_iter = ranks->begin(); r_iter != ranks->end(); ++r_iter) {
       const int                                   rank         = *r_iter;
       const mesh_type::send_overlap_type::source_type& remotePoint  = r_iter.color();
-      const mesh_type::send_overlap_type::source_type  remoteOffset = newVerticesStartP[rank] - oldVerticesStartP[rank];
+      const mesh_type::send_overlap_type::source_type  remoteOffsetNormal = newVerticesStartNormalP[rank] - oldVerticesStartNormalP[rank];
+      const mesh_type::send_overlap_type::source_type  remoteOffsetFault  = newVerticesStartFaultP[rank]  - oldVerticesStartFaultP[rank];
       
-      newSendOverlap->addArrow(localPoint+localOffset, rank, remotePoint+remoteOffset);
+      if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
+        assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+        newSendOverlap->addArrow(localPoint+localOffsetNormal, rank, remotePoint+remoteOffsetNormal);
+      } else {
+        assert(localPoint  >= oldVerticesStartFault);
+        assert(remotePoint >= oldVerticesStartFaultP[rank]);
+        newSendOverlap->addArrow(localPoint+localOffsetFault,  rank, remotePoint+remoteOffsetFault);
+      }
     } // for
   } // for
   Obj<mesh_type::recv_overlap_type::traits::baseSequence> recvPoints = recvOverlap->base();
@@ -710,14 +725,24 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     for(mesh_type::recv_overlap_type::traits::coneSequence::iterator r_iter = ranks->begin(); r_iter != ranks->end(); ++r_iter) {
       const int                                        rank         = *r_iter;
       const mesh_type::recv_overlap_type::target_type& remotePoint  = r_iter.color();
-      const mesh_type::recv_overlap_type::target_type  remoteOffset = newVerticesStartP[rank] - oldVerticesStartP[rank];
+      const mesh_type::send_overlap_type::source_type  remoteOffsetNormal = newVerticesStartNormalP[rank] - oldVerticesStartNormalP[rank];
+      const mesh_type::send_overlap_type::source_type  remoteOffsetFault  = newVerticesStartFaultP[rank]  - oldVerticesStartFaultP[rank];
       
-      newRecvOverlap->addArrow(rank, localPoint+localOffset, remotePoint+remoteOffset);
+      if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
+        assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+        newRecvOverlap->addArrow(rank, localPoint+localOffsetNormal, remotePoint+remoteOffsetNormal);
+      } else {
+        assert(localPoint  >= oldVerticesStartFault);
+        assert(remotePoint >= oldVerticesStartFaultP[rank]);
+        newRecvOverlap->addArrow(rank, localPoint+localOffsetFault, remotePoint+remoteOffsetFault);
+      }
     } // for
   } // for
   newMesh->setCalculatedOverlap(true);
-  delete [] oldVerticesStartP; oldVerticesStartP = PETSC_NULL;
-  delete [] newVerticesStartP; newVerticesStartP = PETSC_NULL;
+  delete [] oldVerticesStartNormalP; oldVerticesStartNormalP = PETSC_NULL;
+  delete [] oldVerticesStartFaultP;  oldVerticesStartFaultP  = PETSC_NULL;
+  delete [] newVerticesStartNormalP; newVerticesStartNormalP = PETSC_NULL;
+  delete [] newVerticesStartFaultP;  newVerticesStartFaultP  = PETSC_NULL;
 
   refiner.overlapAddNewVertices(newMesh, *_orderNewMesh, mesh, *_orderOldMesh);
 } // _calcNewOverlap

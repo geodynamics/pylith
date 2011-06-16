@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -38,6 +38,7 @@ testmaterials_SOURCES = \
 	TestMaxwellIsotropic3D.cc \
 	TestMaxwellPlaneStrain.cc \
 	TestGenMaxwellIsotropic3D.cc \
+	TestGenMaxwellPlaneStrain.cc \
 	TestGenMaxwellQpQsIsotropic3D.cc \
 	TestPowerLaw3D.cc \
 	TestDruckerPrager3D.cc \
@@ -55,6 +56,7 @@ noinst_HEADERS = \
 	TestElasticPlaneStress.hh \
 	TestElasticIsotropic3D.hh \
 	TestGenMaxwellIsotropic3D.hh \
+	TestGenMaxwellPlaneStrain.hh \
 	TestGenMaxwellQpQsIsotropic3D.hh \
 	TestMaxwellIsotropic3D.hh \
 	TestMaxwellPlaneStrain.hh \
@@ -77,6 +79,8 @@ testmaterials_SOURCES += \
 	data/MaxwellPlaneStrainTimeDepData.cc \
 	data/GenMaxwellIsotropic3DElasticData.cc \
 	data/GenMaxwellIsotropic3DTimeDepData.cc \
+	data/GenMaxwellPlaneStrainElasticData.cc \
+	data/GenMaxwellPlaneStrainTimeDepData.cc \
 	data/GenMaxwellQpQsIsotropic3DElasticData.cc \
 	data/GenMaxwellQpQsIsotropic3DTimeDepData.cc \
 	data/PowerLaw3DElasticData.cc \
@@ -95,6 +99,8 @@ noinst_HEADERS += \
 	data/ElasticStress1DData.hh \
 	data/GenMaxwellIsotropic3DElasticData.hh \
 	data/GenMaxwellIsotropic3DTimeDepData.hh \
+	data/GenMaxwellPlaneStrainElasticData.hh \
+	data/GenMaxwellPlaneStrainTimeDepData.hh \
 	data/GenMaxwellQpQsIsotropic3DElasticData.hh \
 	data/GenMaxwellQpQsIsotropic3DTimeDepData.hh \
 	data/MaxwellIsotropic3DElasticData.hh \

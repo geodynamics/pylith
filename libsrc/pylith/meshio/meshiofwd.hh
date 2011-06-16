@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -45,6 +45,7 @@ namespace pylith {
     class PsetFile;
     class PsetFileAscii;
     class PsetFileBinary;
+    class ExodusII;
     
     template<typename mesh_type, typename field_type> class OutputManager;
     template<typename mesh_type, typename field_type> class DataWriter;

@@ -1,5 +1,5 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -35,9 +43,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -45,15 +62,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -172,8 +190,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Intel 10.5 and Intel
- 10.6), and Windows from the PyLith web page 
+Binary executables are available for Linux, Mac OS X (Intel 10.4/10.5 and
+ Intel 10.6), and Windows from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -235,7 +253,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.5.0-linux-i686.tgz
+$ tar -xzf pylith-1.6.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -305,12 +323,12 @@ $HOME/pylith
 
 \begin_layout Enumerate
 Unpack the tarball.
- For 10.5.x operating system,
+ For 10.4.x or 10.5.x operating system,
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.5.0-darwin-i386.tgz
+$ tar -xzf pylith-1.6.0-darwin-10.4.tgz
 \end_layout
 
 \end_deeper
@@ -395,7 +413,19 @@ A small utility, PyLith Installer, removes most of the obstacles in building
  This insures that the versions of the dependencies are consistent with
  PyLith and that the proper configure arguments are used.
  The minimum requirements for using the PyLith installer are a C compiler,
- tar, and wget or curl.
+ 
+\family typewriter
+tar
+\family default
+, and 
+\family typewriter
+wget
+\family default
+ or 
+\family typewriter
+curl
+\family default
+.
  Detailed instructions for how to install PyLith using the installer are
  included in the installer distribution, which is available from the PyLith
  web page 

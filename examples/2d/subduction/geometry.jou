@@ -8,7 +8,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -118,6 +118,9 @@ curve 7 name "edgeeast"
 
 # ----------------------------------------------------------------------
 # Split curves to form bounding curves for each material
+#
+# Constructing the entire boundary curves as splines and then breaking
+# them into pieces bounding the surfaces preserves continuity in slip.
 # ----------------------------------------------------------------------
 split curve topobathy crossing curve slabtop
 split curve slabtop crossing curve conmoho
@@ -150,6 +153,10 @@ surface 4 name "oceanmantle"
 delete vertex all
 imprint all
 merge all
+
+# We must stitch the surfaces into a single volume in order to split
+# the curves for the purpose of defining the discretization size along
+# various portions of the curves.
 stitch volume all
 
 # Split top of slab for fault surface

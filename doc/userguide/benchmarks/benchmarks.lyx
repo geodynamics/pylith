@@ -1,5 +1,5 @@
-#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -154,20 +172,23 @@ scecdata.usc.edu/cvws/cgi-bin/cvws.cgi
 \end_inset
 
  includes a graphical user interface for examining the benchmark results.
- Benchmark results for PyLith are available for tpv205-2d (horizontal slice
- through a vertical strike-slip fault), tpv205 (vertical strike-slip fault
- with high and low stress asperities), tpv210-2d (vertical slice through
- a 60 degree dipping normal fault), and tpv210 (60 degree dipping normal
- fault).
+ Benchmark results for PyLith are available for TPV205-2D (horizontal slice
+ through a vertical strike-slip fault), TPV205 (vertical strike-slip fault
+ with high and low stress asperities), TPV210-2D (vertical slice through
+ a 60 degree dipping normal fault), TPV210 (60 degree dipping normal fault),
+ TPV14-2D and TPV15-2D (horizontal slice through a verticel strike-slip
+ fault with a branch) and TPV14 and TPV15 (vertical strike-slip fault with
+ a branch).
 \end_layout
 
 \begin_layout Standard
 The benchmark results indicate that triangular and tetrahedral cells generate
  less numerical noise than quadrilateral or hexahedral cells.
- We plan to add appropriate bulk constitutive models for damping high frequency
- oscillations in order to reduce the numerical noise.
+ TPV14-2D, TPV15-2D, TPV14, and TPV15 use the numerical damping via an artificia
+l viscosity available in PyLith v1.6.0 to these high-frequency oscillations.
  All of the other results without high frequency oscillations posted on
- the SCEC benchmarks web page employ damping to reduce numerical artifacts.
+ the SCEC benchmarks web page employ damping via similar methods to reduce
+ numerical artifacts.
 \end_layout
 
 \end_body

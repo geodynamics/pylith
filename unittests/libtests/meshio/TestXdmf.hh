@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -45,11 +45,9 @@ class pylith::meshio::TestXdmf : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testWrite2DVertex );
-#if 0
   CPPUNIT_TEST( testWrite2DCell );
   CPPUNIT_TEST( testWrite3DVertex );
   CPPUNIT_TEST( testWrite3DCell );
-#endif
 
   CPPUNIT_TEST_SUITE_END();
 

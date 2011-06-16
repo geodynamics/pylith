@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -18,21 +18,27 @@
 
 dist_noinst_DATA = \
 	README \
-	dislocation.cfg \
-	dislocation.jpg \
-	finalslip.spatialdb \
-	fixeddisp_shear.spatialdb \
-	mat_elastic.spatialdb \
-	mat_viscoelastic.spatialdb \
-	mesh_tet4_1000m.lagrit \
 	pylithapp.cfg \
-	shear.jpg \
-	shearxy.cfg \
-	sliptime.spatialdb \
-	tet4-mesh.jpg \
-	tet4_1000m_ascii.gmv \
-	tet4_1000m_ascii.pset \
-	tet4_1000m_binary.gmv \
-	tet4_1000m_binary.pset
+	step01.cfg \
+	step02.cfg \
+	step03.cfg \
+	step04.cfg \
+	mesh/mesh_tet4_1000m.lagrit \
+	mesh/tet4_1000m_ascii.gmv \
+	mesh/tet4_1000m_ascii.pset \
+	mesh/tet4_1000m_binary.gmv \
+	mesh/tet4_1000m_binary.pset \
+	spatialdb/finalslip.spatialdb \
+	spatialdb/fixeddisp_shear.spatialdb \
+	spatialdb/mat_elastic.spatialdb \
+	spatialdb/mat_viscoelastic.spatialdb \
+	spatialdb/sliptime.spatialdb \
+	figures/tet4-mesh.jpg \
+	figures/step01.jpg \
+	figures/step03.jpg
+
+SUBDIRS = \
+	output
+
 
 # End of file 

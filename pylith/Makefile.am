@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -76,6 +76,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/ElasticStrain1D.py \
 	materials/ElasticStress1D.py \
 	materials/GenMaxwellIsotropic3D.py \
+	materials/GenMaxwellPlaneStrain.py \
 	materials/GenMaxwellQpQsIsotropic3D.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
@@ -188,7 +189,8 @@ if ENABLE_HDF5
 	meshio/DataWriterHDF5Ext.py \
 	meshio/DataWriterHDF5ExtMesh.py \
 	meshio/DataWriterHDF5ExtSubMesh.py \
-	meshio/DataWriterHDF5ExtSubSubMesh.py
+	meshio/DataWriterHDF5ExtSubSubMesh.py \
+	meshio/Xdmf.py
 endif
 
 if ENABLE_CUDA

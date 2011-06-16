@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,6 +44,7 @@ namespace pylith {
     class MaxwellIsotropic3D;
     class MaxwellPlaneStrain;
     class GenMaxwellIsotropic3D;
+    class GenMaxwellPlaneStrain;
     class GenMaxwellQpQsIsotropic3D;
     class PowerLaw3D;
     class DruckerPrager3D;

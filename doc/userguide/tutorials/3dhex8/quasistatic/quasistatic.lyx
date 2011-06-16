@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 0
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -69,6 +87,10 @@ Quasi-static solution
 
 \begin_layout Itemize
 Formatting timestamps of VTK output files
+\end_layout
+
+\begin_layout Itemize
+HDF5 output
 \end_layout
 
 \begin_layout Itemize
@@ -134,6 +156,8 @@ This set of examples describes a set of quasi-static problems for PyLith.
  Some of the examples also demonstrate the usage of the nonlinear solver,
  which is required by the nonlinear rheologies (power-law viscoelastic and
  Drucker-Prager elastoplastic).
+ Some of the examples also demonstrate the usage of HDF5 output, which is
+ an alternative to the default VTK output.
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
@@ -256,9 +280,13 @@ SimpleDB
 
 \begin_layout LyX-Code
 materials.lower_crust = pylith.materials.MaxwellIsotropic3D
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -387,9 +415,13 @@ db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
 
 \begin_layout LyX-Code
 db_rate.data = [0.0*cm/year,1.0*cm/year,0.0*year]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -491,9 +523,13 @@ writer.time_format = %04.0f
 
 \begin_layout LyX-Code
 writer.time_constant = 1.0*year
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -580,6 +616,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step04-displ-t200.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -696,6 +733,14 @@ db_initial.values = [traction-shear-horiz,traction-shear-vert,traction-normal]
 
 \begin_layout LyX-Code
 db_initial.data = [0.0*MPa,0.0*MPa,-1.0*MPa]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -743,6 +788,14 @@ bc_dof = [0, 1]
 
 \begin_layout LyX-Code
 label = face_xneg
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -763,6 +816,14 @@ db_initial.values = [displacement-x,displacement-y]
 
 \begin_layout LyX-Code
 db_initial.data = [0.0*cm,-0.5*cm]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -815,6 +876,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step05-displ-t40.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -862,7 +924,7 @@ step06.cfg
  The upper (locked) portion of the fault has 4 m of left-lateral slip every
  200 years, while the lower (creeping) portion of the fault slips at a steady
  rate of 2 cm/year.
- The problem bears some similarity to the strike-slip fault model of Savange
+ The problem bears some similarity to the strike-slip fault model of Savage
  and Prescott 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -918,9 +980,13 @@ stability_factor
 
 \begin_layout LyX-Code
 time_step = pylith.problems.TimeStepAdapt
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -946,6 +1012,194 @@ max_dt = 10.0*year
 
 \begin_layout LyX-Code
 stability_factor = 1.0 ; use time step equal to stable value from materials
+\end_layout
+
+\begin_layout Standard
+In this example and the remainder of the examples in this section, we also
+ make use of HDF5 output rather than the default VTK output.
+ HDF5 output is a new feature beginning with PyLith version 1.6, and it is
+ much more efficient with the additional advantage that multiple time steps
+ can be contained in a single file.
+ PyLith also produces Xdmf files describing the contents of the HDF5 files,
+ which allows the files to be read easily by applications such as ParaView.
+ Since VTK output is still the default, we must change the value from the
+ default.
+ Also note that the filename suffix is 
+\family typewriter
+.h5
+\family default
+:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for output of solution over domain.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.domain]
+\end_layout
+
+\begin_layout LyX-Code
+# We specify that output occurs in terms of a given time frequency, and
+\end_layout
+
+\begin_layout LyX-Code
+# ask for output every 50 years.
+\end_layout
+
+\begin_layout LyX-Code
+output_freq = time_step
+\end_layout
+
+\begin_layout LyX-Code
+time_step = 50.0*year
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# We are using HDF5 output so we must change the default writer.
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5Mesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step06.h5  
+\end_layout
+
+\begin_layout Standard
+Note that we no longer need the 
+\family typewriter
+writer.time_format
+\family default
+ or 
+\family typewriter
+writer.time_constant
+\family default
+ properties, since all time steps are contained in a single file.
+ The HDF5 writer does not have these properties, so if we attempt to define
+ them an error will result.
+\end_layout
+
+\begin_layout Standard
+We also set the writer for other output as well, since it is not the default.
+ For subdomain output we use:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for output of solution over ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.subdomain]
+\end_layout
+
+\begin_layout LyX-Code
+# Name of nodeset for ground surface.
+\end_layout
+
+\begin_layout LyX-Code
+label = face_zpos
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# We keep the default output frequency behavior (skip every n steps), and
+\end_layout
+
+\begin_layout LyX-Code
+# ask to skip 0 steps between output, so that we get output every time step.
+\end_layout
+
+\begin_layout LyX-Code
+# We again switch the writer to produce HDF5 output.
+\end_layout
+
+\begin_layout LyX-Code
+# Note that we specifically ask for a submesh writer.
+\end_layout
+
+\begin_layout LyX-Code
+skip = 0
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5SubMesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step06-groundsurf.h5  
+\end_layout
+
+\begin_layout Standard
+For fault output we use:
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for fault rupture output.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault.output]
+\end_layout
+
+\begin_layout LyX-Code
+# We keep the default output frequency behavior (skip every n steps), and
+\end_layout
+
+\begin_layout LyX-Code
+# ask to skip 0 steps between output, so that we get output every time step.
+\end_layout
+
+\begin_layout LyX-Code
+# We again switch the writer to produce HDF5 output.
+\end_layout
+
+\begin_layout LyX-Code
+# Note that we specifically ask for a subsubmesh writer.
+\end_layout
+
+\begin_layout LyX-Code
+skip = 0
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5SubSubMesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step06-fault.h5
+\end_layout
+
+\begin_layout Standard
+Note the usage of 
+\family typewriter
+pylith.meshio.DataWriterHDF5SubMesh
+\family default
+ for subdomain output and
+\family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
+pylith.meshio.DataWriterHDF5SubSubMesh
+\family default
+ for fault output.
 \end_layout
 
 \begin_layout Standard
@@ -1031,9 +1285,13 @@ slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
 
 \begin_layout LyX-Code
 slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1051,9 +1309,13 @@ slip.iohandler.filename = spatialdb/finalslip_rupture.spatialdb
 
 \begin_layout LyX-Code
 slip_time.iohandler.filename = spatialdb/sliptime.spatialdb
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1146,13 +1408,13 @@ slip_time_two,slip_time_three]
 \begin_layout Standard
 This additional information will be contained in file 
 \family typewriter
-step06-fault_info.vtk
+step06-fault_info.
 \family default
-.
+h5.
  It will contain final slip information for each earthquake source along
  with slip time information.
- When we have run the simulation, the output VTK files will be contained
- in 
+ When we have run the simulation, the output HDF5 and Xdmf files will be
+ contained in 
 \family typewriter
 examples/3d/hex8/output
 \family default
@@ -1161,6 +1423,11 @@ examples/3d/hex8/output
 step06
 \family default
 ).
+ To open the files in ParaView, the Xdmf (
+\family typewriter
+.xmf
+\family default
+) files should be opened, as these files describe the HDF5 data structure.
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1178,6 +1445,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step06-displ-t300.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -1278,9 +1546,13 @@ db_rate.values = [displacement-rate-x,displacement-rate-y,rate-start-time]
 
 \begin_layout LyX-Code
 db_rate.data = [0.0*cm/year,1.0*cm/year,0.0*year]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 
 \end_layout
 
@@ -1338,10 +1610,10 @@ vertex_data_fields
 \end_layout
 
 \begin_layout LyX-Code
-# Give basename for VTK domain output of solution over domain.
-\end_layout
+# Give basename for output of solution over domain.
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.problem.formulation.output.domain]
 \end_layout
 
@@ -1351,22 +1623,13 @@ vertex_data_fields
 
 \begin_layout LyX-Code
 # ask for output every 50 years.
- The time stamps of the output files are
-\end_layout
-
-\begin_layout LyX-Code
-# in years (rather than the default of seconds), and we give a format for
-\end_layout
-
-\begin_layout LyX-Code
-# the time stamp.
 \end_layout
 
 \begin_layout LyX-Code
 # We also request velocity output in addition to displacements.
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 vertex_data_fields = [displacement,velocity]
 \end_layout
 
@@ -1376,26 +1639,38 @@ output_freq = time_step
 
 \begin_layout LyX-Code
 time_step = 50.0*year
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
-writer.filename = output/step07.vtk
-\end_layout
 
-\begin_layout LyX-Code
-writer.time_format = %04.0f
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
-writer.time_constant = 1.0*year
-\end_layout
-
-\begin_layout LyX-Code
 
 \end_layout
 
 \begin_layout LyX-Code
-# Give basename for VTK domain output of solution over ground surface.
+# We are using HDF5 output so we must change the default writer.
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5Mesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step07.h5
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+# Give basename for output of solution over ground surface.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1408,6 +1683,14 @@ writer.time_constant = 1.0*year
 
 \begin_layout LyX-Code
 label = face_zpos
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1428,23 +1711,35 @@ vertex_data_fields = [displacement,velocity]
 
 \begin_layout LyX-Code
 skip = 0
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
-writer.filename = output/step07-groundsurf.vtk
+# We again switch the writer to produce HDF5 output.
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_format = %04.0f
+# Note that we specifically ask for a submesh writer.
 \end_layout
 
 \begin_layout LyX-Code
-writer.time_constant = 1.0*year
+writer = pylith.meshio.DataWriterHDF5SubMesh
+\end_layout
+
+\begin_layout LyX-Code
+writer.filename = output/step07-groundsurf.h5
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output VTK files will be contained
- in 
+When we have run the simulation, the output HDF5 and Xdmf files will be
+ contained in 
 \family typewriter
 examples/3d/hex8/output
 \family default
@@ -1453,6 +1748,19 @@ examples/3d/hex8/output
 step07
 \family default
 ).
+ As for example 
+\family typewriter
+step06
+\family default
+, make sure to open the 
+\family typewriter
+.xmf
+\family default
+ files rather than the 
+\family typewriter
+.h5
+\family default
+ files.
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1470,6 +1778,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step07-displ-vel-t300.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -1841,8 +2150,8 @@ output.cell_data_fields = [total_strain,stress,viscous_strain]
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output VTK files will be contained
- in 
+When we have run the simulation, the output HDF5 and Xdmf files will be
+ contained in 
 \family typewriter
 examples/3d/hex8/output
 \family default
@@ -1868,6 +2177,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step08-strain-displ-t150.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -1880,16 +2190,16 @@ The XY-component of strain (color contours) and displacement field (vectors)
  for example step08 at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
-step08-lower_crust_txxxx.vtk
+step08-lower_crust.xmf
 \family default
  and 
 \family typewriter
-step08-upper_crust_txxxx.vtk
+step08-upper_crust.xmf
 \family default
  files to contour the strain field, and superimposed on it the displacement
  field vectors from 
 \family typewriter
-step08_txxxx.vtk
+step08.xmf
 \family default
 .
 \begin_inset CommandInset label
@@ -2107,8 +2417,8 @@ output.cell_data_fields = [total_strain,stress,plastic_strain]
 \end_layout
 
 \begin_layout Standard
-When we have run the simulation, the output VTK files will be contained
- in 
+When we have run the simulation, the output HDF5 and Xdmf files will be
+ contained in 
 \family typewriter
 examples/3d/hex8/output
 \family default
@@ -2134,6 +2444,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/step08-strain-displ-t150.jpg
+	lyxscale 50
 	width 10cm
 
 \end_inset
@@ -2146,16 +2457,16 @@ The XY-component of strain (color contours) and displacement field (vectors)
  for example step09 at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
-step09-lower_crust_txxxx.vtk
+step09-lower_crust.xmf
 \family default
  and 
 \family typewriter
-step09-upper_crust_txxxx.vtk
+step09-upper_crust.xmf
 \family default
  files to contour the strain field, and superimposed on it the displacement
  field vectors from 
 \family typewriter
-step09_txxxx.vtk
+step09.xmf
 \family default
 .
 \begin_inset CommandInset label

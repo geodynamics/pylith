@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -23,6 +23,7 @@
 #include "Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -375,7 +376,7 @@ pylith::materials::DruckerPrager3D::_stableTimeStepImplicit(
   assert(_numVarsQuadPt == numStateVars);
   // It's unclear what to do for an elasto-plastic material, which has no
   // inherent time scale. For now, just set dtStable to a large value.
-  const double dtStable = 1.0e10;
+  const double dtStable = pylith::PYLITH_MAXDOUBLE;
   PetscLogFlops(0);
   return dtStable;
 } // _stableTimeStepImplicit

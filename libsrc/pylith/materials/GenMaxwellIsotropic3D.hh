@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -44,7 +44,7 @@
  * the value is less than one, the remainder of the total shear
  * modulus is associated with a spring in parallel with the Maxwell
  * models.  The physical properties are stored internally using
- * density, lambdaTot, muTot, which are directly related to the
+ * density, lambdaEff, muEff, which are directly related to the
  * elasticity constants used in the finite-element integration. The
  * viscosity for each model is stored using Maxwell Time
  * (viscosity/mu), and the shear ratio is also stored for each Maxwell
@@ -424,12 +424,16 @@ private :
 
   /** Update state variables after solve as a viscoelastic material.
    *
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    * @param totalStrain Total strain at location.
    * @param strainSize Size of strain tensor.
-   * @param initialState Initial state values.
-   * @param initialStateSize Size of initial state array.
+   * @param initialStress Initial stress tensor at location.
+   * @param initialStressSize Size of initial stress array.
+   * @param initialStrain Initial strain values.
+   * @param initialStrainSize Size of initial strain array.
    */
   void _updateStateVarsViscoelastic(double* const stateVars,
 				    const int numStateVars,

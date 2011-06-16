@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -435,6 +435,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
+  slipRateSection->view("SLIP RATE");
   areaSection->view("AREA");
   dispTSection->view("DISP (t)");
   dispTIncrSection->view("DISP INCR (t->t+dt)");
@@ -584,6 +585,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   dLagrangeTpdtSection->view("AFTER dLagrange");
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
+  slipRateSection->view("AFTER SLIP RATE");
 #endif
 } // constrainSolnSpace
 
@@ -1943,17 +1945,20 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
     // if in compression and no opening
     const double frictionStress = _friction->calcFriction(slipMag, slipRateMag,
 							  tractionNormal);
-    if (tractionShearMag > frictionStress) {
-      // traction is limited by friction, so have sliding
+    if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+      // traction is limited by friction, so have sliding OR
+      // friction exceeds traction due to overshoot in slip
       
-      // Update slip based on value required to stick versus friction
+      // Update traction increment based on value required to stick
+      // versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
 	tractionTpdt[0] / tractionShearMag;
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = 0.0;
     } else {
-      // else friction exceeds value necessary, so stick
+      // friction exceeds value necessary to stick
       // no changes to solution
+      assert(0.0 == slipRateMag);
     } // if/else
   } else {
     // if in tension, then traction is zero.
@@ -1989,13 +1994,16 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
     // if in compression and no opening
     const double frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
-    if (tractionShearMag > frictionStress) {
-      // traction is limited by friction, so have sliding
-      // Update slip based on value required to stick versus friction
+    if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+      // traction is limited by friction, so have sliding OR
+      // friction exceeds traction due to overshoot in slip
+      
+      // Update traction increment based on value required to stick
+      // versus friction
       const double dlp = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[0] / tractionShearMag;
+	tractionTpdt[0] / tractionShearMag;
       const double dlq = -(tractionShearMag - frictionStress) * area *
-  tractionTpdt[1] / tractionShearMag;
+	tractionTpdt[1] / tractionShearMag;
 
       (*dLagrangeTpdt)[0] = dlp;
       (*dLagrangeTpdt)[1] = dlq;
@@ -2004,6 +2012,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
     } else {
       // else friction exceeds value necessary, so stick
       // no changes to solution
+      assert(0.0 == slipRateMag);
     } // if/else
   } else {
     // if in tension, then traction is zero.

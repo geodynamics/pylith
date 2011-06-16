@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -21,6 +21,8 @@
 #include "TestXdmf.hh" // Implementation of class methods
 
 #include "pylith/meshio/Xdmf.hh" // USES Xdmf
+
+#include <cstring> // USES strcmp()
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestXdmf );
@@ -45,7 +47,7 @@ pylith::meshio::TestXdmf::testWrite2DVertex(void)
   Xdmf metafile;
   metafile.write(filenameXdmf, filenameHDF5);
 
-  //_checkFile(filenameXdmf);
+  _checkFile(filenameXdmf);
 } // testWrite2DVertex
 
 // ----------------------------------------------------------------------
@@ -53,6 +55,13 @@ pylith::meshio::TestXdmf::testWrite2DVertex(void)
 void
 pylith::meshio::TestXdmf::testWrite2DCell(void)
 { // testWrite2DCell
+  const char* filenameHDF5 = "data/tri3_cell.h5";
+  const char* filenameXdmf = "tri3_cell.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
 } // testWrite2DCell
 
 // ----------------------------------------------------------------------
@@ -60,6 +69,13 @@ pylith::meshio::TestXdmf::testWrite2DCell(void)
 void
 pylith::meshio::TestXdmf::testWrite3DVertex(void)
 { // testWrite3DVertex
+  const char* filenameHDF5 = "data/tet4_vertex.h5";
+  const char* filenameXdmf = "tet4_vertex.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
 } // testWrite3DVertex
 
 // ----------------------------------------------------------------------
@@ -67,6 +83,13 @@ pylith::meshio::TestXdmf::testWrite3DVertex(void)
 void
 pylith::meshio::TestXdmf::testWrite3DCell(void)
 { // testWrite3DCell
+  const char* filenameHDF5 = "data/tet4_cell.h5";
+  const char* filenameXdmf = "tet4_cell.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
 } // testWrite3DCell
 
 // ----------------------------------------------------------------------

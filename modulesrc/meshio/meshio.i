@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -40,6 +40,7 @@
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
+#include "pylith/meshio/Xdmf.hh"
 #endif
 
 #include "pylith/utils/arrayfwd.hh"
@@ -78,6 +79,7 @@
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
+%include "Xdmf.i"
 #endif
 
 // Template instatiation

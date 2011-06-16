@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -35,6 +35,7 @@ swig_sources = \
 	MaxwellIsotropic3D.i \
 	MaxwellPlaneStrain.i \
 	GenMaxwellIsotropic3D.i \
+	GenMaxwellPlaneStrain.i \
 	GenMaxwellQpQsIsotropic3D.i \
 	PowerLaw3D.i \
 	DruckerPrager3D.i

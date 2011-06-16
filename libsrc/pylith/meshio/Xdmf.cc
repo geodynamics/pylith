@@ -9,16 +9,21 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
 // ======================================================================
 //
 
+#include <portinfo>
+
 #include "Xdmf.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES int_array, string_vector
+#include "HDF5.hh" // USES HDF5
+
+#include "pylith/topology/FieldBase.hh" // USES FieldBase enums
+#include "pylith/utils/array.hh" // USES double_arra
 
 #include <string> // USES std::string
 #include <stdexcept> // USES std::runtime_error
@@ -52,27 +57,20 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   std::string cellType;
   int numVertices = 0;
   int spaceDim = 0;
-  int numTimeSteps = 0;
-  double* timeStamps = 0;
-  std::vector<HDF5::FieldMetadata> fieldsMetadata;
+  double_array timeStamps;
+  std::vector<FieldMetadata> fieldsMetadata;
 
   HDF5 h5(filenameHDF5, H5F_ACC_RDONLY);
-  h5.getTopologyMetadata(&numCells, &numCorners, &cellType);
-  h5.getGeometryMetadata(&numVertices, &spaceDim);
-  h5.getFieldsMetadata(&fieldsMetadata);
-  const int numFields = fieldsMetadata.size();
-  for (int iField=0; iField < numFields; ++iField)
-    if ("vertex_field" == fieldsMetadata[iField].domain) {
-      fieldsMetadata[iField].domain = "Node";
-    } else if ("cell_field" == fieldsMetadata[iField].domain) {
-      fieldsMetadata[iField].domain = "Cell";
-    } else {
-      std::ostringstream msg;
-      msg << "Unknown field type '" << fieldsMetadata[iField].domain
-	  << "' for field '" 
-	  << fieldsMetadata[iField].domain << "'" << std::endl;
-      throw std::runtime_error(msg.str());
-    } // if/else
+
+  int ndims = 0;
+  hsize_t* dims = 0;
+
+  // Vertices
+  h5.getDatasetDims(&dims, &ndims, "/geometry", "vertices");
+  assert(2 == ndims);
+  numVertices = dims[0];
+  spaceDim = dims[1];
+  delete[] dims; dims = 0;
 
   if (1 == spaceDim) {
     std::cout
@@ -82,19 +80,57 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     return;
   } // if
 
+  // Cells
+  h5.getDatasetDims(&dims, &ndims, "/topology", "cells");
+  assert(2 == ndims);
+  numCells = dims[0];
+  numCorners = dims[1];
+  delete[] dims; dims = 0;
+  int cellDim = 0;
+  h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, 
+		  H5T_NATIVE_INT);
+  if (1 == cellDim && 2 == numCorners)
+    cellType = "Polyline";
+  else if (2 == cellDim && 3 == numCorners)
+    cellType = "Triangle";
+  else if (2 == cellDim && 4 == numCorners)
+    cellType = "Quadrilateral";
+  else if (3 == cellDim && 4 == numCorners)
+    cellType = "Tetrahedron";
+  else if (3 == cellDim && 8 == numCorners)
+    cellType = "Hexahedron";
+  else {
+    std::ostringstream msg;
+    msg << "Unknown cell type with " << numCorners
+	<< " vertices and dimension " << cellDim << ".";
+    throw std::runtime_error(msg.str());
+  } // else
+
+  // Time stamps
+  _getTimeStamps(&timeStamps, h5);
+
+  // Fields metadata
+  _getFieldMetadata(&fieldsMetadata, h5);
+
+  // Write Xdmf file.
   _file.open(filenameXdmf);
   if (!_file.is_open() || !_file.good()) {
     std::ostringstream msg;
     msg << "Could not open Xdmf file '" << filenameXdmf
-	<< "' for writing metadata forHDF5 file '"
+	<< "' for writing metadata for HDF5 file '"
 	<< filenameHDF5 << "'.\n";
     throw std::runtime_error(msg.str());
   } // if
 
+  const std::string& h5string = std::string(filenameHDF5);
+  const hsize_t indexSlash = h5string.find_last_of("/");
+  const hsize_t indexPre = (indexSlash != h5string.npos) ? indexSlash+1 : 0;
+  const std::string filenameHDF5Rel = h5string.substr(indexPre);
+
   _file
     << "<?xml version=\"1.0\" ?>\n"
     << "<!DOCTYPE Xdmf SYSTEM \"Xdmf.dtd\" [\n"
-    << "<!ENTITY HeavyData \"" << filenameHDF5 << "\">\n"
+    << "<!ENTITY HeavyData \"" << filenameHDF5Rel << "\">\n"
     << "]>\n"
     << "\n"
     << "<Xdmf>\n"
@@ -104,19 +140,50 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   _writeDomainVertices(numVertices, spaceDim);
 
   _file
-    << "<!-- ============================================================ -->\n";
+    << "    <!-- ============================================================ -->\n";
 
-  _writeTimeStamps(timeStamps, numTimeSteps);
+  const int numTimeStamps = timeStamps.size();
+  const int numFields = fieldsMetadata.size();
+  if (numTimeStamps > 1) {
+    _file << "    <Grid Name=\"TimeSeries\" GridType=\"Collection\" "
+	  << "CollectionType=\"Temporal\">\n";
 
-  _file
-    << "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
-  for (int iTimeStep=0; iTimeStep < numTimeSteps; ++iTimeStep) {
+    _writeTimeStamps(timeStamps);
+
+    for (int iTimeStep=0; iTimeStep < numTimeStamps; ++iTimeStep) {
+      _file
+	<< "      <Grid Name=\"domain\" GridType=\"Uniform\">\n";
+      _writeGridTopology(cellType.c_str(), numCells);
+      _writeGridGeometry(spaceDim);
+
+      for (int iField=0; iField < numFields; ++iField) {
+	if (2 == spaceDim && 
+	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
+	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	  const int fiberDim = fieldsMetadata[iField].fiberDim;
+	  for (int component=0; component < fiberDim; ++component)
+	    _writeGridAttributeComponent(fieldsMetadata[iField],
+					 iTimeStep, component);
+	} else {
+	  _writeGridAttribute(fieldsMetadata[iField],
+			      iTimeStep);
+	} // if/else
+      } // for
+      _file << "      </Grid>\n";
+    } // for
+    _file << "    </Grid>\n";
+  } else {
+    // One time step or no time steps (just the mesh).
+    _file << "    <Grid Name=\"domain\" GridType=\"Uniform\">\n";
     _writeGridTopology(cellType.c_str(), numCells);
     _writeGridGeometry(spaceDim);
+    const int iTimeStep = 0;
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
-	  std::string("vector") == fieldsMetadata[iField].vectorFieldType) {
-	for (int component=0; component < spaceDim; ++component)
+	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
+	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	const int fiberDim = fieldsMetadata[iField].fiberDim;
+	for (int component=0; component < fiberDim; ++component)
 	  _writeGridAttributeComponent(fieldsMetadata[iField],
 				       iTimeStep, component);
       } else {
@@ -124,15 +191,164 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 			    iTimeStep);
       } // if/else
     } // for
-    _file << "      </Grid>\n";
-  } // for
+    _file << "    </Grid>\n";
+  } // if
   
   _file
-    << "    </Grid>\n"
     << "  </Domain>\n"
     << "</Xdmf>\n";
   _file.close();
 } // write
+
+// ----------------------------------------------------------------------
+// Get timestamps from HDF5 file.
+void
+pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
+				     HDF5& h5)
+{ // _getTimeStamps
+  assert(timeStamps);
+
+  hsize_t* dims = 0;
+  int ndims = 0;
+  double* t = 0;
+
+  if (h5.hasDataset("/time")) {
+    h5.getDatasetDims(&dims, &ndims, "/", "time");
+    assert(3 == ndims);
+    const int numTimeStamps = dims[0];
+    assert(1 == dims[1]);
+    assert(1 == dims[2]);
+
+    // Dataset is in chunks of 1.
+    timeStamps->resize(numTimeStamps);
+    for (int i=0; i < numTimeStamps; ++i) {
+      h5.readDatasetChunk("/", "time", (char**)&t,
+			  &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+      assert(3 == ndims);
+      assert(1 == dims[0]);
+      assert(1 == dims[1]);
+      assert(1 == dims[2]);
+      (*timeStamps)[i] = t[0];
+    } // for
+  } // if
+
+  delete[] dims; dims = 0;
+  delete[] t; t = 0;
+} // _getTimeStamps
+
+// ----------------------------------------------------------------------
+// Get field metadata from HDF5 file.
+void
+pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
+					HDF5& h5)
+{ // _getFieldMetadata
+  assert(metadata);
+
+  string_vector fieldNames;
+  hsize_t* dims = 0;
+  int ndims = 0;
+
+  int iOffset = 0;
+  if (h5.hasGroup("/vertex_fields")) {
+    const char* parent = "/vertex_fields";
+    h5.getGroupDatasets(&fieldNames, parent);
+    const int numFields = fieldNames.size();
+
+    metadata->resize(iOffset+numFields);
+    for (int i=0; i < numFields; ++i) {
+      h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
+      std::string fullName = 
+	std::string(parent) + std::string("/") + fieldNames[i];
+      const std::string& vectorFieldString = 
+	h5.readAttribute(fullName.c_str(), "vector_field_type");
+      switch(topology::FieldBase::parseVectorFieldString(vectorFieldString.c_str())) {
+      case topology::FieldBase::SCALAR :
+	(*metadata)[iOffset+i].vectorFieldType = "Scalar";
+	break;
+      case topology::FieldBase::VECTOR :
+	(*metadata)[iOffset+i].vectorFieldType = "Vector";
+	break;
+      case topology::FieldBase::TENSOR :
+	(*metadata)[iOffset+i].vectorFieldType = "Tensor";
+	break;
+      default :
+	(*metadata)[iOffset+i].vectorFieldType = "Matrix";
+      } // switch
+
+      (*metadata)[iOffset+i].name = fieldNames[i];
+      (*metadata)[iOffset+i].domain = "Node";
+      if (2 == ndims) {
+	(*metadata)[iOffset+i].numTimeSteps = 1;
+	(*metadata)[iOffset+i].numPoints = dims[0];
+	(*metadata)[iOffset+i].fiberDim = dims[1];
+      } else {
+	assert(3 == ndims);
+	(*metadata)[iOffset+i].numTimeSteps = dims[0];
+	(*metadata)[iOffset+i].numPoints = dims[1];
+	(*metadata)[iOffset+i].fiberDim = dims[2];
+      } // if/else
+      delete[] dims; dims = 0;
+    } // for
+
+    iOffset += fieldNames.size();
+  } // if
+  if (h5.hasGroup("/cell_fields")) {
+    const char* parent = "/cell_fields";
+    h5.getGroupDatasets(&fieldNames, parent);
+    const int numFields = fieldNames.size();
+
+    metadata->resize(iOffset+numFields);
+    for (int i=0; i < numFields; ++i) {
+      h5.getDatasetDims(&dims, &ndims, parent, fieldNames[i].c_str());
+      std::string fullName =
+	std::string(parent) + std::string("/") + fieldNames[i];
+      const std::string& vectorFieldString = 
+	h5.readAttribute(fullName.c_str(), "vector_field_type");
+      switch(topology::FieldBase::parseVectorFieldString(vectorFieldString.c_str())) {
+      case topology::FieldBase::SCALAR :
+	(*metadata)[iOffset+i].vectorFieldType = "Scalar";
+	break;
+      case topology::FieldBase::VECTOR :
+	(*metadata)[iOffset+i].vectorFieldType = "Vector";
+	break;
+      case topology::FieldBase::TENSOR :
+	(*metadata)[iOffset+i].vectorFieldType = "Tensor";
+	break;
+      default :
+	(*metadata)[iOffset+i].vectorFieldType = "Matrix";
+      } // switch
+
+      (*metadata)[iOffset+i].name = fieldNames[i];
+      (*metadata)[iOffset+i].domain = "Cell";
+      if (2 == ndims) {
+	(*metadata)[iOffset+i].numTimeSteps = 1;
+	(*metadata)[iOffset+i].numPoints = dims[0];
+	(*metadata)[iOffset+i].fiberDim = dims[1];
+      } else {
+	assert(3 == ndims);
+	(*metadata)[iOffset+i].numTimeSteps = dims[0];
+	(*metadata)[iOffset+i].numPoints = dims[1];
+	(*metadata)[iOffset+i].fiberDim = dims[2];
+      } // if/else
+      delete[] dims; dims = 0;
+    } // for
+
+    iOffset += fieldNames.size();
+  } // if
+
+#if 0 // debugging
+  std::cout << "FIELD METADATA" << std::endl;
+  for (int i=0; i < fieldNames.size(); ++i) {
+    std::cout << "  Name: '" << (*metadata)[i].name << "'"
+	      << ", type: " << (*metadata)[i].vectorFieldType
+	      << ", domain: " << (*metadata)[i].domain
+	      << ", #timesteps: " << (*metadata)[i].numTimeSteps
+	      << ", numPoints: " << (*metadata)[i].numPoints
+	      << ", fiberDim: " << (*metadata)[i].fiberDim
+	      << std::endl;
+  } // for
+#endif
+} // _getFieldMetadata
 
 // ----------------------------------------------------------------------
 // Write domain cell information.
@@ -171,14 +387,22 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 // ----------------------------------------------------------------------
 // Write time stamps.
 void
-pylith::meshio::Xdmf::_writeTimeStamps(const double* timeStamps,
-				       const int numTimeSteps)
+pylith::meshio::Xdmf::_writeTimeStamps(const double_array& timeStamps)
 { // _writeTimeStamps
   assert(_file.is_open() && _file.good());
 
-  if (numTimeSteps > 0) {
-    assert(timeStamps);
-  } // if
+  const int numTimeStamps = timeStamps.size();
+  _file 
+    << "      <Time TimeType=\"List\">\n"
+    << "        <DataItem Format=\"XML\" NumberType=\"Float\" "
+    << "Dimensions=\"" << numTimeStamps << "\">\n"
+    << "        ";
+  for (int i=0; i < numTimeStamps; ++i)
+    _file << "  " << timeStamps[i];
+  _file 
+    << "\n"
+    << "        </DataItem>\n"
+    << "      </Time>\n";
 } // _writeTimeStamps
 
 // ----------------------------------------------------------------------
@@ -191,7 +415,7 @@ pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
 
   _file
     << "	<Topology\n"
-    << "	   TopologyType=\"Triangle\"\n"
+    << "	   TopologyType=\"" << cellType << "\"\n"
     << "	   NumberOfElements=\"" << numCells << "\">\n"
     << "	  <DataItem Reference=\"XML\">\n"
     << "	    /Xdmf/Domain/DataItem[@Name=\"cells\"]\n"
@@ -220,13 +444,13 @@ pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
 // ----------------------------------------------------------------------
 // Write grid attribute.
 void
-pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
+pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 					  const int iTime)
 { // _writeGridAttribute
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
-  if (std::string("Vertex") == metadata.domain) {
+  if (std::string("Node") == metadata.domain) {
     h5FullName = std::string("/vertex_fields/") + metadata.name;
   } else if (std::string("Cell") == metadata.domain) {
     h5FullName = std::string("/cell_fields/") + metadata.name;
@@ -243,14 +467,18 @@ pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
     << "	   Type=\"" << metadata.vectorFieldType << "\"\n"
     << "	   Center=\"" << metadata.domain << "\">\n"
     << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 " << metadata.numPoints << " 1\"\n"
+    << "		    Dimensions=\"1 "
+    << metadata.numPoints
+    << " " << metadata.fiberDim << "\"\n"
     << "		    Type=\"HyperSlab\">\n"
     << "            <DataItem\n"
     << "	       Dimensions=\"3 3\"\n"
     << "	       Format=\"XML\">\n"
-    << "              0 0 0\n"
+    << "              " << iTime << " 0 0\n"
     << "              1 1 1\n"
-    << "              1 " << metadata.numPoints << " 1\n"
+    << "              1 "
+    << metadata.numPoints
+    << " " << metadata.fiberDim << "\n"
     << "	    </DataItem>\n"
     << "	    <DataItem\n"
     << "	       DataType=\"Float\" Precision=\"8\"\n"
@@ -268,14 +496,14 @@ pylith::meshio::Xdmf::_writeGridAttribute(const HDF5::FieldMetadata& metadata,
 // ----------------------------------------------------------------------
 // Write grid attribute.
 void
-pylith::meshio::Xdmf::_writeGridAttributeComponent(const HDF5::FieldMetadata& metadata,
+pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata,
 						   const int iTime,
 						   const int component)
 { // _writeGridAttribute
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
-  if (std::string("Vertex") == metadata.domain) {
+  if (std::string("Node") == metadata.domain) {
     h5FullName = std::string("/vertex_fields/") + metadata.name;
   } else if (std::string("Cell") == metadata.domain) {
     h5FullName = std::string("/cell_fields/") + metadata.name;
@@ -287,40 +515,73 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const HDF5::FieldMetadata& me
   } // if/else
 
   std::string componentName = "unknown";
-  switch (component) {
-  case 0:
-    componentName = std::string("x-") + std::string(metadata.name);
-    break;
-  case 1:
-    componentName = std::string("y-") + std::string(metadata.name);
-    break;
-  case 2:
-    componentName = std::string("z-") + std::string(metadata.name);
-    break;
-  default:
-    { // default
-      std::ostringstream msg;
-      msg << "Unknown component " << component << " while writing Xdmf file.";
-      std::cerr << msg.str() << std::endl;
-      assert(0);
+  if (std::string("Vector") == metadata.vectorFieldType) {
+    switch (component) {
+    case 0:
+      componentName = std::string(metadata.name) + std::string("_x");
+      break;
+    case 1:
+      componentName = std::string(metadata.name) + std::string("_y");
+      break;
+    default:
+      { // default
+	std::ostringstream msg;
+	msg << "Unknown component " << component << " while writing Xdmf file.";
+	std::cerr << msg.str() << std::endl;
+	assert(0);
+	throw std::logic_error(msg.str());
+      } // default
+    } // switch
+  } else if (std::string("Tensor") == metadata.vectorFieldType) {
+    switch (component) {
+    case 0:
+      componentName = std::string(metadata.name) + std::string("_xx");
+      break;
+    case 1:
+      componentName = std::string(metadata.name) + std::string("_yy");
+      break;
+    case 2:
+      componentName = std::string(metadata.name) + std::string("_xy");
+      break;
+    default:
+      { // default
+	std::ostringstream msg;
+	msg << "Unknown component " << component << " while writing Xdmf file.";
+	std::cerr << msg.str() << std::endl;
+	assert(0);
+	throw std::logic_error(msg.str());
+      } // default
+    } // switch
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown vector field type " << metadata.vectorFieldType
+	<< " while writing Xdmf file.";
+    std::cerr << msg.str() << std::endl;
+    assert(0);
     throw std::logic_error(msg.str());
-    } // default
-  } // switch
-
+  } // else
+    
   _file
     << "	<Attribute\n"
     << "	   Name=\"" << componentName << "\"\n"
-    << "	   Type=\""<< metadata.vectorFieldType << "\"\n"
+    << "	   Type=\"Scalar\"\n"
     << "	   Center=\"" << metadata.domain << "\">\n"
     << "          <DataItem ItemType=\"HyperSlab\"\n"
-    << "		    Dimensions=\"1 " << metadata.numPoints << " 1\"\n"
+    << "		    Dimensions=\"1 "
+    << metadata.numPoints
+    << " 1\"\n"
     << "		    Type=\"HyperSlab\">\n"
     << "            <DataItem\n"
     << "	       Dimensions=\"3 3\"\n"
     << "	       Format=\"XML\">\n"
-    << "              0 0 "<< component << "\n"
+    << "              "
+    << iTime
+    << " 0 "
+    << component << "\n"
     << "              1 1 1\n"
-    << "              1 " << metadata.numPoints << " 1\n"
+    << "              1 "
+    << metadata.numPoints
+    << " 1\n"
     << "	    </DataItem>\n"
     << "	    <DataItem\n"
     << "	       DataType=\"Float\" Precision=\"8\"\n"

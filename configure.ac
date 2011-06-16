@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010 University of California, Davis
+# Copyright (c) 2010-2011 University of California, Davis
 #
 # See COPYING for license information.
 #
@@ -46,6 +46,7 @@ AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 # Enable full-scale testing except on cygwin (need to rebase)
 if test "$enable_testing" = yes ; then
   enable_full_testing=yes
+  AC_CANONICAL_HOST
   case $host_os in
     cygwin*)
       enable_full_testing=no ;;
@@ -81,19 +82,23 @@ AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[enable_hdf5=yes
-	CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
-	PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
-	[enable_hdf5=no])
+	[if test "$enableval" = yes; then
+          enable_hdf5=yes
+	  CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+          else enable_hdf5=no; fi],
+	[enable_hdf5=yes])
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
 # CUDA
 AC_ARG_ENABLE([cuda],
     [AC_HELP_STRING([--enable-cuda],
         [enable use of CUDA @<:@default=no@:>@])],
-	[enable_cuda=yes
-	CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
-	PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS],
+	[if test "$enable_cuda" = yes; then
+          enable_cuda=yes
+          CPPFLAGS="-DENABLE_CUDA $CPPFLAGS"; export CPPFLAGS
+	  PYLITH_SWIG_CPPFLAGS="-DENABLE_CUDA $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+          else enable_cuda=no; fi],
 	[enable_cuda=no])
 AM_CONDITIONAL([ENABLE_CUDA], [test "$enable_cuda" = yes])
 
@@ -152,6 +157,9 @@ CIT_CHECK_LIB_PETSC_SIEVE
 # Check for Python modules and packages.
 CIT_PYTHON_EGG_SETUP
 
+# Large file support
+AC_SYS_LARGEFILE
+
 # NUMPY
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
@@ -198,42 +206,17 @@ fi
 
 # HDF5
 if test "$enable_hdf5" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  hdf5_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"  
-  AC_CHECK_HEADER([hdf5.h], [], [
-    AC_MSG_ERROR([HDF5 header not found.])
-  ])
-  AC_MSG_CHECKING([for H5Fopen in -lhdf5])
-  AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <hdf5.h>]],
-	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
-    [AC_MSG_RESULT(yes)],
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([hdf5 library not found.])
-  ])
-  CPPFLAGS=$hdf5_save_CPPFLAGS
+  CIT_HDF5_HEADER
+  CIT_HDF5_LIB
+  CIT_HDF5_LIB_PARALLEL
 fi
 
 # CUDA
 if test "$enable_cuda" = "yes" ; then
-  AC_REQUIRE_CPP
-  AC_LANG(C++)
-  cuda_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$PETSC_CC_INCLUDES $PETSC_CXX_INCLUDE $CPPFLAGS"
-  AC_CHECK_HEADER([cuda_runtime.h], [], [
-    AC_MSG_ERROR([CUDA runtime header not found.])
-  ])
-  #AC_MSG_CHECKING([for ?? in -lcuda])
-  #AC_COMPILE_IFELSE(
-  #  [AC_LANG_PROGRAM([[#include <cuda_runtime.h>]],
-  #	             [[H5Fopen("test.h5", H5F_ACC_TRUNC, H5P_DEFAULT);]])],
-  #  [AC_MSG_RESULT(yes)],
-  #  [AC_MSG_RESULT(no)
-  #   AC_MSG_ERROR([cuda library not found.])
-  #])
-  CPPFLAGS=$cuda_save_CPPFLAGS
+  CIT_PYTHON_MODULE([pycuda])
+  CIT_CUDA_INCDIR
+  CIT_CUDA_LIB
+  CIT_CUDA_COMPILER
 fi
 
 # PROJ4
@@ -337,6 +320,7 @@ AC_CONFIG_FILES([Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
 		tests/2d/slipdir/Makefile
+		tests/2d/frictionslide/Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
@@ -352,6 +336,7 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/plasticity/threehex8/results/Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
 		tests/topology/Makefile
+		tests/refinefaulttip/Makefile
                 doc/Makefile
 		doc/developer/Makefile
 		doc/install/Makefile
@@ -362,6 +347,7 @@ AC_CONFIG_FILES([Makefile
 		examples/Makefile
 		examples/3d/Makefile
 		examples/3d/tet4/Makefile
+		examples/3d/tet4/output/Makefile
 		examples/3d/hex8/Makefile
 		examples/3d/hex8/output/Makefile
 		examples/2d/Makefile

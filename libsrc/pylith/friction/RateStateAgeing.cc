@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -356,18 +356,22 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
   // thetaTpdt = thetaT * exp(-slipRate/L * dt)
   //             + dt - 0.5*(sliprate/L)*dt**2 + 1.0/6.0*(slipRate/L)*dt**3;
 
+  // Since regulatized friction -> 0 as slipRate -> 0, limit slip
+  // rate to some minimum value
+  const double slipRateEff = std::max(1.0e-12, slipRate);
+
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
   const double L = properties[p_L];
-  const double vDtL = slipRate * dt / L;
+  const double vDtL = slipRateEff * dt / L;
   const double expTerm = exp(-vDtL);
 
   double thetaTpdtVertex = 0.0;
   if (vDtL > 1.0e-20) {
-    thetaTpdtVertex = thetaTVertex * expTerm + L / slipRate * (1 - expTerm);
+    thetaTpdtVertex = thetaTVertex * expTerm + L / slipRateEff * (1 - expTerm);
     PetscLogFlops(7);
   } else {
-    thetaTpdtVertex = thetaTVertex * expTerm + dt - 0.5 * slipRate/L * dt*dt;
+    thetaTpdtVertex = thetaTVertex * expTerm + dt - 0.5 * slipRateEff/L * dt*dt;
     PetscLogFlops(9);
   } // if/else
   

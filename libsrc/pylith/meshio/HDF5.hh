@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010 University of California, Davis
+// Copyright (c) 2010-2011 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -22,29 +22,15 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include <hdf5.h> // USES hid_t
+#include "pylith/utils/array.hh" // USES string_vector
 
-#include <vector> // USES std::vector
-#include <string> // USES std::string
+#include <hdf5.h> // USES hid_t
 
 // HDF5 -----------------------------------------------------------------
 /// High-level interface for HDF5 operations.
 class pylith::meshio::HDF5
 { // HDF5
   friend class TestHDF5; // Unit testing
-
-// PUBLIC STRUCTS -------------------------------------------------------
-public :
-
-  /// Metadata associated with fields.
-  struct FieldMetadata {
-    std::string name; ///< Name of field.
-    std::string vectorFieldType; ///< Type of field.
-    std::string domain; ///< Domain over which field is given.
-    int numPoints; ///< Number of points in field.
-    int fiberDim; ///< Number of values in field at each point, time.
-    int numTimeSteps; ///< Number of time steps for field.
-  }; // FieldMetadata
 
 // PUBLIC METHODS -------------------------------------------------------
 public :
@@ -94,29 +80,25 @@ public :
    */
   bool hasDataset(const char* name);
 
-  /** Get topology metadata.
+  /** Get dimensions of dataset.
    *
-   * @param numCells Number of cells [output]
-   * @param numCorners Number of corners [output]
-   * @param cellType Type of cell [output]
+   * @param dims Array of dimensions. [output]
+   * @param ndims Number of dimensions. [output]
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
    */
-  void getTopologyMetadata(int* numCells,
-			   int* numCorners,
-			   std::string* cellType);
+  void getDatasetDims(hsize_t** dims,
+		      int* ndims,
+		      const char* parent,
+		      const char* name);
 
-  /** Get geometry metadata.
+  /** Get names of datasets in group.
    *
-   * @param numVertices Number of vertices [output].
-   * @param spaceDim Spatial dimension [output].
+   * @param names Names of datasets.
+   * @param group Name of parent.
    */
-  void getGeometryMetadata(int* numVertices,
-			   int* spaceDim);
-
-  /** Get metadata for fields.
-   *
-   * @param metadata Array of metadata for fields.
-   */
-  void getFieldsMetadata(std::vector<FieldMetadata>* metadata);
+  void getGroupDatasets(string_vector* names,
+			const char* parent);
 
   /** Create group.
    *
@@ -134,6 +116,22 @@ public :
    * @param datatype Datatype of scalar.
    */
   void writeAttribute(const char* parent,
+		      const char* name,
+		      const void* value,
+		      hid_t datatype);
+
+  /** Set scalar attribute (used with external handle to HDF5 file,
+   * such as PetscHDF5Viewer).
+   *
+   * @param h5 HDF5 file.
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
+   * @param value Attribute value.
+   * @param datatype Datatype of scalar.
+   */
+  static
+  void writeAttribute(hid_t h5,
+		      const char* parent,
 		      const char* name,
 		      const void* value,
 		      hid_t datatype);
@@ -160,6 +158,20 @@ public :
 		      const char* name,
 		      const char* value);
 
+  /** Set string attribute (used with external handle to HDF5 file,
+   * such as PetscHDF5Viewer).
+   *
+   * @param h5 HDF5 file.
+   * @param parent Full path of parent dataset for attribute.
+   * @param name Name of attribute.
+   * @param value String value
+   */
+  static
+  void writeAttribute(hid_t h5,
+		      const char* parent,
+		      const char* name,
+		      const char* value);
+
   /** Read string attribute.
    *
    * @param parent Full path of parent dataset for attribute.
@@ -173,14 +185,14 @@ public :
    *
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
-   * @param dims Dimensions of data.
+   * @param maxDims Maximum dimensions of data.
    * @param dimsChunk Dimensions of data chunks.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
   void createDataset(const char* parent,
 		     const char* name,
-		     const hsize_t* dims,
+		     const hsize_t* maxDims,
 		     const hsize_t* dimsChunk,
 		     const int ndims,
 		     hid_t datatype);
@@ -190,8 +202,8 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param data Data.
-   * @param dims Dimensions of data.
-   * @param dimsChunk Dimensions of data chunks.
+   * @param dims Current total dimensions of data.
+   * @param dimsChunk Dimension of data chunk to write.
    * @param ndims Number of dimensions of data.
    * @param chunk Index of data chunk.
    * @param datatype Type of data.
@@ -212,15 +224,15 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param data Data.
-   * @param dims Dimensions of data.
-   * @param ndims Number of dimensions of data.
+   * @param dims Dimensions of chunk.
+   * @param ndims Number of dimensions of chunk.
    * @param islice Index of data slice.
    * @param datatype Type of data.
    */
   void readDatasetChunk(const char* parent,
 			const char* name,
 			char** const data,
-			hsize_t** const dims,
+			hsize_t** const dimsChunk,
 			int* const ndims,
 			const int chunk,
 			hid_t datatype);
@@ -231,14 +243,14 @@ public :
    * @param parent Full path of parent group for dataset.
    * @param name Name of dataset.
    * @param filename Name of external raw data file.
-   * @param dims Dimensions of data.
+   * @param maxDims Maximum dimensions of data.
    * @param ndims Number of dimensions of data.
    * @param datatype Type of data.
    */
   void createDatasetRawExternal(const char* parent,
 				const char* name,
 				const char* filename,
-				const hsize_t* dims,
+				const hsize_t* maxDims,
 				const int ndims,
 				hid_t datatype);
   
