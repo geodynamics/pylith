@@ -19,8 +19,8 @@ in this example was produced using the GMT grd2xyz utility.
 2.  The parameters for the Python script are contained in the file
 dem2lines.cfg. In this file we specify the name of the input
 file, the name of an output VTK file (for viewing the resampled DEM
-using a package such as ParaView), and prefixes for the output u-lines
-and v-lines.  The x_min, x_max, etc. values indicate the region over
+using a package such as ParaView), and prefixes and filenames for the output
+journal files. The x_min, x_max, etc. values indicate the region over
 which full resolution is desired. Outside this region, resampling
 occurs at skip_interval, 2*skip_interval, etc. until the edge of the
 DEM is reached.
@@ -30,18 +30,14 @@ DEM is reached.
 ./dem2lines.py
 
 This will produce the file ruapehu-nzmg-1km-resampled.vtk, and will
-also populate the ulines and vlines directories. You can visualize the
+also populate the ulines and vlines directories with journal files defining
+each u-line and v-line, as well as creating journal files to playback these
+file, and a master journal file to control everything. You can visualize the
 VTK file to make sure it looks OK.
 
-4.  Once you have created the u-lines and v-lines, you must create a
-journal file that Cubit can use to create the NURBS surface. Each file
-in the ulines and vlines directories is a separate Cubit command to
-create a single spline curve. To create the desired surface, we first
-create a ulines.jou file and a vlines.jou file to execute each of
-these. We then create a mktopo.jou file that executes these two
-journal files and then creates the NURBS surface (ruapehu_topo.sab).
-You can create the surface yourself by running Cubit and playing back the
-'mktopo.jou' file.
+4.  Once you have created the necessary journal files, you can create the
+surface yourself by running Cubit and playing back the 'ruapehu_topo.jou'
+file. This will create the NURBS surface (ruapehu_topo.sab).
 
 5.  Once the surface has been created, you can import it in future
 Cubit sessions and use it just as you would any surface created within
