@@ -673,7 +673,7 @@ reference "fig:tutorial:subduction:step01"
 \end_layout
 
 \begin_layout LyX-Code
-displacement_x*iHat + displacement_y*jHat + kHat
+displacement_x*iHat + displacement_y*jHat + 0*kHat
 \end_layout
 
 \begin_layout Standard
