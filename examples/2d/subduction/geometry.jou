@@ -57,7 +57,9 @@ undo off
 # Topography/bathymetry (points from Google Earth)
 #
 # Save ids of important points in APREPRO variables as they are created
-# for use in other commands
+# for use in other commands. We save the entity id in a variable rather
+# than name the vertex because this allows us to still use "idA to idB"
+# to select multiple vertices.
 #
 create vertex x { -600.0*km} y {-2000.0*m}
 #{idPtTopoW=Id("vertex")}
