@@ -164,6 +164,10 @@ paraview.org/Wiki/ParaView
  proper software packages installed.
 \end_layout
 
+\begin_layout Subsubsection
+Input Files
+\end_layout
+
 \begin_layout Standard
 The files needed to work through the tutorials are found in the 
 \family typewriter
