@@ -133,6 +133,13 @@ Custom algebraic multigrid preconditioner with split fields
 Global uniform mesh refinement
 \end_layout
 
+\begin_layout Standard
+All of the files necessary to run the examples are contained in the directory
+ 
+\family typewriter
+examples/3d/tet4.
+\end_layout
+
 \begin_layout Subsection
 Overview
 \end_layout
