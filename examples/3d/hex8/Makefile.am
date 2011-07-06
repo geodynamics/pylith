@@ -37,6 +37,7 @@ dist_noinst_DATA = \
 	step16.cfg \
 	step17.cfg \
 	step18.cfg \
+	step19.cfg \
 	mesh/geometry.jou \
 	mesh/mesh_hex8_1000m.jou \
 	mesh/box_hex8_1000m.exo \
@@ -53,6 +54,7 @@ dist_noinst_DATA = \
 	spatialdb/sliptime.spatialdb \
 	spatialdb/tractions_axial_shear.spatialdb \
 	spatialdb/tractions_axial_pressure.spatialdb \
+	spatialdb/loadcycle.timedb \
 	spatialdb/powerlaw/powerlaw_gendb.cfg \
 	spatialdb/powerlaw/powerlaw_params.spatialdb \
 	spatialdb/powerlaw/powerlaw_points.txt \
