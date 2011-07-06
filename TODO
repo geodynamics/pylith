@@ -2,8 +2,8 @@ v1.6.1 changes
 
 Examples
   3d/hex8
-    step18 [need to add to manual]
-    step19 [need to add to manual]
+    step18 [DONE]
+    step19 [DONE]
   2d/subduction
     updated geometry.jou file to use Id() [DONE]
   meshing/surf_nurbs
