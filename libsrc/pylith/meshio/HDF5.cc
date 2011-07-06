@@ -454,9 +454,6 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
     if (dtype < 0)
       throw std::runtime_error("Could not get datatype of");
 
-    if (H5Tequal(dtype, datatype) <= 0)
-      throw std::runtime_error("Wrong datatype specified for");
-
     hid_t err = H5Aread(attribute, dtype, value);
     if (err < 0)
       throw std::runtime_error("Could not read");
