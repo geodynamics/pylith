@@ -1,3 +1,22 @@
+v1.6.1 changes
+
+Examples
+  3d/hex8
+    step18
+    step19
+  2d/subduction
+    updated geometry.jou file to use Id()
+  meshing/surf_nurbs
+    names of journal files
+    use of nonstandard shell utilities
+    sat versus sab ACIS files
+  greenfns
+    errors when trying to run
+
+Manual
+  tractions - cell_info_fields is out of date [now time dependent]
+
+
 ======================================================================
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================

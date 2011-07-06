@@ -1826,6 +1826,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   topology::Field<topology::SubMesh>& area = _fields->get("area");
   const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   area.newSection(slip, 1);
+  area.vectorFieldType(topology::FieldBase::SCALAR);
   area.allocate();
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
