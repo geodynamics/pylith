@@ -11,9 +11,9 @@
 
 #SPATIAL.ascii 1
 SimpleDB {
-  num-values = 3
-  value-names =  traction-shear-horiz traction-shear-vert traction-normal
-  value-units =  MPa MPa MPa
+  num-values = 4
+  value-names =  traction-shear-horiz traction-shear-vert traction-normal change-start-time
+  value-units =  MPa MPa MPa year
   num-locs = 5
   data-dim = 2 // locations on a surface
   space-dim = 3
@@ -29,8 +29,9 @@ SimpleDB {
 // (4) T-shear-horiz (MPa)
 // (5) T-shear-vert (MPa)
 // (6) T-normal (MPa)
--3.0  3.0  0.0    0.0  0.0   0.0
- 3.0  3.0  0.0    0.0  0.0   0.0
- 3.0 -3.0  0.0    0.0  0.0   0.0
--3.0 -3.0  0.0    0.0  0.0   0.0
- 0.0  0.0  0.0    0.0  0.0  -10.0
+// (7) Start time when used in time-dependent BC (year)
+-3.0  3.0  0.0    0.0  0.0    0.0  0.0
+ 3.0  3.0  0.0    0.0  0.0    0.0  0.0
+ 3.0 -3.0  0.0    0.0  0.0    0.0  0.0
+-3.0 -3.0  0.0    0.0  0.0    0.0  0.0
+ 0.0  0.0  0.0    0.0  0.0  -10.0  0.0

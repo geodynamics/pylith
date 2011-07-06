@@ -1,0 +1,20 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This temporal database specifies the time history of loading. The
+// units are nondimensional corresponding to just a scaled version of
+// the spatial variation.
+//
+// The loading is piecewise linear with a linear increase to 1.0 and
+// then 1.5 followed by a symmetric decrease back to 0.0.
+//
+#TIME HISTORY ascii
+TimeHistory {
+  num-points = 6 // number of points in time history
+  time-units = year // units for time
+}
+  0.0  0.0
+100.0  1.0
+200.0  1.5
+300.0  1.0
+400.0  0.0
+999.9  0.0
