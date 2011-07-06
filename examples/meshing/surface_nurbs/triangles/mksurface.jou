@@ -23,6 +23,7 @@ create surface net from mapped surface 1 heal
 
 # Export the surface in binary ACIS format.
 set geometry engine acis
-export acis "ruapehu-nzmg-1km.sab" surface 2 binary overwrite
+export acis "ruapehu-nzmg-1km.sat" surface 2 overwrite
+
 
 
