@@ -14,7 +14,10 @@ Examples
     errors when trying to run
 
 Manual
-  tractions - cell_info_fields is out of date [now time dependent]
+  tractions - cell_info_fields was out of date [not time dependent]
+
+bugfixes
+  fault rupture info for multiple earthquake sources
 
 
 ======================================================================
