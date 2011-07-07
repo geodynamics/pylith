@@ -29,6 +29,16 @@
 from pylith.utils.PetscComponent import PetscComponent
 from faults import Fault as ModuleFault
 
+# Validator for label
+def validateLabel(value):
+  """
+  Validate label for group/nodeset/pset.
+  """
+  if 0 == len(value):
+    raise ValueError("Label for group/nodeset/pset in mesh not specified.")
+  return value
+
+
 # Validator for direction
 def validateDir(value):
   """
@@ -77,8 +87,8 @@ class Fault(PetscComponent, ModuleFault):
   matId.meta['tip'] = "Fault identifier (must be unique across all faults " \
       "and materials)."
   
-  faultLabel = pyre.inventory.str("label", default="")
-  faultLabel.meta['tip'] = "Name of fault."
+  faultLabel = pyre.inventory.str("label", default="", validator=validateLabel)
+  faultLabel.meta['tip'] = "Label identifier for fault."
   
   upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
                               validator=validateDir)
@@ -216,12 +226,17 @@ class Fault(PetscComponent, ModuleFault):
     """
     Setup members using inventory.
     """
-    PetscComponent._configure(self)
-    self.faultQuadrature = self.inventory.faultQuadrature
-    self.upDir = map(float, self.inventory.upDir)
-    ModuleFault.id(self, self.inventory.matId)
-    ModuleFault.label(self, self.inventory.faultLabel)
-    self.perfLogger = self.inventory.perfLogger
+    try:
+      PetscComponent._configure(self)
+      self.faultQuadrature = self.inventory.faultQuadrature
+      self.upDir = map(float, self.inventory.upDir)
+      ModuleFault.id(self, self.inventory.matId)
+      ModuleFault.label(self, self.inventory.faultLabel)
+      self.perfLogger = self.inventory.perfLogger
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring fault "
+                       "(%s):\n%s" % (aliases, err.message))
     return
 
   
