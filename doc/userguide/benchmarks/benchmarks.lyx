@@ -185,7 +185,7 @@ scecdata.usc.edu/cvws/cgi-bin/cvws.cgi
 The benchmark results indicate that triangular and tetrahedral cells generate
  less numerical noise than quadrilateral or hexahedral cells.
  TPV14-2D, TPV15-2D, TPV14, and TPV15 use the numerical damping via an artificia
-l viscosity available in PyLith v1.6.0 to these high-frequency oscillations.
+l viscosity available in PyLith v1.6 to these high-frequency oscillations.
  All of the other results without high frequency oscillations posted on
  the SCEC benchmarks web page employ damping via similar methods to reduce
  numerical artifacts.
