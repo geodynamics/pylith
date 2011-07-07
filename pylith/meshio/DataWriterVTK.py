@@ -82,4 +82,19 @@ class DataWriterVTK(DataWriter):
     return
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Configure object.
+    """
+    try:
+      DataWriter._configure(self)
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring VTK output "
+                       "(%s):\n%s" % (aliases, err.message))
+
+    return
+
 # End of file 

@@ -46,6 +46,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test _configure().
     """
     fault = FaultCohesiveKin()
+    fault.inventory.faultLabel = "fault group"
     fault._configure()
     return
 
@@ -65,6 +66,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test useFaultMesh().
     """
     fault = FaultCohesiveKin()
+    fault.inventory.faultLabel = "fault group"
     fault._configure()
 
     fault.useFaultMesh(True);
@@ -77,7 +79,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test faultMeshFilename().
     """
-    fault = FaultCohesiveKin()
+    fault = FaultCohesiveKin() 
+    fault.inventory.faultLabel = "fault group"
     fault._configure()
 
     filename = "SanAndreas.inp"
