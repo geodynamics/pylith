@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.6.0
+We are pleased to announce release of PyLith version 1.6.1
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -66,6 +66,31 @@ MIGRATING FROM VERSION 1.5 TO 1.6
 ======================================================================
 
 No changes in parameters are required.
+
+----------------------------------------------------------------------
+Version 1.6.1
+----------------------------------------------------------------------
+
+* Updates to manual
+
+  - Updated description of cell_info_fields for Neumann boundary
+    condition. The description had not been updated to reflect the
+    time-dependence introduced in version 1.4.
+
+  - Added steps 18 and 19 that discuss time-dependent Neumann boundary
+    conditions to the 3d/hex8 examples.
+
+* Bug fixes
+
+  - Fixed bug in writing rupture information to VTK and HDF5 files
+    when using multiple eartquake sources. Field names did not include
+    name of rupture. This caused loss of information in VTK output and
+    a corrupted Xdmf metadata file for HDF5 output.
+
+  - ADD GREEN'S FUNCTION STUFF HERE
+
+  - ADD MESHING STUFF HERE
+
 
 ----------------------------------------------------------------------
 Version 1.6.0
