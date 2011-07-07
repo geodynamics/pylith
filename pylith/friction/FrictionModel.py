@@ -63,8 +63,8 @@ class FrictionModel(PetscComponent):
 
     import pyre.inventory
 
-    label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Name of the friction model."
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Descriptive label for friction model."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     dbProperties = pyre.inventory.facility("db_properties",
@@ -109,14 +109,19 @@ class FrictionModel(PetscComponent):
     """
     Setup members using inventory.
     """
-    PetscComponent._configure(self)
-    self.label(self.inventory.label)
-    self.dbProperties(self.inventory.dbProperties)
-    from pylith.utils.NullComponent import NullComponent
-    if not isinstance(self.inventory.dbInitialState, NullComponent):
-      self.dbInitialState(self.inventory.dbInitialState)
+    try:
+      PetscComponent._configure(self)
+      self.label(self.inventory.label)
+      self.dbProperties(self.inventory.dbProperties)
+      from pylith.utils.NullComponent import NullComponent
+      if not isinstance(self.inventory.dbInitialState, NullComponent):
+        self.dbInitialState(self.inventory.dbInitialState)
 
-    self.perfLogger = self.inventory.perfLogger
+      self.perfLogger = self.inventory.perfLogger
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring friction model "
+                       "(%s):\n%s" % (aliases, err.message))
     return
 
   
