@@ -32,6 +32,16 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
+# Validator for label
+def validateLabel(value):
+  """
+  Validate descriptive label.
+  """
+  if 0 == len(value):
+    raise ValueError("Discriptive label for friction model not specified.")
+  return value
+
+
 # FrictionModel class
 class FrictionModel(PetscComponent):
   """

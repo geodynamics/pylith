@@ -188,7 +188,6 @@ class TestNeumann(unittest.TestCase):
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
-    db._configure()
     db.inventory.label = "TestNeumann tri3"
     db.inventory.iohandler.inventory.filename = "data/tri3_tractions.spatialdb"
     db.inventory.iohandler._configure()
