@@ -347,14 +347,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	const int numTimeSteps
 	  = DataWriter<mesh_type, field_type>::_numTimeSteps;
 	const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-	hsize_t dims[3];
+	hsize_t maxDims[3];
 	if (3 == ndims) {
-	  dims[0] = 1; // external file only constains 1 time step so far.
-	  dims[1] = vNumbering->getGlobalSize();
-	  dims[2] = fiberDim;
+	  maxDims[0] = H5S_UNLIMITED;
+	  maxDims[1] = vNumbering->getGlobalSize();
+	  maxDims[2] = fiberDim;
 	} else {
-	  dims[0] = vNumbering->getGlobalSize();
-	  dims[1] = fiberDim;
+	  maxDims[0] = vNumbering->getGlobalSize();
+	  maxDims[1] = fiberDim;
 	} // else
 	// Create 'vertex_fields' group if necessary.
 	if (!_h5->hasGroup("/vertex_fields"))
@@ -362,7 +362,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	
 	_h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
-				      dims, ndims, H5T_IEEE_F64BE);
+				      maxDims, ndims, H5T_IEEE_F64BE);
 	std::string fullName = std::string("/vertex_fields/") + field.label();
 	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
 			    topology::FieldBase::vectorFieldString(field.vectorFieldType()));
@@ -484,14 +484,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	const int numTimeSteps =
 	  DataWriter<mesh_type, field_type>::_numTimeSteps;
 	const hsize_t ndims = (numTimeSteps > 0) ? 3 : 2;
-	hsize_t dims[3];
+	hsize_t maxDims[3];
 	if (3 == ndims) {
-	  dims[0] = 1; // external file only constains 1 time step so far.
-	  dims[1] = numbering->getGlobalSize();
-	  dims[2] = fiberDim;
+	  maxDims[0] = H5S_UNLIMITED;
+	  maxDims[1] = numbering->getGlobalSize();
+	  maxDims[2] = fiberDim;
 	} else {
-	  dims[0] = numbering->getGlobalSize();
-	  dims[1] = fiberDim;
+	  maxDims[0] = numbering->getGlobalSize();
+	  maxDims[1] = fiberDim;
 	} // else
 	// Create 'cell_fields' group if necessary.
 	if (!_h5->hasGroup("/cell_fields"))
@@ -499,7 +499,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	
 	_h5->createDatasetRawExternal("/cell_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
-				      dims, ndims, H5T_IEEE_F64BE);
+				      maxDims, ndims, H5T_IEEE_F64BE);
 	std::string fullName = std::string("/cell_fields/") + field.label();
 	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
 			    topology::FieldBase::vectorFieldString(field.vectorFieldType()));
