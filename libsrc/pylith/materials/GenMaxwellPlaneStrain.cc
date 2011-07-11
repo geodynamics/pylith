@@ -586,8 +586,7 @@ pylith::materials::GenMaxwellPlaneStrain::_calcStressViscoelastic(
     } // for
 
     devStressTpdt = mu2 * devStressTpdt + devStressInitial[iComp];
-    stress[iComp] = diag[iComp] * (meanStressTpdt + meanStressInitial) +
-      devStressTpdt;
+    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
   PetscLogFlops((9 + 2 * numMaxwellModels) * tensorSize);
