@@ -325,8 +325,7 @@ class GenMaxwellPlaneStrainTimeDep(ElasticMaterialApp):
                                             dqV[model] * deltaStrain
           devStressTpdt += shearRatioV[model] * viscousStrainTpdt[model, iComp]
       devStressTpdt = elasFac * devStressTpdt + devStressInitial[iComp]
-      stressTpdt[iComp] = diag[iComp] * (meanStressTpdt + meanStressInitial) + \
-                          devStressTpdt
+      stressTpdt[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt
     
     stressTpdtV = numpy.array([stressTpdt[0], stressTpdt[1], stressTpdt[3]],
                               dtype=numpy.float64)

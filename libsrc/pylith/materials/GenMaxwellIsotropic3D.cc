@@ -571,8 +571,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
     } // for
 
     devStressTpdt = mu2 * devStressTpdt + devStressInitial[iComp];
-    stress[iComp] = diag[iComp] * (meanStressTpdt + meanStressInitial) +
-      devStressTpdt;
+    stress[iComp] = diag[iComp] * meanStressTpdt + devStressTpdt;
   } // for
 
   PetscLogFlops((9 + 3 * numMaxwellModels) * tensorSize);
