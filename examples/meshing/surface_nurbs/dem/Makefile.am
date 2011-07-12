@@ -25,7 +25,6 @@ dist_noinst_DATA = \
 	README \
 	dem2lines.cfg \
 	dem2lines.py \
-	dem_taper.py \
 	ruapehu-nzmg-1km.txt
 
 

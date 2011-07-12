@@ -32,6 +32,16 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
+# Validator for label
+def validateLabel(value):
+  """
+  Validate descriptive label.
+  """
+  if 0 == len(value):
+    raise ValueError("Descriptive label for material not specified.")
+  return value
+
+
 # Material class
 class Material(PetscComponent):
   """
@@ -56,7 +66,7 @@ class Material(PetscComponent):
     ##
     ## \b Properties
     ## @li \b id Material identifier (from mesh generator)
-    ## @li \b name Name of material
+    ## @li \b label Descriptive label for material.
     ##
     ## \b Facilities
     ## @li \b db_properties Database of material property parameters
@@ -68,8 +78,8 @@ class Material(PetscComponent):
     id = pyre.inventory.int("id", default=0)
     id.meta['tip'] = "Material identifier (from mesh generator)."
 
-    label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Name of material."
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
+    label.meta['tip'] = "Descriptive label for material."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     dbProperties = pyre.inventory.facility("db_properties",
@@ -169,16 +179,21 @@ class Material(PetscComponent):
     """
     Setup members using inventory.
     """
-    PetscComponent._configure(self)
-    self.id(self.inventory.id)
-    self.label(self.inventory.label)
-    self.dbProperties(self.inventory.dbProperties)
-    from pylith.utils.NullComponent import NullComponent
-    if not isinstance(self.inventory.dbInitialState, NullComponent):
-      self.dbInitialState(self.inventory.dbInitialState)
+    try:
+      PetscComponent._configure(self)
+      self.id(self.inventory.id)
+      self.label(self.inventory.label)
+      self.dbProperties(self.inventory.dbProperties)
+      from pylith.utils.NullComponent import NullComponent
+      if not isinstance(self.inventory.dbInitialState, NullComponent):
+        self.dbInitialState(self.inventory.dbInitialState)
 
-    self.quadrature = self.inventory.quadrature
-    self.perfLogger = self.inventory.perfLogger
+      self.quadrature = self.inventory.quadrature
+      self.perfLogger = self.inventory.perfLogger
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring material "
+                       "(%s):\n%s" % (aliases, err.message))
     return
 
   

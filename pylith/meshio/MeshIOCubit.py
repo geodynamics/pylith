@@ -26,6 +26,16 @@
 from MeshIOObj import MeshIOObj
 from meshio import MeshIOCubit as ModuleMeshIOCubit
 
+# Validator for filename
+def validateFilename(value):
+  """
+  Validate filename.
+  """
+  if 0 == len(value):
+    raise ValueError("Filename for CUBIT input mesh not specified.")
+  return value
+
+
 # MeshIOCubit class
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
   """
@@ -53,7 +63,8 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="mesh.exo")
+    filename = pyre.inventory.str("filename", default="mesh.exo",
+                                  validator=validateFilename)
     filename.meta['tip'] = "Name of Cubit Exodus file."
 
     useNames = pyre.inventory.bool("use_nodeset_names", default=True)

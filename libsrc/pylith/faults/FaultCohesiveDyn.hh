@@ -290,6 +290,9 @@ private :
 
   PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
 
+  /// Minimum resolvable slip rate accounting for roundoff errors
+  static const double _slipRateTolerance;
+
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

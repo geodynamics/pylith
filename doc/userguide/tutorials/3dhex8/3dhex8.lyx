@@ -189,6 +189,15 @@ Initial stresses
 Finite strain
 \end_layout
 
+\begin_layout Standard
+All of the files necessary to run the examples are contained in the directory
+ 
+\family typewriter
+examples/3d/hex8
+\family default
+.
+\end_layout
+
 \begin_layout Subsection
 Overview
 \end_layout
@@ -226,12 +235,7 @@ pylithapp.cfg
  set of PyLith features.
  We suggest users go through each of these sections in order as the complexity
  increases at each step.
- All of the files necessary to run the examples are contained in the directory
  
-\family typewriter
-examples/3d/hex8
-\family default
-.
 \end_layout
 
 \begin_layout Subsection
@@ -606,6 +610,13 @@ filename "friction/friction.lyx"
 \begin_inset CommandInset include
 LatexCommand input
 filename "gravity/gravity.lyx"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand input
+filename "surfload/surfload.lyx"
 
 \end_inset
 
