@@ -67,6 +67,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     """
     output = OutputSolnSubset()
     output.inventory.writer._configure()
+    output.inventory.label = "nodeset"
     output._configure()
     return
 

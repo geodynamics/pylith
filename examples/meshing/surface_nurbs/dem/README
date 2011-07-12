@@ -37,10 +37,10 @@ VTK file to make sure it looks OK.
 
 4.  Once you have created the necessary journal files, you can create the
 surface yourself by running Cubit and playing back the 'ruapehu_topo.jou'
-file. This will create the NURBS surface (ruapehu_topo.sab).
+file. This will create the NURBS surface (ruapehu_topo.sat).
 
 5.  Once the surface has been created, you can import it in future
 Cubit sessions and use it just as you would any surface created within
 Cubit.  For example, to use this surface within Cubit, you would type:
 
-import acis 'ruapehu_topo.sab'
+import acis 'ruapehu_topo.sat'

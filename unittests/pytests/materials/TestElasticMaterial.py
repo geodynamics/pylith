@@ -49,6 +49,7 @@ class TestElasticMaterial(unittest.TestCase):
     db._configure()
 
     material = self.material
+    material.inventory.label = "Elastic material"
     material.inventory.dbInitialStress = db
     material.inventory.useInitialStress = True
     material._configure()
@@ -69,6 +70,7 @@ class TestElasticMaterial(unittest.TestCase):
     db._configure()
 
     material = self.material
+    material.inventory.label = "Elastic material"
     material.inventory.dbInitialStrain = db
     material.inventory.useInitialStrain = True
     material._configure()

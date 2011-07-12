@@ -1,4 +1,4 @@
-The examples in this directory form a step-by-step sequence of 17 problems,
+The examples in this directory form a step-by-step sequence of 19 problems,
 each building on the one before (for the most part). All of the examples
 use the same mesh, which was created by Cubit.  The mesh is 6 km x 6 km x 4
 km with linear hexahedral cells that have edges 1.0 km long.
@@ -66,6 +66,8 @@ step16: Gravitational body forces + initial stresses with generalized
         Maxwell rheology (quasi-static)
 step17: Gravitational body forces + finite strain with generalized Maxwell
         rheology (quasi-static)
+step18: Axial traction surface load on top surface (static)
+step19: Time dependent axial traction surface load on top surface (quasi-static)
 
 ----------------------------------------
 mesh directory
@@ -141,6 +143,14 @@ tractions_axial_shear.spatialdb
 
   Spatial database defining axial and shear tractions for example
   step02.
+
+tractions_axial_pressure.spatialdb
+
+  Spatial database defining axial tractions for examples step18 and step19.
+
+loadcycle.timedb
+
+  Temporal database defining time variation of traction load for step19.
 
 powerlaw directory
 

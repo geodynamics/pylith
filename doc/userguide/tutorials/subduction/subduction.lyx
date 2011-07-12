@@ -169,6 +169,13 @@ Spatially variable aseismic creep
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+All of the files necessary to run the examples are contained in the directory
+ 
+\family typewriter
+examples/2d/subduction.
+\end_layout
+
 \begin_layout Subsection
 Overview
 \end_layout
@@ -673,7 +680,7 @@ reference "fig:tutorial:subduction:step01"
 \end_layout
 
 \begin_layout LyX-Code
-displacement_x*iHat + displacement_y*jHat + kHat
+displacement_x*iHat + displacement_y*jHat + 0*kHat
 \end_layout
 
 \begin_layout Standard

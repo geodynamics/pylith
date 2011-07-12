@@ -26,6 +26,16 @@
 from MeshIOObj import MeshIOObj
 from meshio import MeshIOAscii as ModuleMeshIOAscii
 
+# Validator for filename
+def validateFilename(value):
+  """
+  Validate filename.
+  """
+  if 0 == len(value):
+    raise ValueError("Filename for ASCII input mesh not specified.")
+  return value
+
+
 # MeshIOAscii class
 class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
   """
@@ -53,7 +63,8 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="")
+    filename = pyre.inventory.str("filename", default="", 
+                                  validator=validateFilename)
     filename.meta['tip'] = "Name of mesh file"
 
     from spatialdata.geocoords.CSCart import CSCart
