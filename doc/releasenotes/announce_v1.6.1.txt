@@ -51,7 +51,7 @@ RELEASE NOTES
 * Bug fixes
 
   - Fixed bug in writing rupture information to VTK and HDF5 files
-    when using multiple eartquake sources. Field names did not include
+    when using multiple earthquake sources. Field names did not include
     name of rupture. This caused loss of information in VTK output and
     a corrupted Xdmf metadata file for HDF5 output.
 
