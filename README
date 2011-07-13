@@ -71,6 +71,16 @@ No changes in parameters are required.
 Version 1.6.1
 ----------------------------------------------------------------------
 
+* Validation of user input
+
+  Added stricter requirements for descriptive labels of various
+  objects, including spatial databases and friction models. The
+  default labels are empty strings which do not result in useful error
+  messages; the user is now required to specify a non-empty string for
+  the labels. This makes errors related to spatial databases are much
+  easier to diagnose.
+
+
 * Updates to manual
 
   - Updated description of cell_info_fields for Neumann boundary
@@ -78,7 +88,8 @@ Version 1.6.1
     time-dependence introduced in version 1.4.
 
   - Added steps 18 and 19 that discuss time-dependent Neumann boundary
-    conditions to the 3d/hex8 examples.
+    conditions to examples/3d/hex8.
+
 
 * Bug fixes
 
@@ -87,9 +98,21 @@ Version 1.6.1
     name of rupture. This caused loss of information in VTK output and
     a corrupted Xdmf metadata file for HDF5 output.
 
-  - ADD GREEN'S FUNCTION STUFF HERE
+  - Fixed error in use of initial stress tensor with generalized Maxwell
+    models. The initial stress tensor was added to the current stress
+    tensor twice.
 
-  - ADD MESHING STUFF HERE
+  - Cleaned up Green's function example (examples/greensfns/hex8) so
+    that it runs without errors. Eliminated extraneous processing.
+
+  - Cleaned up meshing examples (examples/meshing), including
+    elimination of superfluous pre-processing. 
+
+  - Adjusted absolute tolerances for PETSc solves in examples/3d/hex8
+    so that solver terminates with desired convergence criterion.
+
+  - Updated examples/2d/subduction/geometry.jou to use APREPRO
+    functions and variables to store id values.
 
 
 ----------------------------------------------------------------------
