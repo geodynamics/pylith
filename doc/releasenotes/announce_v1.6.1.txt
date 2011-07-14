@@ -59,6 +59,14 @@ RELEASE NOTES
     models. The initial stress tensor was added to the current stress
     tensor twice.
 
+  - Fixed two bugs in the fault friction implementation. One bug
+    pertained to accounting for roundoff errors and convergence
+    tolerances in computing the slip rate. Slip rates less than
+    1.0e-12 (nondimensionalized) are set to zero. The friction
+    implementation for quasi-static problems contained a bug that
+    resulted in slip extending over all of the fault rather than the
+    appropriate isolated patch.
+
   - Cleaned up Green's function example (examples/greensfns/hex8) so
     that it runs without errors. Eliminated extraneous processing.
 
