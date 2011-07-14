@@ -537,6 +537,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get change in Lagrange multiplier.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
+
+    // Only update slip if Lagrange multiplier is changing
+    double dLagrangeMag = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      dLagrangeMag += dLagrangeTpdtVertex[iDim]*dLagrangeTpdtVertex[iDim];
+    if (0.0 == dLagrangeMag)
+      continue; // No change, so continue
+
     // Compute change in slip.
     dSlipVertex = 0.0;
     for (int iDim = 0; iDim < spaceDim; ++iDim)
