@@ -34,7 +34,7 @@ RELEASE NOTES
   objects, including spatial databases and friction models. The
   default labels are empty strings which do not result in useful error
   messages; the user is now required to specify a non-empty string for
-  the labels. This makes errors related to spatial databases are much
+  the labels. This makes errors related to spatial databases much
   easier to diagnose.
 
 
