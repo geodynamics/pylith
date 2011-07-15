@@ -1,32 +1,3 @@
-BUGS
-
-  initial stresses and gravity (examples/3d/hex8/step16 and 17)
-
-  dynamic rupture?
-
-
-v1.6.1 changes
-
-Examples
-  3d/hex8
-    step18 [DONE]
-    step19 [DONE]
-  2d/subduction
-    updated geometry.jou file to use Id() [DONE]
-  meshing/surf_nurbs
-    names of journal files
-    use of nonstandard shell utilities
-    sat versus sab ACIS files
-  greenfns
-    errors when trying to run
-
-Manual
-  tractions - cell_info_fields was out of date [not time dependent] [DONE]
-
-bugfixes
-  fault rupture info for multiple earthquake sources [DONE]
-
-
 ======================================================================
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================

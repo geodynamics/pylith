@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file greensfns/gfgen
+## @file examples/greensfns/hex8/gfgen.py
 
 ## @brief Python application to set up impulses for generating Green's functions
 ## using PyLith. This application creates the necessary spatialdb files, a
@@ -21,7 +21,6 @@ import math
 import numpy
 import os
 import re
-import glob
 from pyre.units.time import s
 from pyre.units.length import m
 
@@ -54,9 +53,6 @@ class GfGen(Application):
     ## @li \b impulse_type Type of impulse to be applied.
     ## @li \b impulse_value Amount of impulse to apply.
     ## @li \b impulse_number_width Width of impulse number field.
-    ## @li \b start_impulse_num Number assigned to first impulse.
-    ## @li \b exclude_file File containing vertex coordinates to exclude.
-    ## @li \b distance_tol Distance tolerance to determine coincident vertices.
     ##
     ## \b Facilities
     ## @li \b geometry  Geometry for output database.
@@ -73,10 +69,10 @@ class GfGen(Application):
 
     slipTimeSpatialdb = pyre.inventory.str("slip_time_spatialdb",
                                              default="sliptime.spatialdb")
-    slipTimeSpatialdb.meta['tip'] = "Name of spatialdb file containing slip times."
+    slipTimeSpatialdb.meta['tip'] = "Name of spatialdb file with slip times."
 
     metadataOutputFile = pyre.inventory.str("metadata_output_file",
-                                       default="impulse_description.txt")
+                                            default="impulse_metadata.txt")
     metadataOutputFile.meta['tip'] = "Name of output file containing metadata."
 
     configOutputFile = pyre.inventory.str("config_output_file",
@@ -95,15 +91,6 @@ class GfGen(Application):
     impulseNumberWidth = pyre.inventory.int("impulse_number_width", default=4)
     impulseNumberWidth.meta['tip'] = "Width of impulse number field."
 
-    startImpulseNum = pyre.inventory.int("start_impulse_num", default=0)
-    startImpulseNum.meta['tip'] = "Number assigned to first impulse."
-
-    excludeFile = pyre.inventory.str("exclude_file", default="")
-    excludeFile.meta['tip'] = "File containing vertex coordinates to exclude."
-
-    distanceTol = pyre.inventory.dimensional("distance_tol", default=0.1*m)
-    distanceTol.meta['tip'] = "Distance tolerance to determine coincident vertices."
-
     from spatialdata.spatialdb.generator.Geometry import Geometry
     geometry = pyre.inventory.facility("geometry", family="geometry",
                                        factory=Geometry)
@@ -116,14 +103,10 @@ class GfGen(Application):
     Application.__init__(self, name)
 
     self.numFaultVertices = 0
-    self.numExcludedVertices = 0
-    self.numIncludedVertices = 0
     self.numFaultCells = 0
     self.spaceDim = 0
     self.cellType = ""
 
-    self.excludeCoords = None
-    self.numExcludeCoords = 0
     self.faultVertices = None
     self.normalDir = None
     self.strikeDir = None
@@ -135,7 +118,6 @@ class GfGen(Application):
   def main(self):
     # import pdb
     # pdb.set_trace()
-    self._readExcludeInfo()
     self._readFaultInfo()
     self._makeSpatialdb()
     self._makeConfig()
@@ -164,11 +146,6 @@ class GfGen(Application):
     self.impulseType = self.inventory.impulseType
     self.impulseValue = self.inventory.impulseValue.value
     self.impulseNumberWidth = self.inventory.impulseNumberWidth
-    self.startImpulseNum = self.inventory.startImpulseNum
-
-    # Excluded vertex information
-    self.excludeFile = self.inventory.excludeFile
-    self.distanceTol = self.inventory.distanceTol.value
 
     # Spatialdb output facilities
     self.geometry = self.inventory.geometry
@@ -176,19 +153,6 @@ class GfGen(Application):
     return
       
 
-  def _readExcludeInfo(self):
-    """
-    Function to read coordinates of vertices to exclude from impulse list.
-    """
-    fileExists = os.path.isfile(self.excludeFile)
-    if fileExists:
-      self.excludeCoords = numpy.loadtxt(self.excludeFile, dtype=numpy.float64)
-      self.numExcludeCoords = self.excludeCoords.shape[0]
-    else:
-      print "No exclude file found!"
-
-    return
-      
   def _readFaultInfo(self):
     """
     Function to read fault information from VTK file.
@@ -204,9 +168,9 @@ class GfGen(Application):
     cellVtk = data.get_cells()
     self.numFaultCells = cellVtk.number_of_cells
     self.faultCellArray = cellVtk.to_array()
-    faultCoords = data._get_points().to_array()
+    self.faultVertices = data._get_points().to_array()
     self.cellType = data.get_cell_type(0)
-    (self.numFaultVertices, self.spaceDim) = faultCoords.shape
+    (self.numFaultVertices, self.spaceDim) = self.faultVertices.shape
 
     # Get vertex fields and extract normal vectors.
     vertData = data._get_point_data()
@@ -214,51 +178,11 @@ class GfGen(Application):
     for vertDataArray in range(numVertDataArrays):
       arrayName = vertData.get_array_name(vertDataArray)
       if (arrayName == "normal_dir"):
-        normalDir = vertData.get_array(vertDataArray).to_array()
+        self.normalDir = vertData.get_array(vertDataArray).to_array()
       elif (arrayName == "strike_dir"):
-        strikeDir = vertData.get_array(vertDataArray).to_array()
+        self.strikeDir = vertData.get_array(vertDataArray).to_array()
       elif (arrayName == "dip_dir"):
-        dipDir = vertData.get_array(vertDataArray).to_array()
-
-    # Determine which vertices to exclude, if any.
-    includedVertices = []
-    excludedVertices = []
-    if self.numExcludeCoords == 0:
-      self.numIncludedVertices = self.numFaultVertices
-    else:
-      for vertex in range(self.numFaultVertices):
-        vertexCoords = faultCoords[vertex,:]
-        vertexMatch = False
-        for excludeVertex in range(self.numExcludeCoords):
-          excludeCoords = self.excludeCoords[excludeVertex,:]
-          diff = vertexCoords - excludeCoords
-          dist =numpy.linalg.norm(diff)
-          if (dist <= self.distanceTol):
-            vertexMatch = True
-            excludedVertices.append(vertex)
-            break
-
-        if not vertexMatch:
-          includedVertices.append(vertex)
-          
-      self.numIncludedVertices = len(includedVertices)
-      self.numExcludedVertices = len(excludedVertices)
-      # Reorder arrays so excluded vertices are at the end.
-      includedCoords = faultCoords[includedVertices,:]
-      excludedCoords = faultCoords[excludedVertices,:]
-      self.faultVertices = numpy.vstack((includedCoords, excludedCoords))
-      includedNormal = normalDir[includedVertices,:]
-      excludedNormal = normalDir[excludedVertices,:]
-      self.normalDir = numpy.vstack((includedNormal, excludedNormal))
-      includedStrike = strikeDir[includedVertices,:]
-      excludedStrike = strikeDir[excludedVertices,:]
-      self.strikeDir = numpy.vstack((includedStrike, excludedStrike))
-      includedDip = dipDir[includedVertices,:]
-      excludedDip = dipDir[excludedVertices,:]
-      self.dipDir = numpy.vstack((includedDip, excludedDip))
-    
-    print "Number of excluded vertices:  %i" % self.numExcludedVertices
-    print "Number of included vertices:  %i" % self.numIncludedVertices
+        self.dipDir = vertData.get_array(vertDataArray).to_array()
 
     return
 
@@ -304,14 +228,11 @@ class GfGen(Application):
     if (suffIndex != -1):
       outputRoot = self.spatialdbOutputRoot[:suffIndex - 1]
 
-    # Set up coordinate system.
-    # cs = self.geometry.coordsys()
-    # cs.initialize()
+    # Set data dimension.
     dataDim = self.spaceDim - 1
     
     # Loop over impulses to generate and modify the appropriate entries.
-    impulse = self.startImpulseNum
-    for vertex in range(self.numIncludedVertices):
+    for impulse in range(self.numFaultVertices):
 
       # Set filename
       impulseNum = int(impulse)
@@ -322,12 +243,12 @@ class GfGen(Application):
       writer._configure()
 
       # Modify database values.
-      array1[vertex] = self.impulseValue
-      if (vertex > 0):
-        array1[vertex - 1] = -self.impulseValue
+      array1[impulse] = self.impulseValue
+      if (impulse > 0):
+        array1[impulse - 1] = -self.impulseValue
       
-      if (vertex > 1):
-	array1[vertex - 2] = 0.0
+      if (impulse > 1):
+	array1[impulse - 2] = 0.0
       info1 = {'name': self.impulseType,
                'units': "m",
                'data': array1.flatten()}
@@ -345,7 +266,6 @@ class GfGen(Application):
                 'values': [info1, info2, info3]}
 
       writer.write(data)
-      impulse += 1
 
     return
 
@@ -362,8 +282,8 @@ class GfGen(Application):
     f.write(topHeader)
     
     # Write time step information
-    time = float(self.startImpulseNum) + float(self.numIncludedVertices) - 1.0
-    totalTime = "total_time = " + repr(time) + "*year" + newLine
+    totalTime = "total_time = " + repr(float(self.numFaultVertices - 1)) + \
+                "*year" + newLine
     dt  = "dt = 1.0*year" + newLine
     divider = "# ----------------------------------------------------------" + \
               newLine
@@ -380,13 +300,11 @@ class GfGen(Application):
     comma = ","
 
     # Write eq_srcs list.
-    impulse = self.startImpulseNum
-    for vertex in range(self.numIncludedVertices):
+    for impulse in range(self.numFaultVertices):
       srcName = repr(impulse).rjust(self.impulseNumberWidth, '0')
       f.write(srcName)
-      if (vertex != self.numIncludedVertices - 1):
+      if (impulse != self.numFaultVertices - 1):
         f.write(comma)
-      impulse += 1
 
     srcEnd = "]" + newLine
     f.write(srcEnd)
@@ -401,19 +319,21 @@ class GfGen(Application):
     baseSlip = "slip_function.slip.iohandler.filename = " + slipRoot + "_i"
     slipTime = "slip_function.slip_time.iohandler.filename = " + \
                self.slipTimeSpatialdb + newLine
+    slipLabelRoot = "slip_function.slip.label = Slip for impulse "
+    slipTimeLabelRoot = "slip_function.slip_time.label = Slip time for impulse "
 
     # Write info for each eq_src.
-    impulse = self.startImpulseNum
-    for vertex in range(self.numIncludedVertices):
+    for impulse in range(self.numFaultVertices):
       f.write(newLine)
       srcName = repr(impulse).rjust(self.impulseNumberWidth, '0')
       originTime = float(impulse)
       originString = str(originTime) + "*year\n"
       f.write(baseHeader + srcName + "]\n")
       f.write(baseOrigin + originString)
+      f.write(slipLabelRoot + srcName + newLine)
+      f.write(slipTimeLabelRoot + srcName + newLine)
       f.write(baseSlip + srcName + ".spatialdb\n")
       f.write(slipTime)
-      impulse += 1
 
     f.close()
     
@@ -434,24 +354,22 @@ class GfGen(Application):
              "Strike-Z" + tab + "Dip-X" + tab + "Dip-Y" + tab + "Dip-Z" \
              + newLine
     f.write(header)
-    impulse = self.startImpulseNum
-    for vertex in range(self.numIncludedVertices):
-      x = str(self.faultVertices[vertex, 0]) + tab
-      y = str(self.faultVertices[vertex, 1]) + tab
-      z = str(self.faultVertices[vertex, 2]) + tab
-      xNorm = str(self.normalDir[vertex, 0]) + tab
-      yNorm = str(self.normalDir[vertex, 1]) + tab
-      zNorm = str(self.normalDir[vertex, 2]) + tab
-      xStrike = str(self.strikeDir[vertex, 0]) + tab
-      yStrike = str(self.strikeDir[vertex, 1]) + tab
-      zStrike = str(self.strikeDir[vertex, 2]) + tab
-      xDip = str(self.dipDir[vertex, 0]) + tab
-      yDip = str(self.dipDir[vertex, 1]) + tab
-      zDip = str(self.dipDir[vertex, 2]) + newLine
+    for impulse in range(self.numFaultVertices):
+      x = str(self.faultVertices[impulse, 0]) + tab
+      y = str(self.faultVertices[impulse, 1]) + tab
+      z = str(self.faultVertices[impulse, 2]) + tab
+      xNorm = str(self.normalDir[impulse, 0]) + tab
+      yNorm = str(self.normalDir[impulse, 1]) + tab
+      zNorm = str(self.normalDir[impulse, 2]) + tab
+      xStrike = str(self.strikeDir[impulse, 0]) + tab
+      yStrike = str(self.strikeDir[impulse, 1]) + tab
+      zStrike = str(self.strikeDir[impulse, 2]) + tab
+      xDip = str(self.dipDir[impulse, 0]) + tab
+      yDip = str(self.dipDir[impulse, 1]) + tab
+      zDip = str(self.dipDir[impulse, 2]) + newLine
       outLine = str(impulse) + tab + x + y + z + xNorm + yNorm + zNorm + \
                 xStrike + yStrike + zStrike + xDip + yDip + zDip
       f.write(outLine)
-      impulse += 1
 
     f.close()
 
