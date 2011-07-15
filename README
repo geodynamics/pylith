@@ -1,10 +1,9 @@
-<<<<<<< .working
 NOTE: This is a special branch of PyLith for use in running SCEC
 dynamic spontaneous rupture benchmarks in which fault opening is
 not permitted.
 
 
-We are pleased to announce release of PyLith version 1.6.1
+We are pleased to announce release of PyLith version 1.6.2
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -74,6 +73,16 @@ MIGRATING FROM VERSION 1.5 TO 1.6
 No changes in parameters are required. Version 1.6.1 does require
 users to specify descriptive labels for spatial databases and friction
 models.
+
+----------------------------------------------------------------------
+Version 1.6.2
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed bug in writing tensor data for Xdmf files. Switched Tensor
+    to Tensor6 to account for symmetry.
+
 
 ----------------------------------------------------------------------
 Version 1.6.1

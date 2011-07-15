@@ -33,7 +33,7 @@
 	</Geometry>
 	<Attribute
 	   Name="other"
-	   Type="Tensor"
+	   Type="Tensor6"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
 		    Dimensions="1 2 6"
