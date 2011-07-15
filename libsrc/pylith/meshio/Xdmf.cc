@@ -159,7 +159,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
       for (int iField=0; iField < numFields; ++iField) {
 	if (2 == spaceDim && 
 	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
-	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType) ) {
 	  const int fiberDim = fieldsMetadata[iField].fiberDim;
 	  for (int component=0; component < fiberDim; ++component)
 	    _writeGridAttributeComponent(fieldsMetadata[iField],
@@ -181,7 +181,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
 	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
-	     std::string("Tensor") == fieldsMetadata[iField].vectorFieldType) ) {
+	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType) ) {
 	const int fiberDim = fieldsMetadata[iField].fiberDim;
 	for (int component=0; component < fiberDim; ++component)
 	  _writeGridAttributeComponent(fieldsMetadata[iField],
@@ -269,7 +269,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 	(*metadata)[iOffset+i].vectorFieldType = "Vector";
 	break;
       case topology::FieldBase::TENSOR :
-	(*metadata)[iOffset+i].vectorFieldType = "Tensor";
+	(*metadata)[iOffset+i].vectorFieldType = "Tensor6";
 	break;
       default :
 	(*metadata)[iOffset+i].vectorFieldType = "Matrix";
@@ -312,7 +312,7 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 	(*metadata)[iOffset+i].vectorFieldType = "Vector";
 	break;
       case topology::FieldBase::TENSOR :
-	(*metadata)[iOffset+i].vectorFieldType = "Tensor";
+	(*metadata)[iOffset+i].vectorFieldType = "Tensor6";
 	break;
       default :
 	(*metadata)[iOffset+i].vectorFieldType = "Matrix";
@@ -532,7 +532,7 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
 	throw std::logic_error(msg.str());
       } // default
     } // switch
-  } else if (std::string("Tensor") == metadata.vectorFieldType) {
+  } else if (std::string("Tensor6") == metadata.vectorFieldType) {
     switch (component) {
     case 0:
       componentName = std::string(metadata.name) + std::string("_xx");
