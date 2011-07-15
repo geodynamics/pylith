@@ -1,9 +1,10 @@
+<<<<<<< .working
 NOTE: This is a special branch of PyLith for use in running SCEC
 dynamic spontaneous rupture benchmarks in which fault opening is
 not permitted.
 
 
-We are pleased to announce release of PyLith version 1.6.0
+We are pleased to announce release of PyLith version 1.6.1
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -70,7 +71,65 @@ TIPS
 MIGRATING FROM VERSION 1.5 TO 1.6
 ======================================================================
 
-No changes in parameters are required.
+No changes in parameters are required. Version 1.6.1 does require
+users to specify descriptive labels for spatial databases and friction
+models.
+
+----------------------------------------------------------------------
+Version 1.6.1
+----------------------------------------------------------------------
+
+* Validation of user input
+
+  Added stricter requirements for descriptive labels of various
+  objects, including spatial databases and friction models. The
+  default labels are empty strings which do not result in useful error
+  messages; the user is now required to specify a non-empty string for
+  the labels. This makes errors related to spatial databases much
+  easier to diagnose.
+
+
+* Updates to manual
+
+  - Updated description of cell_info_fields for Neumann boundary
+    condition. The description had not been updated to reflect the
+    time-dependence introduced in version 1.4.
+
+  - Added steps 18 and 19 that discuss time-dependent Neumann boundary
+    conditions to examples/3d/hex8.
+
+
+* Bug fixes
+
+  - Fixed bug in writing rupture information to VTK and HDF5 files
+    when using multiple earthquake sources. Field names did not include
+    name of rupture. This caused loss of information in VTK output and
+    a corrupted Xdmf metadata file for HDF5 output.
+
+  - Fixed error in use of initial stress tensor with generalized Maxwell
+    models. The initial stress tensor was added to the current stress
+    tensor twice.
+
+  - Fixed two bugs in the fault friction implementation. One bug
+    pertained to accounting for roundoff errors and convergence
+    tolerances in computing the slip rate. Slip rates less than
+    1.0e-12 (nondimensionalized) are set to zero. The friction
+    implementation for quasi-static problems contained a bug that
+    resulted in slip extending over all of the fault rather than the
+    appropriate isolated patch.
+
+  - Cleaned up Green's function example (examples/greensfns/hex8) so
+    that it runs without errors. Eliminated extraneous processing.
+
+  - Cleaned up meshing examples (examples/meshing), including
+    elimination of superfluous pre-processing. 
+
+  - Adjusted absolute tolerances for PETSc solves in examples/3d/hex8
+    so that solver terminates with desired convergence criterion.
+
+  - Updated examples/2d/subduction/geometry.jou to use APREPRO
+    functions and variables to store id values.
+
 
 ----------------------------------------------------------------------
 Version 1.6.0

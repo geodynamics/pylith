@@ -56,6 +56,8 @@ class ZeroDispDB(UniformDB):
     values = ["displacement-x", "displacement-y", "displacement-z"]
     data = [0.0*m, 0.0*m, 0.0*m]
 
+    label = pyre.inventory.str("label", default="Zero displacement BC.")
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 

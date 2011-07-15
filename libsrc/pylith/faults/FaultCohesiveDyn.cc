@@ -60,6 +60,9 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor Upd
 typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
+const double pylith::faults::FaultCohesiveDyn::_slipRateTolerance = 1.0e-12;
+
+// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _dbInitialTract(0),
@@ -534,6 +537,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get change in Lagrange multiplier.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
+
+    // Only update slip if Lagrange multiplier is changing
+    double dLagrangeMag = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      dLagrangeMag += dLagrangeTpdtVertex[iDim]*dLagrangeTpdtVertex[iDim];
+    if (0.0 == dLagrangeMag)
+      continue; // No change, so continue
+
     // Compute change in slip.
     dSlipVertex = 0.0;
     for (int iDim = 0; iDim < spaceDim; ++iDim)
@@ -1484,6 +1495,11 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
       for (int kDim = 0; kDim < spaceDim; ++kDim)
         slipRateVertex[iDim] +=
           velocityVertexP[kDim] * +orientationVertex[iDim*spaceDim+kDim];
+
+    // Limit velocity to resolvable range
+    for (int iDim = 0; iDim < spaceDim; ++iDim)
+      if (fabs(slipRateVertex[iDim]) < _slipRateTolerance)
+	slipRateVertex[iDim] = 0.0;
 
     // Update slip rate field.
     assert(slipRateVertex.size() == 

@@ -45,6 +45,7 @@ class TestDirichletBC(unittest.TestCase):
     """
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = SimpleDB()
+    db.inventory.label = "simple database"
     db._configure()
 
     from spatialdata.spatialdb.TimeHistory import TimeHistory
@@ -53,6 +54,7 @@ class TestDirichletBC(unittest.TestCase):
 
     from pylith.bc.DirichletBC import DirichletBC
     bc = DirichletBC()
+    bc.inventory.label = "abc"
     bc.inventory.dbInitial = db
     bc.inventory.dbRate = db
     bc.inventory.dbChange = db

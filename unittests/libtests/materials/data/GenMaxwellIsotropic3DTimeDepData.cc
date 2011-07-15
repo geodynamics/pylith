@@ -342,15 +342,15 @@ const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_strain[] = {
 };
 
 const double pylith::materials::GenMaxwellIsotropic3DTimeDepData::_stress[] = {
-  1.73848741e+07,
-  2.23190000e+07,
-  2.72531259e+07,
+  1.73628741e+07,
+  2.22970000e+07,
+  2.72311259e+07,
   1.99361456e+07,
   2.48702715e+07,
   2.98043974e+07,
-  2.03492020e+06,
-  2.66720000e+06,
-  3.29947980e+06,
+  1.98292020e+06,
+  2.61520000e+06,
+  3.24747980e+06,
   2.55607698e+06,
   3.18835678e+06,
   3.82063657e+06,

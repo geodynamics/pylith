@@ -219,13 +219,35 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
 
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    return s_iter->second->finalSlip();
+
+    // Need to append name of rupture to final slip label. Because
+    // Field is const, we use a buffer.
+    _allocateBufferVectorField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    buffer.copy(s_iter->second->finalSlip());
+    assert(value.length() > 0);
+    const std::string& label = std::string("final_slip_") + std::string(value);
+    buffer.label(label.c_str());
+
+    return buffer;
 
   } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
     const std::string value = std::string(name).substr(timeStrLen + 1);
     const srcs_type::const_iterator s_iter = _eqSrcs.find(value);
     assert(s_iter != _eqSrcs.end());
-    return s_iter->second->slipTime();
+
+    // Need to append name of rupture to final slip label. Because
+    // Field is const, we use a buffer.
+    _allocateBufferScalarField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (scalar)");
+    buffer.copy(s_iter->second->slipTime());
+    assert(value.length() > 0);
+    const std::string& label = std::string("slip_time_") + std::string(value);
+    buffer.label(label.c_str());
+
+    return buffer;
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(0 != fields);

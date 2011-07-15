@@ -26,6 +26,26 @@
 from MeshIOObj import MeshIOObj
 from meshio import MeshIOLagrit as ModuleMeshIOLagrit
 
+# Validator for filename
+def validateFilenameGmv(value):
+  """
+  Validate filename.
+  """
+  if 0 == len(value):
+    raise ValueError("Filename for LaGriT input mesh not specified.")
+  return value
+
+
+# Validator for filename
+def validateFilenamePset(value):
+  """
+  Validate filename.
+  """
+  if 0 == len(value):
+    raise ValueError("Filename for LaGriT pset file not specified.")
+  return value
+
+
 # MeshIOLagrit class
 class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
   """
@@ -56,10 +76,12 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
 
     import pyre.inventory
 
-    filenameGmv = pyre.inventory.str("filename_gmv", default="mesh.gmv")
+    filenameGmv = pyre.inventory.str("filename_gmv", default="mesh.gmv",
+                                     validator=validateFilenameGmv)
     filenameGmv.meta['tip'] = "Name of mesh GMV file."
 
-    filenamePset = pyre.inventory.str("filename_pset", default="mesh.pset")
+    filenamePset = pyre.inventory.str("filename_pset", default="mesh.pset",
+                                      validator=validateFilenamePset)
     filenamePset.meta['tip'] = "Name of mesh PSET file."
 
     flipEndian = pyre.inventory.bool("flip_endian", default=False)
