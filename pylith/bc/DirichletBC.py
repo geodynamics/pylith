@@ -114,8 +114,13 @@ class DirichletBC(BoundaryCondition,
     """
     Setup members using inventory.
     """
-    BoundaryCondition._configure(self)
-    TimeDependentPoints._configure(self)
+    try:
+      BoundaryCondition._configure(self)
+      TimeDependentPoints._configure(self)
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring Dirichlet boundary condition "
+                       "(%s):\n%s" % (aliases, err.message))
     return
 
 

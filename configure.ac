@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [1.6.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [1.6.1], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -82,12 +82,14 @@ AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
         [enable output to HDF5 files via PETSc @<:@default=no@:>@])],
-	[if test "$enableval" = yes; then
-          enable_hdf5=yes
-	  CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
-	  PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+	[if test "$enableval" = yes; 
+	  then enable_hdf5=yes
           else enable_hdf5=no; fi],
 	[enable_hdf5=yes])
+if test "$enable_hdf5" = "yes"; then
+  CPPFLAGS="-DENABLE_HDF5 $CPPFLAGS"; export CPPFLAGS
+  PYLITH_SWIG_CPPFLAGS="-DENABLE_HDF5 $PYLITH_SWIG_CPPFLAGS"; export PYLITH_SWIG_CPPFLAGS
+fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 
 # CUDA

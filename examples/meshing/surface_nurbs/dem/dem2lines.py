@@ -333,8 +333,8 @@ class Dem2Lines(Application):
             comment + newLine + separator + \
             "# Create u-lines and v-lines, then create a net surface.\n" + \
             separator + \
-            "playback 'ulines.jou'\n" + \
-            "playback 'vlines.jou'\n"
+            "playback " + "'" + self.uLineJournal + "'" + "\n" + \
+            "playback " + "'" + self.vLineJournal + "'" + "\n"
     m = open(self.masterJournal, 'w')
     m.write(playCmd)
     c1 = 1

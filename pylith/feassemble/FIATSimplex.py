@@ -158,12 +158,17 @@ class FIATSimplex(ReferenceCell):
     """
     Set members based using inventory.
     """
-    ReferenceCell._configure(self)
-    self.shape = self.inventory.shape
-    self.degree = self.inventory.degree
-    self.order = self.inventory.order
-    if self.order == -1:
-      self.order = self.degree
+    try:
+      ReferenceCell._configure(self)
+      self.shape = self.inventory.shape
+      self.degree = self.inventory.degree
+      self.order = self.inventory.order
+      if self.order == -1:
+        self.order = self.degree
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring quadrature "
+                       "(%s):\n%s" % (aliases, err.message))
     return
 
   

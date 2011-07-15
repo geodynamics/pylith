@@ -25,10 +25,7 @@ dist_noinst_DATA = \
 	README \
 	dem2lines.cfg \
 	dem2lines.py \
-	mktopo.jou \
-	ruapehu-nzmg-1km.txt \
-	ulines.jou \
-	vlines.jou
+	ruapehu-nzmg-1km.txt
 
 
 # End of file 
