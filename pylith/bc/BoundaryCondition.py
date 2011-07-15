@@ -31,6 +31,16 @@
 from pylith.utils.PetscComponent import PetscComponent
 from bc import BoundaryCondition as ModuleBoundaryCondition
 
+# Validator for label
+def validateLabel(value):
+  """
+  Validate label for group/nodeset/pset.
+  """
+  if 0 == len(value):
+    raise ValueError("Label for group/nodeset/pset in mesh not specified.")
+  return value
+
+
 # Validator for direction
 def validateDir(value):
   """
@@ -76,7 +86,7 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
 
     import pyre.inventory
 
-    label = pyre.inventory.str("label", default="")
+    label = pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for boundary."
 
     upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
@@ -132,10 +142,16 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     """
     Setup members using inventory.
     """
-    PetscComponent._configure(self)
-    ModuleBoundaryCondition.label(self, self.inventory.label)
-    self.upDir = map(float, self.inventory.upDir)
-    self.perfLogger = self.inventory.perfLogger
+    try:
+      PetscComponent._configure(self)
+      ModuleBoundaryCondition.label(self, self.inventory.label)
+      self.upDir = map(float, self.inventory.upDir)
+      self.perfLogger = self.inventory.perfLogger
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring boundary condition "
+                       "(%s):\n%s" % (aliases, err.message))
+                         
     return
 
 

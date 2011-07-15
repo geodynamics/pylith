@@ -46,6 +46,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     Test _configure().
     """
     fault = FaultCohesiveDyn()
+    fault.inventory.faultLabel = "fault group"
     fault._configure()
     return
 
@@ -299,6 +300,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     
     from pylith.friction.StaticFriction import StaticFriction
     friction = StaticFriction()
+    friction.inventory.label = "Static friction"
     friction.inventory.dbProperties = dbFriction
     friction._configure()
 

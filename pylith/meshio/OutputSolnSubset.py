@@ -26,6 +26,16 @@
 from OutputManager import OutputManager
 from meshio import OutputSolnSubset as ModuleOutputSolnSubset
 
+# Validator for label
+def validateLabel(value):
+  """
+  Validate label for group/nodeset/pset.
+  """
+  if 0 == len(value):
+    raise ValueError("Label for group/nodeset/pset in mesh not specified.")
+  return value
+
+
 # OutputSolnSubset class
 class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
   """
@@ -53,7 +63,7 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
                                          default=["displacement"])
   vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
   
-  label = pyre.inventory.str("label", default="")
+  label = pyre.inventory.str("label", default="", validator=validateLabel)
   label.meta['tip'] = "Label identifier for subdomain."
 
   from DataWriterVTKSubMesh import DataWriterVTKSubMesh
@@ -138,15 +148,21 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
     """
     Set members based using inventory.
     """
-    OutputManager._configure(self)
-    ModuleOutputSolnSubset.label(self, self.label)
-    ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
-    ModuleOutputSolnSubset.writer(self, self.inventory.writer)
-    from pylith.utils.NullComponent import NullComponent
-    if not isinstance(self.inventory.vertexFilter, NullComponent):
-      ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
-    if not isinstance(self.inventory.cellFilter, NullComponent):
-      ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
+    try:
+      OutputManager._configure(self)
+      ModuleOutputSolnSubset.label(self, self.label)
+      ModuleOutputSolnSubset.coordsys(self, self.inventory.coordsys)
+      ModuleOutputSolnSubset.writer(self, self.inventory.writer)
+      from pylith.utils.NullComponent import NullComponent
+      if not isinstance(self.inventory.vertexFilter, NullComponent):
+        ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
+      if not isinstance(self.inventory.cellFilter, NullComponent):
+        ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
+    except ValueError as err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring output over boundary "
+                       "(%s):\n%s" % (aliases, err.message))
+
     return
 
 

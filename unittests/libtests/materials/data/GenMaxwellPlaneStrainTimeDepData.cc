@@ -281,11 +281,11 @@ const double pylith::materials::GenMaxwellPlaneStrainTimeDepData::_strain[] = {
 };
 
 const double pylith::materials::GenMaxwellPlaneStrainTimeDepData::_stress[] = {
-  8.29099455e+06,
-  8.75027873e+06,
+  8.26999455e+06,
+  8.72927873e+06,
   6.46662036e+06,
-  4.33270011e+06,
-  4.38899464e+06,
+  4.28170011e+06,
+  4.33799464e+06,
   2.49387045e+06,
 };
 

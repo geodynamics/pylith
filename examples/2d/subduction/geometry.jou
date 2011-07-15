@@ -47,12 +47,22 @@
 # ----------------------------------------------------------------------
 reset
 
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
 # ----------------------------------------------------------------------
 # Create points and curves defining materials
 # ----------------------------------------------------------------------
 
 # Topography/bathymetry (points from Google Earth)
+#
+# Save ids of important points in APREPRO variables as they are created
+# for use in other commands. We save the entity id in a variable rather
+# than name the vertex because this allows us to still use "idA to idB"
+# to select multiple vertices.
+#
 create vertex x { -600.0*km} y {-2000.0*m}
+#{idPtTopoW=Id("vertex")}
 create vertex x { -439.1*km} y { -300.0*m}
 create vertex x { -351.2*km} y { -800.0*m}
 create vertex x { -263.4*km} y {    0.0*m}
@@ -61,18 +71,21 @@ create vertex x {  -87.7*km} y {    0.0*m}
 create vertex x {    0.0*km} y { -400.0*m}
 create vertex x {   87.7*km} y {-3000.0*m}
 create vertex x {  165.6*km} y {-6000.0*m}
+#{idPtTrench=Id("vertex")}
 create vertex x {  263.4*km} y {-5400.0*m}
 create vertex x {  351.2*km} y {-5400.0*m}
 create vertex x {  439.1*km} y {-5400.0*m}
 create vertex x {  600.0*km} y {-5700.0*m}
+#{idPtTopoE=Id("vertex")}
 
-create curve spline vertex 1 to 13
-curve 1 name "topobathy"
+create curve spline vertex {idPtTopoW} to {idPtTopoE}
+curve {Id("curve")} name "topobathy"
 
 # Top of slab
 # Hayes and Wald, 2009
 # http://earthquake.usgs.gov/research/data/slab
 create vertex x { -600.0*km} y {-340.00*km}
+#{idPtSlabBot=Id("vertex")}
 create vertex x { -422.4*km} y {-240.00*km}
 create vertex x { -331.0*km} y {-180.00*km}
 create vertex x { -261.6*km} y {-140.00*km}
@@ -80,41 +93,48 @@ create vertex x { -223.9*km} y {-120.00*km}
 create vertex x { -182.6*km} y {-100.00*km}
 create vertex x { -134.3*km} y {-80.00*km}
 create vertex x {  -74.6*km} y {-60.00*km}
+#{idPtSlabMoho=Id("vertex")}
 create vertex x {   -7.9*km} y {-40.00*km}
+#{idPtSlabTopMoho=Id("vertex")}
 create vertex x {   71.1*km} y {-20.00*km}
 create vertex x {  160.5*km} y {-7.50*km}
+#{idPtSlabTop=Id("vertex")}
 
-create curve spline vertex 14 to 24 9
-curve 2 name "slabtop"
+create curve spline vertex {idPtSlabBot} to {idPtSlabTop} {idPtTrench}
+curve {Id("curve")} name "slabtop"
 
 # Bottom of slab (translate top of slab to the east)
 #
 # Better approach would be to move points normal to slab to preserve
 # uniform thickness.
-vertex 14 to 21 copy move X {120.0*km}
+vertex {idPtSlabBot} to {idPtSlabMoho} copy move X {120.0*km}
+#{idPtSlabBotW=idPtSlabTop+1}
 create vertex x {  175.6*km} y {-40.0*km}
 create vertex x {  600.0*km} y {-40.0*km}
+#{idPtMohoE=Id("vertex")}
 
-create curve spline vertex 25 to 34
-curve 3 name "slabbot"
+create curve spline vertex {idPtSlabBotW} to {idPtMohoE}
+curve {Id("curve")} name "slabbot"
 
 # Top of mantle (uniform depth of 40 km)
 create vertex x { -600.0*km} y {-40.00*km}
+#{idPtMohoW=Id("vertex")}
 
-create curve spline vertex 35 22
-curve 4 name "conmoho"
+create curve spline vertex {idPtMohoW} {idPtSlabTopMoho}
+curve {Id("curve")} name "conmoho"
 
 # Lateral edges and bottom boundary
 create vertex x { 600.0*km} y {-340.00*km}
+#{idPtBotE=Id("vertex")}
 
-create curve spline vertex 1 35 14
-curve 5 name "edgewest"
+create curve spline vertex {idPtTopoW} {idPtMohoW} {idPtSlabBot}
+curve {Id("curve")} name "edgewest"
 
-create curve spline vertex 38 25 36
-curve 6 name "edgebot"
+create curve spline vertex {idPtSlabBot} {idPtSlabBotW} {idPtBotE}
+curve {Id("curve")} name "edgebot"
 
-create curve spline vertex 13 34 36
-curve 7 name "edgeeast"
+create curve spline vertex {idPtTopoE} {idPtMohoE} {idPtBotE}
+curve {Id("curve")} name "edgeeast"
 
 # ----------------------------------------------------------------------
 # Split curves to form bounding curves for each material
@@ -133,19 +153,19 @@ split curve edgeeast crossing curve slabbot
 # ----------------------------------------------------------------------
 # Continental crust
 create surface curve topobathy edgewest conmoho slabtop@A
-surface 1 name "concrust"
+surface {Id("surface")} name "concrust"
 
 # Continental mantle
 create surface curve conmoho edgewest@A slabtop
-surface 2 name "conmantle"
+surface {Id("surface")} name "conmantle"
 
 # Oceanic crust (slab)
 create surface curve topobathy@A slabtop@A slabtop edgebot slabbot edgeeast
-surface 3 name "oceancrust"
+surface {Id("surface")} name "oceancrust"
 
 # Oceanic mantle
 create surface curve slabbot edgebot@A edgeeast@A
-surface 4 name "oceanmantle"
+surface {Id("surface")} name "oceanmantle"
 
 # ----------------------------------------------------------------------
 # Imprint/merge
@@ -172,4 +192,3 @@ split curve slabbot distance {420.0*km} from end
 split curve slabbot distance {250.0*km} from end
 
 # End of file
-

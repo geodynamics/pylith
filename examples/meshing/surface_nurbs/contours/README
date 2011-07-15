@@ -31,9 +31,9 @@ playback all the journal files in the journal directory and then
 create a skin surface using Cubit (see Cubit documentation).
 
 3.  We then just run Cubit and playback the hikurangi_mksurf.jou file
-to create an ACIS NURBS surface (hikurangi_sub_geom.sab).
+to create an ACIS NURBS surface (hikurangi_sub_geom.sat).
 
 Once the NURBS surface has been created, it may be used in future
 Cubit sessions by importing it:
 
-import acis 'hikurangi_sub_geom.sab'
+import acis 'hikurangi_sub_geom.sat'

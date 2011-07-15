@@ -18,7 +18,7 @@
 
 dist_noinst_DATA = \
 	README \
-	mkfacets.sh \
+	mkfacets.py \
 	mksurface.jou
 
 

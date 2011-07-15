@@ -1,0 +1,37 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the distribution of the
+// tractions for Neumann boundary conditions associated
+// with a vertical surface load.
+//
+// The spatial distribution of the load is a value of 0.0 at the
+// corners of the domain and a negative vertical load of -10.0 MPa at
+// the center.
+//
+
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 4
+  value-names =  traction-shear-horiz traction-shear-vert traction-normal change-start-time
+  value-units =  MPa MPa MPa year
+  num-locs = 5
+  data-dim = 2 // locations on a surface
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // specify coordinates in km
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) T-shear-horiz (MPa)
+// (5) T-shear-vert (MPa)
+// (6) T-normal (MPa)
+// (7) Start time when used in time-dependent BC (year)
+-3.0  3.0  0.0    0.0  0.0    0.0  0.0
+ 3.0  3.0  0.0    0.0  0.0    0.0  0.0
+ 3.0 -3.0  0.0    0.0  0.0    0.0  0.0
+-3.0 -3.0  0.0    0.0  0.0    0.0  0.0
+ 0.0  0.0  0.0    0.0  0.0  -10.0  0.0
