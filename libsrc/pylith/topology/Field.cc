@@ -87,6 +87,7 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
       err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
     } // if
   } // for
+  _scatters.clear();
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -146,6 +147,9 @@ template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::newSection(void)
 { // newSection
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
 
@@ -167,8 +171,12 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
 
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
+
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
@@ -202,6 +210,9 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
 					       const int fiberDim)
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
+
+  // Clear memory
+  clear();
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -261,6 +272,9 @@ void
 pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 					       const int fiberDim)
 { // newSection
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
 
@@ -299,20 +313,21 @@ template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 { // cloneSection
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
-  deallocate();
   std::string origLabel = _metadata.label;
-  _metadata = src._metadata;
-  label(origLabel.c_str());
+
+  // Clear memory
+  clear();
 
   const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
-    logger.stagePop();
     newSection();
-    logger.stagePush("Field");
-  }
+  } // if
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
+
+  _metadata = src._metadata;
+  label(origLabel.c_str());
 
   if (!_section.isNull()) {
     if (!srcSection->sharedStorage()) {
@@ -1006,14 +1021,17 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
 
 #if 0
-  std::cout << "CONTEXT: " << context 
+  std::cout << "["<<sieveMesh->commRank()<<"] CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()
 	    << ", section size: " << _section->size()
 	    << ", section storage size: " << _section->getStorageSize()
 	    << ", global numbering size: " << numbering->getGlobalSize()
-	    << ", global size: " << order->getGlobalSize()
+	    << ", global order size: " << order->getGlobalSize()
+	    << ", local numbering size: " << numbering->getLocalSize()
+	    << ", local order size: " << order->getLocalSize()
 	    << ", scatter from size: " << sinfo.scatter->from_n
+	    << ", scatter: " << sinfo.scatter
 	    << std::endl;
 #endif
   
@@ -1139,7 +1157,32 @@ pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* contex
 { // _getScatter
   assert(context);
 
-  const bool isNewScatter = _scatters.find(context) == _scatters.end();
+  bool isNewScatter = _scatters.find(context) == _scatters.end();
+
+  // Synchronize creation of scatter (empty sections may have
+  // leftover, reusable scatters that need to be cleared out).
+  int numNewScatterLocal = (isNewScatter) ? 1 : 0;
+  int numNewScatter = 0;
+  MPI_Allreduce(&numNewScatterLocal, &numNewScatter, 1, MPI_INT, MPI_MAX,
+		_mesh.comm());
+  if (numNewScatter && !isNewScatter) {
+    // remove old scatter
+    ScatterInfo& sinfo = _scatters[context];
+    PetscErrorCode err = 0;
+    if (sinfo.vector) {
+      err = VecDestroy(&sinfo.vector);CHECK_PETSC_ERROR(err);
+    } // if
+    if (sinfo.scatter) {
+      err = VecScatterDestroy(&sinfo.scatter);CHECK_PETSC_ERROR(err);
+    } // if
+
+    if (sinfo.scatterVec) {
+      err = VecDestroy(&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
+    } // if
+
+    _scatters.erase(context);
+    isNewScatter = true;
+  } // if
 
   if (isNewScatter && !createOk) {
     std::ostringstream msg;

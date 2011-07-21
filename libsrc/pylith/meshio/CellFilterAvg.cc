@@ -128,11 +128,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } else if (_fieldAvg->sectionSize() != cells->size()*fiberDim) {
-#if 1 // :BUG: Avoid memory leak in section->clear()
-    _fieldAvg->clear();
-#else
-    delete _fieldAvg; _fieldAvg = new field_type(fieldIn.mesh());
-#endif
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } // else
