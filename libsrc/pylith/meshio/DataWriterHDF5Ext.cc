@@ -261,11 +261,15 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
   _tstampIndex = 0;
   deallocate();
 
-  Xdmf metafile;
-  const std::string& hdf5filename = _hdf5Filename();
-  const int indexExt = hdf5filename.find(".h5");
-  std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
-  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  int rank = 0;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+  if (!rank) {
+    Xdmf metafile;
+    const std::string& hdf5filename = _hdf5Filename();
+    const int indexExt = hdf5filename.find(".h5");
+    std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
+    metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  } // if
 } // close
 
 // ----------------------------------------------------------------------

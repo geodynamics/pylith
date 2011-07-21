@@ -1035,9 +1035,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("strike_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
@@ -1049,9 +1049,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("dip_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
@@ -1065,9 +1065,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("normal_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (0 == strcasecmp("initial_traction", name)) {
@@ -1097,11 +1097,12 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-
   // Satisfy return values
   assert(0 != _fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get(
     "buffer (vector)");
+  throw std::logic_error("Internal error.");
+
   return buffer;
 } // vertexField
 
