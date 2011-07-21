@@ -132,10 +132,10 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     self._info.log("Creating lumped Jacobian matrix.")
     from pylith.topology.topology import MeshField
     jacobian = MeshField(self.mesh)
-    jacobian.label("jacobian")
-    jacobian.vectorFieldType(jacobian.VECTOR)
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
     jacobian.allocate()
+    jacobian.label("jacobian")
+    jacobian.vectorFieldType(jacobian.VECTOR)
     self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 
