@@ -102,11 +102,11 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   // Setup and allocate field
   const int fiberDim = 1;
   topology::Field<topology::Mesh> partition(mesh);
+  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  partition.allocate();
   partition.scale(1.0);
   partition.label("partition");
   partition.vectorFieldType(topology::FieldBase::SCALAR);
-  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-  partition.allocate();
   const ALE::Obj<RealSection>& partitionSection = partition.section();
   assert(!partitionSection.isNull());
 

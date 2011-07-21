@@ -230,7 +230,7 @@ class Implicit(Formulation, ModuleImplicit):
     self._eventLogger.stagePush("Solve")
     #self.jacobian.view() # TEMPORARY
     self.solver.solve(dispIncr, self.jacobian, residual)
-    #dispIncr.view("DISP INCR") # TEMPORARY
+    dispIncr.view("DISP INCR") # TEMPORARY
 
     # DEBUGGING Verify solution makes residual 0
     #self._reformResidual(t+dt, dt)
