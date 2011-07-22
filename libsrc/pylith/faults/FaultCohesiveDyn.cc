@@ -493,8 +493,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertex[0]);
   } // for
 
-  dLagrangeTpdtSection->view("dLagrangeTpdt");
-
   // Solve sensitivity problem for negative side of the fault.
   bool negativeSide = true;
   _sensitivityUpdateJacobian(negativeSide, jacobian, *fields);
