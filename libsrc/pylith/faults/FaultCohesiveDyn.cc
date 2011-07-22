@@ -493,6 +493,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertex[0]);
   } // for
 
+  dLagrangeTpdtSection->view("dLagrangeTpdt");
+
   // Solve sensitivity problem for negative side of the fault.
   bool negativeSide = true;
   _sensitivityUpdateJacobian(negativeSide, jacobian, *fields);
@@ -1965,13 +1967,18 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
     if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
-      
-      // Update traction increment based on value required to stick
-      // versus friction
-      const double dlp = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      (*dLagrangeTpdt)[0] = dlp;
-      (*dLagrangeTpdt)[1] = 0.0;
+
+      if (tractionShearMag > 0.0) {
+	// Update traction increment based on value required to stick
+	// versus friction
+	const double dlp = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[0] / tractionShearMag;
+	(*dLagrangeTpdt)[0] = dlp;
+	(*dLagrangeTpdt)[1] = 0.0;
+      } else {
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[1] = 0.0;
+      } // if/else
     } else {
       // friction exceeds value necessary to stick
       // no changes to solution
@@ -2015,16 +2022,22 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
       
-      // Update traction increment based on value required to stick
-      // versus friction
-      const double dlp = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      const double dlq = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[1] / tractionShearMag;
-
-      (*dLagrangeTpdt)[0] = dlp;
-      (*dLagrangeTpdt)[1] = dlq;
-      (*dLagrangeTpdt)[2] = 0.0;
+      if (tractionShearMag > 0.0) {
+	// Update traction increment based on value required to stick
+	// versus friction
+	const double dlp = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[0] / tractionShearMag;
+	const double dlq = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[1] / tractionShearMag;
+	
+	(*dLagrangeTpdt)[0] = dlp;
+	(*dLagrangeTpdt)[1] = dlq;
+	(*dLagrangeTpdt)[2] = 0.0;
+      } else {
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[2] = 0.0;
+      } // if/else	
       
     } else {
       // else friction exceeds value necessary, so stick
