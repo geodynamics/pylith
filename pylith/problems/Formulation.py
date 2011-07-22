@@ -473,9 +473,9 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     lengthScale = normalizer.lengthScale()
     solution = self.fields.get("dispIncr(t->t+dt)")
+    solution.newSection(solution.VERTICES_FIELD, dimension)
     solution.vectorFieldType(solution.VECTOR)
     solution.scale(lengthScale.value)
-    solution.newSection(solution.VERTICES_FIELD, dimension)
     if self.splitFields:
       solution.splitDefault()
       for integrator in self.integratorsMesh + self.integratorsSubMesh:

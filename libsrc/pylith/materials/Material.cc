@@ -315,7 +315,8 @@ pylith::materials::Material::hasStateVar(const char* name)
 // ----------------------------------------------------------------------
 // Get physical property or state variable field.
 void
-pylith::materials::Material::getField(topology::Field<topology::Mesh> *field, const char* name) const
+pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
+				      const char* name) const
 { // getField
   // Logging of allocation is handled by getField() caller since it
   // manages the memory for the field argument.

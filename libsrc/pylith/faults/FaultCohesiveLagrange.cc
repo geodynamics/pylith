@@ -1826,8 +1826,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   topology::Field<topology::SubMesh>& area = _fields->get("area");
   const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   area.newSection(slip, 1);
-  area.vectorFieldType(topology::FieldBase::SCALAR);
   area.allocate();
+  area.vectorFieldType(topology::FieldBase::SCALAR);
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
@@ -1976,6 +1976,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   buffer.cloneSection(slip);
   buffer.zero();
+  assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
 
   logger.stagePop();
 } // _allocateBufferVectorField
@@ -1999,6 +2000,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   const topology::Field<topology::SubMesh>& area = _fields->get("area");
   buffer.cloneSection(area);
   buffer.zero();
+  assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
 
   logger.stagePop();
 } // _allocateBufferScalarField

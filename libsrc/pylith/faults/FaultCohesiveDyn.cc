@@ -1035,9 +1035,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("strike_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
@@ -1049,9 +1049,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("dip_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
@@ -1065,9 +1065,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
     buffer.label("normal_dir");
     buffer.scale(1.0);
+    buffer.copy(dirSection);
     return buffer;
 
   } else if (0 == strcasecmp("initial_traction", name)) {
@@ -1097,11 +1097,12 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-
   // Satisfy return values
   assert(0 != _fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get(
     "buffer (vector)");
+  throw std::logic_error("Internal error.");
+
   return buffer;
 } // vertexField
 
@@ -1964,13 +1965,18 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
     if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
-      
-      // Update traction increment based on value required to stick
-      // versus friction
-      const double dlp = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      (*dLagrangeTpdt)[0] = dlp;
-      (*dLagrangeTpdt)[1] = 0.0;
+
+      if (tractionShearMag > 0.0) {
+	// Update traction increment based on value required to stick
+	// versus friction
+	const double dlp = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[0] / tractionShearMag;
+	(*dLagrangeTpdt)[0] = dlp;
+	(*dLagrangeTpdt)[1] = 0.0;
+      } else {
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[1] = 0.0;
+      } // if/else
     } else {
       // friction exceeds value necessary to stick
       // no changes to solution
@@ -2014,16 +2020,22 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
       
-      // Update traction increment based on value required to stick
-      // versus friction
-      const double dlp = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[0] / tractionShearMag;
-      const double dlq = -(tractionShearMag - frictionStress) * area *
-	tractionTpdt[1] / tractionShearMag;
-
-      (*dLagrangeTpdt)[0] = dlp;
-      (*dLagrangeTpdt)[1] = dlq;
-      (*dLagrangeTpdt)[2] = 0.0;
+      if (tractionShearMag > 0.0) {
+	// Update traction increment based on value required to stick
+	// versus friction
+	const double dlp = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[0] / tractionShearMag;
+	const double dlq = -(tractionShearMag - frictionStress) * area *
+	  tractionTpdt[1] / tractionShearMag;
+	
+	(*dLagrangeTpdt)[0] = dlp;
+	(*dLagrangeTpdt)[1] = dlq;
+	(*dLagrangeTpdt)[2] = 0.0;
+      } else {
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[0] = -(*dLagrangeTpdt)[0];
+	(*dLagrangeTpdt)[2] = 0.0;
+      } // if/else	
       
     } else {
       // else friction exceeds value necessary, so stick

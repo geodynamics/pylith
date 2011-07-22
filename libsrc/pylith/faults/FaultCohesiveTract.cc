@@ -302,10 +302,10 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
     // Create section to hold initial tractions.
     _fields->add("initial traction", "initial_traction");
     topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
-    traction.scale(pressureScale);
-    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     traction.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim);
     traction.allocate();
+    traction.scale(pressureScale);
+    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
     const ALE::Obj<RealSection>& tractionSection = traction.section();
     assert(!tractionSection.isNull());
 

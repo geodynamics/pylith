@@ -56,8 +56,13 @@ pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
 
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  _context = std::string("output_") + sieveMesh->getName() + 
-    ((label) ? std::string("_") + std::string(label) : std::string(""));
+
+  ostringstream s;
+  s << "output_"
+    << sieveMesh->getName();
+  if (label)
+    s << "_" << label << labelId;
+  _context = s.str();
 } // open
 
 // ----------------------------------------------------------------------
