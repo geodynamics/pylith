@@ -400,6 +400,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
+  throw std::logic_error("Internal error.");
   topology::Field<topology::Mesh>& buffer = 
     _outputFields->get("buffer (tensor)");    
 

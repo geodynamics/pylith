@@ -201,14 +201,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
 
-    if (!rank) {
-      hid_t h5 = -1;
-      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
-      assert(h5 >= 0);
-      const int cellDim = mesh.dimension();
-      HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim,
-			   H5T_NATIVE_INT);
-    } // if
+    hid_t h5 = -1;
+    err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+    assert(h5 >= 0);
+    const int cellDim = mesh.dimension();
+    HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim,
+			 H5T_NATIVE_INT);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file "
@@ -235,12 +233,16 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   _timesteps.clear();
   _tstampIndex = 0;
 
-  Xdmf metafile;
-  const std::string& hdf5filename = _hdf5Filename();
-  const int indexExt = hdf5filename.find(".h5");
-  std::string xdmfFilename = 
-    std::string(hdf5filename, 0, indexExt) + ".xmf";
-  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  int rank = 0;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+  if (!rank) {
+    Xdmf metafile;
+    const std::string& hdf5filename = _hdf5Filename();
+    const int indexExt = hdf5filename.find(".h5");
+    std::string xdmfFilename = 
+      std::string(hdf5filename, 0, indexExt) + ".xmf";
+    metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  } // if
 } // close
 
 // ----------------------------------------------------------------------
@@ -312,7 +314,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
 
-    if (!rank && 0 == istep) {
+    if (0 == istep) {
       hid_t h5 = -1;
       err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
       assert(h5 >= 0);
@@ -366,7 +368,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
-
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());      
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
@@ -401,7 +402,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
 
-    if (!rank && 0 == istep) {
+    if (0 == istep) {
       hid_t h5 = -1;
       err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
       assert(h5 >= 0);
@@ -451,7 +452,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
 { // _writeTimeStamp
   PetscErrorCode err = 0;
 
-  if (!rank) {
+  if (0 == rank) {
     err = VecSetValue(_tstamp, 0, t, INSERT_VALUES); CHECK_PETSC_ERROR(err);
   } // if
   err = VecAssemblyBegin(_tstamp); CHECK_PETSC_ERROR(err);
