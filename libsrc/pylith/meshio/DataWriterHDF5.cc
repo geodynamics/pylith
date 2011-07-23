@@ -268,6 +268,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
       sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
     assert(!vNumbering.isNull());
+
+#if 0
+    std::cout << "WRITE VERTEX FIELD" << std::endl;
+    mesh.view("MESH");
+    field.view("FIELD");;
+    vNumbering->view("NUMBERING");
+    std::cout << std::endl;
+#endif
+
     field.createScatterWithBC(vNumbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
