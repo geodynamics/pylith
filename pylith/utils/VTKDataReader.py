@@ -25,13 +25,13 @@ import numpy
 def has_vtk():
   if not "flag" in dir(has_vtk):
     try:
-      from enthought.tvtk.api import tvtk
+      from tvtk.api import tvtk
       has_vtk.flag = True
     except ImportError:
       print "WARNING: Cannot find Mayavi VTK interface to check output."
       print "         Tests limited to running PyLith without errors."
       print "         Install MayaVi2 " \
-          "(https://svn.enthought.com/enthought/wiki/MayaVi)"
+          "(http://code.enthought.com/projects/mayavi/)"
       print "         in order to enable verification of output."
       has_vtk.flag = False
   return has_vtk.flag
@@ -43,7 +43,7 @@ class VTKDataReader(object):
   """
 
   def __init__(self):
-    from enthought.tvtk.api import tvtk
+    from tvtk.api import tvtk
     reader = tvtk.UnstructuredGridReader()
     reader.read_all_scalars = True
     reader.read_all_vectors = True
