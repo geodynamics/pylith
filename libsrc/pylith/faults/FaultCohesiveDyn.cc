@@ -1529,7 +1529,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     const topology::Field<topology::SubMesh>& slip =
         _fields->get("slip");
     solution.cloneSection(slip);
-    solution.createScatter();
+    solution.createScatter(solution.mesh());
   } // if
   const topology::Field<topology::SubMesh>& solution =
       _fields->get("sensitivity solution");
@@ -1539,7 +1539,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     topology::Field<topology::SubMesh>& residual =
         _fields->get("sensitivity residual");
     residual.cloneSection(solution);
-    residual.createScatter();
+    residual.createScatter(solution.mesh());
   } // if
 
   if (!_fields->hasField("sensitivity dispRel")) {

@@ -203,9 +203,12 @@ namespace pylith {
        * information from the "global" PETSc vector view to the "local"
        * Sieve section view.
        *
+       * @param mesh Mesh associated with scatter.
        * @param context Label for context associated with vector.
        */
-      void createScatter(const char* context ="");
+      template<typename scatter_mesh_type>
+      void createScatter(const scatter_mesh_type& mesh,
+			 const char* context ="");
 
       /** Get PETSc vector associated with field.
        *
