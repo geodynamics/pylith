@@ -745,12 +745,14 @@ pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 // information from the "global" PETSc vector view to the "local"
 // Sieve section view.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_mesh_type& mesh,
+								const char* context)
 { // createScatter
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
   const bool createScatterOk = true;
@@ -767,7 +769,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   // Get global order (create if necessary).
   const std::string& orderLabel = _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
@@ -775,7 +777,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, false, &sinfo.scatter);
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, false, 
+				  &sinfo.scatter);
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -809,14 +812,17 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-								const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatter(
+      const scatter_mesh_type& mesh,
+      const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+      const char* context)
 { // createScatter
   assert(!numbering.isNull());
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
   const bool createScatterOk = true;
@@ -838,7 +844,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
     _section->getName() + std::string("_") + std::string(context) :
     _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
@@ -848,7 +854,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, false, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, false, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -862,7 +869,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   } // if/else
 
   // Create vector
-  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());
@@ -892,12 +899,15 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
+        const scatter_mesh_type& mesh,
+	const char* context)
 { // createScatterWithBC
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
 
   PetscErrorCode err = 0;
@@ -915,7 +925,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   // Get global order (create if necessary).
   const std::string& orderLabel = _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
@@ -923,7 +933,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, true, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, true, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -937,7 +948,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   } // if/else
   
   // Create vector
-   err = VecCreate(_mesh.comm(), &sinfo.vector);
+   err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());
@@ -957,9 +968,12 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
 // createScatter() if constrained DOF should be omitted from the PETSc
 // vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-								const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
+       const scatter_mesh_type& mesh,
+       const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+       const char* context)
 { // createScatterWithBC
   assert(!numbering.isNull());
   assert(context);
@@ -985,7 +999,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
     _section->getName() + std::string("_") + std::string(context) :
     _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
@@ -996,7 +1010,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   //order->view("GLOBAL ORDER"); // DEBUG
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, true, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, true, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -1010,7 +1025,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   } // if/else
 
   // Create vector
-  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());

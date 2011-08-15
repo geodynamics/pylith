@@ -129,7 +129,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     assert(!vNumbering.isNull());
     //vNumbering->view("VERTEX NUMBERING");
 
-    coordinates.createScatterWithBC(vNumbering, context);
+    coordinates.createScatterWithBC(mesh, vNumbering, context);
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
@@ -277,7 +277,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     std::cout << std::endl;
 #endif
 
-    field.createScatterWithBC(vNumbering, context);
+    field.createScatterWithBC(mesh, vNumbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
@@ -373,7 +373,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     const ALE::Obj<typename mesh_type::SieveMesh::numbering_type>& numbering = 
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
-    field.createScatterWithBC(numbering, context);
+    field.createScatterWithBC(field.mesh(), numbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
