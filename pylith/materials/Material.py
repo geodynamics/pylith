@@ -150,8 +150,9 @@ class Material(PetscComponent):
               "    number of corners: %d" % \
               (self.label(),
                self.quadrature.cellDim(), self.quadrature.spaceDim(),
+               self.quadrature.cell.numCorners, 
                self.mesh.dimension(), self.mesh.coordsys().spaceDim(),
-               self.quadrature.cell.numCorners, self.mesh.coneSize())
+               self.mesh.coneSize())
     self._eventLogger.eventEnd(logEvent)
     return
   
