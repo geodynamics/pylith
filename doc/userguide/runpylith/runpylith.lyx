@@ -2647,7 +2647,7 @@ PETSc options used with split fields algebraic multigrid preconditioning
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
+<lyxtabular version="3" rows="5" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2in">
 <column alignment="center" valignment="middle" width="0.75in">
@@ -2814,40 +2814,6 @@ ml
 \begin_layout Plain Layout
 Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
  X=0,1,2, ..., N+1.
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\family typewriter
-fs_fieldsplit_X_ksp_type
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\shape italic
-jacobi
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Jacobi is sometimes the best option for fault preconditioning, however we
- often use ML, X=0,1,2,...,N+1
 \end_layout
 
 \end_inset
