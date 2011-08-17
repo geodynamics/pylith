@@ -88,21 +88,20 @@ SECONDARY PRIORITIES
 
 * Paper
 
+  General paper - focus on fault implementation
+  - BSSA, GGG
   
   geometry processing (adjusting topology)
   discretization (cohesive cells)
   model (Lagrange multipliers)
     Slip functions
     Fault constitutive models
-  solver
+  solver (saddle point)
+    custom preconditioner
   benchmarks
     Savage and Prescott
     Dynamic
   real problem  
-
-  General paper - focus on fault implementation
-
-  Custom preconditioner
 
 * Fault preconditioner [BRAD]
 
