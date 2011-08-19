@@ -521,6 +521,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
     orientationVertex.size());
 
+    // Get slip
+    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+
     // Get change in relative displacement.
     const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
     assert(0 != dispRelVertex);
@@ -555,12 +558,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
     const int indexN = spaceDim - 1;
-    if (dSlipVertex[indexN] < 0.0)
-      dSlipVertex[indexN] = 0.0;
+    if (slipVertex[indexN] + dSlipVertex[indexN] < 0.0)
+      dSlipVertex[indexN] = -dSlipVertex[indexN];
     const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
       lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
     if (lagrangeTpdtNormal < 0.0)
-      dSlipVertex[indexN] = 0.0;
+      dSlipVertex[indexN] = -slipVertex[indexN];
 
     // Set change in slip.
     assert(dSlipVertex.size() ==
@@ -1792,7 +1795,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterVectorToSection();
 
-  //solution.view("SENSITIVITY SOLUTION"); // DEBUGGING
+#if 0 // DEBUGGING
+  residual.view("SENSITIVITY RESIDUAL");
+  solution.view("SENSITIVITY SOLUTION");
+#endif
 } // _sensitivitySolve
 
 // ----------------------------------------------------------------------
