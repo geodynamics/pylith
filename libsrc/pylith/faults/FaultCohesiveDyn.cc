@@ -438,10 +438,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
-  slipRateSection->view("SLIP RATE");
-  areaSection->view("AREA");
-  dispTSection->view("DISP (t)");
-  dispTIncrSection->view("DISP INCR (t->t+dt)");
+  //slipRateSection->view("SLIP RATE");
+  //areaSection->view("AREA");
+  //dispTSection->view("DISP (t)");
+  //dispTIncrSection->view("DISP INCR (t->t+dt)");
 #endif
 
   const int numVertices = _cohesiveVertices.size();
@@ -596,9 +596,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
 #if 0 // DEBUGGING
   dLagrangeTpdtSection->view("AFTER dLagrange");
-  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
-  slipRateSection->view("AFTER SLIP RATE");
+  //slipRateSection->view("AFTER SLIP RATE");
 #endif
 } // constrainSolnSpace
 
@@ -1581,8 +1581,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     int maxIters = 0;
     err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters); 
     CHECK_PETSC_ERROR(err);
-    rtol = 1.0e-15;
-    atol = 1.0e-25;
+    rtol = 1.0e-12;
+    atol = 1.0e-15;
     err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);
     CHECK_PETSC_ERROR(err);
 
