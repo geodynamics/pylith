@@ -139,6 +139,14 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   // Set name
   std::string meshLabel = "subdomain_" + std::string(label);
   _mesh->setName(meshLabel);
+
+  if (sieve->getMaxConeSize() <= 0) {
+    std::ostringstream msg;
+    msg << "Error while creating submesh. Submesh '" 
+	<< label << "' does not contain any cells.\n"
+	<< "Submeshes must be one dimension lower than the domain mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
 } // createSubMesh
 
 // ----------------------------------------------------------------------
