@@ -34,13 +34,14 @@ def check_displacements(testcase, filename, mesh):
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
   # Check displacement solution
-  tolerance = 1.0e-6
+  toleranceMask = 1.0e-3
+  tolerance = 1.0e-5
 
   dispE = testcase.calcDisplacements(data['vertices'])
   disp = data['vertex_fields']['displacement']
 
   # Check x displacements
-  mask = numpy.abs(dispE[:,0]) > tolerance
+  mask = numpy.abs(dispE[:,0]) > toleranceMask
   diff = numpy.abs(disp[:,0] - dispE[:,0])
   diffR = numpy.abs(1.0 - disp[:,0] / dispE[:,0])  
   okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
@@ -48,10 +49,13 @@ def check_displacements(testcase, filename, mesh):
     print "Error in x-component of displacement field."
     print "Expected values: ",dispE
     print "Output values: ",disp
+    print dispE[~okay]
+    print disp[~okay]
+    print diffR[~okay]
   testcase.assertEqual(nvertices, numpy.sum(okay))    
     
   # Check y displacements
-  mask = numpy.abs(dispE[:,1]) > tolerance
+  mask = numpy.abs(dispE[:,1]) > toleranceMask
   diff = numpy.abs(disp[:,1] - dispE[:,1])
   diffR = numpy.abs(1.0 - disp[:,1] / dispE[:,1])  
   okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)
@@ -59,10 +63,13 @@ def check_displacements(testcase, filename, mesh):
     print "Error in y-component of displacement field."
     print "Expected values: ",dispE
     print "Output values: ",disp
+    print dispE[~okay]
+    print disp[~okay]
+    print diffR[~okay]
   testcase.assertEqual(nvertices, numpy.sum(okay))    
 
   # Check z displacements
-  mask = numpy.abs(dispE[:,2]) > tolerance
+  mask = numpy.abs(dispE[:,2]) > toleranceMask
   diff = numpy.abs(disp[:,2] - dispE[:,2])
   diffR = numpy.abs(1.0 - disp[:,2] / dispE[:,2])  
   okay = ~mask * (diff < tolerance) + mask * (diffR < tolerance)

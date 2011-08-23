@@ -388,6 +388,11 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePop();
   logger.stagePop(); // Mesh
   //logger.setDebug(0);
+
+#if 0 // DEBUGGING
+  sendParallelMeshOverlap->view("SEND OVERLAP");
+  recvParallelMeshOverlap->view("RECV OVERLAP");
+#endif
 } // distribute
 
 

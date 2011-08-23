@@ -119,7 +119,7 @@ class Explicit(Formulation, ModuleExplicit):
     dispT.zero()
     residual = self.fields.get("residual")
     residual.zero()
-    residual.createScatter()
+    residual.createScatterMesh(residual.mesh())
 
     lengthScale = normalizer.lengthScale()
     timeScale = normalizer.timeScale()
