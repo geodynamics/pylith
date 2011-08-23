@@ -60,7 +60,7 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor Upd
 typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
-const double pylith::faults::FaultCohesiveDyn::_slipRateTolerance = 1.0e-12;
+const double pylith::faults::FaultCohesiveDyn::_zeroTolerance = 1.0e-12;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -439,9 +439,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
   slipRateSection->view("SLIP RATE");
-  areaSection->view("AREA");
-  dispTSection->view("DISP (t)");
-  dispTIncrSection->view("DISP INCR (t->t+dt)");
+  //areaSection->view("AREA");
+  //dispTSection->view("DISP (t)");
+  //dispTIncrSection->view("DISP INCR (t->t+dt)");
 #endif
 
   const int numVertices = _cohesiveVertices.size();
@@ -521,6 +521,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
     orientationVertex.size());
 
+    // Get slip
+    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+
     // Get change in relative displacement.
     const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
     assert(0 != dispRelVertex);
@@ -555,12 +558,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
     const int indexN = spaceDim - 1;
-    if (dSlipVertex[indexN] < 0.0)
-      dSlipVertex[indexN] = 0.0;
     const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
       lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
-    if (lagrangeTpdtNormal < 0.0)
-      dSlipVertex[indexN] = 0.0;
+    if (lagrangeTpdtNormal < -_zeroTolerance || 
+	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
+      dSlipVertex[indexN] = -slipVertex[indexN];
+    } // if
 
     // Set change in slip.
     assert(dSlipVertex.size() ==
@@ -594,7 +597,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
 #if 0 // DEBUGGING
   dLagrangeTpdtSection->view("AFTER dLagrange");
-  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
   slipRateSection->view("AFTER SLIP RATE");
 #endif
@@ -1499,7 +1502,7 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
 
     // Limit velocity to resolvable range
     for (int iDim = 0; iDim < spaceDim; ++iDim)
-      if (fabs(slipRateVertex[iDim]) < _slipRateTolerance)
+      if (fabs(slipRateVertex[iDim]) < _zeroTolerance)
 	slipRateVertex[iDim] = 0.0;
 
     // Update slip rate field.
@@ -1529,7 +1532,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     const topology::Field<topology::SubMesh>& slip =
         _fields->get("slip");
     solution.cloneSection(slip);
-    solution.createScatter();
+    solution.createScatter(solution.mesh());
   } // if
   const topology::Field<topology::SubMesh>& solution =
       _fields->get("sensitivity solution");
@@ -1539,7 +1542,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     topology::Field<topology::SubMesh>& residual =
         _fields->get("sensitivity residual");
     residual.cloneSection(solution);
-    residual.createScatter();
+    residual.createScatter(solution.mesh());
   } // if
 
   if (!_fields->hasField("sensitivity dispRel")) {
@@ -1579,8 +1582,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     int maxIters = 0;
     err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters); 
     CHECK_PETSC_ERROR(err);
-    rtol = 1.0e-15;
-    atol = 1.0e-25;
+    rtol = _zeroTolerance;
+    atol = 0.001*_zeroTolerance;
     err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);
     CHECK_PETSC_ERROR(err);
 
@@ -1792,7 +1795,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterVectorToSection();
 
-  //solution.view("SENSITIVITY SOLUTION"); // DEBUGGING
+#if 0 // DEBUGGING
+  residual.view("SENSITIVITY RESIDUAL");
+  solution.view("SENSITIVITY SOLUTION");
+#endif
 } // _sensitivitySolve
 
 // ----------------------------------------------------------------------

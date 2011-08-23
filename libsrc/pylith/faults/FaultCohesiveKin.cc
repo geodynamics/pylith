@@ -227,7 +227,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
         _fields->get("buffer (vector)");
     buffer.copy(s_iter->second->finalSlip());
     assert(value.length() > 0);
-    const std::string& label = std::string("final_slip_") + std::string(value);
+    const std::string& label = (_eqSrcs.size() > 1) ? 
+      std::string("final_slip_") + std::string(value) : "final_slip";
     buffer.label(label.c_str());
 
     return buffer;
@@ -244,7 +245,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
         _fields->get("buffer (scalar)");
     buffer.copy(s_iter->second->slipTime());
     assert(value.length() > 0);
-    const std::string& label = std::string("slip_time_") + std::string(value);
+    const std::string& label = (_eqSrcs.size() > 1) ? 
+      std::string("slip_time_") + std::string(value) : "slip_time";
     buffer.label(label.c_str());
 
     return buffer;

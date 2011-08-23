@@ -7,12 +7,16 @@ examples_dir=`pwd`
 
 # Run specified list of examples (single .cfg file)
 run_examples() {
+  nprocs=1
+  if [ $# == 1 ]; then
+    nprocs=$1
+  fi
   cd ${examples_dir}/$dir
   rm *.vtk
   if [ -d output ]; then rm output/*.vtk; fi
   for example in $examples; do
     echo "RUNNING $dir/$example"
-    pylith $example
+    pylith --nodes=$nprocs $example
   done
 }
 
@@ -57,17 +61,27 @@ run_examples
 dir="3d/tet4"
 examples="step01.cfg step02.cfg step03.cfg step04.cfg"
 run_examples
+run_examples 2
+run_examples 3
+run_examples 4
+run_examples 5
 
 # 3d/hex8
 dir="3d/hex8"
-examples="step01.cfg step02.cfg step03.cfg step04.cfg step05.cfg step06.cfg step07.cfg step08.cfg step09.cfg step10.cfg step11.cfg step12.cfg step13.cfg step14.cfg step15.cfg step16.cfg step17.cfg"
+examples="step01.cfg step02.cfg step03.cfg step04.cfg step05.cfg step06.cfg step07.cfg step08.cfg step09.cfg step10.cfg step11.cfg step12.cfg step13.cfg step14.cfg step15.cfg step16.cfg step17.cfg step18.cfg step19.cfg"
 run_examples
+
+examples="step01.cfg step03.cfg step06.cfg step15.cfg step19.cfg"
+run_examples 2
 
 # ----------------------------------------------------------------------
 # subduction
 dir="2d/subduction"
 examples="step01.cfg step02.cfg step03.cfg"
 run_examples
+run_examples 2
+run_examples 4
+run_examples 5
 
 # ----------------------------------------------------------------------
 # bar_shearwave/tri3
@@ -93,7 +107,7 @@ examples="pylithapp.cfg"
 run_examples
 
 
-
+# ----------------------------------------------------------------------
 # Return to examples dir
 cd ${examples_dir}
   

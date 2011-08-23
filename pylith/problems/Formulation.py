@@ -491,7 +491,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     memoryLogger.stagePop()
 
     # This also creates a global order.
-    solution.createScatter()
+    solution.createScatterMesh(solution.mesh())
 
     memoryLogger.stagePush("Problem")
     dispT = self.fields.get("disp(t)")
