@@ -185,8 +185,17 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 	const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
 	  ncV.getOrientedPoints();
 	const int coneSize = ncV.getOrientedSize();
-          for (int c=0; c < coneSize; ++c)
-            tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
+	if (coneSize != numCorners) {
+	  std::ostringstream msg;
+	  msg << "Inconsistency in topology found for mesh '"
+	      << sieveMesh->getName() << "' during output.\n"
+	      << "Number of vertices (" << coneSize << ") in cell '"
+	      << *c_iter << "' does not expected number of vertices ("
+	      << numCorners << ").";
+	  throw std::runtime_error(msg.str());
+	} // if
+	for (int c=0; c < coneSize; ++c)
+	  tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
 
     PetscVec elemVec;
