@@ -60,7 +60,7 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor Upd
 typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
-const double pylith::faults::FaultCohesiveDyn::_slipRateTolerance = 1.0e-12;
+const double pylith::faults::FaultCohesiveDyn::_zeroTolerance = 1.0e-12;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -438,7 +438,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
-  //slipRateSection->view("SLIP RATE");
+  slipRateSection->view("SLIP RATE");
   //areaSection->view("AREA");
   //dispTSection->view("DISP (t)");
   //dispTIncrSection->view("DISP INCR (t->t+dt)");
@@ -560,9 +560,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const int indexN = spaceDim - 1;
     const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
       lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
-    if (lagrangeTpdtNormal < 0.0 || 
-	slipVertex[indexN] + dSlipVertex[indexN] < 0.0)
+    if (lagrangeTpdtNormal < -_zeroTolerance || 
+	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
       dSlipVertex[indexN] = -slipVertex[indexN];
+    } // if
 
     // Set change in slip.
     assert(dSlipVertex.size() ==
@@ -598,7 +599,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   dLagrangeTpdtSection->view("AFTER dLagrange");
   //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   slipSection->view("AFTER SLIP");
-  //slipRateSection->view("AFTER SLIP RATE");
+  slipRateSection->view("AFTER SLIP RATE");
 #endif
 } // constrainSolnSpace
 
@@ -1501,7 +1502,7 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
 
     // Limit velocity to resolvable range
     for (int iDim = 0; iDim < spaceDim; ++iDim)
-      if (fabs(slipRateVertex[iDim]) < _slipRateTolerance)
+      if (fabs(slipRateVertex[iDim]) < _zeroTolerance)
 	slipRateVertex[iDim] = 0.0;
 
     // Update slip rate field.
@@ -1581,8 +1582,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     int maxIters = 0;
     err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters); 
     CHECK_PETSC_ERROR(err);
-    rtol = 1.0e-12;
-    atol = 1.0e-15;
+    rtol = _zeroTolerance;
+    atol = 0.001*_zeroTolerance;
     err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);
     CHECK_PETSC_ERROR(err);
 
