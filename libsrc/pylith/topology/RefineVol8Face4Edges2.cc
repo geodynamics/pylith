@@ -323,10 +323,10 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     const point_type right = e_iter->first.second;
     
     if (oldSendOverlap->capContains(left) && oldSendOverlap->capContains(right)) {
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq  = oldSendOverlap->support(left);
+      const Obj<mesh_type::send_overlap_type::supportSequence>& leftRanksSeq  = oldSendOverlap->support(left);
       assert(!leftRanksSeq.isNull());
       std::set<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
+      const Obj<mesh_type::send_overlap_type::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
       assert(!rightRanksSeq.isNull());
       std::set<int> rightRanks(rightRanksSeq->begin(), rightRanksSeq->end());
       std::set<int> ranks;
@@ -386,7 +386,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const point_type first     = f_iter->first.points[0];
       point_type       minVertex = first;
 
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& firstRanksSeq  = oldSendOverlap->support(first);
+      const Obj<mesh_type::send_overlap_type::supportSequence>& firstRanksSeq  = oldSendOverlap->support(first);
       assert(!firstRanksSeq.isNull());
       std::set<int> firstRanks(firstRanksSeq->begin(), firstRanksSeq->end());
       std::set<int> ranks, curRanks;
@@ -395,7 +395,7 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       for(int i = 1; i < 4; ++i) {
         const point_type nextVertex = f_iter->first.points[i];
 
-        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& nextRanksSeq = oldSendOverlap->support(nextVertex);
+        const Obj<mesh_type::send_overlap_type::supportSequence>& nextRanksSeq = oldSendOverlap->support(nextVertex);
         assert(!nextRanksSeq.isNull());
         std::set<int> nextRanks(nextRanksSeq->begin(), nextRanksSeq->end());
 
@@ -482,8 +482,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const int  localOffsetL = orderOldMesh.verticesNormal().hasPoint(e_iter->first.first) ? localNormalOffset : localCensoredOffset;
 
       // Find the rank which owns the left edge point, and return the remotePoint in the new mesh
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffsetL);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
+      const Obj<mesh_type::send_overlap_type::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localOffsetL);
+      for(mesh_type::send_overlap_type::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
         if (rank == *lr_iter) {
           remoteLeft = lr_iter.color();
           break;
@@ -493,8 +493,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const int  localOffsetR = orderOldMesh.verticesNormal().hasPoint(e_iter->first.second) ? localNormalOffset : localCensoredOffset;
 
       // Find the rank which owns the right edge point, and return the remotePoint in the new mesh
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffsetR);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
+      const Obj<mesh_type::send_overlap_type::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localOffsetR);
+      for(mesh_type::send_overlap_type::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
         if (rank == *rr_iter) {
           remoteRight = rr_iter.color();
           break;
@@ -521,15 +521,15 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         for(int d = 0; d < remoteSize; ++d) {
           std::cout << "["<<oldMesh->commRank()<<"]     remote val " << remoteVals[d] << std::endl;
         }
-        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks2 = oldSendOverlap->support(e_iter->first.first);
-        for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks2->begin(); lr_iter != leftRanks2->end(); ++lr_iter) {
+        const Obj<mesh_type::send_overlap_type::supportSequence>& leftRanks2 = oldSendOverlap->support(e_iter->first.first);
+        for(mesh_type::send_overlap_type::supportSequence::iterator lr_iter = leftRanks2->begin(); lr_iter != leftRanks2->end(); ++lr_iter) {
           if (rank == *lr_iter) {
             std::cout << "["<<oldMesh->commRank()<<"]     left match:  old vertex " << lr_iter.color() << std::endl;
             break;
           }
         }
-        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks2 = oldSendOverlap->support(e_iter->first.second);
-        for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks2->begin(); rr_iter != rightRanks2->end(); ++rr_iter) {
+        const Obj<mesh_type::send_overlap_type::supportSequence>& rightRanks2 = oldSendOverlap->support(e_iter->first.second);
+        for(mesh_type::send_overlap_type::supportSequence::iterator rr_iter = rightRanks2->begin(); rr_iter != rightRanks2->end(); ++rr_iter) {
           if (rank == *rr_iter) {
             std::cout << "["<<oldMesh->commRank()<<"]     right match: old vertex " << rr_iter.color() << std::endl;
             break;
@@ -554,8 +554,8 @@ ALE::RefineVol8Face4Edges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 
       for(int i = 0; i < 4; ++i) {
         const int localOffset = orderOldMesh.verticesNormal().hasPoint(f_iter->first.points[i]) ? localNormalOffset : localCensoredOffset;
-        const Obj<mesh_type::send_overlap_type::traits::supportSequence>& faceRanks = newSendOverlap->support(f_iter->first.points[i]+localOffset);
-        for(mesh_type::send_overlap_type::traits::supportSequence::iterator fr_iter = faceRanks->begin(); fr_iter != faceRanks->end(); ++fr_iter) {
+        const Obj<mesh_type::send_overlap_type::supportSequence>& faceRanks = newSendOverlap->support(f_iter->first.points[i]+localOffset);
+        for(mesh_type::send_overlap_type::supportSequence::iterator fr_iter = faceRanks->begin(); fr_iter != faceRanks->end(); ++fr_iter) {
           if (rank == *fr_iter) {
             remoteVertices.points[i] = fr_iter.color();
             break;
