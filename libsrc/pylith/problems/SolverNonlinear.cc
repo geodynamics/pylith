@@ -390,7 +390,24 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     if (a == 0.0) {
       lambdatemp = -initslope/(2.0*b);
     } else {
+
+      // MATT: Check this
+      // 
+      // Temporary fix by Brad to keep lambda in proper
+      // range. Necessary due to underflow and overflow of a, b, c,
+      // and d.
+#if 0 
       lambdatemp = (-b + sqrt(d))/(3.0*a);
+#else
+      if ((-b + sqrt(d) > 0.0 && a > 0.0) ||
+	  (-b + sqrt(d) < 0.0 && a < 0.0)) {
+	lambdatemp = (-b + sqrt(d))/(3.0*a);
+      } else {
+	lambdatemp = 0.05*lambda;
+      } // else
+#endif   
+
+ 
     } // if/else
     lambdaprev = lambda;
     gnormprev  = *gnorm;
@@ -400,6 +417,9 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
       lambda = .1*lambda;
     else
       lambda = lambdatemp;
+
+
+
     ierr  = VecWAXPY(w,-lambda,y,x);CHKERRQ(ierr);
     if (snes->nfuncs >= snes->max_funcs) {
       ierr = PetscInfo1(snes,"Exceeded maximum function evaluations, "
