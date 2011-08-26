@@ -187,10 +187,10 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
     const point_type right = e_iter->first.second;
     
     if (oldSendOverlap->capContains(left) && oldSendOverlap->capContains(right)) {
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanksSeq = oldSendOverlap->support(left);
+      const Obj<mesh_type::send_overlap_type::supportSequence>& leftRanksSeq = oldSendOverlap->support(left);
       assert(!leftRanksSeq.isNull());
       std::set<int> leftRanks(leftRanksSeq->begin(), leftRanksSeq->end());
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
+      const Obj<mesh_type::send_overlap_type::supportSequence>& rightRanksSeq = oldSendOverlap->support(right);
       assert(!rightRanksSeq.isNull());
       std::set<int> rightRanks(rightRanksSeq->begin(), rightRanksSeq->end());
       std::set<int> ranks;
@@ -257,16 +257,16 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       const int  rank       = *r_iter;
       
       const int localFirstOffset = (orderOldMesh.verticesNormal().hasPoint(e_iter->first.first)) ? localNormalOffset : localCensoredOffset;
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localFirstOffset);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
+      const Obj<mesh_type::send_overlap_type::supportSequence>& leftRanks = newSendOverlap->support(e_iter->first.first+localFirstOffset);
+      for(mesh_type::send_overlap_type::supportSequence::iterator lr_iter = leftRanks->begin(); lr_iter != leftRanks->end(); ++lr_iter) {
         if (rank == *lr_iter) {
           remoteLeft = lr_iter.color();
           break;
         } // if
       } // for
       const int localSecondOffset = (orderOldMesh.verticesNormal().hasPoint(e_iter->first.second)) ? localNormalOffset : localCensoredOffset;
-      const Obj<mesh_type::send_overlap_type::traits::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localSecondOffset);
-      for(mesh_type::send_overlap_type::traits::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
+      const Obj<mesh_type::send_overlap_type::supportSequence>& rightRanks = newSendOverlap->support(e_iter->first.second+localSecondOffset);
+      for(mesh_type::send_overlap_type::supportSequence::iterator rr_iter = rightRanks->begin(); rr_iter != rightRanks->end(); ++rr_iter) {
         if (rank == *rr_iter) {
           remoteRight = rr_iter.color();
           break;

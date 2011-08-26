@@ -206,8 +206,8 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   int localRecvOverlapSize = 0, recvOverlapSize;
   const int commSize = sendMeshOverlap->commSize();
   for (int p = 0; p < commSize; ++p) {
-    localSendOverlapSize += sendMeshOverlap->cone(p)->size();
-    localRecvOverlapSize += recvMeshOverlap->support(p)->size();
+    localSendOverlapSize += sendMeshOverlap->getConeSize(p);
+    localRecvOverlapSize += recvMeshOverlap->getSupportSize(p);
   } // for
   MPI_Allreduce(&localSendOverlapSize, &sendOverlapSize, 1, MPI_INT, MPI_SUM,
 		sendMeshOverlap->comm());
