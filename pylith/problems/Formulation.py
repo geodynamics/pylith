@@ -476,7 +476,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     solution.newSection(solution.VERTICES_FIELD, dimension)
     solution.vectorFieldType(solution.VECTOR)
     solution.scale(lengthScale.value)
-    if self.splitFields:
+    if self.splitFields():
       solution.splitDefault()
       for integrator in self.integratorsMesh + self.integratorsSubMesh:
         integrator.splitField(solution)
