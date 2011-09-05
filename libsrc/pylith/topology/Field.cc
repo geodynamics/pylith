@@ -1158,8 +1158,10 @@ pylith::topology::Field<mesh_type, section_type>::splitDefault(void)
     for (typename chart_type::const_iterator c_iter = chart.begin();
         c_iter != chartEnd;
         ++c_iter) {
-      assert(spaceDim == _section->getFiberDimension(*c_iter));
-      _section->setFiberDimension(*c_iter, 1, fibration);
+      if (_section->getFiberDimension(*c_iter) > 0) {
+	assert(spaceDim == _section->getFiberDimension(*c_iter));
+	_section->setFiberDimension(*c_iter, 1, fibration);
+      } // if
     } // for
 } // splitDefault
 
