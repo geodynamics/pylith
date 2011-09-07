@@ -1,8 +1,59 @@
+
 ======================================================================
-CURRENT ISSUES/PRIORITIES (1.7.0)
+MENLO PARK MEETING
 ======================================================================
 
-* AUSTIN MEETING
+PyLith paper
+
+1.6.2 priorities
+
+  * scalable distribution
+    FIX BUGS, DISCUSS
+
+  * improved fault implementation
+    EASY?, DISCUSS
+
+1.7 priorities
+
+  * GPU
+    DIFFICULT, DISCUSS
+
+    + Finite-element integrations
+      How do we handle constitutive model calculations and GPU?
+
+    + Use GPU in solve?
+
+  * Modularize spontaneous rupture nucleation (space and time) for tractions
+    EASY, NO DISCUSSION NEEDED
+    Implementation is straightforward
+
+  * Attenuation
+    needs cleanup and setting of parameters from Qp and Qs
+    MODERATE, NO DISCUSSION NEEDED
+
+1.8?? priorities (post-1.7 stuff not related to multi-fields)
+
+  * Green's functions
+    MODERATE, DISCUSS
+
+    + Output of solution at arbitrary points
+      requires KD search tree for efficient interpolation
+
+2.0 priorities (multi-fields)
+
+  DIFFIFULT, DISCUSS
+
+  * Pressure formulation for incompressible
+
+  * higher order basis functions for greater efficiency in explicit
+    time stepping
+
+  * multiphysics
+
+
+======================================================================
+AUSTIN MEETING
+======================================================================
 
  (1) DONE Fix GPU build
     - Need the CUDA includes and libraries (get from PyCUDA)
@@ -25,6 +76,13 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
   ---------------------------------------
   MultiField
     unit tests
+
+
+
+
+======================================================================
+CURRENT ISSUES/PRIORITIES (1.7.0)
+======================================================================
 
 * GenMaxwellQpQs [BRAD]
 
