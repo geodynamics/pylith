@@ -43,7 +43,7 @@ PyLith paper
 
   DIFFIFULT, DISCUSS
 
-  * Pressure formulation for incompressible
+  * Pressure formulation for incompressible physical properties.
 
   * higher order basis functions for greater efficiency in explicit
     time stepping
