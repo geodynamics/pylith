@@ -358,9 +358,6 @@ private :
    */
   void _calcOrientation(const double upDir[3]);
 
-  /// Calculate fault area field.
-  void _calcArea(void);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
