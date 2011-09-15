@@ -5,6 +5,11 @@ MENLO PARK MEETING
 
 PyLith paper
 
+  fault implementation (see below)
+
+  preconditioner for the fault
+    try static/performance benchmark
+
 1.6.2 priorities
 
   * scalable distribution
@@ -12,6 +17,11 @@ PyLith paper
 
   * improved fault implementation
     EASY?, DISCUSS
+
+      General formulation (equations)
+      Spontaneous rupture (quadrature points versus
+        Dirichlet BC and faults
+        Fault intersections
 
 1.7 priorities
 
@@ -22,6 +32,9 @@ PyLith paper
       How do we handle constitutive model calculations and GPU?
 
     + Use GPU in solve?
+
+    1. Build on laptop
+    2. Build on cluster
 
   * Modularize spontaneous rupture nucleation (space and time) for tractions
     EASY, NO DISCUSSION NEEDED
@@ -36,6 +49,10 @@ PyLith paper
   * Green's functions
     MODERATE, DISCUSS
 
+    + Top-level design (green's function problem object)
+
+    + Barbot body forces for fault slip
+
     + Output of solution at arbitrary points
       requires KD search tree for efficient interpolation
 
@@ -43,10 +60,10 @@ PyLith paper
 
   DIFFIFULT, DISCUSS
 
-  * Pressure formulation for incompressible physical properties.
-
   * higher order basis functions for greater efficiency in explicit
     time stepping
+
+  * Pressure formulation for incompressible physical properties.
 
   * multiphysics
 
