@@ -31,7 +31,7 @@ SUFFIXES=.cu
 
 LTCUDACOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=compile nvcc $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) -m64 -prefer-non-pic $(AM_CXXFLAGS) $(NVCC_FLAGS)
+	$(AM_CPPFLAGS) $(CPPFLAGS) -arch=sm_13 -m64 -prefer-non-pic --compiler-options="$(CXXFLAGS)" $(AM_CXXFLAGS) $(NVCC_FLAGS)
 
 .cu.lo:
 @am__fastdepCXX_FALSE@	$(LTCUDACOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
