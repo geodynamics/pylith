@@ -141,7 +141,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
       != cellsEnd; ++c_iter) {
     distSection->updatePoint(*c_iter, &rank);
-  }
+  } // for
 
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir);
@@ -219,10 +219,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
   const int orientationSize = spaceDim * spaceDim;
-  if (cellDim != spaceDim)
-    throw std::logic_error("Integration for cells with spatial dimensions "
-			   "different than the spatial dimension of the "
-			   "domain not implemented yet.");
+  assert(cellDim == spaceDim-1);
 
   // Get cohesive cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -433,10 +430,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  if (cellDim != spaceDim)
-    throw std::logic_error("Integration for cells with spatial dimensions "
-			   "different than the spatial dimension of the "
-			   "domain not implemented yet.");
+  assert (cellDim == spaceDim-1);
 
   // Get cohesive cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -598,10 +592,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  if (cellDim != spaceDim)
-    throw std::logic_error("Integration for cells with spatial dimensions "
-			   "different than the spatial dimension of the "
-			   "domain not implemented yet.");
+  assert (cellDim == spaceDim-1);
 
   // Get cohesive cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -2031,8 +2022,15 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   assert(0 != _faultMesh);
   _fields->add("buffer (scalar)", "buffer");
   topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
-  const topology::Field<topology::SubMesh>& area = _fields->get("area");
-  buffer.cloneSection(area);
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+      faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  buffer.newSection(vertices, 1);
+  buffer.allocate();
+  buffer.vectorFieldType(topology::FieldBase::SCALAR);
+  buffer.scale(1.0);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
 

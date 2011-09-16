@@ -240,13 +240,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
@@ -254,13 +252,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
@@ -268,13 +264,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

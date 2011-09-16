@@ -224,23 +224,6 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     } // for
   } // for
 
-  // Check area
-  const ALE::Obj<RealSection>& areaSection =
-    fault._fields->get("area").section();
-  CPPUNIT_ASSERT(!areaSection.isNull());
-  iVertex = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = areaSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
-    const double* areaVertex = areaSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != areaVertex);
-
-    const double tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaVertex[0],
-				 tolerance);
-  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
