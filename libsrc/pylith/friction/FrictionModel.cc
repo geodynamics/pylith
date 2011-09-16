@@ -97,8 +97,7 @@ pylith::friction::FrictionModel::normalizer(const spatialdata::units::Nondimensi
 void
 pylith::friction::FrictionModel::initialize(
 			const topology::SubMesh& faultMesh,
-			feassemble::Quadrature<topology::SubMesh>* quadrature,
-			const topology::Field<topology::SubMesh>& area)
+			feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
   assert(0 != _dbProperties);
 

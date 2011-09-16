@@ -131,7 +131,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   assert(0 != _faultMesh);
   assert(0 != _fields);
   _friction->normalizer(*_normalizer);
-  _friction->initialize(*_faultMesh, _quadrature, _fields->get("area"));
+  _friction->initialize(*_faultMesh, _quadrature);
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
@@ -258,9 +258,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
       _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
 
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
-
   double_array lagrangeTVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -284,11 +281,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
       slipRateVertex.size());
 
-    // Get total fault area asssociated with vertex (assembled over all cells)
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
-    assert(1 == areaSection->getFiberDimension(v_fault));
-
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
       lagrangeTVertex.size());
@@ -298,12 +290,10 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     // Compute Lagrange multiplier at time t+dt
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
 
-    // :KLUDGE: Solution at Lagrange constraint vertices is the
+    // :TODO: FIX THIS
+    // Solution at Lagrange constraint vertices is the
     // Lagrange multiplier value, which is currently the force.
     // Compute traction by dividing force by area
-    assert(*areaVertex > 0);
-    tractionTVertex = lagrangeTVertex / (*areaVertex);
-    tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -356,8 +346,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     (double_array*,
      const double_array&,
      const double_array&,
-     const double_array&,
-     const double);
+     const double_array&);
 
   assert(0 != fields);
   assert(0 != _quadrature);
@@ -388,9 +377,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   const ALE::Obj<RealSection>& slipRateSection =
       _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
-
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
 
   double_array orientationVertex(spaceDim * spaceDim);
   const ALE::Obj<RealSection>& orientationSection =
@@ -439,7 +425,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 #if 0 // DEBUGGING
   slipSection->view("SLIP");
   slipRateSection->view("SLIP RATE");
-  //areaSection->view("AREA");
   //dispTSection->view("DISP (t)");
   //dispTIncrSection->view("DISP INCR (t->t+dt)");
 #endif
@@ -456,11 +441,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
       slipRateVertex.size());
 
-    // Get total fault area asssociated with vertex (assembled over all cells)
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
-    assert(1 == areaSection->getFiberDimension(v_fault));
-
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
       lagrangeTVertex.size());
@@ -471,12 +451,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
 
+    // :TODO: FIX THIS
     // :KLUDGE: Solution at Lagrange constraint vertices is the
     // Lagrange multiplier value, which is currently the force.
     // Compute traction by dividing force by area
-    assert(*areaVertex > 0);
-    tractionTVertex = lagrangeTVertex / (*areaVertex);
-    tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -486,7 +464,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
-					 tractionTpdtVertex, *areaVertex);
+					 tractionTpdtVertex);
 
     assert(dLagrangeTpdtVertex.size() ==
         dLagrangeTpdtSection->getFiberDimension(v_fault));
@@ -616,8 +594,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     (double_array*,
      const double_array&,
      const double_array&,
-     const double_array&,
-     const double);
+     const double_array&);
 
   /// Member prototype for _sensitivitySolveLumpedXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*sensitivitySolveLumped_fn_type)
@@ -683,9 +660,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   const ALE::Obj<RealSection>& slipRateSection =
       _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
-
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
 
   double_array orientationVertex(orientationSize);
   const ALE::Obj<RealSection>& orientationSection =
@@ -784,11 +758,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
 				   slipRateVertex.size());
     
-    // Get total fault area asssociated with vertex (assembled over all cells)
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
-    assert(1 == areaSection->getFiberDimension(v_fault));
-    
     // Get fault orientation
     orientationSection->restrictPoint(v_fault, &orientationVertex[0],
 				      orientationVertex.size());
@@ -841,12 +810,15 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
     
+    // :TODO: FIX THIS
     // :KLUDGE: Solution at Lagrange constraint vertices is the
     // Lagrange multiplier value, which is currently the force.
     // Compute traction by dividing force by area
+#if 0
     assert(*areaVertex > 0);
     tractionTVertex = lagrangeTVertex / (*areaVertex);
     tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
+#endif
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -854,7 +826,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
-					 tractionTpdtVertex, *areaVertex);
+					 tractionTpdtVertex);
     CALL_MEMBER_FN(*this,
        sensitivitySolveLumpedFn)(&slipVertex,
            dLagrangeTpdtVertex, jacobianVertexN, jacobianVertexP);
@@ -1308,8 +1280,6 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
   double_array tractionsVertex(fiberDim);
 
   // Get sections.
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());
 
@@ -1336,15 +1306,14 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
 
     assert(fiberDim == dispTSection->getFiberDimension(v_lagrange));
     assert(fiberDim == tractionsSection->getFiberDimension(v_fault));
-    assert(1 == areaSection->getFiberDimension(v_fault));
 
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
     assert(0 != dispTVertex);
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
 
+#if 0 // :TODO: FIX THIS
     for (int i=0; i < fiberDim; ++i)
       tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
+#endif
 
     assert(tractionsVertex.size() == 
 	   tractionsSection->getFiberDimension(v_fault));
@@ -1376,8 +1345,6 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(
   double_array tractionsVertexFault(spaceDim);
 
   // Get sections.
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
   const ALE::Obj<RealSection>& orientationSection = 
     _fields->get("orientation").section();
   assert(!orientationSection.isNull());
@@ -1407,19 +1374,18 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(
 
     assert(spaceDim == forcesInitialSection->getFiberDimension(v_fault));
     assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
-    assert(1 == areaSection->getFiberDimension(v_fault));
 
     const double* forcesInitialVertex = 
       forcesInitialSection->restrictPoint(v_fault);
     assert(0 != forcesInitialVertex);
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
     const double* orientationVertex = 
       orientationSection->restrictPoint(v_fault);
     assert(0 != orientationVertex);
 
+#if 0 // :TODO: FIX THIS
     for (int i = 0; i < spaceDim; ++i)
       tractionsVertexGlobal[i] = forcesInitialVertex[i] / areaVertex[0];
+#endif
 
     // Rotate from global coordinate system to local coordinate system
     tractionsVertexFault = 0.0;
@@ -1930,8 +1896,7 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(double_array* dLagrangeTpdt,
          const double_array& slip,
          const double_array& sliprate,
-         const double_array& tractionTpdt,
-         const double area)
+         const double_array& tractionTpdt)
 { // _constrainSolnSpace1D
   assert(0 != dLagrangeTpdt);
 
@@ -1940,7 +1905,11 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(double_array* dLagrangeT
     } else {
       // if tension, then traction is zero.
 
+#if 0 // :TODO: FIX THIS
       const double dlp = -tractionTpdt[0] * area;
+#else
+      const double dlp = -tractionTpdt[0];
+#endif // 
       (*dLagrangeTpdt)[0] = dlp;
     } // else
 
@@ -1953,8 +1922,7 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeTpdt,
          const double_array& slip,
          const double_array& slipRate,
-         const double_array& tractionTpdt,
-         const double area)
+         const double_array& tractionTpdt)
 { // _constrainSolnSpace2D
   assert(0 != dLagrangeTpdt);
 
@@ -1975,7 +1943,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
       if (tractionShearMag > 0.0) {
 	// Update traction increment based on value required to stick
 	// versus friction
-	const double dlp = -(tractionShearMag - frictionStress) * area *
+	const double dlp = -(tractionShearMag - frictionStress) *
 	  tractionTpdt[0] / tractionShearMag;
 	(*dLagrangeTpdt)[0] = dlp;
 	(*dLagrangeTpdt)[1] = 0.0;
@@ -1990,8 +1958,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(double_array* dLagrangeT
     } // if/else
   } else {
     // if in tension, then traction is zero.
-    (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
-    (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
+    (*dLagrangeTpdt)[0] = -tractionTpdt[0];
+    (*dLagrangeTpdt)[1] = -tractionTpdt[1];
   } // else
 
   PetscLogFlops(8);
@@ -2003,8 +1971,7 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeTpdt,
          const double_array& slip,
          const double_array& slipRate,
-         const double_array& tractionTpdt,
-         const double area)
+         const double_array& tractionTpdt)
 { // _constrainSolnSpace3D
   assert(0 != dLagrangeTpdt);
 
@@ -2029,9 +1996,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
       if (tractionShearMag > 0.0) {
 	// Update traction increment based on value required to stick
 	// versus friction
-	const double dlp = -(tractionShearMag - frictionStress) * area *
+	const double dlp = -(tractionShearMag - frictionStress) * 
 	  tractionTpdt[0] / tractionShearMag;
-	const double dlq = -(tractionShearMag - frictionStress) * area *
+	const double dlq = -(tractionShearMag - frictionStress) * 
 	  tractionTpdt[1] / tractionShearMag;
 	
 	(*dLagrangeTpdt)[0] = dlp;
@@ -2050,9 +2017,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
     } // if/else
   } else {
     // if in tension, then traction is zero.
-    (*dLagrangeTpdt)[0] = -tractionTpdt[0] * area;
-    (*dLagrangeTpdt)[1] = -tractionTpdt[1] * area;
-    (*dLagrangeTpdt)[2] = -tractionTpdt[2] * area;
+    (*dLagrangeTpdt)[0] = -tractionTpdt[0];
+    (*dLagrangeTpdt)[1] = -tractionTpdt[1];
+    (*dLagrangeTpdt)[2] = -tractionTpdt[2];
   } // else
 
   PetscLogFlops(22);
