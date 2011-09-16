@@ -132,11 +132,11 @@ public :
 			    void *lsctx,
 			    PetscVec x,
 			    PetscVec f,
-			    PetscVec g,
 			    PetscVec y,
-			    PetscVec w,
 			    PetscReal fnorm,
 			    PetscReal xnorm,
+			    PetscVec g,
+			    PetscVec w,
 			    PetscReal *ynorm,
 			    PetscReal *gnorm,
 			    PetscBool *flag);
