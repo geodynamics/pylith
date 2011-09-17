@@ -166,12 +166,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     const int ncells = cNumbering->getLocalSize();
     const int conesSize = ncells*numCorners;
-    PetscScalar* tmpVertices = (conesSize > 0) ? new PetscScalar[conesSize] : 0;
+    PylithScalar* tmpVertices = (conesSize > 0) ? new PylithScalar[conesSize] : 0;
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
     ALE::ISieveVisitor::NConeRetriever<sieve_type> 
-      ncV(*sieve, (size_t) pow((double) sieve->getMaxConeSize(), 
+      ncV(*sieve, (size_t) pow((PylithScalar) sieve->getMaxConeSize(), 
 			       std::max(0, sieveMesh->depth())));
 
     int k = 0;
@@ -259,7 +259,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
-				            const double t,
+				            const PylithScalar t,
 					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
@@ -358,7 +358,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
-				       const double t,
+				       const PylithScalar t,
 				       field_type& field,
 				       const char* label,
 				       const int labelId)
@@ -465,7 +465,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
-						    const double t,
+						    const PylithScalar t,
 						    const int rank)
 { // _writeTimeStamp
   PetscErrorCode err = 0;

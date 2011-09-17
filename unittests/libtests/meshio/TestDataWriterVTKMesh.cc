@@ -94,7 +94,7 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeConstant(void)
 { // testTimeConstant
   DataWriterVTK<topology::Mesh, MeshField> writer;
 
-  const double value = 4.5;
+  const PylithScalar value = 4.5;
   writer.timeConstant(value);
   CPPUNIT_ASSERT_EQUAL(value, writer._timeConstant);
 } // testTimeConstant
@@ -127,7 +127,7 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void)
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
@@ -169,7 +169,7 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void)
 
   const int nfields = _data->numVertexFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
@@ -212,7 +212,7 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void)
 
   const int nfields = _data->numCellFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);

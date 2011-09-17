@@ -41,20 +41,20 @@ void
 pylith::feassemble::TestQuadrature::testCopyConstructor(void)
 { // testClone
   // Semi-random values manually set to check cloning
-  const double minJacobianE = 1.0;
+  const PylithScalar minJacobianE = 1.0;
   const bool checkConditioning = true;
   const int cellDimE = 1;
   const int numBasisE = 2;
   const int numQuadPtsE = 1;
   const int spaceDimE = 1;
-  const double basisE[] = { 0.2, 0.4 };
-  const double basisDerivE[] = { 0.8, 1.6 };
-  const double quadPtsRefE[] = { 3.2 };
-  const double quadWtsE[] = { 6.4 };
-  const double quadPtsE[] = { 12.8 };
-  const double jacobianE[] = { 2.56 };
-  const double jacobianInvE[] = { 5.12 };
-  const double jacobianDetE[] = { 10.24 };
+  const PylithScalar basisE[] = { 0.2, 0.4 };
+  const PylithScalar basisDerivE[] = { 0.8, 1.6 };
+  const PylithScalar quadPtsRefE[] = { 3.2 };
+  const PylithScalar quadWtsE[] = { 6.4 };
+  const PylithScalar quadPtsE[] = { 12.8 };
+  const PylithScalar jacobianE[] = { 2.56 };
+  const PylithScalar jacobianInvE[] = { 5.12 };
+  const PylithScalar jacobianDetE[] = { 10.24 };
   GeometryLine1D geometry;
 
   // Set values
@@ -80,25 +80,25 @@ pylith::feassemble::TestQuadrature::testCopyConstructor(void)
   CPPUNIT_ASSERT_EQUAL(numQuadPtsE, qCopy.numQuadPts());
   CPPUNIT_ASSERT_EQUAL(spaceDimE, qCopy.spaceDim());
 
-  const double_array& basis = qCopy.basis();
+  const scalar_array& basis = qCopy.basis();
   size_t size = numBasisE * numQuadPtsE;
   CPPUNIT_ASSERT_EQUAL(size, basis.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basisE[i], basis[i]);
 
-  const double_array& basisDerivRef = qCopy._basisDerivRef;
+  const scalar_array& basisDerivRef = qCopy._basisDerivRef;
   size = numBasisE * numQuadPtsE * spaceDimE;
   CPPUNIT_ASSERT_EQUAL(size, basisDerivRef.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basisDerivE[i], basisDerivRef[i]);
 
-  const double_array& quadPtsRef = qCopy._quadPtsRef;
+  const scalar_array& quadPtsRef = qCopy._quadPtsRef;
   size = numQuadPtsE * cellDimE;
   CPPUNIT_ASSERT_EQUAL(size, quadPtsRef.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(quadPtsRefE[i], quadPtsRef[i]);
 
-  const double_array& quadWts = qCopy.quadWts();
+  const scalar_array& quadWts = qCopy.quadWts();
   size = numQuadPtsE;
   CPPUNIT_ASSERT_EQUAL(size, quadWts.size());
   for (int i=0; i < size; ++i)
@@ -132,18 +132,18 @@ pylith::feassemble::TestQuadrature::testEngineAccessors(void)
   const int numBasis = 5;
   const int numQuadPts = 1;
   const int spaceDim = 3;
-  const double basis[] = { 
+  const PylithScalar basis[] = { 
     1.1, 1.2, 1.3, 1.4, 1.5
   };
-  const double basisDerivRef[] = {
+  const PylithScalar basisDerivRef[] = {
     2.1, 2.2, 2.3,
     2.4, 2.5, 2.6,
     2.7, 2.8, 2.9,
     2.10, 2.11, 2.12,
     2.13, 2.14, 2.15,
   };
-  const double quadPtsRef[] = { 3.1, 3.2, 3.3 };
-  const double quadWts[] = { 4.0 };
+  const PylithScalar quadPtsRef[] = { 3.1, 3.2, 3.3 };
+  const PylithScalar quadWts[] = { 4.0 };
 
   QuadratureRefCell refCell;
   refCell.initialize(basis, numQuadPts, numBasis,
@@ -187,13 +187,13 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   const int spaceDim = data.spaceDim;
 
   const int numCells = data.numCells;
-  const double* vertCoords = data.vertices;
-  const double* quadPtsE = data.quadPts;
-  const double* jacobianE = data.jacobian;
-  const double* jacobianDetE = data.jacobianDet;
-  const double* basisDerivE = data.basisDeriv;
+  const PylithScalar* vertCoords = data.vertices;
+  const PylithScalar* quadPtsE = data.quadPts;
+  const PylithScalar* jacobianE = data.jacobian;
+  const PylithScalar* jacobianDetE = data.jacobianDet;
+  const PylithScalar* basisDerivE = data.basisDeriv;
 
-  const double minJacobian = 1.0e-06;
+  const PylithScalar minJacobian = 1.0e-06;
 
   // Create mesh with test cell
   topology::Mesh mesh(data.cellDim);
@@ -236,7 +236,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 #if defined(PRECOMPUTE_GEOMETRY)
   quadrature.computeGeometry(mesh, cells);
 #else
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<topology::Mesh::RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -247,7 +247,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   size_t size = 0;
 
   // Check values from computeGeometry()
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end(); 
   for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -260,25 +260,25 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
     quadrature.computeGeometry(coordinatesCell, *c_iter);    
 #endif
 
-    const double_array& quadPts = quadrature.quadPts();
+    const scalar_array& quadPts = quadrature.quadPts();
     size = numQuadPts * spaceDim;
     CPPUNIT_ASSERT_EQUAL(size, quadPts.size());
     for (size_t i=0; i < size; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPtsE[i], quadPts[i], tolerance);
 
-    const double_array& jacobian = quadrature.jacobian();
+    const scalar_array& jacobian = quadrature.jacobian();
     size = numQuadPts * cellDim * spaceDim;
     CPPUNIT_ASSERT_EQUAL(size, jacobian.size());
     for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianE[i], jacobian[i], tolerance);
 
-    const double_array& jacobianDet = quadrature.jacobianDet();
+    const scalar_array& jacobianDet = quadrature.jacobianDet();
     size = numQuadPts;
     CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
     for (size_t i=0; i < size; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDetE[i], jacobianDet[i], tolerance);
     
-    const double_array& basisDeriv = quadrature.basisDeriv();
+    const scalar_array& basisDeriv = quadrature.basisDeriv();
     size = numQuadPts * numBasis * spaceDim;
     CPPUNIT_ASSERT_EQUAL(size, basisDeriv.size());
     for (size_t i=0; i < size; ++i)
@@ -309,13 +309,13 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
   const int spaceDim = data.spaceDim;
 
   const int numCells = data.numCells;
-  double_array vertCoords(data.vertices, numBasis*spaceDim);
-  const double* quadPtsE = data.quadPts;
-  const double* jacobianE = data.jacobian;
-  const double* jacobianDetE = data.jacobianDet;
-  const double* basisDerivE = data.basisDeriv;
+  scalar_array vertCoords(data.vertices, numBasis*spaceDim);
+  const PylithScalar* quadPtsE = data.quadPts;
+  const PylithScalar* jacobianE = data.jacobian;
+  const PylithScalar* jacobianDetE = data.jacobianDet;
+  const PylithScalar* basisDerivE = data.basisDeriv;
 
-  const double minJacobian = 1.0e-06;
+  const PylithScalar minJacobian = 1.0e-06;
 
 #if 0
   // Create mesh with test cell
@@ -365,27 +365,27 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
   size_t size = 0;
 
   // Check values from computeGeometry()
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
-  const double_array& quadPts = quadrature.quadPts();
+  const scalar_array& quadPts = quadrature.quadPts();
   size = numQuadPts * spaceDim;
   CPPUNIT_ASSERT_EQUAL(size, quadPts.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPtsE[i], quadPts[i], tolerance);
   
-  const double_array& jacobian = quadrature.jacobian();
+  const scalar_array& jacobian = quadrature.jacobian();
   size = numQuadPts * cellDim * spaceDim;
   CPPUNIT_ASSERT_EQUAL(size, jacobian.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianE[i], jacobian[i], tolerance);
   
-  const double_array& jacobianDet = quadrature.jacobianDet();
+  const scalar_array& jacobianDet = quadrature.jacobianDet();
   size = numQuadPts;
   CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDetE[i], jacobianDet[i], tolerance);
   
-  const double_array& basisDeriv = quadrature.basisDeriv();
+  const scalar_array& basisDeriv = quadrature.basisDeriv();
   size = numQuadPts * numBasis * spaceDim;
   CPPUNIT_ASSERT_EQUAL(size, basisDeriv.size());
   for (size_t i=0; i < size; ++i)

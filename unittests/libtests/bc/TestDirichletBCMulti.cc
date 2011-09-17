@@ -173,7 +173,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
   field.zero();
@@ -188,7 +188,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
-  const double t = 10.0;
+  const PylithScalar t = 10.0;
   bcA.setField(t, field);
   bcB.setField(t, field);
   bcC.setField(t, field);
@@ -239,7 +239,7 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
   field.zero();
@@ -254,8 +254,8 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
-  const double t0 = 10.0;
-  const double t1 = 14.0;
+  const PylithScalar t0 = 10.0;
+  const PylithScalar t1 = 14.0;
   bcA.setFieldIncr(t0, t1, field);
   bcB.setFieldIncr(t0, t1, field);
   bcC.setFieldIncr(t0, t1, field);

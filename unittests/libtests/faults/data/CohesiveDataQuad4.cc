@@ -57,7 +57,7 @@ const int pylith::faults::CohesiveDataQuad4::_numCells = 3;
 
 const int pylith::faults::CohesiveDataQuad4::_cellDim = 2;
 
-const double pylith::faults::CohesiveDataQuad4::_vertices[] = {
+const PylithScalar pylith::faults::CohesiveDataQuad4::_vertices[] = {
   -2.0, -1.0,
   -2.0,  1.0,
    0.0, -1.0,
@@ -112,7 +112,7 @@ pylith::faults::CohesiveDataQuad4::CohesiveDataQuad4(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);

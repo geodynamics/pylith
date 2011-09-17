@@ -42,9 +42,9 @@ const int pylith::bc::DirichletDataTri3::_fixedDOF[] = { 1 };
 const int pylith::bc::DirichletDataTri3::_numConstrainedPts = 2;
 const int pylith::bc::DirichletDataTri3::_constrainedPoints[] = { 1, 3 };
 
-const double pylith::bc::DirichletDataTri3::_tRef = 0.7;
-const double pylith::bc::DirichletDataTri3::_valueRate = -0.2;
-const double pylith::bc::DirichletDataTri3::_valuesInitial[] =
+const PylithScalar pylith::bc::DirichletDataTri3::_tRef = 0.7;
+const PylithScalar pylith::bc::DirichletDataTri3::_valueRate = -0.2;
+const PylithScalar pylith::bc::DirichletDataTri3::_valuesInitial[] =
   { 0.3, 0.7 };
 
 const char* pylith::bc::DirichletDataTri3::_meshFilename = 
@@ -66,7 +66,7 @@ pylith::bc::DirichletDataTri3::DirichletDataTri3(void)
 
   tRef = _tRef;
   valueRate = _valueRate;
-  valuesInitial = const_cast<double*>(_valuesInitial);
+  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

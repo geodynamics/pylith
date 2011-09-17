@@ -24,7 +24,7 @@
 
 #include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
 
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 // ----------------------------------------------------------------------
@@ -51,8 +51,8 @@ pylith::materials::TestElasticStrain1D::testStableTimeStepImplicit(void)
 
   topology::Mesh mesh;
 
-  const double dt = _matElastic->stableTimeStepImplicit(mesh);
-  CPPUNIT_ASSERT_EQUAL(1.0, dt/pylith::PYLITH_MAXDOUBLE);
+  const PylithScalar dt = _matElastic->stableTimeStepImplicit(mesh);
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), dt/pylith::PYLITH_MAXSCALAR);
 } // testStableTimeStepImplicit
 
 

@@ -33,7 +33,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
 typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
-typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PylithInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -71,7 +71,7 @@ void pylith::faults::FaultCohesiveTract::dbInitial(spatialdata::spatialdb::Spati
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
-					     const double upDir[3])
+					       const double upDir[3])
 { // initialize
   assert(0 != upDir);
   assert(0 != _quadrature);
@@ -103,7 +103,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
 void
 pylith::faults::FaultCohesiveTract::integrateResidual(
 			   const topology::Field<topology::Mesh>& residual,
-			   const double t,
+			   const PylithScalar t,
 			   topology::SolutionFields* const fields)
 { // integrateResidual
   throw std::logic_error("FaultCohesiveTract::integrateResidual() not implemented.");
@@ -114,7 +114,7 @@ pylith::faults::FaultCohesiveTract::integrateResidual(
 void
 pylith::faults::FaultCohesiveTract::integrateJacobian(
 				   topology::Jacobian* jacobian,
-				   const double t,
+				   const PylithScalar t,
 				   topology::SolutionFields* const fields)
 { // integrateJacobian
   throw std::logic_error("FaultCohesiveTract::integrateJacobian() not implemented.");
@@ -201,7 +201,9 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
   assert(0 != _fields);
   assert(0 != _quadrature);
 
-  double_array up(upDir, 3);
+  scalar_array up(3);
+  for (int i=0; i < 3; ++i)
+    up[i] = upDir[i];
 
   // Get 'fault' cells.
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -218,20 +220,20 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
-  double_array quadPtRef(cellDim);
-  const double_array& quadPtsRef = _quadrature->quadPtsRef();
+  scalar_array quadPtRef(cellDim);
+  const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
   
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
   const int fiberDim = numQuadPts * orientationSize;
   const int jacobianSize = spaceDim * cellDim;
-  double_array jacobian(jacobianSize);
-  double jacobianDet = 0;
-  double_array orientationQuadPt(orientationSize);
-  double_array orientationCell(fiberDim);
+  scalar_array jacobian(jacobianSize);
+  PylithScalar jacobianDet = 0;
+  scalar_array orientationQuadPt(orientationSize);
+  scalar_array orientationCell(fiberDim);
 
   // Get sections.
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     faultSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -267,7 +269,7 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
 
       // Compute Jacobian and determinant at quadrature point, then get
       // orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
+      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(PylithScalar));
       cellGeometry.jacobian(&jacobian, &jacobianDet,
 			    coordinatesCell, quadPtRef);
       cellGeometry.orientation(&orientationQuadPt, jacobian, jacobianDet, up);
@@ -275,7 +277,7 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const double upDir[3])
       orientationQuadPt /= jacobianDet;
 
       memcpy(&orientationCell[iQuad*orientationSize], 
-	     &orientationQuadPt[0], orientationSize*sizeof(double));
+	     &orientationQuadPt[0], orientationSize*sizeof(PylithScalar));
     } // for
 
     orientationSection->updatePoint(*c_iter, &orientationCell[0]);
@@ -292,8 +294,8 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
   assert(0 != _normalizer);
   assert(0 != _quadrature);
 
-  const double pressureScale = _normalizer->pressureScale();
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
@@ -351,11 +353,11 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
   
     // Containers for database query results and quadrature coordinates in
     // reference geometry.
-    double_array tractionCell(numQuadPts*spaceDim);
-    double_array quadPtsGlobal(numQuadPts*spaceDim);
+    scalar_array tractionCell(numQuadPts*spaceDim);
+    scalar_array quadPtsGlobal(numQuadPts*spaceDim);
     
     // Get sections.
-    double_array coordinatesCell(numBasis*spaceDim);
+    scalar_array coordinatesCell(numBasis*spaceDim);
     const ALE::Obj<RealSection>& coordinates =
       faultSieveMesh->getRealSection("coordinates");
     assert(!coordinates.isNull());
@@ -375,7 +377,7 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
       faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
       _quadrature->computeGeometry(coordinatesCell, *c_iter);
       
-      const double_array& quadPtsNondim = _quadrature->quadPts();
+      const scalar_array& quadPtsNondim = _quadrature->quadPts();
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				  lengthScale);

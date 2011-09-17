@@ -24,7 +24,7 @@
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -37,7 +37,7 @@ void
 pylith::feassemble::TestIntegrator::testTimeStep(void)
 { // testTimeStep
   ElasticityExplicit integrator;
-  const double dt = 1.2;
+  const PylithScalar dt = 1.2;
   integrator.timeStep(dt);
 
   CPPUNIT_ASSERT_EQUAL(dt, integrator._dt);
@@ -51,7 +51,8 @@ pylith::feassemble::TestIntegrator::testStableTimeStep(void)
   ElasticityExplicit integrator;
   topology::Mesh mesh;
 
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, integrator.stableTimeStep(mesh));
+  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR,
+		       integrator.stableTimeStep(mesh));
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------
@@ -76,7 +77,7 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
   // value of minJacobian
 
   Quadrature<topology::Mesh> quadrature;
-  const double minJacobian = 4.0;
+  const PylithScalar minJacobian = 4.0;
   quadrature.minJacobian(minJacobian);
   
   ElasticityExplicit integrator;
@@ -132,7 +133,7 @@ pylith::feassemble::TestIntegrator::testInitCellVector(void)
     quadrature.spaceDim() * quadrature.numBasis();
   CPPUNIT_ASSERT_EQUAL(size, integrator._cellVector.size());
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellVector[i]);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellVector[i]);
 } // testInitCellVector
 
 // ----------------------------------------------------------------------
@@ -155,7 +156,7 @@ pylith::feassemble::TestIntegrator::testResetCellVector(void)
     integrator._cellVector[i] = 1.4+2*i;
   integrator._resetCellVector();
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellVector[i]);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellVector[i]);
 } // testResetCellVector
 
 // ----------------------------------------------------------------------
@@ -176,7 +177,7 @@ pylith::feassemble::TestIntegrator::testInitCellMatrix(void)
     quadrature.spaceDim() * quadrature.numBasis();
   CPPUNIT_ASSERT_EQUAL(size, integrator._cellMatrix.size());
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellMatrix[i]);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellMatrix[i]);
 } // testInitCellMatrix
 
 // ----------------------------------------------------------------------
@@ -200,7 +201,7 @@ pylith::feassemble::TestIntegrator::testResetCellMatrix(void)
     integrator._cellMatrix[i] = 1.23 + 1.2*i;
   integrator._resetCellMatrix();
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(0.0, integrator._cellMatrix[i]);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(0.0), integrator._cellMatrix[i]);
 } // testResetCellMatrix
 
 // ----------------------------------------------------------------------
@@ -225,12 +226,12 @@ pylith::feassemble::TestIntegrator::testLumpCellMatrix(void)
     integrator._cellMatrix[i] = 1.23 + 1.2*i;
   integrator._lumpCellMatrix();
 
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   const int numBasis = quadrature.numBasis();
   const int spaceDim = quadrature.spaceDim();
   for (int iBasis=0; iBasis < numBasis; ++iBasis)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      double value = 0;
+      PylithScalar value = 0;
       const int index = (iBasis*spaceDim+iDim)*numBasis*spaceDim;
       for (int jBasis=0; jBasis < numBasis; ++jBasis)
 	value += 1.23 + 1.2*(index+jBasis*spaceDim+iDim);
@@ -264,11 +265,11 @@ pylith::feassemble::TestIntegrator::_initQuadrature(
   const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const double basis[] = { 0.5, 0.5 };
-  const double basisDeriv[] = { -0.5, 0.5 };
-  const double quadPtsRef[] = { 0.0 };
-  const double quadWts[] = { 2.0 };
-  const double minJacobian = 1.0;
+  const PylithScalar basis[] = { 0.5, 0.5 };
+  const PylithScalar basisDeriv[] = { -0.5, 0.5 };
+  const PylithScalar quadPtsRef[] = { 0.0 };
+  const PylithScalar quadWts[] = { 2.0 };
+  const PylithScalar minJacobian = 1.0;
 
   quadrature->initialize(basis, numQuadPts, numBasis,
 			 basisDeriv, numQuadPts, numBasis, cellDim,

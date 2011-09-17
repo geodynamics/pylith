@@ -99,10 +99,10 @@ pylith::feassemble::QuadratureEngine::QuadratureEngine(const QuadratureEngine& q
 // ----------------------------------------------------------------------
 // Check determinant of Jacobian against minimum allowable value
 void
-pylith::feassemble::QuadratureEngine::_checkJacobianDet(const double det,
+pylith::feassemble::QuadratureEngine::_checkJacobianDet(const PylithScalar det,
 							const int cell) const
 { // _checkJacobianDet
-  const double minJacobian = _quadRefCell.minJacobian();
+  const PylithScalar minJacobian = _quadRefCell.minJacobian();
   if (det < minJacobian) {
     std::ostringstream msg;
     msg << "Determinant of Jacobian (" << det << ") for cell " << cell

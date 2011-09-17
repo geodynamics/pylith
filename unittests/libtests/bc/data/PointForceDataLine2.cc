@@ -43,13 +43,13 @@ const int pylith::bc::PointForceDataLine2::_forceDOF[] = { 0 };
 const int pylith::bc::PointForceDataLine2::_numForcePts = 2;
 const int pylith::bc::PointForceDataLine2::_forcePoints[] = { 0, 2 };
 
-const double pylith::bc::PointForceDataLine2::_tRef = 0.6;
-const double pylith::bc::PointForceDataLine2::_forceRate = 0.3;
-const double pylith::bc::PointForceDataLine2::_forceInitial[] =
+const PylithScalar pylith::bc::PointForceDataLine2::_tRef = 0.6;
+const PylithScalar pylith::bc::PointForceDataLine2::_forceRate = 0.3;
+const PylithScalar pylith::bc::PointForceDataLine2::_forceInitial[] =
   { 1.1, 2.2 };
 
-const double pylith::bc::PointForceDataLine2::_tResidual = 1.5;
-const double pylith::bc::PointForceDataLine2::_residual[] =
+const PylithScalar pylith::bc::PointForceDataLine2::_tResidual = 1.5;
+const PylithScalar pylith::bc::PointForceDataLine2::_residual[] =
   { 1.37,
     0.0,
     2.47,
@@ -74,10 +74,10 @@ pylith::bc::PointForceDataLine2::PointForceDataLine2(void)
 
   tRef = _tRef;
   forceRate = _forceRate;
-  forceInitial = const_cast<double*>(_forceInitial);
+  forceInitial = const_cast<PylithScalar*>(_forceInitial);
 
   tResidual = _tResidual;
-  residual = const_cast<double*>(_residual);
+  residual = const_cast<PylithScalar*>(_residual);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

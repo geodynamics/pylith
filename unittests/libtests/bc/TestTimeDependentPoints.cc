@@ -43,9 +43,9 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 namespace pylith {
   namespace bc {
     namespace _TestTimeDependentPoints {
-      const double pressureScale = 4.0;
-      const double lengthScale = 1.5;
-      const double timeScale = 0.5;
+      const PylithScalar pressureScale = 4.0;
+      const PylithScalar lengthScale = 1.5;
+      const PylithScalar timeScale = 0.5;
       const int npointsIn = 2;
       const int pointsIn[npointsIn] = { 3, 5, };
       const int npointsOut = 2;
@@ -53,64 +53,64 @@ namespace pylith {
 
       const int numBCDOF = 2;
       const int bcDOF[numBCDOF] = { 1, 0 };
-      const double initial[npointsIn*numBCDOF] = {
+      const PylithScalar initial[npointsIn*numBCDOF] = {
 	0.3,  0.4,
 	0.7,  0.6,
       };
-      const double rate[npointsIn*numBCDOF] = {
+      const PylithScalar rate[npointsIn*numBCDOF] = {
 	-0.2,  -0.1,
 	 0.4,   0.3,
       };
-      const double rateTime[npointsIn] = {
+      const PylithScalar rateTime[npointsIn] = {
 	0.5,
 	0.8,
       };
-      const double change[npointsIn*numBCDOF] = {
+      const PylithScalar change[npointsIn*numBCDOF] = {
 	1.3,  1.4,
 	1.7,  1.6,
       };
-      const double changeTime[npointsIn] = {
+      const PylithScalar changeTime[npointsIn] = {
 	2.0,
 	2.4,
       };
 
-      const double tValue = 2.2;
-      const double tValue2 = 2.6;
-      const double valuesRate[npointsIn*numBCDOF] = {
+      const PylithScalar tValue = 2.2;
+      const PylithScalar tValue2 = 2.6;
+      const PylithScalar valuesRate[npointsIn*numBCDOF] = {
 	-0.34,  -0.17,
 	 0.56,   0.42,
       };
-      const double valuesChange[npointsIn*numBCDOF] = {
+      const PylithScalar valuesChange[npointsIn*numBCDOF] = {
 	1.3,  1.4,
 	0.0,  0.0,
       };
-      const double valuesChangeTH[npointsIn*numBCDOF] = {
+      const PylithScalar valuesChangeTH[npointsIn*numBCDOF] = {
 	1.3*0.98,  1.4*0.98,
 	0.0,  0.0,
       };
-      const double valuesIncrInitial[npointsIn*numBCDOF] = {
+      const PylithScalar valuesIncrInitial[npointsIn*numBCDOF] = {
 	0.0,  0.0,
 	0.0,  0.0,
       };
-      const double valuesIncrRate[npointsIn*numBCDOF] = {
+      const PylithScalar valuesIncrRate[npointsIn*numBCDOF] = {
 	-0.08,  -0.04,
 	 0.16,   0.12,
       };
-      const double valuesIncrChange[npointsIn*numBCDOF] = {
+      const PylithScalar valuesIncrChange[npointsIn*numBCDOF] = {
 	0.0,  0.0,
 	1.7,  1.6,
       };
-      const double valuesIncrChangeTH[npointsIn*numBCDOF] = {
+      const PylithScalar valuesIncrChangeTH[npointsIn*numBCDOF] = {
 	1.3*-0.04,  1.4*-0.04,
 	1.7*0.98,  1.6*0.98,
       };
 
       // Check values in section against expected values.
       static
-      void _checkValues(const double* valuesE,
+      void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
 			const ALE::Obj<RealSection>& section,
-			const double scale);
+			const PylithScalar scale);
     } // _TestTimeDependentPoints
   } // bc
 } // pylith
@@ -190,25 +190,25 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
-  spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleDB dbInitial("TestTimeDependentPoints _queryDatabases initial");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
   dbInitialIO.filename("data/tri3_force.spatialdb");
   dbInitial.ioHandler(&dbInitialIO);
   dbInitial.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-  spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleDB dbRate("TestTimeDependentPoints _queryDatabases rate");
   spatialdata::spatialdb::SimpleIOAscii dbRateIO;
   dbRateIO.filename("data/tri3_force_rate.spatialdb");
   dbRate.ioHandler(&dbRateIO);
   dbRate.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-  spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases change");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
   dbChangeIO.filename("data/tri3_force_change.spatialdb");
   dbChange.ioHandler(&dbChangeIO);
   dbChange.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-  spatialdata::spatialdb::TimeHistory th("TestTimeDependentPoints _queryDatabases");
+  spatialdata::spatialdb::TimeHistory th("TestTimeDependentPoints _queryDatabases time history");
   th.filename("data/tri3_force.timedb");
 
   _bc->dbInitial(&dbInitial);
@@ -216,14 +216,14 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
   _bc->dbChange(&dbChange);
   _bc->dbTimeHistory(&th);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -280,15 +280,15 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 
   _bc->dbInitial(&dbInitial);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
   _bc->_calculateValue(_TestTimeDependentPoints::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -316,15 +316,15 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 
   _bc->dbRate(&dbRate);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
   _bc->_calculateValue(_TestTimeDependentPoints::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -352,15 +352,15 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 
   _bc->dbChange(&dbChange);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
   _bc->_calculateValue(_TestTimeDependentPoints::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -391,15 +391,15 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
   _bc->dbChange(&dbChange);
   _bc->dbTimeHistory(&th);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
   _bc->_calculateValue(_TestTimeDependentPoints::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -445,21 +445,21 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
   _bc->dbChange(&dbChange);
   _bc->dbTimeHistory(&th);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
   _bc->_calculateValue(_TestTimeDependentPoints::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const int npoints = _TestTimeDependentPoints::npointsIn;
-  double_array valuesE(npoints*numBCDOF);
+  scalar_array valuesE(npoints*numBCDOF);
   for (int i=0; i < valuesE.size(); ++i)
     valuesE[i] = 
       _TestTimeDependentPoints::initial[i] +
@@ -489,17 +489,17 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 
   _bc->dbInitial(&dbInitial);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
-  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
-  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  const PylithScalar t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const PylithScalar t1 = _TestTimeDependentPoints::tValue2 / timeScale;
   _bc->_calculateValueIncr(t0, t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -527,17 +527,17 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 
   _bc->dbRate(&dbRate);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
-  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
-  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  const PylithScalar t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const PylithScalar t1 = _TestTimeDependentPoints::tValue2 / timeScale;
   _bc->_calculateValueIncr(t0, t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -565,17 +565,17 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 
   _bc->dbChange(&dbChange);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
-  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
-  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  const PylithScalar t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const PylithScalar t1 = _TestTimeDependentPoints::tValue2 / timeScale;
   _bc->_calculateValueIncr(t0, t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -606,17 +606,17 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
   _bc->dbChange(&dbChange);
   _bc->dbTimeHistory(&th);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
-  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
-  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  const PylithScalar t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const PylithScalar t1 = _TestTimeDependentPoints::tValue2 / timeScale;
   _bc->_calculateValueIncr(t0, t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
@@ -662,23 +662,23 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
   _bc->dbChange(&dbChange);
   _bc->dbTimeHistory(&th);
 
-  const double pressureScale = _TestTimeDependentPoints::pressureScale;
-  const double lengthScale = _TestTimeDependentPoints::lengthScale;
-  const double timeScale = _TestTimeDependentPoints::timeScale;
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar pressureScale = _TestTimeDependentPoints::pressureScale;
+  const PylithScalar lengthScale = _TestTimeDependentPoints::lengthScale;
+  const PylithScalar timeScale = _TestTimeDependentPoints::timeScale;
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
   const char* fieldName = "force";
   _bc->_queryDatabases(*_mesh, forceScale, fieldName);
-  const double t0 = _TestTimeDependentPoints::tValue / timeScale;
-  const double t1 = _TestTimeDependentPoints::tValue2 / timeScale;
+  const PylithScalar t0 = _TestTimeDependentPoints::tValue / timeScale;
+  const PylithScalar t1 = _TestTimeDependentPoints::tValue2 / timeScale;
   _bc->_calculateValueIncr(t0, t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int numBCDOF = _TestTimeDependentPoints::numBCDOF;
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
   const int npoints = _TestTimeDependentPoints::npointsIn;
-  double_array valuesE(npoints*numBCDOF);
+  scalar_array valuesE(npoints*numBCDOF);
   for (int i=0; i < valuesE.size(); ++i)
     valuesE[i] = 
       _TestTimeDependentPoints::valuesIncrInitial[i] +
@@ -695,14 +695,14 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 // ----------------------------------------------------------------------
 // Check values in section against expected values.
 void
-pylith::bc::_TestTimeDependentPoints::_checkValues(const double* valuesE,
+pylith::bc::_TestTimeDependentPoints::_checkValues(const PylithScalar* valuesE,
 						   const int fiberDimE,
 						   const ALE::Obj<RealSection>& section,
-						   const double scale)
+						   const PylithScalar scale)
 { // _checkValues
   CPPUNIT_ASSERT(!section.isNull());
   
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // Check values at points associated with BC.
   const int npointsIn = _TestTimeDependentPoints::npointsIn;
@@ -711,7 +711,7 @@ pylith::bc::_TestTimeDependentPoints::_checkValues(const double* valuesE,
     const int fiberDim = section->getFiberDimension(p_bc);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
 
-    const double* values = section->restrictPoint(p_bc);
+    const PylithScalar* values = section->restrictPoint(p_bc);
     CPPUNIT_ASSERT(values);
     for (int iDim=0; iDim < fiberDimE; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i*fiberDimE+iDim]/scale,

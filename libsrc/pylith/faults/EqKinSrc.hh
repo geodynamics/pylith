@@ -59,13 +59,13 @@ public :
    *
    * @param value Origin time for earthquake source.
    */
-  void originTime(const double value);
+  void originTime(const PylithScalar value);
 
   /** Get origin time for earthquake source.
    *
    * @returns Origin time for earthquake source.
    */
-  double originTime(void) const;
+  PylithScalar originTime(void) const;
 
   /** Set slip time function.
    *
@@ -87,7 +87,7 @@ public :
    * @param t Time t.
    */
   void slip(topology::Field<topology::SubMesh>* const slipField,
-	    const double t);
+	    const PylithScalar t);
 
   /** Get increment of slip on fault surface between time t0 and t1.
    *
@@ -96,8 +96,8 @@ public :
    * @param t1 Time for end of slip increment.
    */
   void slipIncr(topology::Field<topology::SubMesh>* const slipField,
-		const double t0,
-		const double t1);
+		const PylithScalar t0,
+		const PylithScalar t1);
 
   /** Get final slip.
    *
@@ -120,7 +120,7 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  double _originTime; ///< Origin time for earthquake source
+  PylithScalar _originTime; ///< Origin time for earthquake source
   SlipTimeFn* _slipfn; ///< Slip time function
 
 }; // class EqKinSrc

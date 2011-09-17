@@ -27,7 +27,7 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
@@ -75,7 +75,7 @@ pylith::feassemble::ElasticityExplicitTet4::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
+pylith::feassemble::ElasticityExplicitTet4::timeStep(const PylithScalar dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -90,7 +90,7 @@ pylith::feassemble::ElasticityExplicitTet4::timeStep(const double dt)
 // ----------------------------------------------------------------------
 // Set normalized viscosity for numerical damping.
 void
-pylith::feassemble::ElasticityExplicitTet4::normViscosity(const double viscosity)
+pylith::feassemble::ElasticityExplicitTet4::normViscosity(const PylithScalar viscosity)
 { // normViscosity
   if (viscosity < 0.0) {
     std::ostringstream msg;
@@ -119,7 +119,7 @@ pylith::feassemble::ElasticityExplicitTet4::useSolnIncr(const bool flag)
 void
 pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
-			  const double t,
+			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != _quadrature);
@@ -139,7 +139,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   assert(_quadrature->numQuadPts() == _numQuadPts);
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == _numQuadPts);
   assert(_quadrature->numBasis() == _numBasis);
   assert(_quadrature->spaceDim() == _spaceDim);
@@ -163,10 +163,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 			   "domain not implemented yet.");
 
   // Allocate vectors for cell values.
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -179,20 +179,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array accCell(numBasis*spaceDim);
+  scalar_array accCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& accSection = 
     fields->get("acceleration(t)").section();
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
-  double_array velCell(numBasis*spaceDim);
+  scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  double_array dispCell(numBasis*spaceDim);
-  double_array dispAdjCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -201,7 +201,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
   
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -209,15 +209,15 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale = 
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
 
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
   assert(_normViscosity > 0.0);
   assert(dt > 0);
-  const double viscosity = dt*_normViscosity;
+  const PylithScalar viscosity = dt*_normViscosity;
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -235,7 +235,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
+    const PylithScalar volume = _volume(coordinatesCell);
     assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -269,7 +269,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     _logger->eventBegin(computeEvent);
 #endif
 
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
     assert(density.size() == 1);
 
     // Compute body force vector if gravity is being used.
@@ -286,13 +286,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
           lengthScale);
 
       // Compute action for element body forces
-      const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
+      const int err = db->query(&gravVec[0], gravVec.size(),
         &quadPtsGlobal[0], spaceDim, cs);
       if (err)
         throw std::runtime_error("Unable to get gravity vector for point.");
       _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
           gravityScale);
-      const double wtVertex = density[0] * volume / 4.0;
+      const PylithScalar wtVertex = density[0] * volume / 4.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
@@ -300,7 +301,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * volume / 16.0;
+    const PylithScalar wtVertex = density[0] * volume / 16.0;
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
         for (int iDim = 0; iDim < spaceDim; ++iDim)
@@ -318,38 +319,38 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     dispAdjCell = dispCell + viscosity * velCell;
 
     // Compute B(transpose) * sigma, first computing strains
-    const double x0 = coordinatesCell[0];
-    const double y0 = coordinatesCell[1];
-    const double z0 = coordinatesCell[2];
+    const PylithScalar x0 = coordinatesCell[0];
+    const PylithScalar y0 = coordinatesCell[1];
+    const PylithScalar z0 = coordinatesCell[2];
 
-    const double x1 = coordinatesCell[3];
-    const double y1 = coordinatesCell[4];
-    const double z1 = coordinatesCell[5];
+    const PylithScalar x1 = coordinatesCell[3];
+    const PylithScalar y1 = coordinatesCell[4];
+    const PylithScalar z1 = coordinatesCell[5];
 
-    const double x2 = coordinatesCell[6];
-    const double y2 = coordinatesCell[7];
-    const double z2 = coordinatesCell[8];
+    const PylithScalar x2 = coordinatesCell[6];
+    const PylithScalar y2 = coordinatesCell[7];
+    const PylithScalar z2 = coordinatesCell[8];
 
-    const double x3 = coordinatesCell[9];
-    const double y3 = coordinatesCell[10];
-    const double z3 = coordinatesCell[11];
+    const PylithScalar x3 = coordinatesCell[9];
+    const PylithScalar y3 = coordinatesCell[10];
+    const PylithScalar z3 = coordinatesCell[11];
 
-    const double scaleB = 6.0 * volume;
-    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
-    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
-    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+    const PylithScalar scaleB = 6.0 * volume;
+    const PylithScalar b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
+    const PylithScalar c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
+    const PylithScalar d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
 
-    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
-    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
-    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+    const PylithScalar b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
+    const PylithScalar c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
+    const PylithScalar d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
 
-    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
-    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
-    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+    const PylithScalar b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
+    const PylithScalar c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
+    const PylithScalar d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
 
-    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
-    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
-    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
+    const PylithScalar b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
+    const PylithScalar c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
+    const PylithScalar d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
     strainCell[0] = 
@@ -377,7 +378,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
        d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
        b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(196);
@@ -425,12 +426,12 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 void
 pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
         const topology::Field<topology::Mesh>& residual,
-        const double t,
+        const PylithScalar t,
         topology::SolutionFields* const fields)
 { // integrateResidualLumped
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicitTet4::*elasticityResidual_fn_type)
-    (const double_array&);
+    (const scalar_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -471,10 +472,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
          "domain not implemented yet.");
 
   // Allocate vectors for cell values.
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -490,20 +491,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   assert(!sieve.isNull());
 
   // Get sections
-  double_array accCell(numBasis*spaceDim);
+  scalar_array accCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& accSection = 
     fields->get("acceleration(t)").section();
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
-  double_array velCell(numBasis*spaceDim);
+  scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  double_array dispCell(numBasis*spaceDim);
-  double_array dispAdjCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -512,7 +513,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -520,18 +521,18 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale =
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale =
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
             _normalizer->densityScale());
 
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
   assert(_normViscosity > 0.0);
   assert(dt > 0);
-  const double viscosity = dt*_normViscosity;
+  const PylithScalar viscosity = dt*_normViscosity;
 
   // Get parameters used in integration.
-  double_array valuesIJ(numBasis);
+  scalar_array valuesIJ(numBasis);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -579,7 +580,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Compute geometry information for current cell
-    const double volume = _volume(coordinatesCell);
+    const PylithScalar volume = _volume(coordinatesCell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -590,7 +591,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     _material->retrievePropsAndVars(*c_iter);
 
     // Get density at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
@@ -614,13 +615,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
           lengthScale);
 
       // Compute action for element body forces
-      const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
+      const int err = db->query(&gravVec[0], gravVec.size(),
         &quadPtsGlobal[0], spaceDim, cs);
       if (err)
         throw std::runtime_error("Unable to get gravity vector for point.");
       _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
           gravityScale);
-      const double wtVertex = density[0] * volume / 4.0;
+      const PylithScalar wtVertex = density[0] * volume / 4.0;
       for (int iBasis=0; iBasis < numBasis; ++iBasis)
         for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
@@ -628,7 +630,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     } // if
 
     // Compute action for inertial terms
-    const double wtVertex = density[0] * volume / 4.0;
+    const PylithScalar wtVertex = density[0] * volume / 4.0;
     _cellVector -= wtVertex * accCell;
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -642,38 +644,38 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
     dispAdjCell = dispCell + viscosity * velCell;    
 
     // Compute B(transpose) * sigma, first computing strains
-    const double x0 = coordinatesCell[0];
-    const double y0 = coordinatesCell[1];
-    const double z0 = coordinatesCell[2];
+    const PylithScalar x0 = coordinatesCell[0];
+    const PylithScalar y0 = coordinatesCell[1];
+    const PylithScalar z0 = coordinatesCell[2];
 
-    const double x1 = coordinatesCell[3];
-    const double y1 = coordinatesCell[4];
-    const double z1 = coordinatesCell[5];
+    const PylithScalar x1 = coordinatesCell[3];
+    const PylithScalar y1 = coordinatesCell[4];
+    const PylithScalar z1 = coordinatesCell[5];
 
-    const double x2 = coordinatesCell[6];
-    const double y2 = coordinatesCell[7];
-    const double z2 = coordinatesCell[8];
+    const PylithScalar x2 = coordinatesCell[6];
+    const PylithScalar y2 = coordinatesCell[7];
+    const PylithScalar z2 = coordinatesCell[8];
 
-    const double x3 = coordinatesCell[9];
-    const double y3 = coordinatesCell[10];
-    const double z3 = coordinatesCell[11];
+    const PylithScalar x3 = coordinatesCell[9];
+    const PylithScalar y3 = coordinatesCell[10];
+    const PylithScalar z3 = coordinatesCell[11];
 
-    const double scaleB = 6.0 * volume;
-    const double b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
-    const double c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
-    const double d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
+    const PylithScalar scaleB = 6.0 * volume;
+    const PylithScalar b1 = (y1*(z3-z2)-y2*z3+y3*z2-(y3-y2)*z1) / scaleB;
+    const PylithScalar c1 = (-x1*(z3-z2)+x2*z3-x3*z2-(x2-x3)*z1) / scaleB;
+    const PylithScalar d1 = (-x2*y3-x1*(y2-y3)+x3*y2+(x2-x3)*y1) / scaleB;
 
-    const double b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
-    const double c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
-    const double d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
+    const PylithScalar b2 = (-y0*z3-y2*(z0-z3)+(y0-y3)*z2+y3*z0) / scaleB;
+    const PylithScalar c2 = (x0*z3+x2*(z0-z3)+(x3-x0)*z2-x3*z0) / scaleB;
+    const PylithScalar d2 = (x2*(y3-y0)-x0*y3-(x3-x0)*y2+x3*y0) / scaleB;
 
-    const double b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
-    const double c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
-    const double d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
+    const PylithScalar b3 = (-(y1-y0)*z3+y3*(z1-z0)-y0*z1+y1*z0) / scaleB;
+    const PylithScalar c3 = (-(x0-x1)*z3-x3*(z1-z0)+x0*z1-x1*z0) / scaleB;
+    const PylithScalar d3 = ((x0-x1)*y3-x0*y1-x3*(y0-y1)+x1*y0) / scaleB;
 
-    const double b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
-    const double c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
-    const double d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
+    const PylithScalar b4 = (-y0*(z2-z1)+y1*z2-y2*z1+(y2-y1)*z0) / scaleB;
+    const PylithScalar c4 = (x0*(z2-z1)-x1*z2+x2*z1+(x1-x2)*z0) / scaleB;
+    const PylithScalar d4 = (x1*y2+x0*(y1-y2)-x2*y1-(x1-x2)*y0) / scaleB;
 
     assert(strainCell.size() == 6);
     strainCell[0] = 
@@ -701,7 +703,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
        d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
        b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(196);
@@ -762,7 +764,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 void
 pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 					topology::Jacobian* jacobian,
-					const double t,
+					const PylithScalar t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
   assert(0 != _quadrature);
@@ -781,7 +783,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -803,7 +805,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array dispCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = 
     fields->get("disp(t)").section();
   assert(!dispSection.isNull());
@@ -813,8 +815,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
+  const PylithScalar dt = _dt;
+  const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
@@ -825,7 +827,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 					   sieveMesh->depth())*spaceDim);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -848,7 +850,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
     // Compute geometry information for current cell
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
+    const PylithScalar volume = _volume(coordinatesCell);
     assert(volume > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -868,11 +870,11 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
     _resetCellMatrix();
 
     // Get material physical properties at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
     assert(density.size() == 1);
 
     // Compute Jacobian for inertial terms
-    const double wtVertex = density[0] * volume / (16.0 * dt2);
+    const PylithScalar wtVertex = density[0] * volume / (16.0 * dt2);
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
 	for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -913,7 +915,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 void
 pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 			    topology::Field<topology::Mesh>* jacobian,
-			    const double t,
+			    const PylithScalar t,
 			    topology::SolutionFields* fields)
 { // integrateJacobian
   assert(0 != _quadrature);
@@ -954,8 +956,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
+  const PylithScalar dt = _dt;
+  const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
   // Get sections
@@ -963,7 +965,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   assert(!jacobianSection.isNull());
   UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -984,7 +986,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
     coordsVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    const double volume = _volume(coordinatesCell);
+    const PylithScalar volume = _volume(coordinatesCell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -1000,7 +1002,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
 
     // Compute Jacobian for inertial terms
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
     assert(volume > 0.0);
     _cellVector = density[0] * volume / (4.0 * dt2);
     
@@ -1030,35 +1032,35 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 
 // ----------------------------------------------------------------------
 // Compute volume of tetrahedral cell.
-double
+PylithScalar
 pylith::feassemble::ElasticityExplicitTet4::_volume(
-			     const double_array& coordinatesCell) const
+			     const scalar_array& coordinatesCell) const
 { // __volume
   assert(12 == coordinatesCell.size());
 
-  const double x0 = coordinatesCell[0];
-  const double y0 = coordinatesCell[1];
-  const double z0 = coordinatesCell[2];
+  const PylithScalar x0 = coordinatesCell[0];
+  const PylithScalar y0 = coordinatesCell[1];
+  const PylithScalar z0 = coordinatesCell[2];
 
-  const double x1 = coordinatesCell[3];
-  const double y1 = coordinatesCell[4];
-  const double z1 = coordinatesCell[5];
+  const PylithScalar x1 = coordinatesCell[3];
+  const PylithScalar y1 = coordinatesCell[4];
+  const PylithScalar z1 = coordinatesCell[5];
 
-  const double x2 = coordinatesCell[6];
-  const double y2 = coordinatesCell[7];
-  const double z2 = coordinatesCell[8];
+  const PylithScalar x2 = coordinatesCell[6];
+  const PylithScalar y2 = coordinatesCell[7];
+  const PylithScalar z2 = coordinatesCell[8];
 
-  const double x3 = coordinatesCell[9];
-  const double y3 = coordinatesCell[10];
-  const double z3 = coordinatesCell[11];
+  const PylithScalar x3 = coordinatesCell[9];
+  const PylithScalar y3 = coordinatesCell[10];
+  const PylithScalar z3 = coordinatesCell[11];
 
-  const double det = 
+  const PylithScalar det = 
     x1*(y2*z3-y3*z2)-y1*(x2*z3-x3*z2)+(x2*y3-x3*y2)*z1 - 
     x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
     y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
     z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
     
-  const double volume = det / 6.0;
+  const PylithScalar volume = det / 6.0;
   PetscLogFlops(48);
 
   return volume;  

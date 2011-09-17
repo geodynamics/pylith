@@ -19,6 +19,8 @@
 #if !defined(pylith_bc_pointforcedata_hh)
 #define pylith_bc_pointforcedata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace bc {
      class PointForceData;
@@ -40,9 +42,9 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  double tRef; ///< Reference time for rate of change of forces.
-  double forceRate; ///< Rate of change of force.
-  double tResidual; ///< Time for computing residual.
+  PylithScalar tRef; ///< Reference time for rate of change of forces.
+  PylithScalar forceRate; ///< Rate of change of force.
+  PylithScalar tResidual; ///< Time for computing residual.
 
   int numDOF; ///< Number of degrees of freedom at each point.
   int numForceDOF; ///< Number of forces at points.
@@ -53,8 +55,8 @@ public:
 
   int* forceDOF; ///< Degrees of freedom that are constrained at each point
   int* forcePoints; ///< Array of indices of points with forces.
-  double* forceInitial; ///< Forces at points.
-  double* residual; ///< Residual field.
+  PylithScalar* forceInitial; ///< Forces at points.
+  PylithScalar* residual; ///< Residual field.
 
   char* meshFilename; ///< Filename for input mesh.
   char* dbFilename; ///< Filename of simple spatial database.

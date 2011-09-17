@@ -119,7 +119,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 void
 pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != fields);
@@ -163,7 +163,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
 
-  double scale = 0.0;
+  PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
     const topology::Field<topology::SubMesh>& slip = _fields->get("slip");

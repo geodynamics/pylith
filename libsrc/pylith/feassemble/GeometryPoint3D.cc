@@ -20,7 +20,7 @@
 
 #include "GeometryPoint3D.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -29,7 +29,7 @@
 pylith::feassemble::GeometryPoint3D::GeometryPoint3D(void) :
   CellGeometry(POINT, 3)
 { // constructor
-  const double vertices[] = { 0.0 };
+  const PylithScalar vertices[] = { 0.0 };
   _setVertices(vertices, 1, 1);
 } // constructor
 
@@ -58,9 +58,9 @@ pylith::feassemble::GeometryPoint3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryPoint3D::ptsRefToGlobal(double* ptsGlobal,
-						    const double* ptsRef,
-						    const double* vertices,
+pylith::feassemble::GeometryPoint3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
+						    const PylithScalar* ptsRef,
+						    const PylithScalar* vertices,
 						    const int dim,
 						    const int npts) const
 { // ptsRefToGlobal
@@ -78,10 +78,10 @@ pylith::feassemble::GeometryPoint3D::ptsRefToGlobal(double* ptsGlobal,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryPoint3D::jacobian(double_array* jacobian,
-					    double* det,
-					    const double_array& vertices,
-					    const double_array& location) const
+pylith::feassemble::GeometryPoint3D::jacobian(scalar_array* jacobian,
+					    PylithScalar* det,
+					    const scalar_array& vertices,
+					    const scalar_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -95,10 +95,10 @@ pylith::feassemble::GeometryPoint3D::jacobian(double_array* jacobian,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryPoint3D::jacobian(double* jacobian,
-					      double* det,
-					      const double* vertices,
-					      const double* location,
+pylith::feassemble::GeometryPoint3D::jacobian(PylithScalar* jacobian,
+					      PylithScalar* det,
+					      const PylithScalar* vertices,
+					      const PylithScalar* location,
 					      const int dim,
 					      const int npts) const
 { // jacobian

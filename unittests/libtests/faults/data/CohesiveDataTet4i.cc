@@ -43,7 +43,7 @@ const int pylith::faults::CohesiveDataTet4i::_numCells = 6;
 
 const int pylith::faults::CohesiveDataTet4i::_cellDim = 3;
 
-const double pylith::faults::CohesiveDataTet4i::_vertices[] = {
+const PylithScalar pylith::faults::CohesiveDataTet4i::_vertices[] = {
   -1.0,  0.0,  0.0,
    0.0, -1.0,  0.0,
    0.0,  0.0,  1.0,
@@ -105,7 +105,7 @@ pylith::faults::CohesiveDataTet4i::CohesiveDataTet4i(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);

@@ -90,7 +90,7 @@ public :
    */
   virtual
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Update state variables as needed.
@@ -99,7 +99,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateStateVars(const double t,
+  void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
   /** Constrain solution space based on friction.
@@ -109,7 +109,7 @@ public :
    * @param jacobian Sparse matrix for system Jacobian.
    */
   void constrainSolnSpace(topology::SolutionFields* const fields,
-			  const double t,
+			  const PylithScalar t,
 			  const topology::Jacobian& jacobian);
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
@@ -205,10 +205,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped1D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped1D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
    *
@@ -217,10 +217,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped2D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped2D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
    *
@@ -229,10 +229,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped3D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped3D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
@@ -242,11 +242,11 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt,
+           const PylithScalar area);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
@@ -256,11 +256,11 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt,
+           const PylithScalar area);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
@@ -270,11 +270,11 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt,
+           const PylithScalar area);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
@@ -291,7 +291,7 @@ private :
   PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
 
   /// Minimum resolvable value accounting for roundoff errors
-  static const double _zeroTolerance;
+  static const PylithScalar _zeroTolerance;
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -57,6 +57,7 @@
 
 %include "typemaps.i"
 %include "../include/doublearray.i"
+%include "../include/pylithtypes.i"
 
 // Numpy interface stuff
 %{

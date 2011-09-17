@@ -48,25 +48,25 @@ const int pylith::faults::CohesiveDynDataHex8::_numBasis = 4;
 
 const int pylith::faults::CohesiveDynDataHex8::_numQuadPts = 4;
 
-const double pylith::faults::CohesiveDynDataHex8::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_quadPts[] = {
   -0.57735027, -0.57735027,
   +0.57735027, -0.57735027,
   +0.57735027, +0.57735027,
   -0.57735027, +0.57735027,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_quadWts[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_basis[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_basis[] = {
   0.62200847,  0.16666667,  0.0446582,   0.16666667,
   0.16666667,  0.62200847,  0.16666667,   0.0446582,
   0.0446582,   0.16666667,  0.62200847,  0.16666667,
   0.16666667,   0.0446582,  0.16666667,  0.62200847,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_basisDeriv[] = {
   -0.39433757, -0.39433757,
   +0.39433757, -0.10566243,
   +0.10566243, +0.10566243,
@@ -88,7 +88,7 @@ const double pylith::faults::CohesiveDynDataHex8::_basisDeriv[] = {
   -0.39433757, +0.39433757,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_verticesRef[] = {
   -1.0, -1.0,
   +1.0, -1.0,
   +1.0, +1.0,
@@ -102,7 +102,7 @@ const char* pylith::faults::CohesiveDynDataHex8::_label = "fault";
 const char* pylith::faults::CohesiveDynDataHex8::_initialTractFilename = 
   "data/hex8_initialtract.spatialdb";
 
-const double pylith::faults::CohesiveDynDataHex8::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldT[] = {
   4.1, 6.1, 8.1,
   4.2, 6.2, 8.2,
   4.3, 6.3, 8.3,
@@ -127,7 +127,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldT[] = {
 
 // :TODO: Make sensible values for Jacobian for DOF on positive and
 // negative sides of the fault. Add semi-random values for other DOF.
-const double pylith::faults::CohesiveDynDataHex8::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_jacobian[] = {
     1,  0.1,  0.2,
   0.3,  0.4,  0.5,
   0.6,  0.7,  0.8,
@@ -1334,18 +1334,18 @@ const double pylith::faults::CohesiveDynDataHex8::_jacobian[] = {
 // Computed values
 // ----------------------------------------------------------------------
 
-const double pylith::faults::CohesiveDynDataHex8::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_area[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_forcesInitial[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_forcesInitial[] = {
   3.063397471, -1.063397471, +2.063397471, 
   3.121132498, -1.121132498, +2.121132498, 
   3.178867525, -1.178867525, +2.178867525,
@@ -1361,7 +1361,7 @@ const int pylith::faults::CohesiveDynDataHex8::_constraintVertices[] = {
 // Stick case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
   0.1, 2.1, 28.1,
   0.2, 2.2, 28.2,
   0.3, 2.3, 28.3,
@@ -1391,7 +1391,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
 // Slip case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
   5.1, 7.1, 9.1,
   5.2, 7.2, 9.2,
   5.3, 7.3, 9.3,
@@ -1415,7 +1415,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
 };
 
 // Output
-const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
    5.100000000000,   7.100000000000,   9.100000000000,
    5.200000000000,   7.200000000000,   9.200000000000,
    5.300000000000,   7.300000000000,   9.300000000000,
@@ -1438,7 +1438,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
   -5.424264068712,  -7.424264068712, -10.000000000000,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_slipSlipE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_slipSlipE[] = {
    0.009957324142,   0.009642822884,   0.000000000000,
    0.008367993202,   0.008229627421,   0.000000000000,
    0.007245099193,   0.007208982264,   0.000000000000,
@@ -1449,7 +1449,7 @@ const double pylith::faults::CohesiveDynDataHex8::_slipSlipE[] = {
 // Open case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataHex8::_fieldIncrOpen[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrOpen[] = {
   5.1, 7.1, 9.1,
   5.2, 7.2, 9.2,
   5.3, 7.3, 9.3,
@@ -1473,7 +1473,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrOpen[] = {
 };
 
 // Output
-const double pylith::faults::CohesiveDynDataHex8::_fieldIncrOpenE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrOpenE[] = {
    5.100000000000,   7.100000000000,   9.100000000000,
    5.200000000000,   7.200000000000,   9.200000000000,
    5.300000000000,   7.300000000000,   9.300000000000,
@@ -1496,7 +1496,7 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrOpenE[] = {
   -5.000000000000,  -7.000000000000,  -9.000000000000,
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_slipOpenE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_slipOpenE[] = {
   -0.115090051058,  -0.352456376134,   0.000000000000,
   -0.089197388297,  -0.318623393323,   0.000000000000,
   -0.071043332138,  -0.294365786929,   0.000000000000,
@@ -1511,36 +1511,36 @@ pylith::faults::CohesiveDynDataHex8::CohesiveDynDataHex8(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   initialTractFilename = const_cast<char*>(_initialTractFilename);
 
-  fieldT = const_cast<double*>(_fieldT);
-  jacobian = const_cast<double*>(_jacobian);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  forcesInitial = const_cast<PylithScalar*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 
   // Stick
-  fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  fieldIncrStick = const_cast<PylithScalar*>(_fieldIncrStick);
 
   // Slip
-  fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);
-  fieldIncrSlipE = const_cast<double*>(_fieldIncrSlipE);
-  slipSlipE = const_cast<double*>(_slipSlipE);
+  fieldIncrSlip = const_cast<PylithScalar*>(_fieldIncrSlip);
+  fieldIncrSlipE = const_cast<PylithScalar*>(_fieldIncrSlipE);
+  slipSlipE = const_cast<PylithScalar*>(_slipSlipE);
 
   // Open
-  fieldIncrOpen = const_cast<double*>(_fieldIncrOpen);
-  fieldIncrOpenE = const_cast<double*>(_fieldIncrOpenE);
-  slipOpenE = const_cast<double*>(_slipOpenE);
+  fieldIncrOpen = const_cast<PylithScalar*>(_fieldIncrOpen);
+  fieldIncrOpenE = const_cast<PylithScalar*>(_fieldIncrOpenE);
+  slipOpenE = const_cast<PylithScalar*>(_slipOpenE);
 } // constructor
 
 pylith::faults::CohesiveDynDataHex8::~CohesiveDynDataHex8(void)

@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "utilsfwd.hh" // forward declarations
 
-#include "arrayfwd.hh" // USES double_array
+#include "array.hh" // USES scalar_array
 
 // TestArray ------------------------------------------------------------
 /** @brief C++ object for testing array values.
@@ -53,9 +53,9 @@ public :
    */
   static
   bool
-  check(const double* valuesE,
+  check(const PylithScalar* valuesE,
 	const int nvalues,
-	const double_array& values);
+	const scalar_array& values);
 
 }; // EventLogger
 

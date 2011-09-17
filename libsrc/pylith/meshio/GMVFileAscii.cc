@@ -20,7 +20,7 @@
 
 #include "GMVFileAscii.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include "journal/info.h" // USES journal::info_t
 
@@ -50,7 +50,7 @@ pylith::meshio::GMVFileAscii::~GMVFileAscii(void)
 // ----------------------------------------------------------------------
 // Read ASCII GMV file.
 void
-pylith::meshio::GMVFileAscii::read(double_array* coordinates,
+pylith::meshio::GMVFileAscii::read(scalar_array* coordinates,
 				   int_array* cells,
 				   int_array* materialIds,
 				   int* meshDim,
@@ -108,7 +108,7 @@ pylith::meshio::GMVFileAscii::read(double_array* coordinates,
 // ----------------------------------------------------------------------
 // Write ASCII GMV file.
 void
-pylith::meshio::GMVFileAscii::write(const double_array& coordinates,
+pylith::meshio::GMVFileAscii::write(const scalar_array& coordinates,
 				    const int_array& cells,
 				    const int_array& materialIds,
 				    const int meshDim,
@@ -149,7 +149,7 @@ pylith::meshio::GMVFileAscii::_readHeader(std::ifstream& fin)
 // ----------------------------------------------------------------------
 void
 pylith::meshio::GMVFileAscii::_readVertices(std::ifstream& fin,
-					    double_array* coordinates,
+					    scalar_array* coordinates,
 					    int* numVertices,
 					    int* spaceDim)
 { // _readVertices
@@ -244,12 +244,12 @@ pylith::meshio::GMVFileAscii::_readVariables(std::ifstream& fin,
     fin >> varType;
     if (1 == varType) { // variables/attributes associated with vertices
       const int numVars = 1;
-      double_array vals(numVertices*numVars);
+      scalar_array vals(numVertices*numVars);
       for (int iVertex=0; iVertex < numVertices; ++iVertex)
 	fin >> vals[iVertex];
     } else { // variables/attributes associated with cells
       const int numVars = 1;
-      double_array vals(numCells*numVars);
+      scalar_array vals(numCells*numVars);
       for (int iCell=0; iCell < numCells; ++iCell)
 	fin >> vals[iCell];
     } // else

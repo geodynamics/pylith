@@ -48,7 +48,7 @@ pylith::problems::Implicit::calcRateFields(void)
 
   // vel(t) = (disp(t+dt) - disp(t)) / dt
   //        = dispIncr(t+dt) / dt
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
   const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();
@@ -56,11 +56,11 @@ pylith::problems::Implicit::calcRateFields(void)
   const int spaceDim = cs->spaceDim();
   
   // Get sections.
-  double_array dispIncrVertex(spaceDim);
+  scalar_array dispIncrVertex(spaceDim);
   const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
   assert(!dispIncrSection.isNull());
 	 
-  double_array velVertex(spaceDim);
+  scalar_array velVertex(spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     _fields->get("velocity(t)").section();
   assert(!velSection.isNull());

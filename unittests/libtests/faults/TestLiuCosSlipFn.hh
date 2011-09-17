@@ -110,7 +110,7 @@ private :
   void _initialize(topology::Mesh* mesh,
 		   topology::SubMesh* faultMesh,
 		   LiuCosSlipFn* slipfn,
-		   const double originTime);
+		   const PylithScalar originTime);
 
   /** Test intialize().
    *
@@ -126,9 +126,9 @@ private :
    * @param riseTime Rise time (t95).
    */
   static
-  double _slipFn(const double t,
-		 const double finalSlip,
-		 const double riseTime);
+  PylithScalar _slipFn(const PylithScalar t,
+		 const PylithScalar finalSlip,
+		 const PylithScalar riseTime);
 
 }; // class TestLiuCosSlipFn
 

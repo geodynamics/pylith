@@ -77,9 +77,9 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
   assert(_normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double rateScale = lengthScale / timeScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar rateScale = lengthScale / timeScale;
 
   assert(_boundaryMesh);
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
@@ -131,7 +131,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 					     const char* label,
-					     const double scale)
+					     const PylithScalar scale)
 { // _bufferVector
   typedef topology::SubMesh::SieveMesh SieveMesh;
   typedef topology::Mesh::RealUniformSection RealUniformSection;
@@ -164,7 +164,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
     _outputFields->section();
   assert(!outputSection.isNull());
   const int outputFiberDim = _outputFields->fiberDim();  
-  double_array outputVertex(outputFiberDim);
+  scalar_array outputVertex(outputFiberDim);
   const int bufferIndex = _outputFields->sectionIndex("buffer (vector)");
   const int bufferFiberDim = _outputFields->sectionFiberDim("buffer (vector)");
   assert(bufferIndex + bufferFiberDim <= outputFiberDim);
@@ -184,7 +184,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
     outputVertex = 0.0;
 
     assert(parametersFiberDim == parametersSection->getFiberDimension(point));
-    const double* parametersVertex = parametersSection->restrictPoint(point);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(point);
     assert(parametersVertex);
     
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
@@ -207,7 +207,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 					     const char* label,
-					     const double scale)
+					     const PylithScalar scale)
 { // _bufferScalar
   typedef topology::SubMesh::SieveMesh SieveMesh;
   typedef topology::Mesh::RealUniformSection RealUniformSection;
@@ -235,7 +235,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
     _outputFields->section();
   assert(!outputSection.isNull());
   const int outputFiberDim = _outputFields->fiberDim();  
-  double_array outputVertex(outputFiberDim);
+  scalar_array outputVertex(outputFiberDim);
   const int bufferIndex = _outputFields->sectionIndex("buffer (vector)");
   const int bufferFiberDim = _outputFields->sectionFiberDim("buffer (vector)");
   assert(bufferIndex + bufferFiberDim <= outputFiberDim);
@@ -255,7 +255,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
     outputVertex = 0.0;
 
     assert(parametersFiberDim == parametersSection->getFiberDimension(point));
-    const double* parametersVertex = parametersSection->restrictPoint(point);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(point);
     assert(parametersVertex);
     
     outputVertex[bufferIndex] = parametersVertex[fieldIndex];

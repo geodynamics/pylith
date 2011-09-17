@@ -19,6 +19,8 @@
 #if !defined(pylith_bc_absorbingdampersdata_hh)
 #define pylith_bc_absorbingdampersdata_hh
 
+#include "pylith/utils/types.hh" // USES PylithScalar
+
 namespace pylith {
   namespace bc {
      class AbsorbingDampersData;
@@ -46,10 +48,10 @@ public:
   //@{
   int numBasis; ///< Number of basis functions for cell
   int numQuadPts; ///< Number of quadrature points
-  double* quadPts; ///< Coordinates of quad pts in ref cell
-  double* quadWts; ///< Weights of quadrature points
-  double* basis; ///< Basis fns at quadrature points
-  double* basisDerivRef; ///< Derivatives of basis fns at quad pts
+  PylithScalar* quadPts; ///< Coordinates of quad pts in ref cell
+  PylithScalar* quadWts; ///< Weights of quadrature points
+  PylithScalar* basis; ///< Basis fns at quadrature points
+  PylithScalar* basisDerivRef; ///< Derivatives of basis fns at quad pts
   //@}
 
   /// @name Parameter information
@@ -61,10 +63,10 @@ public:
 
   /// @name Input fields
   //@{
-  double dt; ///< Time step
-  double* fieldTIncr; ///< Input increment field for time to to t+dt.
-  double* fieldT; ///< Input field at time t.
-  double* fieldTmdt; ///< Input field at time t-dt.
+  PylithScalar dt; ///< Time step
+  PylithScalar* fieldTIncr; ///< Input increment field for time to to t+dt.
+  PylithScalar* fieldT; ///< Input field at time t.
+  PylithScalar* fieldTmdt; ///< Input field at time t-dt.
   //@}
 
   /// @name Boundary mesh information
@@ -79,9 +81,9 @@ public:
 
   /// @name Calculated values.
   //@{
-  double* dampingConsts; ///< Expected values from initialization.
-  double* valsResidual; ///< Expected values from residual calculation.
-  double* valsJacobian; ///< Expected values from Jacobian calculation.
+  PylithScalar* dampingConsts; ///< Expected values from initialization.
+  PylithScalar* valsResidual; ///< Expected values from residual calculation.
+  PylithScalar* valsJacobian; ///< Expected values from Jacobian calculation.
   //@}
 };
 

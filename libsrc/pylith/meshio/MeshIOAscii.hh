@@ -83,7 +83,7 @@ private :
    * @param spaceDim Pointer to dimension of coordinates vector space
    */
   void _readVertices(spatialdata::utils::LineParser& parser,
-		     double_array* coordinates,
+		     scalar_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
   

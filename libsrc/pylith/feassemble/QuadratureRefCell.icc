@@ -22,7 +22,7 @@
 
 // Get minimum allowable Jacobian.
 inline
-double
+PylithScalar
 pylith::feassemble::QuadratureRefCell::minJacobian(void) const {
   return _minJacobian;
 }
@@ -30,34 +30,34 @@ pylith::feassemble::QuadratureRefCell::minJacobian(void) const {
 // Set minimum allowable Jacobian.
 inline
 void
-pylith::feassemble::QuadratureRefCell::minJacobian(const double min) {
+pylith::feassemble::QuadratureRefCell::minJacobian(const PylithScalar min) {
   _minJacobian = min;
 }
 
 // Get coordinates of quadrature points in reference cell.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureRefCell::quadPtsRef(void) const {
   return _quadPtsRef;
 }
 
 // Get weights of quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureRefCell::quadWts(void) const {
   return _quadWts;
 }
 
 // Get basis fns evaluated at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureRefCell::basis(void) const {
   return _basis;
 }
 
 // Get derivates of basis fns evaluated at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureRefCell::basisDerivRef(void) const {
   return _basisDerivRef;
 }

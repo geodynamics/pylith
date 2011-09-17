@@ -71,7 +71,7 @@ pylith::meshio::TestDataWriterHDF5ExtBCMesh::testOpenClose(void)
 
   writer.filename(_data->timestepFilename);
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
@@ -106,7 +106,7 @@ pylith::meshio::TestDataWriterHDF5ExtBCMesh::testWriteVertexField(void)
 
   const int nfields = _data->numVertexFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
@@ -144,7 +144,7 @@ pylith::meshio::TestDataWriterHDF5ExtBCMesh::testWriteCellField(void)
 
   const int nfields = _data->numCellFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);

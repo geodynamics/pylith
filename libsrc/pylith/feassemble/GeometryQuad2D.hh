@@ -82,9 +82,9 @@ public :
    * @param dim Dimension of global coordinate system.
    * @param npts Number of points to transform.
    */
-  void ptsRefToGlobal(double* ptsGlobal,
-		      const double* ptsRef,
-		      const double* vertices,
+  void ptsRefToGlobal(PylithScalar* ptsGlobal,
+		      const PylithScalar* ptsRef,
+		      const PylithScalar* vertices,
 		      const int dim,
 		      const int npts =1) const;
 
@@ -95,10 +95,10 @@ public :
    * @param vertices Coordinates of vertices of cell.
    * @param location Location in reference cell at which to compute Jacobian.
    */
-  void jacobian(double_array* jacobian,
-		double* det,
-		const double_array& vertices,
-		const double_array& location) const;
+  void jacobian(scalar_array* jacobian,
+		PylithScalar* det,
+		const scalar_array& vertices,
+		const scalar_array& location) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -109,10 +109,10 @@ public :
    * @param dim Dimension of coordinate system.
    * @param npts Number of points to transform.
    */
-  void jacobian(double* jacobian,
-		double* det,
-		const double* vertices,
-		const double* ptsRef,
+  void jacobian(PylithScalar* jacobian,
+		PylithScalar* det,
+		const PylithScalar* vertices,
+		const PylithScalar* ptsRef,
 		const int dim,
 		const int npts =1) const;
 

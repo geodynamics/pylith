@@ -70,9 +70,9 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
   _getPoints(mesh);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double forceScale = pressureScale * lengthScale * lengthScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
 
   _queryDatabases(mesh, forceScale, "force");
 } // initialize
@@ -82,7 +82,7 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 void
 pylith::bc::PointForce::integrateResidual(
 			   const topology::Field<topology::Mesh>& residual,
-			   const double t,
+			   const PylithScalar t,
 			   topology::SolutionFields* const fields)
 { // integrateResidualAssembled
   assert(_parameters);
@@ -99,7 +99,7 @@ pylith::bc::PointForce::integrateResidual(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  double_array residualVertex(spaceDim);
+  scalar_array residualVertex(spaceDim);
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
@@ -130,7 +130,7 @@ pylith::bc::PointForce::integrateResidual(
     residualVertex *= 0.0; // Reset residual contribution to zero.
     
     assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_bc);
     assert(parametersVertex);
 
     for (int iDOF=0; iDOF < numBCDOF; ++iDOF)

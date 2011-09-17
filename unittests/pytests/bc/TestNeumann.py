@@ -80,7 +80,7 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, bc.stableTimeStep(mesh))
+    self.assertAlmostEqual(1.0, bc.stableTimeStep(mesh)/1.0e+30, 5)
     return
 
   

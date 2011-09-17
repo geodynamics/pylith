@@ -76,7 +76,7 @@ namespace pylith {
        */
       virtual
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				      const double t,
+				      const PylithScalar t,
 				      pylith::topology::SolutionFields* const fields);
 
       /** Update state variables as needed.
@@ -85,7 +85,7 @@ namespace pylith {
        * @param fields Solution fields
        * @param mesh Finite-element mesh
        */
-      void updateStateVars(const double t,
+      void updateStateVars(const PylithScalar t,
 			   pylith::topology::SolutionFields* const fields);
       
       /** Constrain solution space based on friction.
@@ -95,7 +95,7 @@ namespace pylith {
        * @param jacobian Sparse matrix for system Jacobian.
        */
       void constrainSolnSpace(pylith::topology::SolutionFields* const fields,
-			      const double t,
+			      const PylithScalar t,
 			      const pylith::topology::Jacobian& jacobian);
 
       /** Adjust solution from solver with lumped Jacobian to match Lagrange

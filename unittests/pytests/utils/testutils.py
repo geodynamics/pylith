@@ -62,6 +62,9 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestPylith import TestPylith
+    suite.addTest(unittest.makeSuite(TestPylith))
+
     from TestEventLogger import TestEventLogger
     suite.addTest(unittest.makeSuite(TestEventLogger))
 

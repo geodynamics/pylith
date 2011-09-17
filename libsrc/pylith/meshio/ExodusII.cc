@@ -183,9 +183,9 @@ pylith::meshio::ExodusII::getDim(const char* name) const
 } // getDim
 
 // ----------------------------------------------------------------------
-// Get values for variable as an array of doubles.
+// Get values for variable as an array of PylithScalars.
 void
-pylith::meshio::ExodusII::getVar(double* values,
+pylith::meshio::ExodusII::getVar(PylithScalar* values,
 				 int* dims,
 				 int ndims,
 				 const char* name) const

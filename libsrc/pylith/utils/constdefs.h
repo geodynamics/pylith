@@ -25,9 +25,12 @@
 #if !defined(pylith_utils_constdefs_h)
 #define pylith_utils_constdefs_h
 
+#include "types.hh" // HASA PylithScalar
+
 namespace pylith {
   static const double PYLITH_MAXDOUBLE = 1.0e+30;
   static const float PYLITH_MAXFLOAT = 1.0e+30;
+  static const PylithScalar PYLITH_MAXSCALAR = 1.0e+30;
 }
     
 

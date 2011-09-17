@@ -58,6 +58,7 @@
  } // exception
 
 %include "typemaps.i"
+%include "../include/pylithtypes.i"
 
 // Interfaces
 %include "MeshIOObj.i"

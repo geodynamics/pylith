@@ -28,7 +28,7 @@ const int pylith::meshio::MeshDataLagritTet::_cellDim = 3;
 
 const int pylith::meshio::MeshDataLagritTet::_numCorners = 4;
 
-const double pylith::meshio::MeshDataLagritTet::_vertices[] = {
+const PylithScalar pylith::meshio::MeshDataLagritTet::_vertices[] = {
   0.00000E+000,  -5.00000E-001,  -5.00000E-001,
   0.00000E+000,  -5.00000E-001,   5.00000E-001,
   1.00000E+000,  -5.00000E-001,  -5.00000E-001,
@@ -93,7 +93,7 @@ pylith::meshio::MeshDataLagritTet::MeshDataLagritTet(void)
   numCells = _numCells;
   cellDim = _cellDim;
   numCorners = _numCorners;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);

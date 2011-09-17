@@ -77,7 +77,7 @@ public :
   /// Test hasVar()
   void testHasVar(void);
 
-  /// Test getVar(double*)
+  /// Test getVar(PylithScalar*)
   void testGetVarDouble(void);
 
   /// Test getVar(int*)

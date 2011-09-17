@@ -43,16 +43,16 @@ const int pylith::bc::PointForceDataQuad4::_forceDOF[] = { 0, 1 };
 const int pylith::bc::PointForceDataQuad4::_numForcePts = 3;
 const int pylith::bc::PointForceDataQuad4::_forcePoints[] = { 0, 2, 4 };
 
-const double pylith::bc::PointForceDataQuad4::_tRef = 3.0;
-const double pylith::bc::PointForceDataQuad4::_forceRate = -0.5;
-const double pylith::bc::PointForceDataQuad4::_forceInitial[] =
+const PylithScalar pylith::bc::PointForceDataQuad4::_tRef = 3.0;
+const PylithScalar pylith::bc::PointForceDataQuad4::_forceRate = -0.5;
+const PylithScalar pylith::bc::PointForceDataQuad4::_forceInitial[] =
   { 0.1, 0.6,
     0.5, 0.3,
     0.4, 0.2,
   };
 
-const double pylith::bc::PointForceDataQuad4::_tResidual = 4.5;
-const double pylith::bc::PointForceDataQuad4::_residual[] =
+const PylithScalar pylith::bc::PointForceDataQuad4::_tResidual = 4.5;
+const PylithScalar pylith::bc::PointForceDataQuad4::_residual[] =
   { -0.65, -0.15,
      0.0, 0.0,
     -0.25, -0.45,
@@ -80,10 +80,10 @@ pylith::bc::PointForceDataQuad4::PointForceDataQuad4(void)
 
   tRef = _tRef;
   forceRate = _forceRate;
-  forceInitial = const_cast<double*>(_forceInitial);
+  forceInitial = const_cast<PylithScalar*>(_forceInitial);
 
   tResidual = _tResidual;
-  residual = const_cast<double*>(_residual);
+  residual = const_cast<PylithScalar*>(_residual);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

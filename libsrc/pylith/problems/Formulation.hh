@@ -129,8 +129,8 @@ public :
    */
   void updateSettings(topology::Jacobian* jacobian,
 		      topology::SolutionFields* fields,
-		      const double t,
-		      const double dt);
+		      const PylithScalar t,
+		      const PylithScalar dt);
 
   /** Update handles and parameters for reforming the Jacobian and
    *  residual.
@@ -142,8 +142,8 @@ public :
    */
   void updateSettings(topology::Field<topology::Mesh>* jacobian,
 		      topology::SolutionFields* fields,
-		      const double t,
-		      const double dt);
+		      const PylithScalar t,
+		      const PylithScalar dt);
 
   /** Reform system residual.
    *
@@ -189,8 +189,8 @@ public :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  double _t; ///< Current time (nondimensional).
-  double _dt; ///< Current time step (nondimensional).
+  PylithScalar _t; ///< Current time (nondimensional).
+  PylithScalar _dt; ///< Current time step (nondimensional).
   topology::Jacobian* _jacobian; ///< Handle to Jacobian of system.
   PetscMat _customConstraintPCMat; ///< Custom PETSc preconditioning matrix for constraints.
   topology::Field<topology::Mesh>* _jacobianLumped; ///< Handle to lumped Jacobian of system.

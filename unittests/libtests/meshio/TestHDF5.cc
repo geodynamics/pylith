@@ -193,13 +193,13 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
   const hsize_t dims[ndims] = { 2 };
   h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
 
-  const double scalarE = 2.5;
+  const PylithScalar scalarE = 2.5;
   h5.writeAttribute("/data", "myscalar", (void*)&scalarE, H5T_NATIVE_DOUBLE);
   h5.close();
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   h5.open("test.h5", H5F_ACC_RDONLY);
-  double scalar = 0;
+  PylithScalar scalar = 0;
   h5.readAttribute("/data", "myscalar", (void*)&scalar, H5T_NATIVE_DOUBLE);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(scalarE, scalar, tolerance);
   h5.close();

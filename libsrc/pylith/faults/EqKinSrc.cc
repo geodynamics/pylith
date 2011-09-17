@@ -52,14 +52,14 @@ pylith::faults::EqKinSrc::deallocate(void)
 // ----------------------------------------------------------------------
 // Set origin time for earthquake source.
 void
-pylith::faults::EqKinSrc::originTime(const double value)
+pylith::faults::EqKinSrc::originTime(const PylithScalar value)
 { // originTime
   _originTime = value;
 } // originTime
 
 // ----------------------------------------------------------------------
 // Get origin time for earthquake source.
-double
+PylithScalar
 pylith::faults::EqKinSrc::originTime(void) const
 { // originTime
   return _originTime;
@@ -91,7 +91,7 @@ pylith::faults::EqKinSrc::initialize(
 void
 pylith::faults::EqKinSrc::slip(
 			   topology::Field<topology::SubMesh>* const slipField,
-			   const double t)
+			   const PylithScalar t)
 { // slip
   assert(0 != _slipfn);
   _slipfn->slip(slipField, t);
@@ -102,8 +102,8 @@ pylith::faults::EqKinSrc::slip(
 void
 pylith::faults::EqKinSrc::slipIncr(
 			   topology::Field<topology::SubMesh>* const slipField,
-			   const double t0,
-			   const double t1)
+			   const PylithScalar t0,
+			   const PylithScalar t1)
 { // slip
   assert(0 != _slipfn);
   _slipfn->slipIncr(slipField, t0, t1);

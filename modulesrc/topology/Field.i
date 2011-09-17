@@ -101,13 +101,13 @@ namespace pylith {
        *
        * @param value Scale associated with field.
        */
-      void scale(const double value);
+      void scale(const PylithScalar value);
 
       /** Get scale for dimensionalizing field.
        *
        * @returns Scale associated with field.
        */
-      double scale(void) const;
+      PylithScalar scale(void) const;
       
       /** Set flag indicating whether it is okay to dimensionalize field.
        *

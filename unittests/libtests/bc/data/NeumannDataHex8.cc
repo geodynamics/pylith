@@ -34,22 +34,22 @@ const char* pylith::bc::NeumannDataHex8::_meshFilename =
 
 const int pylith::bc::NeumannDataHex8::_numBasis = 4;
 const int pylith::bc::NeumannDataHex8::_numQuadPts = 4;
-const double pylith::bc::NeumannDataHex8::_quadPts[] = {
+const PylithScalar pylith::bc::NeumannDataHex8::_quadPts[] = {
   -0.57735027, -0.57735027,
   +0.57735027, -0.57735027,
   +0.57735027, +0.57735027,
   -0.57735027, +0.57735027,
 };
-const double pylith::bc::NeumannDataHex8::_quadWts[] = {
+const PylithScalar pylith::bc::NeumannDataHex8::_quadWts[] = {
   1.0, 1.0, 1.0, 1.0
 };
-const double pylith::bc::NeumannDataHex8::_basis[] = {
+const PylithScalar pylith::bc::NeumannDataHex8::_basis[] = {
   0.62200847,  0.16666667,  0.0446582,   0.16666667,
   0.16666667,  0.62200847,  0.16666667,   0.0446582,
   0.0446582,   0.16666667,  0.62200847,  0.16666667,
   0.16666667,   0.0446582,  0.16666667,  0.62200847,
 };
-const double pylith::bc::NeumannDataHex8::_basisDerivRef[] = {
+const PylithScalar pylith::bc::NeumannDataHex8::_basisDerivRef[] = {
   -0.39433757, -0.39433757,
   +0.39433757, -0.10566243,
   +0.10566243, +0.10566243,
@@ -86,7 +86,7 @@ const int pylith::bc::NeumannDataHex8::_cells[] = {
   8, 6, 10, 12,
 };
 
-const double pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
+const PylithScalar pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
@@ -94,7 +94,7 @@ const double pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0,
 							       4.0, 0.0, 0.0};
-const double pylith::bc::NeumannDataHex8::_valsResidual[] = { 4.0, 0.0, 0.0,
+const PylithScalar pylith::bc::NeumannDataHex8::_valsResidual[] = { 4.0, 0.0, 0.0,
 							      0.0, 0.0, 0.0,
 							      4.0, 0.0, 0.0,
 							      0.0, 0.0, 0.0,
@@ -114,10 +114,10 @@ pylith::bc::NeumannDataHex8::NeumannDataHex8(void)
 
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
 
   spatialDBFilename = const_cast<char*>(_spatialDBFilename);
   id = _id;
@@ -130,8 +130,8 @@ pylith::bc::NeumannDataHex8::NeumannDataHex8(void)
   numCorners = _numCorners;
   cells = const_cast<int*>(_cells);
 
-  tractionsCell = const_cast<double*>(_tractionsCell);
-  valsResidual = const_cast<double*>(_valsResidual);
+  tractionsCell = const_cast<PylithScalar*>(_tractionsCell);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
 
 } // constructor
 

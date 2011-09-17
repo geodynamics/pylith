@@ -91,7 +91,7 @@ private :
 		   topology::SubMesh* faultMesh,
 		   EqKinSrc* eqsrc,
 		   BruneSlipFn* slipfn,
-		   const double originTime);
+		   const PylithScalar originTime);
 
 }; // class TestEqKinSrc
 

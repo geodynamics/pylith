@@ -22,7 +22,7 @@
 
 #include "Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -108,16 +108,16 @@ pylith::materials::ElasticPlaneStrain::~ElasticPlaneStrain(void)
 // Compute parameters from values in spatial database.
 void
 pylith::materials::ElasticPlaneStrain::_dbToProperties(
-				          double* const propValues,
-                                          const double_array& dbValues)
+				          PylithScalar* const propValues,
+                                          const scalar_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
   assert(_ElasticPlaneStrain::numDBProperties == numDBValues);
 
-  const double density = dbValues[db_density];
-  const double vs = dbValues[db_vs];
-  const double vp = dbValues[db_vp];
+  const PylithScalar density = dbValues[db_density];
+  const PylithScalar vs = dbValues[db_vs];
+  const PylithScalar vp = dbValues[db_vp];
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
     std::ostringstream msg;
@@ -129,8 +129,8 @@ pylith::materials::ElasticPlaneStrain::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  const double mu = density * vs*vs;
-  const double lambda = density * vp*vp - 2.0*mu;
+  const PylithScalar mu = density * vs*vs;
+  const PylithScalar lambda = density * vp*vp - 2.0*mu;
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
@@ -151,15 +151,15 @@ pylith::materials::ElasticPlaneStrain::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::materials::ElasticPlaneStrain::_nondimProperties(double* const values,
+pylith::materials::ElasticPlaneStrain::_nondimProperties(PylithScalar* const values,
 							 const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _ElasticPlaneStrain::numProperties);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_density] = 
     _normalizer->nondimensionalize(values[p_density], densityScale);
@@ -174,15 +174,15 @@ pylith::materials::ElasticPlaneStrain::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::materials::ElasticPlaneStrain::_dimProperties(double* const values,
+pylith::materials::ElasticPlaneStrain::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _ElasticPlaneStrain::numProperties);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_density] = 
     _normalizer->dimensionalize(values[p_density], densityScale);
@@ -197,10 +197,10 @@ pylith::materials::ElasticPlaneStrain::_dimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
-pylith::materials::ElasticPlaneStrain::_calcDensity(double* const density,
-						    const double* properties,
+pylith::materials::ElasticPlaneStrain::_calcDensity(PylithScalar* const density,
+						    const PylithScalar* properties,
 						    const int numProperties,
-						    const double* stateVars,
+						    const PylithScalar* stateVars,
 						    const int numStateVars)
 { // calcDensity
   assert(0 != density);
@@ -214,17 +214,17 @@ pylith::materials::ElasticPlaneStrain::_calcDensity(double* const density,
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties.
 void
-pylith::materials::ElasticPlaneStrain::_calcStress(double* const stress,
+pylith::materials::ElasticPlaneStrain::_calcStress(PylithScalar* const stress,
 						   const int stressSize,
-						   const double* properties,
+						   const PylithScalar* properties,
 						   const int numProperties,
-						   const double* stateVars,
+						   const PylithScalar* stateVars,
 						   const int numStateVars,
-						   const double* totalStrain,
+						   const PylithScalar* totalStrain,
 						   const int strainSize,
-						   const double* initialStress,
+						   const PylithScalar* initialStress,
 						   const int initialStressSize,
-						   const double* initialStrain,
+						   const PylithScalar* initialStrain,
 						   const int initialStrainSize,
 						   const bool computeStateVars)
 { // _calcStress
@@ -240,17 +240,17 @@ pylith::materials::ElasticPlaneStrain::_calcStress(double* const stress,
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
 
-  const double density = properties[p_density];
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
 
-  const double mu2 = 2.0*mu;
+  const PylithScalar mu2 = 2.0*mu;
 
-  const double e11 = totalStrain[0] - initialStrain[0];
-  const double e22 = totalStrain[1] - initialStrain[1];
-  const double e12 = totalStrain[2] - initialStrain[2];
+  const PylithScalar e11 = totalStrain[0] - initialStrain[0];
+  const PylithScalar e22 = totalStrain[1] - initialStrain[1];
+  const PylithScalar e12 = totalStrain[2] - initialStrain[2];
 
-  const double s12 = lambda * (e11 + e22);
+  const PylithScalar s12 = lambda * (e11 + e22);
 
   stress[0] = s12 + mu2*e11 + initialStress[0];
   stress[1] = s12 + mu2*e22 + initialStress[1];
@@ -263,17 +263,17 @@ pylith::materials::ElasticPlaneStrain::_calcStress(double* const stress,
 // Compute elastic constants at location from properties.
 void
 pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
-					     double* const elasticConsts,
+					     PylithScalar* const elasticConsts,
 					     const int numElasticConsts,
-					     const double* properties,
+					     const PylithScalar* properties,
 					     const int numProperties,
-					     const double* stateVars,
+					     const PylithScalar* stateVars,
 					     const int numStateVars,
-					     const double* totalStrain,
+					     const PylithScalar* totalStrain,
 					     const int strainSize,
-					     const double* initialStress,
+					     const PylithScalar* initialStress,
 					     const int initialStressSize,
-					     const double* initialStrain,
+					     const PylithScalar* initialStrain,
 					     const int initialStrainSize)
 { // calcElasticConsts
   assert(0 != elasticConsts);
@@ -288,12 +288,12 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
   assert(0 != initialStrain);
   assert(_ElasticPlaneStrain::tensorSize == initialStrainSize);
  
-  const double density = properties[p_density];
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
 
-  const double mu2 = 2.0 * mu;
-  const double lambda2mu = lambda + mu2;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar lambda2mu = lambda + mu2;
    
   elasticConsts[0] = lambda2mu; // C1111
   elasticConsts[1] = lambda; // C1122
@@ -310,7 +310,7 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 pylith::materials::ElasticPlaneStrain::stableTimeStepImplicit(
 					const topology::Mesh& mesh) {
   return pylith::PYLITH_MAXDOUBLE;
@@ -318,11 +318,11 @@ pylith::materials::ElasticPlaneStrain::stableTimeStepImplicit(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 pylith::materials::ElasticPlaneStrain::_stableTimeStepImplicit(
-				     const double* properties,
+				     const PylithScalar* properties,
 				     const int numProperties,
-				     const double* stateVars,
+				     const PylithScalar* stateVars,
 				     const int numStateVars) const
 { // _stableTimeStepImplicit
   return pylith::PYLITH_MAXDOUBLE;

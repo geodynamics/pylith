@@ -61,7 +61,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -72,7 +72,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Jacobian* mat,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -83,7 +83,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Verify configuration is acceptable.

@@ -44,13 +44,13 @@ namespace pylith {
        *
        * @param value Origin time for earthquake source.
        */
-      void originTime(const double value);
+      void originTime(const PylithScalar value);
       
       /** Get origin time for earthquake source.
        *
        * @returns Origin time for earthquake source.
        */
-      double originTime(void) const;
+      PylithScalar originTime(void) const;
       
       /** Set slip time function.
        *
@@ -72,7 +72,7 @@ namespace pylith {
        * @param t Time t.
        */
       void slip(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
-		const double t);
+		const PylithScalar t);
 
       /** Get increment of slip on fault surface between time t0 and t1.
        *
@@ -81,8 +81,8 @@ namespace pylith {
        * @param t1 Time for end of slip increment.
        */
       void slipIncr(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
-		    const double t0,
-		    const double t1);
+		    const PylithScalar t0,
+		    const PylithScalar t1);
       
       /** Get final slip.
        *

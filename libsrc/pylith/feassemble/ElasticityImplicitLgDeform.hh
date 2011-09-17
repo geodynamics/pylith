@@ -78,7 +78,7 @@ public :
    *
    * @param dt Time step
    */
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Get stable time step for advancing from time t to time t+dt.
    *
@@ -87,7 +87,7 @@ public :
    * @param mesh Finite-element mesh.
    * @returns Time step
    */
-  double stableTimeStep(const topology::Mesh& mesh) const;
+  PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -111,7 +111,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -122,7 +122,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _dtm1; ///< Time step for t-dt1 -> t
+  PylithScalar _dtm1; ///< Time step for t-dt1 -> t
 
 }; // ElasticityImplicitLgDeform
 

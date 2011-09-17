@@ -36,7 +36,7 @@ const char* pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexFilename =
 const char* pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellFilename = 
   "tet4_fault_cell.vtk";
 
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_time = 1.0;
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_time = 1.0;
 
 const char* pylith::meshio::DataWriterVTKDataFaultMeshTet4::_timeFormat = 
   "%3.1f";
@@ -50,15 +50,15 @@ pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexFields[] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField0[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField0[] = {
   1.1, 2.2, 3.3,
   4.4, 5.5, 6.6,
   7.7, 8.8, 9.9,
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField1[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField1[] = {
   2.1, 3.2, 4.3,
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField2[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_vertexField2[] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
@@ -73,13 +73,13 @@ pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellFields[] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::TENSOR, 6 },
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField0[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField0[] = {
   1.1, 2.2, 3.3,
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField1[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField1[] = {
   2.1,
 };
-const double pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField2[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataFaultMeshTet4::_cellField2[] = {
   1.2, 2.3, 3.4, 4.5, 5.6, 6.7,
 };
 
@@ -100,17 +100,17 @@ pylith::meshio::DataWriterVTKDataFaultMeshTet4::DataWriterVTKDataFaultMeshTet4(v
   assert(3 == numVertexFields);
   numVertices = _numVertices;
   vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
-  vertexFields[0] = const_cast<double*>(_vertexField0);
-  vertexFields[1] = const_cast<double*>(_vertexField1);
-  vertexFields[2] = const_cast<double*>(_vertexField2);
+  vertexFields[0] = const_cast<PylithScalar*>(_vertexField0);
+  vertexFields[1] = const_cast<PylithScalar*>(_vertexField1);
+  vertexFields[2] = const_cast<PylithScalar*>(_vertexField2);
 
   numCellFields = _numCellFields;
   assert(3 == numCellFields);
   numCells = _numCells;
   cellFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_cellFields);
-  cellFields[0] = const_cast<double*>(_cellField0);
-  cellFields[1] = const_cast<double*>(_cellField1);
-  cellFields[2] = const_cast<double*>(_cellField2);
+  cellFields[0] = const_cast<PylithScalar*>(_cellField0);
+  cellFields[1] = const_cast<PylithScalar*>(_cellField1);
+  cellFields[2] = const_cast<PylithScalar*>(_cellField2);
 } // constructor
 
 pylith::meshio::DataWriterVTKDataFaultMeshTet4::~DataWriterVTKDataFaultMeshTet4(void)

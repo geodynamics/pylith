@@ -19,6 +19,8 @@
 #if !defined(pylith_meshio_meshdata_hh)
 #define pylith_meshio_meshdata_hh
 
+#include "pylith/utils/types.hh" // USES PylithScalar
+
 namespace pylith {
   namespace meshio {
      class MeshData;
@@ -46,7 +48,7 @@ public:
   int cellDim; ///< Number of dimensions associated with cell
   int numCorners; ///< Number of vertices in cell
 
-  double* vertices; ///< Pointer to coordinates of vertices
+  PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* cells; ///< Pointer to indices of vertices in cells
   int* materialIds; ///< Pointer to cell material identifiers
 

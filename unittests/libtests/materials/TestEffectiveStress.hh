@@ -27,6 +27,8 @@
 #if !defined(pylith_materials_testeffectivestress_hh)
 #define pylith_materials_testeffectivestress_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package

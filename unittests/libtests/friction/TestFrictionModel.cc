@@ -34,7 +34,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
@@ -71,7 +71,7 @@ pylith::friction::TestFrictionModel::testLabel(void)
 void
 pylith::friction::TestFrictionModel::testTimeStep(void) 
 { // testTimeStep
-  const double dt = 2.0;
+  const PylithScalar dt = 2.0;
   StaticFriction friction;
   friction.timeStep(dt);
   
@@ -131,7 +131,7 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
-  const double propertiesE[] = { 0.6, 1000000, 0.4, 1000000 };
+  const PylithScalar propertiesE[] = { 0.6, 1000000, 0.4, 1000000 };
   const int numProperties = 2;
 
   topology::Mesh mesh;
@@ -149,7 +149,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
     vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // Test fieldsPropsStateVars with mesh
   const int fieldsFiberDim = numProperties;
@@ -163,7 +163,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
        ++v_iter) {
     CPPUNIT_ASSERT_EQUAL(fieldsFiberDim, 
 			 fieldsSection->getFiberDimension(*v_iter));
-    const double* fieldsVertex = fieldsSection->restrictPoint(*v_iter);
+    const PylithScalar* fieldsVertex = fieldsSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(fieldsVertex);
     for (int i = 0; i < numProperties; ++i, ++index)
       if (0 != propertiesE[index])
@@ -184,7 +184,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
 void
 pylith::friction::TestFrictionModel::testGetField(void)
 { // testGetField
-  const double fieldE[] = { 0.6, 0.4 };
+  const PylithScalar fieldE[] = { 0.6, 0.4 };
   const int fiberDim = 1;
 
   topology::Mesh mesh;
@@ -205,10 +205,10 @@ pylith::friction::TestFrictionModel::testGetField(void)
     vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   int index = 0;
-  double_array fieldVertex(fiberDim);
+  scalar_array fieldVertex(fiberDim);
   const ALE::Obj<RealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
   for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
@@ -229,9 +229,9 @@ pylith::friction::TestFrictionModel::testGetField(void)
 void
 pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 { // testRetrievePropsStateVars
-  const double propertiesE[] = { 0.4, 1000000 };
+  const PylithScalar propertiesE[] = { 0.4, 1000000 };
   const size_t numProperties = 2;
-  const double* stateVarsE = 0;
+  const PylithScalar* stateVarsE = 0;
   const size_t numStateVars = 0;
   const int vertex = 2;
 
@@ -243,9 +243,9 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 
   friction.retrievePropsStateVars(vertex);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
-  const double_array& fieldsVertex = friction._propsStateVarsVertex;
+  const scalar_array& fieldsVertex = friction._propsStateVarsVertex;
   CPPUNIT_ASSERT_EQUAL(numProperties + numStateVars, fieldsVertex.size());
 
   // Check properties array.
@@ -276,12 +276,12 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
-  const double slip = 1.2;
-  const double slipRate = -2.3;
-  const double normalTraction = -2.4;
-  const double frictionCoef = 0.45;
-  const double cohesion = 1000000;
-  const double frictionE = -normalTraction*frictionCoef + cohesion;
+  const PylithScalar slip = 1.2;
+  const PylithScalar slipRate = -2.3;
+  const PylithScalar normalTraction = -2.4;
+  const PylithScalar frictionCoef = 0.45;
+  const PylithScalar cohesion = 1000000;
+  const PylithScalar frictionE = -normalTraction*frictionCoef + cohesion;
   const int vertex = 2;
 
   topology::Mesh mesh;
@@ -292,9 +292,9 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 
   friction.timeStep(data.dt);
   friction.retrievePropsStateVars(vertex);
-  const double frictionV = friction.calcFriction(slip, slipRate, normalTraction);
+  const PylithScalar frictionV = friction.calcFriction(slip, slipRate, normalTraction);
 
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   if (0.0 != frictionE)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, frictionV/frictionE, tolerance);
   else
@@ -313,10 +313,10 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     StaticFrictionData data;
     _initialize(&mesh, &fault, &friction, &data);
     
-    const double slip = 1.2;
-    const double slipRate = -2.3;
-    const double normalTraction = -2.4;
-    const double cohesion = 1000000;
+    const PylithScalar slip = 1.2;
+    const PylithScalar slipRate = -2.3;
+    const PylithScalar normalTraction = -2.4;
+    const PylithScalar cohesion = 1000000;
     const int vertex = 2;
     
     friction.timeStep(data.dt);
@@ -344,19 +344,19 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     friction.dbProperties(&db);
     fault.frictionModel(&friction);
     
-    const double upDir[] = { 0.0, 0.0, 1.0 };
+    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
     fault.initialize(mesh, upDir);
     const int vertex = 2;
 
-    const double slip = 0.25;
-    const double slipRate = 0.64;
-    const double normalTraction = -2.3;
-    const double cohesion = 1000000;
-    const double dt = 0.01;
+    const PylithScalar slip = 0.25;
+    const PylithScalar slipRate = 0.64;
+    const PylithScalar normalTraction = -2.3;
+    const PylithScalar cohesion = 1000000;
+    const PylithScalar dt = 0.01;
 
     const int numStateVars = 2;
-    const double stateVars[2] = { 0.5, 0.1 };
-    const double stateVarsUpdatedE[2] = { 0.65, 0.5 };
+    const PylithScalar stateVars[2] = { 0.5, 0.1 };
+    const PylithScalar stateVarsUpdatedE[2] = { 0.65, 0.5 };
     
 
     // Set state variables to given values
@@ -368,13 +368,13 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     friction.timeStep(dt);
     friction.updateStateVars(slip, slipRate, normalTraction, vertex);
     
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
     const ALE::Obj<SubRealUniformSection>& fieldsSection = 
       friction._fieldsPropsStateVars->section();
     CPPUNIT_ASSERT_EQUAL(friction._fieldsPropsStateVars->fiberDim(),
 			 fieldsSection->getFiberDimension(vertex));
-    const double* fieldsVertex = fieldsSection->restrictPoint(vertex);
+    const PylithScalar* fieldsVertex = fieldsSection->restrictPoint(vertex);
     CPPUNIT_ASSERT(fieldsVertex);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[0],
 				 fieldsVertex[friction._propsFiberDim+0], 
@@ -424,10 +424,10 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
 
   // Test _dbToProperties()
   const int numLocs = _data->numLocs;
-  double_array dbValues(numDBProperties);
+  scalar_array dbValues(numDBProperties);
 
   const int propertiesSize = _data->numPropsVertex;
-  double_array properties(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numDBProperties; ++i)
@@ -435,8 +435,8 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
 
     _friction->_dbToProperties(&properties[0], dbValues);
     
-    const double* const propertiesE = &_data->properties[iLoc*propertiesSize];
-    const double tolerance = 1.0e-06;
+    const PylithScalar* const propertiesE = &_data->properties[iLoc*propertiesSize];
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -459,19 +459,19 @@ pylith::friction::TestFrictionModel::testNonDimProperties(void)
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsVertex;
-  double_array propertiesNondim(propertiesSize);
-  double_array properties(propertiesSize);
+  scalar_array propertiesNondim(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < propertiesSize; ++i)
       properties[i] = _data->properties[iLoc*propertiesSize+i];
     _friction->_nondimProperties(&properties[0], properties.size());
     
-    const double* const propertiesNondimE =
+    const PylithScalar* const propertiesNondimE =
       &_data->propertiesNondim[iLoc*propertiesSize];
     CPPUNIT_ASSERT(0 != propertiesNondimE);
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -494,18 +494,18 @@ pylith::friction::TestFrictionModel::testDimProperties(void)
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsVertex;
-  double_array properties(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < propertiesSize; ++i)
       properties[i] = _data->propertiesNondim[iLoc*propertiesSize+i];
     _friction->_dimProperties(&properties[0], properties.size());
     
-    const double* const propertiesE =
+    const PylithScalar* const propertiesE =
       &_data->properties[iLoc*propertiesSize];
     CPPUNIT_ASSERT(0 != propertiesE);
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -538,10 +538,10 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
 
   // Test _dbToStateVars()
   const int numLocs = _data->numLocs;
-  double_array dbValues(numDBStateVars);
+  scalar_array dbValues(numDBStateVars);
 
   const int stateVarsSize = _data->numVarsVertex;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numDBStateVars; ++i)
@@ -549,11 +549,11 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
 
     _friction->_dbToStateVars(&stateVars[0], dbValues);
     
-    const double* const stateVarsE = 
+    const PylithScalar* const stateVarsE = 
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -576,19 +576,19 @@ pylith::friction::TestFrictionModel::testNonDimStateVars(void)
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsVertex;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < stateVarsSize; ++i)
       stateVars[i] = _data->dbStateVars[iLoc*stateVarsSize+i];
     _friction->_nondimStateVars(&stateVars[0], stateVars.size());
     
-    const double* const stateVarsNondimE =
+    const PylithScalar* const stateVarsNondimE =
       (stateVarsSize > 0) ? &_data->stateVarsNondim[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsNondimE) ||
 		    (0 == stateVarsSize && 0 == stateVarsNondimE) );
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -611,19 +611,19 @@ pylith::friction::TestFrictionModel::testDimStateVars(void)
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsVertex;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < stateVarsSize; ++i)
       stateVars[i] = _data->stateVarsNondim[iLoc*stateVarsSize+i];
     _friction->_dimStateVars(&stateVars[0], stateVars.size());
     
-    const double* const stateVarsE =
+    const PylithScalar* const stateVarsE =
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -648,27 +648,27 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
   const int numPropsVertex = _data->numPropsVertex;
   const int numVarsVertex = _data->numVarsVertex;
   
-  double_array properties(numPropsVertex);
-  double_array stateVars(numVarsVertex);
+  scalar_array properties(numPropsVertex);
+  scalar_array stateVars(numVarsVertex);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numPropsVertex; ++i)
       properties[i] = _data->properties[iLoc*numPropsVertex+i];
     for (int i=0; i < numVarsVertex; ++i)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
-    const double slip = _data->slip[iLoc];
-    const double slipRate = _data->slipRate[iLoc];
-    const double normalTraction = _data->normalTraction[iLoc];
+    const PylithScalar slip = _data->slip[iLoc];
+    const PylithScalar slipRate = _data->slipRate[iLoc];
+    const PylithScalar normalTraction = _data->normalTraction[iLoc];
 
     _friction->timeStep(_data->dt);
-    const double friction = _friction->_calcFriction(
+    const PylithScalar friction = _friction->_calcFriction(
 					slip, slipRate, normalTraction,
 					&properties[0], properties.size(),
 					&stateVars[0], stateVars.size());
     
-    const double frictionE = _data->friction[iLoc];
+    const PylithScalar frictionE = _data->friction[iLoc];
     
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
 
     if (0.0 != frictionE)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, friction/frictionE, tolerance);
@@ -691,13 +691,13 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
   const int numPropsVertex = _data->numPropsVertex;
   const int numVarsVertex = _data->numVarsVertex;
   
-  double_array properties(numPropsVertex);
-  double_array stateVars(numVarsVertex);
+  scalar_array properties(numPropsVertex);
+  scalar_array stateVars(numVarsVertex);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    const double slip = _data->slip[iLoc];
-    const double slipRate = _data->slipRate[iLoc];
-    const double normalTraction = _data->normalTraction[iLoc];
+    const PylithScalar slip = _data->slip[iLoc];
+    const PylithScalar slipRate = _data->slipRate[iLoc];
+    const PylithScalar normalTraction = _data->normalTraction[iLoc];
     for (int i=0; i < numPropsVertex; ++i)
       properties[i] = _data->properties[iLoc*numPropsVertex+i];
     for (int i=0; i < numVarsVertex; ++i)
@@ -708,12 +708,12 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 				&stateVars[0], stateVars.size(),
 				&properties[0], properties.size());
     
-    const double* stateVarsE = 
+    const PylithScalar* stateVarsE = 
       (numVarsVertex > 0) ? &_data->stateVarsUpdated[iLoc*numVarsVertex] : 0;
     CPPUNIT_ASSERT( (0 < numVarsVertex && 0 != stateVarsE) ||
 		    (0 == numVarsVertex && 0 == stateVarsE) );
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < numVarsVertex; ++i) {
 #if 0 // DEBUGGING
       std::cout << "valE: " << stateVarsE[i] 
@@ -777,10 +777,10 @@ pylith::friction::TestFrictionModel::_initialize(
   const int numCorners = 2;
   const int numQuadPts = 2;
   const int spaceDim = 2;
-  const double basis[] = { 0.75, 0.25, 0.25, 0.75 };
-  const double basisDeriv[] = { -0.5, 0.5, -0.5, 0.5 };
-  const double quadPtsRef[] = { -0.5, 0.5 };
-  const double quadWts[] = { 1.0, 1.0  };
+  const PylithScalar basis[] = { 0.75, 0.25, 0.25, 0.75 };
+  const PylithScalar basisDeriv[] = { -0.5, 0.5, -0.5, 0.5 };
+  const PylithScalar quadPtsRef[] = { -0.5, 0.5 };
+  const PylithScalar quadWts[] = { 1.0, 1.0  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -811,7 +811,7 @@ pylith::friction::TestFrictionModel::_initialize(
   friction->normalizer(normalizer);
   fault->frictionModel(friction);
   
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
   fault->initialize(*mesh, upDir);
 } // _initialize
 

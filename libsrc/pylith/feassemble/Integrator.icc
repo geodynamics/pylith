@@ -24,7 +24,7 @@
 template<typename quadrature_type>
 inline
 void
-pylith::feassemble::Integrator<quadrature_type>::timeStep(const double dt) {
+pylith::feassemble::Integrator<quadrature_type>::timeStep(const PylithScalar dt) {
   _dt = dt;
 } // timeStep
 
@@ -72,7 +72,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     topology::SolutionFields* const fields) {
 } // integrateResidual
 
@@ -82,7 +82,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateResidualLumped(
            const topology::Field<topology::Mesh>& residual,
-           const double t,
+           const PylithScalar t,
            topology::SolutionFields* const fields) {
   integrateResidual(residual, t, fields);
 } // integrateResidual
@@ -94,7 +94,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
 				     topology::Jacobian* jacobian,
-				     const double t,
+				     const PylithScalar t,
 				     topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateJacobian
@@ -106,7 +106,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::integrateJacobian(
 				     topology::Field<topology::Mesh>* jacobian,
-				     const double t,
+				     const PylithScalar t,
 				     topology::SolutionFields* const fields) {
   _needNewJacobian = false;
 } // integrateJacobian
@@ -127,7 +127,7 @@ template<typename quadrature_type>
 inline
 void
 pylith::feassemble::Integrator<quadrature_type>::updateStateVars(
-				     const double t,
+				     const PylithScalar t,
 				     topology::SolutionFields* const fields) {
 } // updateState
 
@@ -137,7 +137,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::constrainSolnSpace(
 			       topology::SolutionFields* const fields,
-			       const double t,
+			       const PylithScalar t,
 			       const topology::Jacobian& jacobian) {
 } // constrainSolnSpace
 

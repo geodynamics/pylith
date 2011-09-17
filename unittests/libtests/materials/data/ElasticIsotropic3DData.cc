@@ -37,15 +37,15 @@ const int pylith::materials::ElasticIsotropic3DData::_numPropsQuadPt = 3;
 
 const int pylith::materials::ElasticIsotropic3DData::_numVarsQuadPt = 0;
 
-const double pylith::materials::ElasticIsotropic3DData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_lengthScale =   1.00000000e+03;
 
-const double pylith::materials::ElasticIsotropic3DData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_timeScale =   1.00000000e+00;
 
-const double pylith::materials::ElasticIsotropic3DData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_pressureScale =   2.25000000e+10;
 
-const double pylith::materials::ElasticIsotropic3DData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+30;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+30;
 
 const int pylith::materials::ElasticIsotropic3DData::_numPropertyValues[] = {
 1,
@@ -63,7 +63,7 @@ const char* pylith::materials::ElasticIsotropic3DData::_dbPropertyValues[] = {
 
 const char** pylith::materials::ElasticIsotropic3DData::_dbStateVarValues = 0;
 
-const double pylith::materials::ElasticIsotropic3DData::_dbProperties[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -72,9 +72,9 @@ const double pylith::materials::ElasticIsotropic3DData::_dbProperties[] = {
   2.07846097e+03,
 };
 
-const double* pylith::materials::ElasticIsotropic3DData::_dbStateVars = 0;
+const PylithScalar* pylith::materials::ElasticIsotropic3DData::_dbStateVars = 0;
 
-const double pylith::materials::ElasticIsotropic3DData::_properties[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -83,9 +83,9 @@ const double pylith::materials::ElasticIsotropic3DData::_properties[] = {
   2.88000000e+09,
 };
 
-const double* pylith::materials::ElasticIsotropic3DData::_stateVars = 0;
+const PylithScalar* pylith::materials::ElasticIsotropic3DData::_stateVars = 0;
 
-const double pylith::materials::ElasticIsotropic3DData::_propertiesNondim[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
@@ -94,14 +94,14 @@ const double pylith::materials::ElasticIsotropic3DData::_propertiesNondim[] = {
   1.28000000e-01,
 };
 
-const double* pylith::materials::ElasticIsotropic3DData::_stateVarsNondim = 0;
+const PylithScalar* pylith::materials::ElasticIsotropic3DData::_stateVarsNondim = 0;
 
-const double pylith::materials::ElasticIsotropic3DData::_density[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_density[] = {
   2.50000000e+03,
   2.00000000e+03,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_strain[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_strain[] = {
   1.10000000e-04,
   1.20000000e-04,
   1.30000000e-04,
@@ -116,7 +116,7 @@ const double pylith::materials::ElasticIsotropic3DData::_strain[] = {
   4.60000000e-04,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_stress[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_stress[] = {
  -2.24790000e+07,
  -2.24780000e+07,
  -2.24770000e+07,
@@ -131,7 +131,7 @@ const double pylith::materials::ElasticIsotropic3DData::_stress[] = {
  -1.09600000e+06,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_elasticConsts[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_elasticConsts[] = {
   6.75000000e+10,
   2.25000000e+10,
   2.25000000e+10,
@@ -206,7 +206,7 @@ const double pylith::materials::ElasticIsotropic3DData::_elasticConsts[] = {
   5.76000000e+09,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_initialStress[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.30000000e+04,
@@ -221,7 +221,7 @@ const double pylith::materials::ElasticIsotropic3DData::_initialStress[] = {
   5.60000000e+04,
 };
 
-const double pylith::materials::ElasticIsotropic3DData::_initialStrain[] = {
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_initialStrain[] = {
   3.10000000e-04,
   3.20000000e-04,
   3.30000000e-04,
@@ -236,7 +236,7 @@ const double pylith::materials::ElasticIsotropic3DData::_initialStrain[] = {
   6.60000000e-04,
 };
 
-const double* pylith::materials::ElasticIsotropic3DData::_stateVarsUpdated = 0;
+const PylithScalar* pylith::materials::ElasticIsotropic3DData::_stateVarsUpdated = 0;
 
 pylith::materials::ElasticIsotropic3DData::ElasticIsotropic3DData(void)
 { // constructor
@@ -257,19 +257,19 @@ pylith::materials::ElasticIsotropic3DData::ElasticIsotropic3DData(void)
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  density = const_cast<double*>(_density);
-  strain = const_cast<double*>(_strain);
-  stress = const_cast<double*>(_stress);
-  elasticConsts = const_cast<double*>(_elasticConsts);
-  initialStress = const_cast<double*>(_initialStress);
-  initialStrain = const_cast<double*>(_initialStrain);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  density = const_cast<PylithScalar*>(_density);
+  strain = const_cast<PylithScalar*>(_strain);
+  stress = const_cast<PylithScalar*>(_stress);
+  elasticConsts = const_cast<PylithScalar*>(_elasticConsts);
+  initialStress = const_cast<PylithScalar*>(_initialStress);
+  initialStrain = const_cast<PylithScalar*>(_initialStrain);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::ElasticIsotropic3DData::~ElasticIsotropic3DData(void)

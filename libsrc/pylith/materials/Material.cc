@@ -23,7 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/utils/array.hh" // USES double_array, std::vector
+#include "pylith/utils/array.hh" // USES scalar_array, std::vector
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -147,7 +147,7 @@ pylith::materials::Material::initialize(
   assert(!propertiesSection.isNull());
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
@@ -156,9 +156,9 @@ pylith::materials::Material::initialize(
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
-  double_array propertiesQuery(numDBProperties);
-  double_array propertiesCell(numQuadPts*_numPropsQuadPt);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array propertiesQuery(numDBProperties);
+  scalar_array propertiesCell(numQuadPts*_numPropsQuadPt);
 
   // Setup database for quering for physical properties
   assert(0 != _dbProperties);
@@ -184,8 +184,8 @@ pylith::materials::Material::initialize(
 
   // Create arrays for querying
   const int numDBStateVars = _metadata.numDBStateVars();
-  double_array stateVarsQuery;
-  double_array stateVarsCell;
+  scalar_array stateVarsQuery;
+  scalar_array stateVarsCell;
   if (0 != _dbInitialState) {
     assert(!stateVarsSection.isNull());
     assert(numDBStateVars > 0);
@@ -200,7 +200,7 @@ pylith::materials::Material::initialize(
   } // if
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
     
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -214,7 +214,7 @@ pylith::materials::Material::initialize(
     quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
 
-    const double_array& quadPtsNonDim = quadrature->quadPts();
+    const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				lengthScale);
@@ -395,8 +395,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     fieldType = _metadata.getProperty(propertyIndex).fieldType;
 
     // Buffer for property at cell's quadrature points
-    double_array fieldCell(numQuadPts*fiberDim);
-    double_array propertiesCell(numQuadPts*numPropsQuadPt);
+    scalar_array fieldCell(numQuadPts*fiberDim);
+    scalar_array propertiesCell(numQuadPts*numPropsQuadPt);
 
     // Loop over cells
     for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
@@ -465,8 +465,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     field->scale(1.0);
 
     // Buffer for state variable at cell's quadrature points
-    double_array fieldCell(numQuadPts*fiberDim);
-    double_array stateVarsCell(numQuadPts*numVarsQuadPt);
+    scalar_array fieldCell(numQuadPts*fiberDim);
+    scalar_array stateVarsCell(numQuadPts*numVarsQuadPt);
     
     // Loop over cells
     for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;

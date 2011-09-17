@@ -19,6 +19,8 @@
 #if !defined(pylith_topology_meshdatacohesive_hh)
 #define pylith_topology_meshdatacohesive_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace topology {
      class MeshDataCohesive;
@@ -55,7 +57,7 @@ public:
   int numCellsCohesive; ///< Number of cohesive cells.
   int numCornersCohesive; ///< Number of vertices in cohesive cell.
 
-  double* vertices; ///< Pointer to coordinates of vertices
+  PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* cells; ///< Pointer to indices of vertices in cells
   int* cellsCohesive; ///< Pointer to indices of vertices in cells
   int* materialIds; ///< Pointer to cell material identifiers

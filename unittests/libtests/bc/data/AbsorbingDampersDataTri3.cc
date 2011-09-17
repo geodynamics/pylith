@@ -23,17 +23,17 @@ const char* pylith::bc::AbsorbingDampersDataTri3::_meshFilename =
 
 const int pylith::bc::AbsorbingDampersDataTri3::_numBasis = 2;
 const int pylith::bc::AbsorbingDampersDataTri3::_numQuadPts = 1;
-const double pylith::bc::AbsorbingDampersDataTri3::_quadPts[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_quadPts[] = {
   0.0,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_quadWts[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_quadWts[] = {
   2.0,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_basis[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_basis[] = {
   0.5,
   0.5,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_basisDerivRef[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_basisDerivRef[] = {
   -0.5,
    0.5,
 };
@@ -43,20 +43,20 @@ const char* pylith::bc::AbsorbingDampersDataTri3::_spatialDBFilename =
 const int pylith::bc::AbsorbingDampersDataTri3::_id = 2;
 const char* pylith::bc::AbsorbingDampersDataTri3::_label = "bc";
 
-const double pylith::bc::AbsorbingDampersDataTri3::_dt =   0.25;
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldTmdt[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_dt =   0.25;
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_fieldTmdt[] = {
   1.0,  2.4,
   1.1,  1.8,
   1.2,  2.4,
   1.3,  2.2,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldT[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_fieldT[] = {
   1.1,  2.0,
   1.3,  2.1,
   1.5,  2.2,
   1.7,  2.3,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldTIncr[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_fieldTIncr[] = {
   1.2,  1.6,
   1.5,  2.4,
   1.8,  2.0,
@@ -73,16 +73,16 @@ const int pylith::bc::AbsorbingDampersDataTri3::_cells[] = {
 };
 
 
-const double pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
   1.41421356e+07,  3.53553391e+06
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
   0.0, 0.0,
   -4.20000000e+07,   -1.30000000e+07,
   0.0, 0.0,
   -4.20000000e+07,   -1.30000000e+07,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
+const PylithScalar pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
   0.0, 0.0, // 0x
   0.0, 0.0,
   0.0, 0.0,
@@ -123,19 +123,19 @@ pylith::bc::AbsorbingDampersDataTri3::AbsorbingDampersDataTri3(void)
 
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
 
   spatialDBFilename = const_cast<char*>(_spatialDBFilename);
   id = _id;
   label = const_cast<char*>(_label);
 
   dt = _dt;
-  fieldTIncr = const_cast<double*>(_fieldTIncr);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldTmdt = const_cast<double*>(_fieldTmdt);
+  fieldTIncr = const_cast<PylithScalar*>(_fieldTIncr);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
 
   spaceDim = _spaceDim;
   cellDim = _cellDim;
@@ -144,9 +144,9 @@ pylith::bc::AbsorbingDampersDataTri3::AbsorbingDampersDataTri3(void)
   numCorners = _numCorners;
   cells = const_cast<int*>(_cells);
 
-  dampingConsts = const_cast<double*>(_dampingConsts);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsJacobian = const_cast<double*>(_valsJacobian);
+  dampingConsts = const_cast<PylithScalar*>(_dampingConsts);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
+  valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
 } // constructor
 
 pylith::bc::AbsorbingDampersDataTri3::~AbsorbingDampersDataTri3(void)

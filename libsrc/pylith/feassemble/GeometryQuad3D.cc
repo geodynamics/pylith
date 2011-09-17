@@ -24,7 +24,7 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -33,7 +33,7 @@
 pylith::feassemble::GeometryQuad3D::GeometryQuad3D(void) :
   CellGeometry(QUADRILATERAL, 3)
 { // constructor
-  const double vertices[] = {
+  const PylithScalar vertices[] = {
     -1.0,  -1.0,
     +1.0,  -1.0,
     +1.0,  +1.0,
@@ -67,9 +67,9 @@ pylith::feassemble::GeometryQuad3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(double* ptsGlobal,
-						   const double* ptsRef,
-						   const double* vertices,
+pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
+						   const PylithScalar* ptsRef,
+						   const PylithScalar* vertices,
 						   const int dim,
 						   const int npts) const
 { // ptsRefToGlobal
@@ -79,37 +79,37 @@ pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(double* ptsGlobal,
   assert(3 == dim);
   assert(spaceDim() == dim);
 
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double f_1 = x1 - x0;
-  const double g_1 = y1 - y0;
-  const double h_1 = z1 - z0;
+  const PylithScalar f_1 = x1 - x0;
+  const PylithScalar g_1 = y1 - y0;
+  const PylithScalar h_1 = z1 - z0;
 
-  const double f_3 = x3 - x0;
-  const double g_3 = y3 - y0;
-  const double h_3 = z3 - z0;
+  const PylithScalar f_3 = x3 - x0;
+  const PylithScalar g_3 = y3 - y0;
+  const PylithScalar h_3 = z3 - z0;
 
-  const double f_01 = x2 - x1 - x3 + x0;
-  const double g_01 = y2 - y1 - y3 + y0;
-  const double h_01 = z2 - z1 - z3 + z0;
+  const PylithScalar f_01 = x2 - x1 - x3 + x0;
+  const PylithScalar g_01 = y2 - y1 - y3 + y0;
+  const PylithScalar h_01 = z2 - z1 - z3 + z0;
 
   for (int i=0, iR=0, iG=0; i < npts; ++i) {
-    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p1 = 0.5 * (1.0 + ptsRef[iR++]);
     assert(0 <= p0 && p0 <= 1.0);
     assert(0 <= p1 && p1 <= 1.0);
     ptsGlobal[iG++] = x0 + f_1 * p0 + f_3 * p1 + f_01 * p0 * p1;
@@ -123,10 +123,10 @@ pylith::feassemble::GeometryQuad3D::ptsRefToGlobal(double* ptsGlobal,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
-					  double* det,
-					  const double_array& vertices,
-					  const double_array& location) const
+pylith::feassemble::GeometryQuad3D::jacobian(scalar_array* jacobian,
+					  PylithScalar* det,
+					  const scalar_array& vertices,
+					  const scalar_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -136,30 +136,30 @@ pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
   assert(cellDim() == location.size());
   assert(spaceDim()*cellDim() == jacobian->size());
   
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double x = 0.5 * (location[0] + 1.0);
-  const double y = 0.5 * (location[1] + 1.0);
+  const PylithScalar x = 0.5 * (location[0] + 1.0);
+  const PylithScalar y = 0.5 * (location[1] + 1.0);
   assert(0 <= x && x <= 1.0);
   assert(0 <= y && y <= 1.0);
 
-  const double f_xy = x2 - x1 - x3 + x0;
-  const double g_xy = y2 - y1 - y3 + y0;
-  const double h_xy = z2 - z1 - z3 + z0;
+  const PylithScalar f_xy = x2 - x1 - x3 + x0;
+  const PylithScalar g_xy = y2 - y1 - y3 + y0;
+  const PylithScalar h_xy = z2 - z1 - z3 + z0;
 
   (*jacobian)[0] = (x1 - x0 + f_xy*y) / 2.0;
   (*jacobian)[1] = (x3 - x0 + f_xy*x) / 2.0;
@@ -170,16 +170,16 @@ pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
   (*jacobian)[4] = (z1 - z0 + h_xy*y) / 2.0;
   (*jacobian)[5] = (z3 - z0 + h_xy*x) / 2.0;
 
-  const double jj00 = 
+  const PylithScalar jj00 = 
     (*jacobian)[0]*(*jacobian)[0] +
     (*jacobian)[2]*(*jacobian)[2] +
     (*jacobian)[4]*(*jacobian)[4];
-  const double jj10 =
+  const PylithScalar jj10 =
     (*jacobian)[0]*(*jacobian)[1] +
     (*jacobian)[2]*(*jacobian)[3] +
     (*jacobian)[4]*(*jacobian)[5];
-  const double jj01 = jj10;
-  const double jj11 = 
+  const PylithScalar jj01 = jj10;
+  const PylithScalar jj11 = 
     (*jacobian)[1]*(*jacobian)[1] +
     (*jacobian)[3]*(*jacobian)[3] +
     (*jacobian)[5]*(*jacobian)[5];
@@ -191,10 +191,10 @@ pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryQuad3D::jacobian(double* jacobian,
-					     double* det,
-					     const double* vertices,
-					     const double* ptsRef,
+pylith::feassemble::GeometryQuad3D::jacobian(PylithScalar* jacobian,
+					     PylithScalar* det,
+					     const PylithScalar* vertices,
+					     const PylithScalar* ptsRef,
 					     const int dim,
 					     const int npts) const
 { // jacobian
@@ -205,45 +205,45 @@ pylith::feassemble::GeometryQuad3D::jacobian(double* jacobian,
   assert(3 == dim);
   assert(spaceDim() == dim);
   
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double f_1 = (x1 - x0) / 2.0;
-  const double g_1 = (y1 - y0) / 2.0;
-  const double h_1 = (z1 - z0) / 2.0;
+  const PylithScalar f_1 = (x1 - x0) / 2.0;
+  const PylithScalar g_1 = (y1 - y0) / 2.0;
+  const PylithScalar h_1 = (z1 - z0) / 2.0;
 
-  const double f_3 = (x3 - x0) / 2.0;
-  const double g_3 = (y3 - y0) / 2.0;
-  const double h_3 = (z3 - z0) / 2.0;
+  const PylithScalar f_3 = (x3 - x0) / 2.0;
+  const PylithScalar g_3 = (y3 - y0) / 2.0;
+  const PylithScalar h_3 = (z3 - z0) / 2.0;
 
-  const double f_01 = (x2 - x1 - x3 + x0) / 2.0;
-  const double g_01 = (y2 - y1 - y3 + y0) / 2.0;
-  const double h_01 = (z2 - z1 - z3 + z0) / 2.0;
+  const PylithScalar f_01 = (x2 - x1 - x3 + x0) / 2.0;
+  const PylithScalar g_01 = (y2 - y1 - y3 + y0) / 2.0;
+  const PylithScalar h_01 = (z2 - z1 - z3 + z0) / 2.0;
 
   for (int i=0, iR=0, iJ=0; i < npts; ++i) {
-    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p1 = 0.5 * (1.0 + ptsRef[iR++]);
     assert(0 <= p0 && p0 <= 1.0);
     assert(0 <= p1 && p1 <= 1.0);
-    const double j0 = f_1 + f_01 * p1; 
-    const double j1 = f_3 + f_01 * p0; 
-    const double j2 = g_1 + g_01 * p1;
-    const double j3 = g_3 + g_01 * p0; 
-    const double j4 = h_1 + h_01 * p1;
-    const double j5 = h_3 + h_01 * p0;
+    const PylithScalar j0 = f_1 + f_01 * p1; 
+    const PylithScalar j1 = f_3 + f_01 * p0; 
+    const PylithScalar j2 = g_1 + g_01 * p1;
+    const PylithScalar j3 = g_3 + g_01 * p0; 
+    const PylithScalar j4 = h_1 + h_01 * p1;
+    const PylithScalar j5 = h_3 + h_01 * p0;
     jacobian[iJ++] = j0;
     jacobian[iJ++] = j1;
     jacobian[iJ++] = j2;
@@ -251,10 +251,10 @@ pylith::feassemble::GeometryQuad3D::jacobian(double* jacobian,
     jacobian[iJ++] = j4;
     jacobian[iJ++] = j5;
 
-    const double jj00 = j0*j0 + j2*j2 + j4*j4;
-    const double jj10 = j0*j1 + j2*j3 + j4*j5;
-    const double jj01 = jj10;
-    const double jj11 = j1*j1 + j3*j3 + j5*j5;
+    const PylithScalar jj00 = j0*j0 + j2*j2 + j4*j4;
+    const PylithScalar jj10 = j0*j1 + j2*j3 + j4*j5;
+    const PylithScalar jj01 = jj10;
+    const PylithScalar jj11 = j1*j1 + j3*j3 + j5*j5;
     det[i] = sqrt(jj00*jj11 - jj01*jj10);
   } // for
 

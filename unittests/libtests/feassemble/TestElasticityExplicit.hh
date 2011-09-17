@@ -32,7 +32,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SolutionFields
 #include "pylith/materials/materialsfwd.hh" // USES ElasticMaterial
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 

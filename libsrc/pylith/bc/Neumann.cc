@@ -86,7 +86,7 @@ pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 void
 pylith::bc::Neumann::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
   assert(_quadrature);
@@ -95,14 +95,14 @@ pylith::bc::Neumann::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate vectors for cell values.
   _initCellVector();
-  double_array tractionsCell(numQuadPts*spaceDim);
+  scalar_array tractionsCell(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -127,7 +127,7 @@ pylith::bc::Neumann::integrateResidual(
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     subSieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
@@ -152,22 +152,22 @@ pylith::bc::Neumann::integrateResidual(
     // Restrict tractions to cell
     assert(parametersFiberDim == 
 	   parametersSection->getFiberDimension(*c_iter));
-    const double* parametersCell = parametersSection->restrictPoint(*c_iter);
+    const PylithScalar* parametersCell = parametersSection->restrictPoint(*c_iter);
     assert(parametersCell);
-    const double* tractionsCell = &parametersCell[valueIndex];
+    const PylithScalar* tractionsCell = &parametersCell[valueIndex];
     assert(tractionsCell);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for traction bc terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQuad*numBasis+iBasis];
+        const PylithScalar valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
+          const PylithScalar valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
 	      tractionsCell[iQuad*spaceDim+iDim] * valIJ;
@@ -236,9 +236,9 @@ pylith::bc::Neumann::_queryDatabases(void)
   assert(_quadrature);
   assert(_boundaryMesh);
   
-  const double pressureScale = _normalizer->pressureScale();
-  const double timeScale = _normalizer->timeScale();
-  const double rateScale = pressureScale / timeScale;
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar rateScale = pressureScale / timeScale;
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
@@ -386,7 +386,7 @@ void
 pylith::bc::Neumann::_queryDB(const char* name,
 			      spatialdata::spatialdb::SpatialDB* const db,
 			      const int querySize,
-			      const double scale)
+			      const PylithScalar scale)
 { // _queryDB
   assert(name);
   assert(db);
@@ -410,11 +410,11 @@ pylith::bc::Neumann::_queryDB(const char* name,
   
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
-  double_array valuesCell(numQuadPts*querySize);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array valuesCell(numQuadPts*querySize);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get sections.
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     subSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -428,13 +428,13 @@ pylith::bc::Neumann::_queryDB(const char* name,
   const int valueIndex = _parameters->sectionIndex(name);
   const int valueFiberDim = _parameters->sectionFiberDim(name);
   assert(valueIndex+valueFiberDim <= parametersFiberDim);
-  double_array parametersCell(parametersFiberDim);
+  scalar_array parametersCell(parametersFiberDim);
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(cs);
 
   assert(_normalizer);
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
 
   // Compute quadrature information
   _quadrature->initializeGeometry();
@@ -454,7 +454,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
     subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 #endif
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				lengthScale);
@@ -501,7 +501,9 @@ void
   assert(_parameters);
   assert(_quadrature);
 
-  double_array up(upDir, 3);
+  scalar_array up(3);
+  for (int i=0; i < 3; ++i)
+    up[i] = upDir[i];
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -518,18 +520,18 @@ void
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
-  double_array quadPtRef(cellDim);
-  const double_array& quadPtsRef = _quadrature->quadPtsRef();
+  scalar_array quadPtRef(cellDim);
+  const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
   
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
   const int jacobianSize = spaceDim * cellDim;
-  double_array jacobian(jacobianSize);
-  double jacobianDet = 0;
-  double_array orientation(orientationSize);
+  scalar_array jacobian(jacobianSize);
+  PylithScalar jacobianDet = 0;
+  scalar_array orientation(orientationSize);
 
   // Get sections.
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     subSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -540,8 +542,8 @@ void
     _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
-  double_array parametersCellLocal(parametersFiberDim);
-  double_array parametersCellGlobal(parametersFiberDim);
+  scalar_array parametersCellLocal(parametersFiberDim);
+  scalar_array parametersCellGlobal(parametersFiberDim);
 
   const int initialIndex = 
     (_dbInitial) ? _parameters->sectionIndex("initial") : -1;
@@ -580,7 +582,7 @@ void
 	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Compute Jacobian and determinant at quadrature point, then get
       // orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
+      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(PylithScalar));
 #if defined(PRECOMPUTE_GEOMETRY)
       coordsVisitor.clear();
       subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
@@ -596,8 +598,8 @@ void
 	// coordinate system
 	assert(initialIndex >= 0);
 	assert(initialFiberDim == numQuadPts*spaceDim);
-	double* initialGlobal = &parametersCellGlobal[initialIndex+iSpace];
-	double* initialLocal = &parametersCellLocal[initialIndex+iSpace];
+	PylithScalar* initialGlobal = &parametersCellGlobal[initialIndex+iSpace];
+	PylithScalar* initialLocal = &parametersCellLocal[initialIndex+iSpace];
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  initialGlobal[iDim] = 0.0;
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
@@ -611,8 +613,8 @@ void
 	// coordinate system
 	assert(rateIndex >= 0);
 	assert(rateFiberDim == numQuadPts*spaceDim);
-	double* rateGlobal = &parametersCellGlobal[rateIndex+iSpace];
-	double* rateLocal = &parametersCellLocal[rateIndex+iSpace];
+	PylithScalar* rateGlobal = &parametersCellGlobal[rateIndex+iSpace];
+	PylithScalar* rateLocal = &parametersCellLocal[rateIndex+iSpace];
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  rateGlobal[iDim] = 0.0;
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
@@ -626,8 +628,8 @@ void
 	// coordinate system
 	assert(changeIndex >= 0);
 	assert(changeFiberDim == numQuadPts*spaceDim);
-	double* changeGlobal = &parametersCellGlobal[changeIndex+iSpace];
-	double* changeLocal = &parametersCellLocal[changeIndex+iSpace];
+	PylithScalar* changeGlobal = &parametersCellGlobal[changeIndex+iSpace];
+	PylithScalar* changeLocal = &parametersCellLocal[changeIndex+iSpace];
 	for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	  changeGlobal[iDim] = 0.0;
 	  for(int jDim = 0; jDim < spaceDim; ++jDim)
@@ -647,13 +649,13 @@ void
 // ----------------------------------------------------------------------
 // Calculate temporal and spatial variation of value over the list of Submesh.
 void
-pylith::bc::Neumann::_calculateValue(const double t)
+pylith::bc::Neumann::_calculateValue(const PylithScalar t)
 { // _calculateValue
   assert(_parameters);
   assert(_boundaryMesh);
   assert(_quadrature);
 
-  const double timeScale = _getNormalizer().timeScale();
+  const PylithScalar timeScale = _getNormalizer().timeScale();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
@@ -671,7 +673,7 @@ pylith::bc::Neumann::_calculateValue(const double t)
     _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
-  double_array parametersCell(parametersFiberDim);
+  scalar_array parametersCell(parametersFiberDim);
   
   const int valueIndex = _parameters->sectionIndex("value");
   const int valueFiberDim = _parameters->sectionFiberDim("value");
@@ -726,7 +728,7 @@ pylith::bc::Neumann::_calculateValue(const double t)
       assert(rateTimeFiberDim == numQuadPts);
       
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const double tRel = t - parametersCell[rateTimeIndex+iQuad];
+	const PylithScalar tRel = t - parametersCell[rateTimeIndex+iQuad];
 	if (tRel > 0.0)  // rate of change integrated over time
 	  for (int iDim=0; iDim < spaceDim; ++iDim)
 	    parametersCell[valueIndex+iQuad*spaceDim+iDim] += 
@@ -742,11 +744,11 @@ pylith::bc::Neumann::_calculateValue(const double t)
       assert(changeTimeFiberDim == numQuadPts);
 
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const double tRel = t - parametersCell[changeTimeIndex+iQuad];
+	const PylithScalar tRel = t - parametersCell[changeTimeIndex+iQuad];
 	if (tRel >= 0) { // change in value over time
-	  double scale = 1.0;
+	  PylithScalar scale = 1.0;
 	  if (0 != _dbTimeHistory) {
-	    double tDim = tRel;
+	    PylithScalar tDim = tRel;
 	    _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	    const int err = _dbTimeHistory->query(&scale, tDim);
 	    if (0 != err) {

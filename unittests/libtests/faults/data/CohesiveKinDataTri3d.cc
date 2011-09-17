@@ -78,25 +78,25 @@ const int pylith::faults::CohesiveKinDataTri3d::_numBasis = 2;
 
 const int pylith::faults::CohesiveKinDataTri3d::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveKinDataTri3d::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_quadPts[] = {
   0.0,
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_quadWts[] = {
   2.0,
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_basis[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_basis[] = {
   0.5,
   0.5
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_basisDeriv[] = {
   -0.5,
    0.5
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_verticesRef[] = {
   -1.0, 1.0
 };
 
@@ -113,7 +113,7 @@ const char* pylith::faults::CohesiveKinDataTri3d::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTri3d::_riseTimeFilename = 
   "data/tri3d_risetime.spatialdb";
 
-const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   6.1, 8.1,
   6.2, 8.2, // 5
   6.3, 8.3, // 6
@@ -129,14 +129,14 @@ const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
 };
 
 
-const double pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
   +0.70710678118654757, -0.70710678118654757,  
   -0.70710678118654757, -0.70710678118654757,
   0.0, -1.0,  -1.0,  0.0,
  +1.0,  0.0,   0.0, -1.0
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_area[] = {
   2.0,
   1.0,
   1.0,
@@ -164,7 +164,7 @@ const int pylith::faults::CohesiveKinDataTri3d::_cellMappingCohesive[] = {
   16, 17
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residual[] = {
   0.0,  0.0,
  -1.4142135623730949, -11.030865786510143, // 5
  -8.0,  -6.0, // 6
@@ -179,7 +179,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_residual[] = {
  -0.6+1.59887481971,  0.6+0.19186497837, // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
   0.0,  0.0,
  -1.4142135623730949, -11.030865786510143, // 5
  -8.0,  -6.0, // 6
@@ -194,7 +194,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
  -0.6+1.59887481971,  0.6+0.19186497837, // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0, // 4x
   0.0, 0.0,
   0.0, 0.0,
@@ -492,22 +492,22 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residual = const_cast<double*>(_residual);
-  residualIncr = const_cast<double*>(_residualIncr);
-  jacobian = const_cast<double*>(_jacobian);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residual = const_cast<PylithScalar*>(_residual);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

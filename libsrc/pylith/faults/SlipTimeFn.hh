@@ -66,7 +66,7 @@ public :
   virtual
   void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
-		  const double originTime =0.0) = 0;
+		  const PylithScalar originTime =0.0) = 0;
 
   /** Get slip on fault surface at time t.
    *
@@ -77,7 +77,7 @@ public :
    */
   virtual
   void slip(topology::Field<topology::SubMesh>* const slipField,
-	    const double t) = 0;
+	    const PylithScalar t) = 0;
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
@@ -89,8 +89,8 @@ public :
    */
   virtual
   void slipIncr(topology::Field<topology::SubMesh>* slipField,
-		const double t0,
-		const double t1) = 0;
+		const PylithScalar t0,
+		const PylithScalar t1) = 0;
 
   /** Get final slip.
    *

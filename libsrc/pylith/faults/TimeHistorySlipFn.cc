@@ -76,7 +76,7 @@ void
 pylith::faults::TimeHistorySlipFn::initialize(
 			    const topology::SubMesh& faultMesh,
 			    const spatialdata::units::Nondimensional& normalizer,
-			    const double originTime)
+			    const PylithScalar originTime)
 { // initialize
   assert(0 != _dbAmplitude);
   assert(0 != _dbSlipTime);
@@ -85,8 +85,8 @@ pylith::faults::TimeHistorySlipFn::initialize(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  const double lengthScale = normalizer.lengthScale();
-  const double timeScale = normalizer.timeScale();
+  const PylithScalar lengthScale = normalizer.lengthScale();
+  const PylithScalar timeScale = normalizer.timeScale();
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -160,7 +160,7 @@ pylith::faults::TimeHistorySlipFn::initialize(
   assert(!coordinates.isNull());
 
   _slipVertex.resize(spaceDim);
-  double_array vCoordsGlobal(spaceDim);  
+  scalar_array vCoordsGlobal(spaceDim);  
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
@@ -213,7 +213,7 @@ pylith::faults::TimeHistorySlipFn::initialize(
 // Get slip on fault surface at time t.
 void
 pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip,
-				 const double t)
+				 const PylithScalar t)
 { // slip
   assert(0 != slip);
   assert(0 != _parameters);
@@ -239,7 +239,7 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  double amplitude = 0.0;
+  PylithScalar amplitude = 0.0;
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
@@ -247,7 +247,7 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
 					&_slipVertex[0], _slipVertex.size());
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    double relTime = t - _slipTimeVertex;
+    PylithScalar relTime = t - _slipTimeVertex;
     if (relTime < 0.0)
       _slipVertex = 0.0;
     else {
@@ -274,8 +274,8 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
 // Get increment of slip on fault surface between time t0 and t1.
 void
 pylith::faults::TimeHistorySlipFn::slipIncr(topology::Field<topology::SubMesh>* slip,
-				     const double t0,
-				     const double t1)
+				     const PylithScalar t0,
+				     const PylithScalar t1)
 { // slipIncr
   assert(0 != slip);
   assert(0 != _parameters);
@@ -301,16 +301,16 @@ pylith::faults::TimeHistorySlipFn::slipIncr(topology::Field<topology::SubMesh>* 
   const ALE::Obj<RealSection>& slipSection = slip->section();
   assert(!slipSection.isNull());
 
-  double amplitude0 = 0.0;
-  double amplitude1 = 0.0;
+  PylithScalar amplitude0 = 0.0;
+  PylithScalar amplitude1 = 0.0;
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
     slipAmplitudeSection->restrictPoint(*v_iter, &_slipVertex[0], _slipVertex.size());
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    double relTime0 = t0 - _slipTimeVertex;
-    double relTime1 = t1 - _slipTimeVertex;
+    PylithScalar relTime0 = t0 - _slipTimeVertex;
+    PylithScalar relTime1 = t1 - _slipTimeVertex;
     if (relTime1 < 0.0)
       _slipVertex = 0.0;
     else {

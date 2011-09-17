@@ -136,7 +136,7 @@ private:
       FaultCohesiveDyn* const fault,
       topology::SolutionFields* const fields,
       topology::Jacobian* const jacobian,
-      const double* const fieldIncrVals);
+      const PylithScalar* const fieldIncrVals);
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *

@@ -151,7 +151,7 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
-  const double t = 1.2;
+  const PylithScalar t = 1.2;
   const char* filenameRoot = "output.vtk";
   const char* timeFormat = "%3.1f";
 
@@ -179,13 +179,13 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   const char* label = "field data";
   const topology::FieldBase::VectorFieldEnum fieldType = 
     topology::FieldBase::VECTOR;
-  const double fieldValues[] = {
+  const PylithScalar fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
     3.1, 3.2,
     4.1, 4.2
   };
-  const double scale = 2.0;
+  const PylithScalar scale = 2.0;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -210,7 +210,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
-  double_array values(nvertices*fiberDim);
+  scalar_array values(nvertices*fiberDim);
   for (int i=0; i < nvertices*fiberDim; ++i)
     values[i] = fieldValues[i];
   values /= scale;
@@ -222,7 +222,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
-  const double t = 1.2;
+  const PylithScalar t = 1.2;
   const char* filenameRoot = "output_vertex.vtk";
   const char* filenameRootF = "output_vertex_filter.vtk";
   const char* timeFormat = "%3.1f";
@@ -267,11 +267,11 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const char* label = "field data";
   const topology::FieldBase::VectorFieldEnum fieldType = 
     topology::FieldBase::MULTI_SCALAR;
-  const double fieldValues[] = {
+  const PylithScalar fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
   };
-  const double scale = 4.0;
+  const PylithScalar scale = 4.0;
 
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -296,7 +296,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   CPPUNIT_ASSERT(!section.isNull());
 
   CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
-  double_array values(ncells*fiberDim);
+  scalar_array values(ncells*fiberDim);
   for (int i=0; i < ncells*fiberDim; ++i)
     values[i] = fieldValues[i];
   values /= scale;
@@ -308,7 +308,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
-  const double t = 1.2;
+  const PylithScalar t = 1.2;
   const char* filenameRoot = "output_cell.vtk";
   const char* filenameRootF = "output_cell_filter.vtk";
   const char* timeFormat = "%3.1f";
@@ -331,23 +331,23 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   const int numBasis = 4;
   const int numQuadPts = 2;
   const int spaceDim = 2;
-  const double basis[] = {
+  const PylithScalar basis[] = {
     1.0, 1.0,
     1.0, 1.0,
     1.0, 1.0,
     1.0, 1.0,
   };
-  const double basisDerivRef[] = {
+  const PylithScalar basisDerivRef[] = {
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
   };
-  const double quadPtsRef[] = {
+  const PylithScalar quadPtsRef[] = {
     1.0, 0.0,
    -1.0, 0.0,};
-  const double quadWts[] = { 1.5, 0.5 };
-  const double minJacobian = 1.0;
+  const PylithScalar quadWts[] = { 1.5, 0.5 };
+  const PylithScalar minJacobian = 1.0;
 
   feassemble::Quadrature<topology::Mesh> quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis, 

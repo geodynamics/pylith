@@ -90,13 +90,13 @@ public :
    *
    * @param dt Time step
    */
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Set normalized viscosity for numerical damping.
    *
    * @param viscosity Normalized viscosity (viscosity / elastic modulus).
    */
-  void normViscosity(const double viscosity);
+  void normViscosity(const PylithScalar viscosity);
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -112,7 +112,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to residual term (r) for operator.
@@ -122,7 +122,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
-       const double t,
+       const PylithScalar t,
        topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -133,7 +133,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -144,7 +144,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
@@ -159,8 +159,8 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _dtm1; ///< Time step for t-dt1 -> t
-  double _normViscosity; ///< Normalized viscosity for numerical damping.
+  PylithScalar _dtm1; ///< Time step for t-dt1 -> t
+  PylithScalar _normViscosity; ///< Normalized viscosity for numerical damping.
 
 }; // ElasticityExplicitLgDeform
 

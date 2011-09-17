@@ -53,6 +53,12 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
   Line search should be improved to include the inequality constraints.
 
+* GPU utilization
+
+  PETSc w/GPU and single precision
+    PyLith use PetscScalar instead of double
+    spatialdata - create single precision versions
+
 ----------------------------------------
 MISCELLANEOUS
 ----------------------------------------

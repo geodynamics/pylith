@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/utils/array.hh" // USES double_array, std::vector
+#include "pylith/utils/array.hh" // USES scalar_array, std::vector
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -141,8 +141,8 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 
 // ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
-const pylith::double_array&
-pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain,
+const pylith::scalar_array&
+pylith::materials::ElasticMaterial::calcStress(const scalar_array& totalStrain,
 					       const bool computeStateVars)
 { // calcStress
   const int numQuadPts = _numQuadPts;
@@ -170,9 +170,9 @@ pylith::materials::ElasticMaterial::calcStress(const double_array& totalStrain,
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix for cell at quadrature points.
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::materials::ElasticMaterial::calcDerivElastic(
-					       const double_array& totalStrain)
+					       const scalar_array& totalStrain)
 { // calcDerivElastic
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
@@ -202,7 +202,7 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 // Update state variables (for next time step).
 void
 pylith::materials::ElasticMaterial::updateStateVars(
-					      const double_array& totalStrain,
+					      const scalar_array& totalStrain,
 					      const int cell)
 { // updateStateVars
   const int numQuadPts = _numQuadPts;
@@ -230,7 +230,7 @@ pylith::materials::ElasticMaterial::updateStateVars(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh& mesh)
 { // stableTimeStepImplicit
   const int numQuadPts = _numQuadPts;
@@ -243,7 +243,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   assert(_initialStressCell.size() == numQuadPts*_tensorSize);
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
-  double dtStable = pylith::PYLITH_MAXDOUBLE;
+  PylithScalar dtStable = pylith::PYLITH_MAXDOUBLE;
 
   // Get cells associated with material
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -260,7 +260,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
     retrievePropsAndVars(*c_iter);
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double dt = 
+      const PylithScalar dt = 
 	_stableTimeStepImplicit(&_propertiesCell[iQuad*numPropsQuadPt],
 				numPropsQuadPt,
 				&_stateVarsCell[iQuad*numVarsQuadPt],
@@ -323,7 +323,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   assert(!sieveMesh.isNull());
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates, 
@@ -332,8 +332,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
-  double_array stressCell(numQuadPts*tensorSize);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array stressCell(numQuadPts*tensorSize);
 
   // Get cells associated with material
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -388,8 +388,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     } // switch
   
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -404,7 +404,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 #endif
 
     // Dimensionalize coordinates for querying
-    const double_array& quadPtsNonDim = quadrature->quadPts();
+    const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				lengthScale);
@@ -469,7 +469,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   assert(!sieveMesh.isNull());
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates, 
@@ -478,8 +478,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 
   // Create arrays for querying
   const int tensorSize = _tensorSize;
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
 
   // Get cells associated with material
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -534,8 +534,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     } // switch
   
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
     
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -550,7 +550,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 #endif
 
     // Dimensionalize coordinates for querying
-    const double_array& quadPtsNonDim = quadrature->quadPts();
+    const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
     _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				lengthScale);
@@ -585,15 +585,15 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 // Update stateVars (for next time step).
 void
 pylith::materials::ElasticMaterial::_updateStateVars(
-					    double* const stateVars,
+					    PylithScalar* const stateVars,
 					    const int numStateVars,
-					    const double* properties,
+					    const PylithScalar* properties,
 					    const int numProperties,
-					    const double* totalStrain,
+					    const PylithScalar* totalStrain,
 					    const int strainSize,
-					    const double* initialStress,
+					    const PylithScalar* initialStress,
 					    const int initialStressSize,
-					    const double* initialStrain,
+					    const PylithScalar* initialStrain,
 					    const int initialStrainSize)
 { // _updateStateVars
 } // _updateStateVars

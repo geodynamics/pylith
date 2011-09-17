@@ -499,11 +499,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   for (TopologyOps::PointSet::const_iterator c_iter = noReplaceCells.begin();
       c_iter != noRCellsEnd;
       ++c_iter) {
-    const double minusOne = -1.0;
+    const PylithScalar minusOne = -1.0;
     if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
       replacedCells->updatePoint(*c_iter, &minusOne);
     } else {
-      const double minusTwo = -2.0;
+      const PylithScalar minusTwo = -2.0;
       replacedCells->updatePoint(*c_iter, &minusTwo);
     } // if/else
   } // for
@@ -513,20 +513,20 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       c_iter != rCellsEnd;
       ++c_iter) {
     if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) {
-      const double one = 1.0;
+      const PylithScalar one = 1.0;
       if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
         replacedCells->updatePoint(*c_iter, &one);
       } else {
-        const double two = 2.0;
+        const PylithScalar two = 2.0;
         replacedCells->updatePoint(*c_iter, &two);
       } // if/else
       continue;
     } // if
-    const double ten = 10.0;
+    const PylithScalar ten = 10.0;
     if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
       replacedCells->updatePoint(*c_iter, &ten);
     } else {
-      const double twenty = 20.0;
+      const PylithScalar twenty = 20.0;
       replacedCells->updatePoint(*c_iter, &twenty);
     } // if/else
     // There should be a way to check for boundary elements

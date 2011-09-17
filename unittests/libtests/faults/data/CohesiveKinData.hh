@@ -19,6 +19,8 @@
 #if !defined(pylith_faults_cohesivekindata_hh)
 #define pylith_faults_cohesivekindata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace faults {
      class CohesiveKinData;
@@ -48,11 +50,11 @@ public:
   int cellDim; ///< Number of dimensions associated with cell
   int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
-  double* quadPts; ///< Coordinates of quad pts in ref cell
-  double* quadWts; ///< Weights of quadrature points
-  double* basis; ///< Basis fns at quadrature points
-  double* basisDeriv; ///< Derivatives of basis fns at quad pts
-  double* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
+  PylithScalar* quadPts; ///< Coordinates of quad pts in ref cell
+  PylithScalar* quadWts; ///< Weights of quadrature points
+  PylithScalar* basis; ///< Basis fns at quadrature points
+  PylithScalar* basisDeriv; ///< Derivatives of basis fns at quad pts
+  PylithScalar* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
   //@}
 
   /// @name Fault information
@@ -67,24 +69,24 @@ public:
 
   /// @name Input fields
   //@{
-  double* fieldT; ///< Field over domain at time t.
-  double* fieldIncr; ///< Solution increment field over domain at time t.
-  double* jacobianLumped; ///< Lumped Jacobian.
+  PylithScalar* fieldT; ///< Field over domain at time t.
+  PylithScalar* fieldIncr; ///< Solution increment field over domain at time t.
+  PylithScalar* jacobianLumped; ///< Lumped Jacobian.
   //@}
 
   /// @name Calculated values.
   //@{
-  double* orientation; ///< Expected values for fault orientation.
-  double* area; ///< Expected values for fault area.
-  double* residual; ///< Expected values from residual calculation.
+  PylithScalar* orientation; ///< Expected values for fault orientation.
+  PylithScalar* area; ///< Expected values for fault area.
+  PylithScalar* residual; ///< Expected values from residual calculation.
 
   /// Expected values from residual calculation using solution increment.
-  double* residualIncr;
+  PylithScalar* residualIncr;
 
-  double* jacobian; ///< Expected values from Jacobian calculation.
+  PylithScalar* jacobian; ///< Expected values from Jacobian calculation.
 
   /// Expected values for solution increment after adjustment.
-  double* fieldIncrAdjusted;
+  PylithScalar* fieldIncrAdjusted;
 
   int* verticesFault; ///< Expected points for Fault vertices
   int* verticesLagrange; ///< Expected points for Lagrange vertices

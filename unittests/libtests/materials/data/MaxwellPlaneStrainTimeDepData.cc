@@ -37,15 +37,15 @@ const int pylith::materials::MaxwellPlaneStrainTimeDepData::_numPropsQuadPt = 4;
 
 const int pylith::materials::MaxwellPlaneStrainTimeDepData::_numVarsQuadPt = 8;
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_lengthScale =   1.00000000e+03;
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_timeScale =   1.00000000e+00;
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_pressureScale =   2.25000000e+10;
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_dtStableImplicit =   8.88888889e+06;
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_dtStableImplicit =   8.88888889e+06;
 
 const int pylith::materials::MaxwellPlaneStrainTimeDepData::_numPropertyValues[] = {
 1,
@@ -78,7 +78,7 @@ const char* pylith::materials::MaxwellPlaneStrainTimeDepData::_dbStateVarValues[
 "viscous-strain-xy",
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_dbProperties[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -89,7 +89,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_dbProperties[] =
   1.00000000e+19,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_dbStateVars[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_dbStateVars[] = {
   2.00000000e+04,
   0.00000000e+00,
   0.00000000e+00,
@@ -108,7 +108,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_dbStateVars[] = 
   0.00000000e+00,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_properties[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -119,7 +119,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_properties[] = {
   3.47222222e+09,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVars[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVars[] = {
   2.00000000e+04,
   1.10000000e-04,
   1.20000000e-04,
@@ -138,7 +138,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVars[] = {
   4.40000000e-04,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_propertiesNondim[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
@@ -149,7 +149,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_propertiesNondim
   3.47222222e+09,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVarsNondim[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVarsNondim[] = {
   8.88888889e-07,
   1.10000000e-04,
   1.20000000e-04,
@@ -168,12 +168,12 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVarsNondim[
   4.40000000e-04,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_density[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_density[] = {
   2.50000000e+03,
   2.00000000e+03,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_strain[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_strain[] = {
   1.20000000e-04,
   1.30000000e-04,
   1.50000000e-04,
@@ -182,7 +182,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_strain[] = {
   4.50000000e-04,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stress[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_stress[] = {
   7.82142817e+06,
   8.31540772e+06,
   5.25970271e+06,
@@ -191,7 +191,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stress[] = {
   2.26569236e+06,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_elasticConsts[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_elasticConsts[] = {
   6.74326010e+10,
   2.25336994e+10,
   0.00000000e+00,
@@ -212,7 +212,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_elasticConsts[] 
   5.75983408e+09,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStress[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.40000000e+04,
@@ -221,7 +221,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStress[] 
   5.40000000e+04,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStrain[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStrain[] = {
   3.60000000e-05,
   3.50000000e-05,
   3.30000000e-05,
@@ -230,7 +230,7 @@ const double pylith::materials::MaxwellPlaneStrainTimeDepData::_initialStrain[] 
   6.60000000e-05,
 };
 
-const double pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVarsUpdated[] = {
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_stateVarsUpdated[] = {
   2.00000000e+04,
   1.20000000e-04,
   1.30000000e-04,
@@ -268,19 +268,19 @@ pylith::materials::MaxwellPlaneStrainTimeDepData::MaxwellPlaneStrainTimeDepData(
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  density = const_cast<double*>(_density);
-  strain = const_cast<double*>(_strain);
-  stress = const_cast<double*>(_stress);
-  elasticConsts = const_cast<double*>(_elasticConsts);
-  initialStress = const_cast<double*>(_initialStress);
-  initialStrain = const_cast<double*>(_initialStrain);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  density = const_cast<PylithScalar*>(_density);
+  strain = const_cast<PylithScalar*>(_strain);
+  stress = const_cast<PylithScalar*>(_stress);
+  elasticConsts = const_cast<PylithScalar*>(_elasticConsts);
+  initialStress = const_cast<PylithScalar*>(_initialStress);
+  initialStrain = const_cast<PylithScalar*>(_initialStrain);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::MaxwellPlaneStrainTimeDepData::~MaxwellPlaneStrainTimeDepData(void)

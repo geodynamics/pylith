@@ -40,7 +40,7 @@ const int pylith::topology::MeshDataCohesiveTri3Level2Fault1::_numCorners = 3;
 
 const int pylith::topology::MeshDataCohesiveTri3Level2Fault1::_numCornersCohesive = 6;
 
-const double pylith::topology::MeshDataCohesiveTri3Level2Fault1::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveTri3Level2Fault1::_vertices[] = {
   -1.0,  0.0,
    0.0, -1.0,
    0.0,  0.0,
@@ -137,7 +137,7 @@ pylith::topology::MeshDataCohesiveTri3Level2Fault1::MeshDataCohesiveTri3Level2Fa
   numCorners = _numCorners;
   numCellsCohesive = _numCellsCohesive;
   numCornersCohesive = _numCornersCohesive;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   cellsCohesive = const_cast<int*>(_cellsCohesive);
   materialIds = const_cast<int*>(_materialIds);

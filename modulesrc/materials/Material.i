@@ -83,13 +83,13 @@ namespace pylith {
        * @param dt Current time step.
        */
       virtual
-      void timeStep(const double dt);
+      void timeStep(const PylithScalar dt);
       
       /** Get current time step.
        *
        * @returns Current time step.
        */
-      double timeStep(void) const;
+      PylithScalar timeStep(void) const;
       
       /** Set database for physical property parameters.
        *
@@ -162,8 +162,8 @@ namespace pylith {
        * @param dbValues Array of database values.
        */
       virtual
-      void _dbToProperties(double* const propValues,
-			   const pylith::double_array& dbValues) = 0;
+      void _dbToProperties(PylithScalar* const propValues,
+			   const pylith::scalar_array& dbValues) = 0;
       
       /** Nondimensionalize properties.
        *
@@ -171,7 +171,7 @@ namespace pylith {
        * @param nvalues Number of values.
        */
       virtual
-      void _nondimProperties(double* const values,
+      void _nondimProperties(PylithScalar* const values,
 			     const int nvalues) const = 0;
       
       /** Dimensionalize properties.
@@ -180,7 +180,7 @@ namespace pylith {
        * @param nvalues Number of values.
        */
       virtual
-      void _dimProperties(double* const values,
+      void _dimProperties(PylithScalar* const values,
 			  const int nvalues) const = 0;
 
     }; // class Material

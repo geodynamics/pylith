@@ -25,10 +25,10 @@
 // Compute density at location from properties.
 inline
 void
-pylith::materials::ElasticIsotropic3D::_calcDensity(double* const density,
-						    const double* properties,
+pylith::materials::ElasticIsotropic3D::_calcDensity(PylithScalar* const density,
+						    const PylithScalar* properties,
 						    const int numProperties,
-						    const double* stateVars,
+						    const PylithScalar* stateVars,
 						    const int numStateVars)
 { // _calcDensity
   assert(0 != density);

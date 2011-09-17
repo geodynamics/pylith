@@ -99,7 +99,7 @@ private :
    * @param pNumDims Pointer to number of dimensions
    */
   void _readVertices(hid_t& filein,
-		     double** pCoordinates,
+		     PylithScalar** pCoordinates,
 		     int* pNumVertices, 
 		     int* pNumDims) const;
   

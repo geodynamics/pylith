@@ -74,7 +74,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -85,7 +85,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
   
   /** Verify configuration is acceptable.

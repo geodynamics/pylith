@@ -36,9 +36,9 @@ const int pylith::bc::DirichletDataLine2b::_fixedDOF[] = {};
 const int pylith::bc::DirichletDataLine2b::_numConstrainedPts = 2;
 const int pylith::bc::DirichletDataLine2b::_constrainedPoints[] = { 0, 2 };
 
-const double pylith::bc::DirichletDataLine2b::_tRef = -0.2;
-const double pylith::bc::DirichletDataLine2b::_valueRate = 1.0;
-const double pylith::bc::DirichletDataLine2b::_valuesInitial[] = {0};
+const PylithScalar pylith::bc::DirichletDataLine2b::_tRef = -0.2;
+const PylithScalar pylith::bc::DirichletDataLine2b::_valueRate = 1.0;
+const PylithScalar pylith::bc::DirichletDataLine2b::_valuesInitial[] = {0};
 
 const char* pylith::bc::DirichletDataLine2b::_meshFilename = 
   "data/line2.mesh";
@@ -59,7 +59,7 @@ pylith::bc::DirichletDataLine2b::DirichletDataLine2b(void)
 
   tRef = _tRef;
   valueRate = _valueRate;
-  valuesInitial = const_cast<double*>(_valuesInitial);
+  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

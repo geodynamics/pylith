@@ -42,21 +42,21 @@ const char* pylith::bc::NeumannDataQuad4::_meshFilename =
 
 const int pylith::bc::NeumannDataQuad4::_numBasis = 2;
 const int pylith::bc::NeumannDataQuad4::_numQuadPts = 2;
-const double pylith::bc::NeumannDataQuad4::_quadPts[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_quadPts[] = {
   -0.57735027,
    0.57735027,
 };
-const double pylith::bc::NeumannDataQuad4::_quadWts[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_quadWts[] = {
   1.0,
   1.0,
 };
-const double pylith::bc::NeumannDataQuad4::_basis[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_basis[] = {
   0.78867513459,
   0.21132486541,
   0.21132486541,
   0.78867513459,
 };
-const double pylith::bc::NeumannDataQuad4::_basisDerivRef[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_basisDerivRef[] = {
  -0.5,
   0.5,
  -0.5,
@@ -78,13 +78,13 @@ const int pylith::bc::NeumannDataQuad4::_cells[] = {
   4, 6,
 };
 
-const double pylith::bc::NeumannDataQuad4::_tractionsCell[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_tractionsCell[] = {
   0.0, -0.1056624327,
   0.0, -0.3943375673,
   0.0, -0.6056624327,
   0.0, -0.8943375673,
 };
-const double pylith::bc::NeumannDataQuad4::_valsResidual[] = {
+const PylithScalar pylith::bc::NeumannDataQuad4::_valsResidual[] = {
   0.0, -0.08333333333,
   0.0,  0.0,
   0.0, -0.5,
@@ -100,10 +100,10 @@ pylith::bc::NeumannDataQuad4::NeumannDataQuad4(void)
 
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
 
   spatialDBFilename = const_cast<char*>(_spatialDBFilename);
   id = _id;
@@ -116,8 +116,8 @@ pylith::bc::NeumannDataQuad4::NeumannDataQuad4(void)
   numCorners = _numCorners;
   cells = const_cast<int*>(_cells);
 
-  tractionsCell = const_cast<double*>(_tractionsCell);
-  valsResidual = const_cast<double*>(_valsResidual);
+  tractionsCell = const_cast<PylithScalar*>(_tractionsCell);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
 
 } // constructor
 

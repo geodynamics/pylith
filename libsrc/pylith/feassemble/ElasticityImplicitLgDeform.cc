@@ -29,7 +29,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
@@ -69,7 +69,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityImplicitLgDeform::timeStep(const double dt)
+pylith::feassemble::ElasticityImplicitLgDeform::timeStep(const PylithScalar dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -82,7 +82,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::timeStep(const double dt)
 
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
-double
+PylithScalar
 pylith::feassemble::ElasticityImplicitLgDeform::stableTimeStep(const topology::Mesh& mesh) const
 { // stableTimeStep
   assert(0 != _material);
@@ -105,12 +105,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::useSolnIncr(const bool flag)
 void
 pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
-			  const double t,
+			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityImplicitLgDeform::*elasticityResidual_fn_type)
-    (const double_array&, const double_array&);
+    (const scalar_array&, const scalar_array&);
   
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -129,7 +129,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -162,13 +162,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array dispTCell(numBasis*spaceDim);
-  double_array dispTIncrCell(numBasis*spaceDim);
-  double_array dispTpdtCell(numBasis*spaceDim);
-  double_array deformCell(numQuadPts*spaceDim*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array dispTCell(numBasis*spaceDim);
+  scalar_array dispTIncrCell(numBasis*spaceDim);
+  scalar_array dispTpdtCell(numBasis*spaceDim);
+  scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -195,7 +195,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -203,8 +203,8 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale = 
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
 
@@ -237,10 +237,10 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& quadPtsNondim = _quadrature->quadPts();
 
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
@@ -252,24 +252,25 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
       assert(0 != cs);
       
       // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
+      const scalar_array& density = _material->calcDensity();
 
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				  lengthScale);
 
       // Compute action for element body forces
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+	const int err = db->query(&gravVec[0], gravVec.size(),
 					     &quadPtsGlobal[0], spaceDim, cs);
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), 
 				       gravityScale);
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {
-	  const double valI = wt*basis[iQ+iBasis];
+	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
 	  } // for
@@ -283,7 +284,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTpdtCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTpdtCell);
 
@@ -306,12 +307,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateResidual(
 void
 pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 					topology::Jacobian* jacobian,
-					const double t,
+					const PylithScalar t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
   /// Member prototype for _elasticityJacobianXD()
   typedef void (pylith::feassemble::ElasticityImplicitLgDeform::*elasticityJacobian_fn_type)
-    (const double_array&, const double_array&, const double_array&);
+    (const scalar_array&, const scalar_array&, const scalar_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -330,7 +331,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -363,12 +364,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     assert(0);
 
   // Allocate vector for total strain
-  double_array dispTCell(numBasis*spaceDim);
-  double_array dispTIncrCell(numBasis*spaceDim);
-  double_array dispTpdtCell(numBasis*spaceDim);
-  double_array deformCell(numQuadPts*spaceDim*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
-  double_array stressCell(numQuadPts*tensorSize);
+  scalar_array dispTCell(numBasis*spaceDim);
+  scalar_array dispTIncrCell(numBasis*spaceDim);
+  scalar_array dispTpdtCell(numBasis*spaceDim);
+  scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
+  scalar_array stressCell(numQuadPts*tensorSize);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -397,7 +398,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
@@ -410,7 +411,7 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 					   sieveMesh->depth())*spaceDim);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -446,9 +447,9 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
@@ -460,11 +461,11 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 
     // Get "elasticity" matrix at quadrature points for this cell
-    const double_array& elasticConsts = 
+    const scalar_array& elasticConsts = 
       _material->calcDerivElastic(strainCell);
 
     // Get Second Priola-Kirchoff stress tensor
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityJacobianFn)(elasticConsts, stressCell,
 						dispTpdtCell);
@@ -474,12 +475,12 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
       int lwork = 5*n;
       int idummy = 0;
       int lierr = 0;
-      double *elemMat = new double[n*n];
-      double *svalues = new double[n];
-      double *work    = new double[lwork];
-      double minSV = 0;
-      double maxSV = 0;
-      double sdummy = 0;
+      PylithScalar *elemMat = new PylithScalar[n*n];
+      PylithScalar *svalues = new PylithScalar[n];
+      PylithScalar *work    = new PylithScalar[lwork];
+      PylithScalar minSV = 0;
+      PylithScalar maxSV = 0;
+      PylithScalar sdummy = 0;
 
       const int n2 = n*n;
       for (int i = 0; i < n2; ++i)

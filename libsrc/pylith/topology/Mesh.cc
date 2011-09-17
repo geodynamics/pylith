@@ -23,7 +23,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -110,7 +110,7 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   coordsDimSection->allocateStorage();
   coordsDimSection->setBC(coordsSection->getBC());
 
-  const double lengthScale = normalizer.lengthScale();
+  const PylithScalar lengthScale = normalizer.lengthScale();
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     _mesh->depthStratum(0);
   assert(!vertices.isNull());
@@ -119,13 +119,13 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   const SieveMesh::label_sequence::iterator verticesEnd = 
     vertices->end();
 
-  double coordsVertex[3];
+  PylithScalar coordsVertex[3];
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
     const int spaceDim = coordsSection->getFiberDimension(*v_iter);
     assert(spaceDim <= 3);
-    const double* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
+    const PylithScalar* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
     
     // Update section with dimensioned coordinates
     assert(spaceDim == 

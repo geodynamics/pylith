@@ -47,25 +47,25 @@ const int pylith::faults::CohesiveKinSrcsDataHex8::_numBasis = 4;
 
 const int pylith::faults::CohesiveKinSrcsDataHex8::_numQuadPts = 4;
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_quadPts[] = {
   -0.57735027, -0.57735027,
   +0.57735027, -0.57735027,
   +0.57735027, +0.57735027,
   -0.57735027, +0.57735027,
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_quadWts[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_basis[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_basis[] = {
   0.62200847,  0.16666667,  0.16666667,  0.0446582,
   0.16666667,  0.62200847,  0.0446582,   0.16666667,
   0.16666667,  0.0446582,   0.62200847,  0.16666667,
   0.0446582,   0.16666667,  0.16666667,  0.62200847,
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_basisDeriv[] = {
   -0.39433757, -0.39433757,
   +0.39433757, -0.10566243,
   +0.10566243, +0.10566243,
@@ -87,7 +87,7 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_basisDeriv[] = {
   -0.39433757, +0.39433757,
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_verticesRef[] = {
   -1.0, -1.0,
   +1.0, -1.0,
   +1.0, +1.0,
@@ -107,7 +107,7 @@ const char* pylith::faults::CohesiveKinSrcsDataHex8::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinSrcsDataHex8::_riseTimeFilename = 
   "data/hex8_risetime.spatialdb";
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_fieldT[] = {
   4.1, 6.1, 8.1,
   4.2, 6.2, 8.2,
   4.3, 6.3, 8.3,
@@ -131,14 +131,14 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_fieldT[] = {
 };
 
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
@@ -165,7 +165,7 @@ const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingCohesive[] = {
 };
 
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_residual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -188,7 +188,7 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_residual[] = {
   1.1+1.29378670385+0.12855127934, -1.1+-0.49761027071+-0.04944279975, 1.1+0.19904410828+0.01977711990, // 21 (constraint)
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_residualIncr[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -211,7 +211,7 @@ const double pylith::faults::CohesiveKinSrcsDataHex8::_residualIncr[] = {
   1.1+1.29378670385+0.12855127934, -1.1+-0.49761027071+-0.04944279975, 1.1+0.19904410828+0.01977711990, // 21 (constraint)
 };
 
-const double pylith::faults::CohesiveKinSrcsDataHex8::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataHex8::_jacobian[] = {
   0.0, 0.0, 0.0, // 2x
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -1421,22 +1421,22 @@ pylith::faults::CohesiveKinSrcsDataHex8::CohesiveKinSrcsDataHex8(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residual = const_cast<double*>(_residual);
-  residualIncr = const_cast<double*>(_residualIncr);
-  jacobian = const_cast<double*>(_jacobian);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residual = const_cast<PylithScalar*>(_residual);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

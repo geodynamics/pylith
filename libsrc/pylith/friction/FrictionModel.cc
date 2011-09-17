@@ -24,7 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-#include "pylith/utils/array.hh" // USES double_array, std::vector
+#include "pylith/utils/array.hh" // USES scalar_array, std::vector
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -120,9 +120,9 @@ pylith::friction::FrictionModel::initialize(
   const int spaceDim = cs->spaceDim();
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
 
-  double_array coordsVertex(spaceDim);
+  scalar_array coordsVertex(spaceDim);
   const ALE::Obj<RealSection>& coordinates =
     faultSieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -143,12 +143,12 @@ pylith::friction::FrictionModel::initialize(
   const ALE::Obj<SubRealUniformSection>& fieldsSection = 
     _fieldsPropsStateVars->section();
   assert(!fieldsSection.isNull());
-  double_array fieldsVertex(fieldsFiberDim);
+  scalar_array fieldsVertex(fieldsFiberDim);
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
-  double_array propertiesDBQuery(numDBProperties);
-  double_array propertiesVertex(_propsFiberDim);
+  scalar_array propertiesDBQuery(numDBProperties);
+  scalar_array propertiesVertex(_propsFiberDim);
 
   // Setup database for querying for physical properties
   assert(_dbProperties);
@@ -197,8 +197,8 @@ pylith::friction::FrictionModel::initialize(
 
     // Create arrays for querying
     const int numDBStateVars = _metadata.numDBStateVars();
-    double_array stateVarsDBQuery(numDBStateVars);
-    double_array stateVarsVertex(_varsFiberDim);
+    scalar_array stateVarsDBQuery(numDBStateVars);
+    scalar_array stateVarsVertex(_varsFiberDim);
     
     // Setup database for querying for initial state variables
     _dbInitialState->open();
@@ -304,19 +304,19 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
 
 // ----------------------------------------------------------------------
 // Compute friction at vertex.
-double
-pylith::friction::FrictionModel::calcFriction(const double slip,
-                                              const double slipRate,
-                                              const double normalTraction)
+PylithScalar
+pylith::friction::FrictionModel::calcFriction(const PylithScalar slip,
+                                              const PylithScalar slipRate,
+                                              const PylithScalar normalTraction)
 { // calcFriction
   assert(_fieldsPropsStateVars);
 
   assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
-  const double* propertiesVertex = &_propsStateVarsVertex[0];
-  const double* stateVarsVertex = (_varsFiberDim > 0) ?
+  const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
+  const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
     &_propsStateVarsVertex[_propsFiberDim] : 0;
 
-  const double friction =
+  const PylithScalar friction =
     _calcFriction(slip, slipRate, normalTraction,
 		  propertiesVertex, _propsFiberDim,
 		  stateVarsVertex, _varsFiberDim);
@@ -327,9 +327,9 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::FrictionModel::updateStateVars(const double slip,
-						 const double slipRate,
-						 const double normalTraction,
+pylith::friction::FrictionModel::updateStateVars(const PylithScalar slip,
+						 const PylithScalar slipRate,
+						 const PylithScalar normalTraction,
 						 const int vertex)
 { // updateStateVars
   assert(_fieldsPropsStateVars);
@@ -341,8 +341,8 @@ pylith::friction::FrictionModel::updateStateVars(const double slip,
     _fieldsPropsStateVars->section();
   assert(!fieldsSection.isNull());
 
-  const double* propertiesVertex = &_propsStateVarsVertex[0];
-  double* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
+  const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
+  PylithScalar* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
   
   _updateStateVars(slip, slipRate, normalTraction,
 		   &stateVarsVertex[0], _varsFiberDim,
@@ -356,12 +356,12 @@ pylith::friction::FrictionModel::updateStateVars(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::FrictionModel::_updateStateVars(const double slip,
-    const double slipRate,
-    const double normalTraction,
-    double* const stateVars,
+pylith::friction::FrictionModel::_updateStateVars(const PylithScalar slip,
+    const PylithScalar slipRate,
+    const PylithScalar normalTraction,
+    PylithScalar* const stateVars,
     const int numStateVars,
-    const double* properties,
+    const PylithScalar* properties,
     const int numProperties)
 { // _updateStateVars
 } // _updateStateVars
@@ -379,7 +379,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
   assert(_propsFiberDim >= 0);
   
   // Determine scales for each physical property.
-  double_array propertiesVertex(_propsFiberDim);
+  scalar_array propertiesVertex(_propsFiberDim);
   for (int i=0; i < _propsFiberDim; ++i)
     propertiesVertex[i] = 1.0;
   _dimProperties(&propertiesVertex[0], propertiesVertex.size());
@@ -392,7 +392,7 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
   assert(_varsFiberDim >= 0);
   
   // Determine scales for each state variable.
-  double_array stateVarsVertex(_varsFiberDim);
+  scalar_array stateVarsVertex(_varsFiberDim);
   for (int i=0; i < _varsFiberDim; ++i)
     stateVarsVertex[i] = 1.0;
   _dimStateVars(&stateVarsVertex[0], stateVarsVertex.size());

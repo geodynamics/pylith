@@ -56,51 +56,51 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor Rest
 namespace pylith {
   namespace bc {
     namespace _TestNeumann {
-      const double pressureScale = 4.0;
-      const double lengthScale = 1.0; // Mesh coordinates have scale=1.0
-      const double timeScale = 0.5;
+      const PylithScalar pressureScale = 4.0;
+      const PylithScalar lengthScale = 1.0; // Mesh coordinates have scale=1.0
+      const PylithScalar timeScale = 0.5;
       const int ncells = 2;
       const int numQuadPts = 2;
       const int spaceDim = 2;
 
-      const double initial[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar initial[ncells*numQuadPts*spaceDim] = {
 	0.3,  0.4,    0.7,  0.6,
 	1.3,  1.4,    1.7,  1.6,
       };
-      const double rate[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar rate[ncells*numQuadPts*spaceDim] = {
 	-0.2,  -0.1,   0.4, 0.3,
 	-1.2,  -1.1,   1.4, 1.3,
       };
-      const double rateTime[ncells*numQuadPts] = {
+      const PylithScalar rateTime[ncells*numQuadPts] = {
 	0.5,   0.8,
 	0.6,   0.9,
       };
-      const double change[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar change[ncells*numQuadPts*spaceDim] = {
 	1.3,  1.4,    1.7,  1.6,
 	2.3,  2.4,    2.7,  2.6,
       };
-      const double changeTime[ncells*numQuadPts] = {
+      const PylithScalar changeTime[ncells*numQuadPts] = {
 	2.0,  2.4,
 	2.1,  2.5,
       };
 
-      const double tValue = 2.2;
-      const double valuesRate[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar tValue = 2.2;
+      const PylithScalar valuesRate[ncells*numQuadPts*spaceDim] = {
 	-0.34,  -0.17,  0.56,   0.42,
 	-1.92,  -1.76,  1.82,   1.69,
       };
-      const double valuesChange[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar valuesChange[ncells*numQuadPts*spaceDim] = {
 	1.3,  1.4,   0.0,  0.0,
 	2.3,  2.4,   0.0,  0.0,
       };
-      const double valuesChangeTH[ncells*numQuadPts*spaceDim] = {
+      const PylithScalar valuesChangeTH[ncells*numQuadPts*spaceDim] = {
 	1.3*0.98,  1.4*0.98,    0.0,  0.0,
 	2.3*0.99,  2.4*0.99,    0.0,  0.0,
       };
 
       // Check values in section against expected values.
       static
-      void _checkValues(const double* valuesE,
+      void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
 			const topology::Field<topology::SubMesh>& field);
     } // _TestNeumann
@@ -196,7 +196,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   // Check traction values
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
-  double_array tractionsCell(fiberDim);
+  scalar_array tractionsCell(fiberDim);
   int index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
   const ALE::Obj<SubRealUniformSection>& parametersSection =
@@ -206,19 +206,19 @@ pylith::bc::TestNeumann::testInitialize(void)
   const int initialIndex = bc._parameters->sectionIndex("initial");
   const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     CPPUNIT_ASSERT_EQUAL(parametersFiberDim,
 			 parametersSection->getFiberDimension(*c_iter));
-    const double* parametersCell = parametersSection->restrictPoint(*c_iter);
+    const PylithScalar* parametersCell = parametersSection->restrictPoint(*c_iter);
     CPPUNIT_ASSERT(parametersCell);
     CPPUNIT_ASSERT(initialIndex + initialFiberDim <= parametersFiberDim);
-    const double* tractionsCell = &parametersCell[initialIndex];
+    const PylithScalar* tractionsCell = &parametersCell[initialIndex];
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int iDim =0; iDim < spaceDim; ++iDim) {
-	const double tractionsCellData = _data->tractionsCell[index];
+	const PylithScalar tractionsCellData = _data->tractionsCell[index];
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionsCellData,
 				     tractionsCell[iQuad*spaceDim+iDim],
 				     tolerance);
@@ -241,27 +241,27 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   _initialize(&mesh, &bc, &fields);
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 0.0;
+  const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
-  const double* valsE = _data->valsResidual;
+  const PylithScalar* valsE = _data->valsResidual;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
 
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual.view("RESIDUAL");
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   // std::cout << "computed residuals: " << std::endl;
   for (int i=0; i < size; ++i)
     // std::cout << "  " << vals[i] << std::endl;
@@ -311,11 +311,11 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const double pressureScale = _TestNeumann::pressureScale;
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar pressureScale = _TestNeumann::pressureScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -389,13 +389,13 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   bc.dbRate(&dbRate);
   bc.dbChange(&dbChange);
 
-  const double pressureScale = _TestNeumann::pressureScale;
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar pressureScale = _TestNeumann::pressureScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   const double upDir[3] = { 0.0, 0.0, 1.0 };
   bc._paramsLocalToGlobal(upDir);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -403,7 +403,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   // Orientation for quad4 is +x, -y for shear and normal tractions.
   CPPUNIT_ASSERT_EQUAL(2, spaceDim); 
   const int ncells = _TestNeumann::ncells;
-  double_array valuesE(ncells*numQuadPts*spaceDim);
+  scalar_array valuesE(ncells*numQuadPts*spaceDim);
   
   // Check initial values.
   for (int i=0; i < valuesE.size(); i+=spaceDim) {
@@ -457,11 +457,11 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
 
   bc.dbInitial(&dbInitial);
 
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -495,11 +495,11 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
 
   bc.dbRate(&dbRate);
 
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -533,11 +533,11 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
 
   bc.dbChange(&dbChange);
 
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -576,11 +576,11 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
@@ -633,18 +633,18 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const double timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
   CPPUNIT_ASSERT(0 != bc._parameters);
   
   // Check values.
   const int ncells = _TestNeumann::ncells;
-  double_array valuesE(ncells*numQuadPts*spaceDim);
+  scalar_array valuesE(ncells*numQuadPts*spaceDim);
   for (int i=0; i < valuesE.size(); ++i)
     valuesE[i] = 
       _TestNeumann::initial[i] +
@@ -752,7 +752,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 // ----------------------------------------------------------------------
 // Check values in section against expected values.
 void
-pylith::bc::_TestNeumann::_checkValues(const double* valuesE,
+pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
 					   const int fiberDimE,
 					   const topology::Field<topology::SubMesh>& field)
 { // _checkValues
@@ -766,14 +766,14 @@ pylith::bc::_TestNeumann::_checkValues(const double* valuesE,
   const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
     submesh->heightStratum(1);
 
-  const double scale = field.scale();
+  const PylithScalar scale = field.scale();
 
   const size_t ncells = _TestNeumann::ncells;
   CPPUNIT_ASSERT_EQUAL(ncells, cells->size());
 
   // Check values associated with BC.
   int icell = 0;
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter, ++icell) {
@@ -781,7 +781,7 @@ pylith::bc::_TestNeumann::_checkValues(const double* valuesE,
     const int fiberDim = section->getFiberDimension(*c_iter);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
     
-    const double* values = section->restrictPoint(*c_iter);
+    const PylithScalar* values = section->restrictPoint(*c_iter);
     for (int iDim=0; iDim < fiberDimE; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[icell*fiberDimE+iDim]/scale,
 				   values[iDim], tolerance);

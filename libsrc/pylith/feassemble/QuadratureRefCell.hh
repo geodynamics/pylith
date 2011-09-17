@@ -29,7 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
-#include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // Quadrature -----------------------------------------------------------
 /** @brief Object with basic quadrature information for the reference
@@ -100,17 +100,17 @@ public :
    *
    * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
-  void initialize(const double* basis,
+  void initialize(const PylithScalar* basis,
 		  const int numQuadPts1,
 		  const int numBasis1,
-		  const double* basisDerivRef,
+		  const PylithScalar* basisDerivRef,
 		  const int numQuadPts2,
 		  const int numBasis2,
 		  const int cellDim2,
-		  const double* quadPtsRef,
+		  const PylithScalar* quadPtsRef,
 		  const int numQuadPts3,
 		  const int cellDim3,
-		  const double* quadWts,
+		  const PylithScalar* quadWts,
 		  const int numQuadPts4,
 		  const int spaceDim);
 
@@ -130,37 +130,37 @@ public :
    *
    * @param tolerance Minimum allowable value for Jacobian
    */
-  void minJacobian(const double min);
+  void minJacobian(const PylithScalar min);
 
   /** Get minimum allowable determinant of Jacobian.
    *
    * @returns Minimum allowable value for Jacobian
    */
-  double minJacobian(void) const;
+  PylithScalar minJacobian(void) const;
 
   /** Get coordinates of quadrature points in reference cell.
    *
    * @returns Array of coordinates of quadrature points in reference cell.
    */
-  const double_array& quadPtsRef(void) const;
+  const scalar_array& quadPtsRef(void) const;
 
   /** Get weights of quadrature points.
    *
    * @returns Weights of quadrature points
    */
-  const double_array& quadWts(void) const;
+  const scalar_array& quadWts(void) const;
 
   /** Get basis fns evaluated at quadrature points.
    *
    * @returns Array of basis fns evaluated at quadrature points
    */
-  const double_array& basis(void) const;
+  const scalar_array& basis(void) const;
 
   /** Get derivates of basis fns evaluated at quadrature points.
    *
    * @returns Array of derivates of basis fns evaluated at quadrature points
    */
-  const double_array& basisDerivRef(void) const;
+  const scalar_array& basisDerivRef(void) const;
 
   /** Get number of dimensions in reference cell.
    *
@@ -198,7 +198,7 @@ protected :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  double _minJacobian; ///< Minium allowable Jacobian determinant
+  PylithScalar _minJacobian; ///< Minium allowable Jacobian determinant
   
   /** Array of coordinates of quadrature points in reference cell.
    *
@@ -210,7 +210,7 @@ protected :
    * size = numQuadPts * cellDim
    * index = iQuadPts*cellDim + iDim
    */
-  double_array _quadPtsRef;
+  scalar_array _quadPtsRef;
 
   /** Array of weights of quadrature points.
    *
@@ -218,7 +218,7 @@ protected :
    * size = numQuadPts
    * index = iQuadPt
    */
-  double_array _quadWts;
+  scalar_array _quadWts;
 
   /** Array of basis functions evaluated at the quadrature points.
    *
@@ -228,7 +228,7 @@ protected :
    * size = numQuadPts * numBasis
    * index = iQuadPt*numBasis + iBasis
    */
-  double_array _basis;
+  scalar_array _basis;
 
   /** Array of basis function derivatives evaluated at the quadrature
    * points, where derivatives are with respect to cell's local
@@ -240,7 +240,7 @@ protected :
    * size = numQuadPts * numBasis * cellDim
    * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
-  double_array _basisDerivRef;
+  scalar_array _basisDerivRef;
 
   int _cellDim; ///< Number of dimensions in reference cell
   int _numBasis; ///< Number of basis functions (and vertices) for cell
