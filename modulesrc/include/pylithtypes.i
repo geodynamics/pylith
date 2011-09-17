@@ -16,7 +16,7 @@
 // ======================================================================
 //
 
-#if (PETSC_PRECISION == single)
+#if defined(PETSC_USE_REAL_SINGLE)
 #define PYLITH_USE_SCALAR_SINGLE
 typedef float PylithScalar;
 #else
