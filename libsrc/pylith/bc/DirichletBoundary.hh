@@ -86,7 +86,7 @@ private :
   const topology::Field<topology::SubMesh>&
   _bufferVector(const char* name,
 		const char* label,
-		const double scale);
+		const PylithScalar scale);
 
   /** Get vertex scalar field with BC information.
    *
@@ -99,7 +99,7 @@ private :
   const topology::Field<topology::SubMesh>&
   _bufferScalar(const char* name,
 		const char* label,
-		const double scale);
+		const PylithScalar scale);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

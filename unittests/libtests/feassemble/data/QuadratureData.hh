@@ -19,6 +19,8 @@
 #if !defined(pylith_feassemble_quadraturedata_hh)
 #define pylith_feassemble_quadraturedata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace feassemble {
      class QuadratureData;
@@ -47,20 +49,20 @@ public:
   int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
 
-  double* vertices; ///< Pointer to coordinates of vertices
+  PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* cells; ///< Pointer to indices of vertices in cells
 
-  double* verticesRef; ///< Coordinates of vertices in ref cell
-  double* quadPtsRef; ///< Coordinates of quad pts in ref cell
-  double* quadWts; ///< Weights of quadrature points
-  double* quadPts; ///< Coordinates of quad pts in cell
+  PylithScalar* verticesRef; ///< Coordinates of vertices in ref cell
+  PylithScalar* quadPtsRef; ///< Coordinates of quad pts in ref cell
+  PylithScalar* quadWts; ///< Weights of quadrature points
+  PylithScalar* quadPts; ///< Coordinates of quad pts in cell
 
-  double* basis; ///< Basis fns at quadrature points
-  double* basisDerivRef; ///< Derivatices of basis fns at quad pts (cell)
-  double* basisDeriv; ///< Derivatices of basis fns at quad pts (global)
-  double* jacobian; ///< Jacobian at quadrature points
-  double* jacobianDet; ///< Determinant of quadrature points
-  double* jacobianInv; ///< Inverse of Jacobian at quadruature points
+  PylithScalar* basis; ///< Basis fns at quadrature points
+  PylithScalar* basisDerivRef; ///< Derivatices of basis fns at quad pts (cell)
+  PylithScalar* basisDeriv; ///< Derivatices of basis fns at quad pts (global)
+  PylithScalar* jacobian; ///< Jacobian at quadrature points
+  PylithScalar* jacobianDet; ///< Determinant of quadrature points
+  PylithScalar* jacobianInv; ///< Inverse of Jacobian at quadruature points
 
 };
 

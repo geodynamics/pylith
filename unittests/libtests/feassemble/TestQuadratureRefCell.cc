@@ -45,7 +45,7 @@ pylith::feassemble::TestQuadratureRefCell::testMinJacobian(void)
 { // testMinJacobian
   QuadratureRefCell q;
 
-  const double min = 1.0;
+  const PylithScalar min = 1.0;
   q.minJacobian(min);
   CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
 } // testMinJacobian
@@ -76,11 +76,11 @@ pylith::feassemble::TestQuadratureRefCell::testInitialize(void)
   const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const double basis[] = { 0.5, 0.5 };
-  const double basisDerivRef[] = { -0.5, 0.5 };
-  const double quadPtsRef[] = { 0.0 };
-  const double quadWts[] = { 2.0 };
-  const double minJacobian = 1.0;
+  const PylithScalar basis[] = { 0.5, 0.5 };
+  const PylithScalar basisDerivRef[] = { -0.5, 0.5 };
+  const PylithScalar quadPtsRef[] = { 0.0 };
+  const PylithScalar quadWts[] = { 2.0 };
+  const PylithScalar minJacobian = 1.0;
 
   QuadratureRefCell q;
   q.initialize(basis, numQuadPts, numBasis,

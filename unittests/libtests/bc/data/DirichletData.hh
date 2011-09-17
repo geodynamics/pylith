@@ -19,6 +19,8 @@
 #if !defined(pylith_bc_dirichletdata_hh)
 #define pylith_bc_dirichletdata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace bc {
      class DirichletData;
@@ -40,8 +42,8 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  double tRef; ///< Reference time for rate of change of values
-  double valueRate; ///< Rate of change of value at constrained points.
+  PylithScalar tRef; ///< Reference time for rate of change of values
+  PylithScalar valueRate; ///< Rate of change of value at constrained points.
 
   int numDOF; ///< Number of degrees of freedom at each point.
   int numFixedDOF; ///< Number of fixedDOF at constrained points.
@@ -52,7 +54,7 @@ public:
 
   int* fixedDOF; ///< Degrees of freedom that are constrained at each point
   int* constrainedPoints; ///< Array of indices of constrained points.
-  double* valuesInitial; ///< Values at constrained points.
+  PylithScalar* valuesInitial; ///< Values at constrained points.
 
   char* meshFilename; ///< Filename for input mesh.
   char* dbFilename; ///< Filename of simple spatial database.

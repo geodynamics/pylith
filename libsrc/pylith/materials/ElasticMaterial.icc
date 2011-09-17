@@ -27,9 +27,9 @@
 inline
 void
 pylith::materials::ElasticMaterial::calcDeviatoric2D(
-					double* const deviatoric,
-					const double* vec,
-					const double vecMean)
+					PylithScalar* const deviatoric,
+					const PylithScalar* vec,
+					const PylithScalar vecMean)
 {
   deviatoric[0] = vec[0] - vecMean;
   deviatoric[1] = vec[1] - vecMean;
@@ -41,9 +41,9 @@ pylith::materials::ElasticMaterial::calcDeviatoric2D(
 inline
 void
 pylith::materials::ElasticMaterial::calcDeviatoric3D(
-					double* const deviatoric,
-					const double* vec,
-					const double vecMean)
+					PylithScalar* const deviatoric,
+					const PylithScalar* vec,
+					const PylithScalar vecMean)
 {
   deviatoric[0] = vec[0] -vecMean;
   deviatoric[1] = vec[1] -vecMean;
@@ -57,11 +57,11 @@ pylith::materials::ElasticMaterial::calcDeviatoric3D(
 // Compute 2D scalar product of two tensors represented as vectors.
 // 6 FLOPs per call.
 inline
-double
-pylith::materials::ElasticMaterial::scalarProduct2D(const double* tensor1,
-						    const double* tensor2) const
+PylithScalar
+pylith::materials::ElasticMaterial::scalarProduct2D(const PylithScalar* tensor1,
+						    const PylithScalar* tensor2) const
 { // scalarProduct2D
-  const double scalarProduct = tensor1[0] * tensor2[0] +
+  const PylithScalar scalarProduct = tensor1[0] * tensor2[0] +
     tensor1[1] * tensor2[1] + 2.0 * tensor1[2] * tensor2[2];
   return scalarProduct;
 
@@ -71,11 +71,11 @@ pylith::materials::ElasticMaterial::scalarProduct2D(const double* tensor1,
 // Compute 3D scalar product of two tensors represented as vectors.
 // 12 FLOPs per call.
 inline
-double
-pylith::materials::ElasticMaterial::scalarProduct3D(const double* tensor1,
-						    const double* tensor2) const
+PylithScalar
+pylith::materials::ElasticMaterial::scalarProduct3D(const PylithScalar* tensor1,
+						    const PylithScalar* tensor2) const
 { // scalarProduct3D
-  const double scalarProduct = tensor1[0] * tensor2[0] +
+  const PylithScalar scalarProduct = tensor1[0] * tensor2[0] +
     tensor1[1] * tensor2[1] +
     tensor1[2] * tensor2[2] +
     2.0 * (tensor1[3] * tensor2[3] +
@@ -124,7 +124,7 @@ pylith::materials::ElasticMaterial::initialFields(void) const {
 // ----------------------------------------------------------------------
 // Compute density for cell at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::materials::ElasticMaterial::calcDensity(void)
 { // calcDensity
   const int numQuadPts = _numQuadPts;

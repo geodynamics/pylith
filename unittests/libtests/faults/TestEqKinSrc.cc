@@ -73,7 +73,7 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
   topology::SubMesh faultMesh;
   EqKinSrc eqsrc;
   BruneSlipFn slipfn;
-  const double originTime = 2.45;
+  const PylithScalar originTime = 2.45;
   _initialize(&mesh, &faultMesh, &eqsrc, &slipfn, originTime);
   
   // Don't have access to details of slip time function, so we can't
@@ -86,11 +86,11 @@ pylith::faults::TestEqKinSrc::testInitialize(void)
 void
 pylith::faults::TestEqKinSrc::testSlip(void)
 { // testSlip
-  const double finalSlipE[] = { 2.3, 0.1, 
+  const PylithScalar finalSlipE[] = { 2.3, 0.1, 
 				2.4, 0.2};
-  const double slipTimeE[] = { 1.2, 1.3 };
-  const double riseTimeE[] = { 1.4, 1.5 };
-  const double originTime = 2.42;
+  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
+  const PylithScalar riseTimeE[] = { 1.4, 1.5 };
+  const PylithScalar originTime = 2.42;
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
@@ -111,10 +111,10 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   slip.newSection(vertices, spaceDim);
   slip.allocate();
 
-  const double t = 2.134;
+  const PylithScalar t = 2.134;
   eqsrc.slip(&slip, originTime+t);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
 
   const ALE::Obj<RealSection>& slipSection = slip.section();
@@ -122,22 +122,22 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
-    double slipMag = 0.0;
+    PylithScalar slipMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
-    const double peakRate = slipMag / riseTimeE[iPoint] * 1.745;
-    const double tau = slipMag / (exp(1.0) * peakRate);
-    const double t0 = slipTimeE[iPoint];
-    const double slipNorm = 1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau);
+    const PylithScalar peakRate = slipMag / riseTimeE[iPoint] * 1.745;
+    const PylithScalar tau = slipMag / (exp(1.0) * peakRate);
+    const PylithScalar t0 = slipTimeE[iPoint];
+    const PylithScalar slipNorm = 1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau);
 
     const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* vals = slipSection->restrictPoint(*v_iter);
+    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double slipE = finalSlipE[iPoint*spaceDim+iDim] * slipNorm;
+      const PylithScalar slipE = finalSlipE[iPoint*spaceDim+iDim] * slipNorm;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
     } // for
   } // for
@@ -148,11 +148,11 @@ pylith::faults::TestEqKinSrc::testSlip(void)
 void
 pylith::faults::TestEqKinSrc::testSlipIncr(void)
 { // testSlip
-  const double finalSlipE[] = { 2.3, 0.1, 
+  const PylithScalar finalSlipE[] = { 2.3, 0.1, 
 				2.4, 0.2};
-  const double slipTimeE[] = { 1.2, 1.3 };
-  const double riseTimeE[] = { 1.4, 1.5 };
-  const double originTime = -4.29;
+  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
+  const PylithScalar riseTimeE[] = { 1.4, 1.5 };
+  const PylithScalar originTime = -4.29;
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
@@ -173,36 +173,36 @@ pylith::faults::TestEqKinSrc::testSlipIncr(void)
   slip.newSection(vertices, spaceDim);
   slip.allocate();
 
-  const double t0 = 1.234;
-  const double t1 = 2.525;
+  const PylithScalar t0 = 1.234;
+  const PylithScalar t1 = 2.525;
   eqsrc.slipIncr(&slip, originTime+t0, originTime+t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
   const ALE::Obj<RealSection>& slipSection = slip.section();
   CPPUNIT_ASSERT(!slipSection.isNull());
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
-    double slipMag = 0.0;
+    PylithScalar slipMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
-    const double peakRate = slipMag / riseTimeE[iPoint] * 1.745;
-    const double tau = slipMag / (exp(1.0) * peakRate);
-    const double tRef = slipTimeE[iPoint];
-    const double slipNorm0 = 
+    const PylithScalar peakRate = slipMag / riseTimeE[iPoint] * 1.745;
+    const PylithScalar tau = slipMag / (exp(1.0) * peakRate);
+    const PylithScalar tRef = slipTimeE[iPoint];
+    const PylithScalar slipNorm0 = 
       (t0 > tRef) ? 1.0 - exp(-(t0-tRef)/tau) * (1.0 + (t0-tRef)/tau) : 0.0;
-    const double slipNorm1 =
+    const PylithScalar slipNorm1 =
       (t1 > tRef) ? 1.0 - exp(-(t1-tRef)/tau) * (1.0 + (t1-tRef)/tau) : 0.0;
     
     const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* vals = slipSection->restrictPoint(*v_iter);
+    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double slipE = 
+      const PylithScalar slipE = 
 	finalSlipE[iPoint*spaceDim+iDim] * (slipNorm1 - slipNorm0);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
     } // for
@@ -216,7 +216,7 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
 					  topology::SubMesh* faultMesh,
 					  EqKinSrc* eqsrc,
 					  BruneSlipFn* slipfn,
-					  const double originTime)
+					  const PylithScalar originTime)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != faultMesh);

@@ -52,9 +52,9 @@ pylith::problems::Explicit::calcRateFields(void)
   // acc(t) = (disp(t+dt) - 2*disp(t) + disp(t-dt)) / (dt*dt)
   //        = (dispIncr(t+dt) - disp(t) + disp(t-dt)) / (dt*dt)
 
-  const double dt = _dt;
-  const double dt2 = dt*dt;
-  const double twodt = 2.0*dt;
+  const PylithScalar dt = _dt;
+  const PylithScalar dt2 = dt*dt;
+  const PylithScalar twodt = 2.0*dt;
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
   const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();
@@ -72,12 +72,12 @@ pylith::problems::Explicit::calcRateFields(void)
     _fields->get("disp(t-dt)").section();
   assert(!dispTmdtSection.isNull());
 
-  double_array velVertex(spaceDim);
+  scalar_array velVertex(spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     _fields->get("velocity(t)").section();
   assert(!velSection.isNull());
 
-  double_array accVertex(spaceDim);
+  scalar_array accVertex(spaceDim);
   const ALE::Obj<RealSection>&  accSection = 
     _fields->get("acceleration(t)").section();
   assert(!accSection.isNull());
@@ -95,13 +95,13 @@ pylith::problems::Explicit::calcRateFields(void)
        v_iter != verticesEnd;
        ++v_iter) {
     assert(spaceDim == dispIncrSection->getFiberDimension(*v_iter));
-    const double* dispIncrVertex = dispIncrSection->restrictPoint(*v_iter);
+    const PylithScalar* dispIncrVertex = dispIncrSection->restrictPoint(*v_iter);
 
     assert(spaceDim == dispTSection->getFiberDimension(*v_iter));
-    const double* dispTVertex = dispTSection->restrictPoint(*v_iter);
+    const PylithScalar* dispTVertex = dispTSection->restrictPoint(*v_iter);
 
     assert(spaceDim == dispTmdtSection->getFiberDimension(*v_iter));
-    const double* dispTmdtVertex = dispTmdtSection->restrictPoint(*v_iter);
+    const PylithScalar* dispTmdtVertex = dispTmdtSection->restrictPoint(*v_iter);
 
     for (int i=0; i < spaceDim; ++i) {
       velVertex[i] = 

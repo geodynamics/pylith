@@ -140,7 +140,7 @@ pylith::topology::TestMesh::testComm(void)
 void
 pylith::topology::TestMesh::testNondimensionalize(void)
 { // testNondimensionalizer
-  const double lengthScale = 2.0;
+  const PylithScalar lengthScale = 2.0;
   const int spaceDim = 2;
   const int numVertices = 4;
   const int coordinates[] = { 
@@ -183,11 +183,11 @@ pylith::topology::TestMesh::testNondimensionalize(void)
   for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
-    const double* coordsVertex = coordsField->restrictPoint(*v_iter);
+    const PylithScalar* coordsVertex = coordsField->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != coordsVertex);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double coordE = coordinates[i++] / lengthScale;
+      const PylithScalar coordE = coordinates[i++] / lengthScale;
       if (coordE < 1.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
 				     tolerance);
@@ -207,11 +207,11 @@ pylith::topology::TestMesh::testNondimensionalize(void)
   for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
       v_iter != verticesEnd;
       ++v_iter) {
-    const double* coordsVertex = coordsDimField->restrictPoint(*v_iter);
+    const PylithScalar* coordsVertex = coordsDimField->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != coordsVertex);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double coordE = coordinates[i++];
+      const PylithScalar coordE = coordinates[i++];
       if (coordE < 1.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
 				     tolerance);

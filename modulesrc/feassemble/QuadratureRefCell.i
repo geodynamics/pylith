@@ -76,45 +76,68 @@ namespace pylith {
        * @param numQuadPts Number of quadrature points
        * @param spaceDim Number of dimensions in coordinates of cell vertices
        */
+#if defined(PYLITH_USE_SCALAR_SINGLE)
+      %apply(float* IN_ARRAY2, int DIM1, int DIM2) {
+	(const PylithScalar* basis,
+	 const int numQuadPts1,
+	 const int numBasis1)
+	  };
+      %apply(float* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
+	(const PylithScalar* basisDerivRef,
+	 const int numQuadPts2,
+	 const int numBasis2,
+	 const int cellDim2)
+	  };
+      %apply(float* IN_ARRAY2, int DIM1, int DIM2) {
+	(const PylithScalar* quadPtsRef,
+	 const int numQuadPts3,
+	 const int cellDim3)
+	  };
+      %apply(float* IN_ARRAY1, int DIM1) {
+	(const PylithScalar* quadWts,
+	 const int numQuadPts4)
+	  };
+#else
       %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
-	(const double* basis,
+	(const PylithScalar* basis,
 	 const int numQuadPts1,
 	 const int numBasis1)
 	  };
       %apply(double* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
-	(const double* basisDerivRef,
+	(const PylithScalar* basisDerivRef,
 	 const int numQuadPts2,
 	 const int numBasis2,
 	 const int cellDim2)
 	  };
       %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
-	(const double* quadPtsRef,
+	(const PylithScalar* quadPtsRef,
 	 const int numQuadPts3,
 	 const int cellDim3)
 	  };
       %apply(double* IN_ARRAY1, int DIM1) {
-	(const double* quadWts,
+	(const PylithScalar* quadWts,
 	 const int numQuadPts4)
 	  };
-      void initialize(const double* basis,
+#endif
+      void initialize(const PylithScalar* basis,
 		      const int numQuadPts1,
 		      const int numBasis1,
-		      const double* basisDerivRef,
+		      const PylithScalar* basisDerivRef,
 		      const int numQuadPts2,
 		      const int numBasis2,
 		      const int cellDim2,
-		      const double* quadPtsRef,
+		      const PylithScalar* quadPtsRef,
 		      const int numQuadPts3,
 		      const int cellDim3,
-		      const double* quadWts,
+		      const PylithScalar* quadWts,
 		      const int numQuadPts4,
 		      const int spaceDim);
-      %clear(const double* basis, const int numQuadPts, const int numBasis);
-      %clear(const double* basisDerivRef, const int numQuadPts,
+      %clear(const PylithScalar* basis, const int numQuadPts, const int numBasis);
+      %clear(const PylithScalar* basisDerivRef, const int numQuadPts,
 	     const int numBasis, const int spaceDim);
-      %clear(const double* quadPtsRef, const int numQuadPts,
+      %clear(const PylithScalar* quadPtsRef, const int numQuadPts,
 	     const int cellDim);
-      %clear(const double* quadWts, const int numQuadPts);
+      %clear(const PylithScalar* quadWts, const int numQuadPts);
       
       /** Set geometry associated with reference cell.
        *
@@ -132,38 +155,38 @@ namespace pylith {
        *
        * @param tolerance Minimum allowable value for Jacobian
        */
-      void minJacobian(const double min);
+      void minJacobian(const PylithScalar min);
       
       /** Get minimum allowable determinant of Jacobian.
        *
        * @returns Minimum allowable value for Jacobian
        */
-      double minJacobian(void) const;
+      PylithScalar minJacobian(void) const;
       
       /** Get coordinates of quadrature points in reference cell.
        *
        * @returns Array of coordinates of quadrature points in reference cell.
        */
-      const pylith::double_array& quadPtsRef(void) const;
+      const pylith::scalar_array& quadPtsRef(void) const;
       
       /** Get weights of quadrature points.
        *
        * @returns Weights of quadrature points
        */
-      const pylith::double_array& quadWts(void) const;
+      const pylith::scalar_array& quadWts(void) const;
       
       /** Get basis fns evaluated at quadrature points.
        *
        * @returns Array of basis fns evaluated at quadrature points
        */
-      const pylith::double_array& basis(void) const;
+      const pylith::scalar_array& basis(void) const;
       
       /** Get derivates of basis fns evaluated at quadrature points.
        *
        * @returns Array of derivates of basis fns evaluated at
        * quadrature points
        */
-      const pylith::double_array& basisDerivRef(void) const;
+      const pylith::scalar_array& basisDerivRef(void) const;
       
       /** Get number of dimensions in reference cell.
        *

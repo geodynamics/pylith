@@ -33,7 +33,7 @@ const int pylith::feassemble::QuadratureData2Din3DQuadratic::_numBasis = 6;
 
 const int pylith::feassemble::QuadratureData2Din3DQuadratic::_numQuadPts = 6;
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_vertices[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_vertices[] = {
   2.00000000e+00, -5.00000000e-01, -5.00000000e-01,
   5.00000000e-01,  3.00000000e+00,  0.00000000e+00,
  -5.00000000e-01,  0.00000000e+00,  2.00000000e+00,
@@ -46,7 +46,7 @@ const int pylith::feassemble::QuadratureData2Din3DQuadratic::_cells[] = {
        0,       1,       2,       3,       4,       5,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_verticesRef[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00,
@@ -55,7 +55,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_verticesRef[] =
   0.00000000e+00, -1.00000000e+00,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPtsRef[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPtsRef[] = {
  -7.50000000e-01, -7.50000000e-01,
   7.50000000e-01, -7.50000000e-01,
  -7.50000000e-01,  7.50000000e-01,
@@ -64,11 +64,11 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPtsRef[] = 
   2.50000000e-01,  2.50000000e-01,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_quadWts[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_quadWts[] = {
   3.33333333e-01,  3.33333333e-01,  3.33333333e-01,  3.33333333e-01,  3.33333333e-01,  3.33333333e-01,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPts[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPts[] = {
   1.50000000e+00,  0.00000000e+00, -1.25000000e-01,
   3.75000000e-01,  2.62500000e+00,  2.50000000e-01,
  -3.75000000e-01,  3.75000000e-01,  1.75000000e+00,
@@ -77,7 +77,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_quadPts[] = {
  -5.00000000e-01,  2.00000000e+00,  1.37500000e+00,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basis[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_basis[] = {
   3.75000000e-01, -9.37500000e-02,
  -9.37500000e-02,  6.25000000e-02,
   3.75000000e-01,  3.75000000e-01,
@@ -98,7 +98,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basis[] = {
  -6.25000000e-01, -6.25000000e-01,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDerivRef[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDerivRef[] = {
  -1.00000000e+00, -1.00000000e+00,
  -2.50000000e-01,  0.00000000e+00,
   0.00000000e+00, -2.50000000e-01,
@@ -137,7 +137,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDerivRef[]
  -1.75000000e+00, -1.25000000e+00,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = {
   7.50000000e-01, -2.50000000e-01, -7.05882353e-01,
  -3.12500000e-02, -1.56250000e-01,  2.94117647e-02,
   2.18750000e-01,  9.37500000e-02, -2.05882353e-01,
@@ -176,7 +176,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = 
   8.75000000e-01, -6.25000000e-01, -8.23529412e-01,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobian[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobian[] = {
  -7.50000000e-01, -1.25000000e+00,
   1.75000000e+00,  2.50000000e-01,
   2.50000000e-01,  1.25000000e+00,
@@ -197,11 +197,11 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobian[] = {
   2.50000000e-01,  1.25000000e+00,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobianDet[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobianDet[] = {
   2.98433410e+00,  2.98433410e+00,  2.98433410e+00,  2.98433410e+00,  2.98433410e+00,  2.98433410e+00,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobianInv[] = {
+const PylithScalar pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobianInv[] = {
   1.25000000e-01,  6.25000000e-01, -1.17647059e-01,
  -8.75000000e-01, -3.75000000e-01,  8.23529412e-01,
   1.25000000e-01,  6.25000000e-01, -1.17647059e-01,
@@ -224,18 +224,18 @@ pylith::feassemble::QuadratureData2Din3DQuadratic::QuadratureData2Din3DQuadratic
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
-  verticesRef = const_cast<double*>(_verticesRef);
-  quadPtsRef = const_cast<double*>(_quadPtsRef);
-  quadWts = const_cast<double*>(_quadWts);
-  quadPts = const_cast<double*>(_quadPts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  jacobian = const_cast<double*>(_jacobian);
-  jacobianDet = const_cast<double*>(_jacobianDet);
-  jacobianInv = const_cast<double*>(_jacobianInv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
+  quadPtsRef = const_cast<PylithScalar*>(_quadPtsRef);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  jacobianDet = const_cast<PylithScalar*>(_jacobianDet);
+  jacobianInv = const_cast<PylithScalar*>(_jacobianInv);
 } // constructor
 
 pylith::feassemble::QuadratureData2Din3DQuadratic::~QuadratureData2Din3DQuadratic(void)

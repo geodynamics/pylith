@@ -31,7 +31,7 @@ pylith::feassemble::CellGeometry::spaceDim(void) const {
 
 // Get coordinates of vertices in reference cell (dual basis).
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::CellGeometry::vertices(void) const {
   return _vertices;
 }
@@ -39,10 +39,10 @@ pylith::feassemble::CellGeometry::vertices(void) const {
 // Compute orientation of cell at location.
 inline
 void
-pylith::feassemble::CellGeometry::orientation(double_array* orientation,
-					      const double_array& jacobian,
-					      const double jacobianDet,
-					      const double_array& upDir) const {
+pylith::feassemble::CellGeometry::orientation(scalar_array* orientation,
+					      const scalar_array& jacobian,
+					      const PylithScalar jacobianDet,
+					      const scalar_array& upDir) const {
   if (0 != _orientFn)
     _orientFn(orientation, jacobian, jacobianDet, upDir);
 } // orientation

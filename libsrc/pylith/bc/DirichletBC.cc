@@ -69,7 +69,7 @@ pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
   _getPoints(mesh);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
   _queryDatabases(mesh, lengthScale, "displacement");
 } // initialize
 
@@ -193,7 +193,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 // ----------------------------------------------------------------------
 // Set values in field.
 void
-pylith::bc::DirichletBC::setField(const double t,
+pylith::bc::DirichletBC::setField(const PylithScalar t,
 				  const topology::Field<topology::Mesh>& field)
 { // setField
   const int numFixedDOF = _bcDOF.size();
@@ -219,7 +219,7 @@ pylith::bc::DirichletBC::setField(const double t,
   assert(!fieldSection.isNull());
   const int fiberDimension = 
     (numPoints > 0) ? fieldSection->getFiberDimension(_points[0]) : 0;
-  double_array fieldVertex(fiberDimension);
+  scalar_array fieldVertex(fiberDimension);
   
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type p_bc = _points[iPoint];
@@ -227,7 +227,7 @@ pylith::bc::DirichletBC::setField(const double t,
     fieldSection->restrictPoint(p_bc, &fieldVertex[0], fieldVertex.size());
 
     assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_bc);
 
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       fieldVertex[_bcDOF[iDOF]] = parametersVertex[valueIndex+iDOF];
@@ -239,8 +239,8 @@ pylith::bc::DirichletBC::setField(const double t,
 // ----------------------------------------------------------------------
 // Set increment in values from t0 to t1 in field.
 void
-pylith::bc::DirichletBC::setFieldIncr(const double t0,
-				      const double t1,
+pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
+				      const PylithScalar t1,
 				      const topology::Field<topology::Mesh>& field)
 { // setFieldIncr
   assert(_useSolnIncr);
@@ -268,7 +268,7 @@ pylith::bc::DirichletBC::setFieldIncr(const double t0,
   assert(!fieldSection.isNull());
   const int fiberDimension = 
     (numPoints > 0) ? fieldSection->getFiberDimension(_points[0]) : 0;
-  double_array fieldVertex(fiberDimension);
+  scalar_array fieldVertex(fiberDimension);
   
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type p_bc = _points[iPoint];
@@ -276,7 +276,7 @@ pylith::bc::DirichletBC::setFieldIncr(const double t0,
     fieldSection->restrictPoint(p_bc, &fieldVertex[0], fieldVertex.size());
 
     assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    const double* parametersVertex = parametersSection->restrictPoint(p_bc);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_bc);
 
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       fieldVertex[_bcDOF[iDOF]] = parametersVertex[valueIndex+iDOF];

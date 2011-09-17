@@ -112,7 +112,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
 
   const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  double rankReal = double(sieveMesh->commRank());
+  PylithScalar rankReal = PylithScalar(sieveMesh->commRank());
   assert(sieveMesh->height() > 0);
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
@@ -126,7 +126,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   } // for
 
   //partition->view("PARTITION");
-  const double t = 0.0;
+  const PylithScalar t = 0.0;
   const int numTimeSteps = 0;
   writer->open(mesh, numTimeSteps);
   writer->openTimeStep(t, mesh);

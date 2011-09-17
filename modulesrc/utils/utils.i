@@ -25,7 +25,7 @@
 #include "pylith/utils/TestArray.hh"
 
 #include <petsclog.h> // USES PetscLogEventBegin/End() in inline methods
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 #include "pylith/utils/sievetypes.hh"
 %}
 
@@ -41,6 +41,7 @@
  } // exception
 
 %include "typemaps.i"
+%include "../include/pylithtypes.i"
 
 // Numpy interface stuff
 %{
@@ -52,6 +53,7 @@ import_array();
 %}
 
 // Interfaces
+%include "pylith_general.i"
 %include "EventLogger.i"
 %include "TestArray.i"
 

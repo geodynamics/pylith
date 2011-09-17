@@ -42,9 +42,9 @@ public:
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-  static const double _tRef; ///< Reference time for rate of change of forces.
-  static const double _forceRate; ///< Rate of change of force.
-  static const double _tResidual; ///< Time for computing residual.
+  static const PylithScalar _tRef; ///< Reference time for rate of change of forces.
+  static const PylithScalar _forceRate; ///< Rate of change of force.
+  static const PylithScalar _tResidual; ///< Time for computing residual.
 
   static const int _numDOF; ///< Number of degrees of freedom at each point.
   static const int _numForceDOF; ///< Number of forces at points.
@@ -55,8 +55,8 @@ private:
 
   static const int _forceDOF[]; ///< Degrees of freedom that are constrained at each point
   static const int _forcePoints[]; ///< Array of indices of points with forces.
-  static const double _forceInitial[]; ///< Forces at points.
-  static const double _residual[]; ///< Residual field.
+  static const PylithScalar _forceInitial[]; ///< Forces at points.
+  static const PylithScalar _residual[]; ///< Residual field.
 
   static const char* _meshFilename; ///< Filename for input mesh.
   static const char* _dbFilename; ///< Filename of simple spatial database.

@@ -39,7 +39,7 @@ const int pylith::topology::MeshDataCohesiveHex8Level2::_numCorners = 8;
 
 const int pylith::topology::MeshDataCohesiveHex8Level2::_numCornersCohesive = 6;
 
-const double pylith::topology::MeshDataCohesiveHex8Level2::_vertices[] = {
+const PylithScalar pylith::topology::MeshDataCohesiveHex8Level2::_vertices[] = {
   -2.0, -1.0, -1.0, // 26
   -2.0, +1.0, -1.0,
   -2.0, -1.0, +1.0,
@@ -153,7 +153,7 @@ pylith::topology::MeshDataCohesiveHex8Level2::MeshDataCohesiveHex8Level2(void)
   numCorners = _numCorners;
   numCellsCohesive = _numCellsCohesive;
   numCornersCohesive = _numCornersCohesive;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   cellsCohesive = const_cast<int*>(_cellsCohesive);
   materialIds = const_cast<int*>(_materialIds);

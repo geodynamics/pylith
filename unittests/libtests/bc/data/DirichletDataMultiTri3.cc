@@ -58,7 +58,7 @@ const char* pylith::bc::DirichletDataMultiTri3::_dbFilenameA =
   "data/tri3_disp.spatialdb";
 const char* pylith::bc::DirichletDataMultiTri3::_dbFilenameARate =
   "data/tri3_vel.spatialdb";
-const double pylith::bc::DirichletDataMultiTri3::_tRefA = 3.2;
+const PylithScalar pylith::bc::DirichletDataMultiTri3::_tRefA = 3.2;
 
 const int pylith::bc::DirichletDataMultiTri3::_idB = 1;
 const char* pylith::bc::DirichletDataMultiTri3::_labelB = "bc2";
@@ -71,7 +71,7 @@ const char* pylith::bc::DirichletDataMultiTri3::_dbFilenameB =
   "data/tri3_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTri3::_dbFilenameBRate =
   "data/tri3_vel2.spatialdb";
-const double pylith::bc::DirichletDataMultiTri3::_tRefB = 0.4;
+const PylithScalar pylith::bc::DirichletDataMultiTri3::_tRefB = 0.4;
 
 const int pylith::bc::DirichletDataMultiTri3::_constraintSizes[] = {
   0,
@@ -87,7 +87,7 @@ const int pylith::bc::DirichletDataMultiTri3::_constrainedDOF[] = {
 };
 
 // Values at t=10.0
-const double pylith::bc::DirichletDataMultiTri3::_field[] = {
+const PylithScalar pylith::bc::DirichletDataMultiTri3::_field[] = {
   0.0, 0.0,
   0.0, 1.66,
   -2.94, 0.0,
@@ -95,7 +95,7 @@ const double pylith::bc::DirichletDataMultiTri3::_field[] = {
 };
 
 // Values from t=10.0 to t=14.0.
-const double pylith::bc::DirichletDataMultiTri3::_fieldIncr[] = {
+const PylithScalar pylith::bc::DirichletDataMultiTri3::_fieldIncr[] = {
   0.0, 0.0,
   0.0, 0.8,
  -1.6, 0.0,
@@ -131,8 +131,8 @@ pylith::bc::DirichletDataMultiTri3::DirichletDataMultiTri3(void)
   dbFilenameBRate = const_cast<char*>(_dbFilenameBRate);
   tRefB = _tRefB;
 
-  field = const_cast<double*>(_field);
-  fieldIncr = const_cast<double*>(_fieldIncr);
+  field = const_cast<PylithScalar*>(_field);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
   constraintSizes = const_cast<int*>(_constraintSizes);
   constrainedDOF = const_cast<int*>(_constrainedDOF);
 

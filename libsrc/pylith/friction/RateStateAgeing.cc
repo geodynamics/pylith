@@ -22,7 +22,7 @@
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -135,19 +135,19 @@ pylith::friction::RateStateAgeing::~RateStateAgeing(void)
 // Compute properties from values in spatial database.
 void
 pylith::friction::RateStateAgeing::_dbToProperties(
-					   double* const propValues,
-					   const double_array& dbValues) const
+					   PylithScalar* const propValues,
+					   const scalar_array& dbValues) const
 { // _dbToProperties
   assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBProperties == numDBValues);
 
-  const double frictionCoef = dbValues[db_coef];
-  const double slipRate0 = dbValues[db_slipRate0];
-  const double dc = dbValues[db_L];
-  const double a = dbValues[db_a];
-  const double b = dbValues[db_b];
-  const double cohesion = dbValues[db_cohesion];
+  const PylithScalar frictionCoef = dbValues[db_coef];
+  const PylithScalar slipRate0 = dbValues[db_slipRate0];
+  const PylithScalar dc = dbValues[db_L];
+  const PylithScalar a = dbValues[db_a];
+  const PylithScalar b = dbValues[db_b];
+  const PylithScalar cohesion = dbValues[db_cohesion];
  
   if (frictionCoef < 0.0) {
     std::ostringstream msg;
@@ -193,16 +193,16 @@ pylith::friction::RateStateAgeing::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
+pylith::friction::RateStateAgeing::_nondimProperties(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _RateStateAgeing::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_slipRate0] /= lengthScale / timeScale;
   values[p_L] /= lengthScale;
@@ -212,16 +212,16 @@ pylith::friction::RateStateAgeing::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::friction::RateStateAgeing::_dimProperties(double* const values,
+pylith::friction::RateStateAgeing::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _RateStateAgeing::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_slipRate0] *= lengthScale / timeScale;
   values[p_L] *= lengthScale;
@@ -232,14 +232,14 @@ pylith::friction::RateStateAgeing::_dimProperties(double* const values,
 // Compute state variables from values in spatial database.
 void
 pylith::friction::RateStateAgeing::_dbToStateVars(
-					   double* const stateValues,
-					   const double_array& dbValues) const
+					   PylithScalar* const stateValues,
+					   const scalar_array& dbValues) const
 { // _dbToStateVars
   assert(stateValues);
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBStateVars == numDBValues);
 
-  const double stateVariable = dbValues[db_state];
+  const PylithScalar stateVariable = dbValues[db_state];
  
   stateValues[s_state] = stateVariable;
 } // _dbToStateVars
@@ -247,14 +247,14 @@ pylith::friction::RateStateAgeing::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-pylith::friction::RateStateAgeing::_nondimStateVars(double* const values,
+pylith::friction::RateStateAgeing::_nondimStateVars(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimStateVars
   assert(_normalizer);
   assert(values);
   assert(nvalues == _RateStateAgeing::numStateVars);
 
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
 
   values[s_state] /= timeScale;
 } // _nondimStateVars
@@ -262,27 +262,27 @@ pylith::friction::RateStateAgeing::_nondimStateVars(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-pylith::friction::RateStateAgeing::_dimStateVars(double* const values,
+pylith::friction::RateStateAgeing::_dimStateVars(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimStateVars
   assert(_normalizer);
   assert(values);
   assert(nvalues == _RateStateAgeing::numStateVars);
 
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
 
   values[s_state] *= timeScale;
 } // _dimStateVars
 
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
-double
-pylith::friction::RateStateAgeing::_calcFriction(const double slip,
-						const double slipRate,
-						const double normalTraction,
-						const double* properties,
+PylithScalar
+pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar slip,
+						const PylithScalar slipRate,
+						const PylithScalar normalTraction,
+						const PylithScalar* properties,
 						const int numProperties,
-						const double* stateVars,
+						const PylithScalar* stateVars,
 						const int numStateVars)
 { // _calcFriction
   assert(properties);
@@ -290,27 +290,27 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   assert(numStateVars);
   assert(_RateStateAgeing::numStateVars == numStateVars);
 
-  double friction = 0.0;
-  double mu_f = 0.0;
+  PylithScalar friction = 0.0;
+  PylithScalar mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
     // regularized rate and state equation
-    const double f0 = properties[p_coef];
+    const PylithScalar f0 = properties[p_coef];
 
     // Since regulatized friction -> 0 as slipRate -> 0, limit slip
     // rate to some minimum value
-    const double slipRateEff = std::max(1.0e-12, slipRate);
+    const PylithScalar slipRateEff = std::max(PylithScalar(1.0e-12), slipRate);
 
-    const double slipRate0 = properties[p_slipRate0];
-    const double a = properties[p_a];
+    const PylithScalar slipRate0 = properties[p_slipRate0];
+    const PylithScalar a = properties[p_a];
 
-    const double theta = stateVars[s_state];
-    const double L = properties[p_L];
-    const double b = properties[p_b];
-    const double bLnTerm = b * log(slipRate0 * theta / L);
-    const double expTerm = exp((f0 + bLnTerm)/a);
-    const double sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
+    const PylithScalar theta = stateVars[s_state];
+    const PylithScalar L = properties[p_L];
+    const PylithScalar b = properties[p_b];
+    const PylithScalar bLnTerm = b * log(slipRate0 * theta / L);
+    const PylithScalar expTerm = exp((f0 + bLnTerm)/a);
+    const PylithScalar sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
@@ -324,12 +324,12 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
-						  const double slipRate,
-						  const double normalTraction,
-						  double* const stateVars,
+pylith::friction::RateStateAgeing::_updateStateVars(const PylithScalar slip,
+						  const PylithScalar slipRate,
+						  const PylithScalar normalTraction,
+						  PylithScalar* const stateVars,
 						  const int numStateVars,
-						  const double* properties,
+						  const PylithScalar* properties,
 						  const int numProperties)
 { // _updateStateVars
   assert(properties);
@@ -358,15 +358,15 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   // Since regulatized friction -> 0 as slipRate -> 0, limit slip
   // rate to some minimum value
-  const double slipRateEff = std::max(1.0e-12, slipRate);
+  const PylithScalar slipRateEff = std::max(PylithScalar(1.0e-12), slipRate);
 
-  const double dt = _dt;
-  const double thetaTVertex = stateVars[s_state];
-  const double L = properties[p_L];
-  const double vDtL = slipRateEff * dt / L;
-  const double expTerm = exp(-vDtL);
+  const PylithScalar dt = _dt;
+  const PylithScalar thetaTVertex = stateVars[s_state];
+  const PylithScalar L = properties[p_L];
+  const PylithScalar vDtL = slipRateEff * dt / L;
+  const PylithScalar expTerm = exp(-vDtL);
 
-  double thetaTpdtVertex = 0.0;
+  PylithScalar thetaTpdtVertex = 0.0;
   if (vDtL > 1.0e-20) {
     thetaTpdtVertex = thetaTVertex * expTerm + L / slipRateEff * (1 - expTerm);
     PetscLogFlops(7);

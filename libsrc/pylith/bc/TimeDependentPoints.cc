@@ -78,11 +78,11 @@ pylith::bc::TimeDependentPoints::bcDOF(const int* flags,
 // Query databases for parameters.
 void
 pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
-						 const double valueScale,
+						 const PylithScalar valueScale,
 						 const char* fieldName)
 { // _queryDatabases
-  const double timeScale = _getNormalizer().timeScale();
-  const double rateScale = valueScale / timeScale;
+  const PylithScalar timeScale = _getNormalizer().timeScale();
+  const PylithScalar rateScale = valueScale / timeScale;
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
@@ -209,7 +209,7 @@ void
 pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 				 spatialdata::spatialdb::SpatialDB* const db,
 				 const int querySize,
-				 const double scale)
+				 const PylithScalar scale)
 { // _queryDB
   assert(name);
   assert(db);
@@ -220,9 +220,9 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  const double lengthScale = _getNormalizer().lengthScale();
+  const PylithScalar lengthScale = _getNormalizer().lengthScale();
 
-  double_array coordsVertex(spaceDim);
+  scalar_array coordsVertex(spaceDim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<RealSection>& coordinates = 
@@ -236,9 +236,9 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   const int valueIndex = _parameters->sectionIndex(name);
   const int valueFiberDim = _parameters->sectionFiberDim(name);
   assert(valueIndex+valueFiberDim <= parametersFiberDim);
-  double_array parametersVertex(parametersFiberDim);
+  scalar_array parametersVertex(parametersFiberDim);
 
-  double_array valueVertex(querySize);
+  scalar_array valueVertex(querySize);
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
@@ -275,19 +275,19 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 // ----------------------------------------------------------------------
 // Calculate temporal and spatial variation of value over the list of points.
 void
-pylith::bc::TimeDependentPoints::_calculateValue(const double t)
+pylith::bc::TimeDependentPoints::_calculateValue(const PylithScalar t)
 { // _calculateValue
   assert(_parameters);
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
-  const double timeScale = _getNormalizer().timeScale();
+  const PylithScalar timeScale = _getNormalizer().timeScale();
 
   const ALE::Obj<RealUniformSection>& parametersSection = 
     _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
-  double_array parametersVertex(parametersFiberDim);
+  scalar_array parametersVertex(parametersFiberDim);
   
   const int valueIndex = _parameters->sectionIndex("value");
   const int valueFiberDim = _parameters->sectionFiberDim("value");
@@ -340,7 +340,7 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
       assert(rateTimeIndex >= 0);
       assert(rateTimeFiberDim == 1);
       
-      const double tRel = t - parametersVertex[rateTimeIndex];
+      const PylithScalar tRel = t - parametersVertex[rateTimeIndex];
       if (tRel > 0.0)  // rate of change integrated over time
 	for (int iDim=0; iDim < numBCDOF; ++iDim)
 	  parametersVertex[valueIndex+iDim] += 
@@ -354,11 +354,11 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
       assert(changeTimeIndex >= 0);
       assert(changeTimeFiberDim == 1);
 
-      const double tRel = t - parametersVertex[changeTimeIndex];
+      const PylithScalar tRel = t - parametersVertex[changeTimeIndex];
       if (tRel >= 0) { // change in value over time
-	double scale = 1.0;
+	PylithScalar scale = 1.0;
 	if (0 != _dbTimeHistory) {
-	  double tDim = tRel;
+	  PylithScalar tDim = tRel;
 	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	  const int err = _dbTimeHistory->query(&scale, tDim);
 	  if (0 != err) {
@@ -383,20 +383,20 @@ pylith::bc::TimeDependentPoints::_calculateValue(const double t)
 // Calculate increment in temporal and spatial variation of value over
 // the list of points.
 void
-pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
-						     const double t1)
+pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
+						     const PylithScalar t1)
 { // _calculateValueIncr
   assert(_parameters);
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
-  const double timeScale = _getNormalizer().timeScale();
+  const PylithScalar timeScale = _getNormalizer().timeScale();
 
   const ALE::Obj<RealUniformSection>& parametersSection = 
     _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
-  double_array parametersVertex(parametersFiberDim);
+  scalar_array parametersVertex(parametersFiberDim);
   
   const int valueIndex = _parameters->sectionIndex("value");
   const int valueFiberDim = _parameters->sectionFiberDim("value");
@@ -439,8 +439,8 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
       assert(rateTimeFiberDim == 1);
       
       // Account for when rate dependence begins.
-      const double tRate = parametersVertex[rateTimeIndex];
-      double tIncr = 0.0;
+      const PylithScalar tRate = parametersVertex[rateTimeIndex];
+      PylithScalar tIncr = 0.0;
       if (t0 > tRate) // rate dependence for t0 to t1
 	tIncr = t1 - t0;
       else if (t1 > tRate) // rate dependence for tRef to t1
@@ -461,12 +461,12 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
       assert(changeTimeIndex >= 0);
       assert(changeTimeFiberDim == 1);
 
-      const double tChange = parametersVertex[changeTimeIndex];
+      const PylithScalar tChange = parametersVertex[changeTimeIndex];
       if (t0 >= tChange) { // increment is after change starts
-	double scale0 = 1.0;
-	double scale1 = 1.0;
+	PylithScalar scale0 = 1.0;
+	PylithScalar scale1 = 1.0;
 	if (0 != _dbTimeHistory) {
-	  double tDim = t0 - tChange;
+	  PylithScalar tDim = t0 - tChange;
 	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	  int err = _dbTimeHistory->query(&scale0, tDim);
 	  if (0 != err) {
@@ -491,9 +491,9 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const double t0,
 	  parametersVertex[valueIndex+iDim] += 
 	    parametersVertex[changeIndex+iDim] * (scale1 - scale0);
       } else if (t1 >= tChange) { // increment spans when change starts
-	double scale1 = 1.0;
+	PylithScalar scale1 = 1.0;
 	if (0 != _dbTimeHistory) {
-	  double tDim = t1 - tChange;
+	  PylithScalar tDim = t1 - tChange;
 	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
 	  int err = _dbTimeHistory->query(&scale1, tDim);
 	  if (0 != err) {

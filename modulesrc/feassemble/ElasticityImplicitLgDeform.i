@@ -43,7 +43,7 @@ namespace pylith {
        *
        * @param dt Time step
        */
-      void timeStep(const double dt);
+      void timeStep(const PylithScalar dt);
 
       /** Get stable time step for advancing from time t to time t+dt.
        *
@@ -52,7 +52,7 @@ namespace pylith {
        * @param mesh Finite-element mesh.
        * @returns Time step
        */
-      double stableTimeStep(const pylith::topology::Mesh& mesh) const;
+      PylithScalar stableTimeStep(const pylith::topology::Mesh& mesh) const;
 
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.
@@ -76,7 +76,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -87,7 +87,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
     }; // ElasticityImplicitLgDeform

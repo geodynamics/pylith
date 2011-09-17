@@ -37,15 +37,15 @@ const int pylith::materials::DruckerPrager3DElasticData::_numPropsQuadPt = 6;
 
 const int pylith::materials::DruckerPrager3DElasticData::_numVarsQuadPt = 6;
 
-const double pylith::materials::DruckerPrager3DElasticData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_lengthScale =   1.00000000e+03;
 
-const double pylith::materials::DruckerPrager3DElasticData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_timeScale =   1.00000000e+00;
 
-const double pylith::materials::DruckerPrager3DElasticData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_pressureScale =   2.25000000e+10;
 
-const double pylith::materials::DruckerPrager3DElasticData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::DruckerPrager3DElasticData::_dtStableImplicit =   1.00000000e+10;
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_dtStableImplicit =   1.00000000e+10;
 
 const int pylith::materials::DruckerPrager3DElasticData::_numPropertyValues[] = {
 1,
@@ -78,7 +78,7 @@ const char* pylith::materials::DruckerPrager3DElasticData::_dbStateVarValues[] =
 "plastic-strain-xz",
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_dbProperties[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -93,7 +93,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_dbProperties[] = {
   4.36332313e-01,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_dbStateVars[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_dbStateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -108,7 +108,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_dbStateVars[] = {
   0.00000000e+00,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_properties[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -123,7 +123,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_properties[] = {
   1.89338478e-01,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_stateVars[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_stateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -138,7 +138,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_stateVars[] = {
   0.00000000e+00,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_propertiesNondim[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
@@ -153,7 +153,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_propertiesNondim[] 
   1.89338478e-01,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_stateVarsNondim[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_stateVarsNondim[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -168,12 +168,12 @@ const double pylith::materials::DruckerPrager3DElasticData::_stateVarsNondim[] =
   0.00000000e+00,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_density[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_density[] = {
   2.50000000e+03,
   2.00000000e+03,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_strain[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_strain[] = {
   1.10000000e-04,
   1.20000000e-04,
   1.30000000e-04,
@@ -188,7 +188,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_strain[] = {
   4.60000000e-04,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_stress[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_stress[] = {
  -2.24790000e+07,
  -2.24780000e+07,
  -2.24770000e+07,
@@ -203,7 +203,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_stress[] = {
  -1.09600000e+06,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_elasticConsts[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_elasticConsts[] = {
   6.75000000e+10,
   2.25000000e+10,
   2.25000000e+10,
@@ -278,7 +278,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_elasticConsts[] = {
   5.76000000e+09,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_initialStress[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.30000000e+04,
@@ -293,7 +293,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_initialStress[] = {
   5.60000000e+04,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_initialStrain[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_initialStrain[] = {
   3.10000000e-04,
   3.20000000e-04,
   3.30000000e-04,
@@ -308,7 +308,7 @@ const double pylith::materials::DruckerPrager3DElasticData::_initialStrain[] = {
   6.60000000e-04,
 };
 
-const double pylith::materials::DruckerPrager3DElasticData::_stateVarsUpdated[] = {
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_stateVarsUpdated[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -342,19 +342,19 @@ pylith::materials::DruckerPrager3DElasticData::DruckerPrager3DElasticData(void)
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  density = const_cast<double*>(_density);
-  strain = const_cast<double*>(_strain);
-  stress = const_cast<double*>(_stress);
-  elasticConsts = const_cast<double*>(_elasticConsts);
-  initialStress = const_cast<double*>(_initialStress);
-  initialStrain = const_cast<double*>(_initialStrain);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  density = const_cast<PylithScalar*>(_density);
+  strain = const_cast<PylithScalar*>(_strain);
+  stress = const_cast<PylithScalar*>(_stress);
+  elasticConsts = const_cast<PylithScalar*>(_elasticConsts);
+  initialStress = const_cast<PylithScalar*>(_initialStress);
+  initialStrain = const_cast<PylithScalar*>(_initialStrain);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::DruckerPrager3DElasticData::~DruckerPrager3DElasticData(void)

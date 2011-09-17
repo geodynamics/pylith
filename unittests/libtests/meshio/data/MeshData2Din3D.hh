@@ -48,7 +48,7 @@ private:
   static const int _cellDim; ///< Number of dimensions associated with cell
   static const int _numCorners; ///< Number of vertices in cell
 
-  static const double _vertices[]; ///< Pointer to coordinates of vertices
+  static const PylithScalar _vertices[]; ///< Pointer to coordinates of vertices
   static const int _cells[]; ///< Pointer to indices of vertices in cells
   static const int _materialIds[]; ///< Pointer to cell material identifiers
 

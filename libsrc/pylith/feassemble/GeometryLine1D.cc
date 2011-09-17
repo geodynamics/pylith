@@ -22,7 +22,7 @@
 
 #include "GeometryPoint1D.hh" // USES GeometryPoint
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "petsc.h" // USES PetscLogFlops
 
@@ -33,7 +33,7 @@
 pylith::feassemble::GeometryLine1D::GeometryLine1D(void) :
   CellGeometry(LINE, 1)
 { // constructor
-  const double vertices[] = {
+  const PylithScalar vertices[] = {
     -1.0,
     +1.0,
   };
@@ -65,9 +65,9 @@ pylith::feassemble::GeometryLine1D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryLine1D::ptsRefToGlobal(double* ptsGlobal,
-						   const double* ptsRef,
-						   const double* vertices,
+pylith::feassemble::GeometryLine1D::ptsRefToGlobal(PylithScalar* ptsGlobal,
+						   const PylithScalar* ptsRef,
+						   const PylithScalar* vertices,
 						   const int dim,
 						   const int npts) const
 { // ptsRefToGlobal
@@ -77,11 +77,11 @@ pylith::feassemble::GeometryLine1D::ptsRefToGlobal(double* ptsGlobal,
   assert(1 == dim);
   assert(spaceDim() == dim);
 
-  const double x0 = vertices[0];
-  const double x1 = vertices[1];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar x1 = vertices[1];
 
   for (int i=0; i < npts; ++i) {
-    const double p0 = 0.5*(1.0+ptsRef[i]);
+    const PylithScalar p0 = 0.5*(1.0+ptsRef[i]);
     ptsGlobal[i] = x0 + (x1-x0) * p0;
   } // for
 
@@ -91,10 +91,10 @@ pylith::feassemble::GeometryLine1D::ptsRefToGlobal(double* ptsGlobal,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
-					     double* det,
-					     const double_array& vertices,
-					     const double_array& location) const
+pylith::feassemble::GeometryLine1D::jacobian(scalar_array* jacobian,
+					     PylithScalar* det,
+					     const scalar_array& vertices,
+					     const scalar_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -103,8 +103,8 @@ pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
 	  ((numCorners()+1)*spaceDim() == vertices.size()) ); // quadratic edge
   assert(spaceDim()*cellDim() == jacobian->size());
 
-  const double x0 = vertices[0];
-  const double x1 = vertices[1];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar x1 = vertices[1];
 
   (*jacobian)[0] = (x1 - x0)/2.0;
   *det = (*jacobian)[0];
@@ -113,10 +113,10 @@ pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryLine1D::jacobian(double* jacobian,
-					     double* det,
-					     const double* vertices,
-					     const double* location,
+pylith::feassemble::GeometryLine1D::jacobian(PylithScalar* jacobian,
+					     PylithScalar* det,
+					     const PylithScalar* vertices,
+					     const PylithScalar* location,
 					     const int dim,
 					     const int npts) const
 { // jacobian
@@ -127,10 +127,10 @@ pylith::feassemble::GeometryLine1D::jacobian(double* jacobian,
   assert(1 == dim);
   assert(spaceDim() == dim);
 
-  const double x0 = vertices[0];
-  const double x1 = vertices[1];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar x1 = vertices[1];
 
-  const double j = (x1 - x0)/2.0;
+  const PylithScalar j = (x1 - x0)/2.0;
   for (int i=0; i < npts; ++i) {
     jacobian[i] = j;
     det[i] = j;

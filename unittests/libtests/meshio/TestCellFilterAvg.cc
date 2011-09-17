@@ -54,7 +54,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   const std::string label = "field data";
   const topology::FieldBase::VectorFieldEnum fieldType = 
     topology::FieldBase::MULTI_SCALAR;
-  const double fieldValues[] = {
+  const PylithScalar fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
   };
@@ -62,28 +62,28 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   const int numBasis = 4;
   const int numQuadPts = 2;
   const int spaceDim = 2;
-  const double basis[] = {
+  const PylithScalar basis[] = {
     1.0, 1.0,
     1.0, 1.0,
     1.0, 1.0,
     1.0, 1.0,
   };
-  const double basisDerivRef[] = {
+  const PylithScalar basisDerivRef[] = {
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0,
   };
-  const double quadPtsRef[] = {
+  const PylithScalar quadPtsRef[] = {
     1.0, 0.0,
    -1.0, 0.0,};
-  const double quadWts[] = { 1.5, 0.5 };
-  const double minJacobian = 1.0;
+  const PylithScalar quadWts[] = { 1.5, 0.5 };
+  const PylithScalar minJacobian = 1.0;
 
   const topology::FieldBase::VectorFieldEnum fieldTypeE = 
     topology::FieldBase::SCALAR;
   const int fiberDimE = 1;
-  const double fieldValuesE[] = {
+  const PylithScalar fieldValuesE[] = {
     (1.5*1.1 + 0.5*1.2)/2.0,
     (1.5*2.1 + 0.5*2.2)/2.0,
   };
@@ -114,7 +114,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++ipt) {
-    const double* values = &fieldValues[ipt*fiberDim];
+    const PylithScalar* values = &fieldValues[ipt*fiberDim];
     section->updatePoint(*c_iter, values);
   } // for
 
@@ -140,9 +140,9 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
        c_iter != cellsEnd;
        ++c_iter, ++ipt) {
     CPPUNIT_ASSERT_EQUAL(fiberDimE, sectionF->getFiberDimension(*c_iter));
-    const double* values = sectionF->restrictPoint(*c_iter);
+    const PylithScalar* values = sectionF->restrictPoint(*c_iter);
     CPPUNIT_ASSERT(0 != values);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < fiberDimE; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
 				   values[i]/fieldValuesE[ipt*fiberDimE+i],

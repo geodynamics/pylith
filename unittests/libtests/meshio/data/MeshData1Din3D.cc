@@ -28,7 +28,7 @@ const int pylith::meshio::MeshData1Din3D::_cellDim = 1;
 
 const int pylith::meshio::MeshData1Din3D::_numCorners = 2;
 
-const double pylith::meshio::MeshData1Din3D::_vertices[] = {
+const PylithScalar pylith::meshio::MeshData1Din3D::_vertices[] = {
   -3.0, -1.2,  0.3,
    1.0, -1.0,  0.0,
    2.6,  3.1, -0.5,
@@ -71,7 +71,7 @@ pylith::meshio::MeshData1Din3D::MeshData1Din3D(void)
   numCells = _numCells;
   cellDim = _cellDim;
   numCorners = _numCorners;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);

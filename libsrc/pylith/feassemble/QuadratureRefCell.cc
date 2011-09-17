@@ -76,17 +76,17 @@ pylith::feassemble::QuadratureRefCell::QuadratureRefCell(const QuadratureRefCell
 // Set basis functions and their derivatives and coordinates and
 //   weights of the quadrature points.
 void
-pylith::feassemble::QuadratureRefCell::initialize(const double* basis,
+pylith::feassemble::QuadratureRefCell::initialize(const PylithScalar* basis,
 						  const int numQuadPts1,
 						  const int numBasis1,
-						  const double* basisDerivRef,
+						  const PylithScalar* basisDerivRef,
 						  const int numQuadPts2,
 						  const int numBasis2,
 						  const int cellDim2,
-						  const double* quadPtsRef,
+						  const PylithScalar* quadPtsRef,
 						  const int numQuadPts3,
 						  const int cellDim3,
-						  const double* quadWts,
+						  const PylithScalar* quadWts,
 						  const int numQuadPts4,
 						  const int spaceDim)
 { // initialize

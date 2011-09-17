@@ -36,7 +36,7 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
-#include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // Integrator -----------------------------------------------------------
 /** @brief Abstract base class for integration of finite-element
@@ -96,7 +96,7 @@ public :
    * @param dt Time step
    */
   virtual
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Get stable time step for advancing from time t to time t+dt.
    *
@@ -106,7 +106,7 @@ public :
    * @returns Time step
    */
   virtual
-  double stableTimeStep(const topology::Mesh& mesh);
+  PylithScalar stableTimeStep(const topology::Mesh& mesh);
 
   /** Check whether Jacobian needs to be recomputed.
    *
@@ -152,7 +152,7 @@ public :
    */
   virtual 
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to residual term (r) for operator.
@@ -163,7 +163,7 @@ public :
    */
   virtual
   void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
-       const double t,
+       const PylithScalar t,
        topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -175,7 +175,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -187,7 +187,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -209,7 +209,7 @@ public :
    * @param mesh Finite-element mesh
    */
   virtual
-  void updateStateVars(const double t,
+  void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
   /** Constrain solution space.
@@ -220,7 +220,7 @@ public :
    */
   virtual
   void constrainSolnSpace(topology::SolutionFields* const fields,
-			  const double t,
+			  const PylithScalar t,
 			  const topology::Jacobian& jacobian);
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
@@ -269,7 +269,7 @@ protected :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  double _dt; ///< Time step for t -> t+dt
+  PylithScalar _dt; ///< Time step for t -> t+dt
 
   quadrature_type* _quadrature; ///< Quadrature for integrating finite-element
 
@@ -279,10 +279,10 @@ protected :
   utils::EventLogger* _logger; ///< Event logger.
 
   /// Vector local to cell containing result of integration action
-  double_array _cellVector;
+  scalar_array _cellVector;
 
   /// Matrix local to cell containing result of integration
-  double_array _cellMatrix;
+  scalar_array _cellMatrix;
 
   /// True if we need to recompute Jacobian for operator, false otherwise.
   /// Default is false;

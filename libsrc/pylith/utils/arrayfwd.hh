@@ -23,7 +23,7 @@
  *
  * These are generally just forward declarations for C++ STL objects.
  *
- * For simple types (i.e., int and double) std::valarray provides some
+ * For simple types (i.e., int and PylithScalar) std::valarray provides some
  * features that std::vector does not have, such as operating on the
  * whole array at once.
  */
@@ -48,7 +48,7 @@ namespace pylith {
   /// Alias for std::vector<int>
   typedef std::vector<int, std::allocator<int> > int_vector;
 
-  /// Alias for std::vector<double>
+  /// Alias for std::vector<PylithScalar>
   typedef std::vector<double, std::allocator<double> > double_vector;
 
   /// Alias for std::vector<std::string>

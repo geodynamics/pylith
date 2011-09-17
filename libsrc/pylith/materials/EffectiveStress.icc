@@ -27,20 +27,20 @@
 // ----------------------------------------------------------------------
 // Get effective stress from initial guess.
 template<typename material_type>
-double
+PylithScalar
 pylith::materials::EffectiveStress::calculate(
-				 const double effStressInitialGuess,
-				 const double stressScale,
+				 const PylithScalar effStressInitialGuess,
+				 const PylithScalar stressScale,
 				 material_type* const material)
 { // getEffStress
   // Check parameters
   assert(effStressInitialGuess >= 0.0);
   // If initial guess is too low, use stress scale instead.
-  const double xMin = 1.0e-10;
+  const PylithScalar xMin = 1.0e-10;
 
   // Bracket the root.
-  double x1 = 0.0;
-  double x2 = 0.0;
+  PylithScalar x1 = 0.0;
+  PylithScalar x2 = 0.0;
   if (effStressInitialGuess > xMin) {
     x1 = effStressInitialGuess - 0.5 * effStressInitialGuess;
     x2 = effStressInitialGuess + 0.5 * effStressInitialGuess;
@@ -52,7 +52,7 @@ pylith::materials::EffectiveStress::calculate(
   _bracket(&x1, &x2, material);
 
   // Find effective stress using Newton's method with bisection.
-  const double effStress = _search(x1, x2, material);
+  const PylithScalar effStress = _search(x1, x2, material);
 
   PetscLogFlops(4); // Log flops
 
@@ -63,22 +63,22 @@ pylith::materials::EffectiveStress::calculate(
 // Bracket effective stress.
 template<typename material_type>
 void
-pylith::materials::EffectiveStress::_bracket(double* px1,
-					     double* px2,
+pylith::materials::EffectiveStress::_bracket(PylithScalar* px1,
+					     PylithScalar* px2,
 					     material_type* const material)
 { // _bracket
   // Arbitrary number of iterations to bracket the root
   const int maxIterations = 50;
 
   // Arbitrary factor by which to increase the brackets.
-  const double bracketFactor = 2;
+  const PylithScalar bracketFactor = 2;
   // Minimum allowed value for effective stress.
-  const double xMin = 0.0;
-  double x1 = *px1;
-  double x2 = *px2;
+  const PylithScalar xMin = 0.0;
+  PylithScalar x1 = *px1;
+  PylithScalar x2 = *px2;
 
-  double funcValue1 = material->effStressFunc(x1);
-  double funcValue2 = material->effStressFunc(x2);
+  PylithScalar funcValue1 = material->effStressFunc(x1);
+  PylithScalar funcValue2 = material->effStressFunc(x2);
 
   int iteration = 0;
   bool bracketed = false;
@@ -111,25 +111,25 @@ pylith::materials::EffectiveStress::_bracket(double* px1,
 // ----------------------------------------------------------------------
 // Find root using Newton's method with bisection.
 template<typename material_type>
-double
-pylith::materials::EffectiveStress::_search(const double x1,
-					    const double x2,
+PylithScalar
+pylith::materials::EffectiveStress::_search(const PylithScalar x1,
+					    const PylithScalar x2,
 					    material_type* const material)
 { // _search
   // Arbitrary number of iterations to find the root
   const int maxIterations = 100;
 
   // Desired accuracy for root. This is a bit arbitrary for now.
-  const double accuracy = 1.0e-10;
+  const PylithScalar accuracy = 1.0e-10;
 
   // Organize search so that effStressFunc(xLow) is less than zero.
-  double funcValueLow = material->effStressFunc(x1);
-  double funcValueHigh = material->effStressFunc(x2);
+  PylithScalar funcValueLow = material->effStressFunc(x1);
+  PylithScalar funcValueHigh = material->effStressFunc(x2);
   assert(funcValueLow * funcValueHigh <= 0.0);
 
-  double effStress = 0.0;
-  double xLow = 0.0;
-  double xHigh = 0.0;
+  PylithScalar effStress = 0.0;
+  PylithScalar xLow = 0.0;
+  PylithScalar xHigh = 0.0;
   bool converged = false;
 
   if (funcValueLow < 0.0) {
@@ -141,12 +141,12 @@ pylith::materials::EffectiveStress::_search(const double x1,
   } // if/else
 
   effStress = 0.5 * (x1 + x2);
-  double dxPrevious = fabs(x2 - x1);
-  double dx = dxPrevious;
-  double funcValue = 0.0;
-  double funcDeriv = 0.0;
-  double funcXHigh = 0.0;
-  double funcXLow = 0.0;
+  PylithScalar dxPrevious = fabs(x2 - x1);
+  PylithScalar dx = dxPrevious;
+  PylithScalar funcValue = 0.0;
+  PylithScalar funcDeriv = 0.0;
+  PylithScalar funcXHigh = 0.0;
+  PylithScalar funcXLow = 0.0;
   material->effStressFuncDerivFunc(&funcValue, &funcDeriv, effStress);
   int iteration = 0;
 

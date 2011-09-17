@@ -23,7 +23,7 @@
 #include "MeshBuilder.hh" // USES MeshBuilder
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include <petsc.h> // USES MPI_Comm
 
@@ -73,7 +73,7 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
   int numFVertices = 0;
   int numFCells = 0;
   int numFCorners = 0;
-  double_array fCoordinates;
+  scalar_array fCoordinates;
   int_array fCells;
   int_array fMaterialIds;
   int_array faceCells;
@@ -158,7 +158,7 @@ pylith::meshio::UCDFaultFile::read(const char* filename,
     vertexIDs.resize(numFVertices);
     for(int v = 0; v < numFVertices; ++v) {
       int id;
-      double dummy;
+      PylithScalar dummy;
 
       fin >> id;
       fin >> vertexIDs[v]; // global node number

@@ -25,18 +25,20 @@
 #if !defined(pylith_utils_sievetypes_hh)
 #define pylith_utils_sievetypes_hh
 
+#include "types.hh"
+
 #include <petscdmmesh.hh> // PETSc Mesh
 
 namespace pylith {
 
   /// Sieve mesh (default, fast access with set sizes).
-  typedef ALE::IMesh<PetscInt,PetscScalar> SieveMesh;
+  typedef ALE::IMesh<PylithInt,PylithScalar> SieveMesh;
 
   /// Sieve mesh (flexible, slower access without set sizes).
-  typedef ALE::Mesh<PetscInt,PetscScalar> SieveFlexMesh;
+  typedef ALE::Mesh<PylithInt,PylithScalar> SieveFlexMesh;
 
   /// Sieve submesh.
-  typedef ALE::IMesh<PetscInt,PetscScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
+  typedef ALE::IMesh<PylithInt,PylithScalar,ALE::LabelSifter<int, SieveMesh::point_type> > SieveSubMesh;
 
 } // pylith
 

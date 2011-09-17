@@ -19,6 +19,8 @@
 #if !defined(pylith_materials_materialdata_hh)
 #define pylith_materials_materialdata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace materials {
      class MaterialData;
@@ -57,17 +59,17 @@ public:
   char** dbPropertyValues; ///< Names of db values for properties.
   char** dbStateVarValues; ///< Names of db values for state variables.
 
-  double* dbProperties; ///< Database values for properties at locations.
-  double* dbStateVars; ///< Database values for state variables at locations.
-  double* properties; ///< Properties at locations.
-  double* stateVars; ///< State variables at locations.
-  double* propertiesNondim; ///< Nondimensional properties at locations.
-  double* stateVarsNondim; ///< Nondimensional state variables at locations.
+  PylithScalar* dbProperties; ///< Database values for properties at locations.
+  PylithScalar* dbStateVars; ///< Database values for state variables at locations.
+  PylithScalar* properties; ///< Properties at locations.
+  PylithScalar* stateVars; ///< State variables at locations.
+  PylithScalar* propertiesNondim; ///< Nondimensional properties at locations.
+  PylithScalar* stateVarsNondim; ///< Nondimensional state variables at locations.
 
-  double lengthScale; ///< Length scale for nondimensionalization.
-  double timeScale; ///< Time scale for nondimensionalization.
-  double pressureScale; ///< Pressure scale for nondimensionalization.
-  double densityScale; ///< Density scale for nondimensionalization.
+  PylithScalar lengthScale; ///< Length scale for nondimensionalization.
+  PylithScalar timeScale; ///< Time scale for nondimensionalization.
+  PylithScalar pressureScale; ///< Pressure scale for nondimensionalization.
+  PylithScalar densityScale; ///< Density scale for nondimensionalization.
 
 };
 

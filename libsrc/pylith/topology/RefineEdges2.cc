@@ -46,7 +46,7 @@ ALE::RefineEdges2::setCoordsNewVertices(const ALE::Obj<mesh_type::real_section_t
   assert(!newCoordsSection.isNull());
   assert(!oldCoordsSection.isNull());
 
-  double coordinatesVertex[3];
+  PylithScalar coordinatesVertex[3];
 
   assert(_edgeToVertex.size() > 0);
   const int spaceDim = newCoordsSection->getFiberDimension(_edgeToVertex.begin()->second);

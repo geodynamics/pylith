@@ -30,7 +30,7 @@
 #include "bcfwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB

@@ -73,7 +73,7 @@ namespace pylith {
        * @param dt Time step
        */
       virtual
-      void timeStep(const double dt);
+      void timeStep(const PylithScalar dt);
       
       /** Get stable time step for advancing from time t to time t+dt.
        *
@@ -83,7 +83,7 @@ namespace pylith {
        * @returns Time step
        */
       virtual
-      double stableTimeStep(const pylith::topology::Mesh& mesh);
+      PylithScalar stableTimeStep(const pylith::topology::Mesh& mesh);
       
       /** Check whether Jacobian needs to be recomputed.
        *
@@ -129,7 +129,7 @@ namespace pylith {
        */
       virtual 
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -141,7 +141,7 @@ namespace pylith {
        */
       virtual
       void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -153,7 +153,7 @@ namespace pylith {
        */
       virtual
       void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
       /** Update state variables as needed.
@@ -163,7 +163,7 @@ namespace pylith {
        * @param mesh Finite-element mesh
        */
       virtual
-      void updateStateVars(const double t,
+      void updateStateVars(const PylithScalar t,
 			   pylith::topology::SolutionFields* const fields);
 
       /** Verify configuration is acceptable.

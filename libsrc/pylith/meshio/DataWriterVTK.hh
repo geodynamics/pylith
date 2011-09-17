@@ -75,7 +75,7 @@ public :
    * @param value Value (time in seconds) used to normalize time stamp in
    * filename.
    */
-  void timeConstant(const double value);
+  void timeConstant(const PylithScalar value);
 
   /** Set precision of floating point values in output.
    *
@@ -91,7 +91,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void openTimeStep(const double t,
+  void openTimeStep(const PylithScalar t,
 		    const mesh_type& mesh,
 		    const char* label =0,
 		    const int labelId =0);
@@ -105,7 +105,7 @@ public :
    * @param field Field over vertices.
    * @param mesh Mesh associated with output.
    */
-  void writeVertexField(const double t,
+  void writeVertexField(const PylithScalar t,
 			field_type& field,
 			const mesh_type& mesh);
 
@@ -117,7 +117,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void writeCellField(const double t,
+  void writeCellField(const PylithScalar t,
 		      field_type& field,
 		      const char* label =0,
 		      const int labelId =0);
@@ -135,7 +135,7 @@ private :
    *
    * @param t Time in seconds.
    */
-  std::string _vtkFilename(const double t) const;
+  std::string _vtkFilename(const PylithScalar t) const;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -146,7 +146,7 @@ private :
 private :
 
   /// Time value (in seconds) used to normalize time stamp.
-  double _timeConstant;
+  PylithScalar _timeConstant;
 
   std::string _filename; ///< Name of VTK file.
   std::string _timeFormat; ///< C style time format for time stamp.

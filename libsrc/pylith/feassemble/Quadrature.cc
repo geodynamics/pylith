@@ -230,7 +230,7 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
-  double_array coordinatesCell(numBasis*_spaceDim);
+  scalar_array coordinatesCell(numBasis*_spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   RestrictVisitor coordsVisitor(*coordinates,
@@ -242,10 +242,10 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     jacobianDetField->section();
   const ALE::Obj<RealSection>& basisDerivSection = basisDerivField->section();
 
-  const double_array& quadPts = _engine->quadPts();
-  const double_array& jacobian = _engine->jacobian();
-  const double_array& jacobianDet = _engine->jacobianDet();
-  const double_array& basisDeriv = _engine->basisDeriv();
+  const scalar_array& quadPts = _engine->quadPts();
+  const scalar_array& jacobian = _engine->jacobian();
+  const scalar_array& jacobianDet = _engine->jacobianDet();
+  const scalar_array& basisDeriv = _engine->basisDeriv();
 
   for(typename label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
@@ -272,29 +272,29 @@ pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_
 
   typedef typename mesh_type::RealSection RealSection;
 
-  const double_array& quadPts = _engine->quadPts();
-  const double_array& jacobian = _engine->jacobian();
-  const double_array& jacobianDet = _engine->jacobianDet();
-  const double_array& basisDeriv = _engine->basisDeriv();
+  const scalar_array& quadPts = _engine->quadPts();
+  const scalar_array& jacobian = _engine->jacobian();
+  const scalar_array& jacobianDet = _engine->jacobianDet();
+  const scalar_array& basisDeriv = _engine->basisDeriv();
 
   const ALE::Obj<RealSection>& quadPtsSection =
     _geometryFields->get("quadrature points").section();
-  quadPtsSection->restrictPoint(cell, const_cast<double*>(&quadPts[0]),
+  quadPtsSection->restrictPoint(cell, const_cast<PylithScalar*>(&quadPts[0]),
 				quadPts.size());
 
   const ALE::Obj<RealSection>& jacobianSection =
     _geometryFields->get("jacobian").section();
-  jacobianSection->restrictPoint(cell, const_cast<double*>(&jacobian[0]),
+  jacobianSection->restrictPoint(cell, const_cast<PylithScalar*>(&jacobian[0]),
 				 jacobian.size());
 
   const ALE::Obj<RealSection>& jacobianDetSection = 
     _geometryFields->get("determinant(jacobian)").section();
-  jacobianDetSection->restrictPoint(cell, const_cast<double*>(&jacobianDet[0]),
+  jacobianDetSection->restrictPoint(cell, const_cast<PylithScalar*>(&jacobianDet[0]),
 				    jacobianDet.size());
 
   const ALE::Obj<RealSection>& basisDerivSection =
     _geometryFields->get("determinant basisfunctions").section();
-  basisDerivSection->restrictPoint(cell, const_cast<double*>(&basisDeriv[0]),
+  basisDerivSection->restrictPoint(cell, const_cast<PylithScalar*>(&basisDeriv[0]),
 				   basisDeriv.size());
 } // retrieveGeometry
 

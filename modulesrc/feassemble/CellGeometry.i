@@ -87,7 +87,7 @@ namespace pylith {
        *
        * @returns Array of coordinates of vertices in reference cell
        */
-      const pylith::double_array& vertices(void) const;
+      const pylith::scalar_array& vertices(void) const;
       
       /** Get cell geometry for lower dimension cell.
        *
@@ -106,9 +106,9 @@ namespace pylith {
        * @param npts Number of points to transform.
        */
       virtual
-      void ptsRefToGlobal(double* ptsGlobal,
-			  const double* ptsRef,
-			  const double* vertices,
+      void ptsRefToGlobal(PylithScalar* ptsGlobal,
+			  const PylithScalar* ptsRef,
+			  const PylithScalar* vertices,
 			  const int dim,
 			  const int npts) const = 0;
       
@@ -120,10 +120,10 @@ namespace pylith {
        * @param location Location in reference cell at which to compute Jacobian.
        */
       virtual
-      void jacobian(pylith::double_array* jacobian,
-		    double* det,
-		    const pylith::double_array& vertices,
-		    const pylith::double_array& location) const = 0;
+      void jacobian(pylith::scalar_array* jacobian,
+		    PylithScalar* det,
+		    const pylith::scalar_array& vertices,
+		    const pylith::scalar_array& location) const = 0;
       
       /** Compute Jacobian at location in cell.
        *
@@ -135,10 +135,10 @@ namespace pylith {
        * @param npts Number of points to transform.
        */
       virtual
-      void jacobian(double* jacobian,
-		    double* det,
-		    const double* vertices,
-		    const double* ptsRef,
+      void jacobian(PylithScalar* jacobian,
+		    PylithScalar* det,
+		    const PylithScalar* vertices,
+		    const PylithScalar* ptsRef,
 		    const int dim,
 		    const int npts) const = 0;
       
@@ -156,10 +156,10 @@ namespace pylith {
        * @param upDir Direction perpendicular to horizontal direction that is 
        *   not collinear with cell normal (usually "up" direction).
        */
-      void orientation(pylith::double_array* orientation,
-		       const pylith::double_array& jacobian,
-		       const double jacobianDet,
-		       const pylith::double_array& upDir) const;
+      void orientation(pylith::scalar_array* orientation,
+		       const pylith::scalar_array& jacobian,
+		       const PylithScalar jacobianDet,
+		       const pylith::scalar_array& upDir) const;
 
     }; // CellGeometry
 

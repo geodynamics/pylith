@@ -157,9 +157,9 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const double* vertexCoords = coordsField->restrictPoint(*v_iter);
+    const PylithScalar* vertexCoords = coordsField->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vertexCoords);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],

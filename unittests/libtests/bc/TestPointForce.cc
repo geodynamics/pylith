@@ -113,7 +113,7 @@ pylith::bc::TestPointForce::testInitialize(void)
   CPPUNIT_ASSERT(!parametersSection.isNull());
   const int parametersFiberDim = bc._parameters->fiberDim();
   
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // Check values
   const int initialIndex = bc._parameters->sectionIndex("initial");
@@ -125,7 +125,7 @@ pylith::bc::TestPointForce::testInitialize(void)
 
     CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
 			 parametersSection->getFiberDimension(p_force));
-    const double* parametersVertex = parametersSection->restrictPoint(p_force);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_force);
     CPPUNIT_ASSERT(parametersVertex);
 
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
@@ -144,7 +144,7 @@ pylith::bc::TestPointForce::testInitialize(void)
 
     CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
 			 parametersSection->getFiberDimension(p_force));
-    const double* parametersVertex = parametersSection->restrictPoint(p_force);
+    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_force);
     CPPUNIT_ASSERT(parametersVertex);
 
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
@@ -173,26 +173,26 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
 
   topology::SolutionFields fields(mesh);
 
-  const double t = _data->tResidual;
+  const PylithScalar t = _data->tResidual;
   bc.integrateResidual(residual, t, &fields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
-  const double* valsE = _data->residual;
+  const PylithScalar* valsE = _data->residual;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int sizeE = spaceDim * totalNumVertices;
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual.view("RESIDUAL");
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);

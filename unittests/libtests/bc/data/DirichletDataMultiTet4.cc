@@ -78,7 +78,7 @@ const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameA =
   "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameARate =
   "data/tet4_vel2.spatialdb";
-const double pylith::bc::DirichletDataMultiTet4::_tRefA = 0.0;
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefA = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idB = 1;
 const char* pylith::bc::DirichletDataMultiTet4::_labelB = "bc2";
@@ -91,7 +91,7 @@ const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameB =
   "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameBRate =
   "data/tet4_vel2.spatialdb";
-const double pylith::bc::DirichletDataMultiTet4::_tRefB = 0.0;
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefB = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_idC = 1;
 const char* pylith::bc::DirichletDataMultiTet4::_labelC = "bc3";
@@ -104,7 +104,7 @@ const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameC =
   "data/tet4_disp2.spatialdb";
 const char* pylith::bc::DirichletDataMultiTet4::_dbFilenameCRate =
   "data/tet4_vel2.spatialdb";
-const double pylith::bc::DirichletDataMultiTet4::_tRefC = 0.0;
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_tRefC = 0.0;
 
 const int pylith::bc::DirichletDataMultiTet4::_constraintSizes[] = {
   2,
@@ -123,7 +123,7 @@ const int pylith::bc::DirichletDataMultiTet4::_constrainedDOF[] = {
 };
 
 // Values at t=10.0
-const double pylith::bc::DirichletDataMultiTet4::_field[] = {
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_field[] = {
   10.1, 0.0, -9.99,
    0.0, 111.0, 0.0,
   20.2, 222.0, -19.98,
@@ -132,7 +132,7 @@ const double pylith::bc::DirichletDataMultiTet4::_field[] = {
 };
 
 // Increment values from t=10.0 to t=14.0
-const double pylith::bc::DirichletDataMultiTet4::_fieldIncr[] = {
+const PylithScalar pylith::bc::DirichletDataMultiTet4::_fieldIncr[] = {
    4.0,   0.0,  -4.0,
    0.0,  40.0,   0.0,
    8.0,  80.0,  -8.0,
@@ -180,8 +180,8 @@ pylith::bc::DirichletDataMultiTet4::DirichletDataMultiTet4(void)
   dbFilenameCRate = const_cast<char*>(_dbFilenameCRate);
   tRefC = _tRefC;
 
-  field = const_cast<double*>(_field);
-  fieldIncr = const_cast<double*>(_fieldIncr);
+  field = const_cast<PylithScalar*>(_field);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
   constraintSizes = const_cast<int*>(_constraintSizes);
   constrainedDOF = const_cast<int*>(_constrainedDOF);
 

@@ -78,7 +78,7 @@ pylith::meshio::DataWriter<mesh_type, field_type>::close(void)
 // Prepare file for data at a new time step.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const double t,
+pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const PylithScalar t,
 						    const mesh_type& mesh,
 						    const char* label,
 						    const int labelId)

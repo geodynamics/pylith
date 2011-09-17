@@ -52,4 +52,40 @@ convert_doublearray(PyObject* input,
  } // typemap
 
 
+%{
+static
+int
+convert_floatarray(PyObject* input,
+		    float* const values,
+		    const int size) {
+  if (!PySequence_Check(input)) {
+    PyErr_SetString(PyExc_TypeError, "Expecting a sequence of floats.");
+    return 0;
+  } // if
+  if (PyObject_Length(input) != size) {
+    PyErr_SetString(PyExc_ValueError, "Sequence size mismatch.");
+    return 0;
+  } // if
+  for (int i=0; i < size; i++) {
+    PyObject *o = PySequence_GetItem(input,i);
+    if (!PyFloat_Check(o)) {
+      Py_XDECREF(o);
+      PyErr_SetString(PyExc_ValueError,"Expecting a sequence of floats.");
+      return 0;
+    } // if
+    values[i] = PyFloat_AsDouble(o);
+    Py_DECREF(o);
+  } // for
+  return 1;
+} // convert_floatarray
+%}
+
+// Map a Python sequence of floats into a C float array.
+%typemap(in) float [ANY] (float values[$1_dim0]) {
+  if (!convert_floatarray($input, values, $1_dim0))
+    return NULL;
+  $1 = &values[0];
+ } // typemap
+
+
 // End of file

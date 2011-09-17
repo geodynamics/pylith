@@ -52,12 +52,12 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::testTimeStep(void)
 
   CPPUNIT_ASSERT_EQUAL(false, material._needNewJacobian);
 
-  const double dt1 = 1.0;
+  const PylithScalar dt1 = 1.0;
   material.timeStep(dt1);
   CPPUNIT_ASSERT_EQUAL(dt1, material.Material::timeStep());
   CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
 
-  const double dt2 = 2.0;
+  const PylithScalar dt2 = 2.0;
   material.timeStep(dt2);
   CPPUNIT_ASSERT_EQUAL(dt2, material.Material::timeStep());
   CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
@@ -143,32 +143,32 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsElastic(vo
   const int numVarsQuadPt = _dataElastic->numVarsQuadPt;
   const int tensorSize = material.tensorSize();
   
-  double_array stress(tensorSize);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
+  scalar_array stress(tensorSize);
+  scalar_array properties(numPropsQuadPt);
+  scalar_array stateVars(numVarsQuadPt);
+  scalar_array strain(tensorSize);
+  scalar_array initialStress(tensorSize);
+  scalar_array initialStrain(tensorSize);
   
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     memcpy(&properties[0], &_dataElastic->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
+	   numPropsQuadPt*sizeof(PylithScalar));
     memcpy(&stateVars[0], &_dataElastic->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
+	   numVarsQuadPt*sizeof(PylithScalar));
     memcpy(&strain[0], &_dataElastic->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
     memcpy(&initialStress[0], &_dataElastic->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
     memcpy(&initialStrain[0], &_dataElastic->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
 
-    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     const int numMaxwellModels = 3;
 
-    const double meanStrain = (strain[0] + strain[1] + strain[2]) / 3.0;
+    const PylithScalar meanStrain = (strain[0] + strain[1] + strain[2]) / 3.0;
     
     // Compute expected state variables
-    double_array stateVarsE(numVarsQuadPt);
+    scalar_array stateVarsE(numVarsQuadPt);
     const int s_totalStrain = GenMaxwellQpQsIsotropic3D::s_totalStrain;
     const int s_viscousDevStrain = 
       GenMaxwellQpQsIsotropic3D::s_viscousDevStrain;
@@ -197,7 +197,7 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsElastic(vo
 			      &initialStress[0], initialStress.size(),
 			      &initialStrain[0], initialStrain.size());
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < numVarsQuadPt; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
   } // for
@@ -213,7 +213,7 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_calcStressTimeDep(void)
 
   delete _dataElastic; _dataElastic = new GenMaxwellQpQsIsotropic3DTimeDepData();
 
-  double dt = 2.0e+5;
+  PylithScalar dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcStress();
 } // testCalcStressTimeDep
@@ -228,7 +228,7 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_calcElasticConstsTimeDep(
 
   delete _dataElastic; _dataElastic = new GenMaxwellQpQsIsotropic3DTimeDepData();
 
-  double dt = 2.0e+5;
+  PylithScalar dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcElasticConsts();
 } // testElasticConstsTimeDep
@@ -248,7 +248,7 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
 
   delete _dataElastic; _dataElastic = new GenMaxwellQpQsIsotropic3DTimeDepData();
 
-  const double dt = 2.0e+5;
+  const PylithScalar dt = 2.0e+5;
   material.timeStep(dt);
 
   const bool computeStateVars = true;
@@ -258,27 +258,27 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
   const int numVarsQuadPt = _dataElastic->numVarsQuadPt;
   const int tensorSize = material.tensorSize();
   
-  double_array stress(tensorSize);
-  double_array properties(numPropsQuadPt);
-  double_array stateVars(numVarsQuadPt);
-  double_array strain(tensorSize);
-  double_array initialStress(tensorSize);
-  double_array initialStrain(tensorSize);
+  scalar_array stress(tensorSize);
+  scalar_array properties(numPropsQuadPt);
+  scalar_array stateVars(numVarsQuadPt);
+  scalar_array strain(tensorSize);
+  scalar_array initialStress(tensorSize);
+  scalar_array initialStrain(tensorSize);
   
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     memcpy(&properties[0], &_dataElastic->properties[iLoc*numPropsQuadPt],
-	   numPropsQuadPt*sizeof(double));
+	   numPropsQuadPt*sizeof(PylithScalar));
     memcpy(&stateVars[0], &_dataElastic->stateVars[iLoc*numVarsQuadPt],
-	   numVarsQuadPt*sizeof(double));
+	   numVarsQuadPt*sizeof(PylithScalar));
     memcpy(&strain[0], &_dataElastic->strain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
     memcpy(&initialStress[0], &_dataElastic->initialStress[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
     memcpy(&initialStrain[0], &_dataElastic->initialStrain[iLoc*tensorSize],
-	   tensorSize*sizeof(double));
+	   tensorSize*sizeof(PylithScalar));
 
     // Compute expected state variables
-    double_array stateVarsE(numVarsQuadPt);
+    scalar_array stateVarsE(numVarsQuadPt);
     const int numMaxwellModels = 3;
     const int s_totalStrain = GenMaxwellQpQsIsotropic3D::s_totalStrain;
     const int s_viscousDevStrain = 
@@ -296,10 +296,10 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
       stateVarsE[s_totalStrain+i] = strain[i];
     
     // State variable 'viscous_strain'
-    double_array maxwellTime(numMaxwellModels);
-    double_array maxwellTimeBulk(numMaxwellModels);
-    double_array dq(numMaxwellModels);
-    double_array dqBulk(numMaxwellModels);
+    scalar_array maxwellTime(numMaxwellModels);
+    scalar_array maxwellTimeBulk(numMaxwellModels);
+    scalar_array dq(numMaxwellModels);
+    scalar_array dqBulk(numMaxwellModels);
     for (int i=0; i < numMaxwellModels; ++i) {
       maxwellTime[i] = properties[p_maxwellTimeShear+i];
       dq[i] = maxwellTime[i] * (1.0 - exp(-dt/maxwellTime[i]))/dt;
@@ -308,20 +308,20 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
       maxwellTimeBulk[i] = properties[p_maxwellTimeBulk+i];
       dqBulk[i] = maxwellTimeBulk[i] * (1.0 - exp(-dt/maxwellTimeBulk[i]))/dt;
     } // for
-    double_array strainT(tensorSize);
+    scalar_array strainT(tensorSize);
     for (int i=0; i < tensorSize; ++i)
       strainT[i] = stateVars[s_totalStrain+i];
-    const double meanStrainT = 
+    const PylithScalar meanStrainT = 
       (stateVars[s_totalStrain+0] + 
        stateVars[s_totalStrain+1] + 
        stateVars[s_totalStrain+2]) / 3.0;
-    const double meanStrainTpdt = (strain[0] + strain[1] + strain[2]) / 3.0;
+    const PylithScalar meanStrainTpdt = (strain[0] + strain[1] + strain[2]) / 3.0;
 
-    double devStrainTpdt = 0.0;
-    double devStrainT = 0.0;
-    double deltaStrain = 0.0;
-    double visStrain = 0.0;
-    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    PylithScalar devStrainTpdt = 0.0;
+    PylithScalar devStrainT = 0.0;
+    PylithScalar deltaStrain = 0.0;
+    PylithScalar visStrain = 0.0;
+    const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
     for (int iComp=0; iComp < tensorSize; ++iComp) {
       devStrainTpdt = strain[iComp] - diag[iComp]*meanStrainTpdt;
@@ -335,8 +335,8 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
       } // for
     } // for
 
-    double volStrainTpdt = meanStrainTpdt;
-    double volStrainT = meanStrainT;
+    PylithScalar volStrainTpdt = meanStrainTpdt;
+    PylithScalar volStrainT = meanStrainT;
     deltaStrain = volStrainTpdt - volStrainT;
 
     for (int iModel=0; iModel < numMaxwellModels; ++iModel) {
@@ -352,7 +352,7 @@ pylith::materials::TestGenMaxwellQpQsIsotropic3D::test_updateStateVarsTimeDep(vo
 			      &initialStress[0], initialStress.size(),
 			      &initialStrain[0], initialStrain.size());
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < numVarsQuadPt; ++i)
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);

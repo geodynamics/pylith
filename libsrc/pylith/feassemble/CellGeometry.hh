@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forwward declarations
 
-#include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // CellGeometry ---------------------------------------------------------
 /// Abstract base class for cell geometry calculations.
@@ -96,7 +96,7 @@ public :
    *
    * @returns Array of coordinates of vertices in reference cell
    */
-  const double_array& vertices(void) const;
+  const scalar_array& vertices(void) const;
 
   /** Get cell geometry for lower dimension cell.
    *
@@ -115,9 +115,9 @@ public :
    * @param npts Number of points to transform.
    */
   virtual
-  void ptsRefToGlobal(double* ptsGlobal,
-		      const double* ptsRef,
-		      const double* vertices,
+  void ptsRefToGlobal(PylithScalar* ptsGlobal,
+		      const PylithScalar* ptsRef,
+		      const PylithScalar* vertices,
 		      const int dim,
 		      const int npts) const = 0;
 
@@ -129,10 +129,10 @@ public :
    * @param location Location in reference cell at which to compute Jacobian.
    */
   virtual
-  void jacobian(double_array* jacobian,
-		double* det,
-		const double_array& vertices,
-		const double_array& location) const = 0;
+  void jacobian(scalar_array* jacobian,
+		PylithScalar* det,
+		const scalar_array& vertices,
+		const scalar_array& location) const = 0;
 
   /** Compute Jacobian at location in cell.
    *
@@ -144,10 +144,10 @@ public :
    * @param npts Number of points to transform.
    */
   virtual
-  void jacobian(double* jacobian,
-		double* det,
-		const double* vertices,
-		const double* ptsRef,
+  void jacobian(PylithScalar* jacobian,
+		PylithScalar* det,
+		const PylithScalar* vertices,
+		const PylithScalar* ptsRef,
 		const int dim,
 		const int npts) const = 0;
 
@@ -165,10 +165,10 @@ public :
    * @param upDir Direction perpendicular to horizontal direction that is 
    *   not collinear with cell normal (usually "up" direction).
    */
-  void orientation(double_array* orientation,
-		   const double_array& jacobian,
-		   const double jacobianDet,
-		   const double_array& upDir) const;
+  void orientation(scalar_array* orientation,
+		   const scalar_array& jacobian,
+		   const PylithScalar jacobianDet,
+		   const scalar_array& upDir) const;
 
 // PROTECTED ////////////////////////////////////////////////////////////
 protected :
@@ -185,7 +185,7 @@ protected :
    * @param numVertices Number of vertices.
    * @param dim Dimension of cell
    */
-  void _setVertices(const double* vertices,
+  void _setVertices(const PylithScalar* vertices,
 		    const int numVertices,
 		    const int dim);
 
@@ -199,10 +199,10 @@ private :
 private :
 
   /// Function type for orientation methods.
-  typedef void (*orient_fn_type)(double_array*, 
-				 const double_array&,
-				 const double,
-				 const double_array&);  
+  typedef void (*orient_fn_type)(scalar_array*, 
+				 const scalar_array&,
+				 const PylithScalar,
+				 const scalar_array&);  
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
@@ -226,10 +226,10 @@ private :
    *   be up-dip direction).
    */
   static
-  void _orient0D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
+  void _orient0D(scalar_array* orientation,
+		 const scalar_array& jacobian,
+		 const PylithScalar jacobianDet,
+		 const scalar_array& upDir);
 		
   /** Compute orientation of 1-D cell. Orientation is either at
    * vertices or quadrature points, depending on whether the arguments
@@ -248,10 +248,10 @@ private :
    *   be up-dip direction).
    */
   static 
-  void _orient1D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
+  void _orient1D(scalar_array* orientation,
+		 const scalar_array& jacobian,
+		 const PylithScalar jacobianDet,
+		 const scalar_array& upDir);
 		
   /** Compute orientation of 2-D cell. Orientation is either at
    * vertices or quadrature points, depending on whether the arguments
@@ -270,10 +270,10 @@ private :
    *   be up-dip direction).
    */
   static
-  void _orient2D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
+  void _orient2D(scalar_array* orientation,
+		 const scalar_array& jacobian,
+		 const PylithScalar jacobianDet,
+		 const scalar_array& upDir);
 		
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -288,7 +288,7 @@ private :
    * size = numBasis * cellDim
    * index = iBasis*cellDim + iDim
    */
-  double_array _vertices;
+  scalar_array _vertices;
 
   orient_fn_type _orientFn; ///< Function for computing orientation of cell
   int _spaceDim; ///< Dimension of coordinate space.

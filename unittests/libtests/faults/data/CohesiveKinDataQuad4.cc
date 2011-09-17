@@ -60,25 +60,25 @@ const int pylith::faults::CohesiveKinDataQuad4::_numBasis = 2;
 
 const int pylith::faults::CohesiveKinDataQuad4::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveKinDataQuad4::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_quadPts[] = {
   0.0,
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_quadWts[] = {
   2.0,
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_basis[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_basis[] = {
   0.5,
   0.5
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_basisDeriv[] = {
   -0.5,
    0.5
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_verticesRef[] = {
   -1.0, 1.0
 };
 
@@ -95,7 +95,7 @@ const char* pylith::faults::CohesiveKinDataQuad4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4::_riseTimeFilename = 
   "data/quad4_risetime.spatialdb";
 
-const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2,
   8.3, 9.3, // 4
@@ -108,7 +108,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.0, 9.0, // 11
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
   3.1, 4.1,
   3.2, 4.2,
   3.3, 4.3, // 4
@@ -121,7 +121,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldIncr[] = {
   3.0, 4.0, // 11
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
   1.1, 1.1,
   1.2, 1.2,
   1.3, 1.3, // 4
@@ -158,17 +158,17 @@ const int pylith::faults::CohesiveKinDataQuad4::_cellMappingCohesive[] = {
 };
 
 
-const double pylith::faults::CohesiveKinDataQuad4::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_orientation[] = {
   0.0,  1.0,  +1.0, 0.0,
   0.0,  1.0,  +1.0, 0.0
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_area[] = {
   1.0, 1.0,
 };
 
 
-const double pylith::faults::CohesiveKinDataQuad4::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_residual[] = {
   0.0,  0.0,
   0.0,  0.0,
   9.8,  8.8, // 4
@@ -181,7 +181,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_residual[] = {
  -0.5+1.89546413727, -0.5+0.08241148423, // 11
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_residualIncr[] = {
   0.0,  0.0,
   0.0,  0.0,
   9.8,  8.8, // 4
@@ -194,7 +194,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_residualIncr[] = {
  -0.5+1.89546413727, -0.5+0.08241148423, // 11
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {
   0.0, 0.0, // 2x
   0.0, 0.0,
   0.0, 0.0,
@@ -397,7 +397,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_jacobian[] = {
   0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_fieldIncrAdjusted[] = {
+const PylithScalar pylith::faults::CohesiveKinDataQuad4::_fieldIncrAdjusted[] = {
   3.1, 4.1,
   3.2, 4.2,
   -4.09563227733, -3.248612969, // 4
@@ -417,25 +417,25 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldIncr = const_cast<double*>(_fieldIncr);
-  jacobianLumped = const_cast<double*>(_jacobianLumped);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residualIncr = const_cast<double*>(_residualIncr);
-  residual = const_cast<double*>(_residual);
-  jacobian = const_cast<double*>(_jacobian);
-  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
+  jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  residual = const_cast<PylithScalar*>(_residual);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

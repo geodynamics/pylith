@@ -43,8 +43,8 @@ class pylith::feassemble::IntegratorElasticityLgDeform :
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef void (*totalStrain_fn_type)(double_array*,
-				      const double_array&,
+  typedef void (*totalStrain_fn_type)(scalar_array*,
+				      const scalar_array&,
 				      const int);
   
 
@@ -70,7 +70,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateStateVars(const double t,
+  void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -99,24 +99,24 @@ protected :
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityResidual1D(const double_array& stress,
-			     const double_array& disp);
+  void _elasticityResidual1D(const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityResidual2D(const double_array& stress,
-			     const double_array& disp);
+  void _elasticityResidual2D(const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Integrate elasticity term in residual for 3-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityResidual3D(const double_array& stress,
-			     const double_array& disp);
+  void _elasticityResidual3D(const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Integrate elasticity term in Jacobian for 1-D cells.
    *
@@ -124,9 +124,9 @@ protected :
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityJacobian1D(const double_array& elasticConsts,
-			     const double_array& stress,
-			     const double_array& disp);
+  void _elasticityJacobian1D(const scalar_array& elasticConsts,
+			     const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.
    *
@@ -134,9 +134,9 @@ protected :
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityJacobian2D(const double_array& elasticConsts,
-			     const double_array& stress,
-			     const double_array& disp);
+  void _elasticityJacobian2D(const scalar_array& elasticConsts,
+			     const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Integrate elasticity term in Jacobian for 3-D cells.
    *
@@ -144,9 +144,9 @@ protected :
    * @param stress Stress tensor for cell at quadrature points.
    * @param disp Displacement field at cell's DOF.
    */
-  void _elasticityJacobian3D(const double_array& elasticConsts,
-			     const double_array& stress,
-			     const double_array& disp);
+  void _elasticityJacobian3D(const scalar_array& elasticConsts,
+			     const scalar_array& stress,
+			     const scalar_array& disp);
 
   /** Calculate Green-Lagrange strain tensor at quadrature points of a
    *  1-D cell.
@@ -156,8 +156,8 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain1D(double_array* strain,
-			  const double_array& deform,
+  void _calcTotalStrain1D(scalar_array* strain,
+			  const scalar_array& deform,
 			  const int numQuadPts);
 
   /** Calculate Green-Lagrange strain tensor at quadrature points of a
@@ -168,8 +168,8 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain2D(double_array* strain,
-			  const double_array& deform,
+  void _calcTotalStrain2D(scalar_array* strain,
+			  const scalar_array& deform,
 			  const int numQuadPts);
 
   /** Calculate Green-Lagrange strain tensor at quadrature points of a
@@ -180,8 +180,8 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain3D(double_array* strain,
-			  const double_array& deform,
+  void _calcTotalStrain3D(scalar_array* strain,
+			  const scalar_array& deform,
 			  const int numQuadPts);
 
   /** Calculate deformation tensor.
@@ -195,10 +195,10 @@ protected :
    * @param dim Dimension of cell.
    */
   static
-  void _calcDeformation(double_array* deform,
-			const double_array& basisDeriv,
-			const double_array& vertices,
-			const double_array& disp,
+  void _calcDeformation(scalar_array* deform,
+			const scalar_array& basisDeriv,
+			const scalar_array& vertices,
+			const scalar_array& disp,
 			const int numBasis,
 			const int numQuadPts,
 			const int dim);

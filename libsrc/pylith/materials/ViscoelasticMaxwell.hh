@@ -27,6 +27,8 @@
 // Include directives ---------------------------------------------------
 #include "materialsfwd.hh" // forward declarations
 
+#include "pylith/utils/types.hh" // USES PylithScalar
+
 // ViscoelasticMaxwell --------------------------------------------------
 /** @brief Class for basic Maxwell viscoelastic functions.
  *
@@ -46,8 +48,8 @@ public :
    *
    * @returns Viscous strain parameter.
    */
-  static double viscousStrainParam(const double dt,
-				   const double maxwellTime);
+  static PylithScalar viscousStrainParam(const PylithScalar dt,
+				   const PylithScalar maxwellTime);
 
 }; // class ViscoelasticMaxwell
 

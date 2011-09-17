@@ -41,18 +41,18 @@ const char* pylith::bc::NeumannDataTet4::_meshFilename =
 
 const int pylith::bc::NeumannDataTet4::_numBasis = 3;
 const int pylith::bc::NeumannDataTet4::_numQuadPts = 1;
-const double pylith::bc::NeumannDataTet4::_quadPts[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_quadPts[] = {
   -0.3333333333333333, -0.3333333333333333
 };
-const double pylith::bc::NeumannDataTet4::_quadWts[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_quadWts[] = {
   2.0,
 };
-const double pylith::bc::NeumannDataTet4::_basis[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_basis[] = {
   0.3333333333333333,
   0.3333333333333333,
   0.3333333333333333,
 };
-const double pylith::bc::NeumannDataTet4::_basisDerivRef[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_basisDerivRef[] = {
  -0.5, -0.5,
   0.5,  0.0,
   0.0,  0.5,
@@ -72,10 +72,10 @@ const int pylith::bc::NeumannDataTet4::_cells[] = {
   3, 4, 5,
 };
 
-const double pylith::bc::NeumannDataTet4::_tractionsCell[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_tractionsCell[] = {
   -0.5380048025,  0.87620875991,  1.3938468501
 };
-const double pylith::bc::NeumannDataTet4::_valsResidual[] = {
+const PylithScalar pylith::bc::NeumannDataTet4::_valsResidual[] = {
   0.0,               0.0,               0.0,
   -1.5530860877e-01,  2.529396817e-01,  4.0236892706e-01,
   -1.5530860877e-01,  2.529396817e-01,  4.0236892706e-01,
@@ -90,10 +90,10 @@ pylith::bc::NeumannDataTet4::NeumannDataTet4(void)
 
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
 
   spatialDBFilename = const_cast<char*>(_spatialDBFilename);
   id = _id;
@@ -106,8 +106,8 @@ pylith::bc::NeumannDataTet4::NeumannDataTet4(void)
   numCorners = _numCorners;
   cells = const_cast<int*>(_cells);
 
-  tractionsCell = const_cast<double*>(_tractionsCell);
-  valsResidual = const_cast<double*>(_valsResidual);
+  tractionsCell = const_cast<PylithScalar*>(_tractionsCell);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
 
 } // constructor
 

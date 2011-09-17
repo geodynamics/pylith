@@ -27,7 +27,7 @@
 
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declaration
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 // Quadrature0D ---------------------------------------------------------
 /// Abstract base class for quadrature computation engine.
@@ -63,26 +63,26 @@ public :
    *
    * @returns Array of coordinates of quadrature points in cell
    */
-  const double_array& quadPts(void) const;
+  const scalar_array& quadPts(void) const;
 
   /** Get derivatives of basis fns evaluated at quadrature points.
    *
    * @returns Array of derivatives of basis fns evaluated at
    * quadrature points
    */
-  const double_array& basisDeriv(void) const;
+  const scalar_array& basisDeriv(void) const;
 
   /** Get Jacobians evaluated at quadrature points.
    *
    * @returns Array of Jacobian inverses evaluated at quadrature points.
    */
-  const double_array& jacobian(void) const;
+  const scalar_array& jacobian(void) const;
 
   /** Get determinants of Jacobian evaluated at quadrature points.
    *
    * @returns Array of determinants of Jacobian evaluated at quadrature pts
    */
-  const double_array& jacobianDet(void) const;
+  const scalar_array& jacobianDet(void) const;
 
   /// Allocate cell buffers.
   void initialize(void);
@@ -96,7 +96,7 @@ public :
    * @param cell Finite-element cell
    */
   virtual
-  void computeGeometry(const double_array& coordinatesCell,
+  void computeGeometry(const scalar_array& coordinatesCell,
 		       const int cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -113,18 +113,18 @@ protected :
    * @param det Value of determinant of Jacobian
    * @param cell Label of finite-element cell
    */
-  void _checkJacobianDet(const double det,
+  void _checkJacobianDet(const PylithScalar det,
 			 const int cell) const;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   /** Buffers for cell data */
-  double_array _quadPts; ///< Coordinates of quad pts.
-  double_array _jacobian; ///< Jacobian at quad pts;
-  double_array _jacobianDet; ///< |J| at quad pts.
-  double_array _jacobianInv; /// Inverse of Jacobian at quad pts.
-  double_array _basisDeriv; ///< Deriv. of basis fns at quad pts.
+  scalar_array _quadPts; ///< Coordinates of quad pts.
+  scalar_array _jacobian; ///< Jacobian at quad pts;
+  scalar_array _jacobianDet; ///< |J| at quad pts.
+  scalar_array _jacobianInv; /// Inverse of Jacobian at quad pts.
+  scalar_array _basisDeriv; ///< Deriv. of basis fns at quad pts.
 
   const QuadratureRefCell& _quadRefCell;
 

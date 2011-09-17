@@ -19,6 +19,8 @@
 #if !defined(pylith_faults_cohesivedynldata_hh)
 #define pylith_faults_cohesivedynldata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace faults {
      class CohesiveDynData;
@@ -48,11 +50,11 @@ public:
   int cellDim; ///< Number of dimensions associated with cell
   int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
-  double* quadPts; ///< Coordinates of quad pts in ref cell
-  double* quadWts; ///< Weights of quadrature points
-  double* basis; ///< Basis fns at quadrature points
-  double* basisDeriv; ///< Derivatives of basis fns at quad pts
-  double* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
+  PylithScalar* quadPts; ///< Coordinates of quad pts in ref cell
+  PylithScalar* quadWts; ///< Weights of quadrature points
+  PylithScalar* basis; ///< Basis fns at quadrature points
+  PylithScalar* basisDeriv; ///< Derivatives of basis fns at quad pts
+  PylithScalar* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
   //@}
 
   /// @name Fault information
@@ -64,22 +66,22 @@ public:
 
   /// @name Input fields
   //@{
-  double* fieldT; ///< Solution field at time t.
-  double* fieldIncrStick; ///< Soln increment field at time t for stick case.
-  double* fieldIncrSlip; ///< Soln increment field at time t for slipping case.
-  double* fieldIncrOpen; ///< Soln increment field at time t for opening case.
-  double* jacobian; ///< Jacobian sparse matrix.
+  PylithScalar* fieldT; ///< Solution field at time t.
+  PylithScalar* fieldIncrStick; ///< Soln increment field at time t for stick case.
+  PylithScalar* fieldIncrSlip; ///< Soln increment field at time t for slipping case.
+  PylithScalar* fieldIncrOpen; ///< Soln increment field at time t for opening case.
+  PylithScalar* jacobian; ///< Jacobian sparse matrix.
   //@}
 
   /// @name Calculated values.
   //@{
-  double* orientation; ///< Expected values for fault orientation.
-  double* area; ///< Expected values for fault area.
-  double* forcesInitial; ///< Expected values for initial forces.
-  double* fieldIncrSlipE; ///< Expected values for solution increment for slipping case.
-  double* slipSlipE; ///< Expected values for slip for slipping case.
-  double* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
-  double* slipOpenE; ///< Expected values for slip for opening case.
+  PylithScalar* orientation; ///< Expected values for fault orientation.
+  PylithScalar* area; ///< Expected values for fault area.
+  PylithScalar* forcesInitial; ///< Expected values for initial forces.
+  PylithScalar* fieldIncrSlipE; ///< Expected values for solution increment for slipping case.
+  PylithScalar* slipSlipE; ///< Expected values for slip for slipping case.
+  PylithScalar* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
+  PylithScalar* slipOpenE; ///< Expected values for slip for opening case.
 
   int* constraintVertices; ///< Expected points for constraint vertices
   int numConstraintVert; ///< Number of constraint vertices

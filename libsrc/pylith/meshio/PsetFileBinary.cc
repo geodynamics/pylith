@@ -22,7 +22,7 @@
 
 #include "BinaryIO.hh" // USES readString()
 
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include "journal/info.h" // USES journal::info_t
 

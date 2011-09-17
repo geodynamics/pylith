@@ -102,7 +102,7 @@ private :
   void _initialize(topology::Mesh* mesh,
 		   topology::SubMesh* faultMesh,
 		   StepSlipFn* slipfn,
-		   const double originTime);
+		   const PylithScalar originTime);
 
   /** Test intialize().
    *

@@ -37,7 +37,7 @@
 class ALE::MeshOrder
 { // MeshOrder
   typedef int point_type;
-  typedef ALE::IMesh<PetscInt,PetscScalar> mesh_type;
+  typedef ALE::IMesh<PylithInt,PylithScalar> mesh_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

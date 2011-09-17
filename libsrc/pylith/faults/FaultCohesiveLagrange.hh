@@ -127,7 +127,7 @@ public :
    */
   virtual
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -139,7 +139,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Jacobian* jacobian,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -151,7 +151,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Compute custom fault precoditioner using Schur complement.
@@ -270,17 +270,17 @@ protected :
    * @param jacobianN Jacobian associated with vertex on - side of fault.
    * @param jacobianP Jacobian associated with vertex on + side of fault.
    */
-  void _adjustSolnLumped1D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
+  void _adjustSolnLumped1D(scalar_array* lagrangeIncr,
+			   scalar_array* dispTIncrN,
+			   scalar_array* dispTIncrP,
+			   const scalar_array& slip,
+			   const scalar_array& orientation,
+			   const scalar_array& dispTN,
+			   const scalar_array& dispTP,
+			   const scalar_array& residualN,
+			   const scalar_array& residualP,
+			   const scalar_array& jacobianN,
+			   const scalar_array& jacobianP);
 
   /** Adjust solution in lumped formulation to match slip for 2-D.
    *
@@ -296,17 +296,17 @@ protected :
    * @param jacobianN Jacobian associated with vertex on - side of fault.
    * @param jacobianP Jacobian associated with vertex on + side of fault.
    */
-  void _adjustSolnLumped2D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
+  void _adjustSolnLumped2D(scalar_array* lagrangeIncr,
+			   scalar_array* dispTIncrN,
+			   scalar_array* dispTIncrP,
+			   const scalar_array& slip,
+			   const scalar_array& orientation,
+			   const scalar_array& dispTN,
+			   const scalar_array& dispTP,
+			   const scalar_array& residualN,
+			   const scalar_array& residualP,
+			   const scalar_array& jacobianN,
+			   const scalar_array& jacobianP);
 
   /** Adjust solution in lumped formulation to match slip for 3-D.
    *
@@ -322,17 +322,17 @@ protected :
    * @param jacobianN Jacobian associated with vertex on - side of fault.
    * @param jacobianP Jacobian associated with vertex on + side of fault.
    */
-  void _adjustSolnLumped3D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
+  void _adjustSolnLumped3D(scalar_array* lagrangeIncr,
+			   scalar_array* dispTIncrN,
+			   scalar_array* dispTIncrP,
+			   const scalar_array& slip,
+			   const scalar_array& orientation,
+			   const scalar_array& dispTN,
+			   const scalar_array& dispTP,
+			   const scalar_array& residualN,
+			   const scalar_array& residualP,
+			   const scalar_array& jacobianN,
+			   const scalar_array& jacobianP);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

@@ -65,7 +65,7 @@ public :
    * @param fields Solution fields.
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
@@ -115,7 +115,7 @@ protected :
   void _queryDB(const char* name,
 		spatialdata::spatialdb::SpatialDB* const db,
 		const int querySize,
-		const double scale);
+		const PylithScalar scale);
 
   /** Convert parameters in local coordinates to global coordinates.
    *
@@ -129,7 +129,7 @@ protected :
    *
    * @param t Current time.
    */
-  void _calculateValue(const double t);
+  void _calculateValue(const PylithScalar t);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

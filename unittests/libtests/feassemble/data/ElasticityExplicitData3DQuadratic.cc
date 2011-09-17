@@ -41,13 +41,13 @@ const int pylith::feassemble::ElasticityExplicitData3DQuadratic::_matId = 0;
 
 const char* pylith::feassemble::ElasticityExplicitData3DQuadratic::_matLabel = "elastic isotropic 3-D";
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_dt =   1.00000000e-02;
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_dt =   1.00000000e-02;
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_gravityVec[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_gravityVec[] = {
   0.00000000e+00,  0.00000000e+00, -1.00000000e+08,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_vertices[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_vertices[] = {
  -5.00000000e-01, -2.00000000e+00, -1.00000000e+00,
   2.00000000e+00, -2.00000000e+00, -5.00000000e-01,
   1.00000000e+00,  1.00000000e+00,  0.00000000e+00,
@@ -64,7 +64,7 @@ const int pylith::feassemble::ElasticityExplicitData3DQuadratic::_cells[] = {
 0,1,2,3,4,5,6,7,8,9,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_verticesRef[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
@@ -77,18 +77,18 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_verticesRef
  -1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_quadPts[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_quadPts[] = {
  -8.00000000e-01, -8.00000000e-01, -8.00000000e-01,
   5.00000000e-01, -8.00000000e-01, -8.00000000e-01,
  -8.00000000e-01,  5.00000000e-01, -8.00000000e-01,
  -8.00000000e-01, -8.00000000e-01,  5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_quadWts[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_quadWts[] = {
   3.33333333e-01,  3.33333333e-01,  3.33333333e-01,  3.33333333e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_basis[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_basis[] = {
   2.80000000e-01, -8.00000000e-02, -8.00000000e-02,
  -8.00000000e-02,  4.00000000e-02,  2.80000000e-01,
   2.80000000e-01,  2.80000000e-01,  4.00000000e-02,
@@ -104,7 +104,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_basis[] = {
   2.00000000e-02,  1.50000000e-01,  3.00000000e-01,
   3.00000000e-01,};
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_basisDerivRef[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_basisDerivRef[] = {
  -9.00000000e-01, -9.00000000e-01, -9.00000000e-01,
  -3.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00, -3.00000000e-01,  0.00000000e+00,
@@ -147,7 +147,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_basisDerivR
   0.00000000e+00,  1.50000000e+00,  2.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTIncr[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTIncr[] = {
   3.00000000e-01, -4.00000000e-01, -4.00000000e-01,
  -6.00000000e-01,  8.00000000e-01,  2.00000000e-01,
   5.00000000e-01,  5.00000000e-01,  7.00000000e-01,
@@ -160,7 +160,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTIncr[
  -1.00000000e-01,  5.00000000e-01, -9.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldT[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldT[] = {
   1.00000000e-01, -2.00000000e-01, -6.00000000e-01,
  -3.00000000e-01,  4.00000000e-01,  9.00000000e-01,
   6.00000000e-01,  8.00000000e-01,  5.00000000e-01,
@@ -173,7 +173,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldT[] = 
  -9.00000000e-01,  3.00000000e-01, -8.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTmdt[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTmdt[] = {
   2.00000000e-01, -3.00000000e-01, -1.00000000e-01,
  -4.00000000e-01,  2.00000000e-01,  3.00000000e-01,
  -5.00000000e-01,  2.00000000e-01,  2.00000000e-01,
@@ -186,7 +186,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_fieldTmdt[]
  -4.00000000e-01,  5.00000000e-01, -7.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidual[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidual[] = {
   2.17054586e+10, -1.01739898e+10,  2.19940105e+10,
   6.44485026e+10, -2.49355435e+10,  6.57568524e+09,
  -4.99706922e+10, -5.58679967e+10, -3.45875247e+10,
@@ -199,7 +199,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidua
   5.77073439e+10, -6.86734841e+10,  9.70537069e+10,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsJacobian[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsJacobian[] = {
   1.50251107e+06,  0.00000000e+00,  0.00000000e+00,
  -5.70500651e+05,  0.00000000e+00,  0.00000000e+00,
  -5.70500651e+05,  0.00000000e+00,  0.00000000e+00,
@@ -502,7 +502,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsJacobia
   0.00000000e+00,  0.00000000e+00,  3.25847917e+06,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidualLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidualLumped[] = {
   2.17058857e+10, -1.01733961e+10,  2.19900081e+10,
   6.44476753e+10, -2.49368998e+10,  6.57917072e+09,
  -4.99716018e+10, -5.58679351e+10, -3.45875383e+10,
@@ -515,7 +515,7 @@ const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsResidua
   5.76997342e+10, -6.86862545e+10,  9.70617888e+10,
 };
 
-const double pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_valsJacobianLumped[] = {
   2.57903646e+06,  2.57903646e+06,  2.57903646e+06,
   2.40117187e+06,  2.40117187e+06,  2.40117187e+06,
   2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
@@ -541,21 +541,21 @@ pylith::feassemble::ElasticityExplicitData3DQuadratic::ElasticityExplicitData3DQ
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
-  gravityVec = const_cast<double*>(_gravityVec);
-  vertices = const_cast<double*>(_vertices);
+  gravityVec = const_cast<PylithScalar*>(_gravityVec);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
-  verticesRef = const_cast<double*>(_verticesRef);
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTIncr = const_cast<double*>(_fieldTIncr);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldTmdt = const_cast<double*>(_fieldTmdt);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsJacobian = const_cast<double*>(_valsJacobian);
-  valsResidualLumped = const_cast<double*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<double*>(_valsJacobianLumped);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
+  fieldTIncr = const_cast<PylithScalar*>(_fieldTIncr);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
+  valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
+  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
+  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitData3DQuadratic::~ElasticityExplicitData3DQuadratic(void)

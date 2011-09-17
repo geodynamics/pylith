@@ -52,12 +52,12 @@ pylith::materials::TestGenMaxwellPlaneStrain::testTimeStep(void)
 
   CPPUNIT_ASSERT_EQUAL(false, material._needNewJacobian);
 
-  const double dt1 = 1.0;
+  const PylithScalar dt1 = 1.0;
   material.timeStep(dt1);
   CPPUNIT_ASSERT_EQUAL(dt1, material.Material::timeStep());
   CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
 
-  const double dt2 = 2.0;
+  const PylithScalar dt2 = 2.0;
   material.timeStep(dt2);
   CPPUNIT_ASSERT_EQUAL(dt2, material.Material::timeStep());
   CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
@@ -144,7 +144,7 @@ pylith::materials::TestGenMaxwellPlaneStrain::test_calcStressTimeDep(void)
 
   delete _dataElastic; _dataElastic = new GenMaxwellPlaneStrainTimeDepData();
 
-  double dt = 2.0e+5;
+  PylithScalar dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcStress();
 } // testCalcStressTimeDep
@@ -159,7 +159,7 @@ pylith::materials::TestGenMaxwellPlaneStrain::test_calcElasticConstsTimeDep(void
 
   delete _dataElastic; _dataElastic = new GenMaxwellPlaneStrainTimeDepData();
 
-  double dt = 2.0e+5;
+  PylithScalar dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_calcElasticConsts();
 } // testElasticConstsTimeDep
@@ -174,7 +174,7 @@ pylith::materials::TestGenMaxwellPlaneStrain::test_updateStateVarsTimeDep(void)
 
   delete _dataElastic; _dataElastic = new GenMaxwellPlaneStrainTimeDepData();
 
-  double dt = 2.0e+5;
+  PylithScalar dt = 2.0e+5;
   _matElastic->timeStep(dt);
   test_updateStateVars();
 

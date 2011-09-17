@@ -18,7 +18,7 @@
 
 import numpy
 
-def test_double(obj, valuesE, values):
+def test_scalararray(obj, valuesE, values, places=6):
     """
     Check whether arrays containing double values match.
 
@@ -36,9 +36,9 @@ def test_double(obj, valuesE, values):
     for (vE, v) in zip(numpy.reshape(valuesE, -1),
                        numpy.reshape(values, -1)):
         if vE == 0.0:
-            obj.assertAlmostEqual(v, vE, 6)
+            obj.assertAlmostEqual(v, vE, places)
         else:
-            obj.assertAlmostEqual(1.0, v/vE, 6)
+            obj.assertAlmostEqual(1.0, v/vE, places)
 
     return
 

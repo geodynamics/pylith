@@ -40,7 +40,7 @@ namespace pylith {
 	0, 1, 3,
 	0, 3, 2,
       };
-      const double coordinates[] = {
+      const PylithScalar coordinates[] = {
 	0.0, 0.0,
 	1.0, 0.0,
 	0.0, 1.0,
@@ -224,7 +224,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   const int nvertices = _TestSubMesh::nvertices;
   const int ncorners = _TestSubMesh::ncorners;
   const int spaceDim = _TestSubMesh::cellDim;
-  const double* coordinates = _TestSubMesh::coordinates;
+  const PylithScalar* coordinates = _TestSubMesh::coordinates;
   const bool interpolate = false;
   ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, ncells, (int*) cells,
 					      nvertices, interpolate, 

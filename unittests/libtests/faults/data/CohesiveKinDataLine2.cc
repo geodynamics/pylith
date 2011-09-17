@@ -39,23 +39,23 @@ const int pylith::faults::CohesiveKinDataLine2::_numBasis = 1;
 
 const int pylith::faults::CohesiveKinDataLine2::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveKinDataLine2::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_quadPts[] = {
   0.0,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_quadWts[] = {
   1.0,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_basis[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_basis[] = {
   1.0,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_basisDeriv[] = {
   1.0
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_verticesRef[] = {
   0.0
 };
 
@@ -73,7 +73,7 @@ const char* pylith::faults::CohesiveKinDataLine2::_riseTimeFilename =
   "data/line2_risetime.spatialdb";
 
 // Don't expect these values to be used, so just use some values.
-const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.1,
   7.2, // 3
   7.3,
@@ -81,7 +81,7 @@ const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.5
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_fieldIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_fieldIncr[] = {
   1.1,
   1.2, // 3
   1.3,
@@ -89,7 +89,7 @@ const double pylith::faults::CohesiveKinDataLine2::_fieldIncr[] = {
   1.5
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
   2.1,
   2.2, // 3
   2.3,
@@ -120,15 +120,15 @@ const int pylith::faults::CohesiveKinDataLine2::_cellMappingCohesive[] = {
 };
 
 
-const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_orientation[] = {
   1.0
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_area[] = {
   1.0
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
    0.0,
    7.5,
    0.0,
@@ -136,7 +136,7 @@ const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
   -0.2+1.89546413727,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_residual[] = {
    0.0,
    7.5, // 3
    0.0,
@@ -144,7 +144,7 @@ const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
   -0.2+1.89546413727,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
   0.0,  0.0,  0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,  0.0, -1.0,
   0.0,  0.0,  0.0,  0.0,  0.0,
@@ -152,7 +152,7 @@ const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
   0.0, -1.0,  0.0, +1.0,  0.0,
 };
 
-const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
+const PylithScalar pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
   1.1,
   -3.09368089375, // 3
   1.3,
@@ -167,25 +167,25 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldIncr = const_cast<double*>(_fieldIncr);
-  jacobianLumped = const_cast<double*>(_jacobianLumped);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residualIncr = const_cast<double*>(_residualIncr);
-  residual = const_cast<double*>(_residual);
-  jacobian = const_cast<double*>(_jacobian);
-  fieldIncrAdjusted = const_cast<double*>(_fieldIncrAdjusted);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
+  jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  residual = const_cast<PylithScalar*>(_residual);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  fieldIncrAdjusted = const_cast<PylithScalar*>(_fieldIncrAdjusted);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

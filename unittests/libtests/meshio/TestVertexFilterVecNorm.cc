@@ -54,7 +54,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   const std::string label = "field data";
   const topology::FieldBase::VectorFieldEnum fieldType = 
     topology::FieldBase::VECTOR;
-  const double fieldValues[] = {
+  const PylithScalar fieldValues[] = {
     1.1, 1.2,
     2.1, 2.2,
     3.1, 3.2,
@@ -63,7 +63,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   const topology::FieldBase::VectorFieldEnum fieldTypeE = 
     topology::FieldBase::SCALAR;
   const int fiberDimE = 1;
-  const double fieldValuesE[] = {
+  const PylithScalar fieldValuesE[] = {
     sqrt(pow(1.1, 2) + pow(1.2, 2)),
     sqrt(pow(2.1, 2) + pow(2.2, 2)),
     sqrt(pow(3.1, 2) + pow(3.2, 2)),
@@ -96,7 +96,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++ipt) {
-    const double* values = &fieldValues[ipt*fiberDim];
+    const PylithScalar* values = &fieldValues[ipt*fiberDim];
     section->updatePoint(*v_iter, values);
   } // for
 
@@ -113,9 +113,9 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
        v_iter != verticesEnd;
        ++v_iter, ++ipt) {
     CPPUNIT_ASSERT_EQUAL(fiberDimE, sectionF->getFiberDimension(*v_iter));
-    const double* values = sectionF->restrictPoint(*v_iter);
+    const PylithScalar* values = sectionF->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != values);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < fiberDimE; ++i)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
 				   values[i]/fieldValuesE[ipt*fiberDimE+i],

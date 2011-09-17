@@ -44,8 +44,11 @@ namespace pylith {
   namespace problems {
     namespace _SolverNonlinear {
 
+      // From PETSc header file src/snes/impls/ls/lsimpl.h
+      // This file is buried in the source directory so we don't have
+      // access to it using pre-processor flags (i.e., -I$DIR).
       typedef struct {
-	PetscErrorCode           (*LineSearch)(PetscSNES,void*,PetscVec,PetscVec,PetscVec,PetscVec,PetscVec,PetscReal,PetscReal,PetscReal*,PetscReal*,PetscBool *);
+	PetscErrorCode           (*LineSearch)(PetscSNES,void*,PetscVec,PetscVec,PetscVec,PetscReal,PetscReal,PetscVec,PetscVec,PetscReal*,PetscReal*,PetscBool *);
 	void                     *lsP;                              /* user-defined line-search context (optional) */
 	/* --------------- Parameters used by line search method ----------------- */
 	PetscReal                alpha;                                                                  /* used to determine sufficient reduction */
@@ -56,6 +59,7 @@ namespace pylith {
 	PetscErrorCode           (*postcheckstep)(PetscSNES,PetscVec,PetscVec,PetscVec,void*,PetscBool *,PetscBool *); /* step-checking routine (optional) */
 	void                     *postcheck;                                                       /* user-defined step-checking context (optional) */
 	PetscViewer  monitor;
+	PetscReal damping;
       } SNES_LS;
     } // _SolverNonlinear
   } // problems
@@ -151,7 +155,7 @@ pylith::problems::SolverNonlinear::solve(
     PetscPC pc = 0;
     PetscKSP *ksps = 0;
     PetscMat A = 0;
-    PetscInt num = 0;
+    PylithInt num = 0;
 
     PetscErrorCode err = 0;
     err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
@@ -248,11 +252,11 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 					      void *lsctx,
 					      PetscVec x,
 					      PetscVec f,
-					      PetscVec g,
 					      PetscVec y,
-					      PetscVec w,
 					      PetscReal fnorm,
 					      PetscReal xnorm,
+					      PetscVec g,
+					      PetscVec w,
 					      PetscReal *ynorm,
 					      PetscReal *gnorm,
 					      PetscBool *flag)

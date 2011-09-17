@@ -52,7 +52,7 @@ pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinatesCell,
+pylith::feassemble::Quadrature3D::computeGeometry(const scalar_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
   const int spaceDim = 3;
@@ -63,9 +63,9 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinate
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
 
-  const double_array& basis = _quadRefCell.basis();
-  const double_array& quadPtsRef = _quadRefCell.quadPtsRef();
-  const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
+  const scalar_array& basis = _quadRefCell.basis();
+  const scalar_array& quadPtsRef = _quadRefCell.quadPtsRef();
+  const scalar_array& basisDerivRef = _quadRefCell.basisDerivRef();
   const CellGeometry& geometry = _quadRefCell.refGeometry();
 
   assert(numBasis*spaceDim == coordinatesCell.size());
@@ -80,7 +80,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinate
     // y = sum[i=0,n-1] (Ni * yi)
     // z = sum[i=0,n-1] (Ni * zi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double valueBasis = basis[iQuadPt*numBasis+iBasis];
+      const PylithScalar valueBasis = basis[iQuadPt*numBasis+iBasis];
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	_quadPts[iQuadPt*spaceDim+iDim] += 
 	  valueBasis * coordinatesCell[iBasis*spaceDim+iDim];
@@ -107,7 +107,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinate
     // dz/dr = sum[i=0,n-1] (dNi/dr * zi)
     for (int iBasis=0; iBasis < numBasis; ++iBasis)
       for (int iCol=0; iCol < cellDim; ++iCol) {
-	const double deriv = 
+	const PylithScalar deriv = 
 	  basisDerivRef[iQuadPt*numBasis*spaceDim+iBasis*cellDim+iCol];
 	for (int iRow=0; iRow < spaceDim; ++iRow)
 	  _jacobian[iQuadPt*cellDim*spaceDim+iRow*cellDim+iCol] += 
@@ -128,7 +128,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinate
     const int i20 = iJ + 2*spaceDim + 0;
     const int i21 = iJ + 2*spaceDim + 1;
     const int i22 = iJ + 2*spaceDim + 2;
-    const double det = 
+    const PylithScalar det = 
       _jacobian[i00]*(_jacobian[i11]*_jacobian[i22] -
 		      _jacobian[i12]*_jacobian[i21]) -
       _jacobian[i01]*(_jacobian[i10]*_jacobian[i22] -
@@ -154,7 +154,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(const double_array& coordinate
 		      &coordinatesCell[0], &quadPtsRef[iQuadPt*cellDim],
 		      spaceDim, 1);
     _checkJacobianDet(_jacobianDet[iQuadPt], cell);
-    const double det = _jacobianDet[iQuadPt];
+    const PylithScalar det = _jacobianDet[iQuadPt];
 #endif
     
     // Compute inverse of Jacobian at quadrature point

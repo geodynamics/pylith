@@ -59,15 +59,15 @@ private:
 
   static const int _numVarsQuadPt;
 
-  static const double _lengthScale;
+  static const PylithScalar _lengthScale;
 
-  static const double _timeScale;
+  static const PylithScalar _timeScale;
 
-  static const double _pressureScale;
+  static const PylithScalar _pressureScale;
 
-  static const double _densityScale;
+  static const PylithScalar _densityScale;
 
-  static const double _dtStableImplicit;
+  static const PylithScalar _dtStableImplicit;
 
   static const int _numPropertyValues[];
 
@@ -77,31 +77,31 @@ private:
 
   static const char* _dbStateVarValues[];
 
-  static const double _dbProperties[];
+  static const PylithScalar _dbProperties[];
 
-  static const double _dbStateVars[];
+  static const PylithScalar _dbStateVars[];
 
-  static const double _properties[];
+  static const PylithScalar _properties[];
 
-  static const double _stateVars[];
+  static const PylithScalar _stateVars[];
 
-  static const double _propertiesNondim[];
+  static const PylithScalar _propertiesNondim[];
 
-  static const double _stateVarsNondim[];
+  static const PylithScalar _stateVarsNondim[];
 
-  static const double _density[];
+  static const PylithScalar _density[];
 
-  static const double _strain[];
+  static const PylithScalar _strain[];
 
-  static const double _stress[];
+  static const PylithScalar _stress[];
 
-  static const double _elasticConsts[];
+  static const PylithScalar _elasticConsts[];
 
-  static const double _initialStress[];
+  static const PylithScalar _initialStress[];
 
-  static const double _initialStrain[];
+  static const PylithScalar _initialStrain[];
 
-  static const double _stateVarsUpdated[];
+  static const PylithScalar _stateVarsUpdated[];
 
 };
 

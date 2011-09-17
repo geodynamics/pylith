@@ -52,7 +52,7 @@ private:
   static const int _constrainedPointsA[]; ///< Array of indices of constrained pts.
   static const char* _dbFilenameA; ///< Filename for db of initial values.
   static const char* _dbFilenameARate; ///< Filename for db of rate of change.
-  static const double _tRefA; ///< Reference time for rate of change.
+  static const PylithScalar _tRefA; ///< Reference time for rate of change.
 
   static const int _numFixedDOFB; ///< Number of fixedDOF at constrained points.
   static const int _numConstrainedPtsB; ///< Number of points constrained.
@@ -62,7 +62,7 @@ private:
   static const int _constrainedPointsB[]; ///< Array of indices of constrained pts.
   static const char* _dbFilenameB; ///< Filename for db of initial values.
   static const char* _dbFilenameBRate; ///< Filename for db of rate of change.
-  static const double _tRefB; ///< Reference time for rate of change.
+  static const PylithScalar _tRefB; ///< Reference time for rate of change.
 
   static const int _numFixedDOFC; ///< Number of fixedDOF at constrained points.
   static const int _numConstrainedPtsC; ///< Number of points constrained.
@@ -72,10 +72,10 @@ private:
   static const int _constrainedPointsC[]; ///< Array of indices of constrained pts.
   static const char* _dbFilenameC; ///< Filename for db of initial values.
   static const char* _dbFilenameCRate; ///< Filename for db of rate of change.
-  static const double _tRefC; ///< Reference time for rate of change.
+  static const PylithScalar _tRefC; ///< Reference time for rate of change.
 
-  static const double _field[]; ///< Values in field
-  static const double _fieldIncr[]; ///< Increment values in field
+  static const PylithScalar _field[]; ///< Values in field
+  static const PylithScalar _fieldIncr[]; ///< Increment values in field
   static const int _constraintSizes[]; ///< Number of constrained DOF at each vertex
   static const int _constrainedDOF[]; ///< Indices of constrained DOF at each constrained vertex
 

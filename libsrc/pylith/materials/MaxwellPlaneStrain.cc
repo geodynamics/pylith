@@ -23,7 +23,7 @@
 #include "ViscoelasticMaxwell.hh" // USES computeVisStrain
 #include "Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -186,17 +186,17 @@ pylith::materials::MaxwellPlaneStrain::useElasticBehavior(const bool flag)
 // Compute properties from values in spatial database.
 void
 pylith::materials::MaxwellPlaneStrain::_dbToProperties(
-					    double* const propValues,
-					    const double_array& dbValues)
+					    PylithScalar* const propValues,
+					    const scalar_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
   assert(_MaxwellPlaneStrain::numDBProperties == numDBValues);
 
-  const double density = dbValues[db_density];
-  const double vs = dbValues[db_vs];
-  const double vp = dbValues[db_vp];
-  const double viscosity = dbValues[db_viscosity];
+  const PylithScalar density = dbValues[db_density];
+  const PylithScalar vs = dbValues[db_vs];
+  const PylithScalar vp = dbValues[db_vp];
+  const PylithScalar viscosity = dbValues[db_viscosity];
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0 || viscosity <= 0.0) {
     std::ostringstream msg;
@@ -209,8 +209,8 @@ pylith::materials::MaxwellPlaneStrain::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  const double mu = density * vs * vs;
-  const double lambda = density * vp * vp - 2.0 * mu;
+  const PylithScalar mu = density * vs * vs;
+  const PylithScalar lambda = density * vp * vp - 2.0 * mu;
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
@@ -222,7 +222,7 @@ pylith::materials::MaxwellPlaneStrain::_dbToProperties(
   } // if
   assert(mu > 0);
 
-  const double maxwellTime = viscosity / mu;
+  const PylithScalar maxwellTime = viscosity / mu;
   assert(maxwellTime > 0.0);
 
   propValues[p_density] = density;
@@ -236,16 +236,16 @@ pylith::materials::MaxwellPlaneStrain::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::materials::MaxwellPlaneStrain::_nondimProperties(double* const values,
+pylith::materials::MaxwellPlaneStrain::_nondimProperties(PylithScalar* const values,
 							 const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numPropsQuadPt);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
   values[p_density] = 
     _normalizer->nondimensionalize(values[p_density], densityScale);
   values[p_mu] = 
@@ -261,16 +261,16 @@ pylith::materials::MaxwellPlaneStrain::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::materials::MaxwellPlaneStrain::_dimProperties(double* const values,
+pylith::materials::MaxwellPlaneStrain::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numPropsQuadPt);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
   values[p_density] = 
     _normalizer->dimensionalize(values[p_density], densityScale);
   values[p_mu] = 
@@ -287,8 +287,8 @@ pylith::materials::MaxwellPlaneStrain::_dimProperties(double* const values,
 // Compute initial state variables from values in spatial database.
 void
 pylith::materials::MaxwellPlaneStrain::_dbToStateVars(
-					double* const stateValues,
-					const double_array& dbValues)
+					PylithScalar* const stateValues,
+					const scalar_array& dbValues)
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();
@@ -297,7 +297,7 @@ pylith::materials::MaxwellPlaneStrain::_dbToStateVars(
   const int totalSize = 1 + _tensorSize + 4;
   assert(totalSize == _numVarsQuadPt);
   assert(totalSize == numDBValues);
-  memcpy(stateValues, &dbValues[0], totalSize*sizeof(double));
+  memcpy(stateValues, &dbValues[0], totalSize*sizeof(PylithScalar));
 
   PetscLogFlops(0);
 } // _dbToStateVars
@@ -305,14 +305,14 @@ pylith::materials::MaxwellPlaneStrain::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-pylith::materials::MaxwellPlaneStrain::_nondimStateVars(double* const values,
+pylith::materials::MaxwellPlaneStrain::_nondimStateVars(PylithScalar* const values,
 							const int nvalues) const
 { // _nondimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numVarsQuadPt);
 
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
   _normalizer->nondimensionalize(&values[s_stressZZInitial], 1, pressureScale);
 
   PetscLogFlops(1);
@@ -321,14 +321,14 @@ pylith::materials::MaxwellPlaneStrain::_nondimStateVars(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-pylith::materials::MaxwellPlaneStrain::_dimStateVars(double* const values,
+pylith::materials::MaxwellPlaneStrain::_dimStateVars(PylithScalar* const values,
 						     const int nvalues) const
 { // _dimStateVars
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numVarsQuadPt);
 
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
   _normalizer->dimensionalize(&values[s_stressZZInitial], 1, pressureScale);
 
   PetscLogFlops(1);
@@ -337,10 +337,10 @@ pylith::materials::MaxwellPlaneStrain::_dimStateVars(double* const values,
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
-pylith::materials::MaxwellPlaneStrain::_calcDensity(double* const density,
-						    const double* properties,
+pylith::materials::MaxwellPlaneStrain::_calcDensity(PylithScalar* const density,
+						    const PylithScalar* properties,
 						    const int numProperties,
-						    const double* stateVars,
+						    const PylithScalar* stateVars,
 						    const int numStateVars)
 { // _calcDensity
   assert(0 != density);
@@ -355,17 +355,17 @@ pylith::materials::MaxwellPlaneStrain::_calcDensity(double* const density,
 // material.
 void
 pylith::materials::MaxwellPlaneStrain::_calcStressElastic(
-				         double* const stress,
+				         PylithScalar* const stress,
 					 const int stressSize,
-					 const double* properties,
+					 const PylithScalar* properties,
 					 const int numProperties,
-					 const double* stateVars,
+					 const PylithScalar* stateVars,
 					 const int numStateVars,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize,
 					 const bool computeStateVars)
 { // _calcStressElastic
@@ -382,15 +382,15 @@ pylith::materials::MaxwellPlaneStrain::_calcStressElastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
-  const double mu2 = 2.0 * mu;
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar mu2 = 2.0 * mu;
 
-  const double e11 = totalStrain[0] - initialStrain[0];
-  const double e22 = totalStrain[1] - initialStrain[1];
-  const double e12 = totalStrain[2] - initialStrain[2];
+  const PylithScalar e11 = totalStrain[0] - initialStrain[0];
+  const PylithScalar e22 = totalStrain[1] - initialStrain[1];
+  const PylithScalar e12 = totalStrain[2] - initialStrain[2];
   
-  const double s12 = lambda * (e11 + e22);
+  const PylithScalar s12 = lambda * (e11 + e22);
 
   stress[0] = s12 + mu2 * e11 + initialStress[0];
   stress[1] = s12 + mu2 * e22 + initialStress[1];
@@ -404,17 +404,17 @@ pylith::materials::MaxwellPlaneStrain::_calcStressElastic(
 // material.
 void
 pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
-				         double* const stress,
+				         PylithScalar* const stress,
 					 const int stressSize,
-					 const double* properties,
+					 const PylithScalar* properties,
 					 const int numProperties,
-					 const double* stateVars,
+					 const PylithScalar* stateVars,
 					 const int numStateVars,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize,
 					 const bool computeStateVars)
 { // _calcStressViscoelastic
@@ -433,28 +433,28 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 
   const int tensorSize = _MaxwellPlaneStrain::tensorSize;
 
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
-  const double maxwellTime = properties[p_maxwellTime];
-  const double stressZZInitial = stateVars[s_stressZZInitial];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar maxwellTime = properties[p_maxwellTime];
+  const PylithScalar stressZZInitial = stateVars[s_stressZZInitial];
 
-  const double mu2 = 2.0 * mu;
-  const double bulkModulus = lambda + mu2 / 3.0;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar bulkModulus = lambda + mu2 / 3.0;
 
   // Initial stress and strain values
-  const double meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0;
-  const double meanStressInitial = (initialStress[0] + initialStress[1] +
+  const PylithScalar meanStrainInitial = (initialStrain[0] + initialStrain[1]) / 3.0;
+  const PylithScalar meanStressInitial = (initialStress[0] + initialStress[1] +
 				    stressZZInitial) / 3.0;
-  const double devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
+  const PylithScalar devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
 				     initialStrain[1] - meanStrainInitial,
 				     initialStrain[2]};
-  const double devStressInitial[] = {initialStress[0] - meanStressInitial,
+  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
 				     initialStress[1] - meanStressInitial,
 				     initialStress[2]};
 
   // Mean stress and strain for t + dt
-  const double meanStrainTpdt = (totalStrain[0] + totalStrain[1]) / 3.0;
-  const double meanStressTpdt = 3.0 * bulkModulus *
+  const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1]) / 3.0;
+  const PylithScalar meanStressTpdt = 3.0 * bulkModulus *
     (meanStrainTpdt - meanStrainInitial) + meanStressInitial;
 
   // Get viscous strains
@@ -466,7 +466,7 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 		      initialStrain, initialStrainSize);
   } else {
     memcpy(&_viscousStrain[0], &stateVars[s_viscousStrain],
-	   4 * sizeof(double));
+	   4 * sizeof(PylithScalar));
   } // else
 
   // Compute new stresses
@@ -484,17 +484,17 @@ pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic(
 // Compute derivative of elasticity matrix at location from properties.
 void
 pylith::materials::MaxwellPlaneStrain::_calcElasticConstsElastic(
-				         double* const elasticConsts,
+				         PylithScalar* const elasticConsts,
 					 const int numElasticConsts,
-					 const double* properties,
+					 const PylithScalar* properties,
 					 const int numProperties,
-					 const double* stateVars,
+					 const PylithScalar* stateVars,
 					 const int numStateVars,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize)
 { // _calcElasticConstsElastic
   assert(0 != elasticConsts);
@@ -510,11 +510,11 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsElastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
  
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
 
-  const double mu2 = 2.0 * mu;
-  const double lambda2mu = lambda + mu2;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar lambda2mu = lambda + mu2;
 
   elasticConsts[ 0] = lambda2mu; // C1111
   elasticConsts[ 1] = lambda; // C1122
@@ -534,17 +534,17 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsElastic(
 // as a viscoelastic material.
 void
 pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic(
-				         double* const elasticConsts,
+				         PylithScalar* const elasticConsts,
 					 const int numElasticConsts,
-					 const double* properties,
+					 const PylithScalar* properties,
 					 const int numProperties,
-					 const double* stateVars,
+					 const PylithScalar* stateVars,
 					 const int numStateVars,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize)
 { // _calcElasticConstsViscoelastic
   assert(0 != elasticConsts);
@@ -560,16 +560,16 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic(
   assert(0 != initialStrain);
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
  
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
-  const double maxwellTime = properties[p_maxwellTime];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar maxwellTime = properties[p_maxwellTime];
 
-  const double mu2 = 2.0 * mu;
-  const double bulkModulus = lambda + mu2 / 3.0;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar bulkModulus = lambda + mu2 / 3.0;
 
-  double dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
+  PylithScalar dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
 
-  const double visFac = mu * dq / 3.0;
+  const PylithScalar visFac = mu * dq / 3.0;
   elasticConsts[ 0] = bulkModulus + 4.0 * visFac; // C1111
   elasticConsts[ 1] = bulkModulus - 2.0 * visFac; // C1122
   elasticConsts[ 2] = 0; // C1112
@@ -587,15 +587,15 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic(
 // Update state variables as an elastic material.
 void
 pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
-				         double* const stateVars,
+				         PylithScalar* const stateVars,
 					 const int numStateVars,
-				         const double* properties,
+				         const PylithScalar* properties,
 					 const int numProperties,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize)
 { // _updateStateVarsElastic
   assert(0 != stateVars);
@@ -610,16 +610,16 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
   const int tensorSize = _tensorSize;
-  const double maxwellTime = properties[p_maxwellTime];
+  const PylithScalar maxwellTime = properties[p_maxwellTime];
 
-  const double strainTpdt[] = {totalStrain[0] - initialStrain[0],
+  const PylithScalar strainTpdt[] = {totalStrain[0] - initialStrain[0],
 			       totalStrain[1] - initialStrain[1],
 			       0.0,
 			       totalStrain[2] - initialStrain[2]};
 
-  const double meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
+  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
 
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
 
   stateVars[s_totalStrain] = totalStrain[0];
   stateVars[s_totalStrain + 1] = totalStrain[1];
@@ -638,15 +638,15 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic(
 // Update state variables as a viscoelastic material.
 void
 pylith::materials::MaxwellPlaneStrain::_updateStateVarsViscoelastic(
-						 double* const stateVars,
+						 PylithScalar* const stateVars,
 						 const int numStateVars,
-						 const double* properties,
+						 const PylithScalar* properties,
 						 const int numProperties,
-						 const double* totalStrain,
+						 const PylithScalar* totalStrain,
 						 const int strainSize,
-						 const double* initialStress,
+						 const PylithScalar* initialStress,
 						 const int initialStressSize,
-						 const double* initialStrain,
+						 const PylithScalar* initialStrain,
 						 const int initialStrainSize)
 { // _updateStateVarsViscoelastic
   assert(0 != stateVars);
@@ -668,9 +668,9 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsViscoelastic(
 		    initialStress, initialStressSize,
 		    initialStrain, initialStrainSize);
 
-  memcpy(&stateVars[s_totalStrain], totalStrain, tensorSize * sizeof(double));
+  memcpy(&stateVars[s_totalStrain], totalStrain, tensorSize * sizeof(PylithScalar));
 
-  memcpy(&stateVars[s_viscousStrain], &_viscousStrain[0], 4 * sizeof(double));
+  memcpy(&stateVars[s_viscousStrain], &_viscousStrain[0], 4 * sizeof(PylithScalar));
 
   _needNewJacobian = false;
 
@@ -678,11 +678,11 @@ pylith::materials::MaxwellPlaneStrain::_updateStateVarsViscoelastic(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 pylith::materials::MaxwellPlaneStrain::_stableTimeStepImplicit(
-					   const double* properties,
+					   const PylithScalar* properties,
 					   const int numProperties,
-					   const double* stateVars,
+					   const PylithScalar* stateVars,
 					   const int numStateVars) const
 { // _stableTimeStepImplicit
   assert(0 != properties);
@@ -690,8 +690,8 @@ pylith::materials::MaxwellPlaneStrain::_stableTimeStepImplicit(
   assert(0 != stateVars);
   assert(_numVarsQuadPt == numStateVars);
 
-  const double maxwellTime = properties[p_maxwellTime];
-  const double dtStable = 0.2*maxwellTime;
+  const PylithScalar maxwellTime = properties[p_maxwellTime];
+  const PylithScalar dtStable = 0.2*maxwellTime;
 
   return dtStable;
 } // _stableTimeStepImplicit
@@ -700,15 +700,15 @@ pylith::materials::MaxwellPlaneStrain::_stableTimeStepImplicit(
 // Compute viscous strain for current time step.
 void
 pylith::materials::MaxwellPlaneStrain::_computeStateVars(
-				         const double* stateVars,
+				         const PylithScalar* stateVars,
 					 const int numStateVars,
-				         const double* properties,
+				         const PylithScalar* properties,
 					 const int numProperties,
-					 const double* totalStrain,
+					 const PylithScalar* totalStrain,
 					 const int strainSize,
-					 const double* initialStress,
+					 const PylithScalar* initialStress,
 					 const int initialStressSize,
-					 const double* initialStrain,
+					 const PylithScalar* initialStrain,
 					 const int initialStrainSize)
 { // _computeStateVars
   assert(0 != stateVars);
@@ -723,28 +723,28 @@ pylith::materials::MaxwellPlaneStrain::_computeStateVars(
   assert(_MaxwellPlaneStrain::tensorSize == initialStrainSize);
 
   const int tensorSize = _tensorSize;
-  const double maxwellTime = properties[p_maxwellTime];
+  const PylithScalar maxwellTime = properties[p_maxwellTime];
 
-  const double strainTpdt[] = {totalStrain[0],
+  const PylithScalar strainTpdt[] = {totalStrain[0],
 			       totalStrain[1],
 			       0.0,
 			       totalStrain[2]};
-  const double strainT[] = {stateVars[s_totalStrain+0],
+  const PylithScalar strainT[] = {stateVars[s_totalStrain+0],
 			    stateVars[s_totalStrain+1],
 			    0.0,
 			    stateVars[s_totalStrain+2]};
   
-  const double meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
-  const double meanStrainT = (strainT[0] + strainT[1])/3.0;
+  const PylithScalar meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
+  const PylithScalar meanStrainT = (strainT[0] + strainT[1])/3.0;
 
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
 
   // Time integration.
-  double dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
-  const double expFac = exp(-_dt/maxwellTime);
+  PylithScalar dq = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
+  const PylithScalar expFac = exp(-_dt/maxwellTime);
 
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
+  PylithScalar devStrainTpdt = 0.0;
+  PylithScalar devStrainT = 0.0;
 
   for (int iComp=0; iComp < 4; ++iComp) {
     devStrainTpdt = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;

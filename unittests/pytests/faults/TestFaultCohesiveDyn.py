@@ -132,7 +132,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, fault.stableTimeStep(mesh))
+    self.assertAlmostEqual(1.0, fault.stableTimeStep(mesh)/1.0e+30, 5)
     return
 
   

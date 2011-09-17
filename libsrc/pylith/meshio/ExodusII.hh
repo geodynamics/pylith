@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // Forward declarations
 
-#include "pylith/utils/array.hh" // USES int_array, double_array, string_vector
+#include "pylith/utils/array.hh" // USES string_vector
 
 #include <string> // HASA std::string
 
@@ -102,14 +102,14 @@ public :
    */
   int getDim(const char* name) const;
 
-  /** Get values for variable as an array of doubles.
+  /** Get values for variable as an array of PylithScalars.
    *
    * @param values Array of values.
    * @param dims Expected dimensions for variable.
    * @param ndims Number of dimension for variable.
    * @param name Name of variable.
    */
-  void getVar(double* values,
+  void getVar(PylithScalar* values,
 	      int* dims,
 	      int ndims,
 	      const char* name) const;

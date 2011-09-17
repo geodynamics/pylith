@@ -22,6 +22,8 @@
 
 #include "data/DataWriterData.hh" // USES DataWriterData
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -83,7 +85,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testOpenClose(void)
 
   writer.filename(_data->timestepFilename);
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
@@ -115,7 +117,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteVertexField(void)
 
   const int nfields = _data->numVertexFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);
@@ -153,7 +155,7 @@ pylith::meshio::TestDataWriterHDF5ExtMesh::testWriteCellField(void)
 
   const int nfields = _data->numCellFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_mesh, numTimeSteps);

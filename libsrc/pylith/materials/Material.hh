@@ -104,13 +104,13 @@ public :
    * @param dt Current time step.
    */
   virtual
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Get current time step.
    *
    * @returns Current time step.
    */
-  double timeStep(void) const;
+  PylithScalar timeStep(void) const;
 
   /** Set database for physical property parameters.
    *
@@ -213,8 +213,8 @@ protected :
    * @param dbValues Array of database values.
    */
   virtual
-  void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) = 0;
+  void _dbToProperties(PylithScalar* const propValues,
+		       const scalar_array& dbValues) = 0;
 
   /** Nondimensionalize properties.
    *
@@ -222,7 +222,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const = 0;
 
   /** Dimensionalize properties.
@@ -231,7 +231,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const = 0;
 
   /** Compute initial state variables from values in spatial database.
@@ -240,8 +240,8 @@ protected :
    * @param dbValues Array of database values.
    */
   virtual
-  void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues);
+  void _dbToStateVars(PylithScalar* const stateValues,
+		      const scalar_array& dbValues);
 
   /** Nondimensionalize state variables.
    *
@@ -249,7 +249,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _nondimStateVars(double* const values,
+  void _nondimStateVars(PylithScalar* const values,
 			   const int nvalues) const;
   
   /** Dimensionalize state variables.
@@ -258,13 +258,13 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _dimStateVars(double* const values,
+  void _dimStateVars(PylithScalar* const values,
 			const int nvalues) const;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  double _dt; ///< Current time step
+  PylithScalar _dt; ///< Current time step
 
   /// Field containing physical properties of material.
   topology::Field<topology::Mesh> *_properties;

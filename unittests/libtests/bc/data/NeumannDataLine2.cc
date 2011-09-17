@@ -32,16 +32,16 @@ const char* pylith::bc::NeumannDataLine2::_meshFilename =
 
 const int pylith::bc::NeumannDataLine2::_numBasis = 1;
 const int pylith::bc::NeumannDataLine2::_numQuadPts = 1;
-const double pylith::bc::NeumannDataLine2::_quadPts[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_quadPts[] = {
   0.0,
 };
-const double pylith::bc::NeumannDataLine2::_quadWts[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_quadWts[] = {
   1.0,
 };
-const double pylith::bc::NeumannDataLine2::_basis[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_basis[] = {
   1.0,
 };
-const double pylith::bc::NeumannDataLine2::_basisDerivRef[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_basisDerivRef[] = {
   1.0,
 };
 
@@ -59,10 +59,10 @@ const int pylith::bc::NeumannDataLine2::_cells[] = {
   2,
 };
 
-const double pylith::bc::NeumannDataLine2::_tractionsCell[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_tractionsCell[] = {
   1.0,
 };
-const double pylith::bc::NeumannDataLine2::_valsResidual[] = {
+const PylithScalar pylith::bc::NeumannDataLine2::_valsResidual[] = {
   1.0,
   0.0,
   0.0,
@@ -75,10 +75,10 @@ pylith::bc::NeumannDataLine2::NeumannDataLine2(void)
 
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
 
   spatialDBFilename = const_cast<char*>(_spatialDBFilename);
   id = _id;
@@ -91,8 +91,8 @@ pylith::bc::NeumannDataLine2::NeumannDataLine2(void)
   numCorners = _numCorners;
   cells = const_cast<int*>(_cells);
 
-  tractionsCell = const_cast<double*>(_tractionsCell);
-  valsResidual = const_cast<double*>(_valsResidual);
+  tractionsCell = const_cast<PylithScalar*>(_tractionsCell);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
 
 } // constructor
 

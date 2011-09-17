@@ -138,7 +138,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::close(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::openTimeStep(
-						       const double t,
+						       const PylithScalar t,
 						       const mesh_type& mesh,
 						       const char* label,
 						       const int labelId)
@@ -162,7 +162,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::closeTimeStep(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
-			                                const double t,
+			                                const PylithScalar t,
 							field_type& field,
 							const mesh_type& mesh)
 { // appendVertexField
@@ -178,7 +178,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendVertexField(
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
-				                     const double t,
+				                     const PylithScalar t,
 						     field_type& field,
 						     const char* label,
 						     const int labelId)

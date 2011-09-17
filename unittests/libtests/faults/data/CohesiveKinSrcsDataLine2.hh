@@ -49,11 +49,11 @@ private:
 
   static const int _numBasis; ///< Number of vertices in cell
   static const int _numQuadPts; ///< Number of quadrature points
-  static const double _quadPts[]; ///< Coordinates of quad pts in ref cell
-  static const double _quadWts[]; ///< Weights of quadrature points
-  static const double _basis[]; ///< Basis fns at quadrature points
-  static const double _basisDeriv[]; ///< Derivatives of basis fns at quad pts
-  static const double _verticesRef[]; ///< Coordinates of vertices in ref cell (dual basis)
+  static const PylithScalar _quadPts[]; ///< Coordinates of quad pts in ref cell
+  static const PylithScalar _quadWts[]; ///< Weights of quadrature points
+  static const PylithScalar _basis[]; ///< Basis fns at quadrature points
+  static const PylithScalar _basisDeriv[]; ///< Derivatives of basis fns at quad pts
+  static const PylithScalar _verticesRef[]; ///< Coordinates of vertices in ref cell (dual basis)
 
   static const int _id; ///< Fault material identifier
   static const char* _label; ///< Label for fault
@@ -63,13 +63,13 @@ private:
   static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 
-  static const double _fieldT[]; ///< Solution field at time t.
+  static const PylithScalar _fieldT[]; ///< Solution field at time t.
 
-  static const double _orientation[]; ///< Expected values for fault orientation.
-  static const double _area[]; ///< Expected values for fault area.
-  static const double _residual[]; ///< Expected values from residual calculation.
-  static const double _residualIncr[]; ///< Expected values from residual calculation with solution increment.
-  static const double _jacobian[]; ///< Expected values from Jacobian calculation.
+  static const PylithScalar _orientation[]; ///< Expected values for fault orientation.
+  static const PylithScalar _area[]; ///< Expected values for fault area.
+  static const PylithScalar _residual[]; ///< Expected values from residual calculation.
+  static const PylithScalar _residualIncr[]; ///< Expected values from residual calculation with solution increment.
+  static const PylithScalar _jacobian[]; ///< Expected values from Jacobian calculation.
 
   static const int _verticesFault[]; ///< Expected points for Fault vertices
   static const int _verticesLagrange[]; ///< Expected points for Lagrange vertices

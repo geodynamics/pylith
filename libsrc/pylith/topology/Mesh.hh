@@ -50,7 +50,7 @@ public :
   /** Typedefs for basic types associated with Sieve mesh.
    * All other PyLith mesh and submesh objects should define:
    *   (1) SieveMesh - Sieve mesh
-   *   (2) RealSection - Section of doubles
+   *   (2) RealSection - Section of PylithScalars
    *   (3) IntSection - Section of ints
    * because these are used in templated code.
    * 
@@ -62,10 +62,10 @@ public :
   typedef pylith::SieveSubMesh SieveSubMesh;
 
   typedef SieveMesh::real_section_type RealSection;
-  typedef ISectionSpaces<SieveMesh::point_type, double> RealUniformSection;
+  typedef ISectionSpaces<SieveMesh::point_type, PylithScalar> RealUniformSection;
   typedef SieveMesh::int_section_type IntSection;
 
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
   //@}
 
 

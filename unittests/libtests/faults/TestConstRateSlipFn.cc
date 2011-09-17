@@ -48,8 +48,8 @@ namespace pylith {
 	const char* slipRateFilename;
 	const char* slipTimeFilename;
 	const int* constraintPts;
-	const double* slipRateE;
-	const double* slipTimeE;
+	const PylithScalar* slipRateE;
+	const PylithScalar* slipTimeE;
 	const int numConstraintPts;
       }; // DataStruct
     } // _TestConstRateSlipFn
@@ -114,8 +114,8 @@ pylith::faults::TestConstRateSlipFn::testInitialize1D(void)
   const char* slipRateFilename = "data/line2_sliprate.spatialdb";
   const char* slipTimeFilename = "data/line2_sliptime.spatialdb";
   const int constraintPts[] = { 3 };
-  const double slipRateE[] = { 0.4 };
-  const double slipTimeE[] = { 1.2 };
+  const PylithScalar slipRateE[] = { 0.4 };
+  const PylithScalar slipTimeE[] = { 1.2 };
   const int numConstraintPts = 1;
 
   _TestConstRateSlipFn::DataStruct data = {meshFilename,
@@ -141,9 +141,9 @@ pylith::faults::TestConstRateSlipFn::testInitialize2D(void)
   const char* slipRateFilename = "data/tri3_sliprate.spatialdb";
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
   const int constraintPts[] = { 3, 4 };
-  const double slipRateE[] = { 0.1, 0.2, 
+  const PylithScalar slipRateE[] = { 0.1, 0.2, 
 			       0.3, 0.4 };
-  const double slipTimeE[] = { 1.2, 1.3 };
+  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
   const int numConstraintPts = 2;
 
   _TestConstRateSlipFn::DataStruct data = {meshFilename,
@@ -169,10 +169,10 @@ pylith::faults::TestConstRateSlipFn::testInitialize3D(void)
   const char* slipRateFilename = "data/tet4_sliprate.spatialdb";
   const char* slipTimeFilename = "data/tet4_sliptime.spatialdb";
   const int constraintPts[] = { 3, 4, 5 };
-  const double slipRateE[] = { 1.6, -0.7, 0.1,
+  const PylithScalar slipRateE[] = { 1.6, -0.7, 0.1,
 			       1.7, -0.8, 0.2,
 			       1.8, -0.9, 0.3 };
-  const double slipTimeE[] = { 1.2, 1.3, 1.4 };
+  const PylithScalar slipTimeE[] = { 1.2, 1.3, 1.4 };
   const int numConstraintPts = 3;
 
   _TestConstRateSlipFn::DataStruct data = {meshFilename,
@@ -192,10 +192,10 @@ pylith::faults::TestConstRateSlipFn::testInitialize3D(void)
 void
 pylith::faults::TestConstRateSlipFn::testSlip(void)
 { // testSlip
-  const double slipRateE[] = { 0.1, 0.2, 
+  const PylithScalar slipRateE[] = { 0.1, 0.2, 
 			       0.3, 0.4};
-  const double slipTimeE[] = { 1.2, 1.3 };
-  const double originTime = 5.064;
+  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
+  const PylithScalar originTime = 5.064;
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
@@ -215,24 +215,24 @@ pylith::faults::TestConstRateSlipFn::testSlip(void)
   slip.newSection(vertices, spaceDim);
   slip.allocate();
 
-  const double t = 1.234;
+  const PylithScalar t = 1.234;
   slipfn.slip(&slip, originTime+t);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
   const ALE::Obj<RealSection>& slipSection = slip.section();
   CPPUNIT_ASSERT(!slipSection.isNull());
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
-    const double t0 = slipTimeE[iPoint];
+    const PylithScalar t0 = slipTimeE[iPoint];
     const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* vals = slipSection->restrictPoint(*v_iter);
+    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double slipE = (t - slipTimeE[iPoint]) > 0.0 ?
+      const PylithScalar slipE = (t - slipTimeE[iPoint]) > 0.0 ?
 	slipRateE[iPoint*spaceDim+iDim] * (t - slipTimeE[iPoint]) : 0.0;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
     } // for
@@ -244,10 +244,10 @@ pylith::faults::TestConstRateSlipFn::testSlip(void)
 void
 pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
 { // testSlipIncr
-  const double slipRateE[] = { 0.1, 0.2, 
+  const PylithScalar slipRateE[] = { 0.1, 0.2, 
 			       0.3, 0.4 };
-  const double slipTimeE[] = { 1.2, 1.3 };
-  const double originTime = 1.064;
+  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
+  const PylithScalar originTime = 1.064;
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
@@ -267,11 +267,11 @@ pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
   slip.newSection(vertices, spaceDim);
   slip.allocate();
 
-  const double t0 = 1.234;
-  const double t1 = 3.635;
+  const PylithScalar t0 = 1.234;
+  const PylithScalar t1 = 3.635;
   slipfn.slipIncr(&slip, originTime+t0, originTime+t1);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
   const ALE::Obj<RealSection>& slipSection = slip.section();
   CPPUNIT_ASSERT(!slipSection.isNull());
@@ -280,12 +280,12 @@ pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
        ++v_iter, ++iPoint) {
     const int fiberDim = slipSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* vals = slipSection->restrictPoint(*v_iter);
+    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != vals);
 
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double tRef = (slipTimeE[iPoint] > t0) ? slipTimeE[iPoint] : t0;
-      const double slipE = 
+      const PylithScalar tRef = (slipTimeE[iPoint] > t0) ? slipTimeE[iPoint] : t0;
+      const PylithScalar slipE = 
 	slipRateE[iPoint*spaceDim+iDim] * (t1 - tRef);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
     } // for
@@ -298,7 +298,7 @@ void
 pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
 						 topology::SubMesh* faultMesh,
 					    	 ConstRateSlipFn* slipfn,
-						 const double originTime)
+						 const PylithScalar originTime)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != faultMesh);
@@ -430,7 +430,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   slipfn.dbSlipTime(&dbSlipTime);
   
   spatialdata::units::Nondimensional normalizer;
-  const double originTime = 5.353;
+  const PylithScalar originTime = 5.353;
   
   slipfn.initialize(faultMesh, normalizer, originTime);
 
@@ -446,13 +446,13 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
     slipfn._parameters->get("slip time").section();
   CPPUNIT_ASSERT(!slipTimeSection.isNull());
 
-  const double tolerance = 1.0e-06;\
+  const PylithScalar tolerance = 1.0e-06;\
   int iPoint = 0;
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter, ++iPoint) {
     CPPUNIT_ASSERT_EQUAL(spaceDim, slipRateSection->getFiberDimension(*v_iter));
-    const double* slipRateVertex = slipRateSection->restrictPoint(*v_iter);
+    const PylithScalar* slipRateVertex = slipRateSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipRateVertex);
     for (int iDim=0; iDim < spaceDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipRateE[iPoint*spaceDim+iDim],
@@ -460,7 +460,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
 				   tolerance);
 
     CPPUNIT_ASSERT_EQUAL(1, slipTimeSection->getFiberDimension(*v_iter));
-    const double* slipTimeVertex = slipTimeSection->restrictPoint(*v_iter);
+    const PylithScalar* slipTimeVertex = slipTimeSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != slipTimeVertex);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint]+originTime,
 				 slipTimeVertex[0], tolerance);

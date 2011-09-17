@@ -22,7 +22,7 @@
 
 #include "pylith/feassemble/GeometryPoint3D.hh"
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "data/GeomDataPoint3D.hh"
 
@@ -75,15 +75,15 @@ pylith::feassemble::TestGeometryPoint3D::testJacobian(void)
   CPPUNIT_ASSERT_EQUAL(spaceDim, geometry.spaceDim());
   CPPUNIT_ASSERT_EQUAL(numCorners, geometry.numCorners());
 
-  double_array jacobian(1);
-  double det = 0.0;
+  scalar_array jacobian(1);
+  PylithScalar det = 0.0;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    double_array vertices(data.vertices, numCorners*spaceDim);
-    double_array location(&data.locations[iLoc], 1);
+    scalar_array vertices(data.vertices, numCorners*spaceDim);
+    scalar_array location(&data.locations[iLoc], 1);
 
     geometry.jacobian(&jacobian, &det, vertices, location);
-    CPPUNIT_ASSERT_EQUAL(1.0, jacobian[0]);
-    CPPUNIT_ASSERT_EQUAL(1.0, det);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), jacobian[0]);
+    CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), det);
   } //for
 } // testJacobian
 

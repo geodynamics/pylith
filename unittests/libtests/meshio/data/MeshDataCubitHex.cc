@@ -28,7 +28,7 @@ const int pylith::meshio::MeshDataCubitHex::_cellDim = 3;
 
 const int pylith::meshio::MeshDataCubitHex::_numCorners = 8;
 
-const double pylith::meshio::MeshDataCubitHex::_vertices[] = {
+const PylithScalar pylith::meshio::MeshDataCubitHex::_vertices[] = {
   -2.0, -1.0,  1.0,
   -2.0, -1.0, -1.0,
   -2.0,  1.0, -1.0,
@@ -79,7 +79,7 @@ pylith::meshio::MeshDataCubitHex::MeshDataCubitHex(void)
   numCells = _numCells;
   cellDim = _cellDim;
   numCorners = _numCorners;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);

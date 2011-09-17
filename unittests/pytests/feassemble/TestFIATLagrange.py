@@ -23,7 +23,7 @@
 import unittest
 import numpy
 from pylith.feassemble.FIATLagrange import FIATLagrange
-from pylith.utils.testarray import test_double
+from pylith.utils.testarray import test_scalararray
 
 # ----------------------------------------------------------------------
 class Line2(object):
@@ -1124,11 +1124,11 @@ class TestFIATLagrange(unittest.TestCase):
     self.assertEqual(cellE.numQuadPts, cell.numQuadPts)
 
     # Check arrays
-    test_double(self, cellE.vertices, cell.vertices)
-    test_double(self, cellE.quadPts, cell.quadPts)
-    test_double(self, cellE.quadWts, cell.quadWts)
-    test_double(self, cellE.basis, cell.basis)
-    test_double(self, cellE.basisDeriv, cell.basisDeriv)
+    test_scalararray(self, cellE.vertices, cell.vertices)
+    test_scalararray(self, cellE.quadPts, cell.quadPts)
+    test_scalararray(self, cellE.quadWts, cell.quadWts)
+    test_scalararray(self, cellE.basis, cell.basis)
+    test_scalararray(self, cellE.basisDeriv, cell.basisDeriv)
     return
 
 

@@ -80,7 +80,7 @@ protected :
    * @param fieldName Name of field associated with value.
    */
   void _queryDatabases(const topology::Mesh& mesh,
-		       const double valueScale,
+		       const PylithScalar valueScale,
 		       const char* fieldName);
 
   /** Query database for values.
@@ -93,14 +93,14 @@ protected :
   void _queryDB(const char* name,
 		spatialdata::spatialdb::SpatialDB* const db,
 		const int querySize,
-		const double scale);
+		const PylithScalar scale);
 
   /** Calculate spatial and temporal variation of value over the list
    *  of points.
    *
    * @param t Current time.
    */
-  void _calculateValue(const double t);
+  void _calculateValue(const PylithScalar t);
 
   /** Calculate increment in spatial and temporal variation of value
    *  over the list of points.
@@ -108,8 +108,8 @@ protected :
    * @param t0 Time when increment begins.
    * @param t1 Time when increment ends.
    */
-  void _calculateValueIncr(const double t0,
-			   const double t1);
+  void _calculateValueIncr(const PylithScalar t0,
+			   const PylithScalar t1);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

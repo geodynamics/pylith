@@ -43,9 +43,9 @@ const int pylith::bc::DirichletDataQuad4::_fixedDOF[] = { 0, 1 };
 const int pylith::bc::DirichletDataQuad4::_numConstrainedPts = 3;
 const int pylith::bc::DirichletDataQuad4::_constrainedPoints[] = { 0, 2, 4 };
 
-const double pylith::bc::DirichletDataQuad4::_tRef = 3.0;
-const double pylith::bc::DirichletDataQuad4::_valueRate = -0.5;
-const double pylith::bc::DirichletDataQuad4::_valuesInitial[] =
+const PylithScalar pylith::bc::DirichletDataQuad4::_tRef = 3.0;
+const PylithScalar pylith::bc::DirichletDataQuad4::_valueRate = -0.5;
+const PylithScalar pylith::bc::DirichletDataQuad4::_valuesInitial[] =
   { 0.1, 0.6, 0.5, 0.3, 0.4, 0.2 };
 
 const char* pylith::bc::DirichletDataQuad4::_meshFilename = 
@@ -67,7 +67,7 @@ pylith::bc::DirichletDataQuad4::DirichletDataQuad4(void)
 
   tRef = _tRef;
   valueRate = _valueRate;
-  valuesInitial = const_cast<double*>(_valuesInitial);
+  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

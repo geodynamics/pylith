@@ -65,9 +65,9 @@ public :
    * @param vec Input tensor (as vector).
    * @param vecMean Tensor trace divided by spatial_dimension.
    */
-  void calcDeviatoric2D(double* const deviatoric,
-			const double* vec,
-			const double vecMean);
+  void calcDeviatoric2D(PylithScalar* const deviatoric,
+			const PylithScalar* vec,
+			const PylithScalar vecMean);
   
   /** Compute 3D deviatoric stress/strain from vector and mean value.
    *
@@ -75,25 +75,25 @@ public :
    * @param vec Input tensor (as vector).
    * @param vecMean Tensor trace divided by spatial_dimension.
    */
-  void calcDeviatoric3D(double* const deviatoric,
-			const double* vec,
-			const double vecMean);
+  void calcDeviatoric3D(PylithScalar* const deviatoric,
+			const PylithScalar* vec,
+			const PylithScalar vecMean);
   
   /** Compute 2D scalar product of two tensors represented as vectors.
    *
    * @param tensor1 First tensor.
    * @param tensor2 Second tensor.
    */
-  double scalarProduct2D(const double* tensor1,
-			 const double* tensor2) const;
+  PylithScalar scalarProduct2D(const PylithScalar* tensor1,
+			 const PylithScalar* tensor2) const;
   
   /** Compute 3D scalar product of two tensors represented as vectors.
    *
    * @param tensor1 First tensor.
    * @param tensor2 Second tensor.
    */
-  double scalarProduct3D(const double* tensor1,
-			 const double* tensor2) const;
+  PylithScalar scalarProduct3D(const PylithScalar* tensor1,
+			 const PylithScalar* tensor2) const;
   
   /** Set database for initial stress state.
    *
@@ -130,7 +130,7 @@ public :
    *
    * @returns Array of density values at cell's quadrature points.
    */
-  const double_array& calcDensity(void);
+  const scalar_array& calcDensity(void);
   
   /** Get stress tensor at quadrature points. If the state variables
    * are from the previous time step, then the computeStateVars flag
@@ -157,8 +157,8 @@ public :
    *
    * @returns Array of stresses at cell's quadrature points.
    */
-  const double_array&
-  calcStress(const double_array& totalStrain,
+  const scalar_array&
+  calcStress(const scalar_array& totalStrain,
 	     const bool computeStateVars =false);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
@@ -187,8 +187,8 @@ public :
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    */
-  const double_array&
-  calcDerivElastic(const double_array& totalStrain);
+  const scalar_array&
+  calcDerivElastic(const scalar_array& totalStrain);
 
   /** Update state variables (for next time step).
    *
@@ -196,7 +196,7 @@ public :
    *    [numQuadPts][tensorSize]
    * @param cell Finite element cell
    */
-  void updateStateVars(const double_array& totalStrain,
+  void updateStateVars(const scalar_array& totalStrain,
 		       const int cell);
 
   /** Get flag indicating whether material implements an empty
@@ -217,7 +217,7 @@ public :
    * @returns Time step
    */
   virtual
-  double stableTimeStepImplicit(const topology::Mesh& mesh);
+  PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *
@@ -245,10 +245,10 @@ protected :
    * @param numProperties Number of properties.
    */
   virtual
-  void _calcDensity(double* const density,
-		    const double* properties,
+  void _calcDensity(PylithScalar* const density,
+		    const PylithScalar* properties,
 		    const int numProperties,
-		    const double* stateVars,
+		    const PylithScalar* stateVars,
 		    const int numStateVars) = 0;
 
   /** Compute stress tensor from properties and state variables. If
@@ -272,17 +272,17 @@ protected :
    * @param computeStateVars Flag indicating to compute updated state variables.
    */
   virtual
-  void _calcStress(double* const stress,
+  void _calcStress(PylithScalar* const stress,
 		   const int stressSize,
-		   const double* properties,
+		   const PylithScalar* properties,
 		   const int numProperties,
-		   const double* stateVars,
+		   const PylithScalar* stateVars,
 		   const int numStateVars,
-		   const double* totalStrain,
+		   const PylithScalar* totalStrain,
 		   const int strainSize,
-		   const double* initialStress,
+		   const PylithScalar* initialStress,
 		   const int initialStressSize,
-		   const double* initialStrain,
+		   const PylithScalar* initialStrain,
 		   const int initialStrainSize,
 		   const bool computeStateVars) = 0;
 
@@ -302,17 +302,17 @@ protected :
    * @param initialStrainSize Size of initial strain array.
    */
   virtual
-  void _calcElasticConsts(double* const elasticConsts,
+  void _calcElasticConsts(PylithScalar* const elasticConsts,
 			  const int numElasticConsts,
-			  const double* properties,
+			  const PylithScalar* properties,
 			  const int numProperties,
-			  const double* stateVars,
+			  const PylithScalar* stateVars,
 			  const int numStateVars,
-			  const double* totalStrain,
+			  const PylithScalar* totalStrain,
 			  const int strainSize,
-			  const double* initialStress,
+			  const PylithScalar* initialStress,
 			  const int initialStressSize,
-			  const double* initialStrain,
+			  const PylithScalar* initialStrain,
 			  const int initialStrainSize) = 0;
 
   /** Update state variables (for next time step).
@@ -329,15 +329,15 @@ protected :
    * @param initialStrainSize Size of initial strain array.
    */
   virtual
-  void _updateStateVars(double* const stateVars,
+  void _updateStateVars(PylithScalar* const stateVars,
 			const int numStateVars,
-			const double* properties,
+			const PylithScalar* properties,
 			const int numProperties,
-			const double* totalStrain,
+			const PylithScalar* totalStrain,
 			const int strainSize,
-			const double* initialStress,
+			const PylithScalar* initialStress,
 			const int initialStressSize,
-			const double* initialStrain,
+			const PylithScalar* initialStrain,
 			const int initialStrainSize);
 
   /** Get stable time step for implicit time integration.
@@ -350,9 +350,9 @@ protected :
    * @returns Time step
    */
   virtual
-  double _stableTimeStepImplicit(const double* properties,
+  PylithScalar _stableTimeStepImplicit(const PylithScalar* properties,
 				 const int numProperties,
-				 const double* stateVars,
+				 const PylithScalar* stateVars,
 				 const int numStateVars) const = 0;
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
@@ -397,49 +397,49 @@ private :
    * size = numQuadPts * numPropsQuadPt
    * index = iQuadPt * numPropsQuadPt + iPropQuadPt
    */
-  double_array _propertiesCell;
+  scalar_array _propertiesCell;
 
   /** State variables at quadrature points for current cell.
    *
    * size = numQuadPts * numVarsQuadPt
    * index = iQuadPt * numVarsQuadPt + iStateVar
    */
-  double_array _stateVarsCell;
+  scalar_array _stateVarsCell;
 
   /** Initial stress state for current cell.
    *
    * size = numQuadPts * tensorSize
    * index = iQuadPt * tensorSize + iComponent
    */
-  double_array _initialStressCell;
+  scalar_array _initialStressCell;
 
   /** Initial strain state for current cell.
    *
    * size = numQuadPts * tensorSize
    * index = iQuadPt * tensorSize + iComponent
    */
-  double_array _initialStrainCell;
+  scalar_array _initialStrainCell;
 
   /** Density value at quadrature points for current cell.
    *
    * size = numQuadPts
    * index = iQuadPt
    */
-  double_array _densityCell;
+  scalar_array _densityCell;
 
   /** Stress tensor at quadrature points for current cell.
    *
    * size = numQuadPts * tensorSize
    * index = iQuadPt * tensorSize + iStress
    */
-  double_array _stressCell;
+  scalar_array _stressCell;
 
   /** Elasticity matrix at quadrature points for current cell.
    *
    * size = numQuadPts * numElasticConsts
    * index = iQuadPt * numElasticConsts + iConstant
    */
-  double_array _elasticConstsCell;
+  scalar_array _elasticConstsCell;
 
   int _numQuadPts; ///< Number of quadrature points
   const int _numElasticConsts; ///< Number of elastic constants.

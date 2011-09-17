@@ -24,7 +24,7 @@
 #include "pylith/faults/FaultCohesiveTract.hh" // USES FaultsCohesiveTract
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/array.hh" // USES int_array, double_array
+#include "pylith/utils/array.hh" // USES int_array, scalar_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -540,8 +540,8 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const double* vertexCoords = coordsSection->restrictPoint(*v_iter);
-    const double tolerance = 1.0e-06;
+    const PylithScalar* vertexCoords = coordsSection->restrictPoint(*v_iter);
+    const PylithScalar tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
@@ -686,9 +686,9 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 	vertices->begin();
       v_iter != vertices->end();
       ++v_iter) {
-    const double* coordsVertex = coordsSection->restrictPoint(*v_iter);
+    const PylithScalar* coordsVertex = coordsSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != coordsVertex);
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], coordsVertex[iDim],

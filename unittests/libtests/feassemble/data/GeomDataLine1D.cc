@@ -22,31 +22,31 @@ const int pylith::feassemble::GeomDataLine1D::_cellDim = 1;
 
 const int pylith::feassemble::GeomDataLine1D::_spaceDim = 1;
 
-const double pylith::feassemble::GeomDataLine1D::_gravityVec[] = {
+const PylithScalar pylith::feassemble::GeomDataLine1D::_gravityVec[] = {
   -9.80665 };
 
 const int pylith::feassemble::GeomDataLine1D::_numCorners = 2;
 
 const int pylith::feassemble::GeomDataLine1D::_numLocs = 2;
 
-const double pylith::feassemble::GeomDataLine1D::_vertices[] = {
+const PylithScalar pylith::feassemble::GeomDataLine1D::_vertices[] = {
   1.2,
   4.5
 };
 
-const double pylith::feassemble::GeomDataLine1D::_locations[] = {
+const PylithScalar pylith::feassemble::GeomDataLine1D::_locations[] = {
   0.345,
   0.459
 };
 
 // Reference cell has length of 2.0, so divide by 2.0;
-const double pylith::feassemble::GeomDataLine1D::_jacobian[] = {
+const PylithScalar pylith::feassemble::GeomDataLine1D::_jacobian[] = {
   3.3/2.0,
   3.3/2.0
 };
 
 // Reference cell has length of 2.0, so divide by 2.0;
-const double pylith::feassemble::GeomDataLine1D::_jacobianDet[] = {
+const PylithScalar pylith::feassemble::GeomDataLine1D::_jacobianDet[] = {
   3.3/2.0,
   3.3/2.0
 };
@@ -57,11 +57,11 @@ pylith::feassemble::GeomDataLine1D::GeomDataLine1D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
-  gravityVec = const_cast<double*>(_gravityVec);
-  vertices = const_cast<double*>(_vertices);
-  locations = const_cast<double*>(_locations);
-  jacobian = const_cast<double*>(_jacobian);
-  jacobianDet = const_cast<double*>(_jacobianDet);
+  gravityVec = const_cast<PylithScalar*>(_gravityVec);
+  vertices = const_cast<PylithScalar*>(_vertices);
+  locations = const_cast<PylithScalar*>(_locations);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  jacobianDet = const_cast<PylithScalar*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataLine1D::~GeomDataLine1D(void)

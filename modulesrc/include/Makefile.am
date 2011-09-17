@@ -23,6 +23,7 @@ dist_subpkgdata_DATA = \
 	numpy.i \
 	chararray.i \
 	doublearray.i \
+	pylithtypes.i \
 	eqkinsrcarray.i \
 	integratorarray.i \
 	submeshfield.i

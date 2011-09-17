@@ -67,7 +67,7 @@ namespace pylith {
        * @param value Value (time in seconds) used to normalize time stamp in
        * filename.
        */
-      void timeConstant(const double value);
+      void timeConstant(const PylithScalar value);
       
 	  /** Set precision of floating point values in output.
    	   *	
@@ -83,7 +83,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void openTimeStep(const double t,
+      void openTimeStep(const PylithScalar t,
 			const mesh_type& mesh,
 			const char* label =0,
 			const int labelId =0);
@@ -97,7 +97,7 @@ namespace pylith {
        * @param field Field over vertices.
        * @param mesh Mesh for output.
        */
-      void writeVertexField(const double t,
+      void writeVertexField(const PylithScalar t,
 			    field_type& field,
 			    const mesh_type& mesh);
       
@@ -109,7 +109,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void writeCellField(const double t,
+      void writeCellField(const PylithScalar t,
 			  field_type& field,
 			  const char* label =0,
 			  const int labelId =0);

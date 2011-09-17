@@ -61,25 +61,25 @@ const int pylith::faults::CohesiveDynDataQuad4::_numBasis = 2;
 
 const int pylith::faults::CohesiveDynDataQuad4::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveDynDataQuad4::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_quadPts[] = {
   0.0,
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_quadWts[] = {
   2.0,
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_basis[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_basis[] = {
   0.5,
   0.5
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_basisDeriv[] = {
   -0.5,
    0.5
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_verticesRef[] = {
   -1.0, 1.0
 };
 
@@ -90,7 +90,7 @@ const char* pylith::faults::CohesiveDynDataQuad4::_label = "fault";
 const char* pylith::faults::CohesiveDynDataQuad4::_initialTractFilename = 
   "data/quad4_initialtract.spatialdb";
 
-const double pylith::faults::CohesiveDynDataQuad4::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2,
   8.3, 9.3, // 4
@@ -105,7 +105,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldT[] = {
 
 // :TODO: Make sensible values for Jacobian for DOF on positive and
 // negative sides of the fault. Add semi-random values for other DOF.
-const double pylith::faults::CohesiveDynDataQuad4::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_jacobian[] = {
    1, 0.1,
  0.2, 0.3,
  0.4, 0.5,
@@ -312,17 +312,17 @@ const double pylith::faults::CohesiveDynDataQuad4::_jacobian[] = {
 // Computed values
 // ----------------------------------------------------------------------
 
-const double pylith::faults::CohesiveDynDataQuad4::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_orientation[] = {
   0.0,  -1.0,  -1.0, 0.0,
   0.0,  -1.0,  -1.0, 0.0
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_area[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_area[] = {
   1.0,
   1.0,
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_forcesInitial[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_forcesInitial[] = {
   2.05, -1.05,
   2.05, -1.05,
 };
@@ -337,7 +337,7 @@ const int pylith::faults::CohesiveDynDataQuad4::_constraintVertices[] = {
 // Stick case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrStick[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrStick[] = {
   1.1, 29.1,
   1.2, 29.2,
   1.3, 29.3, // 4
@@ -357,7 +357,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrStick[] = {
 // Slip case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlip[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlip[] = {
   9.1, 10.1,
   9.2, 10.2,
   9.3, 10.3, // 4
@@ -372,7 +372,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlip[] = {
 
 // Output
 // :TODO: Update Lagrange multiplier values
-const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
   9.1,  10.100000000000,
   9.2,  10.200000000000,
   9.3,  10.313079001869,
@@ -386,7 +386,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
 };
 
 // Update slip values based on changes in Lagrange multiplier values
-const double pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
   0.026158003737426,                   0.0,
   0.011730507820273,                   0.0,
 };
@@ -395,7 +395,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
 // Open case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpen[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpen[] = {
   9.1, 10.1,
   9.2, 10.2,
   9.3, 10.3, // 4
@@ -409,7 +409,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpen[] = {
 };
 
 // Output
-const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpenE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpenE[] = {
    9.100000000000,  10.100000000000,
    9.200000000000,  10.200000000000,
    9.300000000000,  10.685047196672,
@@ -422,7 +422,7 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpenE[] = {
   -8.000000000000,  -9.000000000000,
 };
 
-const double pylith::faults::CohesiveDynDataQuad4::_slipOpenE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataQuad4::_slipOpenE[] = {
   0.770094393343286,  0.0,
   1.553898551051246,   1.065418664609568,
 };
@@ -435,36 +435,36 @@ pylith::faults::CohesiveDynDataQuad4::CohesiveDynDataQuad4(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   initialTractFilename = const_cast<char*>(_initialTractFilename);
 
-  fieldT = const_cast<double*>(_fieldT);
-  jacobian = const_cast<double*>(_jacobian);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  forcesInitial = const_cast<PylithScalar*>(_forcesInitial);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 
   // Stick
-  fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  fieldIncrStick = const_cast<PylithScalar*>(_fieldIncrStick);
 
   // Slip
-  fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);
-  fieldIncrSlipE = const_cast<double*>(_fieldIncrSlipE);
-  slipSlipE = const_cast<double*>(_slipSlipE);
+  fieldIncrSlip = const_cast<PylithScalar*>(_fieldIncrSlip);
+  fieldIncrSlipE = const_cast<PylithScalar*>(_fieldIncrSlipE);
+  slipSlipE = const_cast<PylithScalar*>(_slipSlipE);
 
   // Open
-  fieldIncrOpen = const_cast<double*>(_fieldIncrOpen);
-  fieldIncrOpenE = const_cast<double*>(_fieldIncrOpenE);
-  slipOpenE = const_cast<double*>(_slipOpenE);
+  fieldIncrOpen = const_cast<PylithScalar*>(_fieldIncrOpen);
+  fieldIncrOpenE = const_cast<PylithScalar*>(_fieldIncrOpenE);
+  slipOpenE = const_cast<PylithScalar*>(_slipOpenE);
 } // constructor
 
 pylith::faults::CohesiveDynDataQuad4::~CohesiveDynDataQuad4(void)

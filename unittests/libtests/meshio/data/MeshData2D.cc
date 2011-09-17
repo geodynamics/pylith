@@ -28,7 +28,7 @@ const int pylith::meshio::MeshData2D::_cellDim = 2;
 
 const int pylith::meshio::MeshData2D::_numCorners = 4;
 
-const double pylith::meshio::MeshData2D::_vertices[] = {
+const PylithScalar pylith::meshio::MeshData2D::_vertices[] = {
   -1.0,  3.0,
    1.0,  3.3,
   -1.2,  0.9,
@@ -77,7 +77,7 @@ pylith::meshio::MeshData2D::MeshData2D(void)
   numCells = _numCells;
   cellDim = _cellDim;
   numCorners = _numCorners;
-  vertices = const_cast<double*>(_vertices);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
   groups = const_cast<int*>(_groups);

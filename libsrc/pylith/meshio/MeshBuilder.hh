@@ -29,7 +29,7 @@
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
-#include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array, int_array,
                                     // string_vector
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
@@ -63,7 +63,7 @@ public :
    */
   static
   void buildMesh(topology::Mesh* mesh,
-		 double_array* coordinates,
+		 scalar_array* coordinates,
 		 const int numVertices,
 		 const int spaceDim,
 		 const int_array& cells,
@@ -93,7 +93,7 @@ public :
   static
   void buildFaultMesh(const ALE::Obj<topology::Mesh::SieveMesh>& fault,
 		      ALE::Obj<SieveFlexMesh>& faultBd,
-		      const double_array& coordinates,
+		      const scalar_array& coordinates,
 		      const int numVertices,
 		      const int spaceDim,
 		      const int_array& cells,

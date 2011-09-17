@@ -77,7 +77,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       virtual
-      void openTimeStep(const double t,
+      void openTimeStep(const PylithScalar t,
 			const mesh_type& mesh,
 			const char* label =0,
 			const int labelId =0);
@@ -93,7 +93,7 @@ namespace pylith {
        * @param mesh Mesh for output.
        */
       virtual
-      void writeVertexField(const double t,
+      void writeVertexField(const PylithScalar t,
 			    field_type& field,
 			    const mesh_type& mesh) = 0;
       
@@ -106,7 +106,7 @@ namespace pylith {
        * @param labelId Value of label defining which cells to include.
        */
       virtual
-      void writeCellField(const double t,
+      void writeCellField(const PylithScalar t,
 			  field_type& field,
 			  const char* label =0,
 			  const int labelId =0) = 0;

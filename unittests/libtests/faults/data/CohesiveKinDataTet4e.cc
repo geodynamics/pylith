@@ -46,25 +46,25 @@ const int pylith::faults::CohesiveKinDataTet4e::_numBasis = 3;
 
 const int pylith::faults::CohesiveKinDataTet4e::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveKinDataTet4e::_quadPts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_quadPts[] = {
   -3.33333333e-01,  -3.33333333e-01,
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_quadWts[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_quadWts[] = {
   2.0,
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_basis[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_basis[] = {
   3.33333333e-01,  3.33333333e-01,
   3.33333333e-01,};
 
-const double pylith::faults::CohesiveKinDataTet4e::_basisDeriv[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_basisDeriv[] = {
  -0.50000000e+00, -0.50000000e+00,
   0.50000000e+00,  0.00000000e+00,
   0.00000000e+00,  0.50000000e+00,
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00,
@@ -83,7 +83,7 @@ const char* pylith::faults::CohesiveKinDataTet4e::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTet4e::_riseTimeFilename = 
   "data/tet4e_risetime.spatialdb";
 
-const double pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
   3.1, 5.1, 7.1,
   3.2, 5.2, 7.2, // 5
   3.3, 5.3, 7.3, // 6
@@ -101,14 +101,14 @@ const double pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
 };
 
 
-const double pylith::faults::CohesiveKinDataTet4e::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_area[] = {
   2.0/3.0,
   1.0/3.0,
   2.0/3.0,
@@ -139,7 +139,7 @@ const int pylith::faults::CohesiveKinDataTet4e::_cellMappingCohesive[] = {
 
 
 
-const double pylith::faults::CohesiveKinDataTet4e::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_residual[] = {
   0.0,  0.0,  0.0,
   7.8,  3.8,  5.8, // 5
   7.0,  3.0,  5.0, // 6
@@ -156,7 +156,7 @@ const double pylith::faults::CohesiveKinDataTet4e::_residual[] = {
  -0.8+1.29378670385, -0.8-0.49761027071, -0.8+0.19904410828, // 17
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_residualIncr[] = {
   0.0,  0.0,  0.0,
   7.8,  3.8,  5.8, // 5
   7.0,  3.0,  5.0, // 6
@@ -173,7 +173,7 @@ const double pylith::faults::CohesiveKinDataTet4e::_residualIncr[] = {
  -0.8+1.29378670385, -0.8-0.49761027071, -0.8+0.19904410828, // 17
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_jacobian[] = {
   0.0, 0.0, 0.0, // 4x
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -771,22 +771,22 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residual = const_cast<double*>(_residual);
-  residualIncr = const_cast<double*>(_residualIncr);
-  jacobian = const_cast<double*>(_jacobian);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residual = const_cast<PylithScalar*>(_residual);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

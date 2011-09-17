@@ -27,6 +27,8 @@
 #if !defined(pylith_meshio_testdatawritervtk_hh)
 #define pylith_meshio_testdatawritervtk_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 /// Namespace for pylith package
 namespace pylith {
   namespace meshio {
@@ -49,7 +51,7 @@ public :
    */
   static
   void checkFile(const char* filename,
-		 const double t,
+		 const PylithScalar t,
 		 const char* timeFormat);
   
 }; // class TestDataWriterVTK

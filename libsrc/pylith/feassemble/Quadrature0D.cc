@@ -50,7 +50,7 @@ pylith::feassemble::Quadrature0D::Quadrature0D(const Quadrature0D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature0D::computeGeometry(const double_array& coordinatesCell,
+pylith::feassemble::Quadrature0D::computeGeometry(const scalar_array& coordinatesCell,
 						  const int cell)
 { // computeGeometry
   const int cellDim = 0;
@@ -64,7 +64,7 @@ pylith::feassemble::Quadrature0D::computeGeometry(const double_array& coordinate
   assert(_quadRefCell.numBasis() == numBasis);
   assert(coordinatesCell.size() == numBasis*spaceDim);
 
-  const double_array& basisDerivRef = _quadRefCell.basisDerivRef();
+  const scalar_array& basisDerivRef = _quadRefCell.basisDerivRef();
 
   zero();
 

@@ -28,6 +28,7 @@
 #define pylith_topology_topologyfwd_hh
 
 #include "pylith/utils/sievetypes.hh"
+#include "pylith/utils/types.hh"
 
 namespace ALE {
   template<typename point_type, 
@@ -57,7 +58,7 @@ namespace pylith {
 
     class FieldBase;
     template<typename mesh_type, 
-	     typename section_type =ALE::IGeneralSection<pylith::SieveMesh::point_type, double> > class Field;
+	     typename section_type =ALE::IGeneralSection<pylith::SieveMesh::point_type, PylithScalar> > class Field;
     template<typename field_type> class Fields;
     template<typename mesh_type> class FieldsNew;
 

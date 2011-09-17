@@ -20,7 +20,7 @@
 
 #include "Field.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -466,7 +466,7 @@ pylith::topology::Field<mesh_type, section_type>::zeroAll(void)
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chartBegin) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
     values *= 0.0;
 
     for (typename chart_type::const_iterator c_iter = chartBegin;
@@ -637,7 +637,7 @@ pylith::topology::Field<mesh_type, section_type>::operator+=(const Field& field)
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chartBegin) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
 
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
@@ -675,7 +675,7 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chart.begin()) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
 
     spatialdata::units::Nondimensional normalizer;
 
