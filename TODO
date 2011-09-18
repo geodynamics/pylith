@@ -2,15 +2,28 @@
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
+* GPU utilization
+
+  PETSc w/GPU and single precision
+    PyLith use PetscScalar instead of double
+    spatialdata - create single precision versions
+
+* Green's functions
+
+* 2-D materials
+
+  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
+
+* Make nucleation for spontaneous rupture modular [BRAD]
+
+  spatial and temporal variation in shear/normal stress for nucleation
+
 * GenMaxwellQpQs [BRAD]
 
   2-D and 3-D versions
   Need to redo Maxwell time calculation. Use ratio.
   Create benchmark for test (compare against fk)
-
-* Make nucleation for spontaneous rupture modular [BRAD]
-
-  spatial and temporal variation in shear/normal stress for nucleation
 
 * Reimplement parameters to use PackedFields. [BRAD]
 
@@ -20,23 +33,10 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
       Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
-* Field split.
-
-    Add flag to material [default is false] for creating null vector
-    When setting up solver, create null vector, and pass it to KSP
-
-  Need to check performance of custom fault preconditioner.
-
-
 * Cleanup
 
-    Add elasticPrestep() to Formulation
+    Add elasticPrestep() to Formulation (called from Problem)
     Remove solnIncr, keep setField()
-
-* 2-D materials
-
-  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
 * Scalable distribution [MATT]
 
@@ -49,15 +49,30 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
   + Need ribbon around fault in order to develop algorithm
 
+======================================================================
+CURRENT ISSUES/PRIORITIES (1.8.0)
+======================================================================
+
+* GPU finite-element integrations (possible promotion to 1.7)
+
+* Higher order
+
+* Coupling
+
+* Field split. DELAY??
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
+  Need to check performance of custom fault preconditioner.
+
 * Line search [MATT]
 
   Line search should be improved to include the inequality constraints.
 
-* GPU utilization
 
-  PETSc w/GPU and single precision
-    PyLith use PetscScalar instead of double
-    spatialdata - create single precision versions
+
+
 
 ----------------------------------------
 MISCELLANEOUS
