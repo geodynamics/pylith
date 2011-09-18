@@ -471,9 +471,13 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
 #endif
   } // for
 
+  // Copy cpu input to gpu
+
   const int elementBatchSize      = 32;
   const int numConcurrentElements = 1;
   launchKernel(spaceDim, numBasis, elementBatchSize, numConcurrentElements, cells->size(), analytic_gpu, geometry_gpu, elemMat_gpu);
+
+  // Copy gpu output to cpu
 
   // Update global matrix
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;

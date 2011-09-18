@@ -16,6 +16,8 @@
 // ======================================================================
 //
 
+%include "petscconf.h"
+
 #if defined(PETSC_USE_REAL_SINGLE)
 #define PYLITH_USE_SCALAR_SINGLE
 typedef float PylithScalar;
