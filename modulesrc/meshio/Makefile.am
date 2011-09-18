@@ -64,7 +64,7 @@ INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PETSC_
 
 if ENABLE_SWIG
 $(srcdir)/meshio_wrap.cxx $(srcdir)/meshio.py: $(swig_sources)
-	$(SWIG) $(PYLITH_SWIG_CPPFLAGS) -Wall -c++ -python $<
+	$(SWIG) $(PETSC_CC_INCLUDES) $(PYLITH_SWIG_CPPFLAGS) -Wall -c++ -python $<
 endif
 
 if ENABLE_HDF5

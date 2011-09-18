@@ -89,7 +89,7 @@ $(srcdir)/petsc_wrap.cxx $(srcdir)/petsc.py: $(petsc_swig_sources)
 	$(SWIG) -Wall -c++ -python $<
 
 $(srcdir)/utils_wrap.cxx $(srcdir)/utils.py: $(utils_swig_sources)
-	$(SWIG) -Wall -c++ -python $<
+	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
 endif
 
 
