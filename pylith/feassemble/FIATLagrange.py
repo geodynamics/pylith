@@ -414,7 +414,7 @@ class FIATLagrange(ReferenceCell):
       
       if self.order == -1:
         self.order = self.degree+1
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring quadrature "
                        "(%s):\n%s" % (aliases, err.message))

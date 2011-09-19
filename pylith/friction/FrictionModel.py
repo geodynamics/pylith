@@ -128,7 +128,7 @@ class FrictionModel(PetscComponent):
         self.dbInitialState(self.inventory.dbInitialState)
 
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring friction model "
                        "(%s):\n%s" % (aliases, err.message))
