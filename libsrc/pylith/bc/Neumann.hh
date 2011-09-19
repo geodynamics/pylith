@@ -56,7 +56,7 @@ public :
    *   direction that is not collinear with surface normal.
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -122,7 +122,7 @@ protected :
    * @param upDir Direction perpendicular to horizontal surface tangent 
    *   direction that is not collinear with surface normal.
    */
-  void _paramsLocalToGlobal(const double upDir[3]);
+  void _paramsLocalToGlobal(const PylithScalar upDir[3]);
 
   /** Calculate spatial and temporal variation of value over the list
    *  of submesh.

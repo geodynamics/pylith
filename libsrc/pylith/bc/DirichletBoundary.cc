@@ -62,7 +62,7 @@ pylith::bc::DirichletBoundary::deallocate(void)
 // Initialize boundary condition.
 void
 pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
-					  const double upDir[3])
+					  const PylithScalar upDir[3])
 { // initialize
   DirichletBC::initialize(mesh, upDir);
 

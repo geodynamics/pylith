@@ -305,7 +305,7 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   dbIORate.filename(_data->dbFilenameARate);
   dbRate.ioHandler(&dbIORate);
 
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
   bcA->label(_data->labelA);
   bcA->dbInitial(&db);

@@ -392,7 +392,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   const PylithScalar pressureScale = _TestNeumann::pressureScale;
   const PylithScalar timeScale = _TestNeumann::timeScale;
   bc._queryDatabases();
-  const double upDir[3] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   bc._paramsLocalToGlobal(upDir);
 
   const PylithScalar tolerance = 1.0e-06;
@@ -727,7 +727,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
     db.ioHandler(&dbIO);
     db.queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
 
-    const double upDir[] = { 0.0, 0.0, 1.0 };
+    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
     bc->dbInitial(&db);
     bc->initialize(*mesh, upDir);

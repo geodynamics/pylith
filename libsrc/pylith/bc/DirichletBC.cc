@@ -61,7 +61,7 @@ pylith::bc::DirichletBC::deallocate(void)
 // Initialize boundary condition.
 void
 pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
-				    const double upDir[3])
+				    const PylithScalar upDir[3])
 { // initialize
   if (0 == _bcDOF.size())
     return;

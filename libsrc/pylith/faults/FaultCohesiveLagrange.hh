@@ -110,7 +110,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Split solution field for separate preconditioning.
    *
@@ -356,7 +356,7 @@ private :
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
    */
-  void _calcOrientation(const double upDir[3]);
+  void _calcOrientation(const PylithScalar upDir[3]);
 
   /// Calculate fault area field.
   void _calcArea(void);

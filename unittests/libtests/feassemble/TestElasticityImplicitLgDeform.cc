@@ -174,17 +174,17 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
+  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 2.0e-05;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
-      if (fabs(valsE[index]) > 1.0) 
-	{
-	  std::cout << "valE: " << valsE[index] << ", val: " << vals[index] << std::endl;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
-	}
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
+      const PylithScalar valE = valsE[index];
+      if (fabs(valE) > 1.0) {
+	// Adjust tolerance based on magnitude of expected value compared to typical Jacobian values of 1.0e+11
+	const PylithScalar toleranceAdj = (fabs(valE) < 1.0e+10) ? tolerance*1.0e+11/fabs(valE) : tolerance;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valE, toleranceAdj);
+      } else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
     } // for
   MatDestroy(&jDense);
   MatDestroy(&jSparseAIJ);

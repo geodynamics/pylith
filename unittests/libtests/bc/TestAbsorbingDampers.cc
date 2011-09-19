@@ -397,7 +397,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     db.ioHandler(&dbIO);
     db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-    const double upDir[] = { 0.0, 0.0, 1.0 };
+    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
     bc->quadrature(_quadrature);
     bc->timeStep(_data->dt);

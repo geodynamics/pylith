@@ -741,7 +741,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(
   mesh->coordsys(&cs);
   mesh->nondimensionalize(normalizer);
   
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
   
   fault->initialize(*mesh, upDir);
   
