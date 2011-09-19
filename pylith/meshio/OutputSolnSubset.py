@@ -158,7 +158,7 @@ class OutputSolnSubset(OutputManager, ModuleOutputSolnSubset):
         ModuleOutputSolnSubset.vertexFilter(self, self.inventory.vertexFilter)
       if not isinstance(self.inventory.cellFilter, NullComponent):
         ModuleOutputSolnSubset.cellFilter(self, self.inventory.cellFilter)
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring output over boundary "
                        "(%s):\n%s" % (aliases, err.message))

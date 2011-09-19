@@ -165,7 +165,7 @@ class FIATSimplex(ReferenceCell):
       self.order = self.inventory.order
       if self.order == -1:
         self.order = self.degree
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring quadrature "
                        "(%s):\n%s" % (aliases, err.message))
