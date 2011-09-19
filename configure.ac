@@ -215,7 +215,6 @@ fi
 
 # CUDA
 if test "$enable_cuda" = "yes" ; then
-  CIT_PYTHON_MODULE([pycuda])
   CIT_CUDA_INCDIR
   CIT_CUDA_LIB
   CIT_CUDA_COMPILER
