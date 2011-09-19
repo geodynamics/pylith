@@ -205,13 +205,13 @@ class IntegratorApp(Script):
                         format="%d")
     self.data.addScalar(vtype="int", name="_numCells", value=self.numCells,
                         format="%d")
-    self.data.addArray(vtype="double", name="_gravityVec", values=self.gravityVec,
+    self.data.addArray(vtype="PylithScalar", name="_gravityVec", values=self.gravityVec,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
+    self.data.addArray(vtype="PylithScalar", name="_vertices", values=self.vertices,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="int", name="_cells", values=self.cells,
                        format="%d", ncols=self.numBasis)    
-    self.data.addArray(vtype="double", name="_verticesRef", values=self.verticesRef,
+    self.data.addArray(vtype="PylithScalar", name="_verticesRef", values=self.verticesRef,
                        format="%16.8e", ncols=self.cellDim)
 
     # Quadrature information
@@ -219,13 +219,13 @@ class IntegratorApp(Script):
                         format="%d")
     self.data.addScalar(vtype="int", name="_numQuadPts", value=self.numQuadPts,
                         format="%d")
-    self.data.addArray(vtype="double", name="_quadPts", values=self.quadPts,
+    self.data.addArray(vtype="PylithScalar", name="_quadPts", values=self.quadPts,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
+    self.data.addArray(vtype="PylithScalar", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
-    self.data.addArray(vtype="double", name="_basis", values=self.basis,
+    self.data.addArray(vtype="PylithScalar", name="_basis", values=self.basis,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_basisDerivRef",
+    self.data.addArray(vtype="PylithScalar", name="_basisDerivRef",
                        values=self.basisDerivRef,
                        format="%16.8e", ncols=self.cellDim)
 
@@ -240,23 +240,23 @@ class IntegratorApp(Script):
                         value=self.matLabel, format='"%s"')
 
     # Input files
-    self.data.addScalar(vtype="double", name="_dt", value=self.dt,
+    self.data.addScalar(vtype="PylithScalar", name="_dt", value=self.dt,
                         format="%16.8e")
-    self.data.addArray(vtype="double", name="_fieldTIncr",
+    self.data.addArray(vtype="PylithScalar", name="_fieldTIncr",
                        values=self.fieldTIncr,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_fieldT",
+    self.data.addArray(vtype="PylithScalar", name="_fieldT",
                        values=self.fieldT,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_fieldTmdt",
+    self.data.addArray(vtype="PylithScalar", name="_fieldTmdt",
                        values=self.fieldTmdt,
                        format="%16.8e", ncols=self.spaceDim)
 
     # Calculated values
-    self.data.addArray(vtype="double", name="_valsResidual",
+    self.data.addArray(vtype="PylithScalar", name="_valsResidual",
                        values=self.valsResidual,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_valsJacobian",
+    self.data.addArray(vtype="PylithScalar", name="_valsJacobian",
                        values=self.valsJacobian,
                        format="%16.8e", ncols=self.spaceDim)
     return
