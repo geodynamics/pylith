@@ -492,7 +492,7 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
     const PylithScalar* stressE = &data->stress[iLoc*tensorSize];
     CPPUNIT_ASSERT(0 != stressE);
 
-    const PylithScalar tolerance = 1.0e-04;
+    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (int i=0; i < tensorSize; ++i)
       if (fabs(stressE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 
@@ -562,7 +562,7 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
     const PylithScalar* elasticConstsE = &data->elasticConsts[iLoc*numConsts];
     CPPUNIT_ASSERT(0 != elasticConstsE);
     
-    const PylithScalar tolerance = 1.0e-05;
+    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (int i=0; i < numConsts; ++i)
       if (fabs(elasticConstsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i], 
@@ -618,7 +618,7 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
     CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
 		    (0 == numVarsQuadPt && 0 == stateVarsE) );
 
-    const PylithScalar tolerance = 1.0e-05;
+    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (int i=0; i < numVarsQuadPt; ++i)
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], 
