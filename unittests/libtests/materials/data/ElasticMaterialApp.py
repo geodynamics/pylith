@@ -166,59 +166,59 @@ class ElasticMaterialApp(Script):
     self.data.addArray(vtype="char*", name="_dbStateVarValues",
                        values=self.dbStateVarValues,
 		       format="\"%s\"", ncols=1)
-    self.data.addArray(vtype="double", name="_dbProperties",
+    self.data.addArray(vtype="PylithScalar", name="_dbProperties",
                        values=self.dbProperties,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_dbStateVars",
+    self.data.addArray(vtype="PylithScalar", name="_dbStateVars",
                        values=self.dbStateVars,
 		       format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_properties",
+    self.data.addArray(vtype="PylithScalar", name="_properties",
                        values=self.properties,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_stateVars",
+    self.data.addArray(vtype="PylithScalar", name="_stateVars",
                        values=self.stateVars,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_propertiesNondim",
+    self.data.addArray(vtype="PylithScalar", name="_propertiesNondim",
                        values=self.propertiesNondim,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_stateVarsNondim",
+    self.data.addArray(vtype="PylithScalar", name="_stateVarsNondim",
                        values=self.stateVarsNondim,
                        format="%16.8e", ncols=1)
-    self.data.addScalar(vtype="double", name="_lengthScale",
+    self.data.addScalar(vtype="PylithScalar", name="_lengthScale",
                         value=self.lengthScale,
                         format="%16.8e")
-    self.data.addScalar(vtype="double", name="_timeScale",
+    self.data.addScalar(vtype="PylithScalar", name="_timeScale",
                         value=self.timeScale,
                         format="%16.8e")
-    self.data.addScalar(vtype="double", name="_pressureScale",
+    self.data.addScalar(vtype="PylithScalar", name="_pressureScale",
                         value=self.pressureScale,
                         format="%16.8e")
-    self.data.addScalar(vtype="double", name="_densityScale",
+    self.data.addScalar(vtype="PylithScalar", name="_densityScale",
                         value=self.densityScale,
                         format="%16.8e")
 
-    self.data.addScalar(vtype="double", name="_dtStableImplicit",
+    self.data.addScalar(vtype="PylithScalar", name="_dtStableImplicit",
                         value=self.dtStableImplicit,
                         format="%16.8e")
-    self.data.addArray(vtype="double", name="_density",
+    self.data.addArray(vtype="PylithScalar", name="_density",
                        values=self.density,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_strain",
+    self.data.addArray(vtype="PylithScalar", name="_strain",
                        values=self.strain,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_stress",
+    self.data.addArray(vtype="PylithScalar", name="_stress",
                        values=self.stress,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_elasticConsts",
+    self.data.addArray(vtype="PylithScalar", name="_elasticConsts",
                        values=self.elasticConsts,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_initialStress",
+    self.data.addArray(vtype="PylithScalar", name="_initialStress",
                        values=self.initialStress,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_initialStrain",
+    self.data.addArray(vtype="PylithScalar", name="_initialStrain",
                        values=self.initialStrain,
                        format="%16.8e", ncols=1)
-    self.data.addArray(vtype="double", name="_stateVarsUpdated",
+    self.data.addArray(vtype="PylithScalar", name="_stateVarsUpdated",
                        values=self.stateVarsUpdated,
                        format="%16.8e", ncols=1)
       
