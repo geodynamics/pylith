@@ -492,7 +492,7 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
     const PylithScalar* stressE = &data->stress[iLoc*tensorSize];
     CPPUNIT_ASSERT(0 != stressE);
 
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
     for (int i=0; i < tensorSize; ++i)
       if (fabs(stressE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 

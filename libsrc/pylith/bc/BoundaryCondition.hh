@@ -83,7 +83,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]) = 0;
+		  const PylithScalar upDir[3]) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :

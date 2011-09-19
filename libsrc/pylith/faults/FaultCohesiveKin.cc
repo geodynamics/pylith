@@ -97,7 +97,7 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
-					     const double upDir[3])
+					     const PylithScalar upDir[3])
 { // initialize
   assert(0 != upDir);
   assert(0 != _quadrature);

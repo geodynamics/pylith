@@ -55,7 +55,7 @@ public :
    * @param upDir Vertical direction (somtimes used in 3-D problems).
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *

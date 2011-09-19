@@ -75,7 +75,7 @@ pylith::bc::AbsorbingDampers::deallocate(void)
 // vector at integration points.
 void
 pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
-					 const double upDir[3])
+					 const PylithScalar upDir[3])
 { // initialize
   assert(0 != _boundaryMesh);
   assert(0 != _quadrature);

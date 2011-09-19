@@ -259,7 +259,7 @@ pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
     dbRate.setData(names, units, values, numValues);
   } // rate db
 
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
   bc->dbInitial(&dbInitial);

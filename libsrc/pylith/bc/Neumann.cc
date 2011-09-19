@@ -70,7 +70,7 @@ pylith::bc::Neumann::deallocate(void)
 // vector at integration points.
 void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
-				const double upDir[3])
+				const PylithScalar upDir[3])
 { // initialize
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("BoundaryConditions");
@@ -495,7 +495,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
 void
-  pylith::bc::Neumann::_paramsLocalToGlobal(const double upDir[3])
+  pylith::bc::Neumann::_paramsLocalToGlobal(const PylithScalar upDir[3])
 { // _paramsLocalToGlobal
   assert(_boundaryMesh);
   assert(_parameters);

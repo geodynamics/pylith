@@ -62,7 +62,7 @@ pylith::bc::PointForce::deallocate(void)
 // Initialize boundary condition.
 void
 pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
-				    const double upDir[3])
+				    const PylithScalar upDir[3])
 { // initialize
   if (0 == _bcDOF.size())
     return;
