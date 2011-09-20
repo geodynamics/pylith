@@ -41,13 +41,15 @@
 %} // inline
 
 // ----------------------------------------------------------------------
-// sizeofVoidPtr
+// PetscOptionsSetValue
 %inline %{
   int
-  sizeofVoidPtr(void)
-  { // sizeofVoidPtr
-    return sizeof(void*);
-  } // sizeofVoidPtr
+  optionsSetValue(const char* name,
+		  const char* value)
+  { // optionsSetValue
+    PetscErrorCode err = PetscOptionsSetValue(name, value); CHKERRQ(err);
+    return 0;
+  } // optionsSetValue
 %} // inline
 
 

@@ -46,7 +46,7 @@ namespace pylith {
        * @param upDir Vertical direction (somtimes used in 3-D problems).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
 
       /** Get boundary mesh.
        *

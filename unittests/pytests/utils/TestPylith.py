@@ -30,13 +30,31 @@ class TestPylith(unittest.TestCase):
   """
   
 
+  def test_sizeofVoidPtr(self):
+    """
+    Test sizeofVoidPtr().
+    """
+    from pylith.utils.utils import sizeofVoidPtr
+    size = sizeofVoidPtr()
+    return
+
+
   def test_sizeofPylithScalar(self):
     """
-    Test constructor.
+    Test sizeofPylithScalar().
     """
     from pylith.utils.utils import sizeofPylithScalar
     size = sizeofPylithScalar()
     self.failUnless(4 == size or 8 == size)
+    return
+
+
+  def test_isCUDAEnabled(self):
+    """
+    Test constructor.
+    """
+    from pylith.utils.utils import isCUDAEnabled
+    value = isCUDAEnabled()
     return
 
 

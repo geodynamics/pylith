@@ -27,15 +27,16 @@ class TestPetscManager(unittest.TestCase):
   """
   Unit testing of PetscManager object.
   """
-  
 
   def test_initfinal(self):
     """
     Test initialize/finalize.
     """
     from pylith.utils.PetscManager import PetscManager
+    from pylith.utils.petsc import optionsSetValue
     manager = PetscManager()
     manager.initialize()
+    optionsSetValue("-vec_type", "seq")
     manager.finalize()
     return
 

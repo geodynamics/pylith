@@ -51,7 +51,7 @@ namespace pylith {
        */
       virtual
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
       
       /** Split solution field for separate preconditioning.
        *

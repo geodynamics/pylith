@@ -67,7 +67,7 @@ namespace pylith {
        */
       virtual
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]) = 0;
+		      const PylithScalar upDir[3]) = 0;
 
     }; // class BoundaryCondition
 
