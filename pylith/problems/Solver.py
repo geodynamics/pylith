@@ -24,6 +24,16 @@
 
 from pylith.utils.PetscComponent import PetscComponent
 
+# VALIDATORS ///////////////////////////////////////////////////////////
+
+# Validate use of CUDA.
+def validateUseCUDA(value):
+  from pylith.utils.utils import isCUDAEnabled
+  if value and not isCUDAEnabled:
+    raise ValueError("PyLith is not built with CUDA support.")
+  return value
+
+
 # Solver class
 class Solver(PetscComponent):
   """
@@ -43,12 +53,17 @@ class Solver(PetscComponent):
     ## Python object for managing Solver facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b use_cuda Use CUDA in solve if supported by solver.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
+
+    useCUDA = pyre.inventory.bool("use_cuda", default=False,
+                                  validator=validateUseCUDA)
+    useCUDA.meta['tip'] = "Enable use of CUDA for finite-element integrations."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -60,6 +75,14 @@ class Solver(PetscComponent):
     return
 
 
+  def preinitialize(self):
+    if self.useCUDA:
+      from pylith.utils.petsc import optionsSetValue
+      optionsSetValue("-vec_type", "mpicusp")
+      optionsSetValue("-mat_type", "mpiaijcusp")
+    return
+
+
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
@@ -67,6 +90,8 @@ class Solver(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+
+    self.useCUDA = self.inventory.useCUDA
     return
 
 

@@ -29,6 +29,16 @@ from problems import Formulation as ModuleFormulation
 from pylith.utils.profiling import resourceUsageString
 from pyre.units.time import second
 
+# VALIDATORS ///////////////////////////////////////////////////////////
+
+# Validate use of CUDA.
+def validateUseCUDA(value):
+  from pylith.utils.utils import isCUDAEnabled
+  if value and not isCUDAEnabled:
+    raise ValueError("PyLith is not built with CUDA support.")
+  return value
+
+
 # ITEM FACTORIES ///////////////////////////////////////////////////////
 
 def outputFactory(name):
@@ -62,6 +72,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
+    ## @li \b use_cuda Enable use of CUDA for finite-element integrations.
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements
     ## @li \b use_custom_constraint_pc Use custom preconditioner for
@@ -76,6 +87,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## @li \b jacobian_viewer Writer for Jacobian sparse matrix.
 
     import pyre.inventory
+
+    useCUDA = pyre.inventory.bool("use_cuda", default=False,
+                                  validator=validateUseCUDA)
+    useCUDA.meta['tip'] = "Enable use of CUDA for finite-element integrations."
 
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
@@ -133,7 +148,6 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.constraints = None
     self.jacobian = None
     self.fields = None
-    self.solnName = None
     return
 
 
@@ -154,6 +168,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.constraints = []
     self.gravityField = gravityField
 
+    self.solver.preinitialize()
     self._setupMaterials(materials)
     self._setupBC(boundaryConditions)
     self._setupInterfaces(interfaceConditions)
@@ -290,6 +305,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+    self.useCUDA = self.inventory.useCUDA
     self.matrixType = self.inventory.matrixType
     self.timeStep = self.inventory.timeStep
     self.solver = self.inventory.solver
@@ -311,6 +327,7 @@ class Formulation(PetscComponent, ModuleFormulation):
     ModuleFormulation.splitFields(self, self.inventory.useSplitFields)
     ModuleFormulation.useCustomConstraintPC(self,
                                             self.inventory.useCustomConstraintPC)
+
     return
 
 
@@ -334,11 +351,14 @@ class Formulation(PetscComponent, ModuleFormulation):
               (self.matrixType, matrixMap[self.matrixType])
         self.matrixType = matrixMap[self.matrixType]
     self.blockMatrixOkay = True
+    if self.matrixType == "unknown" and self.solver.useCUDA:
+      self.matrixType = "mpiaijcusp"
     for constraint in self.constraints:
       numDimConstrained = constraint.numDimConstrained()
       if numDimConstrained > 0 and self.mesh.dimension() != numDimConstrained:
         self.blockMatrixOkay = False
     return
+
 
   def _setupMaterials(self, materials):
     """

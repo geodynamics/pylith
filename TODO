@@ -2,11 +2,16 @@
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
+* configure
+  
+  + Check compatibility of PyLith options with PETSc
+    - HDF5
+    - CUDA
+
 * GPU utilization
 
-  PETSc w/GPU and single precision
-    PyLith use PetscScalar instead of double
-    spatialdata - create single precision versions
+  + Implicit elasticity finite-element integration
+  + Explicit elasticity finite-element integration
 
 * Green's functions
 

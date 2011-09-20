@@ -56,7 +56,7 @@ namespace pylith {
        *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
 
       /** Integrate contribution of cohesive cells to residual term.
        *

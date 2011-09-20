@@ -17,6 +17,16 @@
 //
 
 // ----------------------------------------------------------------------
+// sizeofVoidPtr
+%inline %{
+  int
+  sizeofVoidPtr(void)
+  { // sizeofVoidPtr
+    return sizeof(void*);
+  } // sizeofVoidPtr
+%} // inline
+
+// ----------------------------------------------------------------------
 // sizeofPylithScalar
 %inline %{
   int
@@ -24,6 +34,21 @@
   { // sizeofPylithScalar
     return sizeof(PylithScalar);
   } // sizeofPylithScalar
+%} // inline
+
+
+// ----------------------------------------------------------------------
+// isCUDAEnabled
+%inline %{
+  bool
+  isCUDAEnabled(void)
+  { // isCUDAEnabled
+#if ENABLE_CUDA
+    return true;
+#else
+    return false;
+#endif
+  } // isCUDAEnabled
 %} // inline
 
 

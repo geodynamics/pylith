@@ -195,8 +195,7 @@ endif
 
 if ENABLE_CUDA
   nobase_pkgpyexec_PYTHON += \
-	feassemble/ElasticityImplicitCUDA.py \
-	problems/ImplicitCUDA.py
+	feassemble/ElasticityImplicitCUDA.py
 endif
 
 if ENABLE_TETGEN
