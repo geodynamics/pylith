@@ -20,7 +20,7 @@
 ##
 ## @brief Python object for calculating memory usage.
 
-import pylith.utils.petsc as petsc
+from pylith.utils.utils import sizeofVoidPtr
 
 class Memory(object):
   sizeInt    = 4
@@ -33,7 +33,7 @@ class Memory(object):
 
   if pointerSize is None:
     # Get pointer using sizeof(void*) in PyLith C++ library.
-    pointerSize = petsc.sizeofVoidPtr()
+    pointerSize = sizeofVoidPtr()
 
   if pointerSize == 4:
     sizeSetEntry = 12
