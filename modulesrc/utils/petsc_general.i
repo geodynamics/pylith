@@ -52,6 +52,20 @@
   } // optionsSetValue
 %} // inline
 
+// ----------------------------------------------------------------------
+// PetscOptionsHasName
+%inline %{
+  bool
+  optionsHasName(const char* name)
+  { // optionsHasName
+    PetscBool hasName = PetscBool(0);
+    PetscErrorCode err =
+      PetscOptionsHasName(PETSC_NULL, name, &hasName);
+
+    return (hasName) ? true : false;
+  } // optionsHasName
+%} // inline
+
 
 // End of file
 

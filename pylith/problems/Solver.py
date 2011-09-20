@@ -77,9 +77,10 @@ class Solver(PetscComponent):
 
   def preinitialize(self):
     if self.useCUDA:
-      from pylith.utils.petsc import optionsSetValue
-      optionsSetValue("-vec_type", "mpicusp")
-      optionsSetValue("-mat_type", "mpiaijcusp")
+      # Set vec_type for CUDA, if it has not already been set.
+      from pylith.utils.petsc import optionsSetValue, optionsHasName
+      if not optionsHasName("-vec_type"):
+        optionsSetValue("-vec_type", "mpicusp")
     return
 
 
