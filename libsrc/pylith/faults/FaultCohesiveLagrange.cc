@@ -192,7 +192,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   assert(0 != _fields);
   assert(0 != _logger);
 
-  // Cohesive cells with normal vertices P and N, and constraint
+  // Cohesive cells with conventional vertices N and P, and constraint
   // vertex L make contributions to the assembled residual:
   //
   // DOF P: \int_{S_f^+} \tensor{N}_m^T \cdot \tensor{N}_p \cdot \vec{l}_p dS
@@ -342,11 +342,15 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     slipGlobalCell = 0.0;
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       const int iB = iBasis*spaceDim;
-      for (int iDim = 0; iDim < spaceDim; ++iDim)
-	for (int kDim = 0; kDim < spaceDim; ++kDim)
+      for (int iDim = 0; iDim < spaceDim; ++iDim) {
+	for (int kDim = 0; kDim < spaceDim; ++kDim) {
 	  slipGlobalCell[iB+iDim] += slipCell[iB+kDim] *
 	    orientationCell[iB*spaceDim + kDim*spaceDim + iDim];
+	} // for
+      } // for
     } // for
+
+    residualCell = 0.0;
 
     // Compute action for positive side of fault and Lagrange constraints
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -356,15 +360,15 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
         const double valI = wt*basis[iQ+iBasis];
 
 	// Add entries to residual at
-	// iP = DOF at positive node
 	// iN = DOF at negative node
+	// iP = DOF at positive node
 	// iL = DOF at constraint node
 
-	// Indices for positive vertex
-	const int iBP = 0*numBasis*spaceDim + iBasis*spaceDim;
-	
 	// Indices for negative vertex
-	const int iBN = 1*numBasis*spaceDim + iBasis*spaceDim;
+	const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
+	
+	// Indices for positive vertex
+	const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
 	
 	// Indices for Lagrange vertex
 	const int iBL = 2*numBasis*spaceDim + iBasis*spaceDim;
@@ -372,26 +376,42 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQ+jBasis];
 
-	  // Indices for positive vertex
-	  const int jBP = 0*numBasis*spaceDim + jBasis*spaceDim;
-
 	  // Indices for negative vertex
-	  const int jBN = 1*numBasis*spaceDim + jBasis*spaceDim;
+	  const int jBN = 0*numBasis*spaceDim + jBasis*spaceDim;
+
+	  // Indices for positive vertex
+	  const int jBP = 1*numBasis*spaceDim + jBasis*spaceDim;
 
 	  // Indices for Lagrange vertex
 	  const int jBL = 2*numBasis*spaceDim + jBasis*spaceDim;
 
           for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    // positive side of the fault
-            residualCell[iBP + iDim] += dispTpdtCell[jBL + iDim] * valIJ;
-	    
 	    // negative side of the fault
-            residualCell[iBN + iDim] = -residualCell[iBP + iDim];
+            residualCell[iBN + iDim] -= valIJ * dispTpdtCell[jBL + iDim];
+	    
+	    // positive side of the fault
+            residualCell[iBP + iDim] += valIJ * dispTpdtCell[jBL + iDim];
 	    
 	    // Lagrange constraint
-	    residualCell[iBL + iDim] += 
-	      valIJ * (slipGlobalCell[jBasis*spaceDim+iDim]
-		       - dispTpdtCell[jBP + iDim] + dispTpdtCell[jBN + iDim]);
+	    residualCell[iBL + iDim] += valIJ * 
+	      (dispTpdtCell[jBP + iDim] - dispTpdtCell[jBN + iDim] -
+	       slipGlobalCell[jBasis*spaceDim+iDim]);
+
+#if 1
+	    std::cout << "iBasis: " << iBasis
+		      << ", jBasis: " << jBasis
+		      << ", iDim: " << iDim
+		      << ", valIJ: " << valIJ
+		      << ", jacobianDet: " << jacobianDet[iQuad]
+		      << ", slip: " << slipGlobalCell[jBasis*spaceDim+iDim]
+		      << ", dispP: " << dispTpdtCell[jBP + iDim]
+		      << ", dispN: " << dispTpdtCell[jBN + iDim]
+		      << ", residualN: " << residualCell[iBN + iDim]
+		      << ", residualP: " << residualCell[iBP + iDim]
+		      << ", residualL: " << residualCell[iBL + iDim]
+		      << std::endl;
+#endif
+
 	  } // for
         } // for
       } // for
@@ -539,33 +559,34 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
           const double valIJ = valI * basis[iQ+jBasis];
 
 	  // First index for positive, negative, and Lagrange vertices
-	  const int iBP = 0*numBasis*spaceDim + iBasis*spaceDim;
-	  const int iBN = 1*numBasis*spaceDim + iBasis*spaceDim;
+	  const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
+	  const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
 	  const int iBL = 2*numBasis*spaceDim + iBasis*spaceDim;
 
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    // Add entries to Jacobian at (i,j) where
-	    // iP = DOF at positive node, jL = DOF at constraint node
-	    // iL = DOF at constraint node, jP = DOF at positive node
 	    // iN = DOF at negative node, jL = DOF at constraint node
 	    // iL = DOF at constraint node, jN = DOF at negative node
-
-            const int iP = (iBP + iDim) * rowSize; // row
-            const int jP = (iBP + iDim); // col
+	    // iP = DOF at positive node, jL = DOF at constraint node
+	    // iL = DOF at constraint node, jP = DOF at positive node
 
 	    // Indices for negative vertex
             const int iN = (iBN + iDim) * rowSize; // row
             const int jN = (iBN + iDim); // col
 
+	    // Indices for positive vertex
+            const int iP = (iBP + iDim) * rowSize; // row
+            const int jP = (iBP + iDim); // col
+
 	    // Indices for Lagrange vertex
             const int iL = (iBL + iDim) * rowSize; // row
             const int jL = (iBL + iDim); // col
 
-            jacobianCell[iP + jL] -= valIJ;
-            jacobianCell[iL + jP] -= valIJ;
-
             jacobianCell[iN + jL] += valIJ;
             jacobianCell[iL + jN] += valIJ;
+
+            jacobianCell[iP + jL] -= valIJ;
+            jacobianCell[iL + jP] -= valIJ;
           } // for
         } // for
       } // for
