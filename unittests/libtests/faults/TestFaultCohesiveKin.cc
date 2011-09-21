@@ -264,6 +264,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
+    mesh.view("DOMAIN MESH");
     residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
