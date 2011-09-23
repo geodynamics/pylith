@@ -1994,6 +1994,10 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());
 
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
   // Allocate buffer for tractions field (if necessary).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
@@ -2016,16 +2020,20 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
-    assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
-
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
     assert(0 != dispTVertex);
 
-    // :TODO: FIX THIS (orientation: global to fault)
-    for (int i = 0; i < spaceDim; ++i)
-      tractionsVertex[i] = dispTVertex[i];
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
 
-    assert(tractionsVertex.size() == tractionsSection->getFiberDimension(v_fault));
+    tractionsVertex = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      for (int j=0; j < spaceDim; ++j)
+	tractionsVertex[i] += orientationVertex[i*spaceDim+j] * dispTVertex[j];
+
+    assert(tractionsVertex.size() == 
+	   tractionsSection->getFiberDimension(v_fault));
     tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
