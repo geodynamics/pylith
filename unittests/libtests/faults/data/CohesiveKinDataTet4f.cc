@@ -98,6 +98,34 @@ const double pylith::faults::CohesiveKinDataTet4f::_fieldT[] = {
 };
 
 
+const double pylith::faults::CohesiveKinDataTet4f::_fieldIncr[] = {
+  3.1, 4.1, 5.1,
+  3.2, 4.2, 5.2, // 3
+  3.3, 4.3, 5.3, // 4
+  3.4, 4.4, 5.4, // 5
+  3.5, 4.5, 5.5,
+  3.6, 4.6, 5.6, // 7
+  3.8, 4.8, 5.8, // 8
+  3.0, 4.0, 5.0, // 9
+  3.7, 4.7, 5.7, // 10
+  3.9, 4.9, 5.9, // 11
+  3.1, 4.1, 5.1, // 12
+};
+
+const double pylith::faults::CohesiveKinDataTet4f::_jacobianLumped[] = {
+  1.1, 1.1, 1.1,
+  1.2, 1.2, 1.2, // 3
+  1.3, 1.3, 1.3, // 4
+  1.4, 1.4, 1.4, // 5
+  1.5, 1.5, 1.5,
+  1.6, 1.6, 1.6, // 7
+  1.8, 1.8, 1.8, // 8
+  1.0, 1.0, 1.0, // 9
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 10
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 11
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 12
+};
+
 const double pylith::faults::CohesiveKinDataTet4f::_orientation[] = {
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
   0.0, -1.0, 0.0,    0.0, 0.0, +1.0,    -1.0, 0.0, 0.0,
@@ -575,6 +603,8 @@ pylith::faults::CohesiveKinDataTet4f::CohesiveKinDataTet4f(void)
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   residual = const_cast<double*>(_residual);

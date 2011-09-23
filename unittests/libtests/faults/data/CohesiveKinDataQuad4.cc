@@ -130,7 +130,7 @@ const double pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
   1.6, 1.6,
   1.7, 1.7, // 8
   1.9, 1.9, // 9
-  1.8, 1.8, // 10
+  1.0, 1.0, // 10
   1.0, 1.0, // 11
 };
 

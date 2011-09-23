@@ -120,9 +120,9 @@ const double pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
   1.6, 1.6, 1.6, // 7
   1.8, 1.8, 1.8, // 8
   1.0, 1.0, 1.0, // 9
-  1.7, 1.7, 1.7, // 10
-  1.9, 1.9, 1.9, // 11
-  1.1, 1.1, 1.1, // 12
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 10
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 11
+  1.0/3.0, 1.0/3.0, 1.0/3.0, // 12
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numFaultVertices = 3;

@@ -134,6 +134,45 @@ const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
 
 
 
+const double pylith::faults::CohesiveKinDataQuad4e::_fieldIncr[] = {
+  6.1, 4.1,
+  6.2, 4.2,
+  6.3, 4.3, // 6
+  6.4, 4.4, // 7
+  6.5, 4.5,
+  6.6, 4.6,
+  6.7, 4.7,
+  6.8, 4.8, // 11
+  6.9, 4.9,
+  6.0, 4.0, // 13
+  5.2, 3.2, // 14
+  5.4, 3.4, // 15
+  5.1, 3.1, // 16
+  5.3, 3.3, // 17
+  5.5, 3.5, // 18
+};
+
+
+const double pylith::faults::CohesiveKinDataQuad4e::_jacobianLumped[] = {
+  1.1, 7.1,
+  1.2, 7.2,
+  1.3, 7.3, // 6
+  1.4, 7.4, // 7
+  1.5, 7.5,
+  1.6, 7.6,
+  1.7, 7.7,
+  1.8, 7.8, // 11
+  1.9, 7.9,
+  1.0, 7.0, // 13
+  2.2, 3.2, // 14
+  2.4, 3.4, // 15
+  1.0, 1.0, // 16
+  2.0, 2.0, // 17
+  1.0, 1.0, // 18
+};
+
+
+
 const double pylith::faults::CohesiveKinDataQuad4e::_orientation[] = {
   0.0, -1.0,  -1.0, 0.0,
   0.0, -1.0,  -1.0, 0.0,
@@ -686,6 +725,8 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   residual = const_cast<double*>(_residual);
