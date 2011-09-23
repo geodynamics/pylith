@@ -218,7 +218,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  const int orientationSize = spaceDim * spaceDim;
   assert(cellDim == spaceDim-1);
 
   // Get cohesive cell information
@@ -272,19 +271,10 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   double_array slipCell(numBasis*spaceDim);
-  double_array slipGlobalCell(numBasis*spaceDim);
   topology::Field<topology::SubMesh>& slip = _fields->get("slip");
   const ALE::Obj<RealSection>& slipSection = slip.section();
   assert(!slipSection.isNull());
   RestrictVisitor slipVisitor(*slipSection, slipCell.size(), &slipCell[0]);
-
-  double_array orientationCell(numBasis*orientationSize);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-  RestrictVisitor orientationVisitor(*orientationSection, 
-				     orientationCell.size(), 
-				     &orientationCell[0]);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -319,8 +309,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
-    orientationVisitor.clear();
-    faultSieveMesh->restrictClosure(*f_iter, orientationVisitor);
     slipVisitor.clear();
     faultSieveMesh->restrictClosure(*f_iter, slipVisitor);
 
@@ -337,18 +325,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
     dispTpdtCell = dispTCell + dispTIncrCell;
-
-    // Compute slip in global coordinate system
-    slipGlobalCell = 0.0;
-    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const int iB = iBasis*spaceDim;
-      for (int iDim = 0; iDim < spaceDim; ++iDim) {
-	for (int kDim = 0; kDim < spaceDim; ++kDim) {
-	  slipGlobalCell[iB+iDim] += slipCell[iB+kDim] *
-	    orientationCell[iB*spaceDim + kDim*spaceDim + iDim];
-	} // for
-      } // for
-    } // for
 
     residualCell = 0.0;
 
@@ -395,7 +371,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 	    // Lagrange constraint
 	    residualCell[iBL + iDim] += valIJ * 
 	      (dispTpdtCell[jBP + iDim] - dispTpdtCell[jBN + iDim] -
-	       slipGlobalCell[jBasis*spaceDim+iDim]);
+	       slipCell[jBasis*spaceDim+iDim]);
 
 #if 1
 	    std::cout << "iBasis: " << iBasis
@@ -403,7 +379,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 		      << ", iDim: " << iDim
 		      << ", valIJ: " << valIJ
 		      << ", jacobianDet: " << jacobianDet[iQuad]
-		      << ", slip: " << slipGlobalCell[jBasis*spaceDim+iDim]
+		      << ", slip: " << slipCell[jBasis*spaceDim+iDim]
 		      << ", dispP: " << dispTpdtCell[jBP + iDim]
 		      << ", dispN: " << dispTpdtCell[jBN + iDim]
 		      << ", dispL: " << dispTpdtCell[jBL + iDim]
@@ -1354,14 +1330,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
   // Get section information
-  double_array orientationVertex(orientationSize);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
   double_array slipVertex(spaceDim);
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
@@ -1440,10 +1410,6 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
-
     // Get slip at fault cell's vertices.
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
 
@@ -1470,6 +1436,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventBegin(computeEvent);
 #endif
 
+#if 0
     CALL_MEMBER_FN(*this, 
 		   adjustSolnLumpedFn)(&lagrangeTIncrVertex, 
 				       &dispTIncrVertexN, &dispTIncrVertexP,
@@ -1477,6 +1444,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 				       dispTVertexN, dispTVertexP,
 				       residualVertexN, residualVertexP,
 				       jacobianVertexN, jacobianVertexP);
+#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -2043,6 +2011,60 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
+
+// ----------------------------------------------------------------------
+// Transform slip field from local (fault) coordinate system to
+// global coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::_slipFaultToGlobal(void)
+{ // _slipFaultToGlobal
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Fiber dimension of tractions matches spatial dimension.
+  const int spaceDim = _quadrature->spaceDim();
+  double_array slipGlobalVertex(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& slipSection =
+    _fields->get("slip").section();
+  assert(!slipSection.isNull());
+
+  slipSection->view("SLIP (FAULT)");
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(spaceDim == slipSection->getFiberDimension(v_fault));
+    const double* slipFaultVertex = slipSection->restrictPoint(v_fault);
+    assert(slipFaultVertex);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
+
+    slipGlobalVertex = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      for (int j=0; j < spaceDim; ++j)
+	slipGlobalVertex[i] += 
+	  orientationVertex[j*spaceDim+i] * slipFaultVertex[j];
+
+    assert(slipGlobalVertex.size() == 
+	   slipSection->getFiberDimension(v_fault));
+    slipSection->updatePoint(v_fault, &slipGlobalVertex[0]);
+  } // for
+  
+  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
+
+#if 1 // DEBUGGING
+  slipSection->view("SLIP (GLOBAL)");
+#endif
+} // _slipFaultToGlobal
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
