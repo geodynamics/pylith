@@ -140,6 +140,10 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       src->slip(&slip, t);
   } // for
 
+  // Transform slip from local (fault) coordinate system to global
+  // coordinate system
+  _slipFaultToGlobal();
+
   _logger->eventEnd(setupEvent);
 
   FaultCohesiveLagrange::integrateResidual(residual, t, fields);
