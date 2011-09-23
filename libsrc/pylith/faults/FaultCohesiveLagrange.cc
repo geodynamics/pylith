@@ -406,6 +406,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 		      << ", slip: " << slipGlobalCell[jBasis*spaceDim+iDim]
 		      << ", dispP: " << dispTpdtCell[jBP + iDim]
 		      << ", dispN: " << dispTpdtCell[jBN + iDim]
+		      << ", dispL: " << dispTpdtCell[jBL + iDim]
 		      << ", residualN: " << residualCell[iBN + iDim]
 		      << ", residualP: " << residualCell[iBP + iDim]
 		      << ", residualL: " << residualCell[iBL + iDim]
