@@ -127,8 +127,8 @@ const double pylith::faults::CohesiveKinDataTri3::_jacobianLumped[] = {
   1.4, 1.4,
   1.5, 1.5, // 6
   1.7, 1.7, // 7
-  1.6, 1.6, // 8
-  1.8, 1.8, // 9
+  1.0, 1.0, // 8
+  1.0, 1.0, // 9
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_numFaultVertices = 2;

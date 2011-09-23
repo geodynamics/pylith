@@ -143,6 +143,8 @@ pylith::faults::TestFaultCohesiveKin::testUseLagrangeConstraints(void)
 void
 pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 { // testInitialize
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -231,6 +233,11 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 { // testIntegrateResidual
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->fieldT);
+  CPPUNIT_ASSERT(_data->residual);
+  CPPUNIT_ASSERT(_data->residualIncr);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -328,6 +335,10 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 { // testIntegrateJacobian
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->fieldT);
+  CPPUNIT_ASSERT(_data->jacobian);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -411,6 +422,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
 { // testIntegrateJacobianLumped
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->jacobianLumped);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -432,46 +446,64 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
 
+  // Only check Lagrange multiplier values
+
   int iVertex = 0;
   const double tolerance = 1.0e-06;
   const int spaceDim = _data->spaceDim;
+
+  const ALE::Obj<SieveSubMesh>& sieveMesh = mesh.sieveMesh();
+  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& vertices =
+    sieveMesh->depthStratum(0);
+  CPPUNIT_ASSERT(!vertices.isNull());
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = 
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
   SieveSubMesh::renumbering_type& renumbering = 
     faultSieveMesh->getRenumbering();
   const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
     renumbering.begin();
   const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
     renumbering.end();
+
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter, ++iVertex) {
-    SieveMesh::point_type meshVertex = -1;
     bool found = false;
 
     for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
 	 r_iter != renumberingEnd;
 	 ++r_iter) {
-      if (r_iter->second == *v_iter) {
-        meshVertex = r_iter->first;
+      if (r_iter->first == *v_iter) {
         found = true;
         break;
       } // if
     } // for
+    if (!found) // only check Lagrange multiplier values
+      continue;
+
     CPPUNIT_ASSERT(found);
-    int fiberDim = jacobianSection->getFiberDimension(meshVertex);
+    int fiberDim = jacobianSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* jacobianVertex = jacobianSection->restrictPoint(meshVertex);
-    CPPUNIT_ASSERT(0 != jacobianVertex);
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianVertex[iDim],
-				   tolerance);
+    const double* vals = jacobianSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vals);
+    
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double valE = _data->jacobianLumped[iVertex*spaceDim+iDim];
+#if 1 // debugging
+      std::cout << "vertex: " << *v_iter << ", iDim: " << iDim
+		<< ", valE: " << valE
+		<< ", val: " << vals[iDim]
+		<< std::endl;
+#endif
+      if (fabs(valE) > 1.0)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valE, tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[iDim], tolerance);
+    } // for
   } // for
 } // testIntegrateJacobianLumped
 
@@ -480,6 +512,12 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
 void
 pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
 { // testAdjustSolnLumped
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->fieldT);
+  CPPUNIT_ASSERT(_data->fieldIncr);
+  CPPUNIT_ASSERT(_data->fieldIncrAdjusted);
+  CPPUNIT_ASSERT(_data->jacobianLumped);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -578,6 +616,10 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
 void
 pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
 { // testUpdateStateVars
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->fieldT);
+  CPPUNIT_ASSERT(_data->verticesLagrange);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -636,7 +678,7 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
        s_iter != srcsEnd; 
        ++s_iter) {
     EqKinSrc* src = s_iter->second;
-    assert(0 != src);
+    CPPUNIT_ASSERT(0 != src);
     if (t >= src->originTime())
       src->slip(&slipE, t);
   } // for
@@ -681,6 +723,10 @@ pylith::faults::TestFaultCohesiveKin::testUpdateStateVars(void)
 void
 pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 { // testCalcTractionsChange
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_data->fieldT);
+  CPPUNIT_ASSERT(_data->area);
+
   topology::Mesh mesh;
   FaultCohesiveKin fault;
   topology::SolutionFields fields(mesh);
@@ -777,7 +823,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSplitField(void)
 { // testSplitField
-  assert(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   FaultCohesiveKin fault;
@@ -941,7 +987,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
 bool
 pylith::faults::TestFaultCohesiveKin::_isLagrangeVertex(const int vertex) const
 { // _isLagrangeVertex
-  assert(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   const int numFaultVertices = _data->numFaultVertices;
   bool isFound = false;

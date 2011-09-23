@@ -128,6 +128,36 @@ const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   7.2, 9.2, // 15
 };
 
+const double pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
+  3.1, 7.1,
+  3.2, 7.2, // 5
+  3.3, 7.3, // 6
+  3.4, 7.4,
+  3.5, 7.5, // 8
+  3.6, 7.6,
+  3.7, 7.7, // 10
+  3.9, 7.9, // 11
+  3.1, 7.1, // 12
+  3.8, 7.8, // 13
+  3.0, 7.0, // 14
+  2.2, 5.2, // 15
+};
+
+const double pylith::faults::CohesiveKinDataTri3d::_jacobianLumped[] = {
+  6.1, 8.1,
+  6.2, 8.2, // 5
+  6.3, 8.3, // 6
+  6.4, 8.4,
+  6.5, 8.5, // 8
+  6.6, 8.6,
+  6.7, 8.7, // 10
+  6.9, 8.9, // 11
+  7.1, 9.1, // 12
+  2.0, 2.0, // 13
+  1.0, 1.0, // 14
+  1.0, 1.0, // 15
+};
+
 
 const double pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
   +0.70710678118654757, -0.70710678118654757,  
@@ -503,6 +533,8 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   residual = const_cast<double*>(_residual);
