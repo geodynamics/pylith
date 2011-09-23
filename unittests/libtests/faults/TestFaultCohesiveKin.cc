@@ -725,7 +725,6 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 { // testCalcTractionsChange
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(_data->fieldT);
-  CPPUNIT_ASSERT(_data->area);
 
   topology::Mesh mesh;
   FaultCohesiveKin fault;
@@ -805,9 +804,20 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
     const double* dispVertex = dispSection->restrictPoint(meshVertex);
     CPPUNIT_ASSERT(0 != dispVertex);
 
-    const double scale = 1.0 / _data->area[iVertex];
+    const double* orientationVertex = 
+      &_data->orientation[iVertex*spaceDim*spaceDim];
+
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double tractionE = dispVertex[iDim] * scale;
+      double tractionE = 0.0;
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	tractionE += orientationVertex[iDim*spaceDim+jDim] * dispVertex[jDim];
+#if 0 // DEBUGGING
+      std::cout << "vertex: " << *v_iter
+		<< ", iDim: " << iDim
+		<< ", tractionE: " << tractionE
+		<< ", traction: " << tractionsVertex[iDim]
+		<< std::endl;
+#endif
       if (tractionE > 1.0) 
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
 				     tolerance);
