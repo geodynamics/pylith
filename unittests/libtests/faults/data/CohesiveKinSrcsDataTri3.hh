@@ -63,7 +63,9 @@ private:
   static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 
-  static const double _fieldT[]; ///< Solution field at time t.
+  static const double _fieldT[]; ///< Field over domain at time t.
+  static const double _fieldIncr[]; ///< Solution increment field over domain at time t.
+  static const double _jacobianLumped[]; ///< Lumped Jacobian.
 
   static const double _orientation[]; ///< Expected values for fault orientation.
   static const double _area[]; ///< Expected values for fault area.
