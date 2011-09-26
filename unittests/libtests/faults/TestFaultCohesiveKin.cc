@@ -586,13 +586,13 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
-  //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
+  solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
   int i = 0;
-  const double tolerance = 1.0e-06;
+  const double tolerance = 2.0e-06;
   const double* solutionE = _data->fieldIncrAdjusted;
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
@@ -601,13 +601,15 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const double* solutionVertex = solutionSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != solutionVertex);
-    for (int iDim=0; iDim < spaceDim; ++iDim, ++i)
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++i) {
+      std::cout << "valE: " << solutionE[i] << ", val: " << solutionVertex[iDim] << std::endl;
       if (0.0 != solutionE[i])
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[i],
           tolerance);
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[i], solutionVertex[iDim],
 				     tolerance);
+    } // for
   } // for
 } // testAdjustSolnLumped
 
