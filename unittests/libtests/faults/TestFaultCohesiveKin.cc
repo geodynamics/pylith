@@ -271,8 +271,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
-    mesh.view("DOMAIN MESH");
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -303,7 +302,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residualIncr;
@@ -368,7 +367,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 
   jacobian.assemble("final_assembly");
 
-  MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
+  //MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const double* valsE = _data->jacobian;
   const int nrowsE = dispSection->sizeWithBC();
@@ -400,7 +399,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
       const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
       if (fabs(valE-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
 		  << "valE: " << valE
@@ -441,7 +440,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
   jacobian.complete();
 
-  // jacobian.view("JACOBIAN"); // DEBUGGING
+  //jacobian.view("JACOBIAN"); // DEBUGGING
 
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
@@ -586,7 +585,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
-  solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
+  //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());

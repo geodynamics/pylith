@@ -1428,11 +1428,6 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
       dispTIncrVertexP[iDim] = 
 	-jacobianVertexL[iDim]/jacobianVertexP[iDim]*dispTIncrVertexL[iDim];
 
-      std::cout << "iDim: " << iDim
-		<< ", jacobianL: " << jacobianVertexL[iDim]
-		<< ", Sinv: " << Sinv
-		<< std::endl;
-
     } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
