@@ -1295,30 +1295,27 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
                                                         const topology::Field<
 							topology::Mesh>& jacobian)
 { // adjustSolnLumped
-  /// Member prototype for _adjustSolnLumpedXD()
-  typedef void (pylith::faults::FaultCohesiveLagrange::*adjustSolnLumped_fn_type)
-    (double_array*, double_array*, double_array*,
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&);
-
   assert(0 != fields);
   assert(0 != _quadrature);
 
-  // Cohesive cells with conventional vertices i and j, and constraint
-  // vertex k require 2 adjustments to the solution:
+  // Cohesive cells with conventional vertices N and P, and constraint
+  // vertex L require 2 adjustments to the solution:
   //
-  //   * DOF k: Compute increment in Lagrange multipliers
-  //            dl_k = S^{-1} (-C_ki (A_i^{-1} r_i - C_kj A_j^{-1} r_j + u_i - u_j) - d_k)
-  //            S = C_ki (A_i^{-1} + A_j^{-1}) C_ki^T
+  //   * DOF L: Compute increment in Lagrange multipliers
+  //
+  //     d\vec{l}_p = \tensor{S}^{-1} \cdot (-\vec{r}_p^{*} + \tensor{L}_p 
+  //                   \cdot (d\vec{u}_{n+}^* - d\vec{u}_{n-}^*))
+  //     \tensor{S} = \tensor{L}_p \cdot 
+  //                   (\tensor{K}_{n+n+}{-1} + \tensor{K}_{n-n-})
+  //                   \cdot \tensor{L}_p^T
   //
   //   * DOF i and j: Adjust displacement increment (solution) to create slip
   //     consistent with Lagrange multiplier constraints
-  //            du_i = +A_i^-1 C_ki^T dlk
-  //            du_j = -A_j^-1 C_kj^T dlk
-
-  // :TODO: FIX THIS
+  //
+  //     d\vec{u}_{n+} = d\vec{u}_{n+}^{*} - \tensor{K}_{n+n+}^{-1} \cdot 
+  //                     \tensor{L}_p^T \cdot d\vec{l}_p
+  //     d\vec{u}_{n-} = d\vec{u}_{n-}^{*} + \tensor{K}_{n-n-}^{-1} \cdot 
+  //                     \tensor{L}_p^T \cdot d\vec{l}_p
 
   const int setupEvent = _logger->eventId("FaAS setup");
   const int geometryEvent = _logger->eventId("FaAS geometry");
@@ -1332,29 +1329,16 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const int spaceDim = _quadrature->spaceDim();
 
   // Get section information
-  double_array slipVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-
-  double_array jacobianVertexN(spaceDim);
-  double_array jacobianVertexP(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   assert(!jacobianSection.isNull());
 
-  double_array residualVertexN(spaceDim);
-  double_array residualVertexP(spaceDim);
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
   assert(!residualSection.isNull());
 
-  double_array dispTVertexN(spaceDim);
-  double_array dispTVertexP(spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-
   double_array dispTIncrVertexN(spaceDim);
   double_array dispTIncrVertexP(spaceDim);
-  double_array lagrangeTIncrVertex(spaceDim);
+  double_array dispTIncrVertexL(spaceDim); // Lagrange multiplier
   const ALE::Obj<RealSection>& dispTIncrSection = fields->get(
     "dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -1366,28 +1350,9 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", jacobianSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    jacobianSection);
   assert(!globalOrder.isNull());
-
-  adjustSolnLumped_fn_type adjustSolnLumpedFn;
-  switch (spaceDim) { // switch
-  case 1:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped1D;
-    break;
-  case 2: 
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped2D;
-    break;
-  case 3:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped3D;
-    break;
-  default :
-    assert(0);
-    throw std::logic_error("Unknown spatial dimension in "
-			   "FaultCohesiveLagrange::adjustSolnLumped.");
-  } // switch
 
   _logger->eventEnd(setupEvent);
 
@@ -1410,41 +1375,65 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get slip at fault cell's vertices.
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
     // Get residual at cohesive cell's vertices.
-    residualSection->restrictPoint(v_negative, &residualVertexN[0],
-			   residualVertexN.size());
-    residualSection->restrictPoint(v_positive, &residualVertexP[0], 
-				   residualVertexP.size());
-    
-    // Get jacobian at cohesive cell's vertices.
-    jacobianSection->restrictPoint(v_negative, &jacobianVertexN[0], 
-				   jacobianVertexN.size());
-    jacobianSection->restrictPoint(v_positive, &jacobianVertexP[0], 
-				   jacobianVertexP.size());
+    assert(spaceDim == residualSection->getFiberDimension(v_lagrange));
+    const double* residualVertexL = residualSection->restrictPoint(v_lagrange);
+    assert(residualVertexL);
 
-    // Get disp(t) at cohesive cell's vertices.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0],
-				dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0],
-				dispTVertexP.size());
+    // Get jacobian at cohesive cell's vertices.
+    assert(spaceDim == jacobianSection->getFiberDimension(v_negative));
+    const double* jacobianVertexN = jacobianSection->restrictPoint(v_negative);
+    assert(jacobianVertexN);
+
+    assert(spaceDim == jacobianSection->getFiberDimension(v_positive));
+    const double* jacobianVertexP = jacobianSection->restrictPoint(v_positive);
+    assert(jacobianVertexP);
+
+    assert(spaceDim == jacobianSection->getFiberDimension(v_lagrange));
+    const double* jacobianVertexL = jacobianSection->restrictPoint(v_lagrange);
+    assert(jacobianVertexL);
+
+    // Get dispIncr(t) at cohesive cell's vertices.
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_negative));
+    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
+				    dispTIncrVertexN.size());
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_positive));
+    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0],
+				    dispTIncrVertexP.size());
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0],
+				    dispTIncrVertexL.size());
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-#if 0
-    CALL_MEMBER_FN(*this, 
-		   adjustSolnLumpedFn)(&lagrangeTIncrVertex, 
-				       &dispTIncrVertexN, &dispTIncrVertexP,
-				       slipVertex, orientationVertex, 
-				       dispTVertexN, dispTVertexP,
-				       residualVertexN, residualVertexP,
-				       jacobianVertexN, jacobianVertexP);
-#endif
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      assert(jacobianVertexL[iDim] > 0.0);
+      const double Sinv = (jacobianVertexP[iDim] + jacobianVertexN[iDim]) /
+	(jacobianVertexL[iDim]*jacobianVertexL[iDim]);
+      dispTIncrVertexL[iDim] = Sinv * 
+	(-residualVertexL[iDim] +
+	 jacobianVertexL[iDim] * 
+	 (dispTIncrVertexP[iDim] - dispTIncrVertexN[iDim]));
+
+      assert(jacobianVertexN[iDim] > 0.0);
+      dispTIncrVertexN[iDim] = 
+	+jacobianVertexL[iDim]/jacobianVertexN[iDim]*dispTIncrVertexL[iDim];
+
+      assert(jacobianVertexP[iDim] > 0.0);
+      dispTIncrVertexP[iDim] = 
+	-jacobianVertexL[iDim]/jacobianVertexP[iDim]*dispTIncrVertexL[iDim];
+
+      std::cout << "iDim: " << iDim
+		<< ", jacobianL: " << jacobianVertexL[iDim]
+		<< ", Sinv: " << Sinv
+		<< std::endl;
+
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -1462,10 +1451,10 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
     // Set Lagrange multiplier value. Value from preliminary solve is
-    // bogus due to artificial diagonal entry of 1.0.
-    assert(lagrangeTIncrVertex.size() == 
+    // bogus due to artificial diagonal entry.
+    assert(dispTIncrVertexL.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
+    dispTIncrSection->updatePoint(v_lagrange, &dispTIncrVertexL[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
