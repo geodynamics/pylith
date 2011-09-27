@@ -373,7 +373,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 	      (dispTpdtCell[jBP + iDim] - dispTpdtCell[jBN + iDim] -
 	       slipCell[jBasis*spaceDim+iDim]);
 
-#if 1
+#if 0
 	    std::cout << "iBasis: " << iBasis
 		      << ", jBasis: " << jBasis
 		      << ", iDim: " << iDim
@@ -532,13 +532,19 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQ+iBasis];
+
+	// First index for positive, negative, and Lagrange vertices
+	const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
+	const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
+	const int iBL = 2*numBasis*spaceDim + iBasis*spaceDim;
+
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQ+jBasis];
 
 	  // First index for positive, negative, and Lagrange vertices
-	  const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
-	  const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
-	  const int iBL = 2*numBasis*spaceDim + iBasis*spaceDim;
+	  const int jBN = 0*numBasis*spaceDim + jBasis*spaceDim;
+	  const int jBP = 1*numBasis*spaceDim + jBasis*spaceDim;
+	  const int jBL = 2*numBasis*spaceDim + jBasis*spaceDim;
 
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    // Add entries to Jacobian at (i,j) where
@@ -549,15 +555,15 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 
 	    // Indices for negative vertex
             const int iN = (iBN + iDim) * rowSize; // row
-            const int jN = (iBN + iDim); // col
+            const int jN = (jBN + iDim); // col
 
 	    // Indices for positive vertex
             const int iP = (iBP + iDim) * rowSize; // row
-            const int jP = (iBP + iDim); // col
+            const int jP = (jBP + iDim); // col
 
 	    // Indices for Lagrange vertex
             const int iL = (iBL + iDim) * rowSize; // row
-            const int jL = (iBL + iDim); // col
+            const int jL = (jBL + iDim); // col
 
             jacobianCell[iN + jL] += valIJ;
             jacobianCell[iL + jN] += valIJ;
@@ -1413,9 +1419,9 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       assert(jacobianVertexL[iDim] > 0.0);
-      const double Sinv = (jacobianVertexP[iDim] + jacobianVertexN[iDim]) /
-	(jacobianVertexL[iDim]*jacobianVertexL[iDim]);
-      dispTIncrVertexL[iDim] = Sinv * 
+      const double S = (1.0/jacobianVertexP[iDim] + 1.0/jacobianVertexN[iDim]) *
+	jacobianVertexL[iDim]*jacobianVertexL[iDim];
+      dispTIncrVertexL[iDim] = 1.0/S * 
 	(-residualVertexL[iDim] +
 	 jacobianVertexL[iDim] * 
 	 (dispTIncrVertexP[iDim] - dispTIncrVertexN[iDim]));
@@ -2014,8 +2020,6 @@ pylith::faults::FaultCohesiveLagrange::_slipFaultToGlobal(void)
     _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  slipSection->view("SLIP (FAULT)");
-
   const ALE::Obj<RealSection>& orientationSection =
     _fields->get("orientation").section();
   assert(!orientationSection.isNull());
@@ -2045,7 +2049,7 @@ pylith::faults::FaultCohesiveLagrange::_slipFaultToGlobal(void)
   
   PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   slipSection->view("SLIP (GLOBAL)");
 #endif
 } // _slipFaultToGlobal
