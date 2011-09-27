@@ -1,5 +1,5 @@
 test = "hex8"
-vertex = 3
+vertex = 
 
 # ----------------------------------------------------------------------
 if test == "line2":
@@ -7,7 +7,7 @@ if test == "line2":
     jN = 2.2; duN = 1.2
     jP = 2.4; duP = 1.4
 
-    Sinv = (jN + jP) /jL**2
+    Sinv = 1.0/(jL**2 * (1.0/jN + 1.0/jP))
     duL = Sinv * (-rL + jL*(duP-duN));
 
     dduN = jL / jN * duL
@@ -59,7 +59,7 @@ elif test == "tri3" or test == "quad4":
             jN = 1.4; duNx = 3.4; duNy = 4.4;
             jP = 1.9; duPx = 3.9; duPy = 4.9;
 
-    Sinv = (jN + jP) / (jL*jL)
+    Sinv = 1.0/(jL**2 * (1.0/jN + 1.0/jP))
     duLx = Sinv * (-rLx + jL*(duPx - duNx))
     duLy = Sinv * (-rLy + jL*(duPy - duNy))
 
@@ -188,7 +188,7 @@ elif test == "tet4" or test == "hex8":
             jN = 1.8; duNx = 3.8; duNy = 4.8; duNz = 5.8;
             jP = 1.9; duPx = 3.9; duPy = 4.9; duPz = 5.9;
             
-    Sinv = (jN + jP) / (jL*jL)
+    Sinv = 1.0/(jL**2 * (1.0/jN + 1.0/jP))
     duLx = Sinv * (-rLx + jL*(duPx - duNx))
     duLy = Sinv * (-rLy + jL*(duPy - duNy))
     duLz = Sinv * (-rLz + jL*(duPz - duNz))

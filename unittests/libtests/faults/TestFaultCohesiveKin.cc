@@ -492,7 +492,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
     
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       const double valE = _data->jacobianLumped[iVertex*spaceDim+iDim];
-#if 1 // debugging
+#if 0 // debugging
       std::cout << "vertex: " << *v_iter << ", iDim: " << iDim
 		<< ", valE: " << valE
 		<< ", val: " << vals[iDim]
@@ -601,7 +601,6 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
     const double* solutionVertex = solutionSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(0 != solutionVertex);
     for (int iDim=0; iDim < spaceDim; ++iDim, ++i) {
-      std::cout << "valE: " << solutionE[i] << ", val: " << solutionVertex[iDim] << std::endl;
       if (0.0 != solutionE[i])
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[i],
           tolerance);
