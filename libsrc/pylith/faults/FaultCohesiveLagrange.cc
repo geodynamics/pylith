@@ -257,10 +257,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
     faultSieveMesh->heightStratum(0);
   assert(!faultCells.isNull());
-  const SieveMesh::label_sequence::iterator faultCellsBegin = 
-    faultCells->begin();
-  const SieveMesh::label_sequence::iterator faultCellsEnd = 
-    faultCells->end();
+  assert(faultCells->size() == cells->size());
 
   // Get sections associated with fault cells
   double_array coordinatesCell(numBasis*spaceDim);
@@ -282,20 +279,22 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin, 
-	 f_iter=faultCellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter, ++f_iter) {
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+	 c_iter != cellsEnd;
+       ++c_iter) {
+    topology::SubMesh::SieveMesh::point_type c_fault = 
+      _cohesiveToFault[*c_iter];
+
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*f_iter);
+    _quadrature->retrieveGeometry(c_fault);
 #else
     coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*f_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *f_iter);
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
 #endif
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -310,7 +309,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
     slipVisitor.clear();
-    faultSieveMesh->restrictClosure(*f_iter, slipVisitor);
+    faultSieveMesh->restrictClosure(c_fault, slipVisitor);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -466,10 +465,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
     faultSieveMesh->heightStratum(0);
   assert(!faultCells.isNull());
-  const SieveMesh::label_sequence::iterator faultCellsBegin = 
-    faultCells->begin();
-  const SieveMesh::label_sequence::iterator faultCellsEnd = 
-    faultCells->end();
+  assert(faultCells->size() == cells->size());
 
   // Get sections associated with fault cells
   double_array coordinatesCell(numBasis*spaceDim);
@@ -498,20 +494,22 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin, 
-	 f_iter=faultCellsBegin;
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
-       ++c_iter, ++f_iter) {
+       ++c_iter) {
+    topology::SubMesh::SieveMesh::point_type c_fault = 
+      _cohesiveToFault[*c_iter];
+
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*f_iter);
+    _quadrature->retrieveGeometry(c_fault);
 #else
     coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*f_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *f_iter);
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
 #endif
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -674,20 +672,22 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin, 
-	 f_iter=faultCellsBegin;
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
-       ++c_iter, ++f_iter) {
+       ++c_iter) {
+    topology::SubMesh::SieveMesh::point_type c_fault = 
+      _cohesiveToFault[*c_iter];
+
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*f_iter);
+    _quadrature->retrieveGeometry(c_fault);
 #else
     coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*f_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *f_iter);
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
 #endif
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -799,7 +799,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    * -(R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
    */
 
-#if 1 // DIAGONAL PRECONDITIONER
+#if 0 // DIAGONAL PRECONDITIONER
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
   const int restrictEvent = _logger->eventId("FaPr restrict");
@@ -809,10 +809,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
   // Allocate vectors for vertex values
-  double_array orientationVertex(orientationSize);
   double_array jacobianVertexP(spaceDim*spaceDim);
   double_array jacobianVertexN(spaceDim*spaceDim);
   double_array jacobianInvVertexP(spaceDim);
@@ -827,10 +825,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
   assert(!solutionSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
 
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -868,9 +862,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
 
     indicesN = 
       indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_negative)];
@@ -896,18 +887,9 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       jacobianInvVertexP[iDim] = 1.0/jacobianVertexP[iDim*spaceDim+iDim];
     } // for
 
-    // Compute -[C] [Adiag]^(-1) [C]^T
-    //   C_{ij}          = orientationVertex[i*spaceDim+j]
-    //   C^T_{ij}        = orientationVertex[j*spaceDim+i]
-    //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i]
-    //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
-    precondVertexL = 0.0;
-    for (int kDim=0; kDim < spaceDim; ++kDim) {
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	precondVertexL[kDim] -= 
-          orientationVertex[kDim*spaceDim+iDim] * 
-          orientationVertex[kDim*spaceDim+iDim] * 
-          (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      precondVertexL[iDim] = 
+	-(jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
     } // for
     
 
@@ -968,43 +950,27 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   _logger->eventBegin(setupEvent);
 
   // Get cell information and setup storage for cell data
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
   const int spaceDim = _quadrature->spaceDim();
   const int numBasis = _quadrature->numBasis();
-  const int orientationSize = spaceDim * spaceDim;
   const int nrowsF = numBasis*spaceDim; // number of rows/cols in fault matrix
 
   // Size of fault preconditioner matrix for cell
   const int matrixSizeF = nrowsF * nrowsF;
-  PetscBLASInt workSize = 6*nrowsF;
 
   // Allocate vectors for vertex values
-  double_array preconditionerCell(matrixSizeF);
   int_array indicesN(nrowsF);
   int_array indicesP(nrowsF);
   int_array indicesLagrange(nrowsF);
+  double_array preconditionerCell(matrixSizeF);
   double_array jacobianCellP(matrixSizeF);
   double_array jacobianCellN(matrixSizeF);
-  double_array jacobianInvCellP(matrixSizeF);
-  double_array jacobianInvCellN(matrixSizeF);
-  double_array UN(matrixSizeF);
-  double_array UP(matrixSizeF);
-  double_array VNt(matrixSizeF);
-  double_array VPt(matrixSizeF);
-  double_array singularValuesN(nrowsF);
-  double_array singularValuesP(nrowsF);
-  double_array work(workSize);
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
   assert(!solutionSection.isNull());
-
-  double_array orientationCell(numBasis*orientationSize);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-  RestrictVisitor orientationVisitor(*orientationSection,
-				     orientationCell.size(), 
-				     &orientationCell[0]);
 
   const int numConstraintVert = numBasis;
   const int numCorners = 3 * numConstraintVert; // cohesive cell
@@ -1035,20 +1001,26 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
 					   sieveMesh->depth())*spaceDim);
 
-
-
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
       (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
 
-
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  // Get fault cell information
+  const ALE::Obj<SieveMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::sieve_type>& faultSieve = faultSieveMesh->getSieve();
-  assert(!faultSieve.isNull());
-  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> fncV(*faultSieve,
-      (size_t) pow(faultSieve->getMaxConeSize(), std::max(0, faultSieveMesh->depth())));
+  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
+    faultSieveMesh->heightStratum(0);
+  assert(!faultCells.isNull());
+  assert(faultCells->size() == cellsCohesive->size());
+
+  // Get sections associated with fault cells
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -1058,34 +1030,38 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
+    topology::SubMesh::SieveMesh::point_type c_fault = 
+      _cohesiveToFault[*c_iter];
+
+    // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(geometryEvent);
+#endif
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(c_fault);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
+#endif
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
+
     // Get cone for cohesive cell
     ncV.clear();
     ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
 								 *c_iter, ncV);
     const int coneSize = ncV.getSize();
     assert(coneSize == numCorners);
-    const Mesh::point_type *cohesiveCone = ncV.getPoints();
+    const SieveMesh::point_type* cohesiveCone = ncV.getPoints();
     assert(0 != cohesiveCone);
 
-    // Get cone for corresponding fault cell
-    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    fncV.clear();
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*faultSieve,
-								 c_fault, fncV);
-    const int coneSizeFault = fncV.getSize();
-    assert(coneSizeFault == numBasis);
-    const Mesh::point_type *faultCone = fncV.getPoints();
-    assert(0 != faultCone);
-
+    // Get indices and Jacobian values
     jacobianCellP = 0.0;
     jacobianCellN = 0.0;
-    preconditionerCell = 0.0;
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventBegin(restrictEvent);
-#endif
-
-    // Get indices
     for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
       // constraint vertex k
       const int v_negative = cohesiveCone[0*numBasis+iBasis];
@@ -1126,138 +1102,70 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 		       &jacobianCellP[0]);
     CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
    
-    // Get orientation at fault vertices.
-    orientationVisitor.clear();
-    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
-
-
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    // Invert jacobianCellN and jacobianCellP, result goes in
-    // jacobianInvCellN and jacobianInvCellP if need separate place
-    // for result.
-    PetscBLASInt elemRows = nrowsF;
-    PetscScalar  one      = 1.0;
-    PetscBLASInt berr;
+    // Integrate preconditioner terms
+    
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
-#if 0
-    std::cout << "AN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << jacobianCellN[i*nrowsF+j];
-      }
-      std::cout << std::endl;
-    }
-#endif
+    preconditionerCell = 0.0;
 
-    // Transpose matrices so we can call LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp               = jacobianCellN[k];
-        jacobianCellN[k]  = jacobianCellN[kp];
-        jacobianCellN[kp] = tmp;
-        tmp               = jacobianCellP[k];
-        jacobianCellP[k]  = jacobianCellP[kp];
-        jacobianCellP[kp] = tmp;
-      }
-    }
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellN[0], &elemRows, &singularValuesN[0], &UN[0], &elemRows, &VNt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of negative-side element matrix failed.");
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellP[0], &elemRows, &singularValuesP[0], &UP[0], &elemRows, &VPt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of positive-side element matrix failed.");
+    const int rowSize = numBasis*spaceDim;
 
-#if 0
-    for(int i = 0; i < nrowsF; ++i) {
-      std::cout << "sigmaN["<<i<<"]: " << singularValuesN[i] << " sigmaP["<<i<<"]: " << singularValuesP[i] << std::endl;
-    }
-    std::cout << "UN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << UN[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-    std::cout << "VNt_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << VNt[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-#endif
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQ+iBasis];
 
-    // Row scale Vt by the inverse of the singular values
-    for(int i = 0; i < nrowsF; ++i) {
-      const PetscReal invN = singularValuesN[i] > 1.0e-10 ? 1.0/singularValuesN[i] : 0.0;
-      const PetscReal invP = singularValuesP[i] > 1.0e-10 ? 1.0/singularValuesP[i] : 0.0;
+	// First index Lagrange vertices
+	const int iB = iBasis*spaceDim;
 
-      for(int j = 0; j < nrowsF; ++j) {
-        VNt[j*nrowsF+i] *= invN;
-        VPt[j*nrowsF+i] *= invP;
-      }
-    }
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UN[0], &elemRows, &VNt[0], &elemRows, &one, &jacobianInvCellN[0], &elemRows);
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UP[0], &elemRows, &VPt[0], &elemRows, &one, &jacobianInvCellP[0], &elemRows);
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
 
-    // Transpose matrices from LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp                  = jacobianInvCellN[k];
-        jacobianInvCellN[k]  = jacobianInvCellN[kp];
-        jacobianInvCellN[kp] = tmp;
-        tmp                  = jacobianInvCellP[k];
-        jacobianInvCellP[k]  = jacobianInvCellP[kp];
-        jacobianInvCellP[kp] = tmp;
-      }
-    }
+	  // First index for Lagrange vertices
+	  const int jB = jBasis*spaceDim;
 
-    // Combine Jacbian inverse terms with result in jacobianInvCellN
-    jacobianInvCellN += jacobianInvCellP;
+	  for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+	    const int kB = kBasis*spaceDim;
 
-    for (int iLagrange=0; iLagrange < numBasis; ++iLagrange) {
-      // Exploit structure of C in matrix multiplication.
-      // C_ij Ai_jk C_lk - Structure of C means j == i;
-      const int jBasis = iLagrange;
-      
-      for (int lLagrange=0; lLagrange < numBasis; ++lLagrange) {
-	// Exploit structure of C in matrix multiplication.
-	// -C_ij Ai_jk C_lk - Structure of C means k == l;
-	const int kBasis = lLagrange;
+	    const double valIK = valI * basis[iQ+kBasis];
+	    const double valJK = basis[iQ+jBasis]*basis[iQ+kBasis];
 
-	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  const int iL = iLagrange*spaceDim + iDim;
+	    for (int iDim=0; iDim < spaceDim; ++iDim) {
+	      // Add entries to Jacobian at (i,j) where
+	      // iL = DOF at constraint node, jL = DOF at constraint node
+	      const int iL = (iB + iDim) * rowSize; // row
+	      const int jL = (jB + iDim); // col
 
-	  for (int lDim=0; lDim < spaceDim; ++lDim) {
-	    const int lL = lLagrange*spaceDim + lDim;
+	      const int k = (kB+iDim)*rowSize+(kB+iDim);
+	      const double jacobianNPInv = 
+		1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
 
-	    for (int jDim=0; jDim < spaceDim; ++jDim) {
-	      const int jB = jBasis*spaceDim + jDim;
+	      std::cout << "iB: " << iB
+			<< ", jB: " << jB
+			<< ", kB: " << kB
+			<< ", iDim: " << iDim
+			<< ", iL: " << iL
+			<< ", jL: " << jL
+			<< ", k: " << k
+			<< ", valIK: " << valIK
+			<< ", valJK: " << valJK
+			<< ", jacobianInv: " << jacobianNPInv
+			<< std::endl;
 
-	      for (int kDim=0; kDim < spaceDim; ++kDim) {
-		const int kB = kBasis*spaceDim + kDim;
-
-		preconditionerCell[iL*nrowsF+lL] -= 
-		  orientationCell[iLagrange*orientationSize+iDim*spaceDim+jDim] *
-		  jacobianInvCellN[jB*nrowsF+kB] *
-		  orientationCell[lLagrange*orientationSize+kDim*spaceDim+lDim];
-
-	      } // for
+	      preconditionerCell[iL + jL] -= valIK*valJK*jacobianNPInv;
 	    } // for
 	  } // for
-	} // for
+        } // for
       } // for
     } // for
 
-#if 0
+#if 1
     std::cout << "1/P_cell " << *c_iter << std::endl;
     for(int i = 0; i < nrowsF; ++i) {
       for(int j = 0; j < nrowsF; ++j) {
