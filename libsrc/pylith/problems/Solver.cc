@@ -189,7 +189,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatSetType(_jacobianPCFault, MATAIJ);
     err = MatSetFromOptions(_jacobianPCFault); CHECK_PETSC_ERROR(err);
     
-#if 1
+#if 0
     // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
 				    PETSC_NULL); CHECK_PETSC_ERROR(err);

@@ -762,183 +762,31 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   assert(0 != _fields);
   assert(0 != _logger);
 
-  /** We have J = [A C^T]
-   *              [C   0]
+  /** We have A = [K L^T]
+   *              [L   0]
    *
-   * We want to approximate -( C A^(-1) C^T )
+   * Compute P^(-1) = -( [L] [K]^(-1) [L]^T ) for each cohesive cell
+   * using the diagonal of K to approximate [K]^(-1).
    *
-   * Consider Lagrange vertex L that constrains the relative
-   * displacement between vertex N on the negative side of the fault
-   * and vertex P on the positive side of the fault.
+   * Decompose [K] into [Kn] and [Kp], where [Kn] contains the terms
+   * for vertices on the negative side of the fault and [Kp] contains
+   * the terms for vertices on the positive side of the fault.
    *
-   * If we approximate A(-1) by 1/diag(A), then we can write 
-   * C A^(-1) C^T for a 2-D case as
+   * P^(-1) = L_{ik} (1.0/Kn_{kk} + 1.0/Kp{kk}) L_{jk}
    *
-   * [-R00 -R01  R00 R01][Ai_nx 0      0     0    ][-R00 -R10]
-   * [-R10 -R11  R10 R11][      Ai_ny  0     0    ][-R01 -R11]
-   *                     [      0      Ai_px 0    ][ R00  R10]
-   *                     [                   Ai_py][ R01  R11]
+   * L_{ij} = sum_cells sum_{qi} N_i N_j w_qi |J|_{qi}
    *
-   * where
-   *
-   * Ai_nx is the inverse of the diag(A) for DOF x of vertex N
-   * Ai_ny is the inverse of the diag(A) for DOF y of vertex N
-   * Ai_px is the inverse of the diag(A) for DOF x of vertex P
-   * Ai_py is the inverse of the diag(A) for DOF y of vertex P
-   *
-   * If Ai_nx == Ai_ny and Ai_px == Ai_py, then the result is
-   * diagonal. Otherwise, the off-diagonal terms will be nonzero,
-   * but we expect them to be small. Since we already approximate
-   * the inverse of A by the inverse of the diagonal, we drop the
-   * off-diagonal terms of C A^(-1) C^T:
-   *
-   * Term for DOF x of vertex L is: 
-   * -(R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
-   *
-   * Term for DOF y of vertex L is: 
-   * -(R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
+   * :KLUDGE: There is a difference between P^(-1) using the full
+   * system matrices and assemblying P^(-1) from the cell
+   * matrices. The square of the sums of the basis functions (system
+   * matrices) is greater than the sums of the squares of the basis
+   * functions (cell matrices). Empirical experiments suggests that
+   * multiplying the cell matrices by a factor of about 5.0 improves
+   * the rate of convergence.
    */
-
-#if 0 // DIAGONAL PRECONDITIONER
-  const int setupEvent = _logger->eventId("FaPr setup");
-  const int computeEvent = _logger->eventId("FaPr compute");
-  const int restrictEvent = _logger->eventId("FaPr restrict");
-  const int updateEvent = _logger->eventId("FaPr update");
-
-  _logger->eventBegin(setupEvent);
-
-  // Get cell information and setup storage for cell data
-  const int spaceDim = _quadrature->spaceDim();
-
-  // Allocate vectors for vertex values
-  double_array jacobianVertexP(spaceDim*spaceDim);
-  double_array jacobianVertexN(spaceDim*spaceDim);
-  double_array jacobianInvVertexP(spaceDim);
-  double_array jacobianInvVertexN(spaceDim);
-  double_array precondVertexL(spaceDim);
-  int_array indicesN(spaceDim);
-  int_array indicesP(spaceDim);
-  int_array indicesRel(spaceDim);
-  for (int i=0; i < spaceDim; ++i)
-    indicesRel[i] = i;
-
-  // Get sections
-  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
-  assert(!solutionSection.isNull());
-
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-        solutionSection);
-  assert(!globalOrder.isNull());
-
-  const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
-        solutionSection, spaceDim);
-  assert(!lagrangeGlobalOrder.isNull());
-
-  _logger->eventEnd(setupEvent);
-#if !defined(DETAILED_EVENT_LOGGING)
-  _logger->eventBegin(computeEvent);
-#endif
-
-  PetscMat jacobianNP;
-  std::map<int, int> indicesMatToSubmat;
-  _getJacobianSubmatrixNP(&jacobianNP, &indicesMatToSubmat, *jacobian, *fields);
-  
-  PetscErrorCode err = 0;
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0, cV = 0; iVertex < numVertices; ++iVertex) {
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
-
-    // Compute contribution only if Lagrange constraint is local.
-    if (!globalOrder->isLocal(v_lagrange))
-      continue;
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventBegin(restrictEvent);
-#endif
-
-    indicesN = 
-      indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_negative)];
-    err = MatGetValues(jacobianNP,
-		       indicesN.size(), &indicesN[0],
-		       indicesN.size(), &indicesN[0],
-		       &jacobianVertexN[0]); CHECK_PETSC_ERROR(err);
-    indicesP = 
-      indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_positive)];
-    err = MatGetValues(jacobianNP,
-		       indicesP.size(), &indicesP[0],
-		       indicesP.size(), &indicesP[0],
-		       &jacobianVertexP[0]); CHECK_PETSC_ERROR(err);
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventEnd(restrictEvent);
-    _logger->eventBegin(computeEvent);
-#endif
-
-    // Compute inverse of Jacobian diagonals
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      jacobianInvVertexN[iDim] = 1.0/jacobianVertexN[iDim*spaceDim+iDim];
-      jacobianInvVertexP[iDim] = 1.0/jacobianVertexP[iDim*spaceDim+iDim];
-    } // for
-
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      precondVertexL[iDim] = 
-	-(jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
-    } // for
-    
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventEnd(computeEvent);
-    _logger->eventBegin(updateEvent);
-#endif
-
-    // Set global preconditioner index associated with Lagrange constraint vertex.
-    const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
-    
-    // Set diagonal entries in preconditioned matrix.
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      MatSetValue(*precondMatrix,
-		  indexLprecond + iDim,
-		  indexLprecond + iDim,
-		  precondVertexL[iDim],
-		  INSERT_VALUES);
-    
-#if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(spaceDim*spaceDim*4);
-    _logger->eventEnd(updateEvent);
-#endif
-  } // for
-  err = MatDestroy(&jacobianNP); CHECK_PETSC_ERROR(err);
-
-
-#else // FULL PRECONDITIONER
-
-  // Compute Pi = -( [L] [K]^(-1) [L]^T ) for cell using the diagonal of K
-  // to approximate [K]^(-1).
-  //
-  // Decompose [K] into [Kn] and [Kp], where [Kn] contains the terms
-  // for vertices on the negative side of the fault and [Kp] contains
-  // the terms for vertices on the positive side of the fault.
-  //
-  // [Kn] and [Kp] are numBasis*spaceDim x numBasis*spaceDim
-  // 
-  // Pi = L_{ik} (1.0/Kn_{kk} + 1.0/Kp{kk}) L_{jk}
-  //
-  // L_{ij} = sum_{qi} N_i N_j w_qi |J|_{qi}
-  //
-  // :KLUDGE: There is a difference between Pi using the full system
-  // matrices and the sum of Pi over the cells. The square of the sums
-  // of the basis functions (system matrices) is greater than the sums
-  // of the squares of the basis functions (cell matrices). Empirical
-  // experiments suggests a value of 4.0 improves the rate of
-  // convergence.
   const double assemblyFactor = 5.0;
+
+  //#define USE_DIAGONAL_PRECONDITIONER // Extract only the diagonal terms of P.
 
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
@@ -962,7 +810,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   int_array indicesN(nrowsF);
   int_array indicesP(nrowsF);
   int_array indicesLagrange(nrowsF);
+#if defined(USE_DIAGONAL_PRECONDITIONER)
+  double_array preconditionerCell(nrowsF);
+#else
   double_array preconditionerCell(matrixSizeF);
+#endif
   double_array jacobianCellP(matrixSizeF);
   double_array jacobianCellN(matrixSizeF);
   double_array basisProducts(numBasis*numBasis);
@@ -1130,39 +982,72 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
     preconditionerCell = 0.0;
 
+#if defined(USE_DIAGONAL_PRECONDITIONER)
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       // First index Lagrange vertices
       const int iB = iBasis*spaceDim;
 
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+      const int jBasis = iBasis; // Compute only diagonal entries
 	  
+      // First index for Lagrange vertices
+      const int jB = jBasis*spaceDim;
+
+      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+	const int kB = kBasis*spaceDim;
+
+	const double valIK = basisProducts[iBasis*numBasis+kBasis];
+	const double valJK = basisProducts[jBasis*numBasis+kBasis];
+
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  const int k = (kB+iDim)*nrowsF+(kB+iDim);
+	  const double jacobianNPInv = 
+	    1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
+
+	  preconditionerCell[iB+iDim] -= valIK*valJK*jacobianNPInv;
+        } // for
+      } // for
+    } // for
+#else
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      // First index Lagrange vertices
+      const int iB = iBasis*spaceDim;
+      
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	
 	// First index for Lagrange vertices
 	const int jB = jBasis*spaceDim;
-
+	
 	for (int kBasis=0; kBasis < numBasis; ++kBasis) {
 	  const int kB = kBasis*spaceDim;
-
+	  
 	  const double valIK = basisProducts[iBasis*numBasis+kBasis];
 	  const double valJK = basisProducts[jBasis*numBasis+kBasis];
-
+	  
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    // Add entries to Jacobian at (i,j) where
 	    // iL = DOF at constraint node, jL = DOF at constraint node
 	    const int iL = (iB + iDim) * nrowsF; // row
 	    const int jL = (jB + iDim); // col
-
+	    
 	    const int k = (kB+iDim)*nrowsF+(kB+iDim);
 	    const double jacobianNPInv = 
 	      1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
-
+	    
 	    preconditionerCell[iL + jL] -= valIK*valJK*jacobianNPInv;
 	  } // for
         } // for
       } // for
     } // for
+#endif
     preconditionerCell *= assemblyFactor;
 
-#if 0
+#if 0 // DEBUGGING
+#if defined(USE_DIAGONAL_PRECONDITIONER)
+    std::cout << "1/P_cell " << *c_iter << std::endl;
+    for(int i = 0; i < nrowsF; ++i) {
+      std::cout << "  " << preconditionerCell[i] << std::endl;
+    }
+#else
     std::cout << "1/P_cell " << *c_iter << std::endl;
     for(int i = 0; i < nrowsF; ++i) {
       for(int j = 0; j < nrowsF; ++j) {
@@ -1171,17 +1056,27 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       std::cout << std::endl;
     }
 #endif
+#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
 
+#if defined(USE_DIAGONAL_PRECONDITIONER)
+    for (int i=0; i < nrowsF; ++i)
+      MatSetValue(*precondMatrix,
+		  indicesLagrange[i],
+		  indicesLagrange[i],
+		  preconditionerCell[i],
+		  ADD_VALUES);
+#else
     err = MatSetValues(*precondMatrix,
                  indicesLagrange.size(), &indicesLagrange[0],
                  indicesLagrange.size(), &indicesLagrange[0],
                  &preconditionerCell[0],
                  ADD_VALUES);
+#endif
     CHECK_PETSC_ERROR_MSG(err, "Setting values in fault preconditioner failed.");
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -1192,8 +1087,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
-#endif
-
 #endif
 
 } // calcPreconditioner
