@@ -919,28 +919,26 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
 #else // FULL PRECONDITIONER
 
-  // Compute -( [C] [A]^(-1) [C]^T ) for cell.
+  // Compute Pi = -( [L] [K]^(-1) [L]^T ) for cell using the diagonal of K
+  // to approximate [K]^(-1).
   //
-  // numBasis = number of corners in fault cell
-  // spaceDim = spatial dimension
-  //
-  // For the cell, [A] is 2*numBasis*spaceDim x 2*numBasis*spaceDim,
-  // [C] is numBasis*spaceDim x 2*numBasis*spaceDim
-  //
-  // Decompose [A] into [An] and [Ap], where [An] contains the terms
-  // for vertices on the negative side of the fault and [Ap] contains
+  // Decompose [K] into [Kn] and [Kp], where [Kn] contains the terms
+  // for vertices on the negative side of the fault and [Kp] contains
   // the terms for vertices on the positive side of the fault.
   //
-  // [An] and [Ap] are numBasis*spaceDim x numBasis*spaceDim
+  // [Kn] and [Kp] are numBasis*spaceDim x numBasis*spaceDim
   // 
-  // Let [CAC] = [C] [A]^(-1) [C]^T.
+  // Pi = L_{ik} (1.0/Kn_{kk} + 1.0/Kp{kk}) L_{jk}
   //
-  // CAiC_kl = Cij Ai_jk C_lk
+  // L_{ij} = sum_{qi} N_i N_j w_qi |J|_{qi}
   //
-  // Cij: iLagrange, iDim, jBasis, jDim
-  // Ai_jk: jBasis, jDim, kBasis, kDim
-  // C_lk: lLagrange, lDim, kBasis, kDim
-  
+  // :KLUDGE: There is a difference between Pi using the full system
+  // matrices and the sum of Pi over the cells. The square of the sums
+  // of the basis functions (system matrices) is greater than the sums
+  // of the squares of the basis functions (cell matrices). Empirical
+  // experiments suggests a value of 4.0 improves the rate of
+  // convergence.
+  const double assemblyFactor = 5.0;
 
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
@@ -967,6 +965,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   double_array preconditionerCell(matrixSizeF);
   double_array jacobianCellP(matrixSizeF);
   double_array jacobianCellN(matrixSizeF);
+  double_array basisProducts(numBasis*numBasis);
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -1113,59 +1112,57 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
-    preconditionerCell = 0.0;
-
-    const int rowSize = numBasis*spaceDim;
-
+    // Compute product of basis functions.
+    // Want values summed over quadrature points
+    basisProducts = 0.0;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQ+iBasis];
 
-	// First index Lagrange vertices
-	const int iB = iBasis*spaceDim;
-
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
 
-	  // First index for Lagrange vertices
-	  const int jB = jBasis*spaceDim;
+	  basisProducts[iBasis*numBasis+jBasis] += valI*basis[iQ+jBasis];
+	} // for
+      } // for
+    } // for
 
-	  for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-	    const int kB = kBasis*spaceDim;
+    preconditionerCell = 0.0;
 
-	    const double valIK = valI * basis[iQ+kBasis];
-	    const double valJK = basis[iQ+jBasis]*basis[iQ+kBasis];
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      // First index Lagrange vertices
+      const int iB = iBasis*spaceDim;
 
-	    for (int iDim=0; iDim < spaceDim; ++iDim) {
-	      // Add entries to Jacobian at (i,j) where
-	      // iL = DOF at constraint node, jL = DOF at constraint node
-	      const int iL = (iB + iDim) * rowSize; // row
-	      const int jL = (jB + iDim); // col
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	  
+	// First index for Lagrange vertices
+	const int jB = jBasis*spaceDim;
 
-	      const int k = (kB+iDim)*rowSize+(kB+iDim);
-	      const double jacobianNPInv = 
-		1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
+	for (int kBasis=0; kBasis < numBasis; ++kBasis) {
+	  const int kB = kBasis*spaceDim;
 
-	      std::cout << "iB: " << iB
-			<< ", jB: " << jB
-			<< ", kB: " << kB
-			<< ", iDim: " << iDim
-			<< ", iL: " << iL
-			<< ", jL: " << jL
-			<< ", k: " << k
-			<< ", valIK: " << valIK
-			<< ", valJK: " << valJK
-			<< ", jacobianInv: " << jacobianNPInv
-			<< std::endl;
+	  const double valIK = basisProducts[iBasis*numBasis+kBasis];
+	  const double valJK = basisProducts[jBasis*numBasis+kBasis];
 
-	      preconditionerCell[iL + jL] -= valIK*valJK*jacobianNPInv;
-	    } // for
+	  for (int iDim=0; iDim < spaceDim; ++iDim) {
+	    // Add entries to Jacobian at (i,j) where
+	    // iL = DOF at constraint node, jL = DOF at constraint node
+	    const int iL = (iB + iDim) * nrowsF; // row
+	    const int jL = (jB + iDim); // col
+
+	    const int k = (kB+iDim)*nrowsF+(kB+iDim);
+	    const double jacobianNPInv = 
+	      1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
+
+	    preconditionerCell[iL + jL] -= valIK*valJK*jacobianNPInv;
 	  } // for
         } // for
       } // for
     } // for
+    preconditionerCell *= assemblyFactor;
 
-#if 1
+#if 0
     std::cout << "1/P_cell " << *c_iter << std::endl;
     for(int i = 0; i < nrowsF; ++i) {
       for(int j = 0; j < nrowsF; ++j) {
