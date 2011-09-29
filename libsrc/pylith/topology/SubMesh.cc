@@ -17,13 +17,14 @@
 //
 
 #include <portinfo>
-#include <stdexcept>
 
 #include "SubMesh.hh" // implementation of class methods
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <Selection.hh> // USES ALE::Selection
+
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -140,7 +141,12 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   std::string meshLabel = "subdomain_" + std::string(label);
   _mesh->setName(meshLabel);
 
-  if (sieve->getMaxConeSize() <= 0) {
+  int maxConeSizeLocal = sieve->getMaxConeSize();
+  int maxConeSize = 0;
+  int err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+			  sieve->comm()); CHECK_PETSC_ERROR(err);
+
+  if (maxConeSize <= 0) {
     std::ostringstream msg;
     msg << "Error while creating submesh. Submesh '" 
 	<< label << "' does not contain any cells.\n"
