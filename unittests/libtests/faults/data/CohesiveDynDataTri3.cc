@@ -268,14 +268,14 @@ const int pylith::faults::CohesiveDynDataTri3::_constraintVertices[] = {
 // ----------------------------------------------------------------------
 // Input
 const double pylith::faults::CohesiveDynDataTri3::_fieldIncrStick[] = {
-  1.1, 29.1,
-  1.2, 29.2, // 3
-  1.3, 29.3, // 4
-  1.4, 29.4,
-  1.5, 29.5, // 6
-  1.7, 29.7, // 7
-  1.6, -29.6, // 8
-  1.8, -29.8, // 9
+  1.1, 2.1,
+  1.2, 2.2, // 3
+  1.3, 2.3, // 4
+  1.4, 2.4,
+  1.5, 2.5, // 6
+  1.7, 2.7, // 7
+  21.6, 2.6, // 8
+  21.8, 2.8, // 9
 };
 
 // No change in fieldIncr

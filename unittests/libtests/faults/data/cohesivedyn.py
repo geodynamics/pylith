@@ -1,5 +1,5 @@
-cell = "hex8"
-dim = "3d"
+cell = "tri3"
+dim = "2d"
 testCase = "slip"
 
 import numpy

@@ -218,7 +218,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
 
-    //dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
+    dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
 
     // Get expected values
     const double* valsE = _data->fieldIncrStick; // No change in dispIncr
@@ -260,7 +260,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 
     // Get section containing slip
     const ALE::Obj<RealSection>& slipSection =
-      fault._fields->get("slip").section();
+      fault.vertexField("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
     const double valE = 0.0; // slip should be zero
@@ -372,7 +372,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 
     // Get section containing slip
     const ALE::Obj<RealSection>& slipSection =
-      fault._fields->get("slip").section();
+      fault.vertexField("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
     // Get expected values
@@ -494,7 +494,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
     // Get section containing slip
     const ALE::Obj<RealSection>& slipSection =
-      fault._fields->get("slip").section();
+      fault.vertexField("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
     // Get expected values
@@ -636,7 +636,7 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
       double tractionE = 0.0;
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	tractionE += 
-	  orientationVertex[jDim*spaceDim+iDim]*tractionsVertexGlobalE[jDim];
+	  orientationVertex[iDim*spaceDim+jDim]*tractionsVertexGlobalE[jDim];
       } // for
       if (tractionE != 0.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
