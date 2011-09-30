@@ -136,7 +136,6 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
 
-
   // Create field for slip rate associated with Lagrange vertex k
   _fields->add("slip rate", "slip_rate");
   topology::Field<topology::SubMesh>& slipRate = _fields->get("slip rate");
@@ -243,29 +242,26 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate arrays for vertex values
-  double_array tractionTVertex(spaceDim);
-  double_array tractionTpdtVertex(spaceDim);
-  double_array slipTpdtVertex(spaceDim);
-  double_array lagrangeTpdtVertex(spaceDim);
+  double_array tractionTpdtVertex(spaceDim); // Fault coordinate system
 
   // Get sections
-  double_array slipVertex(spaceDim);
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
-  double_array slipRateVertex(spaceDim);
   const ALE::Obj<RealSection>& slipRateSection =
       _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
 
-  double_array lagrangeTVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  double_array lagrangeTIncrVertex(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection =
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+      fields->get("orientation").section();
+  assert(!orientationSection.isNull());
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -275,25 +271,35 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Get slip
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+    assert(spaceDim == slipSection->getFiberDimension(v_fault));
+    const double* slipVertex = slipSection->restrictPoint(v_fault);
 
     // Get slip rate
-    slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
-      slipRateVertex.size());
+    assert(spaceDim == slipRateSection->getFiberDimension(v_fault));
+    const double* slipRateVertex = slipRateSection->restrictPoint(v_fault);
+
+    // Get orientation
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
 
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
-    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
-      lagrangeTVertex.size());
-    dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
-      lagrangeTIncrVertex.size());
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTIncrVertex = 
+      dispTIncrSection->restrictPoint(v_lagrange);
 
-    // Compute Lagrange multiplier at time t+dt
-    lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
-
-    // :TODO: FIX THIS
-    // Solution at Lagrange constraint vertices is the
-    // Lagrange multiplier value, which is currently the force.
-    // Compute traction by dividing force by area
+    // Compute fault traction (Lagrange multiplier) at time t+dt in
+    // fault coordinate system.
+    tractionTpdtVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	tractionTpdtVertex[iDim] += 
+	  (lagrangeTVertex[jDim]+lagrangeTIncrVertex[jDim]) *
+	  orientationVertex[jDim*spaceDim+iDim];
+      } // for
+    } // for
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -362,14 +368,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate arrays for vertex values
-  double_array tractionTVertex(spaceDim);
   double_array tractionTpdtVertex(spaceDim);
-  double_array slipTpdtVertex(spaceDim);
-  double_array lagrangeTpdtVertex(spaceDim);
 
   // Get sections
-  double_array slipVertex(spaceDim);
   double_array dSlipVertex(spaceDim);
+  double_array slipVertex(spaceDim);
   const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
   assert(!slipSection.isNull());
 
@@ -378,18 +381,15 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       _fields->get("slip rate").section();
   assert(!slipRateSection.isNull());
 
-  double_array orientationVertex(spaceDim * spaceDim);
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
 
-  double_array lagrangeTVertex(spaceDim);
   double_array dispTVertexN(spaceDim);
   double_array dispTVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  double_array lagrangeTIncrVertex(spaceDim);
   double_array dispTIncrVertexN(spaceDim);
   double_array dispTIncrVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection =
@@ -397,6 +397,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   assert(!dispTIncrSection.isNull());
 
   double_array dLagrangeTpdtVertex(spaceDim);
+  double_array dLagrangeTpdtVertexGlobal(spaceDim);
   const ALE::Obj<RealSection>& dLagrangeTpdtSection =
       _fields->get("sensitivity dLagrange").section();
   assert(!dLagrangeTpdtSection.isNull());
@@ -441,34 +442,51 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
       slipRateVertex.size());
 
+    // Get orientation
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
-    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
-      lagrangeTVertex.size());
-    dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
-      lagrangeTIncrVertex.size());
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
 
-    // Compute Lagrange multiplier at time t+dt
-    lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
-    dLagrangeTpdtVertex = 0.0;
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTIncrVertex = 
+      dispTIncrSection->restrictPoint(v_lagrange);
 
-    // :TODO: FIX THIS
-    // :KLUDGE: Solution at Lagrange constraint vertices is the
-    // Lagrange multiplier value, which is currently the force.
-    // Compute traction by dividing force by area
+    // Compute Lagrange multiplier at time t+dt in fault coordinate system.
+    tractionTpdtVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	tractionTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
+      } // for
+    } // for
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
 
     // Use fault constitutive model to compute traction associated with
     // friction.
+    dLagrangeTpdtVertex = 0.0;
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
 					 tractionTpdtVertex);
 
-    assert(dLagrangeTpdtVertex.size() ==
+    // Rotate traction to global coordinate system.
+    dLagrangeTpdtVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	dLagrangeTpdtVertexGlobal[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * dLagrangeTpdtVertex[jDim];
+      } // for
+    } // for
+
+    assert(dLagrangeTpdtVertexGlobal.size() ==
         dLagrangeTpdtSection->getFiberDimension(v_fault));
-    dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertex[0]);
+    dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertexGlobal[0]);
   } // for
 
   // Solve sensitivity problem for negative side of the fault.
@@ -495,10 +513,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Get fault orientation
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-    orientationVertex.size());
-
     // Get slip
     slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
 
@@ -508,12 +522,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
 
     // Get Lagrange multiplier at time t
-    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
-				lagrangeTVertex.size());
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
 
     // Get Lagrange multiplier increment at time t
-    dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
-				    lagrangeTIncrVertex.size());
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTIncrVertex = 
+      dispTIncrSection->restrictPoint(v_lagrange);
 
     // Get change in Lagrange multiplier.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
@@ -527,14 +542,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       continue; // No change, so continue
 
     // Compute change in slip.
-    dSlipVertex = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        dSlipVertex[iDim] += 
-	  orientationVertex[iDim*spaceDim+kDim] * dispRelVertex[kDim];
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      dSlipVertex[iDim] = 2.0*dispRelVertex[iDim];
 
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
+    // :TODO: FIX THIS
     const int indexN = spaceDim - 1;
     const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
       lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
@@ -553,15 +566,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
 
-    // Compute change in displacement field.
-    dispTIncrVertexN = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        dispTIncrVertexN[iDim] += 
-	  orientationVertex[kDim*spaceDim+iDim] * dSlipVertex[kDim];
-    
     // Update displacement field
-    dispTIncrVertexN *= -0.5;
+    dispTIncrVertexN = -0.5*dSlipVertex;
     assert(dispTIncrVertexN.size() ==
 	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
@@ -810,15 +816,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
     dLagrangeTpdtVertex = 0.0;
     
-    // :TODO: FIX THIS
-    // :KLUDGE: Solution at Lagrange constraint vertices is the
-    // Lagrange multiplier value, which is currently the force.
-    // Compute traction by dividing force by area
-#if 0
-    assert(*areaVertex > 0);
-    tractionTVertex = lagrangeTVertex / (*areaVertex);
-    tractionTpdtVertex = lagrangeTpdtVertex / (*areaVertex);
-#endif
+    // :TODO: Rotate fault tractions to fault coordinate system.
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -831,6 +829,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
        sensitivitySolveLumpedFn)(&slipVertex,
            dLagrangeTpdtVertex, jacobianVertexN, jacobianVertexP);
 
+    // :TODO: Rotate fault tractions to global coordinate system.
+    
     lagrangeTIncrVertex += dLagrangeTpdtVertex;
 
     // :TODO: Refactor this into sensitivitySolveLumpedXD().
@@ -1310,6 +1310,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
     assert(0 != dispTVertex);
 
+    // :TODO: Rotate to fault coordinate system
 #if 0 // :TODO: FIX THIS
     for (int i=0; i < fiberDim; ++i)
       tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
@@ -1387,7 +1388,7 @@ pylith::faults::FaultCohesiveDyn::_getInitialTractions(
       tractionsVertexGlobal[i] = forcesInitialVertex[i] / areaVertex[0];
 #endif
 
-    // Rotate from global coordinate system to local coordinate system
+    // Rotate from global coordinate system to fault coordinate system
     tractionsVertexFault = 0.0;
     for (int iDim = 0; iDim < spaceDim; ++iDim)
       for (int kDim = 0; kDim < spaceDim; ++kDim)
