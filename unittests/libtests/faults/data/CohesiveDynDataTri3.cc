@@ -252,9 +252,9 @@ const double pylith::faults::CohesiveDynDataTri3::_area[] = {
   1.0,
 };
 
-const double pylith::faults::CohesiveDynDataTri3::_forcesInitial[] = {
-  2.05, -1.05,
-  2.05, -1.05,
+const double pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
+  2.0, -1.0,
+  2.1, -1.1,
 };
 
 
@@ -366,7 +366,7 @@ pylith::faults::CohesiveDynDataTri3::CohesiveDynDataTri3(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  

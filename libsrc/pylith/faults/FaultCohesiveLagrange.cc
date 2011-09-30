@@ -107,18 +107,18 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.stagePush("Fault");
 
-  // Allocate slip field
+  // Allocate dispRel field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  _fields->add("slip", "slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.newSection(vertices, cs->spaceDim());
-  slip.allocate();
-  slip.vectorFieldType(topology::FieldBase::VECTOR);
-  slip.scale(_normalizer->lengthScale());
+  _fields->add("relative disp", "relative_disp");
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  dispRel.newSection(vertices, cs->spaceDim());
+  dispRel.allocate();
+  dispRel.vectorFieldType(topology::FieldBase::VECTOR);
+  dispRel.scale(_normalizer->lengthScale());
 
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
       faultSieveMesh->heightStratum(0);
@@ -267,11 +267,12 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   RestrictVisitor coordsVisitor(*coordinates, 
 				coordinatesCell.size(), &coordinatesCell[0]);
 
-  double_array slipCell(numBasis*spaceDim);
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  const ALE::Obj<RealSection>& slipSection = slip.section();
-  assert(!slipSection.isNull());
-  RestrictVisitor slipVisitor(*slipSection, slipCell.size(), &slipCell[0]);
+  double_array dispRelCell(numBasis*spaceDim);
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  const ALE::Obj<RealSection>& dispRelSection = dispRel.section();
+  assert(!dispRelSection.isNull());
+  RestrictVisitor dispRelVisitor(*dispRelSection, 
+				 dispRelCell.size(), &dispRelCell[0]);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -308,8 +309,8 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     dispTIncrVisitor.clear();
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
-    slipVisitor.clear();
-    faultSieveMesh->restrictClosure(c_fault, slipVisitor);
+    dispRelVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, dispRelVisitor);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -370,7 +371,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 	    // Lagrange constraint
 	    residualCell[iBL + iDim] += valIJ * 
 	      (dispTpdtCell[jBP + iDim] - dispTpdtCell[jBN + iDim] -
-	       slipCell[jBasis*spaceDim+iDim]);
+	       dispRelCell[jBasis*spaceDim+iDim]);
 
 #if 0
 	    std::cout << "iBasis: " << iBasis
@@ -378,7 +379,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 		      << ", iDim: " << iDim
 		      << ", valIJ: " << valIJ
 		      << ", jacobianDet: " << jacobianDet[iQuad]
-		      << ", slip: " << slipCell[jBasis*spaceDim+iDim]
+		      << ", dispRel: " << dispRelCell[jBasis*spaceDim+iDim]
 		      << ", dispP: " << dispTpdtCell[jBP + iDim]
 		      << ", dispN: " << dispTpdtCell[jBN + iDim]
 		      << ", dispL: " << dispTpdtCell[jBL + iDim]
@@ -1515,8 +1516,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
   // Allocate orientation field.
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  orientation.newSection(slip, orientationSize);
+  const topology::Field<topology::SubMesh>& dispRel = 
+    _fields->get("relative disp");
+  orientation.newSection(dispRel, orientationSize);
   const ALE::Obj<RealSection>& orientationSection = orientation.section();
   assert(!orientationSection.isNull());
   // Create subspaces for along-strike, up-dip, and normal directions
@@ -1760,8 +1762,9 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     //logger.stagePush("Fault");
 
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->cloneSection(slip);
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    tractions->cloneSection(dispRel);
 
     //logger.stagePop();
   } // if
@@ -1780,13 +1783,15 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     assert(0 != dispTVertex);
 
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
 
     tractionsVertex = 0.0;
-    for (int i=0; i < spaceDim; ++i)
-      for (int j=0; j < spaceDim; ++j)
-	tractionsVertex[i] += orientationVertex[i*spaceDim+j] * dispTVertex[j];
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	tractionsVertex[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * dispTVertex[jDim];
 
     assert(tractionsVertex.size() == 
 	   tractionsSection->getFiberDimension(v_fault));
@@ -1801,22 +1806,22 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
 } // _calcTractionsChange
 
 // ----------------------------------------------------------------------
-// Transform slip field from local (fault) coordinate system to
+// Transform field from local (fault) coordinate system to
 // global coordinate system.
 void
-pylith::faults::FaultCohesiveLagrange::_slipFaultToGlobal(void)
-{ // _slipFaultToGlobal
+pylith::faults::FaultCohesiveLagrange::_faultToGlobal(topology::Field<topology::SubMesh>* field)
+{ // _faultToGlobal
+  assert(field);
   assert(0 != _faultMesh);
   assert(0 != _fields);
 
-  // Fiber dimension of tractions matches spatial dimension.
+  // Fiber dimension of vector field matches spatial dimension.
   const int spaceDim = _quadrature->spaceDim();
-  double_array slipGlobalVertex(spaceDim);
+  double_array fieldVertexGlobal(spaceDim);
 
   // Get sections.
-  const ALE::Obj<RealSection>& slipSection =
-    _fields->get("slip").section();
-  assert(!slipSection.isNull());
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
 
   const ALE::Obj<RealSection>& orientationSection =
     _fields->get("orientation").section();
@@ -1826,31 +1831,83 @@ pylith::faults::FaultCohesiveLagrange::_slipFaultToGlobal(void)
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    assert(spaceDim == slipSection->getFiberDimension(v_fault));
-    const double* slipFaultVertex = slipSection->restrictPoint(v_fault);
-    assert(slipFaultVertex);
+    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
+    const double* fieldVertexFault = fieldSection->restrictPoint(v_fault);
+    assert(fieldVertexFault);
 
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
     const double* orientationVertex = orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
 
-    slipGlobalVertex = 0.0;
-    for (int i=0; i < spaceDim; ++i)
-      for (int j=0; j < spaceDim; ++j)
-	slipGlobalVertex[i] += 
-	  orientationVertex[j*spaceDim+i] * slipFaultVertex[j];
+    fieldVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexGlobal[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] * fieldVertexFault[jDim];
 
-    assert(slipGlobalVertex.size() == 
-	   slipSection->getFiberDimension(v_fault));
-    slipSection->updatePoint(v_fault, &slipGlobalVertex[0]);
+    assert(fieldVertexGlobal.size() == 
+	   fieldSection->getFiberDimension(v_fault));
+    fieldSection->updatePoint(v_fault, &fieldVertexGlobal[0]);
   } // for
   
   PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
 
 #if 0 // DEBUGGING
-  slipSection->view("SLIP (GLOBAL)");
+  field->view("FIELD (GLOBAL)");
 #endif
-} // _slipFaultToGlobal
+} // _faultToGlobal
+
+// ----------------------------------------------------------------------
+// Transform field from global coordinate system to local (fault)
+// coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::_globalToFault(topology::Field<topology::SubMesh>* field)
+{ // _globalToFault
+  assert(field);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Fiber dimension of vector field matches spatial dimension.
+  const int spaceDim = _quadrature->spaceDim();
+  double_array fieldVertexFault(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
+    const double* fieldVertexGlobal = fieldSection->restrictPoint(v_fault);
+    assert(fieldVertexGlobal);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
+
+    fieldVertexFault = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexFault[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * fieldVertexGlobal[jDim];
+
+    assert(fieldVertexFault.size() == 
+	   fieldSection->getFiberDimension(v_fault));
+    fieldSection->updatePoint(v_fault, &fieldVertexFault[0]);
+  } // for
+  
+  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
+
+#if 0 // DEBUGGING
+  field->view("FIELD (FAULT)");
+#endif
+} // _faultToGlobal
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
@@ -1864,12 +1921,14 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
 
-  // Create vector field; use same shape/chart as slip field.
+  // Create vector field; use same shape/chart as relative
+  // displacement field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  buffer.cloneSection(slip);
+  const topology::Field<topology::SubMesh>& dispRel = 
+    _fields->get("relative disp");
+  buffer.cloneSection(dispRel);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
 

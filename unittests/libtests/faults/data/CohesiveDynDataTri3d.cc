@@ -438,10 +438,10 @@ const int pylith::faults::CohesiveDynDataTri3d::_constraintVertices[] = {
   13, 14, 15
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_forcesInitial[] = {
-  3.15*1.4142135623730951, 1.00*1.41421356237309,
-  2.05, -1.05,
-  1.10,  2.10,
+const double pylith::faults::CohesiveDynDataTri3d::_initialTractions[] = {
+  3.0*0.70710678118654757, 0.70710678118654757,
+  2.1, -1.1,
+  1.2,  2.2,
 };
 
 
@@ -572,7 +572,7 @@ pylith::faults::CohesiveDynDataTri3d::CohesiveDynDataTri3d(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  

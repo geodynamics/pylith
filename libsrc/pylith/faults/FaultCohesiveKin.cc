@@ -129,20 +129,20 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const int setupEvent = _logger->eventId("FaIR setup");
   _logger->eventBegin(setupEvent);
 
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.zero();
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  dispRel.zero();
   // Compute slip field at current time step
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
     if (t >= src->originTime())
-      src->slip(&slip, t);
+      src->slip(&dispRel, t);
   } // for
 
-  // Transform slip from local (fault) coordinate system to global
-  // coordinate system
-  _slipFaultToGlobal();
+  // Transform slip from local (fault) coordinate system to relative
+  // displacement field in global coordinate system
+  _faultToGlobal(&dispRel);
 
   _logger->eventEnd(setupEvent);
 
@@ -170,8 +170,15 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    return slip;
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    _allocateBufferVectorField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    buffer.copy(dispRel);
+    buffer.label("slip");
+    _globalToFault(&buffer);
+    return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection = _fields->get(
@@ -271,6 +278,9 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
+
+  // Should never get here.
+  throw std::logic_error("Unknown field in FaultCohesiveKin::vertexField().");
 
   // Satisfy return values
   assert(0 != _fields);

@@ -146,18 +146,13 @@ private :
   void _calcTractions(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
-  /** Get initial tractions on fault surface.
-   *
-   * @param tractions Field for tractions.
-   */
-  void _getInitialTractions(topology::Field<topology::SubMesh>* tractions);
-
-  /** Update slip rate associated with Lagrange vertex k corresponding
-   * to diffential velocity between conventional vertices i and j.
+  /** Update relative velocity associated with Lagrange vertex k
+   * corresponding to diffential velocity between conventional
+   * vertices i and j.
    *
    * @param fields Solution fields.
    */
-  void _updateSlipRate(const topology::SolutionFields& fields);
+  void _updateVelRel(const topology::SolutionFields& fields);
 
   /** Setup sensitivity problem to compute change in slip given change
    * in Lagrange multipliers.

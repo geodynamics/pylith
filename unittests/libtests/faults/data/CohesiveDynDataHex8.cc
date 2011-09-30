@@ -1345,11 +1345,11 @@ const double pylith::faults::CohesiveDynDataHex8::_area[] = {
   1.0, 1.0, 1.0, 1.0
 };
 
-const double pylith::faults::CohesiveDynDataHex8::_forcesInitial[] = {
-  3.063397471, -1.063397471, +2.063397471, 
-  3.121132498, -1.121132498, +2.121132498, 
-  3.178867525, -1.178867525, +2.178867525,
-  3.236602552, -1.236602552, +2.236602552,
+const double pylith::faults::CohesiveDynDataHex8::_initialTractions[] = {
+  3.0, -1.0, +2.0, 
+  3.1, -1.1, +2.1, 
+  3.2, -1.2, +2.2,
+  3.3, -1.3, +2.3,
 };
 
 
@@ -1524,7 +1524,7 @@ pylith::faults::CohesiveDynDataHex8::CohesiveDynDataHex8(void)
   jacobian = const_cast<double*>(_jacobian);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  initialTractions = const_cast<double*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
