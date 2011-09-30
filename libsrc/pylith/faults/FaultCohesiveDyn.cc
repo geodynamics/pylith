@@ -348,7 +348,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       double slipNormal = 0.0;
       const int indexN = spaceDim - 1;
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipNormal += orientationCell[iO + jDim*spaceDim]*dispRelCell[iB+jDim];
+	slipNormal += 
+	  orientationCell[iO + indexN*spaceDim+jDim]*dispRelCell[iB+jDim];
       } // for
 
       if (slipNormal > _zeroTolerance) {
@@ -453,11 +454,11 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
-	slipRateVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	slipRateVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  velRelVertex[jDim];
-	tractionTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim]+lagrangeTIncrVertex[jDim]);
       } // for
     } // for
@@ -619,14 +620,28 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[jDim] += orientationVertex[jDim*spaceDim+iDim] *
+	slipVertex[jDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
-	slipRateVertex[jDim] += orientationVertex[jDim*spaceDim+iDim] *
+	slipRateVertex[jDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  velRelVertex[jDim];
-	tractionTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
       } // for
     } // for
+
+#if 1 // debugging
+    std::cout << "slipVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipVertex[iDim];
+    std::cout << ",  slipRateVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipRateVertex[iDim];
+    std::cout << ",  tractionVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << tractionTpdtVertex[iDim];
+    std::cout << std::endl;
+#endif
+     
 
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
@@ -644,7 +659,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	dLagrangeTpdtVertexGlobal[iDim] += 
-	  orientationVertex[iDim*spaceDim+jDim] * dLagrangeTpdtVertex[jDim];
+	  orientationVertex[jDim*spaceDim+iDim] * dLagrangeTpdtVertex[jDim];
       } // for
     } // for
 
@@ -721,9 +736,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     slipVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
-	dSlipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] * 
+	dSlipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
 	  2.0*sensDispRelVertex[jDim];
       } // for
     } // for
@@ -732,9 +747,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     double tractionNormal = 0.0;
     const int indexN = spaceDim - 1;
     for (int jDim=0; jDim < spaceDim; ++jDim) {
-      tractionNormal += orientationVertex[jDim*spaceDim+indexN] *
-	(lagrangeTVertex[indexN] + lagrangeTIncrVertex[indexN] + 
-	 dLagrangeTpdtVertex[indexN]);
+      tractionNormal += orientationVertex[indexN*spaceDim+jDim] *
+	(lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim] + 
+	 dLagrangeTpdtVertex[jDim]);
     } // for
 
     // Do not allow fault interpenetration and set fault opening to
@@ -748,7 +763,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dDispRelVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	dDispRelVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	dDispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
 	  dSlipVertex[jDim];
       } // for
     } // for
@@ -1485,7 +1500,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     tractionsVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	tractionsVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	tractionsVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispTVertex[jDim];
       } // for
     } // for
@@ -1763,6 +1778,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   assert(0 != _quadrature);
 
   const int spaceDim = _quadrature->spaceDim();
+
+  // :TODO: FIX THIS
 
   // Compute residual -C^T dLagrange
   double_array residualVertex(spaceDim);

@@ -1787,6 +1787,7 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
       orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
 
+    // Rotate from global coordinate system to fault (orientation)
     tractionsVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       for (int jDim=0; jDim < spaceDim; ++jDim)
@@ -1839,6 +1840,7 @@ pylith::faults::FaultCohesiveLagrange::_faultToGlobal(topology::Field<topology::
     const double* orientationVertex = orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
 
+    // Rotate from fault to global coordinate system (transpose orientation)
     fieldVertexGlobal = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       for (int jDim=0; jDim < spaceDim; ++jDim)
@@ -1891,6 +1893,7 @@ pylith::faults::FaultCohesiveLagrange::_globalToFault(topology::Field<topology::
     const double* orientationVertex = orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
 
+    // Rotate from global coordinate system to fault (orientation)
     fieldVertexFault = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       for (int jDim=0; jDim < spaceDim; ++jDim)
