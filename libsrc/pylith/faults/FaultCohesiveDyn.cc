@@ -136,12 +136,13 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
 
-  // Create field for slip rate associated with Lagrange vertex k
-  _fields->add("slip rate", "slip_rate");
-  topology::Field<topology::SubMesh>& slipRate = _fields->get("slip rate");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slipRate.cloneSection(slip);
-  slipRate.vectorFieldType(topology::FieldBase::VECTOR);
+  // Create field for relative velocity associated with Lagrange vertex k
+  _fields->add("relative velocity", "relative_velocity");
+  topology::Field<topology::SubMesh>& velRel = 
+    _fields->get("relative velocity");
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  velRel.cloneSection(dispRel);
+  velRel.vectorFieldType(topology::FieldBase::VECTOR);
 
   //logger.stagePop();
 } // initialize
@@ -156,6 +157,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 { // integrateResidual
   assert(0 != fields);
   assert(0 != _fields);
+  assert(0 != _logger);
 
   // Initial fault tractions have been assembled, so they do not need
   // assembling across processors.
@@ -166,65 +168,214 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   if (0 == _dbInitialTract)
     return;
 
+  const int setupEvent = _logger->eventId("FaIR setup");
+  const int geometryEvent = _logger->eventId("FaIR geometry");
+  const int computeEvent = _logger->eventId("FaIR compute");
+  const int restrictEvent = _logger->eventId("FaIR restrict");
+  const int updateEvent = _logger->eventId("FaIR update");
+
+  _logger->eventBegin(setupEvent);
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+  assert(cellDim == spaceDim-1);
 
-  // Get sections
-  double_array forcesInitialVertex(spaceDim);
-  const ALE::Obj<RealSection>& forcesInitialSection = 
-    _fields->get("initial forces").section();
-  assert(!forcesInitialSection.isNull());
-
-  double_array residualVertex(spaceDim);
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  assert(!residualSection.isNull());
-
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-
+  // Get cohesive cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-					    residualSection);
-  assert(!globalOrder.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  const int numCells = cells->size();
 
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    const int v_negative = _cohesiveVertices[iVertex].negative;
-    const int v_positive = _cohesiveVertices[iVertex].positive;
+  // Get sections associated with cohesive cells
+  double_array residualCell(3*numBasis*spaceDim);
+  const ALE::Obj<RealSection>& residualSection = residual.section();
+  assert(!residualSection.isNull());
+  UpdateAddVisitor residualVisitor(*residualSection, &residualCell[0]);
 
-    // Compute contribution only if Lagrange constraint is local.
-    if (!globalOrder->isLocal(v_lagrange))
-      continue;
+  // Get fault cell information
+  const ALE::Obj<SieveMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
+    faultSieveMesh->heightStratum(0);
+  assert(!faultCells.isNull());
+  assert(faultCells->size() == cells->size());
 
-    // Get initial forces at fault vertex. Forces are in the global
-    // coordinate system so no rotation is necessary.
-    forcesInitialSection->restrictPoint(v_fault, 
-					&forcesInitialVertex[0],
-					forcesInitialVertex.size());
+  // Get sections associated with fault cells
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
 
-    assert(spaceDim == slipSection->getFiberDimension(v_fault));
-    const double* slipVertex = slipSection->restrictPoint(v_fault);
-    assert(0 != slipVertex);
-    
-    // only apply initial tractions if there is no opening
-    if (0.0 == slipVertex[spaceDim-1]) {
-      residualVertex = forcesInitialVertex;
+  double_array dispRelCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dispRelSection = 
+    _fields->get("relative disp").section();
+  assert(!dispRelSection.isNull());
+  RestrictVisitor dispRelVisitor(*dispRelSection, 
+				 dispRelCell.size(), &dispRelCell[0]);
 
-      assert(residualVertex.size() == 
-	     residualSection->getFiberDimension(v_positive));
-      residualSection->updateAddPoint(v_positive, &residualVertex[0]);
+  double_array initialTractionsCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& initialTractionsSection = 
+    _fields->get("initial tractions").section();
+  assert(!initialTractionsSection.isNull());
+  RestrictVisitor initialTractionsVisitor(*initialTractionsSection, 
+					  initialTractionsCell.size(),
+					  &initialTractionsCell[0]);
+
+  double_array orientationCell(numBasis*spaceDim*spaceDim);
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+  RestrictVisitor orientationVisitor(*orientationSection, 
+				     orientationCell.size(),
+				     &orientationCell[0]);
+
+  _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
+
+  // Loop over cells
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+	 c_iter != cellsEnd;
+       ++c_iter) {
+    topology::SubMesh::SieveMesh::point_type c_fault = 
+      _cohesiveToFault[*c_iter];
+
+    // Compute geometry information for current cell
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventBegin(geometryEvent);
+#endif
+#if defined(PRECOMPUTE_GEOMETRY)
+    _quadrature->retrieveGeometry(c_fault);
+#else
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, c_fault);
+#endif
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(geometryEvent);
+    _logger->eventBegin(restrictEvent);
+#endif
+
+    // Restrict input fields to cell
+    initialTractionsVisitor.clear();
+    sieveMesh->restrictClosure(c_fault, initialTractionsVisitor);
+
+    dispRelVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, dispRelVisitor);
+
+    orientationVisitor.clear();
+    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(restrictEvent);
+    _logger->eventBegin(computeEvent);
+#endif
+
+    residualCell = 0.0;
+
+    // Compute action for positive side of fault and Lagrange constraints
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      const int iQ = iQuad * numBasis;
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQ+iBasis];
+
+	// Add entries to residual at
+	// iN = DOF at negative node
+	// iP = DOF at positive node
+	// iL = DOF at constraint node
+
+	// Indices for negative vertex
+	const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
+	
+	// Indices for positive vertex
+	const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
+	
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQ+jBasis];
+
+	  // Indices for fault vertex
+	  const int jB = jBasis*spaceDim;
+
+          for (int iDim=0; iDim < spaceDim; ++iDim) {
+	    // negative side of the fault
+            residualCell[iBN + iDim] -= valIJ * initialTractionsCell[jB + iDim];
+	    
+	    // positive side of the fault
+            residualCell[iBP + iDim] += valIJ * initialTractionsCell[jB + iDim];
+	    
+#if 0
+	    std::cout << "iBasis: " << iBasis
+		      << ", jBasis: " << jBasis
+		      << ", iDim: " << iDim
+		      << ", valIJ: " << valIJ
+		      << ", jacobianDet: " << jacobianDet[iQuad]
+		      << ", residualN: " << residualCell[iBN + iDim]
+		      << ", residualP: " << residualCell[iBP + iDim]
+		      << std::endl;
+#endif
+
+	  } // for
+        } // for
+      } // for
+    } // for
+
+
+    // Only apply initial tractions if there is no opening.
+    // If there is opening, zero out initial tractions
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      const int iB = iBasis*spaceDim;
+      const int iO = iBasis*spaceDim*spaceDim;
       
-      residualVertex *= -1.0;
-      assert(residualVertex.size() == 
-	     residualSection->getFiberDimension(v_negative));
-      residualSection->updateAddPoint(v_negative, &residualVertex[0]);
-    } // if
-  } // for
+      double slipNormal = 0.0;
+      const int indexN = spaceDim - 1;
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	slipNormal += orientationCell[iO + jDim*spaceDim]*dispRelCell[iB+jDim];
+      } // for
 
-  PetscLogFlops(numVertices*spaceDim);
+      if (slipNormal > _zeroTolerance) {
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  residualCell[iB+iDim] = 0.0;
+	} // for
+      } // if
+    } // for
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(computeEvent);
+    _logger->eventBegin(updateEvent);
+#endif
+
+    // Assemble cell contribution into field
+    residualVisitor.clear();
+    sieveMesh->updateClosure(*c_iter, residualVisitor);
+
+#if defined(DETAILED_EVENT_LOGGING)
+    _logger->eventEnd(updateEvent);
+#endif
+  } // for
+  PetscLogFlops(numCells*spaceDim*spaceDim*8);
+
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventEnd(computeEvent);
+#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -237,7 +388,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   assert(0 != fields);
   assert(0 != _fields);
 
-  _updateSlipRate(*fields);
+  _updateVelRel(*fields);
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -245,12 +396,15 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   double_array tractionTpdtVertex(spaceDim); // Fault coordinate system
 
   // Get sections
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
+  double_array slipVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispRelSection = 
+    _fields->get("relative disp").section();
+  assert(!dispRelSection.isNull());
 
-  const ALE::Obj<RealSection>& slipRateSection =
-      _fields->get("slip rate").section();
-  assert(!slipRateSection.isNull());
+  double_array slipRateVertex(spaceDim);
+  const ALE::Obj<RealSection>& velRelSection =
+      _fields->get("relative velocity").section();
+  assert(!velRelSection.isNull());
 
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -260,7 +414,7 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
   assert(!dispTIncrSection.isNull());
 
   const ALE::Obj<RealSection>& orientationSection =
-      fields->get("orientation").section();
+      _fields->get("orientation").section();
   assert(!orientationSection.isNull());
 
   const int numVertices = _cohesiveVertices.size();
@@ -270,13 +424,15 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Get slip
-    assert(spaceDim == slipSection->getFiberDimension(v_fault));
-    const double* slipVertex = slipSection->restrictPoint(v_fault);
+    // Get relative displacement
+    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
+    const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
+    assert(dispRelVertex);
 
-    // Get slip rate
-    assert(spaceDim == slipRateSection->getFiberDimension(v_fault));
-    const double* slipRateVertex = slipRateSection->restrictPoint(v_fault);
+    // Get relative velocity
+    assert(spaceDim == velRelSection->getFiberDimension(v_fault));
+    const double* velRelVertex = velRelSection->restrictPoint(v_fault);
+    assert(velRelVertex);
 
     // Get orientation
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
@@ -290,14 +446,19 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
     const double* lagrangeTIncrVertex = 
       dispTIncrSection->restrictPoint(v_lagrange);
 
-    // Compute fault traction (Lagrange multiplier) at time t+dt in
-    // fault coordinate system.
+    // Compute slip, slip rate, and fault traction (Lagrange
+    // multiplier) at time t+dt in fault coordinate system.
+    slipVertex = 0.0;
+    slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	tractionTpdtVertex[iDim] += 
-	  (lagrangeTVertex[jDim]+lagrangeTIncrVertex[jDim]) *
-	  orientationVertex[jDim*spaceDim+iDim];
+	slipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  dispRelVertex[jDim];
+	slipRateVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  velRelVertex[jDim];
+	tractionTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  (lagrangeTVertex[jDim]+lagrangeTIncrVertex[jDim]);
       } // for
     } // for
 
@@ -359,7 +520,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   assert(0 != _fields);
   assert(0 != _friction);
 
-  _updateSlipRate(*fields);
+  _updateVelRel(*fields);
   _sensitivitySetup(jacobian);
 
   // Update time step in friction (can vary).
@@ -371,22 +532,22 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   double_array tractionTpdtVertex(spaceDim);
 
   // Get sections
+  double_array dDispRelVertex(spaceDim);
+  const ALE::Obj<RealSection>& dispRelSection = 
+    _fields->get("relative disp").section();
+  assert(!dispRelSection.isNull());
+
   double_array dSlipVertex(spaceDim);
   double_array slipVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-
   double_array slipRateVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipRateSection =
-      _fields->get("slip rate").section();
-  assert(!slipRateSection.isNull());
+  const ALE::Obj<RealSection>& velRelSection =
+      _fields->get("relative velocity").section();
+  assert(!velRelSection.isNull());
 
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
 
-  double_array dispTVertexN(spaceDim);
-  double_array dispTVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
@@ -423,24 +584,20 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   } // switch
 
 
-#if 0 // DEBUGGING
-  slipSection->view("SLIP");
-  slipRateSection->view("SLIP RATE");
-  //dispTSection->view("DISP (t)");
-  //dispTIncrSection->view("DISP INCR (t->t+dt)");
-#endif
-
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    // Get slip
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+    // Get relative displacement
+    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
+    const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
+    assert(dispRelVertex);
 
-    // Get slip rate
-    slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
-      slipRateVertex.size());
+    // Get relative velocity
+    assert(spaceDim == velRelSection->getFiberDimension(v_fault));
+    const double* velRelVertex = velRelSection->restrictPoint(v_fault);
+    assert(velRelVertex);
 
     // Get orientation
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
@@ -455,10 +612,17 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const double* lagrangeTIncrVertex = 
       dispTIncrSection->restrictPoint(v_lagrange);
 
-    // Compute Lagrange multiplier at time t+dt in fault coordinate system.
+    // Compute slip, slip rate, and Lagrange multiplier at time t+dt
+    // in fault coordinate system.
+    slipVertex = 0.0;
+    slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
+	slipVertex[jDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  dispRelVertex[jDim];
+	slipRateVertex[jDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  velRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
       } // for
@@ -475,7 +639,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 					 slipVertex, slipRateVertex,
 					 tractionTpdtVertex);
 
-    // Rotate traction to global coordinate system.
+    // Rotate traction back to global coordinate system.
     dLagrangeTpdtVertexGlobal = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
@@ -505,30 +669,41 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
   // Update slip field based on solution of sensitivity problem and
   // increment in Lagrange multipliers.
-  const ALE::Obj<RealSection>& dispRelSection =
-    _fields->get("sensitivity dispRel").section();
+  const ALE::Obj<RealSection>& sensDispRelSection =
+    _fields->get("sensitivity relative disp").section();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Get slip
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
-    // Get change in relative displacement.
+    // Get current relative displacement for updating.
+    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
     const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
     assert(0 != dispRelVertex);
-    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
+
+    // Get change in relative displacement from sensitivity solve.
+    assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
+    const double* sensDispRelVertex = 
+      sensDispRelSection->restrictPoint(v_fault);
+    assert(sensDispRelVertex);
+
+    // Get orientation.
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
 
     // Get Lagrange multiplier at time t
     assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
     const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
+    assert(lagrangeTVertex);
 
     // Get Lagrange multiplier increment at time t
     assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
     const double* lagrangeTIncrVertex = 
       dispTIncrSection->restrictPoint(v_lagrange);
+    assert(lagrangeTIncrVertex);
 
     // Get change in Lagrange multiplier.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
@@ -541,25 +716,47 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     if (0.0 == dLagrangeMag)
       continue; // No change, so continue
 
-    // Compute change in slip.
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      dSlipVertex[iDim] = 2.0*dispRelVertex[iDim];
+    // Compute slip and change in slip in fault coordinates.
+    dSlipVertex = 0.0;
+    slipVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	slipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  dispRelVertex[jDim];
+	dSlipVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] * 
+	  2.0*sensDispRelVertex[jDim];
+      } // for
+    } // for
+
+    // Compute normal traction in fault coordinates.
+    double tractionNormal = 0.0;
+    const int indexN = spaceDim - 1;
+    for (int jDim=0; jDim < spaceDim; ++jDim) {
+      tractionNormal += orientationVertex[jDim*spaceDim+indexN] *
+	(lagrangeTVertex[indexN] + lagrangeTIncrVertex[indexN] + 
+	 dLagrangeTpdtVertex[indexN]);
+    } // for
 
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
-    // :TODO: FIX THIS
-    const int indexN = spaceDim - 1;
-    const double lagrangeTpdtNormal = lagrangeTVertex[indexN] + 
-      lagrangeTIncrVertex[indexN] + dLagrangeTpdtVertex[indexN];
-    if (lagrangeTpdtNormal < -_zeroTolerance || 
+    if (tractionNormal < -_zeroTolerance || 
 	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
       dSlipVertex[indexN] = -slipVertex[indexN];
     } // if
 
+    // Compute change relative displacement from change in slip.
+    dDispRelVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	dDispRelVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	  dSlipVertex[jDim];
+      } // for
+    } // for
+
     // Set change in slip.
-    assert(dSlipVertex.size() ==
-        slipSection->getFiberDimension(v_fault));
-    slipSection->updateAddPoint(v_fault, &dSlipVertex[0]);
+    assert(dDispRelVertex.size() ==
+        dispRelSection->getFiberDimension(v_fault));
+    dispRelSection->updateAddPoint(v_fault, &dDispRelVertex[0]);
     
     // Update Lagrange multiplier increment.
     assert(dLagrangeTpdtVertex.size() ==
@@ -567,7 +764,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
 
     // Update displacement field
-    dispTIncrVertexN = -0.5*dSlipVertex;
+    dispTIncrVertexN = -0.5*dDispRelVertex;
     assert(dispTIncrVertexN.size() ==
 	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
@@ -582,8 +779,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 #if 0 // DEBUGGING
   dLagrangeTpdtSection->view("AFTER dLagrange");
   //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
-  slipSection->view("AFTER SLIP");
-  slipRateSection->view("AFTER SLIP RATE");
+  dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
+  velRelSection->view("AFTER RELATIVE VELOCITY");
 #endif
 } // constrainSolnSpace
 
@@ -595,6 +792,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 			 topology::SolutionFields* const fields,
 			 const topology::Field<topology::Mesh>& jacobian)
 { // adjustSolnLumped
+#if 0
   /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
     (double_array*,
@@ -972,6 +1170,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
 #endif
+#endif
 } // adjustSolnLumped
 
 // ----------------------------------------------------------------------
@@ -992,13 +1191,26 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   double scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    return slip;
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    _allocateBufferVectorField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    buffer.copy(dispRel);
+    buffer.label("slip");
+    _globalToFault(&buffer);
+    return buffer;
 
   } else if (0 == strcasecmp("slip_rate", name)) {
-    const topology::Field<topology::SubMesh>& slipRate =
-      _fields->get("slip rate");
-    return slipRate;
+    const topology::Field<topology::SubMesh>& velRel = 
+      _fields->get("relative velocity");
+    _allocateBufferVectorField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    buffer.copy(velRel);
+    buffer.label("slip_rate");
+    _globalToFault(&buffer);
+    return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection = _fields->get(
@@ -1050,7 +1262,10 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
-    _getInitialTractions(&buffer);
+    topology::Field<topology::SubMesh>& tractions =
+        _fields->get("initial tractions");
+    buffer.copy(tractions);
+    _globalToFault(&buffer);
     return buffer;
 
   } else if (0 == strcasecmp("traction", name)) {
@@ -1072,11 +1287,13 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
+  // Should never get here.
+  throw std::logic_error("Unknown field in FaultCohesiveDyn::vertexField().");
+
   // Satisfy return values
   assert(0 != _fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get(
     "buffer (vector)");
-  throw std::logic_error("Internal error.");
 
   return buffer;
 } // vertexField
@@ -1086,7 +1303,6 @@ void
 pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
 { // _setupInitialTractions
   assert(0 != _normalizer);
-  assert(0 != _quadrature);
 
   // If no initial tractions specified, leave method
   if (0 == _dbInitialTract)
@@ -1096,28 +1312,37 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   const double pressureScale = _normalizer->pressureScale();
   const double lengthScale = _normalizer->lengthScale();
 
-  // Get quadrature information
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Create section to hold initial tractions.
-  _fields->add("initial forces", "initial_forces");
-  topology::Field<topology::SubMesh>& forcesInitial = 
-    _fields->get("initial forces");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  forcesInitial.cloneSection(slip);
-  forcesInitial.scale(pressureScale);
-  const ALE::Obj<RealSection>& forcesInitialSection = forcesInitial.section();
-  assert(!forcesInitialSection.isNull());
-  double_array forcesInitialCell(numBasis*spaceDim);
-  double_array tractionQuadPt(spaceDim);
-  UpdateAddVisitor forcesInitialVisitor(*forcesInitialSection,
-					&forcesInitialCell[0]);
+  _fields->add("initial tractions", "initial_tractions");
+  topology::Field<topology::SubMesh>& initialTractions = 
+    _fields->get("initial tractions");
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  initialTractions.cloneSection(dispRel);
+  initialTractions.scale(pressureScale);
+
+  double_array initialTractionsVertex(spaceDim);
+  double_array initialTractionsVertexGlobal(spaceDim);
+  const ALE::Obj<RealSection>& initialTractionsSection = 
+    initialTractions.section();
+  assert(!initialTractionsSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
+  assert(0 != cs);
+
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  double_array coordsVertex(spaceDim);
+  const ALE::Obj<RealSection>& coordsSection =
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordsSection.isNull());
+
 
   assert(0 != _dbInitialTract);
   _dbInitialTract->open();
@@ -1143,124 +1368,61 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
     assert(0);
     throw std::logic_error("Bad spatial dimension in Neumann.");
   } // switch
-  
-  // Get cells associated with fault
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-  assert(0 != cs);
-
-#if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    faultSieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates,
-        coordinatesCell.size(), &coordinatesCell[0]);
-#endif
-
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
-
-    const double_array& quadPtsNonDim = _quadrature->quadPts();
-    quadPtsGlobal = quadPtsNonDim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-        lengthScale);
-    forcesInitialCell = 0.0;
-
-    // Loop over quadrature points in cell and query database
-    for (int iQuadPt=0, index=0;
-        iQuadPt < numQuadPts;
-        ++iQuadPt, index+=spaceDim) {
-
-      tractionQuadPt = 0.0;
-      int err = _dbInitialTract->query(&tractionQuadPt[0], spaceDim,
-          &quadPtsGlobal[index], spaceDim, cs);
-      if (err) {
-        std::ostringstream msg;
-        msg << "Could not find parameters for physical properties at \n" << "(";
-        for (int i = 0; i < spaceDim; ++i)
-          msg << "  " << quadPtsGlobal[index + i];
-        msg << ") in friction model " << label() << "\n"
-            << "using spatial database '" << _dbInitialTract->label() << "'.";
-        throw std::runtime_error(msg.str());
-      } // if
-      tractionQuadPt /= pressureScale;
-
-      // Get cell geometry information that depends on cell
-      const double_array& basis = _quadrature->basis();
-      const double_array& jacobianDet = _quadrature->jacobianDet();
-
-      // Integrate tractions over cell.
-      const double wt = quadWts[iQuadPt] * jacobianDet[iQuadPt];
-      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-	const double valI = wt*basis[iQuadPt*numBasis+iBasis];
-	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	  const double valIJ = valI * basis[iQuadPt*numBasis+jBasis];
-	  for (int iDim=0; iDim < spaceDim; ++iDim)
-	    forcesInitialCell[iBasis*spaceDim+iDim] += 
-	      tractionQuadPt[iDim] * valIJ;
-	} // for
-      } // for
-    } // for
-    // Assemble cell contribution into field
-    forcesInitialVisitor.clear();
-    faultSieveMesh->updateClosure(*c_iter, forcesInitialVisitor);
-  } // for
-  // Close properties database
-  _dbInitialTract->close();
-
-  forcesInitial.complete(); // Assemble contributions
-
-  // Rotate forces from fault coordinate system to global coordinate system
-  const int orientationSize = spaceDim * spaceDim;
-  const ALE::Obj<RealSection>& orientationSection =
-    _fields->get("orientation").section();
-
-  double_array forcesInitialVertexFault(spaceDim);
-  double_array forcesInitialVertexGlobal(spaceDim);
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    assert(orientationSize == orientationSection->getFiberDimension(v_fault));
-    assert(spaceDim == forcesInitialSection->getFiberDimension(v_fault));
+    coordsSection->restrictPoint(v_fault, &coordsVertex[0], coordsVertex.size());
 
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
     const double* orientationVertex = 
       orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
 
-    forcesInitialSection->restrictPoint(v_fault, 
-					&forcesInitialVertexFault[0], 
-					forcesInitialVertexFault.size());
+    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
+				lengthScale);
 
-    forcesInitialVertexGlobal = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        forcesInitialVertexGlobal[iDim] +=
-          forcesInitialVertexFault[kDim] * 
-	  orientationVertex[kDim*spaceDim+iDim];
+    initialTractionsVertex = 0.0;
+    int err = _dbInitialTract->query(&initialTractionsVertex[0], 
+				     initialTractionsVertex.size(),
+				     &coordsVertex[0], coordsVertex.size(), cs);
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not find parameters for physical properties at \n" << "(";
+      for (int i = 0; i < spaceDim; ++i)
+	msg << "  " << coordsVertex[i];
+      msg << ") in friction model " << label() << "\n"
+	  << "using spatial database '" << _dbInitialTract->label() << "'.";
+      throw std::runtime_error(msg.str());
+    } // if
+    _normalizer->nondimensionalize(&initialTractionsVertex[0],
+				   initialTractionsVertex.size(), 
+				   pressureScale);
 
-    assert(forcesInitialVertexGlobal.size() == 
-	   forcesInitialSection->getFiberDimension(v_fault));
-    forcesInitialSection->updatePoint(v_fault, &forcesInitialVertexGlobal[0]);
+    // Rotate tractions from fault coordinate system to global
+    // coordinate system
+    initialTractionsVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	initialTractionsVertexGlobal[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] *
+	  initialTractionsVertex[jDim];
+      } // for
+    } // for
+
+    assert(initialTractionsVertexGlobal.size() ==
+	   initialTractionsSection->getFiberDimension(v_fault));
+    initialTractionsSection->updatePoint(v_fault, 
+					 &initialTractionsVertexGlobal[0]);
   } // for
 
-  //forcesInitial.view("INITIAL FORCES"); // DEBUGGING
+  // Close properties database
+  _dbInitialTract->close();
+
+  initialTractions.complete(); // Assemble contributions
+
+  //initalTractions.view("INITIAL FORCES"); // DEBUGGING
 } // _setupInitialTractions
 
 // ----------------------------------------------------------------------
@@ -1276,12 +1438,16 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
   assert(0 != _normalizer);
 
   // Fiber dimension of tractions matches spatial dimension.
-  const int fiberDim = _quadrature->spaceDim();
-  double_array tractionsVertex(fiberDim);
+  const int spaceDim = _quadrature->spaceDim();
+  double_array tractionsVertex(spaceDim);
 
   // Get sections.
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection = 
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
 
   // Allocate buffer for tractions field (if necessary).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
@@ -1289,8 +1455,9 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     //logger.stagePush("Fault");
 
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->cloneSection(slip);
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    tractions->cloneSection(dispRel);
 
     //logger.stagePop();
   } // if
@@ -1304,24 +1471,31 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    assert(fiberDim == dispTSection->getFiberDimension(v_lagrange));
-    assert(fiberDim == tractionsSection->getFiberDimension(v_fault));
-
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
-    assert(0 != dispTVertex);
+    assert(dispTVertex);
 
-    // :TODO: Rotate to fault coordinate system
-#if 0 // :TODO: FIX THIS
-    for (int i=0; i < fiberDim; ++i)
-      tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
-#endif
+    assert(spaceDim*spaceDim == 
+	   orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
+
+    // Rotate tractions to fault coordinate system.
+    tractionsVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	tractionsVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  dispTVertex[jDim];
+      } // for
+    } // for
 
     assert(tractionsVertex.size() == 
 	   tractionsSection->getFiberDimension(v_fault));
     tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
-  PetscLogFlops(numVertices * (1 + fiberDim) );
+  PetscLogFlops(numVertices * (1 + spaceDim) );
 
 #if 0 // DEBUGGING
   tractions->view("TRACTIONS");
@@ -1330,109 +1504,23 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
 } // _calcTractions
 
 // ----------------------------------------------------------------------
-// Compute initial tractions on fault surface.
-void
-pylith::faults::FaultCohesiveDyn::_getInitialTractions(
-    topology::Field<topology::SubMesh>* tractions)
-{ // _getInitialTractions
-  assert(0 != tractions);
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-  assert(0 != _normalizer);
-
-  // Fiber dimension of tractions matches spatial dimension.
-  const int spaceDim = _quadrature->spaceDim();
-  double_array tractionsVertexGlobal(spaceDim);
-  double_array tractionsVertexFault(spaceDim);
-
-  // Get sections.
-  const ALE::Obj<RealSection>& orientationSection = 
-    _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-  const ALE::Obj<RealSection>& forcesInitialSection = 
-    _fields->get("initial forces").section();
-  assert(!forcesInitialSection.isNull());
-
-  // Allocate buffer for tractions field (if necessary).
-  const ALE::Obj<RealSection>& tractionsSection = tractions->section();
-  if (tractionsSection.isNull()) {
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    //logger.stagePush("Fault");
-
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->cloneSection(slip);
-
-    //logger.stagePop();
-  } // if
-  const double pressureScale = _normalizer->pressureScale();
-  tractions->label("initial_traction");
-  tractions->scale(pressureScale);
-  tractions->zero();
-
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-
-    assert(spaceDim == forcesInitialSection->getFiberDimension(v_fault));
-    assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
-
-    const double* forcesInitialVertex = 
-      forcesInitialSection->restrictPoint(v_fault);
-    assert(0 != forcesInitialVertex);
-    const double* orientationVertex = 
-      orientationSection->restrictPoint(v_fault);
-    assert(0 != orientationVertex);
-
-#if 0 // :TODO: FIX THIS
-    for (int i = 0; i < spaceDim; ++i)
-      tractionsVertexGlobal[i] = forcesInitialVertex[i] / areaVertex[0];
-#endif
-
-    // Rotate from global coordinate system to fault coordinate system
-    tractionsVertexFault = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        tractionsVertexFault[iDim] +=
-          tractionsVertexGlobal[kDim] * orientationVertex[iDim*spaceDim+kDim];
-    
-    assert(tractionsVertexFault.size() == 
-	   tractionsSection->getFiberDimension(v_fault));
-    tractionsSection->updatePoint(v_fault, &tractionsVertexFault[0]);
-  } // for
-
-  PetscLogFlops(numVertices * (1 + spaceDim) );
-
-#if 0 // DEBUGGING
-  tractions->view("INITIAL TRACTIONS");
-#endif
-
-} // _getInitialTractions
-
-// ----------------------------------------------------------------------
 // Update slip rate associated with Lagrange vertex k corresponding
 // to diffential velocity between conventional vertices i and j.
 void
-pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields& fields)
-{ // _updateSlipRate
+pylith::faults::FaultCohesiveDyn::_updateVelRel(const topology::SolutionFields& fields)
+{ // _updateVelRel
   assert(0 != _fields);
 
   const int spaceDim = _quadrature->spaceDim();
 
   // Get section information
-  double_array velocityVertexN(spaceDim);
-  double_array velocityVertexP(spaceDim);
   const ALE::Obj<RealSection>& velocitySection =
       fields.get("velocity(t)").section();
   assert(!velocitySection.isNull());
 
-  double_array slipRateVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipRateSection =
-      _fields->get("slip rate").section();
-
-  double_array orientationVertex(spaceDim*spaceDim);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
+  double_array velRelVertex(spaceDim);
+  const ALE::Obj<RealSection>& velRelSection =
+      _fields->get("relative velocity").section();
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -1450,36 +1538,20 @@ pylith::faults::FaultCohesiveDyn::_updateSlipRate(const topology::SolutionFields
     assert(0 != velocityVertexP);
     assert(spaceDim == velocitySection->getFiberDimension(v_positive));
 
-    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
-    assert(0 != orientationVertex);
-    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-
-    slipRateVertex = 0.0;
-    // Velocity for negative vertex.
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        slipRateVertex[iDim] +=
-          velocityVertexN[kDim] * -orientationVertex[iDim*spaceDim+kDim];
-
-    // Velocity for positive vertex.
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        slipRateVertex[iDim] +=
-          velocityVertexP[kDim] * +orientationVertex[iDim*spaceDim+kDim];
-
-    // Limit velocity to resolvable range
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      if (fabs(slipRateVertex[iDim]) < _zeroTolerance)
-	slipRateVertex[iDim] = 0.0;
+    // Compute relative velocity
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double value = velocityVertexP[iDim] - velocityVertexN[iDim];
+      velRelVertex[iDim] = fabs(value) > _zeroTolerance ? value : 0.0;
+    } // for
 
     // Update slip rate field.
-    assert(slipRateVertex.size() == 
-	   slipRateSection->getFiberDimension(v_fault));
-    slipRateSection->updatePoint(v_fault, &slipRateVertex[0]);
+    assert(velRelVertex.size() == 
+	   velRelSection->getFiberDimension(v_fault));
+    velRelSection->updatePoint(v_fault, &velRelVertex[0]);
   } // for
 
   PetscLogFlops(numVertices*spaceDim*spaceDim*4);
-} // _updateSlipRate
+} // _updateVelRel
 
 // ----------------------------------------------------------------------
 // Setup sensitivity problem to compute change in slip given change in Lagrange multipliers.
@@ -1496,9 +1568,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     _fields->add("sensitivity solution", "sensitivity_soln");
     topology::Field<topology::SubMesh>& solution =
         _fields->get("sensitivity solution");
-    const topology::Field<topology::SubMesh>& slip =
-        _fields->get("slip");
-    solution.cloneSection(slip);
+    const topology::Field<topology::SubMesh>& dispRel =
+        _fields->get("relative disp");
+    solution.cloneSection(dispRel);
     solution.createScatter(solution.mesh());
   } // if
   const topology::Field<topology::SubMesh>& solution =
@@ -1513,13 +1585,13 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   } // if
 
   if (!_fields->hasField("sensitivity dispRel")) {
-    _fields->add("sensitivity dispRel", "sensitivity_disprel");
+    _fields->add("sensitivity relative disp", "sensitivity_relative_disp");
     topology::Field<topology::SubMesh>& dispRel =
-        _fields->get("sensitivity dispRel");
+        _fields->get("sensitivity relative disp");
     dispRel.cloneSection(solution);
   } // if
   topology::Field<topology::SubMesh>& dispRel =
-    _fields->get("sensitivity dispRel");
+    _fields->get("sensitivity relative disp");
   dispRel.zero();
 
   if (!_fields->hasField("sensitivity dLagrange")) {
@@ -1783,7 +1855,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
   const ALE::Obj<RealSection>& solutionSection =
       _fields->get("sensitivity solution").section();
   const ALE::Obj<RealSection>& dispRelSection =
-    _fields->get("sensitivity dispRel").section();
+    _fields->get("sensitivity relative disp").section();
 
   const double sign = (negativeSide) ? -1.0 : 1.0;
 

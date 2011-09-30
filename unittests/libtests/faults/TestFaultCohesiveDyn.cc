@@ -155,28 +155,28 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
     } // for
   } // for
 
-  // Initial forces/tractions
+  // Initial tractions
   if (0 != fault._dbInitialTract) {
-    //fault._fields->get("initial forces").view("INITIAL FORCES"); // DEBUGGING
-    const ALE::Obj<RealSection>& forcesInitialSection = 
-      fault._fields->get("initial forces").section();
-    CPPUNIT_ASSERT(!forcesInitialSection.isNull());
+    //fault._fields->get("initial tractions").view("INITIAL TRACTIONS"); // DEBUGGING
+    const ALE::Obj<RealSection>& initialTractionsSection = 
+      fault._fields->get("initial tractions").section();
+    CPPUNIT_ASSERT(!initialTractionsSection.isNull());
     const int spaceDim = _data->spaceDim;
     iVertex = 0;
     for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
         v_iter != verticesEnd;
         ++v_iter, ++iVertex) {
-      const int fiberDim = forcesInitialSection->getFiberDimension(*v_iter);
+      const int fiberDim = initialTractionsSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-      const double* forcesInitialVertex = 
-	forcesInitialSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != forcesInitialVertex);
+      const double* initialTractionsVertex = 
+	initialTractionsSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(initialTractionsVertex);
 
       const double tolerance = 1.0e-06;
       for (int i = 0; i < spaceDim; ++i) {
         const int index = iVertex * spaceDim + i;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forcesInitial[index], 
-				     forcesInitialVertex[i], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[index], 
+				     initialTractionsVertex[i], tolerance);
       } // for
     } // for
   } // if
@@ -252,8 +252,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
     // Get fault vertex info
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
     CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-    SieveSubMesh::renumbering_type& renumbering =
-      faultSieveMesh->getRenumbering();
     const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
     CPPUNIT_ASSERT(!vertices.isNull());
@@ -366,8 +364,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     // Get fault vertex info
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
     CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-    SieveSubMesh::renumbering_type& renumbering =
-      faultSieveMesh->getRenumbering();
     const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
     CPPUNIT_ASSERT(!vertices.isNull());
@@ -490,8 +486,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     // Get fault vertex info
     const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
     CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-    SieveSubMesh::renumbering_type& renumbering =
-      faultSieveMesh->getRenumbering();
     const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
     CPPUNIT_ASSERT(!vertices.isNull());
@@ -629,22 +623,27 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
     int fiberDim = tractionsSection->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const double* tractionsVertex = tractionsSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != tractionsVertex);
+    CPPUNIT_ASSERT(tractionsVertex);
 
-    fiberDim = dispSection->getFiberDimension(meshVertex);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const double* dispVertex = dispSection->restrictPoint(meshVertex);
-    CPPUNIT_ASSERT(0 != dispVertex);
+    const double* tractionsVertexGlobalE = 
+      dispSection->restrictPoint(meshVertex);
+    CPPUNIT_ASSERT(tractionsVertexGlobalE);
+    const double* orientationVertex = 
+      &_data->orientation[iVertex*spaceDim*spaceDim];
+    CPPUNIT_ASSERT(orientationVertex);
 
-    const double scale = 1.0 / _data->area[iVertex];
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double tractionE = dispVertex[iDim] * scale;
+      double tractionE = 0.0;
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	tractionE += 
+	  orientationVertex[jDim*spaceDim+iDim]*tractionsVertexGlobalE[jDim];
+      } // for
       if (tractionE != 0.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
 				     tolerance);
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsVertex[iDim],
-             tolerance);
+				     tolerance);
     } // for
   } // for
 } // testCalcTractions
