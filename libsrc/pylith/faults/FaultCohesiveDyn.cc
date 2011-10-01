@@ -1683,6 +1683,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     cellsCohesive->end();
 
   // Visitor for Jacobian matrix associated with domain.
+  double_array jacobianSubCell(submatrixSize);
   const PetscMat jacobianDomainMatrix = jacobian.matrix();
   assert(0 != jacobianDomainMatrix);
   const ALE::Obj<SieveMesh::order_type>& globalOrderDomain =
@@ -1704,7 +1705,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!solutionFaultSection.isNull());
 
   // Visitor for Jacobian matrix associated with fault.
-  double_array jacobianSubCell(submatrixSize);
   assert(0 != _jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();
   assert(0 != jacobianFaultMatrix);
@@ -1745,7 +1745,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 	else
 	  indicesGlobal[iB+iDim] = -1;
 
-	// Set matrix diagonal entries to 1.0 (used when vertex is not local).
+	// Set matrix diagonal entries to 1.0 (used when vertex is not
+	// local).  This happens if a vertex is not on the same
+	// processor as the cohesive cell.
 	jacobianSubCell[(iB+iDim)*numBasis*spaceDim+iB+iDim] = 1.0;
       } // for
     } // for
@@ -1774,52 +1776,106 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 void
 pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negativeSide)
 { // _sensitivityReformResidual
-  assert(0 != _fields);
-  assert(0 != _quadrature);
+  /** Compute residual -L^T dLagrange
+   *
+   * Note: We need all entries for L, even those on other processors,
+   * so we compute L rather than extract entries from the Jacoiab.
+   */
 
+  const double signFault = (negativeSide) ? -1.0 : 1.0;
+
+  // Get cell information
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
   const int spaceDim = _quadrature->spaceDim();
+  const int numBasis = _quadrature->numBasis();
 
-  // :TODO: FIX THIS
 
-  // Compute residual -C^T dLagrange
-  double_array residualVertex(spaceDim);
+  double_array basisProducts(numBasis*numBasis);
+
+  // Get fault cell information
+  const ALE::Obj<SieveMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
+    faultSieveMesh->heightStratum(0);
+  assert(!cells.isNull());
+  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const int numCells = cells->size();
+
+  // Get sections
+  double_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    faultSieveMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
+
+  double_array dLagrangeCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& dLagrangeSection = 
+    _fields->get("sensitivity dLagrange").section();
+  assert(!dLagrangeSection.isNull());
+  RestrictVisitor dLagrangeVisitor(*dLagrangeSection, 
+				   dLagrangeCell.size(), &dLagrangeCell[0]);
+
+  double_array residualCell(numBasis*spaceDim);
   topology::Field<topology::SubMesh>& residual =
       _fields->get("sensitivity residual");
   const ALE::Obj<RealSection>& residualSection = residual.section();
+  UpdateAddVisitor residualVisitor(*residualSection, &residualCell[0]);
+
   residual.zero();
 
-  const ALE::Obj<RealSection>& dLagrangeSection =
-      _fields->get("sensitivity dLagrange").section();
+  // Loop over cells
+  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry
+    coordsVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    _quadrature->computeGeometry(coordinatesCell, *c_iter);
 
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
+    // Restrict input fields to cell
+    dLagrangeVisitor.clear();
+    faultSieveMesh->restrictClosure(*c_iter, dLagrangeVisitor);
 
-  const double sign = (negativeSide) ? -1.0 : 1.0;
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
+    // Compute product of basis functions.
+    // Want values summed over quadrature points
+    basisProducts = 0.0;
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 
-    const double* dLagrangeVertex = dLagrangeSection->restrictPoint(v_fault);
-    assert(0 != dLagrangeVertex);
-    assert(spaceDim == dLagrangeSection->getFiberDimension(v_fault));
+      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQ+iBasis];
+	
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	  
+	  basisProducts[iBasis*numBasis+jBasis] += valI*basis[iQ+jBasis];
+	} // for
+      } // for
+    } // for
 
-    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
-    assert(0 != orientationVertex);
-    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    residualCell = 0.0;
+    
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	const double l = basisProducts[iBasis*numBasis+jBasis];
+	for (int iDim=0; iDim < spaceDim; ++iDim) {
+	  residualCell[iBasis*spaceDim+iDim] -= 
+	    signFault * l * dLagrangeCell[jBasis*spaceDim+iDim];
+	} // for
+      } // for
+    } // for
 
-    residualVertex = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        residualVertex[iDim] +=
-          sign * dLagrangeVertex[kDim] * -orientationVertex[kDim*spaceDim+iDim];
-
-    assert(residualVertex.size() == residualSection->getFiberDimension(v_fault));
-    residualSection->updatePoint(v_fault, &residualVertex[0]);
+    // Assemble cell contribution into field
+    residualVisitor.clear();
+    faultSieveMesh->updateClosure(*c_iter, residualVisitor);    
   } // for
-
-  PetscLogFlops(numVertices*spaceDim*spaceDim*4);
 } // _sensitivityReformResidual
 
 // ----------------------------------------------------------------------
