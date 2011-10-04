@@ -218,7 +218,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
 
-    dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
+    //dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
 
     // Get expected values
     const double* valsE = _data->fieldIncrStick; // No change in dispIncr
@@ -325,7 +325,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       fault.vertexField("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
-    slipSection->view("SLIP"); // DEBUGGING
+    //slipSection->view("SLIP"); // DEBUGGING
 
     // Get expected values
     const double* valsE = _data->slipSlipE;
@@ -345,7 +345,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
 	std::cout << "SLIP valE: " << valE
 		  << ", val: " << vals[i]
 		  << ", error: " << fabs(1.0-vals[i]/valE)
@@ -393,7 +393,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
         const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
 	std::cout << "SOLUTION valE: " << valE
 		  << ", val: " << vals[i]
 		  << ", error: " << fabs(1.0-vals[i]/valE)

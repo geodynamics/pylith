@@ -649,7 +649,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       } // for
     } // for
 
-#if 1 // debugging
+#if 0 // debugging
     std::cout << "slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipVertex[iDim];
@@ -668,13 +668,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     std::cout << std::endl;
 #endif
      
-
     assert(dLagrangeTpdtVertexGlobal.size() ==
         dLagrangeTpdtSection->getFiberDimension(v_fault));
     dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertexGlobal[0]);
   } // for
-
-  dLagrangeTpdtSection->view("dLagrange"); // DEBUGGING
 
   // Solve sensitivity problem for negative side of the fault.
   bool negativeSide = true;
@@ -799,7 +796,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     
   } // for
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   //dLagrangeTpdtSection->view("AFTER dLagrange");
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   //dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
@@ -1776,7 +1773,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   _jacobian->assemble("final_assembly");
 
-  _jacobian->view(); // DEBUGGING
+  //_jacobian->view(); // DEBUGGING
 } // _sensitivityUpdateJacobian
 
 // ----------------------------------------------------------------------
@@ -1915,7 +1912,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterVectorToSection();
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   residual.view("SENSITIVITY RESIDUAL");
   solution.view("SENSITIVITY SOLUTION");
 #endif
