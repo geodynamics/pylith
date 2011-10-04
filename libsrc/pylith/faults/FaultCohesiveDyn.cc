@@ -629,20 +629,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       } // for
     } // for
 
-#if 1 // debugging
-    std::cout << "slipVertex: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << slipVertex[iDim];
-    std::cout << ",  slipRateVertex: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << slipRateVertex[iDim];
-    std::cout << ",  tractionVertex: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << tractionTpdtVertex[iDim];
-    std::cout << std::endl;
-#endif
-     
-
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
 
@@ -663,10 +649,32 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       } // for
     } // for
 
+#if 1 // debugging
+    std::cout << "slipVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipVertex[iDim];
+    std::cout << ",  slipRateVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipRateVertex[iDim];
+    std::cout << ",  tractionVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << tractionTpdtVertex[iDim];
+    std::cout << ",  dLagrangeTpdtVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dLagrangeTpdtVertex[iDim];
+    std::cout << ",  dLagrangeTpdtVertexGlobal: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dLagrangeTpdtVertexGlobal[iDim];
+    std::cout << std::endl;
+#endif
+     
+
     assert(dLagrangeTpdtVertexGlobal.size() ==
         dLagrangeTpdtSection->getFiberDimension(v_fault));
     dLagrangeTpdtSection->updatePoint(v_fault, &dLagrangeTpdtVertexGlobal[0]);
   } // for
+
+  dLagrangeTpdtSection->view("dLagrange"); // DEBUGGING
 
   // Solve sensitivity problem for negative side of the fault.
   bool negativeSide = true;
@@ -739,7 +747,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
 	dSlipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
-	  2.0*sensDispRelVertex[jDim];
+	  sensDispRelVertex[jDim];
       } // for
     } // for
 
@@ -791,11 +799,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     
   } // for
 
-#if 0 // DEBUGGING
-  dLagrangeTpdtSection->view("AFTER dLagrange");
-  //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
-  dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
-  velRelSection->view("AFTER RELATIVE VELOCITY");
+#if 1 // DEBUGGING
+  //dLagrangeTpdtSection->view("AFTER dLagrange");
+  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  //dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
+  //velRelSection->view("AFTER RELATIVE VELOCITY");
 #endif
 } // constrainSolnSpace
 
@@ -1768,7 +1776,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
   _jacobian->assemble("final_assembly");
 
-  //_jacobian->view(); // DEBUGGING
+  _jacobian->view(); // DEBUGGING
 } // _sensitivityUpdateJacobian
 
 // ----------------------------------------------------------------------
@@ -1782,7 +1790,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
    * so we compute L rather than extract entries from the Jacoiab.
    */
 
-  const double signFault = (negativeSide) ? -1.0 : 1.0;
+  const double signFault = (negativeSide) ? 1.0 : -1.0;
 
   // Get cell information
   const int numQuadPts = _quadrature->numQuadPts();
@@ -1864,10 +1872,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
     
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double l = basisProducts[iBasis*numBasis+jBasis];
+	const double l = signFault * basisProducts[iBasis*numBasis+jBasis];
 	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  residualCell[iBasis*spaceDim+iDim] -= 
-	    signFault * l * dLagrangeCell[jBasis*spaceDim+iDim];
+	  residualCell[iBasis*spaceDim+iDim] += 
+	    l * dLagrangeCell[jBasis*spaceDim+iDim];
 	} // for
       } // for
     } // for
@@ -1907,7 +1915,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterVectorToSection();
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
   residual.view("SENSITIVITY RESIDUAL");
   solution.view("SENSITIVITY SOLUTION");
 #endif
