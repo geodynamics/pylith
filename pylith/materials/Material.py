@@ -191,7 +191,7 @@ class Material(PetscComponent):
 
       self.quadrature = self.inventory.quadrature
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring material "
                        "(%s):\n%s" % (aliases, err.message))

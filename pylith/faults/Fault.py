@@ -233,7 +233,7 @@ class Fault(PetscComponent, ModuleFault):
       ModuleFault.id(self, self.inventory.matId)
       ModuleFault.label(self, self.inventory.faultLabel)
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring fault "
                        "(%s):\n%s" % (aliases, err.message))

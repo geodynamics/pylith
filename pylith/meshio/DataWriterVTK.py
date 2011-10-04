@@ -90,7 +90,7 @@ class DataWriterVTK(DataWriter):
     """
     try:
       DataWriter._configure(self)
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring VTK output "
                        "(%s):\n%s" % (aliases, err.message))

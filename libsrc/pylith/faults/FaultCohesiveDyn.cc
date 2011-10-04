@@ -1604,7 +1604,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     residual.createScatter(solution.mesh());
   } // if
 
-  if (!_fields->hasField("sensitivity dispRel")) {
+  if (!_fields->hasField("sensitivity relative disp")) {
     _fields->add("sensitivity relative disp", "sensitivity_relative_disp");
     topology::Field<topology::SubMesh>& dispRel =
         _fields->get("sensitivity relative disp");
