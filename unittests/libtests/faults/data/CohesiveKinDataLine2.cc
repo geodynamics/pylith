@@ -130,34 +130,34 @@ const double pylith::faults::CohesiveKinDataLine2::_area[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
    0.0,
-  -7.5,
+  +7.5, // 3
    0.0,
-  +7.5,
-  0.2-1.89546413727,
+  -7.5, // 5
+  -0.2+1.89546413727,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
    0.0,
-  -7.5, // 3
+  +7.5, // 3
    0.0,
-  +7.5, // 5
-  0.2-1.89546413727,
+  -7.5, // 5
+  -0.2+1.89546413727,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
   0.0,  0.0,  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,  0.0, +1.0,
-  0.0,  0.0,  0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,  0.0, -1.0,
-  0.0, +1.0,  0.0, -1.0,  0.0,
+  0.0,  0.0,  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,  0.0, +1.0,
+  0.0, -1.0,  0.0, +1.0,  0.0,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
   1.1,
-  2.18893781075, // 3
+  0.419757841424, // 3
   1.3,
-  0.49347367348, // 5
-  2.17566318365, // 6
+  2.11522197869, // 5
+  -1.71653274887, // 6
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
