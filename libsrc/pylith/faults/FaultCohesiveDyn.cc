@@ -1464,7 +1464,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
 
   initialTractions.complete(); // Assemble contributions
 
-  initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
+  //initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _setupInitialTractions
 
 // ----------------------------------------------------------------------
