@@ -226,7 +226,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 
   double_array initialTractionsCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& initialTractionsSection = 
-    _fields->get("initial tractions").section();
+    _fields->get("initial traction").section();
   assert(!initialTractionsSection.isNull());
   RestrictVisitor initialTractionsVisitor(*initialTractionsSection, 
 					  initialTractionsCell.size(),
@@ -271,7 +271,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 
     // Restrict input fields to cell
     initialTractionsVisitor.clear();
-    sieveMesh->restrictClosure(c_fault, initialTractionsVisitor);
+    faultSieveMesh->restrictClosure(c_fault, initialTractionsVisitor);
 
     dispRelVisitor.clear();
     faultSieveMesh->restrictClosure(c_fault, dispRelVisitor);
@@ -316,6 +316,11 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 	  const int jB = jBasis*spaceDim;
 
           for (int iDim=0; iDim < spaceDim; ++iDim) {
+	    // Initial (external) tractions oppose (internal)
+	    // tractions associated with Lagrange multiplier, so these
+	    // terms have the opposite sign as the integration of the
+	    // Lagrange multipliers in FaultCohesiveLagrange.
+
 	    // negative side of the fault
             residualCell[iBN + iDim] -= valIJ * initialTractionsCell[jB + iDim];
 	    
@@ -328,6 +333,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 		      << ", iDim: " << iDim
 		      << ", valIJ: " << valIJ
 		      << ", jacobianDet: " << jacobianDet[iQuad]
+		      << ", initialTractions: " << initialTractionsCell[jB + iDim]
 		      << ", residualN: " << residualCell[iBN + iDim]
 		      << ", residualP: " << residualCell[iBP + iDim]
 		      << std::endl;
@@ -353,8 +359,15 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       } // for
 
       if (slipNormal > _zeroTolerance) {
+	// Indices for negative vertex
+	const int iBN = 0*numBasis*spaceDim + iBasis*spaceDim;
+	
+	// Indices for positive vertex
+	const int iBP = 1*numBasis*spaceDim + iBasis*spaceDim;
+	
 	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  residualCell[iB+iDim] = 0.0;
+	  residualCell[iBN+iDim] = 0.0;
+	  residualCell[iBP+iDim] = 0.0;
 	} // for
       } // if
     } // for
@@ -620,9 +633,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[jDim] += orientationVertex[iDim*spaceDim+jDim] *
+	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  dispRelVertex[jDim];
-	slipRateVertex[jDim] += orientationVertex[iDim*spaceDim+jDim] *
+	slipRateVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  velRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
@@ -656,9 +669,18 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     std::cout << ",  slipRateVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipRateVertex[iDim];
+    std::cout << ", orientationVertex: ";
+    for (int iDim=0; iDim < spaceDim*spaceDim; ++iDim)
+      std::cout << "  " << orientationVertex[iDim];
     std::cout << ",  tractionVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << tractionTpdtVertex[iDim];
+    std::cout << ",  lagrangeTVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << lagrangeTVertex[iDim];
+    std::cout << ",  lagrangeTIncrVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << lagrangeTIncrVertex[iDim];
     std::cout << ",  dLagrangeTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << dLagrangeTpdtVertex[iDim];
@@ -799,7 +821,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 #if 0 // DEBUGGING
   //dLagrangeTpdtSection->view("AFTER dLagrange");
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
-  //dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
+  dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
   //velRelSection->view("AFTER RELATIVE VELOCITY");
 #endif
 } // constrainSolnSpace
@@ -1283,7 +1305,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
     topology::Field<topology::SubMesh>& tractions =
-        _fields->get("initial tractions");
+        _fields->get("initial traction");
     buffer.copy(tractions);
     _globalToFault(&buffer);
     return buffer;
@@ -1335,9 +1357,9 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   const int spaceDim = _quadrature->spaceDim();
 
   // Create section to hold initial tractions.
-  _fields->add("initial tractions", "initial_tractions");
+  _fields->add("initial traction", "initial_traction");
   topology::Field<topology::SubMesh>& initialTractions = 
-    _fields->get("initial tractions");
+    _fields->get("initial traction");
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
   initialTractions.cloneSection(dispRel);
   initialTractions.scale(pressureScale);
@@ -1426,7 +1448,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	initialTractionsVertexGlobal[iDim] += 
-	  orientationVertex[jDim*spaceDim+iDim] *
+	  orientationVertex[iDim*spaceDim+jDim] *
 	  initialTractionsVertex[jDim];
       } // for
     } // for
@@ -1442,7 +1464,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
 
   initialTractions.complete(); // Assemble contributions
 
-  //initalTractions.view("INITIAL FORCES"); // DEBUGGING
+  initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _setupInitialTractions
 
 // ----------------------------------------------------------------------
@@ -1787,7 +1809,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
    * so we compute L rather than extract entries from the Jacoiab.
    */
 
-  const double signFault = (negativeSide) ? 1.0 : -1.0;
+  const double signFault = (negativeSide) ?  1.0 : -1.0;
 
   // Get cell information
   const int numQuadPts = _quadrature->numQuadPts();

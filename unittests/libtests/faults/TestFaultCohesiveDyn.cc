@@ -159,7 +159,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   if (0 != fault._dbInitialTract) {
     //fault._fields->get("initial tractions").view("INITIAL TRACTIONS"); // DEBUGGING
     const ALE::Obj<RealSection>& initialTractionsSection = 
-      fault._fields->get("initial tractions").section();
+      fault._fields->get("initial traction").section();
     CPPUNIT_ASSERT(!initialTractionsSection.isNull());
     const int spaceDim = _data->spaceDim;
     iVertex = 0;
