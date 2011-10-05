@@ -74,6 +74,40 @@ class Line2(object):
 
 
 # ----------------------------------------------------------------------
+class Line2Collocated(Line2):
+
+  def __init__(self):
+    """
+    Setup line2 cell.
+    """
+    vertices = numpy.array([[-1.0], [1.0]])
+    quadPts = vertices[:]
+    quadWts = numpy.array( [1.0,1.0], dtype=numpy.float64 )
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (2, 2), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (2, 2, 1), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q)],
+                                 dtype=numpy.float64).reshape( (2,) )
+      deriv = numpy.array([[self.N0p(q)], [self.N1p(q)]],
+                          dtype=numpy.float64)      
+      basisDeriv[iQuad] = deriv.reshape((2, 1))
+      iQuad += 1
+
+    self.cellDim = 1
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
+
+# ----------------------------------------------------------------------
 class Line3(object):
 
   def __init__(self):
@@ -204,6 +238,49 @@ class Quad4(object):
 
   def N3q(self, p):
     return (1-p[0])/4.0
+
+
+# ----------------------------------------------------------------------
+class Quad4Collocated(Quad4):
+
+  def __init__(self):
+    """
+    Setup quad4 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0],
+                            [+1.0, -1.0],
+                            [+1.0, +1.0],
+                            [-1.0, +1.0]])
+    quadPts = numpy.array([[-1.0, -1.0],
+                           [+1.0, -1.0],
+                           [-1.0, +1.0],
+                           [+1.0, +1.0]])
+    quadWts = numpy.array( [1.0, 1.0, 1.0, 1.0])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (4, 4), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (4, 4, 2), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q),
+                                  self.N2(q), self.N3(q)],
+                                 dtype=numpy.float64).reshape( (4,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q)],
+                           [self.N1p(q), self.N1q(q)],
+                           [self.N2p(q), self.N2q(q)],
+                           [self.N3p(q), self.N3q(q)]])
+      basisDeriv[iQuad] = deriv.reshape((4, 2))
+      iQuad += 1
+
+    self.cellDim = 2
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
 
 
 # ----------------------------------------------------------------------
@@ -1014,6 +1091,27 @@ class TestFIATLagrange(unittest.TestCase):
     return
 
 
+  def test_initialize_line2_collocated(self):
+    """
+    Test initialize() with line2 cell.
+    """
+    cell = FIATLagrange()
+    cell.inventory.dimension = 1
+    cell.inventory.degree = 1
+    cell.inventory.order  = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell._info.activate()
+    cell.initialize(spaceDim=1)
+
+
+    cellE = Line2Collocated()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryLine1D
+    self.failUnless(isinstance(cell.geometry, GeometryLine1D))
+    return
+
+
   def test_initialize_line3(self):
     """
     Test initialize() with line3 cell.
@@ -1044,6 +1142,25 @@ class TestFIATLagrange(unittest.TestCase):
     cell.initialize(spaceDim=2)
 
     cellE = Quad4()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryQuad2D
+    self.failUnless(isinstance(cell.geometry, GeometryQuad2D))
+    return
+
+
+  def test_initialize_quad4_collocated(self):
+    """
+    Test initialize() with quad4 cell.
+    """
+    cell = FIATLagrange()
+    cell.inventory.dimension = 2
+    cell.inventory.degree = 1
+    cell.inventory.order  = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell.initialize(spaceDim=2)
+
+    cellE = Quad4Collocated()
     self._checkVals(cellE, cell)
     from pylith.feassemble.CellGeometry import GeometryQuad2D
     self.failUnless(isinstance(cell.geometry, GeometryQuad2D))
