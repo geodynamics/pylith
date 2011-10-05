@@ -157,7 +157,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 
   // Initial tractions
   if (0 != fault._dbInitialTract) {
-    //fault._fields->get("initial tractions").view("INITIAL TRACTIONS"); // DEBUGGING
+    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
     const ALE::Obj<RealSection>& initialTractionsSection = 
       fault._fields->get("initial traction").section();
     CPPUNIT_ASSERT(!initialTractionsSection.isNull());
