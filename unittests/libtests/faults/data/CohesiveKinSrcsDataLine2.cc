@@ -131,26 +131,26 @@ const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingCohesive[] = {
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_residualIncr[] = {
    0.0,
-  -7.5,
-   0.0,
   +7.5,
-   0.2-1.89546413727-0.99414665414,
+   0.0,
+  -7.5,
+  -0.2+1.89546413727+0.99414665414,
 };
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_residual[] = {
    0.0,
-  -7.5,
-   0.0,
   +7.5,
-  0.2-1.89546413727-0.99414665414,
+   0.0,
+  -7.5,
+  -0.2+1.89546413727+0.99414665414,
 };
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_jacobian[] = {
   0.0,  0.0,  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,  0.0, +1.0,
-  0.0,  0.0,  0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,  0.0, -1.0,
-  0.0, +1.0,  0.0, -1.0,  0.0,
+  0.0,  0.0,  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,  0.0, +1.0,
+  0.0, -1.0,  0.0, +1.0,  0.0,
 };
 
 pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
