@@ -363,13 +363,13 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 
           for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    // negative side of the fault
-            residualCell[iBN + iDim] -= valIJ * dispTpdtCell[jBL + iDim];
+            residualCell[iBN + iDim] += valIJ * dispTpdtCell[jBL + iDim];
 	    
 	    // positive side of the fault
-            residualCell[iBP + iDim] += valIJ * dispTpdtCell[jBL + iDim];
+            residualCell[iBP + iDim] -= valIJ * dispTpdtCell[jBL + iDim];
 	    
 	    // Lagrange constraint
-	    residualCell[iBL + iDim] += valIJ * 
+	    residualCell[iBL + iDim] -= valIJ * 
 	      (dispTpdtCell[jBP + iDim] - dispTpdtCell[jBN + iDim] -
 	       dispRelCell[jBasis*spaceDim+iDim]);
 
@@ -564,11 +564,11 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
             const int iL = (iBL + iDim) * rowSize; // row
             const int jL = (jBL + iDim); // col
 
-            jacobianCell[iN + jL] += valIJ;
-            jacobianCell[iL + jN] += valIJ;
+            jacobianCell[iN + jL] -= valIJ;
+            jacobianCell[iL + jN] -= valIJ;
 
-            jacobianCell[iP + jL] -= valIJ;
-            jacobianCell[iL + jP] -= valIJ;
+            jacobianCell[iP + jL] += valIJ;
+            jacobianCell[iL + jP] += valIJ;
           } // for
         } // for
       } // for
