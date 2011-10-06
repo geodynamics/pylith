@@ -36,22 +36,6 @@ def validateDimension(dim):
   return dim
 
 
-from FIAT.quadrature import QuadratureRule
-class CollocatedQuadratureLineRule(QuadratureRule):
-  """
-  Quadrature points colocated with vertices.
-  """
-  def __init__(self, ref_el, m):
-    from FIAT.lagrange import Lagrange
-    vertices = Lagrange(ref_el, m).dual.get_nodes()
-    pts = [v.get_point_dict().keys()[0] for v in vertices]
-    npts = len(pts)
-    wts = (ref_el.volume()/npts,)*npts
-    
-    QuadratureRule.__init__(self, ref_el, pts, wts)
-    return
-
-
 # FIATLagrange class
 class FIATLagrange(ReferenceCell):
   """
@@ -482,13 +466,14 @@ class FIATLagrange(ReferenceCell):
     """
     Setup quadrature rule for reference cell.
     """
-    from FIAT.quadrature import make_quadrature
     from FIAT.reference_element import default_simplex
-
+    from FIAT.quadrature import make_quadrature
+    from FIATQuadrature import CollocatedQuadratureRule
+      
     if not self.collocateQuad:
       q = make_quadrature(default_simplex(1), self.order)
     else:
-      q = CollocatedQuadratureLineRule(default_simplex(1), self.order)
+      q = CollocatedQuadratureRule(default_simplex(1), self.order)
 
     return q
 
