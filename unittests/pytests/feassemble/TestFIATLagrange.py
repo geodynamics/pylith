@@ -582,6 +582,63 @@ class Hex8(object):
   
 
 # ----------------------------------------------------------------------
+class Hex8Collocated(Hex8):
+
+  def __init__(self):
+    """
+    Setup hex8 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0, -1.0],
+                            [+1.0, -1.0, -1.0],
+                            [+1.0, +1.0, -1.0],
+                            [-1.0, +1.0, -1.0],
+                            [-1.0, -1.0, +1.0],
+                            [+1.0, -1.0, +1.0],
+                            [+1.0, +1.0, +1.0],
+                            [-1.0, +1.0, +1.0]])
+    quadPts = numpy.array([[-1.0, -1.0, -1.0],
+                           [+1.0, -1.0, -1.0],
+                           [-1.0, +1.0, -1.0],
+                           [+1.0, +1.0, -1.0],
+                           [-1.0, -1.0, +1.0],
+                           [+1.0, -1.0, +1.0],
+                           [-1.0, +1.0, +1.0],
+                           [+1.0, +1.0, +1.0]])
+    quadWts = numpy.array( [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (8, 8), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (8, 8, 3), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q),
+                                  self.N2(q), self.N3(q),
+                                  self.N4(q), self.N5(q),
+                                  self.N6(q), self.N7(q)],
+                                 dtype=numpy.float64).reshape( (8,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N3p(q), self.N3q(q), self.N3r(q)],
+                           [self.N4p(q), self.N4q(q), self.N4r(q)],
+                           [self.N5p(q), self.N5q(q), self.N5r(q)],
+                           [self.N6p(q), self.N6q(q), self.N6r(q)],
+                           [self.N7p(q), self.N7q(q), self.N7r(q)]])      
+      basisDeriv[iQuad] = deriv.reshape((8, 3))
+      iQuad += 1
+
+    self.cellDim = 3
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
+
+# ----------------------------------------------------------------------
 class Hex27(object):
 
   def __init__(self):
@@ -1101,7 +1158,6 @@ class TestFIATLagrange(unittest.TestCase):
     cell.inventory.order  = 1
     cell.inventory.collocateQuad = True
     cell._configure()
-    cell._info.activate()
     cell.initialize(spaceDim=1)
 
 
@@ -1197,6 +1253,25 @@ class TestFIATLagrange(unittest.TestCase):
     cell.initialize(spaceDim=3)
 
     cellE = Hex8()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryHex3D
+    self.failUnless(isinstance(cell.geometry, GeometryHex3D))
+    return
+
+
+  def test_initialize_hex8_collocated(self):
+    """
+    Test initialize() with hex8 cell.
+    """
+    cell = FIATLagrange()
+    cell.inventory.dimension = 3
+    cell.inventory.degree = 1
+    cell.inventory.order  = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell.initialize(spaceDim=3)
+
+    cellE = Hex8Collocated()
     self._checkVals(cellE, cell)
     from pylith.feassemble.CellGeometry import GeometryHex3D
     self.failUnless(isinstance(cell.geometry, GeometryHex3D))
