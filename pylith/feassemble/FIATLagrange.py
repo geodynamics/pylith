@@ -35,6 +35,7 @@ def validateDimension(dim):
     raise ValueError("Dimension of Lagrange element must be 1, 2, or 3.")
   return dim
 
+
 # FIATLagrange class
 class FIATLagrange(ReferenceCell):
   """
@@ -53,9 +54,10 @@ class FIATLagrange(ReferenceCell):
     ## Python object for managing FIATLagrange facilities and properties.
     ##
     ## \b Properties
-    ## @li \b dimension Dimension of finite-element cell
-    ## @li \b degree Degree of finite-element cell 
-    ## @li \b quad_order Order of quadrature rule
+    ## @li \b dimension Dimension of finite-element cell.
+    ## @li \b degree Degree of finite-element cell.
+    ## @li \b quad_order Order of quadrature rule.
+    ## @li \b collocate_quad Collocate quadrature points with vertices.
     ##
     ## \b Facilities
     ## @li None
@@ -72,6 +74,9 @@ class FIATLagrange(ReferenceCell):
     order = pyre.inventory.int("quad_order", default=-1)
     order.meta['tip'] = "Order of quadrature rule."
     
+    collocateQuad = pyre.inventory.bool("collocate_quad", default=False)
+    collocateQuad.meta['tip'] = "Collocate quadrature points with vertices."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -411,6 +416,7 @@ class FIATLagrange(ReferenceCell):
       self.cellDim = self.inventory.dimension
       self.degree = self.inventory.degree
       self.order = self.inventory.order
+      self.collocateQuad = self.inventory.collocateQuad
       
       if self.order == -1:
         self.order = self.degree+1
@@ -460,9 +466,16 @@ class FIATLagrange(ReferenceCell):
     """
     Setup quadrature rule for reference cell.
     """
-    from FIAT.quadrature import make_quadrature
     from FIAT.reference_element import default_simplex
-    return make_quadrature(default_simplex(1), self.order)
+    from FIAT.quadrature import make_quadrature
+    from FIATQuadrature import CollocatedQuadratureRule
+      
+    if not self.collocateQuad:
+      q = make_quadrature(default_simplex(1), self.order)
+    else:
+      q = CollocatedQuadratureRule(default_simplex(1), self.order)
+
+    return q
 
 
   def _setupElement(self):

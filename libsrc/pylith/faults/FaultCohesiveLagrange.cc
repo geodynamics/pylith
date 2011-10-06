@@ -787,7 +787,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
    */
   const double assemblyFactor = 5.0;
 
-  //#define USE_DIAGONAL_PRECONDITIONER // Extract only the diagonal terms of P.
+#define USE_DIAGONAL_PRECONDITIONER // Extract only the diagonal terms of P.
 
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
@@ -813,12 +813,13 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   int_array indicesLagrange(nrowsF);
 #if defined(USE_DIAGONAL_PRECONDITIONER)
   double_array preconditionerCell(nrowsF);
+  double_array basisProducts(numBasis);
 #else
   double_array preconditionerCell(matrixSizeF);
+  double_array basisProducts(numBasis*numBasis);
 #endif
   double_array jacobianCellP(matrixSizeF);
   double_array jacobianCellN(matrixSizeF);
-  double_array basisProducts(numBasis*numBasis);
 
   // Get sections
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
@@ -965,6 +966,18 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
 
+#if defined(USE_DIAGONAL_PRECONDITIONER)
+    // Compute product of basis functions.
+    // Want values summed over quadrature points
+    basisProducts = 0.0;
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+
+      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+	basisProducts[iBasis] += wt*basis[iQ+iBasis]*basis[iQ+iBasis];
+      } // for
+    } // for
+#else
     // Compute product of basis functions.
     // Want values summed over quadrature points
     basisProducts = 0.0;
@@ -980,6 +993,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 	} // for
       } // for
     } // for
+#endif
 
     preconditionerCell = 0.0;
 
@@ -988,24 +1002,12 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       // First index Lagrange vertices
       const int iB = iBasis*spaceDim;
 
-      const int jBasis = iBasis; // Compute only diagonal entries
-	  
-      // First index for Lagrange vertices
-      const int jB = jBasis*spaceDim;
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	const int k = (iB+iDim)*nrowsF+(iB+iDim);
+	const double jacobianNPInv = 
+	  1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
 
-      for (int kBasis=0; kBasis < numBasis; ++kBasis) {
-	const int kB = kBasis*spaceDim;
-
-	const double valIK = basisProducts[iBasis*numBasis+kBasis];
-	const double valJK = basisProducts[jBasis*numBasis+kBasis];
-
-	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  const int k = (kB+iDim)*nrowsF+(kB+iDim);
-	  const double jacobianNPInv = 
-	    1.0/jacobianCellN[k] + 1.0/jacobianCellP[k];
-
-	  preconditionerCell[iB+iDim] -= valIK*valJK*jacobianNPInv;
-        } // for
+	preconditionerCell[iB+iDim] -= jacobianNPInv*basisProducts[iBasis];
       } // for
     } // for
 #else
@@ -1039,8 +1041,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
         } // for
       } // for
     } // for
-#endif
     preconditionerCell *= assemblyFactor;
+#endif
 
 #if 0 // DEBUGGING
 #if defined(USE_DIAGONAL_PRECONDITIONER)

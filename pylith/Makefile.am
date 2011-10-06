@@ -54,6 +54,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
 	feassemble/ElasticityImplicitLgDeform.py \
+	feassemble/FIATQuadrature.py \
 	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
