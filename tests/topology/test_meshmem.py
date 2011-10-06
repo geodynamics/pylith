@@ -134,7 +134,7 @@ class TestApp(Script):
 
       mesh = dmesh
       
-      
+
     # Refine mesh (if necessary)
     from pylith.topology.RefineUniform import RefineUniform
     refiner = RefineUniform()
@@ -157,6 +157,7 @@ class TestApp(Script):
 
 
   def _showStatus(self, stage):
+    import sys
     from pylith.utils.profiling import resourceUsageString
     from pylith.mpi.Communicator import petsc_comm_world
     comm = petsc_comm_world()
@@ -171,6 +172,7 @@ class TestApp(Script):
         print "\nPROCESSOR %d" % comm.rank
         print "\nStatus from ps: %s\n" % resourceUsageString()
         self.logger.show()
+        sys.stdout.flush()
 
       comm.barrier()
     return
