@@ -350,26 +350,19 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   // Set variables dependent on dimension of cell
   totalStrain_fn_type calcTotalStrainFn;
   elasticityJacobian_fn_type elasticityJacobianFn;
-  elasticityJacobian_fn_type elasticityPreconFn;
   if (1 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian1D;
-    elasticityPreconFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon1D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian2D;
-    elasticityPreconFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon2D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian3D;
-    elasticityPreconFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityPrecon3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
@@ -513,17 +506,6 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 					jacobianVisitor, *c_iter,
 					&_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-#if 0
-    // Get laplacian matrix at quadrature points for this cell
-    CALL_MEMBER_FN(*this, elasticityPreconFn)(elasticConsts);
-
-    // Assemble cell contribution into PETSc preconditioner matrix.
-    jacobianVisitor.clear();
-    PetscErrorCode err = updateOperator(preconMat, *sieveMesh->getSieve(),
-					jacobianVisitor, *c_iter,
-					&_cellMatrix[0], ADD_VALUES);
-    CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
-#endif
   } // for
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
