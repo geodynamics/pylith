@@ -811,7 +811,7 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
   double_array dispTIncrVertexN(spaceDim);
   double_array dispTIncrVertexP(spaceDim);
-  double_array dispTIncrVertexL(spaceDim); // Lagrange multiplier
+  double_array dispTIncrVertexL(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = fields->get(
     "dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -862,12 +862,13 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const double* jacobianVertexP = jacobianSection->restrictPoint(v_positive);
     assert(jacobianVertexP);
 
+    // Get area at fault vertex.
     assert(1 == areaSection->getFiberDimension(v_fault));
     assert(areaSection->restrictPoint(v_fault));
     const double areaVertex = *areaSection->restrictPoint(v_fault);
     assert(areaVertex > 0.0);
 
-    // Get dispIncr(t) at cohesive cell's vertices.
+    // Get dispIncr(t) at vertices.
     assert(spaceDim == dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
 				    dispTIncrVertexN.size());
