@@ -737,6 +737,8 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(
   disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   disp.allocate();
   fields->copyLayout("disp(t)");
+
+  fault->verifyConfiguration(*mesh);
 } // _initialize
 
 // ----------------------------------------------------------------------

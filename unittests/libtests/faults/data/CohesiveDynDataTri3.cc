@@ -61,24 +61,24 @@ const int pylith::faults::CohesiveDynDataTri3::_cellDim = 1;
 
 const int pylith::faults::CohesiveDynDataTri3::_numBasis = 2;
 
-const int pylith::faults::CohesiveDynDataTri3::_numQuadPts = 1;
+const int pylith::faults::CohesiveDynDataTri3::_numQuadPts = 2;
 
 const double pylith::faults::CohesiveDynDataTri3::_quadPts[] = {
-  0.0,
+  -1.0, 1.0,
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_quadWts[] = {
-  2.0,
+  1.0, 1.0
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_basis[] = {
-  0.5,
-  0.5
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_basisDeriv[] = {
-  -0.5,
-   0.5
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_verticesRef[] = {
@@ -297,18 +297,18 @@ const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlip[] = {
 // Output
 const double pylith::faults::CohesiveDynDataTri3::_fieldIncrSlipE[] = {
    9.100000000000,   7.100000000000,
-   9.200000000000,   7.375196378327,
-   9.300000000000,   8.288777189348,
+   9.200000000000,   7.390546440275,
+   9.300000000000,   8.283993111958,
    9.400000000000,   7.400000000000,
-   9.500000000000,   7.324803621673,
-   9.700000000000,   6.711222810652,
+   9.500000000000,   7.309453559725,
+   9.700000000000,   6.716006888042,
    1.600000000000,  -3.480000000000,
    1.800000000000,  -3.440000000000,
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_slipSlipE[] = {
-   0.350392756653,   0.000000000000,
-   1.977554378695,   0.000000000000,
+   0.381092880550,   0.000000000000,
+   1.967986223916,   0.000000000000,
 };
 
 // ----------------------------------------------------------------------
@@ -329,18 +329,18 @@ const double pylith::faults::CohesiveDynDataTri3::_fieldIncrOpen[] = {
 // Output
 const double pylith::faults::CohesiveDynDataTri3::_fieldIncrOpenE[] = {
    9.100000000000,   7.100000000000,
-  11.868906669946,   7.109969358633,
-  12.354802377535,   8.769332161050,
+  11.874337677762,   7.148344513504,
+  12.357207850137,   8.757371967576,
    9.400000000000,   7.400000000000,
-   6.831093330054,   7.590030641367,
-   6.645197622465,   6.230667838950,
+   6.825662322238,   7.551655486496,
+   6.642792149863,   6.242628032424,
   -8.600000000000,  -9.600000000000,
   -8.800000000000,  -9.800000000000,
 };
 
 const double pylith::faults::CohesiveDynDataTri3::_slipOpenE[] = {
-  -0.180061282734,   5.337813339891,
-   2.938664322101,   6.109604755069,
+  -0.103310972991,   5.348675355523,
+   2.914743935152,   6.114415700274,
 };
 
 // ----------------------------------------------------------------------

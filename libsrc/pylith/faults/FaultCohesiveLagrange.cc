@@ -213,7 +213,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   _logger->eventBegin(setupEvent);
 
   // Get cell geometry information that doesn't depend on cell
-  const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
   // Get sections associated with cohesive cells
@@ -500,9 +499,9 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   } // for
+  PetscLogFlops(numVertices*spaceDim*2);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(numVertices*spaceDim*2);
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -722,7 +721,6 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(spaceDim*6);
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
@@ -752,9 +750,9 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #endif
   } // for
   err = MatDestroy(&jacobianNP); CHECK_PETSC_ERROR(err);
+  PetscLogFlops(numVertices*spaceDim*6);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(numVertices*spaceDim*6);
     _logger->eventEnd(computeEvent);
 #endif
 } // calcPreconditioner
