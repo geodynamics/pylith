@@ -250,6 +250,9 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   assert(!globalOrder.isNull());
 
   _logger->eventEnd(setupEvent);
+#if !defined(DETAILED_EVENT_LOGGING)
+  _logger->eventBegin(computeEvent);
+#endif
 
   // Loop over fault vertices
   const int numVertices = _cohesiveVertices.size();
