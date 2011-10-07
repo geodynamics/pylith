@@ -59,24 +59,24 @@ const int pylith::faults::CohesiveDynDataQuad4::_cellDim = 1;
 
 const int pylith::faults::CohesiveDynDataQuad4::_numBasis = 2;
 
-const int pylith::faults::CohesiveDynDataQuad4::_numQuadPts = 1;
+const int pylith::faults::CohesiveDynDataQuad4::_numQuadPts = 2;
 
 const double pylith::faults::CohesiveDynDataQuad4::_quadPts[] = {
-  0.0,
+  -1.0, 1.0,
 };
 
 const double pylith::faults::CohesiveDynDataQuad4::_quadWts[] = {
-  2.0,
+  1.0, 1.0
 };
 
 const double pylith::faults::CohesiveDynDataQuad4::_basis[] = {
-  0.5,
-  0.5
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
 const double pylith::faults::CohesiveDynDataQuad4::_basisDeriv[] = {
-  -0.5,
-   0.5
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
 const double pylith::faults::CohesiveDynDataQuad4::_verticesRef[] = {
@@ -332,20 +332,19 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlip[] = {
 const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrSlipE[] = {
    1.100000000000,   2.100000000000,
    1.200000000000,   2.200000000000,
-   1.300000000000,   2.468370545405,
-   1.400000000000,   3.350253402750,
+   1.300000000000,   2.406970297611,
+   1.400000000000,   3.369389712309,
    1.500000000000,   2.500000000000,
    1.600000000000,   2.600000000000,
-   1.700000000000,   2.531629454595,
-   1.900000000000,   1.949746597250,
+   1.700000000000,   2.593029702389,
+   1.900000000000,   1.930610287691,
    1.800000000000,  -3.440000000000,
    1.000000000000,  -3.600000000000,
 };
 
-// Update slip values based on changes in Lagrange multiplier values
 const double pylith::faults::CohesiveDynDataQuad4::_slipSlipE[] = {
-   0.336741090809,   0.000000000000,
-   1.900506805500,   0.000000000000,
+   0.213940595221,   0.000000000000,
+   1.938779424618,   0.000000000000,
 };
 
 // ----------------------------------------------------------------------
@@ -369,19 +368,19 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpen[] = {
 const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrOpenE[] = {
    1.100000000000,   2.100000000000,
    1.200000000000,   2.200000000000,
-   3.837558167495,   2.192904776328,
-   4.297022233334,   3.773022694556,
+   3.815834136232,   2.039404156843,
+   4.287400342924,   3.820863468454,
    1.500000000000,   2.500000000000,
    1.600000000000,   2.600000000000,
-  -0.837558167495,   2.807095223672,
-  -0.997022233334,   1.526977305444,
+  -0.815834136232,   2.960595843157,
+  -0.987400342924,   1.479136531546,
   -8.800000000000,  -9.800000000000,
   -8.000000000000,  -9.000000000000,
 };
 
 const double pylith::faults::CohesiveDynDataQuad4::_slipOpenE[] = {
-  -0.214190447343,   5.075116334990,
-   2.746045389111,   5.794044466667,
+  -0.521191686313,   5.031668272463,
+   2.841726936907,   5.774800685848,
 };
 
 // ----------------------------------------------------------------------
