@@ -633,7 +633,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get current relative displacement for updating.
     assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
     const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
-    assert(0 != dispRelVertex);
+    assert(dispRelVertex);
 
     // Get change in relative displacement from sensitivity solve.
     assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
@@ -704,6 +704,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	dDispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
 	  dSlipVertex[jDim];
       } // for
+      if (fabs(dDispRelVertex[iDim]) < _zeroTolerance) {
+	dDispRelVertex[iDim] = 0.0;
+      } // if
     } // for
 
     // Set change in slip.
@@ -745,29 +748,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 			 topology::SolutionFields* const fields,
 			 const topology::Field<topology::Mesh>& jacobian)
 { // adjustSolnLumped
-#if 0
   /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
     (double_array*,
      const double_array&,
      const double_array&,
      const double_array&);
-
-  /// Member prototype for _sensitivitySolveLumpedXD()
-  typedef void (pylith::faults::FaultCohesiveDyn::*sensitivitySolveLumped_fn_type)
-    (double_array*,
-     const double_array&,
-     const double_array&,
-     const double_array&);
-
-  /// Member prototype for _adjustSolnLumpedXD()
-  typedef void (pylith::faults::FaultCohesiveDyn::*adjustSolnLumped_fn_type)
-    (double_array*, double_array*, double_array*,
-     const double_array&, const double_array&,
-     const double_array&, const double_array&,
-     const double_array&, const double_array&,
-     const double_array&, const double_array&);
-
 
   assert(0 != fields);
   assert(0 != _quadrature);
@@ -796,36 +782,35 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
   // Allocate arrays for vertex values
-  double_array tractionTVertex(spaceDim);
   double_array tractionTpdtVertex(spaceDim);
-  double_array slipTpdtVertex(spaceDim);
   double_array lagrangeTpdtVertex(spaceDim);
   double_array dLagrangeTpdtVertex(spaceDim);
+  double_array dLagrangeTpdtVertexGlobal(spaceDim);
 
   // Update time step in friction (can vary).
   _friction->timeStep(_dt);
 
   // Get section information
+  double_array dispRelVertex(spaceDim);
   double_array slipVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
+  const ALE::Obj<RealSection>& dispRelSection = 
+    _fields->get("relative disp").section();
+  assert(!dispRelSection.isNull());
 
   double_array slipRateVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipRateSection =
-      _fields->get("slip rate").section();
-  assert(!slipRateSection.isNull());
+  const ALE::Obj<RealSection>& velRelSection =
+      _fields->get("relative velocity").section();
+  assert(!velRelSection.isNull());
 
-  double_array orientationVertex(orientationSize);
   const ALE::Obj<RealSection>& orientationSection =
       _fields->get("orientation").section();
   assert(!orientationSection.isNull());
 
-  double_array dispTVertexN(spaceDim);
-  double_array dispTVertexP(spaceDim);
-  double_array lagrangeTVertex(spaceDim);
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
@@ -840,13 +825,9 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     "dispIncr adjust").section();
   assert(!dispTIncrAdjSection.isNull());
 
-  double_array jacobianVertexN(spaceDim);
-  double_array jacobianVertexP(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   assert(!jacobianSection.isNull());
 
-  double_array residualVertexN(spaceDim);
-  double_array residualVertexP(spaceDim);
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
 
@@ -857,33 +838,19 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 					    jacobianSection);
   assert(!globalOrder.isNull());
 
-  adjustSolnLumped_fn_type adjustSolnLumpedFn;
   constrainSolnSpace_fn_type constrainSolnSpaceFn;
-  sensitivitySolveLumped_fn_type sensitivitySolveLumpedFn;
   switch (spaceDim) { // switch
   case 1:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped1D;
     constrainSolnSpaceFn = 
       &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D;
-    sensitivitySolveLumpedFn =
-      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D;
     break;
   case 2: 
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped2D;
     constrainSolnSpaceFn = 
       &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D;
-    sensitivitySolveLumpedFn =
-      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D;
     break;
   case 3:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveDyn::_adjustSolnLumped3D;
     constrainSolnSpaceFn = 
       &pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D;
-    sensitivitySolveLumpedFn =
-      &pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D;
     break;
   default :
     assert(0);
@@ -908,40 +875,53 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get slip
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
-    // Get slip rate
-    slipRateSection->restrictPoint(v_fault, &slipRateVertex[0],
-				   slipRateVertex.size());
-    
-    // Get fault orientation
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
-    
-    // Get Jacobian at vertices on positive and negative sides of the fault.
-    jacobianSection->restrictPoint(v_negative, &jacobianVertexN[0],
-				   jacobianVertexN.size());
-    jacobianSection->restrictPoint(v_positive, &jacobianVertexP[0],
-				   jacobianVertexP.size());
-    
     // Get residual at cohesive cell's vertices.
-    residualSection->restrictPoint(v_negative, &residualVertexN[0], 
-				   residualVertexN.size());
-    residualSection->restrictPoint(v_positive, &residualVertexP[0], 
-				   residualVertexP.size());
+    assert(spaceDim == residualSection->getFiberDimension(v_lagrange));
+    const double* residualVertexL = residualSection->restrictPoint(v_lagrange);
+    assert(residualVertexL);
 
-    // Get disp(t) at cohesive cell's vertices.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0], 
-				dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0], 
-				dispTVertexP.size());
-    
-    // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
-    dispTSection->restrictPoint(v_lagrange, &lagrangeTVertex[0],
-				lagrangeTVertex.size());
+    // Get jacobian at cohesive cell's vertices.
+    assert(spaceDim == jacobianSection->getFiberDimension(v_negative));
+    const double* jacobianVertexN = jacobianSection->restrictPoint(v_negative);
+    assert(jacobianVertexN);
+
+    assert(spaceDim == jacobianSection->getFiberDimension(v_positive));
+    const double* jacobianVertexP = jacobianSection->restrictPoint(v_positive);
+    assert(jacobianVertexP);
+
+    // Get area at fault vertex.
+    assert(1 == areaSection->getFiberDimension(v_fault));
+    assert(areaSection->restrictPoint(v_fault));
+    const double areaVertex = *areaSection->restrictPoint(v_fault);
+    assert(areaVertex > 0.0);
+
+    // Get disp(t) at Lagrange vertex.
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
+    assert(lagrangeTVertex);
+
+    // Get dispIncr(t) at cohesive cell's vertices.
+    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
+				    dispTIncrVertexN.size());
+    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0],
+				    dispTIncrVertexP.size());
     dispTIncrSection->restrictPoint(v_lagrange, &lagrangeTIncrVertex[0],
 				    lagrangeTIncrVertex.size());
+
+    // Get relative displacement at fault vertex.
+    dispRelSection->restrictPoint(v_fault, &dispRelVertex[0], 
+				  dispRelVertex.size());
+
+    // Get relative velocity at fault vertex.
+    assert(spaceDim == velRelSection->getFiberDimension(v_fault));
+    const double* velRelVertex = velRelSection->restrictPoint(v_fault);
+    assert(velRelVertex);
+    
+    // Get fault orientation at fault vertex.
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
     
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -949,139 +929,118 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     _logger->eventBegin(computeEvent);
 #endif
 
-    CALL_MEMBER_FN(*this,
-		   adjustSolnLumpedFn)(&lagrangeTIncrVertex,
-				       &dispTIncrVertexN,
-				       &dispTIncrVertexP,
-				       slipVertex,
-				       orientationVertex,
-				       dispTVertexN,
-				       dispTVertexP,
-				       residualVertexN,
-				       residualVertexP,
-				       jacobianVertexN,
-				       jacobianVertexP);
+    // Adjust solution as in prescribed rupture, updating the Lagrange
+    // multipliers and the corresponding displacment increments.
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      assert(jacobianVertexP[iDim] > 0.0);
+      assert(jacobianVertexN[iDim] > 0.0);
+      const double S = (1.0/jacobianVertexP[iDim] + 1.0/jacobianVertexN[iDim]) *
+	areaVertex * areaVertex;
+      assert(S > 0.0);
+      lagrangeTIncrVertex[iDim] = 1.0/S * 
+	(-residualVertexL[iDim] +
+	 areaVertex * (dispTIncrVertexP[iDim] - dispTIncrVertexN[iDim]));
 
-    
-    // Compute Lagrange multiplier at time t+dt
-    lagrangeTpdtVertex = lagrangeTVertex + lagrangeTIncrVertex;
-    dLagrangeTpdtVertex = 0.0;
-    
-    // :TODO: Rotate fault tractions to fault coordinate system.
+      assert(jacobianVertexN[iDim] > 0.0);
+      dispTIncrVertexN[iDim] = 
+	+areaVertex / jacobianVertexN[iDim]*lagrangeTIncrVertex[iDim];
+
+      assert(jacobianVertexP[iDim] > 0.0);
+      dispTIncrVertexP[iDim] = 
+	-areaVertex / jacobianVertexP[iDim]*lagrangeTIncrVertex[iDim];
+
+    } // for
+
+    // Compute slip, slip rate, and Lagrange multiplier at time t+dt
+    // in fault coordinate system.
+    slipVertex = 0.0;
+    slipRateVertex = 0.0;
+    tractionTpdtVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	  dispRelVertex[jDim];
+	slipRateVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	  velRelVertex[jDim];
+	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
+      } // for
+    } // for
     
     // Get friction properties and state variables.
     _friction->retrievePropsStateVars(v_fault);
 
+    // Use fault constitutive model to compute traction associated with
+    // friction.
+    dLagrangeTpdtVertex = 0.0;
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
 					 tractionTpdtVertex);
-    CALL_MEMBER_FN(*this,
-       sensitivitySolveLumpedFn)(&slipVertex,
-           dLagrangeTpdtVertex, jacobianVertexN, jacobianVertexP);
 
-    // :TODO: Rotate fault tractions to global coordinate system.
-    
-    lagrangeTIncrVertex += dLagrangeTpdtVertex;
+    // Rotate traction back to global coordinate system.
+    dLagrangeTpdtVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      for (int jDim=0; jDim < spaceDim; ++jDim) {
+	dLagrangeTpdtVertexGlobal[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] * dLagrangeTpdtVertex[jDim];
+      } // for
+    } // for
 
-    // :TODO: Refactor this into sensitivitySolveLumpedXD().
-    switch (spaceDim) { // switch
-    case 1: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
+#if 0 // debugging
+    std::cout << "dispTIncrP: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dispTIncrVertexP[iDim];
+    std::cout << ", dispTIncrN: "; 
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dispTIncrVertexN[iDim];
+    std::cout << ", slipVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipVertex[iDim];
+    std::cout << ",  slipRateVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipRateVertex[iDim];
+    std::cout << ", orientationVertex: ";
+    for (int iDim=0; iDim < spaceDim*spaceDim; ++iDim)
+      std::cout << "  " << orientationVertex[iDim];
+    std::cout << ",  tractionVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << tractionTpdtVertex[iDim];
+    std::cout << ",  lagrangeTVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << lagrangeTVertex[iDim];
+    std::cout << ",  lagrangeTIncrVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << lagrangeTIncrVertex[iDim];
+    std::cout << ",  dLagrangeTpdtVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dLagrangeTpdtVertex[iDim];
+    std::cout << ",  dLagrangeTpdtVertexGlobal: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dLagrangeTpdtVertexGlobal[iDim];
+    std::cout << std::endl;
+#endif
 
-      const double dlp = lagrangeTIncrVertex[0];
+    // Compute change in displacement.
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      assert(jacobianVertexP[iDim] > 0.0);
+      assert(jacobianVertexN[iDim] > 0.0);
 
-      // Update displacements at negative vertex
-      dispTIncrVertexN[0] = +1.0 / jacobianVertexN[0] * dlp;
-  
-      // Update displacements at positive vertex
-      dispTIncrVertexP[0] = -1.0 / jacobianVertexP[0] * dlp;
-  
-      break;
-    } // case 1
-    case 2: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexN[1] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-      assert(jacobianVertexP[1] > 0.0);
+      dispTIncrVertexN[iDim] += 
+	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexN[iDim];
+      dispTIncrVertexP[iDim] -= 
+	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexP[iDim];
 
-      // Check to make sure Jacobian is same at all DOF for
-      // vertices i and j (means S is diagonal with equal enties).
-      assert(jacobianVertexN[0] == jacobianVertexN[1]);
-      assert(jacobianVertexP[0] == jacobianVertexP[1]);
+      // Set increment in relative displacement.
+      dispRelVertex[iDim] = -areaVertex * dLagrangeTpdtVertexGlobal[iDim] / 
+	(jacobianVertexN[iDim] + jacobianVertexP[iDim]);
+      if (fabs(dispRelVertex[iDim]) < _zeroTolerance) {
+	dispRelVertex[iDim] = 0.0;
+      } // if
 
-      const double Cpx = orientationVertex[0];
-      const double Cpy = orientationVertex[1];
-      const double Cqx = orientationVertex[2];
-      const double Cqy = orientationVertex[3];
-
-      const double dlp = lagrangeTIncrVertex[0];
-      const double dlq = lagrangeTIncrVertex[1];
-
-      const double dlx = Cpx * dlp + Cqx * dlq;
-      const double dly = Cpy * dlp + Cqy * dlq;
-  
-      // Update displacements at negative vertex.
-      dispTIncrVertexN[0] = dlx / jacobianVertexN[0];
-      dispTIncrVertexN[1] = dly / jacobianVertexN[0];
-  
-      // Update displacements at positive vertex.
-      dispTIncrVertexP[0] = -dlx / jacobianVertexP[0];
-      dispTIncrVertexP[1] = -dly / jacobianVertexP[0];
-
-      break;
-    } // case 2
-    case 3: {
-      assert(jacobianVertexN[0] > 0.0);
-      assert(jacobianVertexN[1] > 0.0);
-      assert(jacobianVertexN[2] > 0.0);
-      assert(jacobianVertexP[0] > 0.0);
-      assert(jacobianVertexP[1] > 0.0);
-      assert(jacobianVertexP[2] > 0.0);
-
-      // Check to make sure Jacobian is same at all DOF for
-      // vertices i and j (means S is diagonal with equal enties).
-      assert(jacobianVertexN[0] == jacobianVertexN[1] && 
-	     jacobianVertexN[0] == jacobianVertexN[2]);
-      assert(jacobianVertexP[0] == jacobianVertexP[1] && 
-	     jacobianVertexP[0] == jacobianVertexP[2]);
-
-      const double Cpx = orientationVertex[0];
-      const double Cpy = orientationVertex[1];
-      const double Cpz = orientationVertex[2];
-      const double Cqx = orientationVertex[3];
-      const double Cqy = orientationVertex[4];
-      const double Cqz = orientationVertex[5];
-      const double Crx = orientationVertex[6];
-      const double Cry = orientationVertex[7];
-      const double Crz = orientationVertex[8];
-
-      const double dlp = lagrangeTIncrVertex[0];
-      const double dlq = lagrangeTIncrVertex[1];
-      const double dlr = lagrangeTIncrVertex[2];
-
-      const double dlx = Cpx * dlp + Cqx * dlq + Crx * dlr;
-      const double dly = Cpy * dlp + Cqy * dlq + Cry * dlr;
-      const double dlz = Cpz * dlp + Cqz * dlq + Crz * dlr;
-
-      // Update displacements at negative vertex.
-      dispTIncrVertexN[0] = dlx / jacobianVertexN[0];
-      dispTIncrVertexN[1] = dly / jacobianVertexN[1];
-      dispTIncrVertexN[2] = dlz / jacobianVertexN[2];
-
-      // Update displacements at positive vertex.
-      dispTIncrVertexP[0] = -dlx / jacobianVertexP[0];
-      dispTIncrVertexP[1] = -dly / jacobianVertexP[1];
-      dispTIncrVertexP[2] = -dlz / jacobianVertexP[2];
-
-      break;
-    } // case 3
-    default:
-      assert(0);
-      throw std::logic_error("Unknown spatial dimension in "
-			     "FaultCohesiveDyn::adjustSolnLumped().");
-    } // switch
+      // Update increment in Lagrange multiplier.
+      lagrangeTIncrVertex[iDim] += dLagrangeTpdtVertexGlobal[iDim];
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -1092,7 +1051,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     // constraint is local (the adjustment is assembled across processors).
     if (globalOrder->isLocal(v_lagrange)) {
       // Adjust displacements to account for Lagrange multiplier values
-      // (assumed to be zero in perliminary solve).
+      // (assumed to be zero in preliminary solve).
       assert(dispTIncrVertexN.size() == 
 	     dispTIncrAdjSection->getFiberDimension(v_negative));
       dispTIncrAdjSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
@@ -1102,27 +1061,39 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
     } // if
 
-    // The Lagrange multiplier and slip are NOT assembled across processors.
+    // The Lagrange multiplier and relative displacement are NOT
+    // assembled across processors.
 
     // Set Lagrange multiplier value. Value from preliminary solve is
-    // bogus due to artificial diagonal entry of 1.0.
+    // bogus due to artificial diagonal entry in Jacobian of 1.0.
     assert(lagrangeTIncrVertex.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
 
-    // Update the slip estimate based on adjustment to the Lagrange
-    // multiplier values.
-    assert(slipVertex.size() ==
-        slipSection->getFiberDimension(v_fault));
-    slipSection->updatePoint(v_fault, &slipVertex[0]);
+    // Update the relative displacement estimate based on adjustment
+    // to the Lagrange multiplier values.
+    assert(dispRelVertex.size() ==
+	   dispRelSection->getFiberDimension(v_fault));
+    dispRelSection->updateAddPoint(v_fault, &dispRelVertex[0]);
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
-  } // for
+    } // for
+  PetscLogFlops(numVertices*spaceDim*(17 + // adjust solve
+				      9 + // updates
+				      spaceDim*9));
+
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
 #endif
+
+#if 0 // DEBUGGING
+  //dLagrangeTpdtSection->view("AFTER dLagrange");
+  //dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
+  //velRelSection->view("AFTER RELATIVE VELOCITY");
 #endif
 } // adjustSolnLumped
 
