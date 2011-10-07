@@ -288,7 +288,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const double* valsE = _data->residual;
@@ -416,7 +416,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
       const double valE = valsE[index];
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
       if (fabs(valE-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
 		  << "valE: " << valE
