@@ -46,7 +46,7 @@ V3 = 5.0e-6
 integrateStateVar(theta, V3, 4.0)
 
 mask4 = numpy.bitwise_and(t >= 8.0, t < 12.0)
-V4 = 1.0e-7
+V4 = 2.0e-7
 integrateStateVar(theta, V4, 8.0)
 
 slipRateE = mask1*V1 + mask2*V2 + mask3*V3 + mask4*V4
