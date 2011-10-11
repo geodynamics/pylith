@@ -573,16 +573,13 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       } // for
     } // for
 
-#if 1 // debugging
+#if 0 // debugging
     std::cout << "slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipVertex[iDim];
     std::cout << ",  slipRateVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipRateVertex[iDim];
-    std::cout << ", orientationVertex: ";
-    for (int iDim=0; iDim < spaceDim*spaceDim; ++iDim)
-      std::cout << "  " << orientationVertex[iDim];
     std::cout << ",  tractionVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << tractionTpdtVertex[iDim];
@@ -1034,9 +1031,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       // Set increment in relative displacement.
       dispRelVertex[iDim] = -areaVertex * dLagrangeTpdtVertexGlobal[iDim] / 
 	(jacobianVertexN[iDim] + jacobianVertexP[iDim]);
-      if (fabs(dispRelVertex[iDim]) < _zeroTolerance) {
-	dispRelVertex[iDim] = 0.0;
-      } // if
 
       // Update increment in Lagrange multiplier.
       lagrangeTIncrVertex[iDim] += dLagrangeTpdtVertexGlobal[iDim];
