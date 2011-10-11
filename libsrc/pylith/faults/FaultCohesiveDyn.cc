@@ -573,7 +573,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       } // for
     } // for
 
-#if 0 // debugging
+#if 1 // debugging
     std::cout << "slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipVertex[iDim];
@@ -693,7 +693,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
     if (tractionNormal < -_zeroTolerance || 
-	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
+	slipVertex[indexN] + dSlipVertex[indexN] < -_zeroTolerance) {
       dSlipVertex[indexN] = -slipVertex[indexN];
     } // if
 
@@ -1330,7 +1330,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	initialTractionsVertexGlobal[iDim] += 
-	  orientationVertex[iDim*spaceDim+jDim] *
+	  orientationVertex[jDim*spaceDim+iDim] *
 	  initialTractionsVertex[jDim];
       } // for
     } // for
