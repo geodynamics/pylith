@@ -143,6 +143,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
   velRel.cloneSection(dispRel);
   velRel.vectorFieldType(topology::FieldBase::VECTOR);
+  velRel.scale(_normalizer->lengthScale() / _normalizer->timeScale());
 
   //logger.stagePop();
 } // initialize
@@ -457,13 +458,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   double_array tractionTpdtVertex(spaceDim);
 
   // Get sections
-  double_array dDispRelVertex(spaceDim);
+  double_array slipVertex(spaceDim);
   const ALE::Obj<RealSection>& dispRelSection = 
     _fields->get("relative disp").section();
   assert(!dispRelSection.isNull());
 
-  double_array dSlipVertex(spaceDim);
-  double_array slipVertex(spaceDim);
   double_array slipRateVertex(spaceDim);
   const ALE::Obj<RealSection>& velRelSection =
       _fields->get("relative velocity").section();
@@ -476,8 +475,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  double_array dispTIncrVertexN(spaceDim);
-  double_array dispTIncrVertexP(spaceDim);
+  double_array velTVertexN(spaceDim);
+  double_array velTVertexP(spaceDim);
+  const ALE::Obj<RealSection>& velTSection = 
+    fields->get("velocity(t)").section();
+  assert(!velTSection.isNull());
+
+  double_array dDispTIncrVertexN(spaceDim);
+  double_array dDispTIncrVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection =
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -509,6 +514,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   } // switch
 
 
+#if 0 // DEBUGGING
+  dispRelSection->view("BEFORE RELATIVE DISPLACEMENT");
+  dispTIncrSection->view("BEFORE DISP INCR (t->t+dt)");
+#endif
+
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -532,10 +542,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
     assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
     const double* lagrangeTVertex = dispTSection->restrictPoint(v_lagrange);
+    assert(lagrangeTVertex);
 
     assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
     const double* lagrangeTIncrVertex = 
       dispTIncrSection->restrictPoint(v_lagrange);
+    assert(lagrangeTIncrVertex);
 
     // Compute slip, slip rate, and Lagrange multiplier at time t+dt
     // in fault coordinate system.
@@ -617,6 +629,11 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   _sensitivitySolve();
   _sensitivityUpdateSoln(negativeSide);
 
+
+  double_array dSlipVertex(spaceDim);
+  double_array dDispRelVertex(spaceDim);
+  double_array dispRelVertex(spaceDim);
+
   // Update slip field based on solution of sensitivity problem and
   // increment in Lagrange multipliers.
   const ALE::Obj<RealSection>& sensDispRelSection =
@@ -627,22 +644,40 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-    // Get current relative displacement for updating.
-    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
-    const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
-    assert(dispRelVertex);
-
     // Get change in relative displacement from sensitivity solve.
     assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
     const double* sensDispRelVertex = 
       sensDispRelSection->restrictPoint(v_fault);
     assert(sensDispRelVertex);
 
+    // Get current relative displacement for updating.
+    dispRelSection->restrictPoint(v_fault, &dispRelVertex[0],
+				  dispRelVertex.size());
+
     // Get orientation.
     assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
     const double* orientationVertex = 
       orientationSection->restrictPoint(v_fault);
     assert(orientationVertex);
+
+    // Get displacements from disp(t) and dispIncr(t).
+    assert(spaceDim == dispTSection->getFiberDimension(v_negative));
+    const double* dispTVertexN = dispTSection->restrictPoint(v_negative);
+    assert(dispTVertexN);
+
+    assert(spaceDim == dispTSection->getFiberDimension(v_positive));
+    const double* dispTVertexP = dispTSection->restrictPoint(v_positive);
+    assert(dispTVertexP);
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_negative));
+    const double* dispTIncrVertexN = 
+      dispTIncrSection->restrictPoint(v_negative);
+    assert(dispTIncrVertexN);
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_positive));
+    const double* dispTIncrVertexP = 
+      dispTIncrSection->restrictPoint(v_positive);
+    assert(dispTIncrVertexP);
 
     // Get Lagrange multiplier at time t
     assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
@@ -659,22 +694,26 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
 
-    // Only update slip if Lagrange multiplier is changing
+    // Only update slip, disp, etc if Lagrange multiplier is
+    // changing. If Lagrange multiplier is the same, there is no slip
+    // so disp, etc should be unchanged.
     double dLagrangeMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       dLagrangeMag += dLagrangeTpdtVertex[iDim]*dLagrangeTpdtVertex[iDim];
-    if (0.0 == dLagrangeMag)
+    if (dLagrangeMag < _zeroTolerance) {
       continue; // No change, so continue
+    } // if
 
     // Compute slip and change in slip in fault coordinates.
     dSlipVertex = 0.0;
     slipVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
-	  dispRelVertex[jDim];
 	dSlipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
 	  sensDispRelVertex[jDim];
+	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
+	  (dispTVertexP[jDim] - dispTVertexN[jDim] +
+	   dispTIncrVertexP[jDim] - dispTIncrVertexN[jDim]);
       } // for
     } // for
 
@@ -694,46 +733,83 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       dSlipVertex[indexN] = -slipVertex[indexN];
     } // if
 
-    // Compute change relative displacement from change in slip.
+    // Compute current estimate of slip.
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double value = slipVertex[iDim] + dSlipVertex[iDim];
+      slipVertex[iDim] = fabs(value) > _zeroTolerance ? value : 0.0;
+      dSlipVertex[iDim] = 
+	fabs(dSlipVertex[iDim]) > _zeroTolerance ? dSlipVertex[iDim] : 0.0;
+    } // for
+
+    // Update relative displacement from slip.
+    dispRelVertex = 0.0;
     dDispRelVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
+	dispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
+	  slipVertex[jDim];
 	dDispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
 	  dSlipVertex[jDim];
       } // for
-      if (fabs(dDispRelVertex[iDim]) < _zeroTolerance) {
-	dDispRelVertex[iDim] = 0.0;
-      } // if
+
+      dDispTIncrVertexN[iDim] = -0.5*dDispRelVertex[iDim];
+      dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
+
+      velTVertexN[iDim] = 
+	(dispTIncrVertexN[iDim] + dDispTIncrVertexN[iDim]) / _dt;
+      velTVertexP[iDim] = 
+	(dispTIncrVertexP[iDim] + dDispTIncrVertexP[iDim]) / _dt;
     } // for
 
-    // Set change in slip.
-    assert(dDispRelVertex.size() ==
-        dispRelSection->getFiberDimension(v_fault));
-    dispRelSection->updateAddPoint(v_fault, &dDispRelVertex[0]);
-    
+#if 0 // debugging
+    std::cout << "dLagrangeTpdtVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dLagrangeTpdtVertex[iDim];
+    std::cout << ", slipVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << slipVertex[iDim];
+    std::cout << ",  dispRelVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dispRelVertex[iDim];
+    std::cout << ",  dDispRelVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dDispRelVertex[iDim];
+    std::cout << std::endl;
+#endif
+
     // Update Lagrange multiplier increment.
     assert(dLagrangeTpdtVertex.size() ==
 	   dispTIncrSection->getFiberDimension(v_lagrange));
     dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
 
-    // Update displacement field
-    dispTIncrVertexN = -0.5*dDispRelVertex;
-    assert(dispTIncrVertexN.size() ==
+    // Set change in relative displacement.
+    assert(dispRelVertex.size() ==
+        dispRelSection->getFiberDimension(v_fault));
+    dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
+    
+    // Set displacement field
+    assert(dDispTIncrVertexN.size() ==
 	   dispTIncrSection->getFiberDimension(v_negative));
-    dispTIncrSection->updateAddPoint(v_negative, &dispTIncrVertexN[0]);
+    dispTIncrSection->updateAddPoint(v_negative, &dDispTIncrVertexN[0]);
     
-    dispTIncrVertexP = -dispTIncrVertexN;
-    assert(dispTIncrVertexP.size() ==
+    assert(dDispTIncrVertexP.size() ==
 	   dispTIncrSection->getFiberDimension(v_positive));
-    dispTIncrSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
+    dispTIncrSection->updateAddPoint(v_positive, &dDispTIncrVertexP[0]);
     
+    // Set velocity field.
+    assert(velTVertexN.size() == velTSection->getFiberDimension(v_negative));
+    velTSection->updatePoint(v_negative, &velTVertexN[0]);
+    
+    assert(velTVertexP.size() == velTSection->getFiberDimension(v_positive));
+    velTSection->updatePoint(v_positive, &velTVertexP[0]);
+
   } // for
 
 #if 0 // DEBUGGING
   //dLagrangeTpdtSection->view("AFTER dLagrange");
-  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
   dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
-  //velRelSection->view("AFTER RELATIVE VELOCITY");
+  dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
+  //velTSection->view("AFTER VELOCITY");
 #endif
 } // constrainSolnSpace
 
