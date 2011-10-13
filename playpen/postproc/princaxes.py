@@ -185,8 +185,7 @@ class PrincAxes(Application):
 
   def _compPrincAxes(self, tensor):
     """
-    Function to compute 3D principal axes, sort them, and multiply by
-    corresponding eigenvalue.
+    Function to compute 3D principal axes and sort them.
     """
     tensorMat = numpy.array([(tensor[0], tensor[3], tensor[5]),
                              (tensor[3], tensor[1], tensor[4]),
@@ -196,11 +195,11 @@ class PrincAxes(Application):
     idx = eigenValue.argsort()
     eigenValuesOrdered = eigenValue[idx]
     princAxesOrdered = princAxes[:,idx]
-    tensorOrdered = numpy.empty_like(princAxesOrdered)
-    tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
-    tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]
-    tensorOrdered[2,:] = eigenValuesOrdered[2] * princAxesOrdered[2,:]
-    return tensorOrdered, eigenValuesOrdered
+    # tensorOrdered = numpy.empty_like(princAxesOrdered)
+    # tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
+    # tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]
+    # tensorOrdered[2,:] = eigenValuesOrdered[2] * princAxesOrdered[2,:]
+    return princAxesOrdered, eigenValuesOrdered
   
 
   def _writeVtkFile(self):
