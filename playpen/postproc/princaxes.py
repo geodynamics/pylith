@@ -44,7 +44,11 @@ class PrincAxes(Application):
     ## @li \b vtk_input_file  Name of VTK input file.
     ## @li \b vtk_output_file Name of VTK output file.
     ## @li \b vtk_tensor_index Index indicating which VTK field array contains desired tensor.
-    ## @li \b vtk_tensor_components_order Indices corresponding to xx,yy,zz,xy,yz,xz.
+    ## @li \b vtk_tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
+    ## @li \b add_regional_stress Add regional stress field?
+    ## @li \b regional_sigma1 Stress value and direction cosines for sigma_1.
+    ## @li \b regional_sigma2 Stress value and direction cosines for sigma_2.
+    ## @li \b regional_sigma3 Stress value and direction cosines for sigma_3.
 
     import pyre.inventory
 
@@ -60,7 +64,23 @@ class PrincAxes(Application):
 
     vtkTensorComponentsOrder = pyre.inventory.list("vtk_tensor_components_order",
                                                 default=[0, 1, 2, 3, 4, 5])
-    vtkTensorComponentsOrder.meta['tip'] = "Indices corresponding to xx, yy, zz, xy, yz, xz."
+    vtkTensorComponentsOrder.meta['tip'] = "Indices of xx, yy, zz, xy, yz, xz."
+
+    addRegionalStress = pyre.inventory.bool("add_regional_stress",
+                                            default=False)
+    addRegionalStress.meta['tip'] = "Add regional stress field?"
+
+    regionalSigma1 = pyre.inventory.list("regional_sigma1",
+                                         default=[-1.5e7, 1.0, 0.0, 0.0])
+    regionalSigma1.meta['tip'] = "Stress value and direction cosines of sigma1."
+
+    regionalSigma2 = pyre.inventory.list("regional_sigma2",
+                                         default=[-1.0e7, 0.0, 0.0, 1.0])
+    regionalSigma2.meta['tip'] = "Stress value and direction cosines of sigma2."
+
+    regionalSigma3 = pyre.inventory.list("regional_sigma3",
+                                         default=[-5.0e6, 0.0, 1.0, 0.0])
+    regionalSigma3.meta['tip'] = "Stress value and direction cosines of sigma3."
     
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -82,6 +102,8 @@ class PrincAxes(Application):
     self.minEigenvalue = None
     self.intEigenvalue = None
     self.maxEigenvalue = None
+
+    self.regionalStress = numpy.zeros((3, 3), dtype=numpy.float64)
     return
 
 
@@ -89,6 +111,8 @@ class PrincAxes(Application):
     # import pdb
     # pdb.set_trace()
     self._readVtkFile()
+    if (self.addRegionalStress):
+      self._getRegionalStress()
     self._getPrincAxes()
     self._writeVtkFile()
     return
@@ -112,6 +136,28 @@ class PrincAxes(Application):
     self.vtkTensorIndex = self.inventory.vtkTensorIndex
     self.vtkTensorComponentsOrder = self.inventory.vtkTensorComponentsOrder
 
+    # Regional stresses
+    s1 = float(self.inventory.regionalSigma1[0])
+    s2 = float(self.inventory.regionalSigma1[0])
+    s3 = float(self.inventory.regionalSigma1[0])
+    sVec = numpy.array([s1, s2, s3], dtype=numpy.float64)
+    self.regionalSigma = numpy.diag(sVec)
+    self.regionalAxes = numpy.zeros((3,3), dtype=numpy.float64)
+    for i in range(3):
+      self.regionalAxes[0,i] = float(self.inventory.regionalSigma1[i+1])
+      self.regionalAxes[1,i] = float(self.inventory.regionalSigma2[i+1])
+      self.regionalAxes[2,i] = float(self.inventory.regionalSigma3[i+1])
+
+    return
+
+
+  def _getRegionalStress(self):
+    """
+    Function to transform regional stress from principal axes to mesh
+    coordinates.
+    """
+    t1 = numpy.dot(self.regionalAxes, self.regionalSigma)
+    self.regionalStress = numpy.dot(t1, numpy.transpose(self.regionalAxes))
     return
       
 
@@ -191,6 +237,7 @@ class PrincAxes(Application):
                              (tensor[3], tensor[1], tensor[4]),
                              (tensor[5], tensor[4], tensor[2])],
                             dtype=numpy.float64)
+    tensorMat += self.regionalStress
     (eigenValue, princAxes) = numpy.linalg.eigh(tensorMat)
     idx = eigenValue.argsort()
     eigenValuesOrdered = eigenValue[idx]
