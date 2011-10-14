@@ -58,6 +58,12 @@ public :
   virtual
   void deallocate(void);
   
+  /** Set time scale for simulation time.
+   *
+   * @param value Time scale
+   */
+  void timeScale(const double value);
+
   /** Prepare for writing files.
    *
    * @param mesh Finite-element mesh. 
@@ -136,6 +142,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
+  double _timeScale; ///< Time scale for dimensioning time in output.
   int _numTimeSteps; ///< Expected number of time steps for fields.
   std::string _context; ///< Context of scatters for DataWriter.
 

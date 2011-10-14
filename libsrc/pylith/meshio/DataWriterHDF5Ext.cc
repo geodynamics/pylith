@@ -615,7 +615,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dims[0] = _tstampIndex+1;
   dims[1] = 1;
   dims[2] = 1;
-  _h5->writeDatasetChunk("/", "time", &t, dims, dimsChunk, ndims, 
+  const double tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+  _h5->writeDatasetChunk("/", "time", &tDim, dims, dimsChunk, ndims, 
 			 _tstampIndex, H5T_NATIVE_DOUBLE);
   
   _tstampIndex++;

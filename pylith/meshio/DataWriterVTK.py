@@ -69,19 +69,6 @@ class DataWriterVTK(DataWriter):
     return
 
 
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriter.initialize(self, normalizer)
-
-    # Nondimensionalize
-    timeScale = normalizer.timeScale()
-    self.timeConstantN = normalizer.nondimensionalize(self.timeConstant,
-                                                timeScale)
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
