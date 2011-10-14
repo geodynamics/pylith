@@ -217,9 +217,9 @@ class PrincAxes(Application):
     for point in xrange(self.numTensorPoints):
       tensor = self.tensorSorted[point, :]
       tensorOrdered, eigenValuesOrdered = self._compPrincAxes(tensor)
-      self.minPrincAxis[point,:] = tensorOrdered[0]
-      self.intPrincAxis[point,:] = tensorOrdered[1]
-      self.maxPrincAxis[point,:] = tensorOrdered[2]
+      self.minPrincAxis[point,:] = tensorOrdered[:,0]
+      self.intPrincAxis[point,:] = tensorOrdered[:,1]
+      self.maxPrincAxis[point,:] = tensorOrdered[:,2]
       self.minEigenValue[point] = eigenValuesOrdered[0]
       self.intEigenValue[point] = eigenValuesOrdered[1]
       self.maxEigenValue[point] = eigenValuesOrdered[2]
