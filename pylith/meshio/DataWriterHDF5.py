@@ -53,12 +53,4 @@ class DataWriterHDF5(DataWriter):
     return
 
 
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriter.initialize(self, normalizer)
-    return
-
-
 # End of file 

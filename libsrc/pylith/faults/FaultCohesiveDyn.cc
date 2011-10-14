@@ -60,7 +60,7 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor Upd
 typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PetscInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
-const double pylith::faults::FaultCohesiveDyn::_zeroTolerance = 1.0e-12;
+const double pylith::faults::FaultCohesiveDyn::_zeroTolerance = 1.0e-10;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -1615,8 +1615,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     int maxIters = 0;
     err = KSPGetTolerances(_ksp, &rtol, &atol, &dtol, &maxIters); 
     CHECK_PETSC_ERROR(err);
-    rtol = _zeroTolerance;
-    atol = 0.001*_zeroTolerance;
+    rtol = 1.0e-2*_zeroTolerance;
+    atol = 1.0e-5*_zeroTolerance;
     err = KSPSetTolerances(_ksp, rtol, atol, dtol, maxIters);
     CHECK_PETSC_ERROR(err);
 
