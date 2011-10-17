@@ -82,6 +82,22 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_fieldT[] = {
 };
 
 
+const double pylith::faults::CohesiveKinSrcsDataLine2::_fieldIncr[] = {
+  1.1,
+  1.2, // 3
+  1.3,
+  1.4, // 5
+  1.5
+};
+
+const double pylith::faults::CohesiveKinSrcsDataLine2::_jacobianLumped[] = {
+  2.1,
+  2.2, // 3
+  2.3,
+  2.4, // 5
+  1.0
+};
+
 const double pylith::faults::CohesiveKinSrcsDataLine2::_orientation[] = {
   1.0
 };
@@ -115,7 +131,7 @@ const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingCohesive[] = {
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_residualIncr[] = {
    0.0,
-   7.5,
+  +7.5,
    0.0,
   -7.5,
   -0.2+1.89546413727+0.99414665414,
@@ -123,7 +139,7 @@ const double pylith::faults::CohesiveKinSrcsDataLine2::_residualIncr[] = {
 
 const double pylith::faults::CohesiveKinSrcsDataLine2::_residual[] = {
    0.0,
-   7.5,
+  +7.5,
    0.0,
   -7.5,
   -0.2+1.89546413727+0.99414665414,
@@ -155,6 +171,8 @@ pylith::faults::CohesiveKinSrcsDataLine2::CohesiveKinSrcsDataLine2(void)
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   fieldT = const_cast<double*>(_fieldT);
+  fieldIncr = const_cast<double*>(_fieldIncr);
+  jacobianLumped = const_cast<double*>(_jacobianLumped);
   orientation = const_cast<double*>(_orientation);
   area = const_cast<double*>(_area);
   residualIncr = const_cast<double*>(_residualIncr);

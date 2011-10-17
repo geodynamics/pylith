@@ -146,18 +146,13 @@ private :
   void _calcTractions(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
-  /** Get initial tractions on fault surface.
-   *
-   * @param tractions Field for tractions.
-   */
-  void _getInitialTractions(topology::Field<topology::SubMesh>* tractions);
-
-  /** Update slip rate associated with Lagrange vertex k corresponding
-   * to diffential velocity between conventional vertices i and j.
+  /** Update relative velocity associated with Lagrange vertex k
+   * corresponding to diffential velocity between conventional
+   * vertices i and j.
    *
    * @param fields Solution fields.
    */
-  void _updateSlipRate(const topology::SolutionFields& fields);
+  void _updateVelRel(const topology::SolutionFields& fields);
 
   /** Setup sensitivity problem to compute change in slip given change
    * in Lagrange multipliers.
@@ -240,13 +235,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
@@ -254,13 +247,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
@@ -268,13 +259,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
            const double_array& slip,
            const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+           const double_array& tractionTpdt);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

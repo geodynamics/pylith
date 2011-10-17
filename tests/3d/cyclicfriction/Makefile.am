@@ -16,11 +16,10 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	cyclicfriction \
-	matprops \
-	plasticity \
-	slipdir
+dist_noinst_DATA = \
+	pylithapp.cfg \
+	matprops.spatialdb \
+	cycle.timedb
 
 
 # End of file 

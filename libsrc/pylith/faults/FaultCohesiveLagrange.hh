@@ -234,6 +234,20 @@ protected :
   void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
+  /** Transform field from local (fault) coordinate system to
+   * global coordinate system.
+   *
+   * @param field Field to transform.
+   */
+  void _faultToGlobal(topology::Field<topology::SubMesh>* field);
+
+  /** Transform field from global coordinate system to local (fault)
+   * coordinate system.
+   *
+   * @param field Field to transform.
+   */
+  void _globalToFault(topology::Field<topology::SubMesh>* field);
+
   /// Allocate buffer for vector field.
   void _allocateBufferVectorField(void);
 

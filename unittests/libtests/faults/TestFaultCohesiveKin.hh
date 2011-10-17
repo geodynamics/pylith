@@ -107,9 +107,6 @@ public :
   /// Test adjustSolnLumped().
   void testAdjustSolnLumped(void);
 
-  /// Test updateStateVars().
-  void testUpdateStateVars(void);
-
   /// Test _calcTractionsChange().
   void testCalcTractionsChange(void);
 
