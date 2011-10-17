@@ -1,0 +1,54 @@
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+reset
+
+#{Units('si')}
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# Block is 12 km x 12 km x 6 km
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -6 km <= z <= 0 km
+
+
+#{blockLength=12.0*km}
+#{blockHeight=6.0*km}
+brick x {blockLength} y {blockLength} z {blockHeight}
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z {-blockHeight/2.0}
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+create sheet extended from surface 7 intersecting volume 1
+delete body 2
+surface 8 name "fault_surface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+delete body 3
+surface 9 name "fault_surface"
+volume 1 name "elastic_xpos"
+volume 4 name "elastic_xneg"
+
+# Create vertical curve at middle of domain
+create vertex on curve 23 fraction 0.5 from start
+create vertex on curve 21 fraction 0.5 from start
+split surface 14  across location vertex 25 location vertex 26
+
+
+delete vertex all
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all with volume all
+merge all
+

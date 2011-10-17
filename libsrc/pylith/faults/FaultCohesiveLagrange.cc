@@ -107,18 +107,18 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.stagePush("Fault");
 
-  // Allocate slip field
+  // Allocate dispRel field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
       faultSieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  _fields->add("slip", "slip");
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.newSection(vertices, cs->spaceDim());
-  slip.allocate();
-  slip.vectorFieldType(topology::FieldBase::VECTOR);
-  slip.scale(_normalizer->lengthScale());
+  _fields->add("relative disp", "relative_disp");
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  dispRel.newSection(vertices, cs->spaceDim());
+  dispRel.allocate();
+  dispRel.vectorFieldType(topology::FieldBase::VECTOR);
+  dispRel.scale(_normalizer->lengthScale());
 
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
       faultSieveMesh->heightStratum(0);
@@ -137,11 +137,11 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   assert(!distSection.isNull());
   const double rank = (double) distSection->commRank();
 
-  // Loop over cells in fault mesh, compute area
+  // Loop over cells in fault mesh, set distribution
   for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
       != cellsEnd; ++c_iter) {
     distSection->updatePoint(*c_iter, &rank);
-  }
+  } // for
 
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir);
@@ -195,13 +195,14 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   assert(0 != _fields);
   assert(0 != _logger);
 
-  // Cohesive cells with normal vertices i and j, and constraint
-  // vertex k make contributions to the assembled residual:
+  // Cohesive cells with conventional vertices N and P, and constraint
+  // vertex L make contributions to the assembled residual:
   //
-  //   * DOF i and j: internal forces in soln field associated with
-  //                  slip  -[C]^T{L(t)+dL(t)}
-  //   * DOF k: slip values  -[C]{u(t)+dt(t)}
-  //   * DOF k: slip values {D(t+dt)}
+  // DOF P: \int_{S_f^+} \tensor{N}_m^T \cdot \tensor{N}_p \cdot \vec{l}_p dS
+  // DOF N: -\int_{S_f^+} \tensor{N}_m^T \cdot \tensor{N}_p \cdot \vec{l}_p dS
+  // DOF L: \int_S_f \tensor{N}_p^T ( \tensor{R} \cdot \vec{d} 
+  //                 -\tensor{N}_{n^+} \cdot \vec{u}_{n^+}
+  //                 +\tensor{N}_{n^-} \cdot \vec{u}_{n^-} dS
 
   const int setupEvent = _logger->eventId("FaIR setup");
   const int geometryEvent = _logger->eventId("FaIR geometry");
@@ -211,51 +212,40 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 
   _logger->eventBegin(setupEvent);
 
-  // Get cell information and setup storage for cell data
+  // Get cell geometry information that doesn't depend on cell
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
-  // Allocate vectors for vertex values
-  double_array slipVertex(spaceDim);
-  double_array orientationVertex(orientationSize);
-  double_array dispTVertexN(spaceDim);
-  double_array dispTVertexP(spaceDim);
-  double_array dispTVertexL(spaceDim);
-  double_array dispTIncrVertexN(spaceDim);
-  double_array dispTIncrVertexP(spaceDim);
-  double_array dispTIncrVertexL(spaceDim);
-  double_array dispTpdtVertexN(spaceDim);
-  double_array dispTpdtVertexP(spaceDim);
-  double_array dispTpdtVertexL(spaceDim);
+  // Get sections associated with cohesive cells
   double_array residualVertexN(spaceDim);
   double_array residualVertexP(spaceDim);
   double_array residualVertexL(spaceDim);
-
-  // Get sections
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  const ALE::Obj<RealSection>& slipSection = slip.section();
-  assert(!slipSection.isNull());
-
   const ALE::Obj<RealSection>& residualSection = residual.section();
   assert(!residualSection.isNull());
 
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispTSection = dispT.section();
+  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
-  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
+  const ALE::Obj<RealSection>& dispTIncrSection = 
+    fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
 
+  double_array dispTpdtVertexN(spaceDim);
+  double_array dispTpdtVertexP(spaceDim);
+  double_array dispTpdtVertexL(spaceDim);
+
+  const ALE::Obj<RealSection>& dispRelSection = 
+    _fields->get("relative disp").section();
+  assert(!dispRelSection.isNull());
+
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
+  // Get fault information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-					    residualSection);
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+					      residualSection);
   assert(!globalOrder.isNull());
 
   _logger->eventEnd(setupEvent);
@@ -263,6 +253,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
   _logger->eventBegin(computeEvent);
 #endif
 
+  // Loop over fault vertices
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -278,28 +269,44 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get slip at fault vertex.
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
+    // Get relative dislplacement at fault vertex.
+    assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
+    const double* dispRelVertex = dispRelSection->restrictPoint(v_fault);
+    assert(dispRelVertex);
 
-    // Get orientations at fault vertex.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
+    // Get area associated with fault vertex.
+    assert(1 == areaSection->getFiberDimension(v_fault));
+    assert(areaSection->restrictPoint(v_fault));
+    const double areaVertex = *areaSection->restrictPoint(v_fault);
 
     // Get disp(t) at conventional vertices and Lagrange vertex.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0],
-				dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0],
-				dispTVertexP.size());
-    dispTSection->restrictPoint(v_lagrange, &dispTVertexL[0],
-				dispTVertexL.size());
+    assert(spaceDim == dispTSection->getFiberDimension(v_negative));
+    const double* dispTVertexN = dispTSection->restrictPoint(v_negative);
+    assert(dispTVertexN);
+
+    assert(spaceDim == dispTSection->getFiberDimension(v_positive));
+    const double* dispTVertexP = dispTSection->restrictPoint(v_positive);
+    assert(dispTVertexP);
+
+    assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
+    const double* dispTVertexL = dispTSection->restrictPoint(v_lagrange);
+    assert(dispTVertexL);
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
-    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
-				    dispTIncrVertexN.size());
-    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0],
-				    dispTIncrVertexP.size());
-    dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0],
-				    dispTIncrVertexL.size());
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_negative));
+    const double* dispTIncrVertexN = 
+      dispTIncrSection->restrictPoint(v_negative);
+    assert(dispTIncrVertexN);
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_positive));
+    const double* dispTIncrVertexP = 
+      dispTIncrSection->restrictPoint(v_positive);
+    assert(dispTIncrVertexP);
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    const double* dispTIncrVertexL = 
+      dispTIncrSection->restrictPoint(v_lagrange);
+    assert(dispTIncrVertexL);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -308,33 +315,27 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
 
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
-    dispTpdtVertexN = dispTVertexN + dispTIncrVertexN;
-    dispTpdtVertexP = dispTVertexP + dispTIncrVertexP;
-    dispTpdtVertexL = dispTVertexL + dispTIncrVertexL;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      dispTpdtVertexN[iDim] = dispTVertexN[iDim] + dispTIncrVertexN[iDim];
+      dispTpdtVertexP[iDim] = dispTVertexP[iDim] + dispTIncrVertexP[iDim];
+      dispTpdtVertexL[iDim] = dispTVertexL[iDim] + dispTIncrVertexL[iDim];
+    } // for
 
-    // Entries associated with constraint forces applied at negative vertex
-    residualVertexN = 0.0;
-    for (int iDim = 0; iDim < spaceDim; ++iDim)
-      for (int kDim = 0; kDim < spaceDim; ++kDim)
-        residualVertexN[iDim] -= 
-	  dispTpdtVertexL[kDim] * -orientationVertex[kDim*spaceDim+iDim];
-
-    // Entries associated with constraint forces applied at positive vertex
+    residualVertexN = areaVertex * dispTpdtVertexL;
     residualVertexP = -residualVertexN;
 
-    // Entries associated with relative displacements between positive
-    // and negative vertices for Lagrange vertex.
-    residualVertexL = slipVertex;
-    for (int kDim = 0; kDim < spaceDim; ++kDim)
-      for (int iDim = 0; iDim < spaceDim; ++iDim)
-        residualVertexL[kDim] -= (dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim])
-            * orientationVertex[kDim*spaceDim+iDim];
+    residualVertexL = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      residualVertexL[iDim] = -areaVertex * 
+	(dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim] - dispRelVertex[iDim]);
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
 #endif
 
+    // Assemble contributions into field
     assert(residualVertexN.size() == 
 	   residualSection->getFiberDimension(v_negative));
     residualSection->updateAddPoint(v_negative, &residualVertexN[0]);
@@ -351,7 +352,7 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  PetscLogFlops(numVertices*spaceDim*spaceDim*8);
+  PetscLogFlops(numVertices*spaceDim*8);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
@@ -379,16 +380,28 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 
   _logger->eventBegin(setupEvent);
 
-  // Add constraint information to Jacobian matrix; these are the
-  // direction cosines. Entries are associated with vertices ik, jk,
-  // ki, and kj.
+  // Add constraint information to Jacobian matrix; Entries are
+  // associated with vertices ik, jk, ki, and kj.
 
-  // Get cell information and setup storage for cell data
+  // Get cell geometry information that doesn't depend on cell
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
+
+  // Get sections
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
+  const ALE::Obj<RealSection>& solnSection = fields->solution().section();
+  assert(!solnSection.isNull());
+
+  // Get fault information
+  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+        solnSection);
+  assert(!globalOrder.isNull());
 
   // Allocate vectors for vertex values
-  double_array orientationVertex(orientationSize);
   double_array jacobianVertex(spaceDim*spaceDim);
   int_array indicesL(spaceDim);
   int_array indicesN(spaceDim);
@@ -397,21 +410,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   for (int i=0; i < spaceDim; ++i)
     indicesRel[i] = i;
 
-  // Get sections
-  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
-  assert(!solutionSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-        solutionSection);
-  assert(!globalOrder.isNull());
-
+  // Get sparse matrix
   const PetscMat jacobianMatrix = jacobian->matrix();
   assert(0 != jacobianMatrix);
 
@@ -435,27 +434,39 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0], orientationVertex.size());
+    // Get area associated with fault vertex.
+    assert(1 == areaSection->getFiberDimension(v_fault));
+    assert(areaSection->restrictPoint(v_fault));
+    const double areaVertex = *areaSection->restrictPoint(v_fault);
 
     // Set global order indices
     indicesL = indicesRel + globalOrder->getIndex(v_lagrange);
     indicesN = indicesRel + globalOrder->getIndex(v_negative);
     indicesP = indicesRel + globalOrder->getIndex(v_positive);
-    assert(0 == solutionSection->getConstraintDimension(v_negative));
-    assert(0 == solutionSection->getConstraintDimension(v_positive));
+    assert(0 == solnSection->getConstraintDimension(v_negative));
+    assert(0 == solnSection->getConstraintDimension(v_positive));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(updateEvent);
 #endif
 
-    // Values associated with [C]
+    // Set diagonal entries of Jacobian at positive vertex to area
+    // associated with vertex.
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      jacobianVertex[iDim*spaceDim+iDim] = areaVertex;
+
     // Values at positive vertex, entry L,P in Jacobian
-    jacobianVertex = orientationVertex;
     MatSetValues(jacobianMatrix,
                  indicesL.size(), &indicesL[0],
                  indicesP.size(), &indicesP[0],
+                 &jacobianVertex[0],
+                 ADD_VALUES);
+
+    // Values at positive vertex, entry P,L in Jacobian
+    MatSetValues(jacobianMatrix,
+                 indicesP.size(), &indicesP[0],
+                 indicesL.size(), &indicesL[0],
                  &jacobianVertex[0],
                  ADD_VALUES);
 
@@ -467,23 +478,7 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
                  &jacobianVertex[0],
                  ADD_VALUES);
 
-    // Values associated with [C]^T
-    // Transpose orientation matrix
-    jacobianVertex = 0.0;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-        jacobianVertex[iDim*spaceDim+jDim] = 
-	  orientationVertex[jDim*spaceDim+iDim];
-
-    // Values at positive vertex, entry P,L in Jacobian
-    MatSetValues(jacobianMatrix,
-                 indicesP.size(), &indicesP[0],
-                 indicesL.size(), &indicesL[0],
-                 &jacobianVertex[0],
-                 ADD_VALUES);
-
-    // Values at negative vertex, entry L,N in Jacobian
-    jacobianVertex *= -1.0;
+    // Values at negative vertex, entry N,L in Jacobian
     MatSetValues(jacobianMatrix,
                  indicesN.size(), &indicesN[0],
                  indicesL.size(), &indicesL[0],
@@ -500,14 +495,13 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
                  ADD_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(spaceDim*spaceDim*2);
-    _logger->eventBegin(updateEvent);
+    _logger->eventEnd(updateEvent);
 #endif
 
   } // for
+  PetscLogFlops(numVertices*spaceDim*2);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(numVertices*(spaceDim*spaceDim*2));
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -517,7 +511,6 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   sieveMesh->getSendOverlap()->view("Send domain overlap");
   sieveMesh->getRecvOverlap()->view("Receive domain overlap");
 #endif
-
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -571,12 +564,13 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
     if (!globalOrder->isLocal(v_lagrange))
       continue;
 
-    assert(jacobianSection->getFiberDimension(v_lagrange) == spaceDim);
-
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
 #endif
+
+    assert(jacobianSection->getFiberDimension(v_lagrange) == spaceDim);
     jacobianSection->updatePoint(v_lagrange, &jacobianVertex[0]);
+
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
@@ -605,44 +599,22 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
   assert(0 != _fields);
   assert(0 != _logger);
 
-  /** We have J = [A C^T]
-   *              [C   0]
+  /** We have A = [K L^T]
+   *              [L   0]
    *
-   * We want to approximate -( C A^(-1) C^T )
+   * Compute Pmat = -( [L] [K]^(-1) [L]^T ) using the diagonal of K to
+   * approximate [K]^(-1).
    *
-   * Consider Lagrange vertex L that constrains the relative
-   * displacement between vertex N on the negative side of the fault
-   * and vertex P on the positive side of the fault.
+   * Decompose [K] into [Kn] and [Kp], where [Kn] contains the terms
+   * for vertices on the negative side of the fault and [Kp] contains
+   * the terms for vertices on the positive side of the fault.
    *
-   * If we approximate A(-1) by 1/diag(A), then we can write 
-   * C A^(-1) C^T for a 2-D case as
+   * Pmat = L_{ik} (1.0/Kn_{kk} + 1.0/Kp{kk}) L_{ik}
    *
-   * [-R00 -R01  R00 R01][Ai_nx 0      0     0    ][-R00 -R10]
-   * [-R10 -R11  R10 R11][      Ai_ny  0     0    ][-R01 -R11]
-   *                     [      0      Ai_px 0    ][ R00  R10]
-   *                     [                   Ai_py][ R01  R11]
-   *
-   * where
-   *
-   * Ai_nx is the inverse of the diag(A) for DOF x of vertex N
-   * Ai_ny is the inverse of the diag(A) for DOF y of vertex N
-   * Ai_px is the inverse of the diag(A) for DOF x of vertex P
-   * Ai_py is the inverse of the diag(A) for DOF y of vertex P
-   *
-   * If Ai_nx == Ai_ny and Ai_px == Ai_py, then the result is
-   * diagonal. Otherwise, the off-diagonal terms will be nonzero,
-   * but we expect them to be small. Since we already approximate
-   * the inverse of A by the inverse of the diagonal, we drop the
-   * off-diagonal terms of C A^(-1) C^T:
-   *
-   * Term for DOF x of vertex L is: 
-   * -(R00^2 (Ai_nx + Ai_px) + R01^2 (Ai_ny + Ai_py))
-   *
-   * Term for DOF y of vertex L is: 
-   * -(R10^2 (Ai_nx + Ai_px) + R11^2 (Ai_ny + Ai_py))
+   * Because we use quadrature points located at the vertices,
+   * L_{ii} = area, L_{ij} = 0 if i != j
    */
 
-#if 1 // DIAGONAL PRECONDITIONER
   const int setupEvent = _logger->eventId("FaPr setup");
   const int computeEvent = _logger->eventId("FaPr compute");
   const int restrictEvent = _logger->eventId("FaPr restrict");
@@ -652,10 +624,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
   // Allocate vectors for vertex values
-  double_array orientationVertex(orientationSize);
   double_array jacobianVertexP(spaceDim*spaceDim);
   double_array jacobianVertexN(spaceDim*spaceDim);
   double_array jacobianInvVertexP(spaceDim);
@@ -668,12 +638,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     indicesRel[i] = i;
 
   // Get sections
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
+
   const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
   assert(!solutionSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
 
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -711,9 +680,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
+
+    // Get area associated with fault vertex.
+    assert(1 == areaSection->getFiberDimension(v_fault));
+    assert(areaSection->restrictPoint(v_fault));
+    const double areaVertex = *areaSection->restrictPoint(v_fault);
 
     indicesN = 
       indicesRel + indicesMatToSubmat[globalOrder->getIndex(v_negative)];
@@ -739,18 +710,13 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
       jacobianInvVertexP[iDim] = 1.0/jacobianVertexP[iDim*spaceDim+iDim];
     } // for
 
-    // Compute -[C] [Adiag]^(-1) [C]^T
-    //   C_{ij}          = orientationVertex[i*spaceDim+j]
-    //   C^T_{ij}        = orientationVertex[j*spaceDim+i]
+    // Compute -[L] [Adiag]^(-1) [L]^T
+    //   L_{ii} = L^T{ii} = areaVertex
     //   Adiag^{-1}_{ii} = jacobianInvVertexN[i] + jacobianInvVertexP[i]
-    //  \sum_{j} C_{ij} Adiag^{-1}_{jj} C^T_{ji}
     precondVertexL = 0.0;
-    for (int kDim=0; kDim < spaceDim; ++kDim) {
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	precondVertexL[kDim] -= 
-          orientationVertex[kDim*spaceDim+iDim] * 
-          orientationVertex[kDim*spaceDim+iDim] * 
-          (jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      precondVertexL[iDim] -= areaVertex * areaVertex * 
+	(jacobianInvVertexN[iDim] + jacobianInvVertexP[iDim]);
     } // for
     
 
@@ -759,7 +725,8 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventBegin(updateEvent);
 #endif
 
-    // Set global preconditioner index associated with Lagrange constraint vertex.
+    // Set global preconditioner index associated with Lagrange
+    // constraint vertex.
     const int indexLprecond = lagrangeGlobalOrder->getIndex(v_lagrange);
     
     // Set diagonal entries in preconditioned matrix.
@@ -769,371 +736,25 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 		  indexLprecond + iDim,
 		  precondVertexL[iDim],
 		  INSERT_VALUES);
+
+#if 0 // DEBUGGING
+    std::cout << "1/P_vertex " << *v_lagrange << std::endl;
+    for(int iDim = 0; iDim < spaceDim; ++iDim) {
+      std::cout << "  " << precondVertexL[iDim] << std::endl;
+    } // for
+#endif
+
     
 #if defined(DETAILED_EVENT_LOGGING)
-    PetscLogFlops(spaceDim*spaceDim*4);
     _logger->eventEnd(updateEvent);
 #endif
   } // for
   err = MatDestroy(&jacobianNP); CHECK_PETSC_ERROR(err);
+  PetscLogFlops(numVertices*spaceDim*6);
 
-
-#else // FULL PRECONDITIONER
-
-  // Compute -( [C] [A]^(-1) [C]^T ) for cell.
-  //
-  // numBasis = number of corners in fault cell
-  // spaceDim = spatial dimension
-  //
-  // For the cell, [A] is 2*numBasis*spaceDim x 2*numBasis*spaceDim,
-  // [C] is numBasis*spaceDim x 2*numBasis*spaceDim
-  //
-  // Decompose [A] into [An] and [Ap], where [An] contains the terms
-  // for vertices on the negative side of the fault and [Ap] contains
-  // the terms for vertices on the positive side of the fault.
-  //
-  // [An] and [Ap] are numBasis*spaceDim x numBasis*spaceDim
-  // 
-  // Let [CAC] = [C] [A]^(-1) [C]^T.
-  //
-  // CAiC_kl = Cij Ai_jk C_lk
-  //
-  // Cij: iLagrange, iDim, jBasis, jDim
-  // Ai_jk: jBasis, jDim, kBasis, kDim
-  // C_lk: lLagrange, lDim, kBasis, kDim
-  
-
-  const int setupEvent = _logger->eventId("FaPr setup");
-  const int computeEvent = _logger->eventId("FaPr compute");
-  const int restrictEvent = _logger->eventId("FaPr restrict");
-  const int updateEvent = _logger->eventId("FaPr update");
-
-  _logger->eventBegin(setupEvent);
-
-  // Get cell information and setup storage for cell data
-  const int spaceDim = _quadrature->spaceDim();
-  const int numBasis = _quadrature->numBasis();
-  const int orientationSize = spaceDim * spaceDim;
-  const int nrowsF = numBasis*spaceDim; // number of rows/cols in fault matrix
-
-  // Size of fault preconditioner matrix for cell
-  const int matrixSizeF = nrowsF * nrowsF;
-  PetscBLASInt workSize = 6*nrowsF;
-
-  // Allocate vectors for vertex values
-  double_array preconditionerCell(matrixSizeF);
-  int_array indicesN(nrowsF);
-  int_array indicesP(nrowsF);
-  int_array indicesLagrange(nrowsF);
-  double_array jacobianCellP(matrixSizeF);
-  double_array jacobianCellN(matrixSizeF);
-  double_array jacobianInvCellP(matrixSizeF);
-  double_array jacobianInvCellN(matrixSizeF);
-  double_array UN(matrixSizeF);
-  double_array UP(matrixSizeF);
-  double_array VNt(matrixSizeF);
-  double_array VPt(matrixSizeF);
-  double_array singularValuesN(nrowsF);
-  double_array singularValuesP(nrowsF);
-  double_array work(workSize);
-
-  // Get sections
-  const ALE::Obj<RealSection>& solutionSection = fields->solution().section();
-  assert(!solutionSection.isNull());
-
-  double_array orientationCell(numBasis*orientationSize);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-  RestrictVisitor orientationVisitor(*orientationSection,
-				     orientationCell.size(), 
-				     &orientationCell[0]);
-
-  const int numConstraintVert = numBasis;
-  const int numCorners = 3 * numConstraintVert; // cohesive cell
-
-  // Get cohesive cells
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
-        solutionSection, spaceDim);
-  assert(!lagrangeGlobalOrder.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cellsCohesive =
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cellsCohesive.isNull());
-  const SieveMesh::label_sequence::iterator cellsCohesiveBegin =
-    cellsCohesive->begin();
-  const SieveMesh::label_sequence::iterator cellsCohesiveEnd =
-    cellsCohesive->end();
-
-  const PetscMat jacobianMatrix = jacobian->matrix();
-  assert(0 != jacobianMatrix);
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-					    solutionSection);
-  assert(!globalOrder.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  IndicesVisitor jacobianVisitor(*solutionSection, *globalOrder,
-				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-					   sieveMesh->depth())*spaceDim);
-
-
-
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  assert(!sieve.isNull());
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
-      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
-
-
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::sieve_type>& faultSieve = faultSieveMesh->getSieve();
-  assert(!faultSieve.isNull());
-  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> fncV(*faultSieve,
-      (size_t) pow(faultSieve->getMaxConeSize(), std::max(0, faultSieveMesh->depth())));
-
-  _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
-  _logger->eventBegin(computeEvent);
-#endif
-
-  for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
-       c_iter != cellsCohesiveEnd;
-       ++c_iter) {
-    // Get cone for cohesive cell
-    ncV.clear();
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*sieve,
-								 *c_iter, ncV);
-    const int coneSize = ncV.getSize();
-    assert(coneSize == numCorners);
-    const Mesh::point_type *cohesiveCone = ncV.getPoints();
-    assert(0 != cohesiveCone);
-
-    // Get cone for corresponding fault cell
-    const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
-    fncV.clear();
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*faultSieve,
-								 c_fault, fncV);
-    const int coneSizeFault = fncV.getSize();
-    assert(coneSizeFault == numBasis);
-    const Mesh::point_type *faultCone = fncV.getPoints();
-    assert(0 != faultCone);
-
-    jacobianCellP = 0.0;
-    jacobianCellN = 0.0;
-    preconditionerCell = 0.0;
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventBegin(restrictEvent);
-#endif
-
-    // Get indices
-    for (int iBasis = 0; iBasis < numBasis; ++iBasis) {
-      // constraint vertex k
-      const int v_negative = cohesiveCone[0*numBasis+iBasis];
-      const int v_positive = cohesiveCone[1*numBasis+iBasis];
-      const int v_lagrange = cohesiveCone[2*numBasis+iBasis];
-      
-      for (int iDim=0, iB=iBasis*spaceDim; iDim < spaceDim; ++iDim) {
-	if (globalOrder->isLocal(v_negative))
-	  indicesN[iB+iDim] = globalOrder->getIndex(v_negative) + iDim;
-	else
-	  indicesN[iB+iDim] = -1;
-	if (globalOrder->isLocal(v_positive))
-	  indicesP[iB+iDim] = globalOrder->getIndex(v_positive) + iDim;
-	else
-	  indicesP[iB+iDim] = -1;
-	if (globalOrder->isLocal(v_lagrange))
-	  indicesLagrange[iB+iDim] = lagrangeGlobalOrder->getIndex(v_lagrange) + iDim;
-	else
-	  indicesLagrange[iB+iDim] = -1;
-
-	// Set matrix diagonal entries to 1.0 (used when vertex is not local).
-	jacobianCellN[iB+iDim] = 1.0;
-	jacobianCellP[iB+iDim] = 1.0;
-      } // for
-    } // for
-    
-    // Get values from Jacobian matrix.
-    PetscErrorCode err = 0;
-    err = MatGetValues(jacobianMatrix, 
-		       indicesN.size(), &indicesN[0],
-		       indicesN.size(), &indicesN[0],
-		       &jacobianCellN[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-    
-    err = MatGetValues(jacobianMatrix, 
-		       indicesP.size(), &indicesP[0],
-		       indicesP.size(), &indicesP[0],
-		       &jacobianCellP[0]);
-    CHECK_PETSC_ERROR_MSG(err, "Restrict from PETSc Mat failed.");
-   
-    // Get orientation at fault vertices.
-    orientationVisitor.clear();
-    faultSieveMesh->restrictClosure(c_fault, orientationVisitor);
-
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventEnd(restrictEvent);
-    _logger->eventBegin(computeEvent);
-#endif
-
-    // Invert jacobianCellN and jacobianCellP, result goes in
-    // jacobianInvCellN and jacobianInvCellP if need separate place
-    // for result.
-    PetscBLASInt elemRows = nrowsF;
-    PetscScalar  one      = 1.0;
-    PetscBLASInt berr;
-
-#if 0
-    std::cout << "AN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << jacobianCellN[i*nrowsF+j];
-      }
-      std::cout << std::endl;
-    }
-#endif
-
-    // Transpose matrices so we can call LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp               = jacobianCellN[k];
-        jacobianCellN[k]  = jacobianCellN[kp];
-        jacobianCellN[kp] = tmp;
-        tmp               = jacobianCellP[k];
-        jacobianCellP[k]  = jacobianCellP[kp];
-        jacobianCellP[kp] = tmp;
-      }
-    }
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellN[0], &elemRows, &singularValuesN[0], &UN[0], &elemRows, &VNt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of negative-side element matrix failed.");
-    LAPACKgesvd_("A", "A", &elemRows, &elemRows, &jacobianCellP[0], &elemRows, &singularValuesP[0], &UP[0], &elemRows, &VPt[0], &elemRows, &work[0], &workSize, &berr);
-    CHECK_PETSC_ERROR_MSG(berr, "Inversion of positive-side element matrix failed.");
-
-#if 0
-    for(int i = 0; i < nrowsF; ++i) {
-      std::cout << "sigmaN["<<i<<"]: " << singularValuesN[i] << " sigmaP["<<i<<"]: " << singularValuesP[i] << std::endl;
-    }
-    std::cout << "UN_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << UN[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-    std::cout << "VNt_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << VNt[j*nrowsF+i];
-      }
-      std::cout << std::endl;
-    }
-#endif
-
-    // Row scale Vt by the inverse of the singular values
-    for(int i = 0; i < nrowsF; ++i) {
-      const PetscReal invN = singularValuesN[i] > 1.0e-10 ? 1.0/singularValuesN[i] : 0.0;
-      const PetscReal invP = singularValuesP[i] > 1.0e-10 ? 1.0/singularValuesP[i] : 0.0;
-
-      for(int j = 0; j < nrowsF; ++j) {
-        VNt[j*nrowsF+i] *= invN;
-        VPt[j*nrowsF+i] *= invP;
-      }
-    }
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UN[0], &elemRows, &VNt[0], &elemRows, &one, &jacobianInvCellN[0], &elemRows);
-    BLASgemm_("N", "N", &elemRows, &elemRows, &elemRows, &one, &UP[0], &elemRows, &VPt[0], &elemRows, &one, &jacobianInvCellP[0], &elemRows);
-
-    // Transpose matrices from LAPACK
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < i; ++j) {
-        PetscInt    k  = i*nrowsF+j;
-        PetscInt    kp = j*nrowsF+i;
-        PetscScalar tmp;
-        tmp                  = jacobianInvCellN[k];
-        jacobianInvCellN[k]  = jacobianInvCellN[kp];
-        jacobianInvCellN[kp] = tmp;
-        tmp                  = jacobianInvCellP[k];
-        jacobianInvCellP[k]  = jacobianInvCellP[kp];
-        jacobianInvCellP[kp] = tmp;
-      }
-    }
-
-    // Combine Jacbian inverse terms with result in jacobianInvCellN
-    jacobianInvCellN += jacobianInvCellP;
-
-    for (int iLagrange=0; iLagrange < numBasis; ++iLagrange) {
-      // Exploit structure of C in matrix multiplication.
-      // C_ij Ai_jk C_lk - Structure of C means j == i;
-      const int jBasis = iLagrange;
-      
-      for (int lLagrange=0; lLagrange < numBasis; ++lLagrange) {
-	// Exploit structure of C in matrix multiplication.
-	// -C_ij Ai_jk C_lk - Structure of C means k == l;
-	const int kBasis = lLagrange;
-
-	for (int iDim=0; iDim < spaceDim; ++iDim) {
-	  const int iL = iLagrange*spaceDim + iDim;
-
-	  for (int lDim=0; lDim < spaceDim; ++lDim) {
-	    const int lL = lLagrange*spaceDim + lDim;
-
-	    for (int jDim=0; jDim < spaceDim; ++jDim) {
-	      const int jB = jBasis*spaceDim + jDim;
-
-	      for (int kDim=0; kDim < spaceDim; ++kDim) {
-		const int kB = kBasis*spaceDim + kDim;
-
-		preconditionerCell[iL*nrowsF+lL] -= 
-		  orientationCell[iLagrange*orientationSize+iDim*spaceDim+jDim] *
-		  jacobianInvCellN[jB*nrowsF+kB] *
-		  orientationCell[lLagrange*orientationSize+kDim*spaceDim+lDim];
-
-	      } // for
-	    } // for
-	  } // for
-	} // for
-      } // for
-    } // for
-
-#if 0
-    std::cout << "1/P_cell " << *c_iter << std::endl;
-    for(int i = 0; i < nrowsF; ++i) {
-      for(int j = 0; j < nrowsF; ++j) {
-        std::cout << "  " << preconditionerCell[i*nrowsF+j];
-      }
-      std::cout << std::endl;
-    }
-#endif
-
-#if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
-    _logger->eventBegin(updateEvent);
 #endif
-
-    err = MatSetValues(*precondMatrix,
-                 indicesLagrange.size(), &indicesLagrange[0],
-                 indicesLagrange.size(), &indicesLagrange[0],
-                 &preconditionerCell[0],
-                 ADD_VALUES);
-    CHECK_PETSC_ERROR_MSG(err, "Setting values in fault preconditioner failed.");
-
-#if defined(DETAILED_EVENT_LOGGING)
-    _logger->eventBegin(updateEvent);
-#endif
-
-  } // for
-
-#if !defined(DETAILED_EVENT_LOGGING)
-  _logger->eventEnd(computeEvent);
-#endif
-
-#endif
-
 } // calcPreconditioner
 
 // ----------------------------------------------------------------------
@@ -1144,28 +765,27 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
                                                         const topology::Field<
 							topology::Mesh>& jacobian)
 { // adjustSolnLumped
-  /// Member prototype for _adjustSolnLumpedXD()
-  typedef void (pylith::faults::FaultCohesiveLagrange::*adjustSolnLumped_fn_type)
-    (double_array*, double_array*, double_array*,
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&, 
-     const double_array&, const double_array&);
-
   assert(0 != fields);
   assert(0 != _quadrature);
 
-  // Cohesive cells with conventional vertices i and j, and constraint
-  // vertex k require 2 adjustments to the solution:
+  // Cohesive cells with conventional vertices N and P, and constraint
+  // vertex L require 2 adjustments to the solution:
   //
-  //   * DOF k: Compute increment in Lagrange multipliers
-  //            dl_k = S^{-1} (-C_ki (A_i^{-1} r_i - C_kj A_j^{-1} r_j + u_i - u_j) - d_k)
-  //            S = C_ki (A_i^{-1} + A_j^{-1}) C_ki^T
+  //   * DOF L: Compute increment in Lagrange multipliers
+  //
+  //     d\vec{l}_p = \tensor{S}^{-1} \cdot (-\vec{r}_p^{*} + \tensor{L}_p 
+  //                   \cdot (d\vec{u}_{n+}^* - d\vec{u}_{n-}^*))
+  //     \tensor{S} = \tensor{L}_p \cdot 
+  //                   (\tensor{K}_{n+n+}{-1} + \tensor{K}_{n-n-})
+  //                   \cdot \tensor{L}_p^T
   //
   //   * DOF i and j: Adjust displacement increment (solution) to create slip
   //     consistent with Lagrange multiplier constraints
-  //            du_i = +A_i^-1 C_ki^T dlk
-  //            du_j = -A_j^-1 C_kj^T dlk
+  //
+  //     d\vec{u}_{n+} = d\vec{u}_{n+}^{*} - \tensor{K}_{n+n+}^{-1} \cdot 
+  //                     \tensor{L}_p^T \cdot d\vec{l}_p
+  //     d\vec{u}_{n-} = d\vec{u}_{n-}^{*} + \tensor{K}_{n-n-}^{-1} \cdot 
+  //                     \tensor{L}_p^T \cdot d\vec{l}_p
 
   const int setupEvent = _logger->eventId("FaAS setup");
   const int geometryEvent = _logger->eventId("FaAS geometry");
@@ -1177,37 +797,21 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
 
   // Get cell information and setup storage for cell data
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = spaceDim * spaceDim;
 
   // Get section information
-  double_array orientationVertex(orientationSize);
-  const ALE::Obj<RealSection>& orientationSection =
-      _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
+  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
+  assert(!areaSection.isNull());
 
-  double_array slipVertex(spaceDim);
-  const ALE::Obj<RealSection>& slipSection = _fields->get("slip").section();
-  assert(!slipSection.isNull());
-
-  double_array jacobianVertexN(spaceDim);
-  double_array jacobianVertexP(spaceDim);
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   assert(!jacobianSection.isNull());
 
-  double_array residualVertexN(spaceDim);
-  double_array residualVertexP(spaceDim);
   const ALE::Obj<RealSection>& residualSection =
       fields->get("residual").section();
   assert(!residualSection.isNull());
 
-  double_array dispTVertexN(spaceDim);
-  double_array dispTVertexP(spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-
   double_array dispTIncrVertexN(spaceDim);
   double_array dispTIncrVertexP(spaceDim);
-  double_array lagrangeTIncrVertex(spaceDim);
+  double_array dispTIncrVertexL(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = fields->get(
     "dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -1219,28 +823,9 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::order_type>& globalOrder =
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", jacobianSection);
+    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+					    jacobianSection);
   assert(!globalOrder.isNull());
-
-  adjustSolnLumped_fn_type adjustSolnLumpedFn;
-  switch (spaceDim) { // switch
-  case 1:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped1D;
-    break;
-  case 2: 
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped2D;
-    break;
-  case 3:
-    adjustSolnLumpedFn = 
-      &pylith::faults::FaultCohesiveLagrange::_adjustSolnLumped3D;
-    break;
-  default :
-    assert(0);
-    throw std::logic_error("Unknown spatial dimension in "
-			   "FaultCohesiveLagrange::adjustSolnLumped.");
-  } // switch
 
   _logger->eventEnd(setupEvent);
 
@@ -1263,43 +848,60 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get orientations at fault cell's vertices.
-    orientationSection->restrictPoint(v_fault, &orientationVertex[0],
-				      orientationVertex.size());
-
-    // Get slip at fault cell's vertices.
-    slipSection->restrictPoint(v_fault, &slipVertex[0], slipVertex.size());
-
     // Get residual at cohesive cell's vertices.
-    residualSection->restrictPoint(v_negative, &residualVertexN[0],
-			   residualVertexN.size());
-    residualSection->restrictPoint(v_positive, &residualVertexP[0], 
-				   residualVertexP.size());
-    
-    // Get jacobian at cohesive cell's vertices.
-    jacobianSection->restrictPoint(v_negative, &jacobianVertexN[0], 
-				   jacobianVertexN.size());
-    jacobianSection->restrictPoint(v_positive, &jacobianVertexP[0], 
-				   jacobianVertexP.size());
+    assert(spaceDim == residualSection->getFiberDimension(v_lagrange));
+    const double* residualVertexL = residualSection->restrictPoint(v_lagrange);
+    assert(residualVertexL);
 
-    // Get disp(t) at cohesive cell's vertices.
-    dispTSection->restrictPoint(v_negative, &dispTVertexN[0],
-				dispTVertexN.size());
-    dispTSection->restrictPoint(v_positive, &dispTVertexP[0],
-				dispTVertexP.size());
+    // Get jacobian at cohesive cell's vertices.
+    assert(spaceDim == jacobianSection->getFiberDimension(v_negative));
+    const double* jacobianVertexN = jacobianSection->restrictPoint(v_negative);
+    assert(jacobianVertexN);
+
+    assert(spaceDim == jacobianSection->getFiberDimension(v_positive));
+    const double* jacobianVertexP = jacobianSection->restrictPoint(v_positive);
+    assert(jacobianVertexP);
+
+    // Get area at fault vertex.
+    assert(1 == areaSection->getFiberDimension(v_fault));
+    assert(areaSection->restrictPoint(v_fault));
+    const double areaVertex = *areaSection->restrictPoint(v_fault);
+    assert(areaVertex > 0.0);
+
+    // Get dispIncr(t) at vertices.
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_negative));
+    dispTIncrSection->restrictPoint(v_negative, &dispTIncrVertexN[0],
+				    dispTIncrVertexN.size());
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_positive));
+    dispTIncrSection->restrictPoint(v_positive, &dispTIncrVertexP[0],
+				    dispTIncrVertexP.size());
+
+    assert(spaceDim == dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->restrictPoint(v_lagrange, &dispTIncrVertexL[0],
+				    dispTIncrVertexL.size());
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(computeEvent);
 #endif
 
-    CALL_MEMBER_FN(*this, 
-		   adjustSolnLumpedFn)(&lagrangeTIncrVertex, 
-				       &dispTIncrVertexN, &dispTIncrVertexP,
-				       slipVertex, orientationVertex, 
-				       dispTVertexN, dispTVertexP,
-				       residualVertexN, residualVertexP,
-				       jacobianVertexN, jacobianVertexP);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      const double S = (1.0/jacobianVertexP[iDim] + 1.0/jacobianVertexN[iDim]) *
+	areaVertex * areaVertex;
+      dispTIncrVertexL[iDim] = 1.0/S * 
+	(-residualVertexL[iDim] +
+	 areaVertex * (dispTIncrVertexP[iDim] - dispTIncrVertexN[iDim]));
+
+      assert(jacobianVertexN[iDim] > 0.0);
+      dispTIncrVertexN[iDim] = 
+	+areaVertex / jacobianVertexN[iDim]*dispTIncrVertexL[iDim];
+
+      assert(jacobianVertexP[iDim] > 0.0);
+      dispTIncrVertexP[iDim] = 
+	-areaVertex / jacobianVertexP[iDim]*dispTIncrVertexL[iDim];
+
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
@@ -1317,10 +919,10 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     dispTIncrAdjSection->updateAddPoint(v_positive, &dispTIncrVertexP[0]);
 
     // Set Lagrange multiplier value. Value from preliminary solve is
-    // bogus due to artificial diagonal entry of 1.0.
-    assert(lagrangeTIncrVertex.size() == 
+    // bogus due to artificial diagonal entry.
+    assert(dispTIncrVertexL.size() == 
 	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
+    dispTIncrSection->updatePoint(v_lagrange, &dispTIncrVertexL[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
@@ -1348,6 +950,31 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
         << " for boundary condition.";
     throw std::runtime_error(msg.str());
   } // if  
+
+  // Verify quadrature scheme is consistent with points collocated
+  // with verties. Expect basis functions to be 1.0 at one quadrature
+  // point and zero at all others.
+  const double_array basis = _quadrature->basis();
+  const int numBasis = _quadrature->numBasis();
+  const int numQuadPts = _quadrature->numQuadPts();
+  for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt) {
+    int nonzero = 0;
+    const double tolerance = 1.0e-6;
+    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+      if (fabs(basis[iQuadPt*numBasis+iBasis]) > tolerance) 
+	++nonzero;
+    } // for
+    if (numBasis != numQuadPts || 1 != nonzero) {
+      std::ostringstream msg;
+      msg << "Quadrature scheme for fault " << label()
+	  << " is incompatible with fault implementation.\n"
+	  << "Expected quadrature points collocated with vertices, so that "
+	  << "basis functions are \n"
+	  << "1.0 at one quadrature point and zero at all other quadrature "
+	  << "points.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // for
 
   // check compatibility of mesh and quadrature scheme
   const int dimension = mesh.dimension() - 1;
@@ -1582,8 +1209,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
   // Allocate orientation field.
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  orientation.newSection(slip, orientationSize);
+  const topology::Field<topology::SubMesh>& dispRel = 
+    _fields->get("relative disp");
+  orientation.newSection(dispRel, orientationSize);
   const ALE::Obj<RealSection>& orientationSection = orientation.section();
   assert(!orientationSection.isNull());
   // Create subspaces for along-strike, up-dip, and normal directions
@@ -1824,8 +1452,9 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   // Allocate area field.
   _fields->add("area", "area");
   topology::Field<topology::SubMesh>& area = _fields->get("area");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  area.newSection(slip, 1);
+  const topology::Field<topology::SubMesh>& dispRel = 
+    _fields->get("relative disp");
+  area.newSection(dispRel, 1);
   area.allocate();
   area.vectorFieldType(topology::FieldBase::SCALAR);
   area.zero();
@@ -1908,10 +1537,12 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   double_array tractionsVertex(spaceDim);
 
   // Get sections.
-  const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
-  assert(!areaSection.isNull());
   const ALE::Obj<RealSection>& dispTSection = dispT.section();
   assert(!dispTSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
 
   // Allocate buffer for tractions field (if necessary).
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
@@ -1919,8 +1550,9 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     //logger.stagePush("Fault");
 
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    tractions->cloneSection(slip);
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    tractions->cloneSection(dispRel);
 
     //logger.stagePop();
   } // if
@@ -1935,18 +1567,23 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     assert(spaceDim == dispTSection->getFiberDimension(v_lagrange));
-    assert(spaceDim == tractionsSection->getFiberDimension(v_fault));
-    assert(1 == areaSection->getFiberDimension(v_fault));
-
     const double* dispTVertex = dispTSection->restrictPoint(v_lagrange);
     assert(0 != dispTVertex);
-    const double* areaVertex = areaSection->restrictPoint(v_fault);
-    assert(0 != areaVertex);
 
-    for (int i = 0; i < spaceDim; ++i)
-      tractionsVertex[i] = dispTVertex[i] / areaVertex[0];
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = 
+      orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
 
-    assert(tractionsVertex.size() == tractionsSection->getFiberDimension(v_fault));
+    // Rotate from global coordinate system to fault (orientation)
+    tractionsVertex = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	tractionsVertex[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * dispTVertex[jDim];
+
+    assert(tractionsVertex.size() == 
+	   tractionsSection->getFiberDimension(v_fault));
     tractionsSection->updatePoint(v_fault, &tractionsVertex[0]);
   } // for
 
@@ -1956,6 +1593,112 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
+
+// ----------------------------------------------------------------------
+// Transform field from local (fault) coordinate system to
+// global coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::_faultToGlobal(topology::Field<topology::SubMesh>* field)
+{ // _faultToGlobal
+  assert(field);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Fiber dimension of vector field matches spatial dimension.
+  const int spaceDim = _quadrature->spaceDim();
+  double_array fieldVertexGlobal(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
+    const double* fieldVertexFault = fieldSection->restrictPoint(v_fault);
+    assert(fieldVertexFault);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
+
+    // Rotate from fault to global coordinate system (transpose orientation)
+    fieldVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexGlobal[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] * fieldVertexFault[jDim];
+
+    assert(fieldVertexGlobal.size() == 
+	   fieldSection->getFiberDimension(v_fault));
+    fieldSection->updatePoint(v_fault, &fieldVertexGlobal[0]);
+  } // for
+  
+  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
+
+#if 0 // DEBUGGING
+  field->view("FIELD (GLOBAL)");
+#endif
+} // _faultToGlobal
+
+// ----------------------------------------------------------------------
+// Transform field from global coordinate system to local (fault)
+// coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::_globalToFault(topology::Field<topology::SubMesh>* field)
+{ // _globalToFault
+  assert(field);
+  assert(0 != _faultMesh);
+  assert(0 != _fields);
+
+  // Fiber dimension of vector field matches spatial dimension.
+  const int spaceDim = _quadrature->spaceDim();
+  double_array fieldVertexFault(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection =
+    _fields->get("orientation").section();
+  assert(!orientationSection.isNull());
+
+  const int numVertices = _cohesiveVertices.size();
+  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_fault = _cohesiveVertices[iVertex].fault;
+
+    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
+    const double* fieldVertexGlobal = fieldSection->restrictPoint(v_fault);
+    assert(fieldVertexGlobal);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
+    const double* orientationVertex = orientationSection->restrictPoint(v_fault);
+    assert(orientationVertex);
+
+    // Rotate from global coordinate system to fault (orientation)
+    fieldVertexFault = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexFault[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * fieldVertexGlobal[jDim];
+
+    assert(fieldVertexFault.size() == 
+	   fieldSection->getFiberDimension(v_fault));
+    fieldSection->updatePoint(v_fault, &fieldVertexFault[0]);
+  } // for
+  
+  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
+
+#if 0 // DEBUGGING
+  field->view("FIELD (FAULT)");
+#endif
+} // _faultToGlobal
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.
@@ -1969,12 +1712,14 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
 
-  // Create vector field; use same shape/chart as slip field.
+  // Create vector field; use same shape/chart as relative
+  // displacement field.
   assert(0 != _faultMesh);
   _fields->add("buffer (vector)", "buffer");
   topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-  const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  buffer.cloneSection(slip);
+  const topology::Field<topology::SubMesh>& dispRel = 
+    _fields->get("relative disp");
+  buffer.cloneSection(dispRel);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
 
@@ -1997,8 +1742,15 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   assert(0 != _faultMesh);
   _fields->add("buffer (scalar)", "buffer");
   topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
-  const topology::Field<topology::SubMesh>& area = _fields->get("area");
-  buffer.cloneSection(area);
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
+      faultSieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  buffer.newSection(vertices, 1);
+  buffer.allocate();
+  buffer.vectorFieldType(topology::FieldBase::SCALAR);
+  buffer.scale(1.0);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
 

@@ -121,7 +121,7 @@ const int pylith::faults::CohesiveKinDataLine2::_cellMappingCohesive[] = {
 
 
 const double pylith::faults::CohesiveKinDataLine2::_orientation[] = {
-  1.0
+   1.0
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_area[] = {
@@ -130,17 +130,17 @@ const double pylith::faults::CohesiveKinDataLine2::_area[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_residualIncr[] = {
    0.0,
-   7.5,
+  +7.5, // 3
    0.0,
-  -7.5,
+  -7.5, // 5
   -0.2+1.89546413727,
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_residual[] = {
    0.0,
-   7.5, // 3
+  +7.5, // 3
    0.0,
-   -7.5, // 5
+  -7.5, // 5
   -0.2+1.89546413727,
 };
 
@@ -154,10 +154,10 @@ const double pylith::faults::CohesiveKinDataLine2::_jacobian[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_fieldIncrAdjusted[] = {
   1.1,
-  -3.09368089375, // 3
+  0.419757841424, // 3
   1.3,
-  5.33587415261, // 5
-  -9.44609796626, // 6
+  2.11522197869, // 5
+  -1.71653274887, // 6
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
