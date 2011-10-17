@@ -475,12 +475,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   const ALE::Obj<RealSection>& dispTSection = fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
 
-  double_array velTVertexN(spaceDim);
-  double_array velTVertexP(spaceDim);
-  const ALE::Obj<RealSection>& velTSection = 
-    fields->get("velocity(t)").section();
-  assert(!velTSection.isNull());
-
   double_array dDispTIncrVertexN(spaceDim);
   double_array dDispTIncrVertexP(spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection =
@@ -755,10 +749,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       dDispTIncrVertexN[iDim] = -0.5*dDispRelVertex[iDim];
       dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
 
-      velTVertexN[iDim] = 
-	(dispTIncrVertexN[iDim] + dDispTIncrVertexN[iDim]) / _dt;
-      velTVertexP[iDim] = 
-	(dispTIncrVertexP[iDim] + dDispTIncrVertexP[iDim]) / _dt;
     } // for
 
 #if 0 // debugging
@@ -777,17 +767,17 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     std::cout << std::endl;
 #endif
 
-    // Update Lagrange multiplier increment.
-    assert(dLagrangeTpdtVertex.size() ==
-	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
-
     // Set change in relative displacement.
     assert(dispRelVertex.size() ==
         dispRelSection->getFiberDimension(v_fault));
     dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
     
-    // Set displacement field
+    // Update Lagrange multiplier increment.
+    assert(dLagrangeTpdtVertex.size() ==
+	   dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->updateAddPoint(v_lagrange, &dLagrangeTpdtVertex[0]);
+
+    // Update displacement field
     assert(dDispTIncrVertexN.size() ==
 	   dispTIncrSection->getFiberDimension(v_negative));
     dispTIncrSection->updateAddPoint(v_negative, &dDispTIncrVertexN[0]);
@@ -796,20 +786,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	   dispTIncrSection->getFiberDimension(v_positive));
     dispTIncrSection->updateAddPoint(v_positive, &dDispTIncrVertexP[0]);
     
-    // Set velocity field.
-    assert(velTVertexN.size() == velTSection->getFiberDimension(v_negative));
-    velTSection->updatePoint(v_negative, &velTVertexN[0]);
-    
-    assert(velTVertexP.size() == velTSection->getFiberDimension(v_positive));
-    velTSection->updatePoint(v_positive, &velTVertexP[0]);
-
   } // for
 
 #if 0 // DEBUGGING
   //dLagrangeTpdtSection->view("AFTER dLagrange");
   dispRelSection->view("AFTER RELATIVE DISPLACEMENT");
   dispTIncrSection->view("AFTER DISP INCR (t->t+dt)");
-  //velTSection->view("AFTER VELOCITY");
 #endif
 } // constrainSolnSpace
 
