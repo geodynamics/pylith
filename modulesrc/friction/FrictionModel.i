@@ -95,12 +95,10 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh of subdomain.
        * @param quadrature Quadrature for finite-element integration
-       * @param area Area at vertices of subdomain.
        */
       virtual
       void initialize(const pylith::topology::SubMesh& mesh,
-		      pylith::feassemble::Quadrature<pylith::topology::SubMesh>* quadrature,
-		      const pylith::topology::Field<pylith::topology::SubMesh>& area);
+		      pylith::feassemble::Quadrature<pylith::topology::SubMesh>* quadrature);
   
       /** Check whether friction model has a field as a property or
        * state variable.

@@ -17,8 +17,10 @@
 #
 
 SUBDIRS = \
+	cyclicfriction \
 	matprops \
 	plasticity \
 	slipdir
+
 
 # End of file 

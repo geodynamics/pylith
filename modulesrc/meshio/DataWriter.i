@@ -50,6 +50,12 @@ namespace pylith {
       virtual
       void deallocate(void);
   
+      /** Set time scale for simulation time.
+       *
+       * @param value Time scale
+       */
+      void timeScale(const double value);
+
       /** Prepare for writing files.
        *
        * @param mesh Finite-element mesh. 

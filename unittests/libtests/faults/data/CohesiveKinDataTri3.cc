@@ -61,24 +61,24 @@ const int pylith::faults::CohesiveKinDataTri3::_cellDim = 1;
 
 const int pylith::faults::CohesiveKinDataTri3::_numBasis = 2;
 
-const int pylith::faults::CohesiveKinDataTri3::_numQuadPts = 1;
+const int pylith::faults::CohesiveKinDataTri3::_numQuadPts = 2;
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_quadPts[] = {
-  0.0,
+  -1.0, 1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_quadWts[] = {
-  2.0,
+  1.0, 1.0
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_basis[] = {
-  0.5,
-  0.5
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_basisDeriv[] = {
-  -0.5,
-   0.5
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_verticesRef[] = {
@@ -127,8 +127,8 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobianLumped[] = {
   1.4, 1.4,
   1.5, 1.5, // 6
   1.7, 1.7, // 7
-  1.6, 1.6, // 8
-  1.8, 1.8, // 9
+  1.0, 1.0, // 8
+  1.0, 1.0, // 9
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_numFaultVertices = 2;
@@ -166,24 +166,28 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_area[] = {
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_residual[] = {
   0.0,  0.0,
- -9.6, -8.6, // 3
- -9.8, -8.8, // 4
+ +8.6, +9.6, // 3
+ +8.8, +9.8, // 4
   0.0,  0.0,
- +9.6, +8.6, // 6
- +9.8, +8.8, // 7
-  0.3+1.89546413727,  0.3+0.08241148423, // 8
-  0.4+1.77538035254,  0.4+0.14794836271, // 9
+ -8.6, -9.6, // 6
+ -8.8, -9.8, // 7
+ -(8.5-8.2) - (0.08241148423),
+ -(9.5-9.2) - (1.89546413727), // 8
+ -(8.7-8.3) - (0.14794836271),
+ -(9.7-9.3) - (1.77538035254), // 9
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_residualIncr[] = {
   0.0,  0.0,
- -9.6, -8.6, // 3
- -9.8, -8.8, // 4
+ +8.6, +9.6, // 3
+ +8.8, +9.8, // 4
   0.0,  0.0,
- +9.6, +8.6, // 6
- +9.8, +8.8, // 7
-  0.3+1.89546413727,  0.3+0.08241148423, // 8
-  0.4+1.77538035254,  0.4+0.14794836271, // 9
+ -8.6, -9.6, // 6
+ -8.8, -9.8, // 7
+ -(8.5-8.2) - (0.08241148423),
+ -(9.5-9.2) - (1.89546413727), // 8
+ -(8.7-8.3) - (0.14794836271),
+ -(9.7-9.3) - (1.77538035254), // 9
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
@@ -209,7 +213,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 8
+ -1.0, 0.0, // 8
   0.0, 0.0,
   0.0, 0.0, // 3y
   0.0, 0.0,
@@ -217,7 +221,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  8
+  0.0,-1.0, // 8
   0.0, 0.0,
   0.0, 0.0, // 4x
   0.0, 0.0,
@@ -226,7 +230,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, //  9
+ -1.0, 0.0, //  9
   0.0, 0.0, // 4y
   0.0, 0.0,
   0.0, 0.0,
@@ -234,7 +238,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  9
+  0.0,-1.0, // 9
   0.0, 0.0, // 5x
   0.0, 0.0,
   0.0, 0.0,
@@ -257,7 +261,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, //  8
+ +1.0, 0.0, // 8
   0.0, 0.0,
   0.0, 0.0, // 6y
   0.0, 0.0,
@@ -265,7 +269,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  8
+  0.0,+1.0, // 8
   0.0, 0.0,
   0.0, 0.0, // 7x
   0.0, 0.0,
@@ -274,7 +278,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, //  9
+ +1.0, 0.0, // 9
   0.0, 0.0, // 7y
   0.0, 0.0,
   0.0, 0.0,
@@ -282,52 +286,52 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  9
+  0.0,+1.0, // 9
 
   0.0, 0.0, // 8x
-  0.0,+1.0, //  3
+ -1.0, 0.0, // 3
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, //  6
+ +1.0, 0.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 8y
- +1.0, 0.0, //  3
+  0.0,-1.0, // 3
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  6
+  0.0,+1.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
 
   0.0, 0.0, // 9x
   0.0, 0.0,
-  0.0,+1.0, //  4
+ -1.0, 0.0, //  4
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, //  7
+ +1.0, 0.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 9y
   0.0, 0.0,
- +1.0, 0.0, //  4
+  0.0,-1.0, // 4
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  7
+  0.0,+1.0, // 7
   0.0, 0.0,
   0.0, 0.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3::_fieldIncrAdjusted[] = {
   3.1, 4.1,
-  11.4124508246, 12.5863689652, // 3
-  11.1489656107, 12.3019463023, // 4
+  3.57911749124, 5.58636896515, // 3
+  3.83717073887, 5.75938219977, // 4
   3.4, 4.4,
-  -3.06996065966, -2.20909517212, // 6
-  -2.30215017286, -1.41913540767, // 7
-  -10.0636427582, -9.85494098949, // 8
-  -10.402530193, -10.2036552939, // 9
+  3.19670600701, 3.39090482788, // 6
+  3.28922237616, 3.58400184723, // 7
+  0.454940989487, 1.66364275818, // 8
+  0.69832196053, 1.8971968597, // 9
 };
 
 pylith::faults::CohesiveKinDataTri3::CohesiveKinDataTri3(void)

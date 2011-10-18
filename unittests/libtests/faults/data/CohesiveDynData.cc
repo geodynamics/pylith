@@ -40,7 +40,7 @@ pylith::faults::CohesiveDynData::CohesiveDynData(void) :
   fieldIncrOpen(0),
   jacobian(0),
   orientation(0),
-  forcesInitial(0),
+  initialTractions(0),
   area(0),
   fieldIncrSlipE(0),
   slipSlipE(0),

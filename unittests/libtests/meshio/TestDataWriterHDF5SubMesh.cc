@@ -104,9 +104,11 @@ pylith::meshio::TestDataWriterHDF5SubMesh::testWriteVertexField(void)
 
   writer.filename(_data->vertexFilename);
 
-  const int nfields = _data->numVertexFields;
+  const PylithScalar timeScale = 4.0;
+  writer.timeScale(timeScale);
+  const PylithScalar t = _data->time / timeScale;
 
-  const PylithScalar t = _data->time;
+  const int nfields = _data->numVertexFields;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
@@ -142,9 +144,11 @@ pylith::meshio::TestDataWriterHDF5SubMesh::testWriteCellField(void)
 
   writer.filename(_data->cellFilename);
 
-  const int nfields = _data->numCellFields;
+  const PylithScalar timeScale = 4.0;
+  writer.timeScale(timeScale);
+  const PylithScalar t = _data->time / timeScale;
 
-  const PylithScalar t = _data->time;
+  const int nfields = _data->numCellFields;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);

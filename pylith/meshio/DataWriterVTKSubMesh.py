@@ -50,9 +50,14 @@ class DataWriterVTKSubMesh(DataWriterVTK, ModuleDataWriterVTK):
     """
     DataWriterVTK.initialize(self, normalizer)
 
+    timeScale = normalizer.timeScale()
+    timeConstantN = normalizer.nondimensionalize(self.timeConstant,
+                                                 timeScale)
+
     ModuleDataWriterVTK.filename(self, self.filename)
+    ModuleDataWriterVTK.timeScale(self, timeScale.value)
     ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
-    ModuleDataWriterVTK.timeConstant(self, self.timeConstantN)
+    ModuleDataWriterVTK.timeConstant(self, timeConstantN)
     ModuleDataWriterVTK.precision(self, self.precision)
     return
   

@@ -116,12 +116,10 @@ public :
    *
    * @param mesh Finite-element mesh of subdomain.
    * @param quadrature Quadrature for finite-element integration
-   * @param area Area at vertices of subdomain.
    */
   virtual
   void initialize(const topology::SubMesh& mesh,
-		  feassemble::Quadrature<topology::SubMesh>* quadrature,
-		  const topology::Field<topology::SubMesh>& area);
+		  feassemble::Quadrature<topology::SubMesh>* quadrature);
   
   /** Check whether friction model has a field as a property or state
    * variable.

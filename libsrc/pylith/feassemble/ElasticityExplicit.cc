@@ -693,7 +693,6 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \
@@ -853,7 +852,6 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
   if (cellDim != spaceDim)
     throw std::logic_error("Don't know how to integrate elasticity " \
 			   "contribution to Jacobian matrix for cells with " \
