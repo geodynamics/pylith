@@ -36,6 +36,13 @@ namespace pylith {
       /// Destructor.
       ~RateStateAgeing(void);
 
+      /** Set floor for slip rate used in computing friction. Used to
+       *  avoid zero friction at zero slip rate.
+       *
+       * @param value Floor for slip rate.
+       */
+      void minSlipRate(const double value);
+
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
 
