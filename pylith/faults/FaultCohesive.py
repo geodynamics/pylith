@@ -94,6 +94,8 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
                                           self.inventory.meshFilename)
 
     # Hardwire collocated quadrature
+    self.faultQuadrature.inventory.cell._configure()
+    self.faultQuadrature._configure()
     self.faultQuadrature.cell.collocateQuad = True
     self.faultQuadrature.cell.order = self.faultQuadrature.cell.degree
     return

@@ -98,6 +98,20 @@ pylith::faults::TestFaultCohesiveDyn::testDBInitialTract(void)
  } // testDBInitialTract
 
 // ----------------------------------------------------------------------
+// Test zeroTolerance().
+void
+pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
+{ // testZeroTolerance
+  FaultCohesiveDyn fault;
+
+  CPPUNIT_ASSERT_EQUAL(1.0e-10, fault._zeroTolerance); // default
+
+  const PylithScalar value = 1.0e-20;
+  fault.zeroTolerance(value);
+  CPPUNIT_ASSERT_EQUAL(value, fault._zeroTolerance);
+ } // zeroTolerance
+
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::faults::TestFaultCohesiveDyn::testInitialize(void)

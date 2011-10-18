@@ -1,5 +1,5 @@
-cell = "hex8"
-dim = "3d"
+cell = "tri3d"
+dim = "2d"
 testCase = "open"
 
 import numpy
@@ -310,6 +310,7 @@ if dim == "2d":
         slipVertex[:,1] = 0
     mask = slipVertex[:,1] < 0.0
     slipVertex[mask,1] = 0
+    print "slip",slipVertex
     slipVertex = faultToGlobal(slipVertex, C)
     slipVertex = numpy.reshape(slipVertex, m)
 

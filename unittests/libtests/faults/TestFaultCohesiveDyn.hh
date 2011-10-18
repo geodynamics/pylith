@@ -53,6 +53,7 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDBInitialTract );
+  CPPUNIT_TEST( testZeroTolerance );
 
   // Tests in derived classes:
   // testInitialize()
@@ -88,6 +89,9 @@ public:
 
   /// Test dbInitialTract().
   void testDBInitialTract(void);
+
+  /// Test zeroTolerance().
+  void testZeroTolerance(void);
 
   /// Test initialize().
   void testInitialize(void);

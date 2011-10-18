@@ -106,7 +106,7 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteVertexField(void)
 
   writer.filename(_data->vertexFilename);
 
-  const PylithScalr timeScale = 4.0;
+  const PylithScalar timeScale = 4.0;
   writer.timeScale(timeScale);
   const PylithScalar t = _data->time / timeScale;
 
