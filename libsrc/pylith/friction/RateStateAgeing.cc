@@ -121,7 +121,8 @@ pylith::friction::RateStateAgeing::RateStateAgeing(void) :
 				    _RateStateAgeing::stateVars,
 				    _RateStateAgeing::numStateVars,
 				    _RateStateAgeing::dbStateVars,
-				    _RateStateAgeing::numDBStateVars))
+				    _RateStateAgeing::numDBStateVars)),
+  _minSlipRate(1.0e-12)
 { // constructor
 } // constructor
 
@@ -130,6 +131,21 @@ pylith::friction::RateStateAgeing::RateStateAgeing(void) :
 pylith::friction::RateStateAgeing::~RateStateAgeing(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Set floor for slip rate used in computing friction. Used to
+void
+pylith::friction::RateStateAgeing::minSlipRate(const PylithScalar value)
+{ // minSlipRate
+  if (value < 0.0) {
+    std::ostringstream msg;
+    msg << "Minimum slip rate (" << value << ") for rate state friction model "
+	<< label() << " must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _minSlipRate = value;
+} // minSlipRate
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
@@ -300,7 +316,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar slip,
 
     // Since regulatized friction -> 0 as slipRate -> 0, limit slip
     // rate to some minimum value
-    const PylithScalar slipRateEff = std::max(PylithScalar(1.0e-12), slipRate);
+    const PylithScalar slipRateEff = std::max(_minSlipRate, slipRate);
 
     const PylithScalar slipRate0 = properties[p_slipRate0];
     const PylithScalar a = properties[p_a];
@@ -358,7 +374,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const PylithScalar slip,
 
   // Since regulatized friction -> 0 as slipRate -> 0, limit slip
   // rate to some minimum value
-  const PylithScalar slipRateEff = std::max(PylithScalar(1.0e-12), slipRate);
+  const PylithScalar slipRateEff = std::max(_minSlipRate, slipRate);
 
   const PylithScalar dt = _dt;
   const PylithScalar thetaTVertex = stateVars[s_state];

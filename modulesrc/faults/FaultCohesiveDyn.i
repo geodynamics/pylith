@@ -53,6 +53,12 @@ namespace pylith {
        */
       void frictionModel(pylith::friction::FrictionModel* const model);
 
+      /** Nondimensional tolerance for detecting near zero values.
+       *
+       * @param value Nondimensional tolerance
+       */
+      void zeroTolerance(const PylithScalar value);
+
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.
        *

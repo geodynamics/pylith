@@ -42,7 +42,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   Python object for managing FaultCohesiveDyn facilities and properties.
   
   \b Properties
-  @li None
+  @li \b zero_tolerance Tolerance for detecting zero values.
   
   \b Facilities
   @li \b db_initial_tractions Spatial database for initial tractions.
@@ -55,6 +55,10 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   # INVENTORY //////////////////////////////////////////////////////////
 
   import pyre.inventory
+
+  zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-10,
+                                       validator=pyre.inventory.greaterEqual(0.0))
+  zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
 
   db = pyre.inventory.facility("db_initial_tractions", family="spatial_database",
                                factory=NullComponent)
@@ -192,6 +196,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     if not isinstance(self.inventory.db, NullComponent):
       ModuleFaultCohesiveDyn.dbInitialTract(self, self.inventory.db)
     ModuleFaultCohesiveDyn.frictionModel(self, self.inventory.friction)
+    ModuleFaultCohesiveDyn.zeroTolerance(self, self.inventory.zeroTolerance)
     self.output = self.inventory.output
     return
 

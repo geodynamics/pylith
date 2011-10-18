@@ -58,6 +58,13 @@ public :
   /// Destructor.
   ~RateStateAgeing(void);
 
+  /** Set floor for slip rate used in computing friction. Used to
+   *  avoid zero friction at zero slip rate.
+   *
+   * @param value Floor for slip rate.
+   */
+  void minSlipRate(const PylithScalar value);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -154,6 +161,9 @@ protected :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Floor for slip rate used in friction calculation.
+  PylithScalar _minSlipRate;
 
   /// Indices for properties in section and spatial database.
   static const int p_coef;

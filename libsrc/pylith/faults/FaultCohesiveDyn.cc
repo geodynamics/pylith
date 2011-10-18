@@ -60,11 +60,9 @@ typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor Upd
 typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PylithInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
-const PylithScalar pylith::faults::FaultCohesiveDyn::_zeroTolerance = 1.0e-10;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
+  _zeroTolerance(1.0e-10),
   _dbInitialTract(0),
   _friction(0),
   _jacobian(0),
@@ -110,6 +108,21 @@ pylith::faults::FaultCohesiveDyn::frictionModel(friction::FrictionModel* const m
 { // frictionModel
   _friction = model;
 } // frictionModel
+
+// ----------------------------------------------------------------------
+// Nondimensional tolerance for detecting near zero values.
+void
+pylith::faults::FaultCohesiveDyn::zeroTolerance(const PylithScalar value)
+{ // zeroTolerance
+  if (value < 0.0) {
+    std::ostringstream msg;
+    msg << "Tolerance (" << value << ") for detecting values near zero for "
+      "fault " << label() << " must be nonnegative.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _zeroTolerance = value;
+} // zeroTolerance
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
@@ -722,7 +735,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
-    if (tractionNormal < 0.0 || 
+    if (tractionNormal < -_zeroTolerance || 
 	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
       dSlipVertex[indexN] = -slipVertex[indexN];
     } // if

@@ -38,6 +38,20 @@ pylith::friction::TestRateStateAgeing::setUp(void)
 } // setUp
 
 // ----------------------------------------------------------------------
+// Test floor for minimum slip rate.
+void
+pylith::friction::TestRateStateAgeing::testMinSlipRate(void)
+{ // testMinSlipRate
+  RateStateAgeing model;
+
+  CPPUNIT_ASSERT_EQUAL(1.0e-12, model._minSlipRate); // default
+
+  const PylithScalar value = 1.0e-20;
+  model.minSlipRate(value);
+  CPPUNIT_ASSERT_EQUAL(value, model._minSlipRate);
+} // testMinSlipRate
+  
+// ----------------------------------------------------------------------
 // Test properties metadata.
 void
 pylith::friction::TestRateStateAgeing::testPropertiesMetadata(void)

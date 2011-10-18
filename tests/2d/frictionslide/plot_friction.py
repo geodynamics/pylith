@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-sim = "ratestate_weak"
+sim = "ratestate_stable"
 
 # ======================================================================
 import tables
