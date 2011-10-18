@@ -3,7 +3,7 @@
 import numpy
 import numpy.linalg as linalg
 
-A = numpy.array([[4/3.0, -0.5, 1/6.0, 0,   0,0,0,0],
+K = numpy.array([[4/3.0, -0.5, 1/6.0, 0,   0,0,0,0],
                  [-0.5, 4/3.0, 0, -5/6.0,  0,0,0,0],
                  [1/6.0, 0, 4/3.0, 0.5,    0,0,0,0],
                  [0, -5/6.0, 0.5, 4/3.0,   0,0,0,0],
@@ -12,47 +12,79 @@ A = numpy.array([[4/3.0, -0.5, 1/6.0, 0,   0,0,0,0],
                  [0,0,0,0, 1/6.0, 0, 4/3.0, -0.5],
                  [0,0,0,0, 0, -5/6.0, -0.5, 4/3.0]],
                 dtype=numpy.float64)
-Ai = linalg.inv(A)
+Ki = linalg.inv(K)
 
-C = numpy.array([[0,-1,  0,0,  0,1, 0,0],
-                 [-1,0,  0,0,  1,0, 0,0],
-                 [0,0,  0,-1,  0,0, 0,1],
-                 [0,0, -1,0,   0,0, 1,0]],
+# Gauss quadrature
+L = numpy.array([[-2/3.0,0.0, -1/3.0,0.0,  +2/3.0,0.0, +1/3.0,0.0],
+                 [0.0,-2/3.0, 0.0,-1/3.0,  0.0,+2/3.0, 0.0,+1/3.0],
+                 [-1/3.0,0.0, -2/3.0,0.0,  +1/3.0,0.0, +2/3.0,0.0],
+                 [0.0,-1/3.0, 0.0,-2/3.0,  0.0,+1/3.0, 0.0,+2/3.0]],
                 dtype=numpy.float64)
+
+# Collocated vertices and quadrature
+Lc = numpy.array([[-1.0,0.0, 0.0,0.0,  +1.0,0.0, 0.0,0.0],
+                  [0.0,-1.0, 0.0,0.0,  0.0,+1.0, 0.0,0.0],
+                  [0.0,0.0, -1.0,0.0,  0.0,0.0, +1.0,0.0],
+                  [0.0,0.0, 0.0,-1.0,  0.0,0.0, 0.0,+1.0]],
+                  dtype=numpy.float64)
+
 Z = numpy.zeros( (4,4), dtype=numpy.float64)
 
-J = numpy.vstack( (numpy.hstack( (A, C.transpose()) ),
-                   numpy.hstack( (C, Z) ) ) )
-Jinv = linalg.inv(J)
+A = numpy.vstack( (numpy.hstack( (K, L.transpose()) ),
+                   numpy.hstack( (L, Z) ) ) )
+Ainv = linalg.inv(A)
 
-# Compute [C] [A]^(-1) [C]^T and its inverse.
-CAC = numpy.dot(numpy.dot(C, Ai), C.transpose())
-CACi = numpy.linalg.inv(CAC)
+Ac = numpy.vstack( (numpy.hstack( (K, Lc.transpose()) ),
+                     numpy.hstack( (Lc, Z) ) ) )
+Acinv = linalg.inv(Ac)
 
-# Compute diagonal approximation of CAC and its inverse
-Aid = 1.0 / A.diagonal() * numpy.identity(A.shape[0])
-CACd = numpy.dot(numpy.dot(C, Aid), C.transpose())
-CACdi = 1.0 / CACd.diagonal() * numpy.identity(CACd.shape[0])
+# Compute [L] [K]^(-1) [L]^T and its inverse.
+LKiL = numpy.dot(numpy.dot(L, Ki), L.transpose())
+LKiLi = numpy.linalg.inv(LKiL)
+
+LKiLc = numpy.dot(numpy.dot(Lc, Ki), Lc.transpose())
+LKiLic = numpy.linalg.inv(LKiLc)
+
+# Compute diagonal approximation of LKiL and its inverse
+Kid = 1.0 / K.diagonal() * numpy.identity(K.shape[0])
+LKidL = numpy.dot(numpy.dot(L, Kid), L.transpose())
+LKidLd = LKidL.diagonal() * numpy.identity(LKidL.shape[0])
+
+LKidLc = numpy.dot(numpy.dot(Lc, Kid), Lc.transpose())
+LKidLdc = LKidLc.diagonal() * numpy.identity(LKidLc.shape[0])
 
 # Compute preconditioner using full matrices (no approximations)
-P = J
+P = A
 Pi = numpy.linalg.inv(P)
 
 # Compute condition number
-evals, evecs = numpy.linalg.eig(numpy.dot(J, Pi))
+evals, evecs = numpy.linalg.eig(numpy.dot(Pi, A))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
 
-# Compute preconditioner using diagonal approximations (but full A)
-Pd = numpy.zeros(J.shape)
-Pd[0:8,0:8] = A
+# Compute preconditioner using diagonal approximations for K
+Pd = numpy.zeros(A.shape)
+Pd[0:8,0:8] = K
 Pd[0:8,8:12] = 0.0
 Pd[8:12,0:8] = 0.0
-Pd[8:12,8:12] = -CACd
+Pd[8:12,8:12] = -LKidL
+print LKidL
 
-Pdi = numpy.linalg.inv(Pd)
+# Compute preconditioner using diagonal approximations for K
+Pdc = numpy.zeros(Ac.shape)
+Pdc[0:8,0:8] = K
+Pdc[0:8,8:12] = 0.0
+Pdc[8:12,0:8] = 0.0
+Pdc[8:12,8:12] = -LKidLc
+print LKidLc
 
 # Compute condition number for diagonal approximations
-evals, evecs = numpy.linalg.eig(numpy.dot(Pdi, J))
+Pdi = numpy.linalg.inv(Pd)
+evals, evecs = numpy.linalg.eig(numpy.dot(Pdi, A))
+print numpy.abs(evals)
+print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))
+
+Pdci = numpy.linalg.inv(Pdc)
+evals, evecs = numpy.linalg.eig(numpy.dot(Pdci, Ac))
 print numpy.abs(evals)
 print numpy.max(numpy.abs(evals))/numpy.min(numpy.abs(evals))

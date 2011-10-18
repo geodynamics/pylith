@@ -77,24 +77,24 @@ const int pylith::faults::CohesiveKinDataQuad4e::_cellDim = 1;
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numBasis = 2;
 
-const int pylith::faults::CohesiveKinDataQuad4e::_numQuadPts = 1;
+const int pylith::faults::CohesiveKinDataQuad4e::_numQuadPts = 2;
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_quadPts[] = {
-  0.0,
+  -1.0, 1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_quadWts[] = {
-  2.0,
+  1.0, 1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_basis[] = {
-  0.5,
-  0.5
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_basisDeriv[] = {
-  -0.5,
-   0.5
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_verticesRef[] = {
@@ -130,6 +130,45 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   4.1, 6.1, // 16
   4.3, 6.3, // 17
   4.5, 6.5, // 18
+};
+
+
+
+const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_fieldIncr[] = {
+  6.1, 4.1,
+  6.2, 4.2,
+  6.3, 4.3, // 6
+  6.4, 4.4, // 7
+  6.5, 4.5,
+  6.6, 4.6,
+  6.7, 4.7,
+  6.8, 4.8, // 11
+  6.9, 4.9,
+  6.0, 4.0, // 13
+  5.2, 3.2, // 14
+  5.4, 3.4, // 15
+  5.1, 3.1, // 16
+  5.3, 3.3, // 17
+  5.5, 3.5, // 18
+};
+
+
+const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobianLumped[] = {
+  1.1, 7.1,
+  1.2, 7.2,
+  1.3, 7.3, // 6
+  1.4, 7.4, // 7
+  1.5, 7.5,
+  1.6, 7.6,
+  1.7, 7.7,
+  1.8, 7.8, // 11
+  1.9, 7.9,
+  1.0, 7.0, // 13
+  2.2, 3.2, // 14
+  2.4, 3.4, // 15
+  1.0, 1.0, // 16
+  1.0, 1.0, // 17
+  1.0, 1.0, // 18
 };
 
 
@@ -172,37 +211,43 @@ const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingCohesive[] = {
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_residual[] = {
   0.0,  0.0,
   0.0,  0.0,
- -6.1, -4.1, // 6
- -6.3, -4.3, // 7
+ +1.0*4.1, +1.0*6.1, // 6
+ +2.0*4.3, +2.0*6.3, // 7
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
- -6.5, -4.5, // 11
+ +1.0*4.5, +1.0*6.5, // 11
   0.0,  0.0,
- +6.1, +4.1, // 13
- +6.3, +4.3, // 15
- +6.5, +4.5, // 17
- -0.3+1.77538035254, -0.3+0.14794836271, // 16
-  0.8+1.89546413727,  0.8+0.08241148423, // 17
-  0.6+1.59887481971,  0.6+0.19186497837, // 18
+ -1.0*4.1, -1.0*6.1, // 13
+ -2.0*4.3, -2.0*6.3, // 14
+ -1.0*4.5, -1.0*6.5, // 15
+ -1.0*(3.0-3.3 + 0.14794836271),
+ -1.0*(5.0-5.3 + 1.77538035254), // 16
+ -2.0*(4.2-3.4 + 0.08241148423),
+ -2.0*(6.2-5.4 + 1.89546413727), // 17
+ -1.0*(4.4-3.8 + 0.19186497837),
+ -1.0*(6.4-5.8 + 1.59887481971), // 18
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_residualIncr[] = {
   0.0,  0.0,
   0.0,  0.0,
- -6.1, -4.1, // 6
- -6.3, -4.3, // 7
+ +1.0*4.1, +1.0*6.1, // 6
+ +2.0*4.3, +2.0*6.3, // 7
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
- -6.5, -4.5, // 11
+ +1.0*4.5, +1.0*6.5, // 11
   0.0,  0.0,
- +6.1, +4.1, // 13
- +6.3, +4.3, // 15
- +6.5, +4.5, // 17
- -0.3+1.77538035254, -0.3+0.14794836271, // 16
-  0.8+1.89546413727,  0.8+0.08241148423, // 17
-  0.6+1.59887481971,  0.6+0.19186497837, // 18
+ -1.0*4.1, -1.0*6.1, // 13
+ -2.0*4.3, -2.0*6.3, // 14
+ -1.0*4.5, -1.0*6.5, // 15
+ -1.0*(3.0-3.3 + 0.14794836271),
+ -1.0*(5.0-5.3 + 1.77538035254), // 16
+ -2.0*(4.2-3.4 + 0.08241148423),
+ -2.0*(6.2-5.4 + 1.89546413727), // 17
+ -1.0*(4.4-3.8 + 0.19186497837),
+ -1.0*(6.4-5.8 + 1.59887481971), // 18
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
@@ -278,7 +323,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 16
+ -1.0, 0.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 6y
@@ -293,7 +338,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 16
+  0.0,-1.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 7x
@@ -309,7 +354,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 17
+ -2.0, 0.0, // 17
   0.0, 0.0,
   0.0, 0.0, // 7y
   0.0, 0.0,
@@ -324,7 +369,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 17
+  0.0,-2.0, // 17
   0.0, 0.0,
   0.0, 0.0, // 8x
   0.0, 0.0,
@@ -430,7 +475,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 18
+ -1.0, 0.0, // 18
   0.0, 0.0, // 11y
   0.0, 0.0,
   0.0, 0.0,
@@ -445,7 +490,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 18
+  0.0,-1.0, // 18
   0.0, 0.0, // 12x
   0.0, 0.0,
   0.0, 0.0,
@@ -488,7 +533,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 16
+ +1.0, 0.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 13y
@@ -503,7 +548,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 16
+  0.0,+1.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 14x
@@ -519,7 +564,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 17
+ +2.0, 0.0, // 17
   0.0, 0.0,
   0.0, 0.0, // 14y
   0.0, 0.0,
@@ -534,7 +579,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 17
+  0.0,+2.0, // 17
   0.0, 0.0,
   0.0, 0.0, // 15x
   0.0, 0.0,
@@ -550,7 +595,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 18
+ +1.0, 0.0, // 18
   0.0, 0.0, // 15y
   0.0, 0.0,
   0.0, 0.0,
@@ -565,17 +610,17 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 18
+  0.0,+1.0, // 18
   0.0, 0.0, // 16x
   0.0, 0.0,
-  0.0,+1.0, // 6
+ -1.0, 0.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 13
+ +1.0, 0.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -583,14 +628,14 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0, // 16y
   0.0, 0.0,
- +1.0, 0.0, // 6
+  0.0,-1.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 13
+  0.0,+1.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -599,14 +644,14 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0, // 17x
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 7
+ -2.0, 0.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 14
+ +2.0, 0.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -614,14 +659,14 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0, // 17y
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 7
+  0.0,-2.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 14
+  0.0,+2.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -633,11 +678,11 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 11
+ -1.0, 0.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 15
+ +1.0, 0.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -648,11 +693,11 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 11
+  0.0,-1.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 15
+  0.0,+1.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -676,6 +721,8 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
   fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
+  jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
   orientation = const_cast<PylithScalar*>(_orientation);
   area = const_cast<PylithScalar*>(_area);
   residual = const_cast<PylithScalar*>(_residual);

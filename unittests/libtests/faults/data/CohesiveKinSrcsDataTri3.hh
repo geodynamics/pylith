@@ -63,7 +63,9 @@ private:
   static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 
-  static const PylithScalar _fieldT[]; ///< Solution field at time t.
+  static const PylithScalar _fieldT[]; ///< Field over domain at time t.
+  static const PylithScalar _fieldIncr[]; ///< Solution increment field over domain at time t.
+  static const PylithScalar _jacobianLumped[]; ///< Lumped Jacobian.
 
   static const PylithScalar _orientation[]; ///< Expected values for fault orientation.
   static const PylithScalar _area[]; ///< Expected values for fault area.

@@ -22,6 +22,7 @@
 // Constructor
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
+  _timeScale(1.0),
   _numTimeSteps(0),
   _context("")
 { // constructor
@@ -42,6 +43,22 @@ void
 pylith::meshio::DataWriter<mesh_type, field_type>::deallocate(void)
 { // deallocate
 } // deallocate
+  
+
+// ----------------------------------------------------------------------
+// Set time scale for simulation time.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const double value)
+{ // timeScale
+  if (value <= 0.0) {
+    std::ostringstream msg;
+    msg << "Time scale for simulation time (" << value << " must be positive.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _timeScale = value;
+} // timeScale
   
 // ----------------------------------------------------------------------
 // Prepare for writing files.

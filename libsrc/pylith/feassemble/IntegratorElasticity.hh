@@ -197,24 +197,6 @@ protected :
    */
   void _elasticityJacobian3D(const scalar_array& elasticConsts);
 
-  /** Integrate laplacian term in Jacobian preconditioner for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon1D(const scalar_array& elasticConsts);
-
-  /** Integrate laplacian term in Jacobian preconditioner for 2-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon2D(const scalar_array& elasticConsts);
-
-  /** Integrate laplacian term in Jacobian preconditioner for 3-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon3D(const scalar_array& elasticConsts);
-
   /** Compute total strain in at quadrature points of a cell.
    *
    * @param strain Strain tensor at quadrature points.

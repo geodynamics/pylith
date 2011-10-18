@@ -67,7 +67,7 @@ private:
 
   static const PylithScalar _orientation[]; ///< Expected values for fault orientation.
   static const PylithScalar _area[]; ///< Expected values for fault area.
-  static const PylithScalar _forcesInitial[]; ///< Expected values for initial forces.
+  static const PylithScalar _initialTractions[]; ///< Expected values for initial tractions.
   static const PylithScalar _fieldIncrSlipE[]; ///< Expected values for solution increment for slip case.
   static const PylithScalar _slipSlipE[]; ///< Expected values for slip for slip case.
   static const PylithScalar _fieldIncrOpenE[]; ///< Expected values for solution increment for opening case.

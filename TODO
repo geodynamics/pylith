@@ -8,6 +8,12 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
     - HDF5
     - CUDA
 
+* Module building
+
+  + We want the _wrap.cxx files to work independent of PETSC_ARCH
+    specific details. This was try until we included petscconf.h in
+    pylithtypes.i to resolve single/double precision issues.
+
 * GPU utilization
 
   + Implicit elasticity finite-element integration
