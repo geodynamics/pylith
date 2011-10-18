@@ -56,7 +56,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
 
   import pyre.inventory
 
-  zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-12,
+  zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-10,
                                        validator=pyre.inventory.greaterEqual(0.0))
   zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
 
