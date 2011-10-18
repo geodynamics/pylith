@@ -38,7 +38,7 @@ def validateLabel(value):
   Validate descriptive label.
   """
   if 0 == len(value):
-    raise ValueError("Discriptive label for friction model not specified.")
+    raise ValueError("Descriptive label for friction model not specified.")
   return value
 
 

@@ -67,6 +67,12 @@ public :
    */
   void frictionModel(friction::FrictionModel* const model);
 
+  /** Nondimensional tolerance for detecting near zero values.
+   *
+   * @param value Nondimensional tolerance
+   */
+  void zeroTolerance(const double value);
+
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
@@ -268,6 +274,9 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
+  /// Minimum resolvable value accounting for roundoff errors
+  double _zeroTolerance;
+
   /// Database for initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract;
 
@@ -278,9 +287,6 @@ private :
   topology::Jacobian* _jacobian;
 
   PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
-
-  /// Minimum resolvable value accounting for roundoff errors
-  static const double _zeroTolerance;
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
