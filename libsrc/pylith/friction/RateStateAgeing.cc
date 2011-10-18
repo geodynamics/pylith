@@ -316,7 +316,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 
     // Since regulatized friction -> 0 as slipRate -> 0, limit slip
     // rate to some minimum value
-    const double slipRateEff = std::max(1.0e-14, slipRate);
+    const double slipRateEff = std::max(_minSlipRate, slipRate);
 
     const double slipRate0 = properties[p_slipRate0];
     const double a = properties[p_a];
@@ -374,7 +374,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   // Since regulatized friction -> 0 as slipRate -> 0, limit slip
   // rate to some minimum value
-  const double slipRateEff = std::max(1.0e-14, slipRate);
+  const double slipRateEff = std::max(_minSlipRate, slipRate);
 
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
