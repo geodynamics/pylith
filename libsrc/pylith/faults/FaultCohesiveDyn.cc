@@ -274,7 +274,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       slipNormal += orientationVertex[indexN*spaceDim+jDim]*dispRelVertex[jDim];
     } // for
 
-    if (slipNormal > _zeroTolerance) {
+    if (slipNormal > 0.0) {
       residualVertexN = 0.0;
       residualVertexP = 0.0;
     } // if
@@ -694,7 +694,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     double dLagrangeMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       dLagrangeMag += dLagrangeTpdtVertex[iDim]*dLagrangeTpdtVertex[iDim];
-    if (dLagrangeMag < _zeroTolerance) {
+    if (0.0 == dLagrangeMag) {
       continue; // No change, so continue
     } // if
 
@@ -722,17 +722,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
     // Do not allow fault interpenetration and set fault opening to
     // zero if fault is under compression.
-    if (tractionNormal < -_zeroTolerance || 
-	slipVertex[indexN] + dSlipVertex[indexN] < -_zeroTolerance) {
+    if (tractionNormal < 0.0 || 
+	slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
       dSlipVertex[indexN] = -slipVertex[indexN];
     } // if
 
     // Compute current estimate of slip.
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const double value = slipVertex[iDim] + dSlipVertex[iDim];
-      slipVertex[iDim] = fabs(value) > _zeroTolerance ? value : 0.0;
-      dSlipVertex[iDim] = 
-	fabs(dSlipVertex[iDim]) > _zeroTolerance ? dSlipVertex[iDim] : 0.0;
+      slipVertex[iDim] = slipVertex[iDim] + dSlipVertex[iDim];
     } // for
 
     // Update relative displacement from slip.
