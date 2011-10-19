@@ -25,7 +25,6 @@
 %}
 
 %include "typemaps.i"
-%include "../include/pylithtypes.i"
 
 // Interfaces
 %include "mpi_comm.i"

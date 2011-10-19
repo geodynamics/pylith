@@ -76,49 +76,26 @@ namespace pylith {
        * @param numQuadPts Number of quadrature points
        * @param spaceDim Number of dimensions in coordinates of cell vertices
        */
-#if defined(PYLITH_USE_SCALAR_SINGLE)
-      %apply(float* IN_ARRAY2, int DIM1, int DIM2) {
+      %apply(PylithScalar* IN_ARRAY2, int DIM1, int DIM2) {
 	(const PylithScalar* basis,
 	 const int numQuadPts1,
 	 const int numBasis1)
 	  };
-      %apply(float* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
+      %apply(PylithScalar* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
 	(const PylithScalar* basisDerivRef,
 	 const int numQuadPts2,
 	 const int numBasis2,
 	 const int cellDim2)
 	  };
-      %apply(float* IN_ARRAY2, int DIM1, int DIM2) {
+      %apply(PylithScalar* IN_ARRAY2, int DIM1, int DIM2) {
 	(const PylithScalar* quadPtsRef,
 	 const int numQuadPts3,
 	 const int cellDim3)
 	  };
-      %apply(float* IN_ARRAY1, int DIM1) {
+      %apply(PylithScalar* IN_ARRAY1, int DIM1) {
 	(const PylithScalar* quadWts,
 	 const int numQuadPts4)
 	  };
-#else
-      %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
-	(const PylithScalar* basis,
-	 const int numQuadPts1,
-	 const int numBasis1)
-	  };
-      %apply(double* IN_ARRAY3, int DIM1, int DIM2, int DIM3) {
-	(const PylithScalar* basisDerivRef,
-	 const int numQuadPts2,
-	 const int numBasis2,
-	 const int cellDim2)
-	  };
-      %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
-	(const PylithScalar* quadPtsRef,
-	 const int numQuadPts3,
-	 const int cellDim3)
-	  };
-      %apply(double* IN_ARRAY1, int DIM1) {
-	(const PylithScalar* quadWts,
-	 const int numQuadPts4)
-	  };
-#endif
       void initialize(const PylithScalar* basis,
 		      const int numQuadPts1,
 		      const int numBasis1,

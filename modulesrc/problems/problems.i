@@ -50,7 +50,7 @@
 
 %include "typemaps.i"
 %include "../include/integratorarray.i"
-%include "../include/pylithtypes.i"
+%include "../include/scalartypemaps.i"
 
 // Interfaces
 %include "Formulation.i"

@@ -54,7 +54,7 @@ namespace pylith {
        *
        * @param value Time scale
        */
-      void timeScale(const double value);
+      void timeScale(const PylithScalar value);
 
       /** Prepare for writing files.
        *
