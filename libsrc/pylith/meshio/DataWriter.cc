@@ -49,7 +49,7 @@ pylith::meshio::DataWriter<mesh_type, field_type>::deallocate(void)
 // Set time scale for simulation time.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const double value)
+pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar value)
 { // timeScale
   if (value <= 0.0) {
     std::ostringstream msg;

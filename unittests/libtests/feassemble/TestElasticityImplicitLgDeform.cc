@@ -121,7 +121,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -174,7 +174,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 2.0e-05;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 2.0e-05;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;

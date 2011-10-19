@@ -44,7 +44,7 @@ pylith::friction::TestRateStateAgeing::testMinSlipRate(void)
 { // testMinSlipRate
   RateStateAgeing model;
 
-  CPPUNIT_ASSERT_EQUAL(1.0e-12, model._minSlipRate); // default
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-12), model._minSlipRate); // default
 
   const PylithScalar value = 1.0e-20;
   model.minSlipRate(value);

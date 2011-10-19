@@ -62,7 +62,7 @@ public :
    *
    * @param value Time scale
    */
-  void timeScale(const double value);
+  void timeScale(const PylithScalar value);
 
   /** Prepare for writing files.
    *
@@ -142,7 +142,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  double _timeScale; ///< Time scale for dimensioning time in output.
+  PylithScalar _timeScale; ///< Time scale for dimensioning time in output.
   int _numTimeSteps; ///< Expected number of time steps for fields.
   std::string _context; ///< Context of scatters for DataWriter.
 

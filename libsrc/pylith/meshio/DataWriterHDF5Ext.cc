@@ -591,6 +591,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   assert(_h5);
 
   const int ndims = 3;
+  const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    H5T_NATIVE_DOUBLE : H5T_NATIVE_FLOAT;
 
   // Each time stamp has a size of 1.
   hsize_t dimsChunk[3]; // Use 3 dims for compatibility with PETSc viewer
@@ -606,7 +608,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
     dims[1] = 1;
     dims[2] = 1;
     _h5->createDataset("/", "time", dims, dimsChunk, ndims, 
-		       H5T_NATIVE_DOUBLE);
+		       scalartype);
   } // if
   
   // Write time stamp as chunk to HDF5 file.
@@ -615,9 +617,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dims[0] = _tstampIndex+1;
   dims[1] = 1;
   dims[2] = 1;
-  const double tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+  const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
   _h5->writeDatasetChunk("/", "time", &tDim, dims, dimsChunk, ndims, 
-			 _tstampIndex, H5T_NATIVE_DOUBLE);
+			 _tstampIndex, scalartype);
   
   _tstampIndex++;
 } // _writeTimeStamp

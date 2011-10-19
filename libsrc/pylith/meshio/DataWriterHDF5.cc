@@ -471,7 +471,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
   PetscErrorCode err = 0;
 
   if (0 == rank) {
-    const double tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+    const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
     err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); CHECK_PETSC_ERROR(err);
   } // if
   err = VecAssemblyBegin(_tstamp); CHECK_PETSC_ERROR(err);

@@ -209,7 +209,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
     std::cout << "  " << valsE[i] << std::endl;
 #endif
 
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -249,7 +249,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
     std::cout << "  " << valsE[i] << std::endl;
 #endif
 
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
