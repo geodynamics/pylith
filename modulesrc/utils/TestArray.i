@@ -22,17 +22,10 @@
  * @brief Python interface to C++ TestArray object.
  */
 
-#if defined(PYLITH_USE_SCALAR_SINGLE)
-%apply(float* IN_ARRAY1, int DIM1) {
+%apply(PylithScalar* IN_ARRAY1, int DIM1) {
   (const PylithScalar* valuesE,
    const int nvalues)
     };
-#else
-%apply(double* IN_ARRAY1, int DIM1) {
-  (const PylithScalar* valuesE,
-   const int nvalues)
-    };
-#endif
 %inline %{
   /** Check to make sure array of values match expected values.
    *
