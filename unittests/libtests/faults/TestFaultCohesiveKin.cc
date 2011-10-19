@@ -294,7 +294,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     const PylithScalar* valsE = _data->residual;
     iVertex = 0;
     const int fiberDimE = spaceDim;
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
         v_iter != verticesEnd;
         ++v_iter, ++iVertex) {
@@ -325,7 +325,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     const PylithScalar* valsE = _data->residualIncr;
     iVertex = 0;
     const int fiberDimE = spaceDim;
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
 	 v_iter != verticesEnd;
 	 ++v_iter, ++iVertex) {
@@ -608,7 +608,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
   int i = 0;
-  const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   const PylithScalar* solutionE = _data->fieldIncrAdjusted;
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;

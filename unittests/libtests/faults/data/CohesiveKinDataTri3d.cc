@@ -128,7 +128,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   7.2, 9.2, // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
   3.1, 7.1,
   3.2, 7.2, // 5
   3.3, 7.3, // 6

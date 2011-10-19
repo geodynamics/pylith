@@ -211,6 +211,8 @@ pylith::meshio::Xdmf::_getTimeStamps(scalar_array* timeStamps,
   hsize_t* dims = 0;
   int ndims = 0;
   PylithScalar* t = 0;
+  const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    H5T_NATIVE_DOUBLE : H5T_NATIVE_FLOAT;
 
   if (h5.hasDataset("/time")) {
     h5.getDatasetDims(&dims, &ndims, "/", "time");
@@ -223,7 +225,7 @@ pylith::meshio::Xdmf::_getTimeStamps(scalar_array* timeStamps,
     timeStamps->resize(numTimeStamps);
     for (int i=0; i < numTimeStamps; ++i) {
       h5.readDatasetChunk("/", "time", (char**)&t,
-			  &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+			  &dims, &ndims, i, scalartype);
       assert(3 == ndims);
       assert(1 == dims[0]);
       assert(1 == dims[1]);

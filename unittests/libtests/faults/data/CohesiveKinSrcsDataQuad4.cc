@@ -108,7 +108,7 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataQuad4::_fieldT[] = {
   8.0, 9.0, // 11
 };
 
-const double pylith::faults::CohesiveKinSrcsDataQuad4::_fieldIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataQuad4::_fieldIncr[] = {
   3.1, 4.1,
   3.2, 4.2,
   3.3, 4.3, // 4
@@ -121,7 +121,7 @@ const double pylith::faults::CohesiveKinSrcsDataQuad4::_fieldIncr[] = {
   3.0, 4.0, // 11
 };
 
-const double pylith::faults::CohesiveKinSrcsDataQuad4::_jacobianLumped[] = {
+const PylithScalar pylith::faults::CohesiveKinSrcsDataQuad4::_jacobianLumped[] = {
   1.1, 1.1,
   1.2, 1.2,
   1.3, 1.3, // 4
@@ -416,14 +416,14 @@ pylith::faults::CohesiveKinSrcsDataQuad4::CohesiveKinSrcsDataQuad4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldIncr = const_cast<double*>(_fieldIncr);
-  jacobianLumped = const_cast<double*>(_jacobianLumped);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residual = const_cast<double*>(_residual);
-  residualIncr = const_cast<double*>(_residualIncr);
-  jacobian = const_cast<double*>(_jacobian);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
+  jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residual = const_cast<PylithScalar*>(_residual);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

@@ -104,7 +104,7 @@ pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
 { // testZeroTolerance
   FaultCohesiveDyn fault;
 
-  CPPUNIT_ASSERT_EQUAL(1.0e-10, fault._zeroTolerance); // default
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-10), fault._zeroTolerance); // default
 
   const PylithScalar value = 1.0e-20;
   fault.zeroTolerance(value);
@@ -345,7 +345,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     const PylithScalar* valsE = _data->slipSlipE;
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
-    const PylithScalar tolerance = 1.0e-06;
+    const PylithScalar tolerance = 
+      (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-5;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
 	   != verticesEnd;
 	 ++v_iter, ++iVertex) { // loop over fault vertices
@@ -393,7 +394,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     const PylithScalar* valsE = _data->fieldIncrSlipE; // Expected values for dispIncr
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
 	 v_iter != verticesEnd;
 	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
@@ -466,7 +467,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     const PylithScalar* valsE = _data->fieldIncrOpenE; // Expected values for dispIncr
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
 	 v_iter != verticesEnd;
 	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
@@ -515,7 +516,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     const PylithScalar* valsE = _data->slipOpenE;
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
-    const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
 	   != verticesEnd;
 	 ++v_iter, ++iVertex) { // loop over fault vertices

@@ -65,7 +65,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     int sizeE = (ndimsE > 0 && dimsE[0] > 0) ? 1 : 0;
     for (int i=0; i < ndimsE; ++i)
       sizeE *= dimsE[i];
-    PylithScalar* dataE = (sizeE > 0) ? new PylithScalar[sizeE] : 0;
+    double* dataE = (sizeE > 0) ? new double[sizeE] : 0;
     CPPUNIT_ASSERT(sizeE > 0);
     err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
 		  H5P_DEFAULT, (void*) dataE);
@@ -90,8 +90,10 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     int size = (ndims > 0 && dims[0] > 0) ? 1 : 0;
     for (int i=0; i < ndims; ++i)
       size *= dims[i];
-    PylithScalar* data = (size > 0) ? new PylithScalar[size] : 0;
+    double* data = (size > 0) ? new double[size] : 0;
     CPPUNIT_ASSERT(size > 0);
+    //const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    //  H5T_NATIVE_DOUBLE : H5T_NATIVE_DOUBLE;
     err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
 		  H5P_DEFAULT, (void*) data);
     CPPUNIT_ASSERT(err >= 0);
@@ -107,13 +109,13 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
       CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
 
     // Compare data values.
-    const PylithScalar tolerance = 1.0e-6;
+    const double tolerance = 1.0e-6;
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
     for (int i=0; i < size; ++i)
       if (dataE[i] != 0.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, data[i]/dataE[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], data[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
 
     delete[] dimsE; dimsE = 0;
     delete[] dataE; dataE = 0;

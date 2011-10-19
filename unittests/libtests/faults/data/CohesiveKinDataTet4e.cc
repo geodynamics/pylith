@@ -110,7 +110,7 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
   4.4, 6.4, 8.4, // 17
 };
 
-const double pylith::faults::CohesiveKinDataTet4e::_fieldIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTet4e::_fieldIncr[] = {
   6.1, 7.1, 2.1,
   6.2, 7.2, 2.2, // 5
   6.3, 7.3, 2.3, // 6
