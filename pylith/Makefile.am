@@ -94,6 +94,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/DataWriterVTKMesh.py \
 	meshio/DataWriterVTKSubMesh.py \
 	meshio/DataWriterVTKSubSubMesh.py \
+	meshio/DataWriterVTKPoints.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOLagrit.py \
@@ -108,6 +109,8 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
+	meshio/OutputSolnPoints.py \
+	meshio/PointsList.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	meshio/VertexFilterVecNormMesh.py \

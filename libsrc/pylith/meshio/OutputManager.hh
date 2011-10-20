@@ -91,12 +91,14 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
+  virtual
   void open(const mesh_type& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
 
   /// Close output files.
+  virtual
   void close(void);
 
   /** Setup file for writing fields at time step.
@@ -107,12 +109,14 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
+  virtual
   void openTimeStep(const PylithScalar t,
 		    const mesh_type& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
   /// End writing fields at time step.
+  virtual
   void closeTimeStep(void);
 
   /** Append finite-element vertex field to file.
@@ -121,6 +125,7 @@ public :
    * @param field Vertex field.
    * @param mesh Mesh for output.
    */
+  virtual
   void appendVertexField(const PylithScalar t,
 			 field_type& field,
 			 const mesh_type& mesh);
@@ -133,6 +138,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
+  virtual
   void appendCellField(const PylithScalar t,
 		       field_type& field,
 		       const char* label =0,
