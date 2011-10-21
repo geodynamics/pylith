@@ -52,18 +52,15 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
 { // deallocate
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
-
-  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, false, 
-				  &sinfo.scatter); 
-
-
+#if 0 // :MATT: Need DM wrapper for mesh
   if (_interpolator) {
     assert(_mesh);
     const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
     PetscErrorCode err = 
       DMMeshInterpolationDestroy(sieveMesh, &_interpolator);
-    PETSC_CHECK_ERROR(err);
+    CHECK_PETSC_ERROR(err);
   } // if
+#endif
 
   delete _mesh; _mesh = 0;
   delete _pointsMesh; _pointsMesh = 0;
@@ -99,9 +96,11 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(_pointsMesh);
 
   scalar_array pointsArray(points, numPoints*spaceDim);
-  int_array cells;
-  const int numCells = 0;
-  const int numCorners = 0;
+  int_array cells(numPoints);
+  for (int i=0; i < numPoints; ++i)
+    cells[i] = i;
+  const int numCells = numPoints;
+  const int numCorners = 1;
   const bool interpolate = false;
   MeshBuilder::buildMesh(_pointsMesh,
 			 &pointsArray, numPoints, spaceDim,
@@ -109,6 +108,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 			 interpolate);
   _pointsMesh->coordsys(_mesh->coordsys());
 
+#if 0 // :MATT: Need DM wrapper for mesh
   // Setup interpolator object
   PetscErrorCode err = 0;
 
@@ -127,7 +127,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   
   err = DMMeshInterpolationSetUp(_mesh->sieveMesh(), _interpolator);
   CHECK_PETSC_ERROR(err);
-
+#endif
 } // createPointsMesh
 
 
@@ -176,6 +176,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
+#if 0 // :MATT: Need DM wrapper for mesh
   PetscErrorCode err = 0;
   
   err = DMMeshInterpolationSetDof(sieveMesh, fiberDim, _interpolator);
@@ -183,7 +184,8 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   
   err = DMMeshInterpolationEvaluate(sieveMesh, field.section(), fieldInterpVec,
 				    _interpolator); CHECK_PETSC_ERROR(err);
-  
+#endif  
+
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::appendVertexField(t, fieldInterp, mesh);
 } // appendVertexField
 
