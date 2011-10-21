@@ -133,6 +133,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	meshio/OutputSolnSubset.cc \
+	meshio/OutputSolnPoints.cc \
 	meshio/UCDFaultFile.cc \
 	problems/Formulation.cc \
 	problems/Explicit.cc \
@@ -153,7 +154,6 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
-#meshio/OutputSolnPoints.cc 
 
 # TEMPORARY
 libpylith_la_SOURCES += \
