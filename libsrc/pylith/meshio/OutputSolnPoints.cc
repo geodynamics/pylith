@@ -62,7 +62,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
   } // if
 #endif
 
-  delete _mesh; _mesh = 0;
+  _mesh = 0; // :TODO: Use shared pointer
   delete _pointsMesh; _pointsMesh = 0;
 } // deallocate
   
