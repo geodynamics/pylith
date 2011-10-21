@@ -41,6 +41,7 @@ subpkginclude_HEADERS = \
 	OutputManager.hh \
 	OutputManager.cc \
 	OutputSolnSubset.hh \
+	OutputSolnPoints.hh \
 	UCDFaultFile.hh \
 	VertexFilter.hh \
 	VertexFilter.cc \

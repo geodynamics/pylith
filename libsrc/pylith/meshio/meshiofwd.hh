@@ -57,6 +57,7 @@ namespace pylith {
     template<typename field_type> class VertexFilter;
     template<typename field_type> class VertexFilterVecNorm;
     class OutputSolnSubset;
+    class OutputSolnPoints;
 
     class UCDFaultFile;
 

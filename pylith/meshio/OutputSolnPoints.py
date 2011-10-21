@@ -115,7 +115,8 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     self._eventLogger.eventBegin(logEvent)    
 
     points = self.reader.read()
-    self.mesh = ModuleOutputSolnPoints.createPointsMesh(self, points)
+    ModuleOutputSolnPoints.setupInterpolator(self, mesh, points)
+    self.mesh = ModuleOutputSolnPoints.createPointsMesh(self)
     OutputManager.initialize(self, normalizer)
 
     self._eventLogger.eventEnd(logEvent)
