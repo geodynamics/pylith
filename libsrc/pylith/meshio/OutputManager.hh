@@ -144,7 +144,7 @@ public :
 		       const char* label =0,
 		       const int labelId =0);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
+// PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
   /** Dimension field.
@@ -152,6 +152,11 @@ protected :
    * @param fieldIn Field to dimensionalize.
    */
   field_type& _dimension(field_type& fieldIn);
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  topology::Fields<field_type>* _fields; ///< Buffer fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -168,8 +173,6 @@ private :
   DataWriter<mesh_type, field_type>* _writer; ///< Writer for data.
   VertexFilter<field_type>* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter<mesh_type, field_type>* _cellFilter; ///< Filter applied to cell data.
-
-  topology::Fields<field_type>* _fields; ///< Buffer fields.
 
 }; // OutputManager
 

@@ -153,6 +153,7 @@ libpylith_la_SOURCES = \
 	utils/EventLogger.cc \
 	utils/TestArray.cc
 
+#meshio/OutputSolnPoints.cc 
 
 # TEMPORARY
 libpylith_la_SOURCES += \

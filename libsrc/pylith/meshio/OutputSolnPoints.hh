@@ -28,12 +28,11 @@
 
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
+#include "pylith/utils/petscfwd.h"
 
-#include "pylith/topology/SubMesh.hh" // ISA OutputManager<Mesh>
+#include "pylith/topology/Mesh.hh" // ISA OutputManager<Mesh>
 #include "pylith/topology/Field.hh" // ISA OutputManager<Field<Mesh>>
 #include "OutputManager.hh" // ISA OutputManager
-
-#include <string> // HASA std::string
 
 // OutputSolnPoints -----------------------------------------------------
 /** @brief C++ object for managing output of finite-element data over
@@ -60,27 +59,55 @@ public :
    *
    * @returns Mesh associated with points.
    */
-  const topology::Mesh& createPointsMesh(const PylithScalar* points,
-					 const int numPoints,
-					 const int spaceDim);
+  const topology::Mesh& pointsMesh(void);
+
+  /** Setup interpolator.
+   *
+   * @param mesh Domain mesh.
+   * @param points Array of coordinates for points [numPoints*spaceDim].
+   * @param numPoints Number of points.
+   * @param spaceDim Spatial dimension for coordinates.
+   */
+  void setupInterpolator(topology::Mesh* mesh,
+			 const PylithScalar* points,
+			 const int numPoints,
+			 const int spaceDim);
   
+  /** Append finite-element vertex field to file.
+   *
+   * @param t Time associated with field.
+   * @param field Vertex field.
+   * @param mesh Mesh for output.
+   */
+  void appendVertexField(const PylithScalar t,
+			 topology::Field<topology::Mesh>& field,
+			 const topology::Mesh& mesh);
+
+  /** Append finite-element cell field to file.
+   *
+   * @param t Time associated with field.
+   * @param field Cell field.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
+   */
+  void appendCellField(const PylithScalar t,
+		       topology::Field<topology::Mesh>& field,
+		       const char* label =0,
+		       const int labelId =0);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   OutputSolnPoints(const OutputSolnPoints&); ///< Not implemented.
   const OutputSolnPoints& operator=(const OutputSolnPoints&); ///< Not implemented
 
-// PRIVATE TYPEDEFS /////////////////////////////////////////////////////
-private :
-
-  typedef DMMeshInterpolationInfo PetscDMMeshInterpolationInfo;
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   topology::Mesh* _mesh; ///< Domain mesh.
   topology::Mesh* _pointsMesh; ///< Mesh for points (no cells).
-  PetscDMMeshInterpolationInfo* _interpolator;
+  PetscDMMeshInterpolationInfo _interpolator; ///< Field interpolator.
 
 }; // OutputSolnPoints
 
