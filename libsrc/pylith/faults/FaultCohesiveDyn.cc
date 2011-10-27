@@ -1406,8 +1406,6 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   // Close properties database
   _dbInitialTract->close();
 
-  initialTractions.complete(); // Assemble contributions
-
   //initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _setupInitialTractions
 
