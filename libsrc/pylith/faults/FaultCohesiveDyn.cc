@@ -1660,8 +1660,11 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!globalOrderDomain.isNull());
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
-      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  const int closureSize = 
+    std::max(0, int(pow(sieve->getMaxConeSize(), 
+			std::max(0, sieveMesh->depth()))));
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
+    ncV(*sieve, closureSize);
   int_array indicesGlobal(subnrows);
 
   // Get fault Sieve mesh
@@ -1682,9 +1685,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!globalOrderFault.isNull());
   // We would need to request unique points here if we had an interpolated mesh
   IndicesVisitor jacobianFaultVisitor(*solutionFaultSection,
-				      *globalOrderFault,
-				      (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
-						faultSieveMesh->depth())*spaceDim);
+				      *globalOrderFault, closureSize*spaceDim);
 
   const int iCone = (negativeSide) ? 0 : 1;
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
