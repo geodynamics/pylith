@@ -98,8 +98,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     _tstampIndex = 0;
     const int rank = sieveMesh->commRank();
     const int localSize = (!rank) ? 1 : 0;
-    err = VecCreateMPI(mesh.comm(), localSize, PETSC_DETERMINE, &_tstamp);
+    err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);
     CHECK_PETSC_ERROR(err);
+    assert(_tstamp);
     err = VecSetBlockSize(_tstamp, 1); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) _tstamp, "time");
 
@@ -170,9 +171,11 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
-    ALE::ISieveVisitor::NConeRetriever<sieve_type> 
-      ncV(*sieve, (size_t) pow((double) sieve->getMaxConeSize(), 
-			       std::max(0, sieveMesh->depth())));
+
+  const int closureSize = 
+    std::max(0, int(pow(sieve->getMaxConeSize(), 
+			std::max(0, sieveMesh->depth()))));
+  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
 
     int k = 0;
     const typename label_sequence::const_iterator cellsEnd = cells->end();
@@ -238,6 +241,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   PetscErrorCode err = 0;
   err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
   err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
+  assert(!_tstamp);
 
   _timesteps.clear();
   _tstampIndex = 0;
@@ -468,6 +472,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
 						    const double t,
 						    const int rank)
 { // _writeTimeStamp
+  assert(_tstamp);
   PetscErrorCode err = 0;
 
   if (0 == rank) {
