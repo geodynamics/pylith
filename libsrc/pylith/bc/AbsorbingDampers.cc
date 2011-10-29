@@ -591,8 +591,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, sieveMesh->depth()))));
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
   IndicesVisitor jacobianVisitor(*solutionSection, *globalOrder,
 				 closureSize*spaceDim);
 

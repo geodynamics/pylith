@@ -726,9 +726,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, sieveMesh->depth()))));
-  IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+  assert(closureSize >= 0);
+  IndicesVisitor jacobianVisitor(*solnSection, *globalOrder, 
 				 closureSize*spaceDim);
 
   double_array coordinatesCell(numBasis*spaceDim);

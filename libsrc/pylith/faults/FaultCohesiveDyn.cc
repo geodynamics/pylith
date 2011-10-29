@@ -1097,7 +1097,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexP[iDim];
 
       // Set increment in relative displacement.
-      dispRelVertex[iDim] = -areaVertex * dLagrangeTpdtVertexGlobal[iDim] / 
+      dispRelVertex[iDim] = -areaVertex * 2.0*dLagrangeTpdtVertexGlobal[iDim] / 
 	(jacobianVertexN[iDim] + jacobianVertexP[iDim]);
 
       // Update increment in Lagrange multiplier.
@@ -1661,9 +1661,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
   const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, sieveMesh->depth()))));
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+  assert(closureSize >= 0);
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> 
     ncV(*sieve, closureSize);
   int_array indicesGlobal(subnrows);
 
