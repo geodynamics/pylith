@@ -118,8 +118,17 @@ pylith::meshio::OutputManager<mesh_type, field_type>::open(
 						   const char* label,
 						   const int labelId)
 { // open
-  assert(0 != _writer);
+  if (!_writer) {
+    std::ostringstream msg;
+    if (label) {
+      msg << "Writer for output manager for " << label << " not set.";
+      throw std::runtime_error(msg.str());
+    } else {
+      throw std::runtime_error("Writer for output manager not set.");
+    } // if/else
+  } // if
 
+  assert(_writer);
   _writer->open(mesh, numTimeSteps, label, labelId);
 } // open
 
@@ -129,7 +138,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::close(void)
 { // close
-  assert(0 != _writer);
+  assert(_writer);
   _writer->close();
 } // close
 
@@ -143,7 +152,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::openTimeStep(
 						       const char* label,
 						       const int labelId)
 { // openTimeStep
-  assert(0 != _writer);
+  assert(_writer);
   _writer->openTimeStep(t, mesh, label, labelId);
 } // openTimeStep
 
@@ -153,7 +162,7 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::OutputManager<mesh_type, field_type>::closeTimeStep(void)
 { // closeTimeStep
-  assert(0 != _writer);
+  assert(_writer);
   _writer->closeTimeStep();
 } // closeTimeStep
 

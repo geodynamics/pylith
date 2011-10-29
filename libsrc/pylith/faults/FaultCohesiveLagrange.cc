@@ -1087,9 +1087,11 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = mesh.sieveMesh()->getSieve();
   assert(!sieve.isNull());
-
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
-      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), faultSieveMesh->depth()));
+  assert(closureSize >= 0);
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
+    ncV(*sieve, closureSize);
 
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
       c_iter != cellsEnd;
@@ -1204,11 +1206,10 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   const scalar_array& quadWts = _quadrature->quadWts();
   scalar_array jacobian(jacobianSize);
   PylithScalar jacobianDet = 0;
-  scalar_array orientationVertex(orientationSize);
-  scalar_array coordinatesCell(numBasis * spaceDim);
   scalar_array refCoordsVertex(cohesiveDim);
 
   // Allocate orientation field.
+  scalar_array orientationVertex(orientationSize);
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
   const topology::Field<topology::SubMesh>& dispRel = 
@@ -1234,6 +1235,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Compute orientation of fault at constraint vertices
 
   // Get section containing coordinates of vertices
+  scalar_array coordinatesCell(numBasis * spaceDim);
   const ALE::Obj<RealSection>& coordinatesSection =
       faultSieveMesh->getRealSection("coordinates");
   assert(!coordinatesSection.isNull());
@@ -1250,10 +1252,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
   const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
   assert(!sieve.isNull());
-
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), faultSieveMesh->depth()));
+  assert(closureSize >= 0);
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
-      ncV(*sieve, (size_t) pow(sieve->getMaxConeSize(), std::max(0,
-        faultSieveMesh->depth())));
+    ncV(*sieve, closureSize);
 
   for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
       != cellsEnd; ++c_iter) {
@@ -1265,9 +1268,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve,
       *c_iter, ncV);
     const int coneSize = ncV.getSize();
-    const SieveSubMesh::point_type *cone = ncV.getPoints();
+    const SieveSubMesh::point_type* cone = ncV.getPoints();
 
-    for (int v = 0; v < coneSize; ++v) {
+    for (int v=0; v < coneSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
       memcpy(&refCoordsVertex[0], &verticesRef[v * cohesiveDim], cohesiveDim
           * sizeof(PylithScalar));

@@ -406,10 +406,13 @@ pylith::feassemble::ElasticityImplicitLgDeform::integrateJacobian(
 					    dispTSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
-  IndicesVisitor jacobianVisitor(*dispTSection,
-				 *globalOrder,
-				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-					   sieveMesh->depth())*spaceDim);
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+  assert(closureSize >= 0);
+  IndicesVisitor jacobianVisitor(*dispTSection, *globalOrder, 
+				 closureSize*spaceDim);
 
   scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
