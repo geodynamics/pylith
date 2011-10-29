@@ -590,9 +590,13 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
 					    solutionSection);
   assert(!globalOrder.isNull());
+
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
   IndicesVisitor jacobianVisitor(*solutionSection, *globalOrder,
-				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-					   sieveMesh->depth())*spaceDim);
+				 closureSize*spaceDim);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();

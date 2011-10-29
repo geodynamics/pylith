@@ -1097,7 +1097,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexP[iDim];
 
       // Set increment in relative displacement.
-      dispRelVertex[iDim] = -areaVertex * dLagrangeTpdtVertexGlobal[iDim] / 
+      dispRelVertex[iDim] = -areaVertex * 2.0*dLagrangeTpdtVertexGlobal[iDim] / 
 	(jacobianVertexN[iDim] + jacobianVertexP[iDim]);
 
       // Update increment in Lagrange multiplier.
@@ -1406,8 +1406,6 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   // Close properties database
   _dbInitialTract->close();
 
-  initialTractions.complete(); // Assemble contributions
-
   //initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
 } // _setupInitialTractions
 
@@ -1662,8 +1660,11 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!globalOrderDomain.isNull());
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> ncV(*sieve,
-      (size_t) pow(sieve->getMaxConeSize(), std::max(0, sieveMesh->depth())));
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+  assert(closureSize >= 0);
+  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> 
+    ncV(*sieve, closureSize);
   int_array indicesGlobal(subnrows);
 
   // Get fault Sieve mesh
@@ -1684,9 +1685,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!globalOrderFault.isNull());
   // We would need to request unique points here if we had an interpolated mesh
   IndicesVisitor jacobianFaultVisitor(*solutionFaultSection,
-				      *globalOrderFault,
-				      (int) pow(faultSieveMesh->getSieve()->getMaxConeSize(),
-						faultSieveMesh->depth())*spaceDim);
+				      *globalOrderFault, closureSize*spaceDim);
 
   const int iCone = (negativeSide) ? 0 : 1;
   for (SieveMesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
