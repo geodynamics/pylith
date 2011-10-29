@@ -1088,8 +1088,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const ALE::Obj<SieveMesh::sieve_type>& sieve = mesh.sieveMesh()->getSieve();
   assert(!sieve.isNull());
   const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, faultSieveMesh->depth()))));
+    int(pow(sieve->getMaxConeSize(), faultSieveMesh->depth()));
+  assert(closureSize >= 0);
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
     ncV(*sieve, closureSize);
 
@@ -1251,8 +1251,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
   const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
   assert(!sieve.isNull());
   const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, faultSieveMesh->depth()))));
+    int(pow(sieve->getMaxConeSize(), faultSieveMesh->depth()));
+  assert(closureSize >= 0);
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
     ncV(*sieve, closureSize);
 

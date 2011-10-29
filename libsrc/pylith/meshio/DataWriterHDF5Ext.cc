@@ -187,8 +187,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
     const int closureSize = 
-      std::max(0, int(pow(sieve->getMaxConeSize(), 
-			  std::max(0, sieveMesh->depth()))));
+      int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+    assert(closureSize >= 0);
     ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
     
     int k = 0;

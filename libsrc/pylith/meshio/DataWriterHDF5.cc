@@ -171,11 +171,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
-
-  const int closureSize = 
-    std::max(0, int(pow(sieve->getMaxConeSize(), 
-			std::max(0, sieveMesh->depth()))));
-  ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
+    const int closureSize = 
+      int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+    assert(closureSize >= 0);
+    ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
 
     int k = 0;
     const typename label_sequence::const_iterator cellsEnd = cells->end();
