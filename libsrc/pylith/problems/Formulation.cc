@@ -163,8 +163,8 @@ pylith::problems::Formulation::customPCMatrix(PetscMat& mat)
 void
 pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 					      topology::SolutionFields* fields,
-					      const double t,
-					      const double dt)
+					      const PylithScalar t,
+					      const PylithScalar dt)
 { // updateSettings
   assert(0 != jacobian);
   assert(0 != fields);
@@ -182,8 +182,8 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 void
 pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* jacobian,
 					      topology::SolutionFields* fields,
-					      const double t,
-					      const double dt)
+					      const PylithScalar t,
+					      const PylithScalar dt)
 { // updateSettings
   assert(0 != jacobian);
   assert(0 != fields);

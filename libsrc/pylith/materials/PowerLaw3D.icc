@@ -26,7 +26,7 @@
 // Set current time step.
 inline
 void
-pylith::materials::PowerLaw3D::timeStep(const double dt) {
+pylith::materials::PowerLaw3D::timeStep(const PylithScalar dt) {
   // Not sure what to do here.  If we are using full Newton the Jacobian will
   // always need reforming, but SNES may opt not to reform it sometimes.
   _needNewJacobian = true;
@@ -36,17 +36,17 @@ pylith::materials::PowerLaw3D::timeStep(const double dt) {
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::PowerLaw3D::_calcStress(double* const stress,
+pylith::materials::PowerLaw3D::_calcStress(PylithScalar* const stress,
 					   const int stressSize,
-					   const double* properties,
+					   const PylithScalar* properties,
 					   const int numProperties,
-					   const double* stateVars,
+					   const PylithScalar* stateVars,
 					   const int numStateVars,
-					   const double* totalStrain,
+					   const PylithScalar* totalStrain,
 					   const int strainSize,
-					   const double* initialStress,
+					   const PylithScalar* initialStress,
 					   const int initialStressSize,
-					   const double* initialStrain,
+					   const PylithScalar* initialStrain,
 					   const int initialStrainSize,
 					   const bool computeStateVars)
 {
@@ -64,17 +64,17 @@ pylith::materials::PowerLaw3D::_calcStress(double* const stress,
 inline
 void
 pylith::materials::PowerLaw3D::_calcElasticConsts(
-					double* const elasticConsts,
+					PylithScalar* const elasticConsts,
 					const int numElasticConsts,
-					const double* properties,
+					const PylithScalar* properties,
 					const int numProperties,
-					const double* stateVars,
+					const PylithScalar* stateVars,
 					const int numStateVars,
-					const double* totalStrain,
+					const PylithScalar* totalStrain,
 					const int strainSize,
-					const double* initialStress,
+					const PylithScalar* initialStress,
 					const int initialStressSize,
-					const double* initialStrain,
+					const PylithScalar* initialStrain,
 					const int initialStrainSize)
 {
   assert(0 != _calcElasticConstsFn);
@@ -89,15 +89,15 @@ pylith::materials::PowerLaw3D::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::PowerLaw3D::_updateStateVars(double* const stateVars,
+pylith::materials::PowerLaw3D::_updateStateVars(PylithScalar* const stateVars,
 						 const int numStateVars,
-						 const double* properties,
+						 const PylithScalar* properties,
 						 const int numProperties,
-						 const double* totalStrain,
+						 const PylithScalar* totalStrain,
 						 const int strainSize,
-						 const double* initialStress,
+						 const PylithScalar* initialStress,
 						 const int initialStressSize,
-						 const double* initialStrain,
+						 const PylithScalar* initialStrain,
 						 const int initialStrainSize)
 {
   assert(0 != _updateStateVarsFn);
@@ -110,11 +110,11 @@ pylith::materials::PowerLaw3D::_updateStateVars(double* const stateVars,
 
 // Compute scalar product, assuming vector form of a tensor.
 // inline
-// double
-// pylith::materials::PowerLaw3D::_scalarProduct(const double* tensor1,
-// 					      const double* tensor2)
+// PylithScalar
+// pylith::materials::PowerLaw3D::_scalarProduct(const PylithScalar* tensor1,
+// 					      const PylithScalar* tensor2)
 // {
-//   const double scalarProduct = tensor1[0] * tensor2[0] +
+//   const PylithScalar scalarProduct = tensor1[0] * tensor2[0] +
 //     tensor1[1] * tensor2[1] +
 //     tensor1[2] * tensor2[2] +
 //     2.0 * (tensor1[3] * tensor2[3] +

@@ -38,7 +38,7 @@ def validateLabel(value):
   Validate descriptive label.
   """
   if 0 == len(value):
-    raise ValueError("Discriptive label for friction model not specified.")
+    raise ValueError("Descriptive label for friction model not specified.")
   return value
 
 
@@ -128,7 +128,7 @@ class FrictionModel(PetscComponent):
         self.dbInitialState(self.inventory.dbInitialState)
 
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring friction model "
                        "(%s):\n%s" % (aliases, err.message))

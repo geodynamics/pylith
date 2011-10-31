@@ -37,15 +37,15 @@ const int pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_numPropsQuad
 
 const int pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_numVarsQuadPt = 27;
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_lengthScale =   1.00000000e+03;
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_timeScale =   1.00000000e+00;
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_pressureScale =   2.25000000e+10;
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dtStableImplicit =   8.88888889e+05;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dtStableImplicit =   8.88888889e+05;
 
 const int pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_numPropertyValues[] = {
 1,
@@ -143,7 +143,7 @@ const char* pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbStateVar
 "viscous-mean-strain-3",
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbProperties[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -176,7 +176,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbPropert
   1.00000000e+20,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbStateVars[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbStateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -233,7 +233,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dbStateVa
   0.00000000e+00,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_properties[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   3.75000000e+10,
@@ -266,7 +266,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_propertie
   1.04166667e+11,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVars[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVars[] = {
   1.10000000e-04,
   2.20000000e-04,
   3.30000000e-04,
@@ -323,7 +323,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVars
   2.30000000e-04,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_propertiesNondim[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.66666667e+00,
@@ -356,7 +356,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_propertie
   1.04166667e+11,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVarsNondim[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVarsNondim[] = {
   1.10000000e-04,
   2.20000000e-04,
   3.30000000e-04,
@@ -413,12 +413,12 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVars
   2.30000000e-04,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_density[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_density[] = {
   2.50000000e+03,
   2.00000000e+03,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_strain[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_strain[] = {
   1.10000000e-04,
   2.20000000e-04,
   3.30000000e-04,
@@ -433,7 +433,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_strain[] 
   6.70000000e-04,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stress[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stress[] = {
   1.52472941e+07,
   3.08460297e+07,
   4.64447653e+07,
@@ -448,7 +448,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stress[] 
   1.31748132e+07,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_elasticConsts[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_elasticConsts[] = {
   6.73240927e+10,
   2.24764147e+10,
   2.24764147e+10,
@@ -523,7 +523,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_elasticCo
   5.75963179e+09,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialStress[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.30000000e+04,
@@ -538,7 +538,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialSt
   5.60000000e+04,
 };
 
-const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialStrain[] = {
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialStrain[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -553,7 +553,7 @@ const double pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_initialSt
   0.00000000e+00,
 };
 
-const double* pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVarsUpdated = 0;
+const PylithScalar* pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_stateVarsUpdated = 0;
 
 pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::GenMaxwellQpQsIsotropic3DTimeDepData(void)
 { // constructor
@@ -574,19 +574,19 @@ pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::GenMaxwellQpQsIsotropic
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  density = const_cast<double*>(_density);
-  strain = const_cast<double*>(_strain);
-  stress = const_cast<double*>(_stress);
-  elasticConsts = const_cast<double*>(_elasticConsts);
-  initialStress = const_cast<double*>(_initialStress);
-  initialStrain = const_cast<double*>(_initialStrain);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  density = const_cast<PylithScalar*>(_density);
+  strain = const_cast<PylithScalar*>(_strain);
+  stress = const_cast<PylithScalar*>(_stress);
+  elasticConsts = const_cast<PylithScalar*>(_elasticConsts);
+  initialStress = const_cast<PylithScalar*>(_initialStress);
+  initialStrain = const_cast<PylithScalar*>(_initialStrain);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::~GenMaxwellQpQsIsotropic3DTimeDepData(void)

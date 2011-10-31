@@ -90,7 +90,7 @@ public :
    *   direction that is not collinear with surface normal.
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -99,7 +99,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to residual term (r) for operator.
@@ -109,7 +109,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
-       const double t,
+       const PylithScalar t,
        topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -120,7 +120,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -131,7 +131,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.

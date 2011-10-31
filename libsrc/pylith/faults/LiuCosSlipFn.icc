@@ -45,16 +45,16 @@ pylith::faults::LiuCosSlipFn::dbRiseTime(spatialdata::spatialdb::SpatialDB* cons
 
 // Compute slip using slip time function.
 inline
-double
-pylith::faults::LiuCosSlipFn::_slipFn(const double t,
-				      const double finalSlip,
-				      const double riseTime) {
-  double slip = 0.0;
+PylithScalar
+pylith::faults::LiuCosSlipFn::_slipFn(const PylithScalar t,
+				      const PylithScalar finalSlip,
+				      const PylithScalar riseTime) {
+  PylithScalar slip = 0.0;
   if (t > 0.0) {
-    const double tau = riseTime * 1.525;
-    const double tau1 = 0.13 * tau;
-    const double tau2 = tau - tau1;
-    const double Cn = 
+    const PylithScalar tau = riseTime * 1.525;
+    const PylithScalar tau1 = 0.13 * tau;
+    const PylithScalar tau2 = tau - tau1;
+    const PylithScalar Cn = 
       M_PI /  (1.4 * M_PI * tau1 + 1.2 * tau1 + 0.3 * M_PI * tau2);
     
     if (t <= tau1) {

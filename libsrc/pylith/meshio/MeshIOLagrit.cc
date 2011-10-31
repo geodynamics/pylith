@@ -27,7 +27,7 @@
 #include "MeshBuilder.hh" // USES MeshBuilder
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error()
@@ -70,7 +70,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
   int numVertices = 0;
   int numCells = 0;
   int numCorners = 0;
-  double_array coordinates;
+  scalar_array coordinates;
   int_array cells;
   int_array materialIds;
 

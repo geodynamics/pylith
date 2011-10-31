@@ -164,39 +164,39 @@ class QuadratureApp(Script):
                         value=self.numQuadPts,
                         format="%d")
     
-    self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
+    self.data.addArray(vtype="PylithScalar", name="_vertices", values=self.vertices,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="int", name="_cells", values=self.cells,
                        format="%8d", ncols=self.numVertices)
     
-    self.data.addArray(vtype="double", name="_verticesRef",
+    self.data.addArray(vtype="PylithScalar", name="_verticesRef",
                        values=self.verticesRef,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_quadPtsRef",
+    self.data.addArray(vtype="PylithScalar", name="_quadPtsRef",
                        values=self.quadPtsRef,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
+    self.data.addArray(vtype="PylithScalar", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
-    self.data.addArray(vtype="double", name="_quadPts",
+    self.data.addArray(vtype="PylithScalar", name="_quadPts",
                        values=self.quadPts,
                        format="%16.8e", ncols=self.spaceDim)
         
-    self.data.addArray(vtype="double", name="_basis",
+    self.data.addArray(vtype="PylithScalar", name="_basis",
                        values=self.basis,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_basisDerivRef",
+    self.data.addArray(vtype="PylithScalar", name="_basisDerivRef",
                        values=self.basisDerivRef,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_basisDeriv",
+    self.data.addArray(vtype="PylithScalar", name="_basisDeriv",
                        values=self.basisDeriv,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_jacobian",
+    self.data.addArray(vtype="PylithScalar", name="_jacobian",
                        values=self.jacobian,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_jacobianDet",
+    self.data.addArray(vtype="PylithScalar", name="_jacobianDet",
                        values=self.jacobianDet,
                        format="%16.8e", ncols=self.numQuadPts)
-    self.data.addArray(vtype="double", name="_jacobianInv",
+    self.data.addArray(vtype="PylithScalar", name="_jacobianInv",
                        values=self.jacobianInv,
                        format="%16.8e", ncols=self.spaceDim)
       

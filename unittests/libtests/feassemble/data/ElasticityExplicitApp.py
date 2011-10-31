@@ -85,10 +85,10 @@ class ElasticityExplicitApp(ElasticityApp):
 
     ElasticityApp._initData(self)
     # Calculated values
-    self.data.addArray(vtype="double", name="_valsResidualLumped",
+    self.data.addArray(vtype="PylithScalar", name="_valsResidualLumped",
                        values=self.valsResidualLumped,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_valsJacobianLumped",
+    self.data.addArray(vtype="PylithScalar", name="_valsJacobianLumped",
                        values=self.valsJacobianLumped,
                        format="%16.8e", ncols=self.spaceDim)
     return

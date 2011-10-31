@@ -41,13 +41,13 @@ const int pylith::feassemble::ElasticityExplicitData1DLinear::_matId = 0;
 
 const char* pylith::feassemble::ElasticityExplicitData1DLinear::_matLabel = "elastic strain 1-D";
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_dt =   1.00000000e-02;
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_dt =   1.00000000e-02;
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_gravityVec[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_gravityVec[] = {
  -1.00000000e+08,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_vertices[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_vertices[] = {
  -2.50000000e-01,
   2.00000000e+00,
 };
@@ -56,62 +56,62 @@ const int pylith::feassemble::ElasticityExplicitData1DLinear::_cells[] = {
 0,1,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_verticesRef[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_verticesRef[] = {
  -1.00000000e+00,
   1.00000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_quadPts[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_quadPts[] = {
   0.00000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_quadWts[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_quadWts[] = {
   2.00000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_basis[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_basis[] = {
   5.00000000e-01,
   5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_basisDerivRef[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_basisDerivRef[] = {
  -5.00000000e-01,
   5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTIncr[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTIncr[] = {
   1.20000000e+00,
   1.70000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldT[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_fieldT[] = {
   1.10000000e+00,
   1.50000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTmdt[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTmdt[] = {
   1.00000000e+00,
   1.30000000e+00,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidual[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidual[] = {
   1.71634375e+10,
  -1.72365625e+10,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobian[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobian[] = {
   1.40625000e+07,
   1.40625000e+07,
   1.40625000e+07,
   1.40625000e+07,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidualLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidualLumped[] = {
   1.71690625e+10,
  -1.72421875e+10,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobianLumped[] = {
   2.81250000e+07,
   2.81250000e+07,
 };
@@ -129,21 +129,21 @@ pylith::feassemble::ElasticityExplicitData1DLinear::ElasticityExplicitData1DLine
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
-  gravityVec = const_cast<double*>(_gravityVec);
-  vertices = const_cast<double*>(_vertices);
+  gravityVec = const_cast<PylithScalar*>(_gravityVec);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
-  verticesRef = const_cast<double*>(_verticesRef);
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTIncr = const_cast<double*>(_fieldTIncr);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldTmdt = const_cast<double*>(_fieldTmdt);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsJacobian = const_cast<double*>(_valsJacobian);
-  valsResidualLumped = const_cast<double*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<double*>(_valsJacobianLumped);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
+  fieldTIncr = const_cast<PylithScalar*>(_fieldTIncr);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
+  valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
+  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
+  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitData1DLinear::~ElasticityExplicitData1DLinear(void)

@@ -152,7 +152,7 @@ pylith::feassemble::CellGeometry::numCorners(void) const
 // ----------------------------------------------------------------------
 // Set coordinates of vertices in reference cell.
 void
-pylith::feassemble::CellGeometry::_setVertices(const double* vertices,
+pylith::feassemble::CellGeometry::_setVertices(const PylithScalar* vertices,
 					       const int numVertices,
 					       const int dim)
 { // _setVertices
@@ -163,7 +163,7 @@ pylith::feassemble::CellGeometry::_setVertices(const double* vertices,
     assert(1 == numVertices);
     assert(1 == dim);
   } // if/else
-  const int nbytes = numVertices*dim*sizeof(double);
+  const int nbytes = numVertices*dim*sizeof(PylithScalar);
   _vertices.resize(numVertices*dim);
   memcpy(&_vertices[0], vertices, nbytes);
 } // _setVertices
@@ -171,10 +171,10 @@ pylith::feassemble::CellGeometry::_setVertices(const double* vertices,
 // ----------------------------------------------------------------------
 // Compute orientation of 0-D cell.
 void
-pylith::feassemble::CellGeometry::_orient0D(double_array* orientation,
-					    const double_array& jacobian,
-					    const double jacobianDet,
-					    const double_array& upDir)
+pylith::feassemble::CellGeometry::_orient0D(scalar_array* orientation,
+					    const scalar_array& jacobian,
+					    const PylithScalar jacobianDet,
+					    const scalar_array& upDir)
 { // _orient0D
   assert(0 != orientation);
   assert(1 == orientation->size());
@@ -184,10 +184,10 @@ pylith::feassemble::CellGeometry::_orient0D(double_array* orientation,
 // ----------------------------------------------------------------------
 // Compute orientation of 1-D cell.
 void
-pylith::feassemble::CellGeometry::_orient1D(double_array* orientation,
-					    const double_array& jacobian,
-					    const double jacobianDet,
-					    const double_array& upDir)
+pylith::feassemble::CellGeometry::_orient1D(scalar_array* orientation,
+					    const scalar_array& jacobian,
+					    const PylithScalar jacobianDet,
+					    const scalar_array& upDir)
 { // _orient1D
   const int orientSize = 4;
   assert(0 != orientation);
@@ -198,8 +198,8 @@ pylith::feassemble::CellGeometry::_orient1D(double_array* orientation,
   // cellDim is 1
   const int spaceDim = 2;
 
-  const double j1 = jacobian[0];
-  const double j2 = jacobian[1];
+  const PylithScalar j1 = jacobian[0];
+  const PylithScalar j2 = jacobian[1];
   (*orientation)[0] =  j1;
   (*orientation)[1] =  j2;
   (*orientation)[2] =  j2;
@@ -210,10 +210,10 @@ pylith::feassemble::CellGeometry::_orient1D(double_array* orientation,
 // ----------------------------------------------------------------------
 // Compute orientation of 2-D cell.
 void
-pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
-					    const double_array& jacobian,
-					    const double jacobianDet,
-					    const double_array& upDir)
+pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
+					    const scalar_array& jacobian,
+					    const PylithScalar jacobianDet,
+					    const scalar_array& upDir)
 { // _orient2D
   const int orientSize = 9;
   assert(0 != orientation);
@@ -225,28 +225,28 @@ pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
   const int cellDim = 2;
   const int spaceDim = 3;
 
-  const double j00 = jacobian[0];
-  const double j01 = jacobian[1];
-  const double j10 = jacobian[2];
-  const double j11 = jacobian[3];
-  const double j20 = jacobian[4];
-  const double j21 = jacobian[5];
+  const PylithScalar j00 = jacobian[0];
+  const PylithScalar j01 = jacobian[1];
+  const PylithScalar j10 = jacobian[2];
+  const PylithScalar j11 = jacobian[3];
+  const PylithScalar j20 = jacobian[4];
+  const PylithScalar j21 = jacobian[5];
 
   // Compute normal using Jacobian
-  double r0 =  j10*j21 - j20*j11;
-  double r1 = -j00*j21 + j20*j01;
-  double r2 =  j00*j11 - j10*j01;
+  PylithScalar r0 =  j10*j21 - j20*j11;
+  PylithScalar r1 = -j00*j21 + j20*j01;
+  PylithScalar r2 =  j00*j11 - j10*j01;
   // Make unit vector
-  double mag = sqrt(r0*r0 + r1*r1 + r2*r2);
+  PylithScalar mag = sqrt(r0*r0 + r1*r1 + r2*r2);
   assert(mag > 0.0);
   r0 /= mag;
   r1 /= mag;
   r2 /= mag;
   
   // Compute along-strike direction; cross product of "up" and normal
-  double p0 =  upDir[1]*r2 - upDir[2]*r1;
-  double p1 = -upDir[0]*r2 + upDir[2]*r0;
-  double p2 =  upDir[0]*r1 - upDir[1]*r0;
+  PylithScalar p0 =  upDir[1]*r2 - upDir[2]*r1;
+  PylithScalar p1 = -upDir[0]*r2 + upDir[2]*r0;
+  PylithScalar p2 =  upDir[0]*r1 - upDir[1]*r0;
   // Make unit vector
   mag = sqrt(p0*p0 + p1*p1 + p2*p2);
   assert(mag > 0.0);
@@ -255,13 +255,13 @@ pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
   p2 /= mag;
   
   // Compute up-dip direction; cross product of normal and along-strike
-  const double q0 =  r1*p2 - r2*p1;
-  const double q1 = -r0*p2 + r2*p0;
-  const double q2 =  r0*p1 - r1*p0;
+  const PylithScalar q0 =  r1*p2 - r2*p1;
+  const PylithScalar q1 = -r0*p2 + r2*p0;
+  const PylithScalar q2 =  r0*p1 - r1*p0;
   mag = sqrt(q0*q0 + q1*q1 + q2*q2);
   assert(mag > 0.0);
   
-  const double wt = jacobianDet;
+  const PylithScalar wt = jacobianDet;
   (*orientation)[0] =  p0*wt;
   (*orientation)[1] =  p1*wt;
   (*orientation)[2] =  p2*wt;

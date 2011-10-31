@@ -23,7 +23,7 @@
 #include "ViscoelasticMaxwell.hh" // USES computeVisStrain
 #include "Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -236,16 +236,16 @@ pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag)
 // Compute parameters from values in spatial database.
 void
 pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
-					    double* const propValues,
-					    const double_array& dbValues)
+					    PylithScalar* const propValues,
+					    const scalar_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
   assert(_GenMaxwellIsotropic3D::numDBProperties == numDBValues);
 
-  const double density = dbValues[db_density];
-  const double vs = dbValues[db_vs];
-  const double vp = dbValues[db_vp];
+  const PylithScalar density = dbValues[db_density];
+  const PylithScalar vs = dbValues[db_vs];
+  const PylithScalar vp = dbValues[db_vp];
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
  
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0) {
@@ -258,8 +258,8 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
     throw std::runtime_error(msg.str());
   } // if
 
-  const double mu = density * vs*vs;
-  const double lambda = density * vp*vp - 2.0*mu;
+  const PylithScalar mu = density * vs*vs;
+  const PylithScalar lambda = density * vp*vp - 2.0*mu;
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
@@ -275,7 +275,7 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
   propValues[p_muEff] = mu;
   propValues[p_lambdaEff] = lambda;
 
-  double visFrac = 0.0;
+  PylithScalar visFrac = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) 
     visFrac += dbValues[db_shearRatio + imodel];
   if (visFrac > 1.0) {
@@ -291,10 +291,10 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
 
   // Loop over number of Maxwell models.
   for (int imodel =0; imodel < numMaxwellModels; ++imodel) {
-    double muRatio = dbValues[db_shearRatio + imodel];
-    double viscosity = dbValues[db_viscosity + imodel];
-    double muFac = muRatio*mu;
-    double maxwellTime = pylith::PYLITH_MAXDOUBLE;
+    PylithScalar muRatio = dbValues[db_shearRatio + imodel];
+    PylithScalar viscosity = dbValues[db_viscosity + imodel];
+    PylithScalar muFac = muRatio*mu;
+    PylithScalar maxwellTime = pylith::PYLITH_MAXDOUBLE;
     if (muFac > 0.0)
       maxwellTime = viscosity / muFac;
     if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || maxwellTime < 0.0) {
@@ -316,16 +316,16 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::materials::GenMaxwellIsotropic3D::_nondimProperties(double* const values,
+pylith::materials::GenMaxwellIsotropic3D::_nondimProperties(PylithScalar* const values,
 							 const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numPropsQuadPt);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
   values[p_density] = 
     _normalizer->nondimensionalize(values[p_density], densityScale);
   values[p_muEff] = 
@@ -342,16 +342,16 @@ pylith::materials::GenMaxwellIsotropic3D::_nondimProperties(double* const values
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::materials::GenMaxwellIsotropic3D::_dimProperties(double* const values,
+pylith::materials::GenMaxwellIsotropic3D::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(0 != _normalizer);
   assert(0 != values);
   assert(nvalues == _numPropsQuadPt);
 
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double timeScale = _normalizer->timeScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
   values[p_density] = 
     _normalizer->dimensionalize(values[p_density], densityScale);
   values[p_muEff] = 
@@ -369,8 +369,8 @@ pylith::materials::GenMaxwellIsotropic3D::_dimProperties(double* const values,
 // Compute initial state variables from values in spatial database.
 void
 pylith::materials::GenMaxwellIsotropic3D::_dbToStateVars(
-					double* const stateValues,
-					const double_array& dbValues)
+					PylithScalar* const stateValues,
+					const scalar_array& dbValues)
 { // _dbToStateVars
   assert(0 != stateValues);
   const int numDBValues = dbValues.size();
@@ -389,10 +389,10 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
-pylith::materials::GenMaxwellIsotropic3D::_calcDensity(double* const density,
-						    const double* properties,
+pylith::materials::GenMaxwellIsotropic3D::_calcDensity(PylithScalar* const density,
+						    const PylithScalar* properties,
 						    const int numProperties,
-						    const double* stateVars,
+						    const PylithScalar* stateVars,
 						    const int numStateVars)
 { // _calcDensity
   assert(0 != density);
@@ -407,17 +407,17 @@ pylith::materials::GenMaxwellIsotropic3D::_calcDensity(double* const density,
 // material.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
-					     double* const stress,
+					     PylithScalar* const stress,
 					     const int stressSize,
-					     const double* properties,
+					     const PylithScalar* properties,
 					     const int numProperties,
-					     const double* stateVars,
+					     const PylithScalar* stateVars,
 					     const int numStateVars,
-					     const double* totalStrain,
+					     const PylithScalar* totalStrain,
 					     const int strainSize,
-					     const double* initialStress,
+					     const PylithScalar* initialStress,
 					     const int initialStressSize,
-					     const double* initialStrain,
+					     const PylithScalar* initialStrain,
 					     const int initialStrainSize,
 					     const bool computeStateVars)
 { // _calcStressElastic
@@ -434,19 +434,19 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
   assert(0 != initialStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == initialStrainSize);
 
-  const double mu = properties[p_muEff];
-  const double lambda = properties[p_lambdaEff];
-  const double mu2 = 2.0 * mu;
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar lambda = properties[p_lambdaEff];
+  const PylithScalar mu2 = 2.0 * mu;
 
   // :TODO: Need to consider initial state variables????
-  const double e11 = totalStrain[0] - initialStrain[0];
-  const double e22 = totalStrain[1] - initialStrain[1];
-  const double e33 = totalStrain[2] - initialStrain[2];
-  const double e12 = totalStrain[3] - initialStrain[3];
-  const double e23 = totalStrain[4] - initialStrain[4];
-  const double e13 = totalStrain[5] - initialStrain[5];
+  const PylithScalar e11 = totalStrain[0] - initialStrain[0];
+  const PylithScalar e22 = totalStrain[1] - initialStrain[1];
+  const PylithScalar e33 = totalStrain[2] - initialStrain[2];
+  const PylithScalar e12 = totalStrain[3] - initialStrain[3];
+  const PylithScalar e23 = totalStrain[4] - initialStrain[4];
+  const PylithScalar e13 = totalStrain[5] - initialStrain[5];
   
-  const double s123 = lambda * (e11 + e22 + e33);
+  const PylithScalar s123 = lambda * (e11 + e22 + e33);
 
   stress[0] = s123 + mu2*e11 + initialStress[0];
   stress[1] = s123 + mu2*e22 + initialStress[1];
@@ -464,17 +464,17 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic(
 // material.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
-					     double* const stress,
+					     PylithScalar* const stress,
 					     const int stressSize,
-					     const double* properties,
+					     const PylithScalar* properties,
 					     const int numProperties,
-					     const double* stateVars,
+					     const PylithScalar* stateVars,
 					     const int numStateVars,
-					     const double* totalStrain,
+					     const PylithScalar* totalStrain,
 					     const int strainSize,
-					     const double* initialStress,
+					     const PylithScalar* initialStress,
 					     const int initialStressSize,
-					     const double* initialStrain,
+					     const PylithScalar* initialStrain,
 					     const int initialStrainSize,
 					     const bool computeStateVars)
 { // _calcStressViscoelastic
@@ -494,29 +494,29 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   const int tensorSize = _tensorSize;
 
-  const double mu = properties[p_muEff];
-  const double lambda = properties[p_lambdaEff];
-  const double muRatio[numMaxwellModels] = {
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar lambda = properties[p_lambdaEff];
+  const PylithScalar muRatio[numMaxwellModels] = {
     properties[p_shearRatio  ],
     properties[p_shearRatio+1],
     properties[p_shearRatio+2]
   };
 
-  const double mu2 = 2.0 * mu;
-  const double bulkModulus = lambda + mu2/3.0;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar bulkModulus = lambda + mu2/3.0;
 
   // Initial stress and strain values
-  const double meanStrainInitial =
+  const PylithScalar meanStrainInitial =
     (initialStrain[0] + initialStrain[1] + initialStrain[2])/3.0;
-  const double meanStressInitial =
+  const PylithScalar meanStressInitial =
     (initialStress[0] + initialStress[1] + initialStress[2])/3.0;
-  const double devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
+  const PylithScalar devStrainInitial[] = {initialStrain[0] - meanStrainInitial,
 				     initialStrain[1] - meanStrainInitial,
 				     initialStrain[2] - meanStrainInitial,
 				     initialStrain[3],
 				     initialStrain[4],
 				     initialStrain[5]};
-  const double devStressInitial[] = {initialStress[0] - meanStressInitial,
+  const PylithScalar devStressInitial[] = {initialStress[0] - meanStressInitial,
 				     initialStress[1] - meanStressInitial,
 				     initialStress[2] - meanStressInitial,
 				     initialStress[3],
@@ -524,20 +524,20 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
 				     initialStress[5]};
   // :TODO: Need to determine how to incorporate state variables
   // Mean stress and strain for time t + dt
-  const double meanStrainTpdt = (totalStrain[0] +
+  const PylithScalar meanStrainTpdt = (totalStrain[0] +
 				 totalStrain[1] +
 				 totalStrain[2]) / 3.0;
   
-  const double meanStressTpdt = 3.0 * bulkModulus *
+  const PylithScalar meanStressTpdt = 3.0 * bulkModulus *
     (meanStrainTpdt - meanStrainInitial) + meanStressInitial;
 
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  double visFrac = 0.0;
+  PylithScalar visFrac = 0.0;
   for (int imodel=0; imodel < numMaxwellModels; ++imodel) 
     visFrac += muRatio[imodel];
   assert(visFrac <= 1.0);
-  const double elasFrac = 1.0 - visFrac;
+  const PylithScalar elasFrac = 1.0 - visFrac;
 
   PetscLogFlops(23 + numMaxwellModels);
 
@@ -559,8 +559,8 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
   } // else
 
   // Compute new stresses
-  double devStrainTpdt = 0.0;
-  double devStressTpdt = 0.0;
+  PylithScalar devStrainTpdt = 0.0;
+  PylithScalar devStressTpdt = 0.0;
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp] * meanStrainTpdt -
       devStrainInitial[iComp];
@@ -581,17 +581,17 @@ pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic(
 // Compute derivative of elasticity matrix at location from properties.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
-					double* const elasticConsts,
+					PylithScalar* const elasticConsts,
 					const int numElasticConsts,
-					const double* properties,
+					const PylithScalar* properties,
 					const int numProperties,
-					const double* stateVars,
+					const PylithScalar* stateVars,
 					const int numStateVars,
-					const double* totalStrain,
+					const PylithScalar* totalStrain,
 					const int strainSize,
-					const double* initialStress,
+					const PylithScalar* initialStress,
 					const int initialStressSize,
-					const double* initialStrain,
+					const PylithScalar* initialStrain,
 					const int initialStrainSize)
 { // _calcElasticConstsElastic
   assert(0 != elasticConsts);
@@ -607,11 +607,11 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
   assert(0 != initialStrain);
   assert(_GenMaxwellIsotropic3D::tensorSize == initialStrainSize);
  
-  const double mu = properties[p_muEff];
-  const double lambda = properties[p_lambdaEff];
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar lambda = properties[p_lambdaEff];
 
-  const double mu2 = 2.0 * mu;
-  const double lambda2mu = lambda + mu2;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar lambda2mu = lambda + mu2;
 
   elasticConsts[ 0] = lambda2mu; // C1111
   elasticConsts[ 1] = lambda; // C1122
@@ -658,17 +658,17 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsElastic(
 // as a viscoelastic material.
 void
 pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
-					double* const elasticConsts,
+					PylithScalar* const elasticConsts,
 					const int numElasticConsts,
-					const double* properties,
+					const PylithScalar* properties,
 					const int numProperties,
-					const double* stateVars,
+					const PylithScalar* stateVars,
 					const int numStateVars,
-					const double* totalStrain,
+					const PylithScalar* totalStrain,
 					const int strainSize,
-					const double* initialStress,
+					const PylithScalar* initialStress,
 					const int initialStressSize,
-					const double* initialStrain,
+					const PylithScalar* initialStrain,
 					const int initialStrainSize)
 { // _calcElasticConstsViscoelastic
   assert(0 != elasticConsts);
@@ -686,18 +686,18 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
 
-  const double mu = properties[p_muEff];
-  const double lambda = properties[p_lambdaEff];
-  const double mu2 = 2.0 * mu;
-  const double bulkModulus = lambda + mu2 / 3.0;
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar lambda = properties[p_lambdaEff];
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar bulkModulus = lambda + mu2 / 3.0;
 
   // Compute viscous contribution.
-  double visFac = 0.0;
-  double visFrac = 0.0;
-  double shearRatio = 0.0;
+  PylithScalar visFac = 0.0;
+  PylithScalar visFrac = 0.0;
+  PylithScalar shearRatio = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) {
     shearRatio = properties[p_shearRatio + imodel];
-    double maxwellTime = pylith::PYLITH_MAXDOUBLE;
+    PylithScalar maxwellTime = pylith::PYLITH_MAXDOUBLE;
     visFrac += shearRatio;
     if (shearRatio != 0.0) {
       maxwellTime = properties[p_maxwellTime + imodel];
@@ -705,8 +705,8 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 	shearRatio*ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime);
     } // if
   } // for
-  double elasFrac = 1.0 - visFrac;
-  double shearFac = elasFrac + visFac;
+  PylithScalar elasFrac = 1.0 - visFrac;
+  PylithScalar shearFac = elasFrac + visFac;
 
   elasticConsts[ 0] = bulkModulus + 4.0*mu/3.0 * shearFac; // C1111
   elasticConsts[ 1] = bulkModulus - 2.0*mu/3.0 * shearFac; // C1122
@@ -762,15 +762,15 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
 // Update state variables.
 void
 pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
-					    double* const stateVars,
+					    PylithScalar* const stateVars,
 					    const int numStateVars,
-					    const double* properties,
+					    const PylithScalar* properties,
 					    const int numProperties,
-					    const double* totalStrain,
+					    const PylithScalar* totalStrain,
 					    const int strainSize,
-					    const double* initialStress,
+					    const PylithScalar* initialStress,
 					    const int initialStressSize,
-					    const double* initialStrain,
+					    const PylithScalar* initialStrain,
 					    const int initialStrainSize)
 { // _updateStateVarsElastic
   assert(0 != stateVars);
@@ -786,24 +786,24 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
 
   const int tensorSize = _tensorSize;
 
-  const double strainTpdt[] = {totalStrain[0] - initialStrain[0],
+  const PylithScalar strainTpdt[] = {totalStrain[0] - initialStrain[0],
 			       totalStrain[1] - initialStrain[1],
 			       totalStrain[2] - initialStrain[2],
 			       totalStrain[3] - initialStrain[3],
 			       totalStrain[4] - initialStrain[4],
 			       totalStrain[5] - initialStrain[5]};
-  const double meanStrainTpdt =
+  const PylithScalar meanStrainTpdt =
     (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0;
 
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
   // Update total strain
   for (int iComp=0; iComp < tensorSize; ++iComp)
     stateVars[s_totalStrain+iComp] = totalStrain[iComp];
 
   // Initialize all viscous strains to deviatoric elastic strains.
-  double devStrain = 0.0;
-  double shearRatio = 0.0;
+  PylithScalar devStrain = 0.0;
+  PylithScalar shearRatio = 0.0;
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrain = strainTpdt[iComp] - diag[iComp] * meanStrainTpdt;
     // Maxwell model 1
@@ -822,15 +822,15 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic(
 // Update state variables.
 void
 pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsViscoelastic(
-					    double* const stateVars,
+					    PylithScalar* const stateVars,
 					    const int numStateVars,
-					    const double* properties,
+					    const PylithScalar* properties,
 					    const int numProperties,
-					    const double* totalStrain,
+					    const PylithScalar* totalStrain,
 					    const int strainSize,
-					    const double* initialStress,
+					    const PylithScalar* initialStress,
 					    const int initialStressSize,
-					    const double* initialStrain,
+					    const PylithScalar* initialStrain,
 					    const int initialStrainSize)
 { // _updateStateVarsViscoelastic
   assert(0 != stateVars);
@@ -870,11 +870,11 @@ pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsViscoelastic(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
-					   const double* properties,
+					   const PylithScalar* properties,
 					   const int numProperties,
-					   const double* stateVars,
+					   const PylithScalar* stateVars,
 					   const int numStateVars) const
 { // _stableTimeStepImplicit
   assert(0 != properties);
@@ -882,12 +882,12 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
   assert(0 != stateVars);
   assert(_numVarsQuadPt == numStateVars);
 
-  double dtStable = pylith::PYLITH_MAXDOUBLE;
+  PylithScalar dtStable = pylith::PYLITH_MAXDOUBLE;
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   for (int i=0; i < numMaxwellModels; ++i) {
-    const double maxwellTime = properties[p_maxwellTime+i];
-    const double dt = 0.2*maxwellTime;
+    const PylithScalar maxwellTime = properties[p_maxwellTime+i];
+    const PylithScalar dt = 0.2*maxwellTime;
     if (dt < dtStable)
       dtStable = dt;
   } // for
@@ -900,15 +900,15 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
 // Compute viscous strain for current time step.
 void
 pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
-					       const double* stateVars,
+					       const PylithScalar* stateVars,
 					       const int numStateVars,
-					       const double* properties,
+					       const PylithScalar* properties,
 					       const int numProperties,
-					       const double* totalStrain,
+					       const PylithScalar* totalStrain,
 					       const int strainSize,
-					       const double* initialStress,
+					       const PylithScalar* initialStress,
 					       const int initialStressSize,
-					       const double* initialStrain,
+					       const PylithScalar* initialStrain,
 					       const int initialStrainSize)
 { // _computeStateVars
   assert(0 != stateVars);
@@ -925,23 +925,23 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
   const int tensorSize = _tensorSize;
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
 
-  const double muRatio[numMaxwellModels] = {
+  const PylithScalar muRatio[numMaxwellModels] = {
     properties[p_shearRatio  ],
     properties[p_shearRatio+1],
     properties[p_shearRatio+2]
   };
-  const double maxwellTime[numMaxwellModels] = {
+  const PylithScalar maxwellTime[numMaxwellModels] = {
     properties[p_maxwellTime  ],
     properties[p_maxwellTime+1],
     properties[p_maxwellTime+2]
   };
 
   // :TODO: Need to account for initial values for state variables
-  const double meanStrainTpdt =
+  const PylithScalar meanStrainTpdt =
     (totalStrain[0] + totalStrain[1] + totalStrain[2])/3.0;
-  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
-  const double meanStrainT = 
+  const PylithScalar meanStrainT = 
     ( stateVars[s_totalStrain+0] +
       stateVars[s_totalStrain+1] +
       stateVars[s_totalStrain+2] ) / 3.0;
@@ -949,16 +949,16 @@ pylith::materials::GenMaxwellIsotropic3D::_computeStateVars(
   PetscLogFlops(6);
 
   // Compute Prony series terms
-  double_array dq(numMaxwellModels);
+  scalar_array dq(numMaxwellModels);
   dq = 0.0;
   for (int i=0; i < numMaxwellModels; ++i)
     if (muRatio[i] != 0.0)
       dq[i] = ViscoelasticMaxwell::viscousStrainParam(_dt, maxwellTime[i]);
 
   // Compute new viscous strains
-  double devStrainTpdt = 0.0;
-  double devStrainT = 0.0;
-  double deltaStrain = 0.0;
+  PylithScalar devStrainTpdt = 0.0;
+  PylithScalar devStrainT = 0.0;
+  PylithScalar deltaStrain = 0.0;
   
   for (int iComp=0; iComp < tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp] * meanStrainTpdt;

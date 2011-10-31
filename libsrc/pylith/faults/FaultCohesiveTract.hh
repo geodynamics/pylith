@@ -65,7 +65,7 @@ public :
    *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contribution of cohesive cells to residual term.
    *
@@ -74,7 +74,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -85,7 +85,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
   
   /** Verify configuration is acceptable.
@@ -125,7 +125,7 @@ private :
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
    */
-  void _calcOrientation(const double upDir[3]);
+  void _calcOrientation(const PylithScalar upDir[3]);
 
   /** Get initial tractions using a spatial database.
    */

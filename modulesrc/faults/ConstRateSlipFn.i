@@ -61,7 +61,7 @@ namespace pylith {
        */
       void initialize(const pylith::topology::SubMesh& faultMesh,
 		      const spatialdata::units::Nondimensional& normalizer,
-		      const double originTime =0.0);
+		      const PylithScalar originTime =0.0);
       
       /** Get slip on fault surface at time t.
        *
@@ -71,7 +71,7 @@ namespace pylith {
        * @returns Slip vector as left-lateral/reverse/normal.
        */
       void slip(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
-		const double t);
+		const PylithScalar t);
   
       /** Get slip increment on fault surface between time t0 and t1.
        *
@@ -82,8 +82,8 @@ namespace pylith {
        * @returns Increment in slip vector as left-lateral/reverse/normal.
        */
       void slipIncr(pylith::topology::Field<pylith::topology::SubMesh>* slipField,
-		    const double t0,
-		    const double t1);
+		    const PylithScalar t0,
+		    const PylithScalar t1);
       
       /** Get final slip.
        *

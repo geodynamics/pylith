@@ -98,7 +98,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void openTimeStep(const double t,
+      void openTimeStep(const PylithScalar t,
 			const mesh_type& mesh,
 			const char* label =0,
 			const int labelId =0);
@@ -112,7 +112,7 @@ namespace pylith {
        * @param field Vertex field.
        * @param mesh Mesh for output.
        */
-      void appendVertexField(const double t,
+      void appendVertexField(const PylithScalar t,
 			     field_type& field,
 			     const mesh_type& mesh);
       
@@ -124,7 +124,7 @@ namespace pylith {
        *   (=0 means use all cells in mesh).
        * @param labelId Value of label defining which cells to include.
        */
-      void appendCellField(const double t,
+      void appendCellField(const PylithScalar t,
 			   field_type& field,
 			   const char* label =0,
 			   const int labelId =0);

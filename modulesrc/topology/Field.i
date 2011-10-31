@@ -101,13 +101,13 @@ namespace pylith {
        *
        * @param value Scale associated with field.
        */
-      void scale(const double value);
+      void scale(const PylithScalar value);
 
       /** Get scale for dimensionalizing field.
        *
        * @returns Scale associated with field.
        */
-      double scale(void) const;
+      PylithScalar scale(void) const;
       
       /** Set flag indicating whether it is okay to dimensionalize field.
        *
@@ -203,9 +203,12 @@ namespace pylith {
        * information from the "global" PETSc vector view to the "local"
        * Sieve section view.
        *
+       * @param mesh Mesh associated with scatter.
        * @param context Label for context associated with vector.
        */
-      void createScatter(const char* context ="");
+      template<typename scatter_mesh_type>
+      void createScatter(const scatter_mesh_type& mesh,
+			 const char* context ="");
 
       /** Get PETSc vector associated with field.
        *

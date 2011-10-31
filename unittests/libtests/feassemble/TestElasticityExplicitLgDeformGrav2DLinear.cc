@@ -45,8 +45,8 @@ pylith::feassemble::TestElasticityExplicitLgDeformGrav2DLinear::setUp(void)
   GeometryTri2D geometry;
   _quadrature->refGeometry(&geometry);
 
-  const double g = 1.0e8;
-  const double gravityDir[] = { 0.0, -1.0, 0.0 };
+  const PylithScalar g = 1.0e8;
+  const PylithScalar gravityDir[] = { 0.0, -1.0, 0.0 };
   _gravityField->gravAcceleration(g);
   _gravityField->gravityDir(gravityDir[0], gravityDir[1], gravityDir[2]);
 

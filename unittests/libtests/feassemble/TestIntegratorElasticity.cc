@@ -41,25 +41,25 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain1D(void)
   const int dim = 1;
   const int numBasis = 2;
   const int numQuadPts = 2;
-  const double basisDerivVals[] = {
+  const PylithScalar basisDerivVals[] = {
     -0.50, 0.50,
     -0.25, 0.25 };
   const int tensorSize = 1;
 
   // Let u(x) = 1 + 0.5 * x
-  const double dispVals[] = { 0.5, 1.5 };
-  const double strainE[] = { 0.5, 0.25 };
+  const PylithScalar dispVals[] = { 0.5, 1.5 };
+  const PylithScalar strainE[] = { 0.5, 0.25 };
 
   const int size = numQuadPts * tensorSize;
-  double_array strain(size);
+  scalar_array strain(size);
 
-  double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
-  double_array disp(dispVals, numBasis*dim);
+  scalar_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
+  scalar_array disp(dispVals, numBasis*dim);
 
   IntegratorElasticity::_calcTotalStrain1D(&strain,
 					   basisDeriv, disp, numBasis, numQuadPts);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
@@ -80,7 +80,7 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain2D(void)
   const int dim = 2;
   const int numBasis = 3;
   const int numQuadPts = 2;
-  const double basisDerivVals[] = {
+  const PylithScalar basisDerivVals[] = {
     +1.0,  0.0,   0.0, +1.0,   -1.0, -1.0,
     +2.0,  0.0,   0.0, +2.0,   -2.0, -2.0
   };
@@ -88,26 +88,26 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain2D(void)
 
   // Let ux(x,y) = +0.4 + 0.3*x + 0.8*y
   // Ley uy(x,y) = -2.0 + 0.5*x - 0.2*y
-  const double dispVals[] = {
+  const PylithScalar dispVals[] = {
     0.7, -1.5,
     1.2, -2.2,
     0.4, -2.0
   };
-  const double strainE[] = {
+  const PylithScalar strainE[] = {
     0.3, -0.2, 0.65,
     0.6, -0.4, 1.3
   };
 
   const int size = numQuadPts * tensorSize;
-  double_array strain(size);
+  scalar_array strain(size);
 
-  double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
-  double_array disp(dispVals, numBasis*dim);
+  scalar_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
+  scalar_array disp(dispVals, numBasis*dim);
 
   IntegratorElasticity::_calcTotalStrain2D(&strain, basisDeriv, disp,
 					   numBasis, numQuadPts);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);
@@ -130,7 +130,7 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain3D(void)
   const int dim = 3;
   const int numBasis = 4;
   const int numQuadPts = 2;
-  const double basisDerivVals[] = {
+  const PylithScalar basisDerivVals[] = {
     +1.0,  0.0,  0.0, // Quad pt 0
      0.0, +1.0,  0.0,
      0.0,  0.0, +1.0,
@@ -145,27 +145,27 @@ pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain3D(void)
   // Let ux(x,y,z) = +0.4 + 0.3*x + 0.8*y + 0.4*z
   // Ley uy(x,y,z) = -2.0 + 0.5*x - 0.2*y + 1.2*z
   // Ley uz(x,y,z) = -1.0 + 0.2*x - 0.7*y - 0.3*z
-  const double dispVals[] = {
+  const PylithScalar dispVals[] = {
     0.7, -1.5, -0.8,
     1.2, -2.2, -1.7,
     0.8, -0.8, -1.3,
     0.4, -2.0, -1.0
   };
-  const double strainE[] = {
+  const PylithScalar strainE[] = {
     0.3, -0.2, -0.3, 0.65, 0.25, 0.3,
     0.9, -0.6, -0.9, 1.95, 0.75, 0.9
   };
 
   const int size = numQuadPts * tensorSize;
-  double_array strain(size);
+  scalar_array strain(size);
 
-  double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
-  double_array disp(dispVals, numBasis*dim);
+  scalar_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
+  scalar_array disp(dispVals, numBasis*dim);
 
   IntegratorElasticity::_calcTotalStrain3D(&strain, basisDeriv, disp,
 					   numBasis, numQuadPts);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(size, int(strain.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(strainE[i], strain[i], tolerance);

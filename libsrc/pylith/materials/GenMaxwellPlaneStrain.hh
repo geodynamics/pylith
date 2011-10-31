@@ -65,7 +65,7 @@ public :
    *
    * @param dt Current time step.
    */
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *
@@ -84,15 +84,15 @@ protected :
    * @param propValues Array of property values.
    * @param dbValues Array of database values.
    */
-  void _dbToProperties(double* const propValues,
-		       const double_array& dbValues);
+  void _dbToProperties(PylithScalar* const propValues,
+		       const scalar_array& dbValues);
 
   /** Nondimensionalize properties.
    *
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const;
 
   /** Dimensionalize properties.
@@ -100,7 +100,7 @@ protected :
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const;
 
   /** Compute initial state variables from values in spatial database.
@@ -108,15 +108,15 @@ protected :
    * @param stateValues Array of state variable values.
    * @param dbValues Array of database values.
    */
-  void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues);
+  void _dbToStateVars(PylithScalar* const stateValues,
+		      const scalar_array& dbValues);
 
   /** Nondimensionalize state variables..
    *
    * @param values Array of state variables.
    * @param nvalues Number of values.
    */
-  void _nondimStateVars(double* const values,
+  void _nondimStateVars(PylithScalar* const values,
                         const int nvalues) const;
 
   /** Dimensionalize state variables.
@@ -124,7 +124,7 @@ protected :
    * @param values Array of state variables.
    * @param nvalues Number of values.
    */
-  void _dimStateVars(double* const values,
+  void _dimStateVars(PylithScalar* const values,
                      const int nvalues) const;
 
   /** Compute density from properties.
@@ -135,10 +135,10 @@ protected :
    * @param stateVars Number of state variables.
    * @param numStateVars Number of state variables.
    */
-  void _calcDensity(double* const density,
-		    const double* properties,
+  void _calcDensity(PylithScalar* const density,
+		    const PylithScalar* properties,
 		    const int numProperties,
-		    const double* stateVars,
+		    const PylithScalar* stateVars,
 		    const int numStateVars);
 
   /** Compute stress tensor from properties and state variables. If
@@ -160,17 +160,17 @@ protected :
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state variables.
    */
-  void _calcStress(double* const stress,
+  void _calcStress(PylithScalar* const stress,
 		   const int stressSize,
-		   const double* properties,
+		   const PylithScalar* properties,
 		   const int numProperties,
-		   const double* stateVars,
+		   const PylithScalar* stateVars,
 		   const int numStateVars,
-		   const double* totalStrain,
+		   const PylithScalar* totalStrain,
 		   const int strainSize,
-		   const double* initialStress,
+		   const PylithScalar* initialStress,
 		   const int initialStressSize,
-		   const double* initialStrain,
+		   const PylithScalar* initialStrain,
 		   const int initialStrainSize,
 		   const bool computeStateVars);
 
@@ -189,17 +189,17 @@ protected :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _calcElasticConsts(double* const elasticConsts,
+  void _calcElasticConsts(PylithScalar* const elasticConsts,
 			  const int numElasticConsts,
-			  const double* properties,
+			  const PylithScalar* properties,
 			  const int numProperties,
-			  const double* stateVars,
+			  const PylithScalar* stateVars,
 			  const int numStateVars,
-			  const double* totalStrain,
+			  const PylithScalar* totalStrain,
 			  const int strainSize,
-		          const double* initialStress,
+		          const PylithScalar* initialStress,
 		          const int initialStressSize,
-		          const double* initialStrain,
+		          const PylithScalar* initialStrain,
 		          const int initialStrainSize);
 
   /** Update state variables (for next time step).
@@ -215,15 +215,15 @@ protected :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _updateStateVars(double* const stateVars,
+  void _updateStateVars(PylithScalar* const stateVars,
 			const int numStateVars,
-			const double* properties,
+			const PylithScalar* properties,
 			const int numProperties,
-			const double* totalStrain,
+			const PylithScalar* totalStrain,
 			const int strainSize,
-			const double* initialStress,
+			const PylithScalar* initialStress,
 			const int initialStressSize,
-			const double* initialStrain,
+			const PylithScalar* initialStrain,
 			const int initialStrainSize);
 
   /** Get stable time step for implicit time integration.
@@ -235,9 +235,9 @@ protected :
    *
    * @returns Time step
    */
-  double _stableTimeStepImplicit(const double* properties,
+  PylithScalar _stableTimeStepImplicit(const PylithScalar* properties,
 				 const int numProperties,
-				 const double* stateVars,
+				 const PylithScalar* stateVars,
 				 const int numStateVars) const;
 
   // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
@@ -245,46 +245,46 @@ private :
 
   /// Member prototype for _calcStress()
   typedef void (pylith::materials::GenMaxwellPlaneStrain::*calcStress_fn_type)
-    (double* const,
+    (PylithScalar* const,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
      const bool);
 
   /// Member prototype for _calcElasticConsts()
   typedef void (pylith::materials::GenMaxwellPlaneStrain::*calcElasticConsts_fn_type)
-    (double* const,
+    (PylithScalar* const,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int);
 
   /// Member prototype for _updateStateVars()
   typedef void (pylith::materials::GenMaxwellPlaneStrain::*updateStateVars_fn_type)
-    (double* const,
+    (PylithScalar* const,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int,
-     const double*,
+     const PylithScalar*,
      const int);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
@@ -306,17 +306,17 @@ private :
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
-  void _calcStressElastic(double* const stress,
+  void _calcStressElastic(PylithScalar* const stress,
 			  const int stressSize,
-			  const double* properties,
+			  const PylithScalar* properties,
 			  const int numProperties,
-			  const double* stateVars,
+			  const PylithScalar* stateVars,
 			  const int numStateVars,
-			  const double* totalStrain,
+			  const PylithScalar* totalStrain,
 			  const int strainSize,
-			  const double* initialStress,
+			  const PylithScalar* initialStress,
 			  const int initialStressSize,
-			  const double* initialStrain,
+			  const PylithScalar* initialStrain,
 			  const int initialStrainSize,
 			  const bool computeStateVars);
 
@@ -336,17 +336,17 @@ private :
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
-  void _calcStressViscoelastic(double* const stress,
+  void _calcStressViscoelastic(PylithScalar* const stress,
 			       const int stressSize,
-			       const double* properties,
+			       const PylithScalar* properties,
 			       const int numProperties,
-			       const double* stateVars,
+			       const PylithScalar* stateVars,
 			       const int numStateVars,
-			       const double* totalStrain,
+			       const PylithScalar* totalStrain,
 			       const int strainSize,
-			       const double* initialStress,
+			       const PylithScalar* initialStress,
 			       const int initialStressSize,
-			       const double* initialStrain,
+			       const PylithScalar* initialStrain,
 			       const int initialStrainSize,
 			       const bool computeStateVars);
 
@@ -366,17 +366,17 @@ private :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _calcElasticConstsElastic(double* const elasticConsts,
+  void _calcElasticConstsElastic(PylithScalar* const elasticConsts,
 				 const int numElasticConsts,
-				 const double* properties,
+				 const PylithScalar* properties,
 				 const int numProperties,
-				 const double* stateVars,
+				 const PylithScalar* stateVars,
 				 const int numStateVars,
-				 const double* totalStrain,
+				 const PylithScalar* totalStrain,
 				 const int strainSize,
-			         const double* initialStress,
+			         const PylithScalar* initialStress,
 			         const int initialStressSize,
-			         const double* initialStrain,
+			         const PylithScalar* initialStrain,
 			         const int initialStrainSize);
 
   /** Compute derivatives of elasticity matrix from properties as a
@@ -395,17 +395,17 @@ private :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _calcElasticConstsViscoelastic(double* const elasticConsts,
+  void _calcElasticConstsViscoelastic(PylithScalar* const elasticConsts,
 				      const int numElasticConsts,
-				      const double* properties,
+				      const PylithScalar* properties,
 				      const int numProperties,
-				      const double* stateVars,
+				      const PylithScalar* stateVars,
 				      const int numStateVars,
-				      const double* totalStrain,
+				      const PylithScalar* totalStrain,
 				      const int strainSize,
-			              const double* initialStress,
+			              const PylithScalar* initialStress,
 			              const int initialStressSize,
-			              const double* initialStrain,
+			              const PylithScalar* initialStrain,
 			              const int initialStrainSize);
 
   /** Update state variables after solve as an elastic material.
@@ -421,15 +421,15 @@ private :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _updateStateVarsElastic(double* const stateVars,
+  void _updateStateVarsElastic(PylithScalar* const stateVars,
 			       const int numStateVars,
-			       const double* properties,
+			       const PylithScalar* properties,
 			       const int numProperties,
-			       const double* totalStrain,
+			       const PylithScalar* totalStrain,
 			       const int strainSize,
-			       const double* initialStress,
+			       const PylithScalar* initialStress,
 			       const int initialStressSize,
-			       const double* initialStrain,
+			       const PylithScalar* initialStrain,
 			       const int initialStrainSize);
 
   /** Update state variables after solve as a viscoelastic material.
@@ -445,15 +445,15 @@ private :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _updateStateVarsViscoelastic(double* const stateVars,
+  void _updateStateVarsViscoelastic(PylithScalar* const stateVars,
 				    const int numStateVars,
-				    const double* properties,
+				    const PylithScalar* properties,
 				    const int numProperties,
-				    const double* totalStrain,
+				    const PylithScalar* totalStrain,
 				    const int strainSize,
-				    const double* initialStress,
+				    const PylithScalar* initialStress,
 				    const int initialStressSize,
-				    const double* initialStrain,
+				    const PylithScalar* initialStrain,
 				    const int initialStrainSize);
 
   /** Compute viscous strains (state variables) for the current time
@@ -470,22 +470,22 @@ private :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _computeStateVars(const double* stateVars,
+  void _computeStateVars(const PylithScalar* stateVars,
 			 const int numStateVars,
-			 const double* properties,
+			 const PylithScalar* properties,
 			 const int numProperties,
-			 const double* totalStrain,
+			 const PylithScalar* totalStrain,
 			 const int strainSize,
-			 const double* initialStress,
+			 const PylithScalar* initialStress,
 			 const int initialStressSize,
-			 const double* initialStrain,
+			 const PylithScalar* initialStrain,
 			 const int initialStrainSize);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
   /// Viscous strain array.
-  double_array _viscousStrain;
+  scalar_array _viscousStrain;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;

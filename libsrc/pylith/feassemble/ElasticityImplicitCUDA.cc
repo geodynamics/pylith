@@ -35,7 +35,7 @@ extern cudaError_t cleanupKernel(float *geometry, float *elemMat, float *analyti
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
@@ -56,7 +56,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 
 typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
 typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
-typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -83,7 +83,7 @@ pylith::feassemble::ElasticityImplicitCUDA::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityImplicitCUDA::timeStep(const double dt)
+pylith::feassemble::ElasticityImplicitCUDA::timeStep(const PylithScalar dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -96,7 +96,7 @@ pylith::feassemble::ElasticityImplicitCUDA::timeStep(const double dt)
 
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
-double
+PylithScalar
 pylith::feassemble::ElasticityImplicitCUDA::stableTimeStep(const topology::Mesh& mesh) const
 { // stableTimeStep
   assert(0 != _material);
@@ -119,12 +119,12 @@ pylith::feassemble::ElasticityImplicitCUDA::useSolnIncr(const bool flag)
 void
 pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
-			  const double t,
+			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityImplicitCUDA::*elasticityResidual_fn_type)
-    (const double_array&);
+    (const scalar_array&);
   
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -143,7 +143,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -176,11 +176,11 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array dispTpdtCell(numBasis*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array dispTpdtCell(numBasis*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -193,13 +193,13 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array dispTCell(numBasis*spaceDim);
+  scalar_array dispTCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
   RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
 
-  double_array dispTIncrCell(numBasis*spaceDim);
+  scalar_array dispTIncrCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -209,7 +209,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -217,8 +217,8 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale = 
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
 
@@ -251,10 +251,10 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& quadPtsNondim = _quadrature->quadPts();
 
     // Compute current estimate of displacement at time t+dt using
     // solution increment.
@@ -266,23 +266,24 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
       assert(0 != cs);
 
       // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
+      const scalar_array& density = _material->calcDensity();
 
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
           lengthScale);
 
       // Compute action for element body forces
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
       for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+        const int err = db->query(&gravVec[0], gravVec.size(),
             &quadPtsGlobal[0], spaceDim, cs);
         if (err)
           throw std::runtime_error("Unable to get gravity vector for point.");
         _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
             gravityScale);
-        const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+        const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
         for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
-          const double valI = wt * basis[iQ + iBasis];
+          const PylithScalar valI = wt * basis[iQ + iBasis];
           for (int iDim = 0; iDim < spaceDim; ++iDim) {
             _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
           } // for
@@ -295,7 +296,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
     // Compute B(transpose) * sigma, first computing strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
 		      numBasis, numQuadPts);
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
 
@@ -314,7 +315,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(
 } // integrateResidual
 
 void
-pylith::feassemble::ElasticityImplicitCUDA::calculateGeometry(const int spaceDim, const double coords[], float geometry[])
+pylith::feassemble::ElasticityImplicitCUDA::calculateGeometry(const int spaceDim, const PylithScalar coords[], float geometry[])
 {
   // Just use identity for now
   PetscMemzero(geometry, spaceDim*spaceDim*sizeof(float));
@@ -326,12 +327,12 @@ pylith::feassemble::ElasticityImplicitCUDA::calculateGeometry(const int spaceDim
 void
 pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
 					topology::Jacobian* jacobian,
-					const double t,
+					const PylithScalar t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
   /// Member prototype for _elasticityJacobianXD()
   typedef void (pylith::feassemble::ElasticityImplicitCUDA::*elasticityJacobian_fn_type)
-    (const double_array&);
+    (const scalar_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -350,7 +351,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -376,8 +377,8 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
     assert(0);
 
   // Allocate vector for total strain
-  double_array dispTpdtCell(numBasis*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array dispTpdtCell(numBasis*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
 
   // Get cell information
@@ -391,13 +392,13 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array dispTCell(numBasis*spaceDim);
+  scalar_array dispTCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTSection = 
     fields->get("disp(t)").section();
   assert(!dispTSection.isNull());
   RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
 
-  double_array dispTIncrCell(numBasis*spaceDim);
+  scalar_array dispTIncrCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispTIncrSection = 
     fields->get("dispIncr(t->t+dt)").section();
   assert(!dispTIncrSection.isNull());
@@ -409,7 +410,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
@@ -417,7 +418,7 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
 					    dispTSection);
   assert(!globalOrder.isNull());
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -443,9 +444,9 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
     _quadrature->computeGeometry(coordinatesCell, *c_iter);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(*c_iter);
@@ -465,14 +466,18 @@ pylith::feassemble::ElasticityImplicitCUDA::integrateJacobian(
 		      numBasis, numQuadPts);
       
     // Get "elasticity" matrix at quadrature points for this cell
-    const double_array& elasticConsts = 
+    const scalar_array& elasticConsts = 
       _material->calcDerivElastic(strainCell);
 #endif
   } // for
 
+  // Copy cpu input to gpu
+
   const int elementBatchSize      = 32;
   const int numConcurrentElements = 1;
   launchKernel(spaceDim, numBasis, elementBatchSize, numConcurrentElements, cells->size(), analytic_gpu, geometry_gpu, elemMat_gpu);
+
+  // Copy gpu output to cpu
 
   // Update global matrix
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;

@@ -136,7 +136,7 @@ pylith::problems::SolverLinear::solve(
     PetscPC pc = 0;
     PetscKSP *ksps = 0;
     PetscMat A = 0;
-    PetscInt num = 0;
+    PylithInt num = 0;
     
     err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);

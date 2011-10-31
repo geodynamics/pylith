@@ -125,12 +125,12 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
     _fieldVecNorm->section();
   assert(!sectionNorm.isNull());
 
-  double norm = 0.0;
+  PylithScalar norm = 0.0;
   // Loop over vertices
   for (typename label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
        ++v_iter) {
-    const double* values = sectionIn->restrictPoint(*v_iter);
+    const PylithScalar* values = sectionIn->restrictPoint(*v_iter);
     
     norm = 0.0;
     for (int i=0; i < fiberDimIn; ++i)

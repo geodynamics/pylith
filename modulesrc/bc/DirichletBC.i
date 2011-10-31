@@ -54,7 +54,7 @@ namespace pylith {
        * @param upDir Vertical direction (somtimes used in 3-D problems).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
       
       /** Set number of degrees of freedom that are constrained at
        * points in field.
@@ -74,7 +74,7 @@ namespace pylith {
        * @param t Current time
        * @param field Solution field
        */
-      void setField(const double t,
+      void setField(const PylithScalar t,
 		    const pylith::topology::Field<pylith::topology::Mesh>& field);
       
       /** Set values in field.
@@ -83,8 +83,8 @@ namespace pylith {
        * @param t1 Time t+dt.
        * @param field Solution field
        */
-      void setFieldIncr(const double t0,
-			const double t1,
+      void setFieldIncr(const PylithScalar t0,
+			const PylithScalar t1,
 			const pylith::topology::Field<pylith::topology::Mesh>& field);
       
       // PROTECTED METHODS //////////////////////////////////////////////

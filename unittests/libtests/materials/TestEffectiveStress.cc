@@ -35,15 +35,15 @@ namespace pylith {
       public :
 	Linear(void) {};
 	~Linear(void) {};
-	double effStressFunc(const double x) {
+	PylithScalar effStressFunc(const PylithScalar x) {
 	  return x - 10.0;
 	};
-	double effStressDerivFunc(const double x) {
+	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 1.0;
 	};
-	double effStressFuncDerivFunc(double* f,
-				      double* df,
-				      const double x) {
+	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
+				      PylithScalar* df,
+				      const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -60,15 +60,15 @@ namespace pylith {
       public :
 	Quadratic(void) {};
 	~Quadratic(void) {};
-	double effStressFunc(const double x) {
+	PylithScalar effStressFunc(const PylithScalar x) {
 	  return 1.0e+5 - 1.0/9.0e+3 * pow(x + 2.0e+4, 2);
 	};
-	double effStressDerivFunc(const double x) {
+	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return -2*1.0/9.0e+3*(x+2.0e+4);
 	};
-	double effStressFuncDerivFunc(double* f,
-				      double* df,
-				      const double x) {
+	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
+				      PylithScalar* df,
+				      const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -85,15 +85,15 @@ namespace pylith {
       public :
 	Cubic(void) {};
 	~Cubic(void) {};
-	double effStressFunc(const double x) {
+	PylithScalar effStressFunc(const PylithScalar x) {
 	  return pow(x - 4.0, 3) - 8.0;
 	};
-	double effStressDerivFunc(const double x) {
+	PylithScalar effStressDerivFunc(const PylithScalar x) {
 	  return 3.0*pow(x - 4.0, 2);
 	};
-	double effStressFuncDerivFunc(double* f,
-				      double* df,
-				      const double x) {
+	PylithScalar effStressFuncDerivFunc(PylithScalar* f,
+				      PylithScalar* df,
+				      const PylithScalar x) {
 	  *f = effStressFunc(x);
 	  *df = effStressDerivFunc(x);
 	};
@@ -107,16 +107,16 @@ namespace pylith {
 void
 pylith::materials::TestEffectiveStress::testCalculateLinear(void)
 { // testCalculateLinear
-  const double valueE = 10.0;
+  const PylithScalar valueE = 10.0;
   
   _EffectiveStress::Linear material;
 
   const int ntests = 4;
-  const double guesses[ntests] = { 0.0, 6.0, 14.0, 20.0 };
-  const double scale = 1.0;
-  const double tolerance = 1.0e-06;
+  const PylithScalar guesses[ntests] = { 0.0, 6.0, 14.0, 20.0 };
+  const PylithScalar scale = 1.0;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < ntests; ++i) {
-    const double value =
+    const PylithScalar value =
       EffectiveStress::calculate<_EffectiveStress::Linear>(guesses[i], scale,
 							   &material);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, value/valueE, tolerance);
@@ -128,16 +128,16 @@ pylith::materials::TestEffectiveStress::testCalculateLinear(void)
 void
 pylith::materials::TestEffectiveStress::testCalculateQuadratic(void)
 { // testCalculateQuadratic
-  const double valueE = 1.0e+04;
+  const PylithScalar valueE = 1.0e+04;
   
   _EffectiveStress::Quadratic material;
 
   const int ntests = 4;
-  const double guesses[ntests] = { 1.0, 1.0e-1, 2.0e-2, 1.0e-2 };
-  const double scale = 1.0e-2;
-  const double tolerance = 1.0e-06;
+  const PylithScalar guesses[ntests] = { 1.0, 1.0e-1, 2.0e-2, 1.0e-2 };
+  const PylithScalar scale = 1.0e-2;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < ntests; ++i) {
-    const double value =
+    const PylithScalar value =
       EffectiveStress::calculate<_EffectiveStress::Quadratic>(guesses[i], scale,
 							   &material);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, value/valueE, tolerance);
@@ -149,16 +149,16 @@ pylith::materials::TestEffectiveStress::testCalculateQuadratic(void)
 void
 pylith::materials::TestEffectiveStress::testCalculateCubic(void)
 { // testCalculateCubic
-  const double valueE = 6.0;
+  const PylithScalar valueE = 6.0;
   
   _EffectiveStress::Cubic material;
 
   const int ntests = 4;
-  const double guesses[ntests] = { 2.0, 4.0, 6.0, 8.0 };
-  const double scale = 1.0;
-  const double tolerance = 1.0e-06;
+  const PylithScalar guesses[ntests] = { 2.0, 4.0, 6.0, 8.0 };
+  const PylithScalar scale = 1.0;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < ntests; ++i) {
-    const double value =
+    const PylithScalar value =
       EffectiveStress::calculate<_EffectiveStress::Cubic>(guesses[i], scale,
 							   &material);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, value/valueE, tolerance);

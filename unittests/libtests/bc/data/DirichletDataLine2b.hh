@@ -53,9 +53,9 @@ private:
   static const int _fixedDOF[]; ///< Degrees of freedom constrained at points
 
   static const int _constrainedPoints[]; ///< Array of indices of constrained pts.
-  static const double _tRef; ///< Reference time for rate of change of value
-  static const double _valueRate; ///< Rate of change of values.
-  static const double _valuesInitial[]; ///< Initial values.
+  static const PylithScalar _tRef; ///< Reference time for rate of change of value
+  static const PylithScalar _valueRate; ///< Rate of change of values.
+  static const PylithScalar _valuesInitial[]; ///< Initial values.
 
   static const char* _meshFilename; ///< Filename of input mesh.
   static const char* _dbFilename; ///< Filename of simple spatial database.

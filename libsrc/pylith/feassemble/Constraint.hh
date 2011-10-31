@@ -94,7 +94,7 @@ public :
    * @param field Solution field
    */
   virtual
-  void setField(const double t,
+  void setField(const PylithScalar t,
 		const topology::Field<topology::Mesh>& field) = 0;
 
   /** Set increment in values from t0 to t1 in field.
@@ -104,8 +104,8 @@ public :
    * @param field Solution field
    */
   virtual
-  void setFieldIncr(const double t0,
-		    const double t1,
+  void setFieldIncr(const PylithScalar t0,
+		    const PylithScalar t1,
 		    const topology::Field<topology::Mesh>& field) = 0;
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////

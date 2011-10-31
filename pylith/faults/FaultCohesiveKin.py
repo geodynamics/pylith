@@ -73,7 +73,6 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
   output = pyre.inventory.facility("output", family="output_manager",
                                    factory=OutputFaultKin)
   output.meta['tip'] = "Output manager associated with fault data."
-  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 

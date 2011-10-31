@@ -98,8 +98,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     _tstampIndex = 0;
     const int rank = sieveMesh->commRank();
     const int localSize = (!rank) ? 1 : 0;
-    err = VecCreateMPI(mesh.comm(), localSize, PETSC_DETERMINE, &_tstamp);
+    err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);
     CHECK_PETSC_ERROR(err);
+    assert(_tstamp);
     err = VecSetBlockSize(_tstamp, 1); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) _tstamp, "time");
 
@@ -129,7 +130,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     assert(!vNumbering.isNull());
     //vNumbering->view("VERTEX NUMBERING");
 
-    coordinates.createScatterWithBC(vNumbering, context);
+    coordinates.createScatterWithBC(mesh, vNumbering, context);
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
@@ -166,13 +167,14 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     const int ncells = cNumbering->getLocalSize();
     const int conesSize = ncells*numCorners;
-    PetscScalar* tmpVertices = (conesSize > 0) ? new PetscScalar[conesSize] : 0;
+    PylithScalar* tmpVertices = (conesSize > 0) ? new PylithScalar[conesSize] : 0;
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
-    ALE::ISieveVisitor::NConeRetriever<sieve_type> 
-      ncV(*sieve, (size_t) pow((double) sieve->getMaxConeSize(), 
-			       std::max(0, sieveMesh->depth())));
+    const int closureSize = 
+      int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+    assert(closureSize >= 0);
+    ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
 
     int k = 0;
     const typename label_sequence::const_iterator cellsEnd = cells->end();
@@ -185,8 +187,17 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 	const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
 	  ncV.getOrientedPoints();
 	const int coneSize = ncV.getOrientedSize();
-          for (int c=0; c < coneSize; ++c)
-            tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
+	if (coneSize != numCorners) {
+	  std::ostringstream msg;
+	  msg << "Inconsistency in topology found for mesh '"
+	      << sieveMesh->getName() << "' during output.\n"
+	      << "Number of vertices (" << coneSize << ") in cell '"
+	      << *c_iter << "' does not expected number of vertices ("
+	      << numCorners << ").";
+	  throw std::runtime_error(msg.str());
+	} // if
+	for (int c=0; c < coneSize; ++c)
+	  tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
 
     PetscVec elemVec;
@@ -201,14 +212,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
 
-    if (!rank) {
-      hid_t h5 = -1;
-      err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
-      assert(h5 >= 0);
-      const int cellDim = mesh.dimension();
-      HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim,
-			   H5T_NATIVE_INT);
-    } // if
+    hid_t h5 = -1;
+    err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
+    assert(h5 >= 0);
+    const int cellDim = mesh.dimension();
+    HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim,
+			 H5T_NATIVE_INT);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file "
@@ -231,16 +240,21 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
   PetscErrorCode err = 0;
   err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
   err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
+  assert(!_tstamp);
 
   _timesteps.clear();
   _tstampIndex = 0;
 
-  Xdmf metafile;
-  const std::string& hdf5filename = _hdf5Filename();
-  const int indexExt = hdf5filename.find(".h5");
-  std::string xdmfFilename = 
-    std::string(hdf5filename, 0, indexExt) + ".xmf";
-  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  int rank = 0;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+  if (!rank) {
+    Xdmf metafile;
+    const std::string& hdf5filename = _hdf5Filename();
+    const int indexExt = hdf5filename.find(".h5");
+    std::string xdmfFilename = 
+      std::string(hdf5filename, 0, indexExt) + ".xmf";
+    metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  } // if
 } // close
 
 // ----------------------------------------------------------------------
@@ -248,7 +262,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::close(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
-				            const double t,
+				            const PylithScalar t,
 					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
@@ -266,7 +280,16 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
       sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
     assert(!vNumbering.isNull());
-    field.createScatterWithBC(vNumbering, context);
+
+#if 0
+    std::cout << "WRITE VERTEX FIELD" << std::endl;
+    mesh.view("MESH");
+    field.view("FIELD");;
+    vNumbering->view("NUMBERING");
+    std::cout << std::endl;
+#endif
+
+    field.createScatterWithBC(mesh, vNumbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
@@ -312,7 +335,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
 
-    if (!rank && 0 == istep) {
+    if (0 == istep) {
       hid_t h5 = -1;
       err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
       assert(h5 >= 0);
@@ -338,7 +361,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
-				       const double t,
+				       const PylithScalar t,
 				       field_type& field,
 				       const char* label,
 				       const int labelId)
@@ -362,11 +385,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     const ALE::Obj<typename mesh_type::SieveMesh::numbering_type>& numbering = 
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
-    field.createScatterWithBC(numbering, context);
+    field.createScatterWithBC(field.mesh(), numbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
-
     const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
     assert(!section.isNull());      
     assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
@@ -401,7 +423,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
 
-    if (!rank && 0 == istep) {
+    if (0 == istep) {
       hid_t h5 = -1;
       err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
       assert(h5 >= 0);
@@ -446,13 +468,15 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_hdf5Filename(void) const
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
-						    const double t,
+						    const PylithScalar t,
 						    const int rank)
 { // _writeTimeStamp
+  assert(_tstamp);
   PetscErrorCode err = 0;
 
-  if (!rank) {
-    err = VecSetValue(_tstamp, 0, t, INSERT_VALUES); CHECK_PETSC_ERROR(err);
+  if (0 == rank) {
+    const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+    err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); CHECK_PETSC_ERROR(err);
   } // if
   err = VecAssemblyBegin(_tstamp); CHECK_PETSC_ERROR(err);
   err = VecAssemblyEnd(_tstamp); CHECK_PETSC_ERROR(err);

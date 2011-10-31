@@ -47,7 +47,6 @@ class pylith::faults::TestFaultCohesiveKinTet4e : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testIntegrateJacobianLumped );
-  CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testCalcTractionsChange );
   CPPUNIT_TEST( testSplitField );
 

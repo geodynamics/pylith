@@ -76,27 +76,27 @@ const int pylith::faults::CohesiveKinDataTri3d::_cellDim = 1;
 
 const int pylith::faults::CohesiveKinDataTri3d::_numBasis = 2;
 
-const int pylith::faults::CohesiveKinDataTri3d::_numQuadPts = 1;
+const int pylith::faults::CohesiveKinDataTri3d::_numQuadPts = 2;
 
-const double pylith::faults::CohesiveKinDataTri3d::_quadPts[] = {
-  0.0,
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_quadPts[] = {
+  -1.0, 1.0,
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_quadWts[] = {
-  2.0,
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_quadWts[] = {
+  1.0, 1.0
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_basis[] = {
-  0.5,
-  0.5
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_basis[] = {
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_basisDeriv[] = {
-  -0.5,
-   0.5
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_basisDeriv[] = {
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_verticesRef[] = {
   -1.0, 1.0
 };
 
@@ -113,7 +113,7 @@ const char* pylith::faults::CohesiveKinDataTri3d::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTri3d::_riseTimeFilename = 
   "data/tri3d_risetime.spatialdb";
 
-const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   6.1, 8.1,
   6.2, 8.2, // 5
   6.3, 8.3, // 6
@@ -128,15 +128,45 @@ const double pylith::faults::CohesiveKinDataTri3d::_fieldT[] = {
   7.2, 9.2, // 15
 };
 
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_fieldIncr[] = {
+  3.1, 7.1,
+  3.2, 7.2, // 5
+  3.3, 7.3, // 6
+  3.4, 7.4,
+  3.5, 7.5, // 8
+  3.6, 7.6,
+  3.7, 7.7, // 10
+  3.9, 7.9, // 11
+  3.1, 7.1, // 12
+  3.8, 7.8, // 13
+  3.0, 7.0, // 14
+  2.2, 5.2, // 15
+};
 
-const double pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobianLumped[] = {
+  6.1, 8.1,
+  6.2, 8.2, // 5
+  6.3, 8.3, // 6
+  6.4, 8.4,
+  6.5, 8.5, // 8
+  6.6, 8.6,
+  6.7, 8.7, // 10
+  6.9, 8.9, // 11
+  7.1, 9.1, // 12
+  1.0, 1.0, // 13
+  1.0, 1.0, // 14
+  1.0, 1.0, // 15
+};
+
+
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_orientation[] = {
   +0.70710678118654757, -0.70710678118654757,  
   -0.70710678118654757, -0.70710678118654757,
   0.0, -1.0,  -1.0,  0.0,
  +1.0,  0.0,   0.0, -1.0
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_area[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_area[] = {
   2.0,
   1.0,
   1.0,
@@ -164,37 +194,43 @@ const int pylith::faults::CohesiveKinDataTri3d::_cellMappingCohesive[] = {
   16, 17
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_residual[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residual[] = {
   0.0,  0.0,
- -1.4142135623730949, -11.030865786510143, // 5
- -8.0,  -6.0, // 6
+ +2.0*6.8, +2.0*8.8, // 5
+ +1.0*6.0, +1.0*8.0, // 6
   0.0,  0.0,
- +7.2,  -9.2, // 8
+ +1.0*7.2, +1.0*9.2, // 8
   0.0,  0.0,
- +1.4142135623730949, +11.030865786510143, // 10
- +8.0, +6.0, // 11
- -7.2, +9.2, // 12
-  0.0+1.89546413727, +0.70710678118654757+0.08241148423, // 13
-  0.6+1.77538035254, 0.6+0.14794836271, // 14
- -0.6+1.59887481971,  0.6+0.19186497837, // 15
+ -2.0*6.8, -2.0*8.8, // 10
+ -1.0*6.0, -1.0*8.0, // 6
+ -1.0*7.2, -1.0*9.2, // 8
+  -2.0*(6.7-6.2 -0.70710678118654757*(1.89546413727-0.08241148423)),
+  -2.0*(8.7-8.2 -0.70710678118654757*(-1.89546413727-0.08241148423)), // 13
+  -1.0*(6.9-6.3 +0.14794836271),
+  -1.0*(8.9-8.3 +1.77538035254), // 14
+  -1.0*(7.1-6.5 -1.59887481971),
+  -1.0*(9.1-8.5 +0.19186497837), // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residualIncr[] = {
   0.0,  0.0,
- -1.4142135623730949, -11.030865786510143, // 5
- -8.0,  -6.0, // 6
+ +2.0*6.8, +2.0*8.8, // 5
+ +1.0*6.0, +1.0*8.0, // 6
   0.0,  0.0,
- +7.2,  -9.2, // 8
+ +1.0*7.2, +1.0*9.2, // 8
   0.0,  0.0,
- +1.4142135623730949, +11.030865786510143, // 10
- +8.0, +6.0, // 11
- -7.2, +9.2, // 12
-  0.0+1.89546413727, +0.70710678118654757+0.08241148423, // 13
-  0.6+1.77538035254, 0.6+0.14794836271, // 14
- -0.6+1.59887481971,  0.6+0.19186497837, // 15
+ -2.0*6.8, -2.0*8.8, // 10
+ -1.0*6.0, -1.0*8.0, // 6
+ -1.0*7.2, -1.0*9.2, // 8
+  -2.0*(6.7-6.2 -0.70710678118654757*(1.89546413727-0.08241148423)),
+  -2.0*(8.7-8.2 -0.70710678118654757*(-1.89546413727-0.08241148423)), // 13
+  -1.0*(6.9-6.3 +0.14794836271),
+  -1.0*(8.9-8.3 +1.77538035254), // 14
+  -1.0*(7.1-6.5 -1.59887481971),
+  -1.0*(9.1-8.5 +0.19186497837), // 15
 };
 
-const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0, // 4x
   0.0, 0.0,
   0.0, 0.0,
@@ -228,7 +264,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -0.70710678118654757, +0.70710678118654757, // 13
+ -2.0, 0.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 5y
@@ -240,7 +276,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +0.70710678118654757, +0.70710678118654757, // 13
+  0.0,-2.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 6x
@@ -253,7 +289,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 14
+ -1.0, 0.0, // 14
   0.0, 0.0,
   0.0, 0.0, // 6y
   0.0, 0.0,
@@ -265,7 +301,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 14
+  0.0,-1.0, // 14
   0.0, 0.0,
   0.0, 0.0, // 7x
   0.0, 0.0,
@@ -314,7 +350,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 15
+  0.0,-1.0, // 15
   0.0, 0.0, // 9x
   0.0, 0.0,
   0.0, 0.0,
@@ -348,7 +384,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +0.70710678118654757, -0.70710678118654757, // 13
+ +2.0, 0.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 10y
@@ -360,7 +396,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -0.70710678118654757, -0.70710678118654757, // 13
+  0.0,+2.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 11x
@@ -373,7 +409,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 14
+ +1.0, 0.0, // 14
   0.0, 0.0,
   0.0, 0.0, // 11y
   0.0, 0.0,
@@ -385,7 +421,7 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 14
+  0.0,+1.0, // 14
   0.0, 0.0,
   0.0, 0.0, // 12x
   0.0, 0.0,
@@ -410,26 +446,26 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 15
+  0.0,+1.0, // 15
   0.0, 0.0, // 13x
- -0.70710678118654757, +0.70710678118654757, // 5
+ -2.0, 0.0, // 5
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +0.70710678118654757, -0.70710678118654757, // 10
+ +2.0, 0.0, // 10
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 13y
- +0.70710678118654757, +0.70710678118654757, // 5
+  0.0,-2.0, // 5
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -0.70710678118654757, -0.70710678118654757, // 10
+  0.0,+2.0, // 10
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -437,24 +473,24 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0, // 14x
   0.0, 0.0,
-  0.0,+1.0, // 6
+ -1.0, 0.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 11
+ +1.0, 0.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 14y
   0.0, 0.0,
- +1.0, 0.0, // 6
+  0.0,-1.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 11
+  0.0,+1.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -475,11 +511,11 @@ const double pylith::faults::CohesiveKinDataTri3d::_jacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 8
+  0.0,-1.0, // 8
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 12
+  0.0,+1.0, // 12
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -492,22 +528,24 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   riseTimeFilename = const_cast<char*>(_riseTimeFilename);
-  fieldT = const_cast<double*>(_fieldT);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  residual = const_cast<double*>(_residual);
-  residualIncr = const_cast<double*>(_residualIncr);
-  jacobian = const_cast<double*>(_jacobian);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldIncr = const_cast<PylithScalar*>(_fieldIncr);
+  jacobianLumped = const_cast<PylithScalar*>(_jacobianLumped);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  residual = const_cast<PylithScalar*>(_residual);
+  residualIncr = const_cast<PylithScalar*>(_residualIncr);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
   verticesFault = const_cast<int*>(_verticesFault);
   verticesLagrange = const_cast<int*>(_verticesLagrange);
   verticesNegative = const_cast<int*>(_verticesNegative);

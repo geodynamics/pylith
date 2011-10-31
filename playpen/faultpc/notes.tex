@@ -35,57 +35,58 @@
 
 We have a Jacobian of the form
 \begin{equation}
-  J = \left( \begin{array}{cc}
-    A & C^T \\
-    C & 0
+  A = \left( \begin{array}{cc}
+    K & L^T \\
+    L & 0
   \end{array} \right).
 \end{equation}
-We use the Schur complement of block A to examine the form of $J^{-1}$,
+We use the Schur complement of block K to examine the form of $A^{-1}$,
 \begin{equation}
-  J^{-1} = \left( \begin{array}{cc}
-    A^{-1}+A^{-1} C^{T}(-C A^{-1} C^{T})^{-1} C A^{-1} & 
-    -A^{-1}C^{T}(-C A^{-1} C^{T})^{-1} \\
-    -(-C A^{-1} C^{T})^{-1} C A^{-1} & -(C A^{-1} C^T)^{-1}
+  A^{-1} = \left( \begin{array}{cc}
+    K^{-1}+K^{-1} L^{T}(-L K^{-1} L^{T})^{-1} L K^{-1} & 
+    -K^{-1}L^{T}(-L K^{-1} L^{T})^{-1} \\
+    -(-L K^{-1} L^{T})^{-1} L K^{-1} & -(L K^{-1} L^T)^{-1}
   \end{array} \right),
 \end{equation}
-A suitable block diagonal $P^{-1}$ is
+A suitable block diagonal approximation of $A^{-1}$ is
 \begin{equation}
   P^{-1} = \left( \begin{array}{cc}
-    A^{-1} & 0 \\
-    0 & -(C A^{-1} C^T)^{-1}
+    K^{-1} & 0 \\
+    0 & -(L K^{-1} L^T)^{-1}
   \end{array} \right),
 \end{equation}
 which leads to
 \begin{equation}
   P = \left( \begin{array}{cc}
-    A & 0 \\
-    0 & C A^{-1} C^T
+    K & 0 \\
+    0 & L K^{-1} L^T
   \end{array} \right).
 \end{equation}
 
-We provide PETSc with $P$ so that it can create $P^{-1}$. Using the
-field split preconditioner, we form
+We provide PETSc with preconditioning matrix $P$ so that it can create
+$P^{-1}$. Using the field split preconditioner, we form
 \begin{equation}
   P = \left( \begin{array}{cc}
-    A_\mathit{ml} & 0 \\
+    K_\mathit{ml} & 0 \\
     0 & P_f
   \end{array} \right),
 \end{equation}
-where we use the ML package to form $A_\mathit{ml}$ and we create a
-custom matrix for the portion of the preconditioner associated with
+where we use the ML package to form $K_\mathit{ml}$ and we create a
+custom matrix for the portion of the preconditioning matrix associated with
 the Lagrange constraints, $P_f$. Let $n$ be the number of conventional
 degrees of freedom and $l$ be the number of Lagrange constraints. This
-means $A$ and $P$ are $(n+l) \times (n+l)$, $A$ and $A_\mathit{ml}$
-are $n \times n$, $C$ is $l \times n$, and $P_f$ is $l \times l$.
-We let $P_f$ be the the diagonal approximation of $C A^{-1} C^T$,
+means $K$ and $P$ are $(n+l) \times (n+l)$, $K$ and $K_\mathit{ml}$
+are $n \times n$, $L$ is $l \times n$, and $P_f$ is $l \times l$.
+
+We let $P_f$ be the the diagonal approximation of $L K^{-1} L^T$,
 \begin{equation}
-  P_f = \text{diagonal}(C A_\mathit{diag}^{-1} C^T).
+  P_f = \text{diagonal}(L K_\mathit{diag}^{-1} L^T).
 \end{equation}
 Using the {\tt multiplicative} field split type, PETSc will form
 $P^{-1}$ as
 \begin{equation}
   P^{-1} = \left( \begin{array}{cc}
-    A_\mathit{ml}^{-1} & -A_\mathit{ml}^{-1} C^T ?? \\
+    K_\mathit{ml}^{-1} & -K_\mathit{ml}^{-1} L^T ?? \\
     0 & P_f^{-1}
   \end{array} \right).
 \end{equation}

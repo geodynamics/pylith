@@ -41,13 +41,29 @@
 %} // inline
 
 // ----------------------------------------------------------------------
-// sizeofVoidPtr
+// PetscOptionsSetValue
 %inline %{
   int
-  sizeofVoidPtr(void)
-  { // sizeofVoidPtr
-    return sizeof(void*);
-  } // sizeofVoidPtr
+  optionsSetValue(const char* name,
+		  const char* value)
+  { // optionsSetValue
+    PetscErrorCode err = PetscOptionsSetValue(name, value); CHKERRQ(err);
+    return 0;
+  } // optionsSetValue
+%} // inline
+
+// ----------------------------------------------------------------------
+// PetscOptionsHasName
+%inline %{
+  bool
+  optionsHasName(const char* name)
+  { // optionsHasName
+    PetscBool hasName = PetscBool(0);
+    PetscErrorCode err =
+      PetscOptionsHasName(PETSC_NULL, name, &hasName);
+
+    return (hasName) ? true : false;
+  } // optionsHasName
 %} // inline
 
 

@@ -82,13 +82,13 @@ public :
    * @param dt Current time step.
    */
   virtual
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Get current time step.
    *
    * @returns Current time step.
    */
-  double timeStep(void) const;
+  PylithScalar timeStep(void) const;
 
   /** Set database for physical property parameters.
    *
@@ -116,12 +116,10 @@ public :
    *
    * @param mesh Finite-element mesh of subdomain.
    * @param quadrature Quadrature for finite-element integration
-   * @param area Area at vertices of subdomain.
    */
   virtual
   void initialize(const topology::SubMesh& mesh,
-		  feassemble::Quadrature<topology::SubMesh>* quadrature,
-		  const topology::Field<topology::SubMesh>& area);
+		  feassemble::Quadrature<topology::SubMesh>* quadrature);
   
   /** Check whether friction model has a field as a property or state
    * variable.
@@ -164,9 +162,9 @@ public :
    *
    * @returns Friction (magnitude of shear traction) at vertex.
    */
-  double calcFriction(const double slip,
-                      const double slipRate,
-                      const double normalTraction);
+  PylithScalar calcFriction(const PylithScalar slip,
+                      const PylithScalar slipRate,
+                      const PylithScalar normalTraction);
   
   /** Compute friction at vertex.
    *
@@ -178,9 +176,9 @@ public :
    * @param normalTraction Normal traction at location.
    * @param vertex Finite-element vertex on friction interface.
    */
-  void updateStateVars(const double slip,
-		       const double slipRate,
-		       const double normalTraction,
+  void updateStateVars(const PylithScalar slip,
+		       const PylithScalar slipRate,
+		       const PylithScalar normalTraction,
 		       const int vertex);
   
   // PROTECTED METHODS //////////////////////////////////////////////////
@@ -194,8 +192,8 @@ protected :
    * @param dbValues Array of database values.
    */
   virtual
-  void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) const = 0;
+  void _dbToProperties(PylithScalar* const propValues,
+		       const scalar_array& dbValues) const = 0;
 
   /** Nondimensionalize properties.
    *
@@ -203,7 +201,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const = 0;
 
   /** Dimensionalize properties.
@@ -212,7 +210,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const = 0;
 
   /** Compute initial state variables from values in spatial database.
@@ -221,8 +219,8 @@ protected :
    * @param dbValues Array of database values.
    */
   virtual
-  void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const;
+  void _dbToStateVars(PylithScalar* const stateValues,
+		      const scalar_array& dbValues) const;
 
   /** Nondimensionalize state variables.
    *
@@ -230,7 +228,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _nondimStateVars(double* const values,
+  void _nondimStateVars(PylithScalar* const values,
 			   const int nvalues) const;
   
   /** Dimensionalize state variables.
@@ -239,7 +237,7 @@ protected :
    * @param nvalues Number of values.
    */
   virtual
-  void _dimStateVars(double* const values,
+  void _dimStateVars(PylithScalar* const values,
 			const int nvalues) const;
 
   /** Compute friction from properties and state variables.
@@ -253,12 +251,12 @@ protected :
    * @param numStateVars Number of state variables.
    */
   virtual
-  double _calcFriction(const double slip,
-		       const double slipRate,
-		       const double normalTraction,
-		       const double* properties,
+  PylithScalar _calcFriction(const PylithScalar slip,
+		       const PylithScalar slipRate,
+		       const PylithScalar normalTraction,
+		       const PylithScalar* properties,
 		       const int numProperties,
-		       const double* stateVars,
+		       const PylithScalar* stateVars,
 		       const int numStateVars) = 0;
 
   /** Update state variables (for next time step).
@@ -272,12 +270,12 @@ protected :
    * @param numProperties Number of properties.
    */
   virtual
-  void _updateStateVars(const double slip,
-			const double slipRate,
-			const double normalTraction,
-			double* const stateVars,
+  void _updateStateVars(const PylithScalar slip,
+			const PylithScalar slipRate,
+			const PylithScalar normalTraction,
+			PylithScalar* const stateVars,
 			const int numStateVars,
-			const double* properties,
+			const PylithScalar* properties,
 			const int numProperties);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
@@ -289,7 +287,7 @@ private :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  double _dt; ///< Current time step
+  PylithScalar _dt; ///< Current time step
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer
   
@@ -312,7 +310,7 @@ private :
   topology::FieldsNew<topology::SubMesh>* _fieldsPropsStateVars;
 
   /// Buffer for properties and state variables at vertex.
-  double_array _propsStateVarsVertex;
+  scalar_array _propsStateVarsVertex;
 
   int _propsFiberDim; ///< Number of properties per point.
   int _varsFiberDim; ///< Number of state variables per point.

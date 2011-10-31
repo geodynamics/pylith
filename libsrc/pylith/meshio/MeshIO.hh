@@ -31,8 +31,7 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
-#include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
-                                    // string_vector
+#include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 
 // MeshIO ---------------------------------------------------------------
 /// C++ abstract base class for managing mesh input/output.
@@ -124,7 +123,7 @@ protected :
    * @param numVertices Pointer to number of vertices
    * @param spaceDim Poiner to dimension of vector space for coordinates
    */
-  void _getVertices(double_array* coordinates,
+  void _getVertices(scalar_array* coordinates,
 		    int* numVertices,
 		    int* spaceDim) const;
 

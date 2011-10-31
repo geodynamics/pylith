@@ -228,7 +228,7 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
 		       fieldA.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
   const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
@@ -238,7 +238,7 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionA->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(3, fiberDim);
-    const double* values = sectionA->restrictPoint(*v_iter);
+    const PylithScalar* values = sectionA->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(values);
   } // for
 
@@ -249,7 +249,7 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
 		       std::string(fieldB.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::OTHER,
 		       fieldB.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(2.0, fieldB.scale());
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(2.0), fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
 
   const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();
@@ -259,7 +259,7 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
       ++v_iter) {
     const int fiberDim = sectionB->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(4, fiberDim);
-    const double* values = sectionB->restrictPoint(*v_iter);
+    const PylithScalar* values = sectionB->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(values);
   } // for
 
@@ -296,7 +296,7 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(fieldA.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
 		       fieldA.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(1.0, fieldA.scale());
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
   const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
@@ -315,7 +315,7 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
 		       std::string(fieldB.label()));
   CPPUNIT_ASSERT_EQUAL(FieldBase::OTHER,
 		       fieldB.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(2.0, fieldB.scale());
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(2.0), fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
 
   const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();

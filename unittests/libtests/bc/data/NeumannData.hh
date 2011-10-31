@@ -19,6 +19,8 @@
 #if !defined(pylith_bc_neumanndata_hh)
 #define pylith_bc_neumanndata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace bc {
      class NeumannData;
@@ -46,10 +48,10 @@ public:
   //@{
   int numBasis; ///< Number of basis functions for surface cells.
   int numQuadPts; ///< Number of quadrature points per boundary cell.
-  double* quadPts; ///< Coordinates of quadrature points in ref cell.
-  double* quadWts; ///< Weights of quadrature points.
-  double* basis; ///< Cell basis functions at quad points.
-  double* basisDerivRef; ///< Derivatives of basis functions at quad points.
+  PylithScalar* quadPts; ///< Coordinates of quadrature points in ref cell.
+  PylithScalar* quadWts; ///< Weights of quadrature points.
+  PylithScalar* basis; ///< Cell basis functions at quad points.
+  PylithScalar* basisDerivRef; ///< Derivatives of basis functions at quad points.
   //@}
 
   /// @name Parameter information
@@ -71,8 +73,8 @@ public:
 
   /// @name Calculated values.
   //@{
-  double* tractionsCell; ///< Expected traction values at quadrature points.
-  double* valsResidual; ///< Expected residual at each vertex.
+  PylithScalar* tractionsCell; ///< Expected traction values at quadrature points.
+  PylithScalar* valsResidual; ///< Expected residual at each vertex.
   //@}
 
 

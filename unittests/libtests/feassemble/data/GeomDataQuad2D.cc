@@ -22,21 +22,21 @@ const int pylith::feassemble::GeomDataQuad2D::_cellDim = 2;
 
 const int pylith::feassemble::GeomDataQuad2D::_spaceDim = 2;
 
-const double pylith::feassemble::GeomDataQuad2D::_gravityVec[] = {
+const PylithScalar pylith::feassemble::GeomDataQuad2D::_gravityVec[] = {
   0.0, -9.80665 };
 
 const int pylith::feassemble::GeomDataQuad2D::_numCorners = 4;
 
 const int pylith::feassemble::GeomDataQuad2D::_numLocs = 5;
 
-const double pylith::feassemble::GeomDataQuad2D::_vertices[] = {
+const PylithScalar pylith::feassemble::GeomDataQuad2D::_vertices[] = {
   0.3, 0.1,
   0.8, -0.2,
   0.7, 1.2,
   -0.1, 1.6,
 };
 
-const double pylith::feassemble::GeomDataQuad2D::_locations[] = {
+const PylithScalar pylith::feassemble::GeomDataQuad2D::_locations[] = {
  -1.0, -1.0,
   1.0, -1.0,
  -1.0,  1.0,
@@ -45,7 +45,7 @@ const double pylith::feassemble::GeomDataQuad2D::_locations[] = {
 };
 
 // Reference cell has area of 2.0, so divide by 2.0;
-const double pylith::feassemble::GeomDataQuad2D::_jacobian[] = {
+const PylithScalar pylith::feassemble::GeomDataQuad2D::_jacobian[] = {
   0.5/2.0, -0.4/2.0, -0.3/2.0, 1.5/2.0,
   0.5/2.0, -0.1/2.0, -0.3/2.0, 1.4/2.0,
   0.8/2.0, -0.4/2.0, -0.4/2.0, 1.5/2.0,
@@ -54,7 +54,7 @@ const double pylith::feassemble::GeomDataQuad2D::_jacobian[] = {
 };
 
 // Reference cell has area of 2.0, so divide by 4.0;
-const double pylith::feassemble::GeomDataQuad2D::_jacobianDet[] = {
+const PylithScalar pylith::feassemble::GeomDataQuad2D::_jacobianDet[] = {
   0.63/4.0,
   0.67/4.0,
   1.04/4.0,
@@ -68,11 +68,11 @@ pylith::feassemble::GeomDataQuad2D::GeomDataQuad2D(void)
   spaceDim = _spaceDim;
   numCorners = _numCorners;
   numLocs = _numLocs;
-  gravityVec = const_cast<double*>(_gravityVec);
-  vertices = const_cast<double*>(_vertices);
-  locations = const_cast<double*>(_locations);
-  jacobian = const_cast<double*>(_jacobian);
-  jacobianDet = const_cast<double*>(_jacobianDet);
+  gravityVec = const_cast<PylithScalar*>(_gravityVec);
+  vertices = const_cast<PylithScalar*>(_vertices);
+  locations = const_cast<PylithScalar*>(_locations);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  jacobianDet = const_cast<PylithScalar*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataQuad2D::~GeomDataQuad2D(void)

@@ -23,7 +23,7 @@
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "ExodusII.hh" // USES ExodusII
 
-#include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
+#include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 
 #include "petsc.h" // USES MPI_Comm
 #include "journal/info.h" // USES journal::info_t
@@ -68,7 +68,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   int numVertices = 0;
   int numCells = 0;
   int numCorners = 0;
-  double_array coordinates;
+  scalar_array coordinates;
   int_array cells;
   int_array materialIds;
 
@@ -124,7 +124,7 @@ pylith::meshio::MeshIOCubit::_write(void) const
 // Read mesh vertices.
 void
 pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
-					   double_array* coordinates,
+					   scalar_array* coordinates,
 					   int* numVertices, 
 					   int* numDims) const
 { // _readVertices
@@ -148,7 +148,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
     int dims[2];
     dims[0] = *numDims;
     dims[1] = *numVertices;
-    double_array buffer(*numVertices * *numDims);
+    scalar_array buffer(*numVertices * *numDims);
     exofile.getVar(&buffer[0], dims, ndims, "coord");
     
     coordinates->resize(*numVertices * *numDims);
@@ -161,7 +161,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
     const char* coordNames[3] = { "coordx", "coordy", "coordz" };
 
     coordinates->resize(*numVertices * *numDims);
-    double_array buffer(*numVertices);
+    scalar_array buffer(*numVertices);
 
     const int ndims = 1;
     int dims[1];

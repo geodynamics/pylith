@@ -90,7 +90,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(const DataWri
 // Set value used to normalize time stamp in name of VTK file.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const double value)
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const PylithScalar value)
 { // timeConstant
   if (value <= 0.0) {
     std::ostringstream msg;
@@ -105,7 +105,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const double v
 // Prepare file for data at a new time step.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t,
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithScalar t,
 						       const mesh_type& mesh,
 						       const char* label,
 						       const int labelId)
@@ -175,7 +175,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
-				            const double t,
+				            const PylithScalar t,
 					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
@@ -237,7 +237,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
-				       const double t,
+				       const PylithScalar t,
 				       field_type& field,
 				       const char* label,
 				       const int labelId)
@@ -303,7 +303,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 // Generate filename for VTK file.
 template<typename mesh_type, typename field_type>
 std::string
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const double t) const
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const PylithScalar t) const
 { // _vtkFilename
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");

@@ -95,7 +95,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   assert(0 != quadrature);
 
   const int numQuadPts = quadrature->numQuadPts();
-  const double_array& wts = quadrature->quadWts();
+  const scalar_array& wts = quadrature->quadWts();
   
   const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
   assert(!sieveMesh.isNull());
@@ -128,11 +128,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } else if (_fieldAvg->sectionSize() != cells->size()*fiberDim) {
-#if 1 // :BUG: Avoid memory leak in section->clear()
-    _fieldAvg->clear();
-#else
-    delete _fieldAvg; _fieldAvg = new field_type(fieldIn.mesh());
-#endif
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } // else
@@ -168,8 +163,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   _fieldAvg->scale(fieldIn.scale());
   _fieldAvg->addDimensionOkay(true);
 
-  double_array fieldAvgCell(fiberDim);
-  double scalar = 0.0;
+  scalar_array fieldAvgCell(fiberDim);
+  PylithScalar scalar = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     scalar += wts[iQuad];
 
@@ -177,7 +172,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   for (typename label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const double* values = sectionIn->restrictPoint(*c_iter);
+    const PylithScalar* values = sectionIn->restrictPoint(*c_iter);
     assert(totalFiberDim == sectionIn->getFiberDimension(*c_iter));
     
     fieldAvgCell = 0.0;

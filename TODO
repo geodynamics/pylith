@@ -2,15 +2,39 @@
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
+* configure
+  
+  + Check compatibility of PyLith options with PETSc
+    - HDF5
+    - CUDA
+
+* Module building
+
+  + We want the _wrap.cxx files to work independent of PETSC_ARCH
+    specific details. This was try until we included petscconf.h in
+    pylithtypes.i to resolve single/double precision issues.
+
+* GPU utilization
+
+  + Implicit elasticity finite-element integration
+  + Explicit elasticity finite-element integration
+
+* Green's functions
+
+* 2-D materials
+
+  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
+
+* Make nucleation for spontaneous rupture modular [BRAD]
+
+  spatial and temporal variation in shear/normal stress for nucleation
+
 * GenMaxwellQpQs [BRAD]
 
   2-D and 3-D versions
   Need to redo Maxwell time calculation. Use ratio.
   Create benchmark for test (compare against fk)
-
-* Make nucleation for spontaneous rupture modular [BRAD]
-
-  spatial and temporal variation in shear/normal stress for nucleation
 
 * Reimplement parameters to use PackedFields. [BRAD]
 
@@ -20,23 +44,10 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
       Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
-* Field split.
-
-    Add flag to material [default is false] for creating null vector
-    When setting up solver, create null vector, and pass it to KSP
-
-  Need to check performance of custom fault preconditioner.
-
-
 * Cleanup
 
-    Add elasticPrestep() to Formulation
+    Add elasticPrestep() to Formulation (called from Problem)
     Remove solnIncr, keep setField()
-
-* 2-D materials
-
-  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
 * Scalable distribution [MATT]
 
@@ -49,9 +60,30 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
 
   + Need ribbon around fault in order to develop algorithm
 
+======================================================================
+CURRENT ISSUES/PRIORITIES (1.8.0)
+======================================================================
+
+* GPU finite-element integrations (possible promotion to 1.7)
+
+* Higher order
+
+* Coupling
+
+* Field split. DELAY??
+
+    Add flag to material [default is false] for creating null vector
+    When setting up solver, create null vector, and pass it to KSP
+
+  Need to check performance of custom fault preconditioner.
+
 * Line search [MATT]
 
   Line search should be improved to include the inequality constraints.
+
+
+
+
 
 ----------------------------------------
 MISCELLANEOUS
@@ -88,21 +120,20 @@ SECONDARY PRIORITIES
 
 * Paper
 
+  General paper - focus on fault implementation
+  - BSSA, GGG
   
   geometry processing (adjusting topology)
   discretization (cohesive cells)
   model (Lagrange multipliers)
     Slip functions
     Fault constitutive models
-  solver
+  solver (saddle point)
+    custom preconditioner
   benchmarks
     Savage and Prescott
     Dynamic
   real problem  
-
-  General paper - focus on fault implementation
-
-  Custom preconditioner
 
 * Fault preconditioner [BRAD]
 

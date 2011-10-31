@@ -91,12 +91,14 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
+  virtual
   void open(const mesh_type& mesh,
 	    const int numTimeSteps,
 	    const char* label =0,
 	    const int labelId =0);
 
   /// Close output files.
+  virtual
   void close(void);
 
   /** Setup file for writing fields at time step.
@@ -107,12 +109,14 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void openTimeStep(const double t,
+  virtual
+  void openTimeStep(const PylithScalar t,
 		    const mesh_type& mesh,
 		    const char* label =0,
 		    const int labelId =0);
 
   /// End writing fields at time step.
+  virtual
   void closeTimeStep(void);
 
   /** Append finite-element vertex field to file.
@@ -121,7 +125,8 @@ public :
    * @param field Vertex field.
    * @param mesh Mesh for output.
    */
-  void appendVertexField(const double t,
+  virtual
+  void appendVertexField(const PylithScalar t,
 			 field_type& field,
 			 const mesh_type& mesh);
 
@@ -133,12 +138,13 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void appendCellField(const double t,
+  virtual
+  void appendCellField(const PylithScalar t,
 		       field_type& field,
 		       const char* label =0,
 		       const int labelId =0);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
+// PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
   /** Dimension field.
@@ -146,6 +152,11 @@ protected :
    * @param fieldIn Field to dimensionalize.
    */
   field_type& _dimension(field_type& fieldIn);
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  topology::Fields<field_type>* _fields; ///< Buffer fields.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -162,8 +173,6 @@ private :
   DataWriter<mesh_type, field_type>* _writer; ///< Writer for data.
   VertexFilter<field_type>* _vertexFilter; ///< Filter applied to vertex data.
   CellFilter<mesh_type, field_type>* _cellFilter; ///< Filter applied to cell data.
-
-  topology::Fields<field_type>* _fields; ///< Buffer fields.
 
 }; // OutputManager
 

@@ -23,7 +23,7 @@
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "data/IntegratorData.hh" // USES IntegratorData
 
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -83,7 +83,7 @@ pylith::feassemble::TestElasticityImplicit::testTimeStep(void)
 { // testTimeStep
   ElasticityImplicit integrator;
 
-  const double dt1 = 2.0;
+  const PylithScalar dt1 = 2.0;
   integrator.timeStep(dt1);
   CPPUNIT_ASSERT_EQUAL(dt1, integrator._dt);
   integrator.timeStep(dt1);
@@ -107,7 +107,7 @@ pylith::feassemble::TestElasticityImplicit::testMaterial(void)
   CPPUNIT_ASSERT_EQUAL(id, integrator._material->id());
   CPPUNIT_ASSERT_EQUAL(label, std::string(integrator._material->label()));
   CPPUNIT_ASSERT_EQUAL(integrator._dt, integrator._material->timeStep());
-  const double dt = 2.0;
+  const PylithScalar dt = 2.0;
   integrator.timeStep(dt);
   CPPUNIT_ASSERT_EQUAL(dt, integrator._material->timeStep());
 } // testMaterial
@@ -167,19 +167,19 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
   _initialize(&mesh, &integrator, &fields);
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateResidual(residual, t, &fields);
 
-  const double* valsE = _data->valsResidual;
+  const PylithScalar* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 4.0e-05;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -202,14 +202,14 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 
   topology::Jacobian jacobian(fields.solution());
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   //mesh->getSieve()->setDebug(10);
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   //mesh->getSieve()->setDebug(0);
   jacobian.assemble("final_assembly");
 
-  const double* valsE = _data->valsJacobian;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int nrowsE = _data->numVertices * _data->spaceDim;
   const int ncolsE = _data->numVertices * _data->spaceDim;
 
@@ -226,7 +226,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
-  double_array vals(nrows*ncols);
+  scalar_array vals(nrows*ncols);
   int_array rows(nrows);
   int_array cols(ncols);
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -234,7 +234,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
@@ -259,7 +259,7 @@ pylith::feassemble::TestElasticityImplicit::testUpdateStateVars(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
 
@@ -274,8 +274,8 @@ pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const double stableTimeStep = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXDOUBLE, stableTimeStep);
+  const PylithScalar stableTimeStep = integrator.stableTimeStep(mesh);
+  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

@@ -86,7 +86,7 @@ public :
 	   const char* label,
 	   const int fiberDim,
 	   FieldBase::VectorFieldEnum vectorFieldType =FieldBase::OTHER,
-	   const double scale =1.0,
+	   const PylithScalar scale =1.0,
 	   const bool dimsOkay =false);
 
   /** Create and allocate Sieve section.

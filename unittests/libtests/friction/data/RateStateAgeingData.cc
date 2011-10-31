@@ -32,15 +32,15 @@ const int pylith::friction::RateStateAgeingData::_numPropsVertex = 6;
 
 const int pylith::friction::RateStateAgeingData::_numVarsVertex = 1;
 
-const double pylith::friction::RateStateAgeingData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::friction::RateStateAgeingData::_lengthScale =   1.00000000e+03;
 
-const double pylith::friction::RateStateAgeingData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::friction::RateStateAgeingData::_timeScale =   1.00000000e+00;
 
-const double pylith::friction::RateStateAgeingData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::friction::RateStateAgeingData::_pressureScale =   2.25000000e+10;
 
-const double pylith::friction::RateStateAgeingData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::friction::RateStateAgeingData::_densityScale =   1.00000000e+03;
 
-const double pylith::friction::RateStateAgeingData::_dt = 0.01;
+const PylithScalar pylith::friction::RateStateAgeingData::_dt = 0.01;
 
 const int pylith::friction::RateStateAgeingData::_numPropertyValues[] = {
   1,
@@ -68,7 +68,7 @@ const char* pylith::friction::RateStateAgeingData::_dbStateVarValues[] = {
   "state-variable",
 };
 
-const double pylith::friction::RateStateAgeingData::_dbProperties[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_dbProperties[] = {
   0.6,
   0.000001,
   0.0370,
@@ -83,12 +83,12 @@ const double pylith::friction::RateStateAgeingData::_dbProperties[] = {
   1000000,
 };
 
-const double pylith::friction::RateStateAgeingData::_dbStateVars[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_dbStateVars[] = {
   92.7,
   93.7,
 };
 
-const double pylith::friction::RateStateAgeingData::_properties[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_properties[] = {
   0.6,
   0.000001,
   0.0370,
@@ -103,12 +103,12 @@ const double pylith::friction::RateStateAgeingData::_properties[] = {
   1000000,
 };
 
-const double pylith::friction::RateStateAgeingData::_stateVars[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_stateVars[] = {
   92.7,
   93.7,
 };
 
-const double pylith::friction::RateStateAgeingData::_propertiesNondim[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_propertiesNondim[] = {
   0.6,
   0.000000001,
   0.0000370,
@@ -123,32 +123,32 @@ const double pylith::friction::RateStateAgeingData::_propertiesNondim[] = {
   0.000044444444,
 };
 
-const double pylith::friction::RateStateAgeingData::_stateVarsNondim[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_stateVarsNondim[] = {
   92.7,
   93.7,
 };
 
-const double pylith::friction::RateStateAgeingData::_friction[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_friction[] = {
   1000001.285949009547604,
   1000001.164378652801948,
 };
 
-const double pylith::friction::RateStateAgeingData::_slip[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_slip[] = {
   0.12,
   0.22,
 };
 
-const double pylith::friction::RateStateAgeingData::_slipRate[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_slipRate[] = {
   0.0011,
   0.0021,
 };
 
-const double pylith::friction::RateStateAgeingData::_normalTraction[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_normalTraction[] = {
   -2.2,
   -2.3,
 };
 
-const double pylith::friction::RateStateAgeingData::_stateVarsUpdated[] = {
+const PylithScalar pylith::friction::RateStateAgeingData::_stateVarsUpdated[] = {
   92.682443150471812,
   93.668141160483529,
 };
@@ -170,18 +170,18 @@ pylith::friction::RateStateAgeingData::RateStateAgeingData(void)
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
   dt = _dt;
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  friction = const_cast<double*>(_friction);
-  slip = const_cast<double*>(_slip);
-  slipRate = const_cast<double*>(_slipRate);
-  normalTraction = const_cast<double*>(_normalTraction);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  friction = const_cast<PylithScalar*>(_friction);
+  slip = const_cast<PylithScalar*>(_slip);
+  slipRate = const_cast<PylithScalar*>(_slipRate);
+  normalTraction = const_cast<PylithScalar*>(_normalTraction);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::friction::RateStateAgeingData::~RateStateAgeingData(void)

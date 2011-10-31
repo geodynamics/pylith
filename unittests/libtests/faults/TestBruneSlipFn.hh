@@ -110,7 +110,7 @@ private :
   void _initialize(topology::Mesh* mesh,
 		   topology::SubMesh* faultMesh,
 		   BruneSlipFn* slipfn,
-		   const double originTime);
+		   const PylithScalar originTime);
 
   /** Test intialize().
    *

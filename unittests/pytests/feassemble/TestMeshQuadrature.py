@@ -59,7 +59,7 @@ class TestMeshQuadrature(unittest.TestCase):
     minJacobian = 4.0e-02;
     q = MeshQuadrature()
     q.minJacobian(minJacobian)
-    self.assertEqual(minJacobian, q.minJacobian())
+    self.assertAlmostEqual(minJacobian, q.minJacobian(), places=5)
     return
     
 
@@ -93,21 +93,30 @@ class TestMeshQuadrature(unittest.TestCase):
     cell.inventory.order = 2
     cell._configure()
 
+    scalarType = None
+    from pylith.utils.utils import sizeofPylithScalar
+    if 8 == sizeofPylithScalar():
+      scalarType = numpy.float64
+    elif 4 == sizeofPylithScalar():
+      scalarType = numpy.float32
+    else:
+      raise ValueError("Unknown size for PylithScalar.")
+
     verticesE = numpy.array([ [-1.0], [1.0], [0.0] ])
     quadPtsE = numpy.array( [[-1.0/3**0.5],
                              [+1.0/3**0.5]],
-                            dtype=numpy.float64 )
-    quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
+                            dtype=scalarType )
+    quadWtsE = numpy.array( [1.0, 1.0], dtype=scalarType )
 
     # Compute basis functions and derivatives at quadrature points
-    basisE = numpy.zeros( (2, 3), dtype=numpy.float64)
-    basisDerivE = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
+    basisE = numpy.zeros( (2, 3), dtype=scalarType)
+    basisDerivE = numpy.zeros( (2, 3, 1), dtype=scalarType)
     iQuad = 0
     for q in quadPtsE:
       basisE[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
-                                  dtype=numpy.float64).reshape( (3,) )
+                                  dtype=scalarType).reshape( (3,) )
       deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
-                          dtype=numpy.float64)      
+                          dtype=scalarType)      
       basisDerivE[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 
@@ -123,16 +132,15 @@ class TestMeshQuadrature(unittest.TestCase):
     self.assertEqual(3, quadrature.numBasis())
     self.assertEqual(2, quadrature.numQuadPts())
 
-    from pylith.utils.testarray import test_double
-    from pylith.utils.utils import TestArray_checkDouble
+    from pylith.utils.utils import TestArray_checkScalar
 
-    self.failUnless(TestArray_checkDouble(basisE.ravel(),
+    self.failUnless(TestArray_checkScalar(basisE.ravel(),
                                           quadrature.basis()))
-    self.failUnless(TestArray_checkDouble(basisDerivE.ravel(),
+    self.failUnless(TestArray_checkScalar(basisDerivE.ravel(),
                                           quadrature.basisDerivRef()))
-    self.failUnless(TestArray_checkDouble(quadPtsE.ravel(),
+    self.failUnless(TestArray_checkScalar(quadPtsE.ravel(),
                                           quadrature.quadPtsRef()))
-    self.failUnless(TestArray_checkDouble(quadWtsE.ravel(),
+    self.failUnless(TestArray_checkScalar(quadWtsE.ravel(),
                                           quadrature.quadWts()))
 
     quadrature.initializeGeometry()

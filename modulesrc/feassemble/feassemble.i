@@ -63,7 +63,7 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/doublearray.i"
+%include "../include/scalartypemaps.i"
 
 // Numpy interface stuff
 %{

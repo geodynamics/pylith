@@ -1174,8 +1174,11 @@ We express the trial solution and weighting function as linear combinations
 
 \end_inset
 
-Note that because the trial solution satisfies the Dirichlet boundary condition,
- the number of basis functions for 
+Note that because the weighting function is zero on 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+, the number of basis functions for 
 \begin_inset Formula $\vec{u}$
 \end_inset
 

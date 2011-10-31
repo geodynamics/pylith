@@ -56,7 +56,7 @@ MeshIOHDF5::read(ALE::Obj<ALE::PetscMesh>* pMesh)
   int numVertices = 0;
   int numElements = 0;
   int numCorners = 0;
-  double* coordinates = 0;
+  PylithScalar* coordinates = 0;
   int* elements = 0;
 
   MPI_Comm_rank(comm, &rank);
@@ -152,11 +152,11 @@ MeshIOHDF5::_writeMeshInfo(HDF5& fileout,
 // Read mesh vertices.
 void
 MeshIOHDF5::_readVertices(hid_t& filein,
-			  double** pCoordinates,
+			  PylithScalar** pCoordinates,
 			  int* pNumVertices, 
 			  int* pNumDims) const
 { // _readVertices
-  double* coordinates = 0;
+  PylithScalar* coordinates = 0;
   int numDims = 0;
   int numVertices = 0;
 
@@ -179,7 +179,7 @@ MeshIOHDF5::_writeVertices(HDF5& fileout,
   ALE::Obj<ALE::PetscMesh::field_type> coords_field = mesh->getCoordinates();
   ALE::Obj<ALE::PetscMesh::bundle_type> vertexBundle = mesh->getBundle(0);
   ALE::PetscMesh::field_type::patch_type patch;
-  const double* coordinates = coords_field->restrict(patch);
+  const PylithScalar* coordinates = coords_field->restrict(patch);
   const int numVertices = (vertexBundle->getGlobalOffsets()) ?
     vertexBundle->getGlobalOffsets()[mesh->commSize()] :
     mesh->getTopology()->depthStratum(0)->size();

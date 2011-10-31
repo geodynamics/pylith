@@ -65,7 +65,7 @@ public :
    * @param upDir Vertical direction (somtimes used in 3-D problems).
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Set number of degrees of freedom that are constrained at points in field.
    *
@@ -84,7 +84,7 @@ public :
    * @param t Current time
    * @param field Solution field
    */
-  void setField(const double t,
+  void setField(const PylithScalar t,
 		const topology::Field<topology::Mesh>& field);
 
   /** Set increment in values from t0 to t1 in field.
@@ -93,8 +93,8 @@ public :
    * @param t1 Time t+dt.
    * @param field Solution field
    */
-  void setFieldIncr(const double t0,
-		    const double t1,
+  void setFieldIncr(const PylithScalar t0,
+		    const PylithScalar t1,
 		    const topology::Field<topology::Mesh>& field);
 
   /** Verify configuration is acceptable.

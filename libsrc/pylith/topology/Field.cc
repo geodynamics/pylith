@@ -20,7 +20,7 @@
 
 #include "Field.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -87,6 +87,7 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
       err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
     } // if
   } // for
+  _scatters.clear();
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -146,6 +147,9 @@ template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::newSection(void)
 { // newSection
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
 
@@ -167,8 +171,12 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
 
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
+
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata.label
@@ -202,6 +210,9 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
 					       const int fiberDim)
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
+
+  // Clear memory
+  clear();
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
@@ -261,6 +272,9 @@ void
 pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 					       const int fiberDim)
 { // newSection
+  // Clear memory
+  clear();
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
 
@@ -299,20 +313,21 @@ template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 { // cloneSection
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
-  deallocate();
   std::string origLabel = _metadata.label;
-  _metadata = src._metadata;
-  label(origLabel.c_str());
+
+  // Clear memory
+  clear();
 
   const ALE::Obj<section_type>& srcSection = src.section();
   if (!srcSection.isNull() && _section.isNull()) {
-    logger.stagePop();
     newSection();
-    logger.stagePush("Field");
-  }
+  } // if
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("Field");
+
+  _metadata = src._metadata;
+  label(origLabel.c_str());
 
   if (!_section.isNull()) {
     if (!srcSection->sharedStorage()) {
@@ -451,7 +466,7 @@ pylith::topology::Field<mesh_type, section_type>::zeroAll(void)
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chartBegin) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
     values *= 0.0;
 
     for (typename chart_type::const_iterator c_iter = chartBegin;
@@ -622,7 +637,7 @@ pylith::topology::Field<mesh_type, section_type>::operator+=(const Field& field)
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chartBegin) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
 
     for (typename chart_type::const_iterator c_iter = chartBegin;
 	 c_iter != chartEnd;
@@ -660,7 +675,7 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
     // Assume fiber dimension is uniform
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chart.begin()) : 0;
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
 
     spatialdata::units::Nondimensional normalizer;
 
@@ -730,12 +745,14 @@ pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 // information from the "global" PETSc vector view to the "local"
 // Sieve section view.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_mesh_type& mesh,
+								const char* context)
 { // createScatter
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
   const bool createScatterOk = true;
@@ -752,7 +769,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   // Get global order (create if necessary).
   const std::string& orderLabel = _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
@@ -760,7 +777,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, false, &sinfo.scatter);
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, false, 
+				  &sinfo.scatter);
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -794,14 +812,17 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const char* cont
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-								const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatter(
+      const scatter_mesh_type& mesh,
+      const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+      const char* context)
 { // createScatter
   assert(!numbering.isNull());
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
   PetscErrorCode err = 0;
   const bool createScatterOk = true;
@@ -823,7 +844,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
     _section->getName() + std::string("_") + std::string(context) :
     _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, orderLabel,
@@ -833,7 +854,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, false, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, false, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -847,7 +869,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
   } // if/else
 
   // Create vector
-  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());
@@ -877,12 +899,15 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const typename A
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
+        const scatter_mesh_type& mesh,
+	const char* context)
 { // createScatterWithBC
   assert(context);
   assert(!_section.isNull());
-  assert(!_mesh.sieveMesh().isNull());
+  assert(!mesh.sieveMesh().isNull());
 
 
   PetscErrorCode err = 0;
@@ -900,7 +925,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   // Get global order (create if necessary).
   const std::string& orderLabel = _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
@@ -908,7 +933,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   assert(!order.isNull());
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, true, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, true, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
   
   // Create scatterVec
@@ -922,7 +948,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
   } // if/else
   
   // Create vector
-   err = VecCreate(_mesh.comm(), &sinfo.vector);
+   err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());
@@ -942,9 +968,12 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const char
 // createScatter() if constrained DOF should be omitted from the PETSc
 // vector.
 template<typename mesh_type, typename section_type>
+template<typename scatter_mesh_type>
 void
-pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-								const char* context)
+pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
+       const scatter_mesh_type& mesh,
+       const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+       const char* context)
 { // createScatterWithBC
   assert(!numbering.isNull());
   assert(context);
@@ -970,7 +999,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
     _section->getName() + std::string("_") + std::string(context) :
     _section->getName();
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh =
-    _mesh.sieveMesh();
+    mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
     sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
@@ -981,7 +1010,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   //order->view("GLOBAL ORDER"); // DEBUG
 
   // Create scatter
-  err = DMMeshCreateGlobalScatter(_mesh.sieveMesh(), _section, order, true, &sinfo.scatter); 
+  err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, true, 
+				  &sinfo.scatter); 
   CHECK_PETSC_ERROR(err);
 
   // Create scatterVec
@@ -995,7 +1025,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   } // if/else
 
   // Create vector
-  err = VecCreate(_mesh.comm(), &sinfo.vector);
+  err = VecCreate(mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata.label.c_str());
@@ -1006,14 +1036,17 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(const type
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
 
 #if 0
-  std::cout << "CONTEXT: " << context 
+  std::cout << "["<<sieveMesh->commRank()<<"] CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()
 	    << ", section size: " << _section->size()
 	    << ", section storage size: " << _section->getStorageSize()
 	    << ", global numbering size: " << numbering->getGlobalSize()
-	    << ", global size: " << order->getGlobalSize()
+	    << ", global order size: " << order->getGlobalSize()
+	    << ", local numbering size: " << numbering->getLocalSize()
+	    << ", local order size: " << order->getLocalSize()
 	    << ", scatter from size: " << sinfo.scatter->from_n
+	    << ", scatter: " << sinfo.scatter
 	    << std::endl;
 #endif
   
@@ -1125,8 +1158,10 @@ pylith::topology::Field<mesh_type, section_type>::splitDefault(void)
     for (typename chart_type::const_iterator c_iter = chart.begin();
         c_iter != chartEnd;
         ++c_iter) {
-      assert(spaceDim == _section->getFiberDimension(*c_iter));
-      _section->setFiberDimension(*c_iter, 1, fibration);
+      if (_section->getFiberDimension(*c_iter) > 0) {
+	assert(spaceDim == _section->getFiberDimension(*c_iter));
+	_section->setFiberDimension(*c_iter, 1, fibration);
+      } // if
     } // for
 } // splitDefault
 
@@ -1139,7 +1174,32 @@ pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* contex
 { // _getScatter
   assert(context);
 
-  const bool isNewScatter = _scatters.find(context) == _scatters.end();
+  bool isNewScatter = _scatters.find(context) == _scatters.end();
+
+  // Synchronize creation of scatter (empty sections may have
+  // leftover, reusable scatters that need to be cleared out).
+  int numNewScatterLocal = (isNewScatter) ? 1 : 0;
+  int numNewScatter = 0;
+  MPI_Allreduce(&numNewScatterLocal, &numNewScatter, 1, MPI_INT, MPI_MAX,
+		_mesh.comm());
+  if (numNewScatter && !isNewScatter) {
+    // remove old scatter
+    ScatterInfo& sinfo = _scatters[context];
+    PetscErrorCode err = 0;
+    if (sinfo.vector) {
+      err = VecDestroy(&sinfo.vector);CHECK_PETSC_ERROR(err);
+    } // if
+    if (sinfo.scatter) {
+      err = VecScatterDestroy(&sinfo.scatter);CHECK_PETSC_ERROR(err);
+    } // if
+
+    if (sinfo.scatterVec) {
+      err = VecDestroy(&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
+    } // if
+
+    _scatters.erase(context);
+    isNewScatter = true;
+  } // if
 
   if (isNewScatter && !createOk) {
     std::ostringstream msg;

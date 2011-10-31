@@ -62,7 +62,7 @@ pylith::topology::FieldsNew<mesh_type>::add(const char* name,
 					  const char* label,
 					  const int fiberDim,
 					  const FieldBase::VectorFieldEnum vectorFieldType,
-					  const double scale,
+					  const PylithScalar scale,
 					  const bool dimsOkay)
 { // add
   if (hasField(name)) {

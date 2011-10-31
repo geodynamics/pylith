@@ -19,6 +19,8 @@
 #if !defined(pylith_feassemble_cellgeomdata_hh)
 #define pylith_feassemble_cellgeomdata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace feassemble {
      class CellGeomData;
@@ -46,11 +48,11 @@ public:
 
   int numLocs; ///< Number of locations
 
-  double* gravityVec; ///< Gravity vector for problem
-  double* vertices; ///< Coordinates of vertices of cell
-  double* locations; ///< Locations where Jacobian is computed
-  double* jacobian; ///< Jacobian at locations
-  double* jacobianDet; ///< Determinant of Jacobian at locations
+  PylithScalar* gravityVec; ///< Gravity vector for problem
+  PylithScalar* vertices; ///< Coordinates of vertices of cell
+  PylithScalar* locations; ///< Locations where Jacobian is computed
+  PylithScalar* jacobian; ///< Jacobian at locations
+  PylithScalar* jacobianDet; ///< Determinant of Jacobian at locations
 
 };
 

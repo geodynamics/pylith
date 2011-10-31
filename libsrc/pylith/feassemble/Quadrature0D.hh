@@ -58,7 +58,7 @@ public :
    * @param coordinatesCell Coordinates of cell's vertices.
    * @param cell Finite-element cell
    */
-  void computeGeometry(const double_array& coordinatesCell,
+  void computeGeometry(const scalar_array& coordinatesCell,
 		       const int cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////

@@ -21,7 +21,7 @@
 #include "MeshIO.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include "Selection.hh" // USES boundary()
 
@@ -100,7 +100,7 @@ pylith::meshio::MeshIO::write(topology::Mesh* const mesh)
 // ----------------------------------------------------------------------
 // Get coordinates of vertices in mesh.
 void
-pylith::meshio::MeshIO::_getVertices(double_array* coordinates,
+pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
 				     int* numVertices,
 				     int* spaceDim) const
 { // _getVertices

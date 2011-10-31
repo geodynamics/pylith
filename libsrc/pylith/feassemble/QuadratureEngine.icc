@@ -22,28 +22,28 @@
 
 // Get coordinates of quadrature points in cell (NOT reference cell).
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureEngine::quadPts(void) const {
   return _quadPts;
 }
 
 // Get derivatives of basis fns evaluated at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureEngine::basisDeriv(void) const {
   return _basisDeriv;
 }
 
 // Get Jacobians evaluated at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureEngine::jacobian(void) const {
   return _jacobian;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::QuadratureEngine::jacobianDet(void) const {
   return _jacobianDet;
 }

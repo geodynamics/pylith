@@ -31,7 +31,7 @@
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
@@ -154,7 +154,7 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
 // Update state variables as needed.
 void
 pylith::feassemble::IntegratorElasticity::updateStateVars(
-				      const double t,
+				      const PylithScalar t,
 				      topology::SolutionFields* const fields)
 { // updateState
   assert(0 != _quadrature);
@@ -189,7 +189,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   } // else
 
   // Allocate arrays for cell data.
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
 
   // Get cell information
@@ -203,14 +203,14 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get fields
-  double_array dispCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
   const ALE::Obj<RealSection>& dispSection = disp.section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -239,7 +239,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
@@ -400,6 +400,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   
   // Return tensor section to satisfy member function definition. Code
   // should never get here.
+  throw std::logic_error("Internal error.");
   topology::Field<topology::Mesh>& buffer = 
     _outputFields->get("buffer (tensor)");    
 
@@ -511,10 +512,10 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   } // else
   
   // Allocate arrays for cell data.
-  double_array dispCell(numBasis*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
-  double_array stressCell(numQuadPts*tensorSize);
+  scalar_array stressCell(numQuadPts*tensorSize);
   stressCell = 0.0;
 
   // Get cell information
@@ -534,7 +535,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
     
 #if !defined(PRECOMPUTE_GEOMETRY)
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -563,7 +564,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispCell, 
@@ -595,9 +596,9 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   const int tensorSize = _material->tensorSize();
   
   // Allocate arrays for cell data.
-  double_array strainCell(numQuadPts*tensorSize);
+  scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
-  double_array stressCell(numQuadPts*tensorSize);
+  scalar_array stressCell(numQuadPts*tensorSize);
   stressCell = 0.0;
 
   // Get cell information
@@ -629,26 +630,26 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
 // Integrate elasticity term in residual for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
-				     const double_array& stress)
+				     const scalar_array& stress)
 { // _elasticityResidual1D
   const int spaceDim = 1;
   const int cellDim = 1;
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
 
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQuad];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar s11 = stress[iQuad];
     for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
+      const PylithScalar N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
       _cellVector[iBasis*spaceDim  ] -= N1*s11;
     } // for
   } // for
@@ -659,7 +660,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
 // Integrate elasticity term in residual for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
-				     const double_array& stress)
+				     const scalar_array& stress)
 { // _elasticityResidual2D
   const int cellDim = 2;
   const int spaceDim = 2;
@@ -667,9 +668,9 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
@@ -677,16 +678,16 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQs = iQuad*stressSize;
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQs  ];
-    const double s22 = stress[iQs+1];
-    const double s12 = stress[iQs+2];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar s11 = stress[iQs  ];
+    const PylithScalar s22 = stress[iQs+1];
+    const PylithScalar s12 = stress[iQs+2];
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
       const int iBlock = iBasis*spaceDim;
-      const double N1 = wt*basisDeriv[iQ+iBlock  ];
-      const double N2 = wt*basisDeriv[iQ+iBlock+1];
+      const PylithScalar N1 = wt*basisDeriv[iQ+iBlock  ];
+      const PylithScalar N2 = wt*basisDeriv[iQ+iBlock+1];
 
       _cellVector[iBlock  ] -= N1*s11 + N2*s12;
       _cellVector[iBlock+1] -= N1*s12 + N2*s22;
@@ -699,7 +700,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 // Integrate elasticity term in residual for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
-				     const double_array& stress)
+				     const scalar_array& stress)
 { // _elasticityResidual3D
   const int spaceDim = 3;
   const int cellDim = 3;
@@ -707,9 +708,9 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
@@ -717,21 +718,21 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     const int iQs = iQuad * stressSize;
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double s11 = stress[iQs  ];
-    const double s22 = stress[iQs+1];
-    const double s33 = stress[iQs+2];
-    const double s12 = stress[iQs+3];
-    const double s23 = stress[iQs+4];
-    const double s13 = stress[iQs+5];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar s11 = stress[iQs  ];
+    const PylithScalar s22 = stress[iQs+1];
+    const PylithScalar s33 = stress[iQs+2];
+    const PylithScalar s12 = stress[iQs+3];
+    const PylithScalar s23 = stress[iQs+4];
+    const PylithScalar s13 = stress[iQs+5];
     
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
         iBasis < numBasis;
         ++iBasis) {
       const int iBlock = iBasis*spaceDim;
-      const double N1 = wt*basisDeriv[iQ+iBlock+0];
-      const double N2 = wt*basisDeriv[iQ+iBlock+1];
-      const double N3 = wt*basisDeriv[iQ+iBlock+2];
+      const PylithScalar N1 = wt*basisDeriv[iQ+iBlock+0];
+      const PylithScalar N2 = wt*basisDeriv[iQ+iBlock+1];
+      const PylithScalar N3 = wt*basisDeriv[iQ+iBlock+2];
 
       _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
       _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
@@ -745,28 +746,28 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
 // Integrate elasticity term in Jacobian for 1-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
-			       const double_array& elasticConsts)
+			       const scalar_array& elasticConsts)
 { // _elasticityJacobian1D
   const int cellDim = 1;
   const int spaceDim = 1;
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
   
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    const double C1111 = elasticConsts[iQuad];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar C1111 = elasticConsts[iQuad];
     for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
+      const PylithScalar valI = wt*basisDeriv[iQ+iBasis]*C1111;
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double valIJ = valI * basisDeriv[iQ+jBasis];
+	const PylithScalar valIJ = valI * basisDeriv[iQ+jBasis];
 	const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	const int jBlock = jBasis*spaceDim;
 	_cellMatrix[iBlock+jBlock] += valIJ;
@@ -777,42 +778,10 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
 } // _elasticityJacobian1D
 
 // ----------------------------------------------------------------------
-// Integrate laplacian term in Jacobian preconditioner for 1-D cells.
-void
-pylith::feassemble::IntegratorElasticity::_elasticityPrecon1D(
-			       const double_array& elasticConsts)
-{ // _elasticityPrecon1D
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
-  
-  assert(1 == cellDim);
-  assert(quadWts.size() == numQuadPts);
-  
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      const double valI = wt*basisDeriv[iQ+iBasis];
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-        const double valIJ = valI * basisDeriv[iQ+jBasis];
-        const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
-        const int jBlock = jBasis*spaceDim;
-        _cellMatrix[iBlock+jBlock] += valIJ;
-      } // for
-    } // for
-  } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*2)));
-} // _elasticityPrecon1D
-
-// ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
-			       const double_array& elasticConsts)
+			       const scalar_array& elasticConsts)
 { // _elasticityJacobian2D
   const int spaceDim = 2;
   const int cellDim = 2;
@@ -820,49 +789,49 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
   assert(quadWts.size() == numQuadPts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad*numConsts+0];
-    const double C1122 = elasticConsts[iQuad*numConsts+1];
-    const double C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
-    const double C2211 = elasticConsts[iQuad*numConsts+3];
-    const double C2222 = elasticConsts[iQuad*numConsts+4];
-    const double C2212 = elasticConsts[iQuad*numConsts+5]/2.0;
-    const double C1211 = elasticConsts[iQuad*numConsts+6];
-    const double C1222 = elasticConsts[iQuad*numConsts+7];
-    const double C1212 = elasticConsts[iQuad*numConsts+8]/2.0;
+    const PylithScalar C1111 = elasticConsts[iQuad*numConsts+0];
+    const PylithScalar C1122 = elasticConsts[iQuad*numConsts+1];
+    const PylithScalar C1112 = elasticConsts[iQuad*numConsts+2]/2.0;
+    const PylithScalar C2211 = elasticConsts[iQuad*numConsts+3];
+    const PylithScalar C2222 = elasticConsts[iQuad*numConsts+4];
+    const PylithScalar C2212 = elasticConsts[iQuad*numConsts+5]/2.0;
+    const PylithScalar C1211 = elasticConsts[iQuad*numConsts+6];
+    const PylithScalar C1222 = elasticConsts[iQuad*numConsts+7];
+    const PylithScalar C1212 = elasticConsts[iQuad*numConsts+8]/2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const PylithScalar Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
+      const PylithScalar Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
       const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
       const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Nj1 = basisDeriv[iQ+jBasis*spaceDim  ];
-	const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
-	const double ki0j0 = 
+	const PylithScalar Nj1 = basisDeriv[iQ+jBasis*spaceDim  ];
+	const PylithScalar Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
+	const PylithScalar ki0j0 = 
 	  C1111 * Ni1 * Nj1 + C1211 * Ni2 * Nj1 +
 	  C1112 * Ni1 * Nj2 + C1212 * Ni2 * Nj2;
-	const double ki0j1 =
+	const PylithScalar ki0j1 =
 	  C1122 * Ni1 * Nj2 + C1222 * Ni2 * Nj2 +
 	  C1112 * Ni1 * Nj1 + C1212 * Ni2 * Nj1;
-	const double ki1j0 =
+	const PylithScalar ki1j0 =
 	  C2211 * Ni2 * Nj1 + C1211 * Ni1 * Nj1 +
 	  C2212 * Ni2 * Nj2 + C1212 * Ni1 * Nj2;
-	const double ki1j1 =
+	const PylithScalar ki1j1 =
 	  C2222 * Ni2 * Nj2 + C1222 * Ni1 * Nj2 +
 	  C2212 * Ni2 * Nj1 + C1212 * Ni1 * Nj1;
 	const int jBlock = (jBasis*spaceDim  );
@@ -878,52 +847,10 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 } // _elasticityJacobian2D
 
 // ----------------------------------------------------------------------
-// Integrate laplacian term in Jacobian preconditioner for 2-D cells.
-void
-pylith::feassemble::IntegratorElasticity::_elasticityPrecon2D(
-			       const double_array& elasticConsts)
-{ // _elasticityPrecon2D
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
-
-  assert(2 == cellDim);
-  assert(quadWts.size() == numQuadPts);
-
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    // Delta_ij = C_ijkl * e_kl
-    //        = C_ijlk * 0.5 (u_k,l + u_l,k)
-    //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
-      const double Ni1  = wt*basisDeriv[iQ+iBasis*spaceDim  ];
-      const double Ni2  = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const int iBlock  = (iBasis*spaceDim  ) * (numBasis*spaceDim);
-      const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-        const double Nj1  = basisDeriv[iQ+jBasis*spaceDim  ];
-        const double Nj2  = basisDeriv[iQ+jBasis*spaceDim+1];
-        const int jBlock  = (jBasis*spaceDim  );
-        const int jBlock1 = (jBasis*spaceDim+1);
-        _cellMatrix[iBlock +jBlock ] += Ni1*Nj1;
-        _cellMatrix[iBlock1+jBlock1] += Ni2*Nj2;
-      } // for
-    } // for
-  } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(4))));
-} // _elasticityPrecon2D
-
-// ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 3-D cells.
 void
 pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
-			       const double_array& elasticConsts)
+			       const scalar_array& elasticConsts)
 { // _elasticityJacobian3D
   const int spaceDim = 3;
   const int cellDim = 3;
@@ -931,9 +858,9 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
+  const scalar_array& quadWts = _quadrature->quadWts();
+  const scalar_array& jacobianDet = _quadrature->jacobianDet();
+  const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
   assert(_quadrature->spaceDim() == spaceDim);
   assert(_quadrature->cellDim() == cellDim);
@@ -941,90 +868,90 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 
   // Compute Jacobian for consistent tangent matrix
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+    const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad];
     // tau_ij = C_ijkl * e_kl
     //        = C_ijlk * 0.5 (u_k,l + u_l,k)
     //        = 0.5 * C_ijkl * (u_k,l + u_l,k)
     // divide C_ijkl by 2 if k != l
-    const double C1111 = elasticConsts[iQuad*numConsts+ 0];
-    const double C1122 = elasticConsts[iQuad*numConsts+ 1];
-    const double C1133 = elasticConsts[iQuad*numConsts+ 2];
-    const double C1112 = elasticConsts[iQuad*numConsts+ 3] / 2.0;
-    const double C1123 = elasticConsts[iQuad*numConsts+ 4] / 2.0;
-    const double C1113 = elasticConsts[iQuad*numConsts+ 5] / 2.0;
-    const double C2211 = elasticConsts[iQuad*numConsts+ 6];
-    const double C2222 = elasticConsts[iQuad*numConsts+ 7];
-    const double C2233 = elasticConsts[iQuad*numConsts+ 8];
-    const double C2212 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
-    const double C2223 = elasticConsts[iQuad*numConsts+10] / 2.0;
-    const double C2213 = elasticConsts[iQuad*numConsts+11] / 2.0;
-    const double C3311 = elasticConsts[iQuad*numConsts+12];
-    const double C3322 = elasticConsts[iQuad*numConsts+13];
-    const double C3333 = elasticConsts[iQuad*numConsts+14];
-    const double C3312 = elasticConsts[iQuad*numConsts+15] / 2.0;
-    const double C3323 = elasticConsts[iQuad*numConsts+16] / 2.0;
-    const double C3313 = elasticConsts[iQuad*numConsts+17] / 2.0;
-    const double C1211 = elasticConsts[iQuad*numConsts+18];
-    const double C1222 = elasticConsts[iQuad*numConsts+19];
-    const double C1233 = elasticConsts[iQuad*numConsts+20];
-    const double C1212 = elasticConsts[iQuad*numConsts+21] / 2.0;
-    const double C1223 = elasticConsts[iQuad*numConsts+22] / 2.0;
-    const double C1213 = elasticConsts[iQuad*numConsts+23] / 2.0;
-    const double C2311 = elasticConsts[iQuad*numConsts+24];
-    const double C2322 = elasticConsts[iQuad*numConsts+25];
-    const double C2333 = elasticConsts[iQuad*numConsts+26];
-    const double C2312 = elasticConsts[iQuad*numConsts+27] / 2.0;
-    const double C2323 = elasticConsts[iQuad*numConsts+28] / 2.0;
-    const double C2313 = elasticConsts[iQuad*numConsts+29] / 2.0;
-    const double C1311 = elasticConsts[iQuad*numConsts+30];
-    const double C1322 = elasticConsts[iQuad*numConsts+31];
-    const double C1333 = elasticConsts[iQuad*numConsts+32];
-    const double C1312 = elasticConsts[iQuad*numConsts+33] / 2.0;
-    const double C1323 = elasticConsts[iQuad*numConsts+34] / 2.0;
-    const double C1313 = elasticConsts[iQuad*numConsts+35] / 2.0;
+    const PylithScalar C1111 = elasticConsts[iQuad*numConsts+ 0];
+    const PylithScalar C1122 = elasticConsts[iQuad*numConsts+ 1];
+    const PylithScalar C1133 = elasticConsts[iQuad*numConsts+ 2];
+    const PylithScalar C1112 = elasticConsts[iQuad*numConsts+ 3] / 2.0;
+    const PylithScalar C1123 = elasticConsts[iQuad*numConsts+ 4] / 2.0;
+    const PylithScalar C1113 = elasticConsts[iQuad*numConsts+ 5] / 2.0;
+    const PylithScalar C2211 = elasticConsts[iQuad*numConsts+ 6];
+    const PylithScalar C2222 = elasticConsts[iQuad*numConsts+ 7];
+    const PylithScalar C2233 = elasticConsts[iQuad*numConsts+ 8];
+    const PylithScalar C2212 = elasticConsts[iQuad*numConsts+ 9] / 2.0;
+    const PylithScalar C2223 = elasticConsts[iQuad*numConsts+10] / 2.0;
+    const PylithScalar C2213 = elasticConsts[iQuad*numConsts+11] / 2.0;
+    const PylithScalar C3311 = elasticConsts[iQuad*numConsts+12];
+    const PylithScalar C3322 = elasticConsts[iQuad*numConsts+13];
+    const PylithScalar C3333 = elasticConsts[iQuad*numConsts+14];
+    const PylithScalar C3312 = elasticConsts[iQuad*numConsts+15] / 2.0;
+    const PylithScalar C3323 = elasticConsts[iQuad*numConsts+16] / 2.0;
+    const PylithScalar C3313 = elasticConsts[iQuad*numConsts+17] / 2.0;
+    const PylithScalar C1211 = elasticConsts[iQuad*numConsts+18];
+    const PylithScalar C1222 = elasticConsts[iQuad*numConsts+19];
+    const PylithScalar C1233 = elasticConsts[iQuad*numConsts+20];
+    const PylithScalar C1212 = elasticConsts[iQuad*numConsts+21] / 2.0;
+    const PylithScalar C1223 = elasticConsts[iQuad*numConsts+22] / 2.0;
+    const PylithScalar C1213 = elasticConsts[iQuad*numConsts+23] / 2.0;
+    const PylithScalar C2311 = elasticConsts[iQuad*numConsts+24];
+    const PylithScalar C2322 = elasticConsts[iQuad*numConsts+25];
+    const PylithScalar C2333 = elasticConsts[iQuad*numConsts+26];
+    const PylithScalar C2312 = elasticConsts[iQuad*numConsts+27] / 2.0;
+    const PylithScalar C2323 = elasticConsts[iQuad*numConsts+28] / 2.0;
+    const PylithScalar C2313 = elasticConsts[iQuad*numConsts+29] / 2.0;
+    const PylithScalar C1311 = elasticConsts[iQuad*numConsts+30];
+    const PylithScalar C1322 = elasticConsts[iQuad*numConsts+31];
+    const PylithScalar C1333 = elasticConsts[iQuad*numConsts+32];
+    const PylithScalar C1312 = elasticConsts[iQuad*numConsts+33] / 2.0;
+    const PylithScalar C1323 = elasticConsts[iQuad*numConsts+34] / 2.0;
+    const PylithScalar C1313 = elasticConsts[iQuad*numConsts+35] / 2.0;
     for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	 iBasis < numBasis;
 	 ++iBasis) {
-      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
+      const PylithScalar Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
+      const PylithScalar Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+      const PylithScalar Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
       for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	const double Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
-	const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
-	const double Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
-	const double ki0j0 = 
+	const PylithScalar Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
+	const PylithScalar Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
+	const PylithScalar Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
+	const PylithScalar ki0j0 = 
 	  C1111 * Ni1 * Nj1 + C1211 * Ni2 * Nj1 + C1311 * Ni3 * Nj1 +
 	  C1112 * Ni1 * Nj2 + C1212 * Ni2 * Nj2 + C1312 * Ni3 * Nj2 +
 	  C1113 * Ni1 * Nj3 + C1213 * Ni2 * Nj3 + C1313 * Ni3 * Nj3;
-	const double ki0j1 =
+	const PylithScalar ki0j1 =
 	  C1122 * Ni1 * Nj2 + C1222 * Ni2 * Nj2 + C1322 * Ni3 * Nj2 +
 	  C1112 * Ni1 * Nj1 + C1212 * Ni2 * Nj1 + C1312 * Ni3 * Nj1 +
 	  C1123 * Ni1 * Nj3 + C1223 * Ni2 * Nj3 + C1323 * Ni3 * Nj3;
-	const double ki0j2 =
+	const PylithScalar ki0j2 =
 	  C1133 * Ni1 * Nj3 + C1233 * Ni2 * Nj3 + C1333 * Ni3 * Nj3 +
 	  C1123 * Ni1 * Nj2 + C1223 * Ni2 * Nj2 + C1323 * Ni3 * Nj2 +
 	  C1113 * Ni1 * Nj1 + C1213 * Ni2 * Nj1 + C1313 * Ni3 * Nj1;
-	const double ki1j0 =
+	const PylithScalar ki1j0 =
 	  C2211 * Ni2 * Nj1 + C1211 * Ni1 * Nj1 + C2311 * Ni3 * Nj1 +
 	  C2212 * Ni2 * Nj2 + C1212 * Ni1 * Nj2 + C2312 * Ni3 * Nj2 +
 	  C2213 * Ni2 * Nj3 + C1213 * Ni1 * Nj3 + C2313 * Ni3 * Nj3;
-	const double ki1j1 =
+	const PylithScalar ki1j1 =
 	  C2222 * Ni2 * Nj2 + C1222 * Ni1 * Nj2 + C2322 * Ni3 * Nj2 +
 	  C2212 * Ni2 * Nj1 + C1212 * Ni1 * Nj1 + C2312 * Ni3 * Nj1 +
 	  C2223 * Ni2 * Nj3 + C1223 * Ni1 * Nj3 + C2323 * Ni3 * Nj3;
-	const double ki1j2 =
+	const PylithScalar ki1j2 =
 	  C2233 * Ni2 * Nj3 + C1233 * Ni1 * Nj3 + C2333 * Ni3 * Nj3 +
 	  C2223 * Ni2 * Nj2 + C1223 * Ni1 * Nj2 + C2323 * Ni3 * Nj2 +
 	  C2213 * Ni2 * Nj1 + C1213 * Ni1 * Nj1 + C2313 * Ni3 * Nj1;
-	const double ki2j0 =
+	const PylithScalar ki2j0 =
 	  C3311 * Ni3 * Nj1 + C2311 * Ni2 * Nj1 + C1311 * Ni1 * Nj1 +
 	  C3312 * Ni3 * Nj2 + C2312 * Ni2 * Nj2 + C1312 * Ni1 * Nj2 +
 	  C3313 * Ni3 * Nj3 + C2313 * Ni2 * Nj3 + C1313 * Ni1 * Nj3; 
-	const double ki2j1 =
+	const PylithScalar ki2j1 =
 	  C3322 * Ni3 * Nj2 + C2322 * Ni2 * Nj2 + C1322 * Ni1 * Nj2 +
 	  C3312 * Ni3 * Nj1 + C2312 * Ni2 * Nj1 + C1312 * Ni1 * Nj1 +
 	  C3323 * Ni3 * Nj3 + C2323 * Ni2 * Nj3 + C1323 * Ni1 * Nj3; 
-	const double ki2j2 =
+	const PylithScalar ki2j2 =
 	  C3333 * Ni3 * Nj3 + C2333 * Ni2 * Nj3 + C1333 * Ni1 * Nj3 +
 	  C3323 * Ni3 * Nj2 + C2323 * Ni2 * Nj2 + C1323 * Ni1 * Nj2 +
 	  C3313 * Ni3 * Nj1 + C2313 * Ni2 * Nj1 + C1313 * Ni1 * Nj1;
@@ -1050,56 +977,11 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 } // _elasticityJacobian3D
 
 // ----------------------------------------------------------------------
-// Integrate laplacian term in Jacobian preconditioner for 3-D cells.
-void
-pylith::feassemble::IntegratorElasticity::_elasticityPrecon3D(
-			       const double_array& elasticConsts)
-{ // _elasticityPrecon3D
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const double_array& quadWts = _quadrature->quadWts();
-  const double_array& jacobianDet = _quadrature->jacobianDet();
-  const double_array& basisDeriv = _quadrature->basisDeriv();
-  
-  assert(3 == cellDim);
-  assert(quadWts.size() == numQuadPts);
-
-  // Compute Jacobian for consistent tangent matrix
-  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-    const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-    for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
-	 iBasis < numBasis;
-	 ++iBasis) {
-      const double Ni1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
-      const double Ni2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
-      const double Ni3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
-      for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-        const double Nj1 = basisDeriv[iQ+jBasis*spaceDim+0];
-        const double Nj2 = basisDeriv[iQ+jBasis*spaceDim+1];
-        const double Nj3 = basisDeriv[iQ+jBasis*spaceDim+2];
-        const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
-        const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
-        const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
-        const int jBlock = jBasis*spaceDim;
-        const int jBlock1 = jBasis*spaceDim+1;
-        const int jBlock2 = jBasis*spaceDim+2;
-        _cellMatrix[iBlock +jBlock ] += Ni1*Nj1;
-        _cellMatrix[iBlock1+jBlock1] += Ni2*Nj2;
-        _cellMatrix[iBlock2+jBlock2] += Ni3*Nj3;
-      } // for
-    } // for
-  } // for
-  PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(6))));
-} // _elasticityPrecon3D
-
-// ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
+					    scalar_array* strain,
+					    const scalar_array& basisDeriv,
+					    const scalar_array& disp,
 					    const int numBasis,
 					    const int numQuadPts)
 { // calcTotalStrain1D
@@ -1120,9 +1002,9 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
+					    scalar_array* strain,
+					    const scalar_array& basisDeriv,
+					    const scalar_array& disp,
 					    const int numBasis,
 					    const int numQuadPts)
 { // calcTotalStrain2D
@@ -1150,9 +1032,9 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
 // ----------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(
-					    double_array* strain,
-					    const double_array& basisDeriv,
-					    const double_array& disp,
+					    scalar_array* strain,
+					    const scalar_array& basisDeriv,
+					    const scalar_array& disp,
 					    const int numBasis,
 					    const int numQuadPts)
 { // calcTotalStrain3D

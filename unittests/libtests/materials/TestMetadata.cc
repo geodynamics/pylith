@@ -21,7 +21,7 @@
 #include "TestMetadata.hh" // Implementation of class methods
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <cstring> // USES strcmp()
 

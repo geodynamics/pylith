@@ -53,8 +53,8 @@ public :
    */
   template<typename material_type>
   static
-  double calculate(const double effStressInitialGuess,
-		   const double stressScale,
+  PylithScalar calculate(const PylithScalar effStressInitialGuess,
+		   const PylithScalar stressScale,
 		   material_type* const material);
 
   // PRIVATE METHODS /////////////////////////////////////////////////////
@@ -69,8 +69,8 @@ private :
    */
   template<typename material_type>
   static
-  void _bracket(double* px1,
-		double* px2,
+  void _bracket(PylithScalar* px1,
+		PylithScalar* px2,
 		material_type* const material);
 
   /** Solve for effective stress using Newton's method with bisection.
@@ -83,8 +83,8 @@ private :
    */
   template<typename material_type>
   static
-  double _search(double x1,
-		 double x2,
+  PylithScalar _search(PylithScalar x1,
+		 PylithScalar x2,
 		 material_type* const material);
 
 }; // class EffectiveStress

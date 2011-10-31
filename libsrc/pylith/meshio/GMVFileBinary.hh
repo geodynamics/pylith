@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "GMVFile.hh" // ISA GMVFile
 
-#include "pylith/utils/arrayfwd.hh" // USES int_array, double_array
+#include "pylith/utils/array.hh" // USES int_array, scalar_array
 #include <iosfwd>
 
 // GMVFileBinary --------------------------------------------------------
@@ -67,7 +67,7 @@ public :
    * @param numCells Number of cells in mesh.
    * @param numCorners Number of vertices in each cell.
    */
-  void read(double_array* coordinates,
+  void read(scalar_array* coordinates,
 	    int_array* cells,
 	    int_array* materialIds,
 	    int* meshDim,
@@ -87,7 +87,7 @@ public :
    * @param numCells Number of cells in mesh.
    * @param numCorners Number of vertices in each cell.
    */
-  void write(const double_array& coordinates,
+  void write(const scalar_array& coordinates,
 	     const int_array& cells,
 	     const int_array& materialIds,
 	     const int meshDim,
@@ -112,7 +112,7 @@ private :
    * @param numVertices Number of vertices.
    */
   void _readVertices(std::ifstream& fin,
-		     double_array* coordinates,
+		     scalar_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim);
 

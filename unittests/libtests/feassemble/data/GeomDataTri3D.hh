@@ -48,11 +48,11 @@ private:
 
   static const int _numLocs; ///< Number of locations for computing Jacobian
 
-  static const double _gravityVec[]; ///< Constant gravity vector
-  static const double _vertices[]; ///< Coordinates of cell's vertices
-  static const double _locations[]; ///< Locations to compute Jacobian
-  static const double _jacobian[]; ///< Jacobian at locations
-  static const double _jacobianDet[]; ///< Determinant of Jacobian at locations
+  static const PylithScalar _gravityVec[]; ///< Constant gravity vector
+  static const PylithScalar _vertices[]; ///< Coordinates of cell's vertices
+  static const PylithScalar _locations[]; ///< Locations to compute Jacobian
+  static const PylithScalar _jacobian[]; ///< Jacobian at locations
+  static const PylithScalar _jacobianDet[]; ///< Determinant of Jacobian at locations
 
 };
 

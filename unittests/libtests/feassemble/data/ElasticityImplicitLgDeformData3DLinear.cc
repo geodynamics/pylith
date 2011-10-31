@@ -41,13 +41,13 @@ const int pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_matId = 0
 
 const char* pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_matLabel = "elastic isotropic 3-D";
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_dt =   1.00000000e-02;
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_dt =   1.00000000e-02;
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_gravityVec[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_gravityVec[] = {
   0.00000000e+00,  0.00000000e+00, -1.00000000e+08,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_vertices[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_vertices[] = {
  -5.00000000e-01, -1.00000000e+00, -5.00000000e-01,
   2.00000000e+00, -5.00000000e-01, -4.00000000e-01,
   1.00000000e+00, -1.00000000e-01, -3.00000000e-01,
@@ -58,61 +58,61 @@ const int pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_cells[] =
 0,1,2,3,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_verticesRef[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00, -1.00000000e+00,  1.00000000e+00,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_quadPts[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_quadPts[] = {
  -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_quadWts[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_quadWts[] = {
   1.33333333e+00,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_basis[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_basis[] = {
   2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
   2.50000000e-01,};
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_basisDerivRef[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_basisDerivRef[] = {
  -5.00000000e-01, -5.00000000e-01, -5.00000000e-01,
   5.00000000e-01,  0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  5.00000000e-01,  0.00000000e+00,
   0.00000000e+00,  0.00000000e+00,  5.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldTIncr[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldTIncr[] = {
   3.00000000e-01,  2.00000000e-01, -5.00000000e-01,
  -3.00000000e-01, -4.00000000e-01, -6.00000000e-01,
   2.00000000e-01,  6.00000000e-01,  3.00000000e-01,
  -6.00000000e-01, -1.00000000e-01, -3.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldT[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldT[] = {
   8.00000000e-01,  1.00000000e-01, -6.00000000e-01,
  -1.00000000e-01, -2.00000000e-01, -5.00000000e-01,
   1.00000000e-01,  7.00000000e-01,  2.00000000e-01,
  -5.00000000e-01, -0.00000000e+00, -2.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldTmdt[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_fieldTmdt[] = {
   1.00000000e-01,  1.00000000e-01, -3.00000000e-01,
  -2.00000000e-01, -1.00000000e-01, -5.00000000e-01,
   2.00000000e-01,  4.00000000e-01,  1.00000000e-01,
  -4.00000000e-01, -1.00000000e-01, -1.00000000e-01,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_valsResidual[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_valsResidual[] = {
   2.79474210e+11,  1.80174876e+12,  1.26556850e+12,
   6.44632598e+11,  4.29759382e+12,  2.88601168e+12,
  -1.13174893e+12, -6.94850554e+12, -4.65500318e+12,
   2.07642124e+11,  8.49162957e+11,  5.03422995e+11,
 };
 
-const double pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_valsJacobian[] = {
+const PylithScalar pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::_valsJacobian[] = {
   2.94874367e+11,  6.16951570e+10,  3.89461610e+10,
   5.48150595e+11,  1.11804684e+11,  7.10898629e+10,
  -9.45152856e+11, -2.08621385e+11, -1.32482083e+11,
@@ -176,19 +176,19 @@ pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::ElasticityImplicitLg
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
-  gravityVec = const_cast<double*>(_gravityVec);
-  vertices = const_cast<double*>(_vertices);
+  gravityVec = const_cast<PylithScalar*>(_gravityVec);
+  vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
-  verticesRef = const_cast<double*>(_verticesRef);
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDerivRef = const_cast<double*>(_basisDerivRef);
-  fieldTIncr = const_cast<double*>(_fieldTIncr);
-  fieldT = const_cast<double*>(_fieldT);
-  fieldTmdt = const_cast<double*>(_fieldTmdt);
-  valsResidual = const_cast<double*>(_valsResidual);
-  valsJacobian = const_cast<double*>(_valsJacobian);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
+  fieldTIncr = const_cast<PylithScalar*>(_fieldTIncr);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
+  valsResidual = const_cast<PylithScalar*>(_valsResidual);
+  valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
 } // constructor
 
 pylith::feassemble::ElasticityImplicitLgDeformData3DLinear::~ElasticityImplicitLgDeformData3DLinear(void)

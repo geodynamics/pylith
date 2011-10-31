@@ -23,7 +23,6 @@
 #include "pylith/feassemble/ElasticityImplicitLgDeform.hh" // USES ElasticityImplicitLgDeform
 #include "data/IntegratorData.hh" // USES IntegratorData
 
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -103,10 +102,10 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
   _initialize(&mesh, &integrator, &fields);
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateResidual(residual, t, &fields);
 
-  const double* valsE = _data->valsResidual;
+  const PylithScalar* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
 #if 0 // DEBUGGING
@@ -118,11 +117,11 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -145,12 +144,12 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
 
   topology::Jacobian jacobian(fields.solution());
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.assemble("final_assembly");
 
-  const double* valsE = _data->valsJacobian;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int nrowsE = _data->numVertices * _data->spaceDim;
   const int ncolsE = _data->numVertices * _data->spaceDim;
 
@@ -167,7 +166,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
   MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
-  double_array vals(nrows*ncols);
+  scalar_array vals(nrows*ncols);
   int_array rows(nrows);
   int_array cols(ncols);
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -175,14 +174,17 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 2.0e-05;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
-      if (fabs(valsE[index]) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
+      const PylithScalar valE = valsE[index];
+      if (fabs(valE) > 1.0) {
+	// Adjust tolerance based on magnitude of expected value compared to typical Jacobian values of 1.0e+11
+	const PylithScalar toleranceAdj = (fabs(valE) < 1.0e+10) ? tolerance*1.0e+11/fabs(valE) : tolerance;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valE, toleranceAdj);
+      } else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
     } // for
   MatDestroy(&jDense);
   MatDestroy(&jSparseAIJ);
@@ -200,7 +202,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testUpdateStateVars(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
 

@@ -76,27 +76,27 @@ const int pylith::faults::CohesiveDynDataTri3d::_cellDim = 1;
 
 const int pylith::faults::CohesiveDynDataTri3d::_numBasis = 2;
 
-const int pylith::faults::CohesiveDynDataTri3d::_numQuadPts = 1;
+const int pylith::faults::CohesiveDynDataTri3d::_numQuadPts = 2;
 
-const double pylith::faults::CohesiveDynDataTri3d::_quadPts[] = {
-  0.0,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_quadPts[] = {
+  -1.0, 1.0,
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_quadWts[] = {
-  2.0,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_quadWts[] = {
+  1.0, 1.0
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_basis[] = {
-  0.5,
-  0.5
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_basis[] = {
+  1.0, 0.0,
+  0.0, 1.0,
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_basisDeriv[] = {
-  -0.5,
-   0.5
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_basisDeriv[] = {
+  -0.5, 0.5,
+  -0.5, 0.5,
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_verticesRef[] = {
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_verticesRef[] = {
   -1.0, 1.0
 };
 
@@ -107,24 +107,22 @@ const char* pylith::faults::CohesiveDynDataTri3d::_label = "fault";
 const char* pylith::faults::CohesiveDynDataTri3d::_initialTractFilename = 
   "data/tri3d_initialtract.spatialdb";
 
-const double pylith::faults::CohesiveDynDataTri3d::_fieldT[] = {
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldT[] = {
   6.1, 8.1,
   6.2, 8.2, // 5
   6.3, 8.3, // 6
   6.4, 8.4,
   6.5, 8.5, // 8
   6.6, 8.6,
-  6.7, 8.7, // 10
-  6.9, 8.9, // 11
-  7.1, 9.1, // 12
-  6.8, 8.8, // 13
-  6.0, 8.0, // 14
-  7.2, 9.2, // 15
+  6.2, 8.2, // 10
+  6.3, 8.3, // 11
+  6.5, 8.5, // 12
+ -3.8, 4.8, // 13
+  3.0, 4.0, // 14
+  3.2, 4.2, // 15
 };
 
-// :TODO: Make sensible values for Jacobian for DOF on positive and
-// negative sides of the fault. Add semi-random values for other DOF.
-const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   1.0, 1.1, // 4x
   1.1, 2.1,
   1.2, 2.2,
@@ -150,78 +148,54 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   3.1, 4.0,
   3.2, 4.1,
   6.1, 7.2, // 5x
-  6.0, 7.3,
-  6.9, 7.4,
+ +6.0,-1.0, // 5
+ -1.1,-1.2, // 6
   6.8, 7.5,
-  6.7, 7.6,
+ -1.3,-1.4, // 8
   6.6, 7.7,
   6.5, 7.8,
   6.4, 7.9,
   6.3, 7.0,
- -0.70710678118654757, +0.70710678118654757, // 13
+  6.5, 6.6,
   6.2, 7.1,
   6.1, 7.2,
   3.0, 5.1, // 5y
-  3.1, 5.2,
-  3.2, 5.2,
+ -1.0,+6.1, // 5
+ -0.9,-0.8, // 6
   3.3, 5.1,
-  3.4, 5.3,
+ -0.7,-0.6, // 8
   3.5, 5.0,
   3.6, 5.4,
   3.7, 5.9,
   3.8, 5.5,
- +0.70710678118654757, +0.70710678118654757, // 13
+  3.9, 5.5,
   4.2, 5.6,
   4.1, 5.8,
   3.0, 2.7, // 6x
-  3.9, 2.7,
-  3.8, 2.8,
+ -1.1,-0.9, // 5
+ +6.2,-2.1, // 6
   3.7, 2.6,
-  3.6, 2.9,
+ -2.2,-2.3, // 8
   3.5, 2.5,
   3.4, 2.1,
   3.3, 2.4,
   3.2, 2.2,
   3.1, 2.3,
-  0.0,+1.0, // 14
+  2.0, 2.0,
   3.0, 2.4,
   4.1, 6.1, // 6y
-  4.1, 6.6,
-  4.2, 6.2,
-  4.2, 6.5,
+ -1.2,-0.8, // 5
+ -2.1,+6.3, // 6
   4.3, 6.3,
+ -1.4,-1.5, // 8
   4.3, 6.4,
   4.4, 6.4,
   4.4, 6.3,
   4.5, 6.5,
   4.5, 6.2,
- +1.0, 0.0, // 14
+  4.6, 7.0,
   4.6, 6.1,
-  4.6, 6.6, // 7x
-  5.7, 9.7,
-  5.7, 9.9,
-  5.8, 9.8,
-  5.8, 9.8,
-  5.9, 9.9,
-  5.1, 9.7,
-  5.2, 9.1,
-  5.3, 9.6,
-  5.1, 9.2,
-  5.4, 9.5,
-  5.2, 9.3,
-  5.5, 9.4, // 7y
-  6.3, 9.4,
-  6.6, 9.3,
-  6.4, 9.5,
-  6.7, 9.2,
-  6.5, 9.6,
-  6.8, 9.1,
-  6.6, 9.7,
-  7.9, 8.9,
-  7.7, 8.8,
-  7.1, 8.8,
-  7.8, 8.9,
-  7.2, 8.7, // 8x
+  7.2, 8.7, // 7x
   7.9, 8.1,
   7.3, 8.6,
   7.1, 8.2,
@@ -232,8 +206,8 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   7.6, 8.3,
   7.4, 8.5,
   7.7, 8.6,
- -1.0, 0.0, // 15
-  6.5, 3.3, // 8y
+  7.8, 8.7,
+  6.5, 3.3, // 7y
   6.4, 3.4,
   6.3, 3.8,
   6.2, 3.9,
@@ -244,7 +218,31 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   5.6, 3.4,
   5.5, 3.3,
   5.4, 3.2,
-  0.0,+1.0, // 15
+  5.5, 3.3,
+  4.6, 6.6, // 8x
+ -1.3,-0.7, // 5
+ -2.2,-1.4, // 6
+  5.8, 9.8,
+ +6.4,-1.1, // 8
+  5.9, 9.9,
+  5.1, 9.7,
+  5.2, 9.1,
+  5.3, 9.6,
+  5.1, 9.2,
+  5.4, 9.5,
+  5.2, 9.3,
+  5.5, 9.4, // 8y
+ -1.4,-0.6, // 5
+ -2.3,-1.5, // 6
+  6.4, 9.5,
+ -1.1,+6.5, // 8
+  6.5, 9.6,
+  6.8, 9.1,
+  6.6, 9.7,
+  7.9, 8.9,
+  7.7, 8.8,
+  7.1, 8.8,
+  7.8, 8.9,
   4.4, 2.0, // 9x
   4.3, 2.1,
   4.2, 2.2,
@@ -269,97 +267,97 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   2.7, 3.8,
   2.8, 3.7,
   2.9, 3.6,
-  1.0, 3.5, // 10x
-  1.1, 4.4,
-  1.2, 4.3,
-  1.3, 4.2,
-  1.4, 4.1,
-  1.5, 4.0,
-  1.6, 4.1,
-  1.7, 4.2,
-  1.8, 4.3,
- +0.70710678118654757, -0.70710678118654757, // 13
-  1.9, 5.4,
-  9.0, 5.5,
-  8.0, 4.7, // 10y
-  7.1, 4.5,
-  6.2, 4.4,
-  6.3, 4.6,
-  6.4, 4.7,
-  6.5, 4.4,
-  4.6, 4.8,
-  4.7, 4.4,
-  4.8, 4.2,
- -0.70710678118654757, -0.70710678118654757, // 13
-  6.1, 4.8,
-  6.2, 4.7,
-  6.3, 5.6, // 11x
-  6.4, 5.5,
-  6.5, 5.4,
-  6.6, 5.3,
-  6.7, 5.1,
-  6.8, 5.2,
-  6.9, 5.3,
-  7.0, 5.9,
-  7.7, 5.8,
-  7.6, 5.7,
-  0.0,-1.0, // 14
-  7.5, 5.5,
-  7.4, 6.4, // 11y
-  7.3, 6.2,
-  7.2, 6.0,
-  7.2, 6.9,
-  7.1, 6.8,
-  7.0, 6.7,
-  7.2, 6.6,
-  7.3, 6.5,
-  7.4, 6.3,
-  7.5, 6.2,
- -1.0, 0.0, // 14
-  8.6, 6.2,
-  8.7, 6.3, // 12x
-  8.8, 6.3,
-  8.9, 7.4,
-  8.0, 7.5,
-  8.6, 7.6,
-  8.5, 7.7,
-  8.4, 7.8,
-  8.0, 7.9,
-  8.3, 7.1,
-  8.0, 7.2,
-  8.2, 7.3,
- +1.0, 0.0, // 15
-  7.2, 8.6, // 12y
-  6.6, 8.5,
-  6.7, 8.4,
-  6.9, 8.2,
-  6.5, 8.3,
-  6.4, 8.5,
-  6.3, 8.6,
-  6.5, 8.8,
-  4.7, 8.7,
-  4.9, 8.5,
-  7.5, 8.3,
-  6.0,-1.0, // 15
+  6.1, 7.2, // 10x
+  6.8, 7.5,
+  6.6, 7.7,
+  6.5, 7.8,
+  6.4, 7.9,
+  6.3, 7.0,
+ +5.0,-1.0, // 10
+ -1.1,-1.2, // 11
+ -1.3,-1.4, // 12
+  6.5, 6.6,
+  6.2, 7.1,
+  6.1, 7.2,
+  3.0, 5.1, // 10y
+  3.3, 5.1,
+  3.5, 5.0,
+  3.6, 5.4,
+  3.7, 5.9,
+  3.8, 5.5,
+ -1.0,+5.1, // 10
+ -0.9,-0.8, // 11
+ -0.7,-0.6, // 12
+  3.9, 5.5,
+  4.2, 5.6,
+  4.1, 5.8,
+  3.0, 2.7, // 11x
+  3.7, 2.6,
+  3.5, 2.5,
+  3.4, 2.1,
+  3.3, 2.4,
+  3.2, 2.2,
+ -1.1,-0.9, // 10
+ +5.2,-2.1, // 11
+ -2.2,-2.3, // 12
+  3.1, 2.3,
+  2.0, 2.0,
+  3.0, 2.4,
+  4.1, 6.1, // 11y
+  4.3, 6.3,
+  4.3, 6.4,
+  4.4, 6.4,
+  4.4, 6.3,
+  4.5, 6.5,
+ -1.2,-0.8, // 10
+ -2.1,+5.3, // 11
+ -1.4,-1.5, // 12
+  4.5, 6.2,
+  4.6, 7.0,
+  4.6, 6.1,
+  4.6, 6.6, // 12x
+  5.8, 9.8,
+  5.9, 9.9,
+  5.1, 9.7,
+  5.2, 9.1,
+  5.3, 9.6,
+ -1.3,-0.7, // 10
+ -2.2,-1.4, // 11
+ +5.4,-1.1, // 12
+  5.1, 9.2,
+  5.4, 9.5,
+  5.2, 9.3,
+  5.5, 9.4, // 12y
+  6.4, 9.5,
+  6.5, 9.6,
+  6.8, 9.1,
+  6.6, 9.7,
+  7.9, 8.9,
+ -1.4,-0.6, // 10
+ -2.3,-1.5, // 11
+ -1.1,+5.5, // 12
+  7.7, 8.8,
+  7.1, 8.8,
+  7.8, 8.9,
   3.2, 8.3, // 13x
- -0.70710678118654757, +0.70710678118654757, // 5
+  3.3, 8.4,
   5.4, 9.3,
   5.6, 9.7,
   3.7, 9.0,
   5.9, 9.9,
- +0.70710678118654757, -0.70710678118654757, // 10
+  6.0, 9.8,
   4.4, 4.8,
   4.6, 4.7,
   4.8, 4.6,
   4.9, 4.4,
   4.0, 4.2,
   4.2, 4.3, // 13y
- +0.70710678118654757, +0.70710678118654757, // 5
+  4.3, 4.4,
   7.5, 3.4,
   6.7, 3.5,
   6.4, 3.6,
   4.6, 3.9,
- -0.70710678118654757, -0.70710678118654757, // 10
+  4.7, 4.0,
   8.9, 2.8,
   7.6, 2.7,
   6.4, 2.6,
@@ -367,24 +365,24 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   3.8, 2.3,
   4.5, 2.2, // 14x
   8.5, 2.4,
-  0.0,+1.0, // 6
+  0.0, 1.0,
   7.4, 3.6,
   6.6, 3.5,
   4.7, 3.4,
   3.8, 3.5,
-  0.0,-1.0, // 11
+  0.0, 1.0,
   5.9, 3.7,
   8.7, 4.6,
   7.6, 4.5,
   6.5, 4.4,
   5.5, 4.3, // 14y
   4.3, 4.8,
- +1.0, 0.0, // 6
+  1.0, 0.0,
   4.3, 4.7,
   6.5, 4.6,
   9.6, 4.5,
   8.7, 4.3,
- -1.0, 0.0, // 11
+  1.0, 0.0,
   7.9, 4.5,
   6.7, 5.3,
   5.6, 5.8,
@@ -393,11 +391,11 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   3.3, 5.5,
   4.2, 5.3,
   5.4, 5.6,
- -1.0, 6.0, // 8
+  1.0, 6.0,
   0.8, 6.6,
   9.8, 6.5,
   8.5, 6.5,
- +1.0, 0.0, // 12
+  1.0, 0.0,
   7.5, 7.3,
   6.4, 7.6,
   5.2, 7.8,
@@ -405,11 +403,11 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
   3.7, 8.6,
   3.8, 8.5,
   2.9, 8.3,
-  0.0,+1.0, // 8
+  0.0, 1.0,
   2.0, 9.9,
   2.7, 9.8,
   1.6, 9.7,
-  0.0,-1.0, // 12
+  0.0, 1.0,
   1.5, 5.5,
   1.2, 5.4,
   1.1, 5.3,
@@ -420,14 +418,14 @@ const double pylith::faults::CohesiveDynDataTri3d::_jacobian[] = {
 // Computed values
 // ----------------------------------------------------------------------
 
-const double pylith::faults::CohesiveDynDataTri3d::_orientation[] = {
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_orientation[] = {
   +0.70710678118654757, -0.70710678118654757,  
   -0.70710678118654757, -0.70710678118654757,
   0.0, -1.0,  -1.0,  0.0,
  +1.0,  0.0,   0.0, -1.0
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_area[] = {
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_area[] = {
   2.0,
   1.0,
   1.0,
@@ -438,10 +436,10 @@ const int pylith::faults::CohesiveDynDataTri3d::_constraintVertices[] = {
   13, 14, 15
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_forcesInitial[] = {
-  3.15*1.4142135623730951, 1.00*1.41421356237309,
-  2.05, -1.05,
-  1.10,  2.10,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_initialTractions[] = {
+  3.0*0.70710678118654757, 0.70710678118654757,
+  2.1, -1.1,
+  1.2,  2.2,
 };
 
 
@@ -449,19 +447,19 @@ const double pylith::faults::CohesiveDynDataTri3d::_forcesInitial[] = {
 // Stick case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrStick[] = {
-  1.1, 29.1,
-  1.2, 29.2, // 5
-  1.3, 29.3, // 6
-  1.4, 29.4,
-  1.5, 29.5, // 8
-  1.6, 29.6,
-  1.7, 29.7, // 10
-  1.9, 29.9, // 11
-  2.1, 29.1, // 12
-  1.8, -29.8, // 13
-  1.0, -29.0, // 14
-  2.2, -29.2, // 15
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldIncrStick[] = {
+  1.1, 2.1,
+  1.2, 2.2, // 5
+  1.3, 2.3, // 6
+  1.4, 2.4,
+  1.5, 2.5, // 8
+  1.6, 2.6,
+  1.7, 2.7, // 10
+  1.9, 2.9, // 11
+  2.1, 2.1, // 12
+  21.8, 22.8, // 13
+  21.0, 2.0, // 14
+  2.2, 22.2, // 15
 };
 
 // No change in fieldIncr
@@ -471,84 +469,82 @@ const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrStick[] = {
 // Slip case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrSlip[] = {
-  9.1, 10.1,
-  9.2, 10.2, // 5
-  9.3, 10.3, // 6
-  9.4, 10.4,
-  9.5, 10.5, // 8
-  9.6, 10.6,
-  9.7, 10.7, // 10
-  9.9, 10.9, // 11
-  9.1, 10.1, // 12
-  9.8, -10.8, // 13
-  9.0, -10.0, // 14
-  9.2, -10.2, // 15
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldIncrSlip[] = {
+  1.1, 2.1,
+  1.2, 2.2, // 5
+  1.3, 2.3, // 6
+  1.4, 2.4,
+  1.5, 2.5, // 8
+  1.6, 2.6,
+  1.2, 2.2, // 10
+  1.3, 2.3, // 11
+  1.5, 2.5, // 12
+  1.8, 0.8, // 13
+  1.0, 0.1, // 14
+  1.2, 0.2, // 15
 };
 
 // Output
-// TODO Update
-const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrSlipE[] = {
-  9.100000000000,  10.100000000000,
-  4.178047263424,  15.221952736576,
-  9.300000000000,  10.050098043990,
-  9.400000000000,  10.400000000000,
-  9.655679817715,  10.500000000000,
-  9.600000000000,  10.600000000000,
- 14.721952736576,   5.678047263424,
-  9.900000000000,  11.149901956010,
-  8.944320182285,  10.100000000000,
- -5.600000000000, -10.800000000000,
- -4.800000000000, -10.000000000000,
- -6.600000000000, -10.200000000000,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldIncrSlipE[] = {
+   1.100000000000,   2.100000000000,
+   2.005761009464,   1.394238990536,
+   1.300000000000,   1.928356338235,
+   1.400000000000,   2.400000000000,
+   1.216364402612,   2.500000000000,
+   1.600000000000,   2.600000000000,
+   0.394238990536,   3.005761009464,
+   1.300000000000,   2.671643661765,
+   1.783635597388,   2.500000000000,
+   4.520000000000,  -1.920000000000,
+   1.000000000000,  -1.600000000000,
+  -0.560000000000,   0.200000000000,
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_slipSlipE[] = {
-  14.204227339325,   0.0,
-  -0.499803912020,   0.0,
-  -0.311359635429,   0.0,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_slipSlipE[] = {
+  -2.279036295232,   0.000000000000,
+  -0.743287323529,   0.000000000000,
+   0.567271194775,   0.000000000000,
 };
 
 // ----------------------------------------------------------------------
 // Open case
 // ----------------------------------------------------------------------
 // Input
-const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrOpen[] = {
-  9.1, 10.1,
-  9.2, 10.2, // 5
-  9.3, 10.3, // 6
-  9.4, 10.4,
-  9.5, 10.5, // 8
-  9.6, 10.6,
-  9.7, 10.7, // 10
-  9.9, 10.9, // 11
-  9.1, 10.1, // 12
-  9.8, 10.8, // 13
-  9.0, 10.0, // 14
-  9.2, 10.2, // 15
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldIncrOpen[] = {
+  1.1, 2.1,
+  1.2, 2.2, // 5
+  1.3, 2.3, // 6
+  1.4, 2.4,
+  1.5, 2.5, // 8
+  1.6, 2.6,
+  1.2, 2.2, // 10
+  1.3, 2.3, // 11
+  1.5, 2.5, // 12
+-10.8, 0.8, // 13
+-10.0, 0.1, // 14
+  1.2,-10.2, // 15
 };
 
 // Output
-const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrOpenE[] = {
-   9.100000000000,  10.100000000000,
-  17.946141606808,   1.453858393192,
-   9.300000000000,  16.358051491522,
-   9.400000000000,  10.400000000000,
-   1.376240123890,  19.299429217321,
-   9.600000000000,  10.600000000000,
-   0.953858393192,  19.446141606808,
-   9.900000000000,   4.841948508478,
-  17.223759876110,   1.300570782679,
-  -6.800000000000,  -8.800000000000,
-  -6.000000000000,  -8.000000000000,
-  -7.200000000000,  -9.200000000000,
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_fieldIncrOpenE[] = {
+   1.100000000000,   2.100000000000,
+   9.940107961522,   3.662120348918,
+   5.688525058023,   5.314075601410,
+   1.400000000000,   2.400000000000,
+   3.622067204316,   6.167076609904,
+   1.600000000000,   2.600000000000,
+  -7.540107961522,   0.737879651082,
+  -3.088525058023,  -0.714075601410,
+  -0.622067204316,  -1.167076609904,
+   3.800000000000,  -4.800000000000,
+  -3.000000000000,  -4.000000000000,
+  -3.200000000000,  -4.200000000000,
 };
 
-const double pylith::faults::CohesiveDynDataTri3d::_slipOpenE[] = {
--24.737824157567,  0.0,
- 12.116102983044,  0.0,
- 16.247519752219,  17.598858434641,
-
+const PylithScalar pylith::faults::CohesiveDynDataTri3d::_slipOpenE[] = {
+ -10.292628788528,  14.428129643052,
+   6.028151202820,   8.777050116045,
+  -4.244134408633,   7.334153219809,
 };
 
 // ----------------------------------------------------------------------
@@ -559,36 +555,36 @@ pylith::faults::CohesiveDynDataTri3d::CohesiveDynDataTri3d(void)
   cellDim = _cellDim;
   numBasis = _numBasis;
   numQuadPts = _numQuadPts;
-  quadPts = const_cast<double*>(_quadPts);
-  quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
-  verticesRef = const_cast<double*>(_verticesRef);
+  quadPts = const_cast<PylithScalar*>(_quadPts);
+  quadWts = const_cast<PylithScalar*>(_quadWts);
+  basis = const_cast<PylithScalar*>(_basis);
+  basisDeriv = const_cast<PylithScalar*>(_basisDeriv);
+  verticesRef = const_cast<PylithScalar*>(_verticesRef);
   id = _id;
   label = const_cast<char*>(_label);
   initialTractFilename = const_cast<char*>(_initialTractFilename);
 
-  fieldT = const_cast<double*>(_fieldT);
-  jacobian = const_cast<double*>(_jacobian);
-  orientation = const_cast<double*>(_orientation);
-  area = const_cast<double*>(_area);
-  forcesInitial = const_cast<double*>(_forcesInitial);
+  fieldT = const_cast<PylithScalar*>(_fieldT);
+  jacobian = const_cast<PylithScalar*>(_jacobian);
+  orientation = const_cast<PylithScalar*>(_orientation);
+  area = const_cast<PylithScalar*>(_area);
+  initialTractions = const_cast<PylithScalar*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
   numConstraintVert = _numConstraintVert;  
 
   // Stick
-  fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  fieldIncrStick = const_cast<PylithScalar*>(_fieldIncrStick);
 
   // Slip
-  fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);
-  fieldIncrSlipE = const_cast<double*>(_fieldIncrSlipE);
-  slipSlipE = const_cast<double*>(_slipSlipE);
+  fieldIncrSlip = const_cast<PylithScalar*>(_fieldIncrSlip);
+  fieldIncrSlipE = const_cast<PylithScalar*>(_fieldIncrSlipE);
+  slipSlipE = const_cast<PylithScalar*>(_slipSlipE);
 
   // Open
-  fieldIncrOpen = const_cast<double*>(_fieldIncrOpen);
-  fieldIncrOpenE = const_cast<double*>(_fieldIncrOpenE);
-  slipOpenE = const_cast<double*>(_slipOpenE);
+  fieldIncrOpen = const_cast<PylithScalar*>(_fieldIncrOpen);
+  fieldIncrOpenE = const_cast<PylithScalar*>(_fieldIncrOpenE);
+  slipOpenE = const_cast<PylithScalar*>(_slipOpenE);
 } // constructor
 
 pylith::faults::CohesiveDynDataTri3d::~CohesiveDynDataTri3d(void)

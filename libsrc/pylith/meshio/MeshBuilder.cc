@@ -21,7 +21,7 @@
 #include "MeshBuilder.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -38,7 +38,7 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 // Set vertices and cells in mesh.
 void
 pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
-				       double_array* coordinates,
+				       scalar_array* coordinates,
 				       const int numVertices,
 				       const int spaceDim,
 				       const int_array& cells,
@@ -197,7 +197,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 void
 pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 					    ALE::Obj<SieveFlexMesh>& faultBd,
-					    const double_array& coordinates,
+					    const scalar_array& coordinates,
 					    const int numVertices,
 					    const int spaceDim,
 					    const int_array& cells,

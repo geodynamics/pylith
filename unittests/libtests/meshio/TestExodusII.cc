@@ -22,7 +22,7 @@
 
 #include "pylith/meshio/ExodusII.hh"
 
-#include "pylith/utils/array.hh" // USES int_array, double_array, string_vector
+#include "pylith/utils/array.hh" // USES int_array, scalar_array, string_vector
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestExodusII );
@@ -93,11 +93,11 @@ pylith::meshio::TestExodusII::testHasVar(void)
 } // testHasVar
 
 // ----------------------------------------------------------------------
-// Test getVar(double*).
+// Test getVar(PylithScalar*).
 void
 pylith::meshio::TestExodusII::testGetVarDouble(void)
 { // testGetVarDouble
-  const double coordsE[8] = { -1.0, 0.0, 0.0, 1.0,
+  const PylithScalar coordsE[8] = { -1.0, 0.0, 0.0, 1.0,
 			      0.0, -1.0, 1.0, 0.0 };
 
   const int ndims = 2;
@@ -105,12 +105,12 @@ pylith::meshio::TestExodusII::testGetVarDouble(void)
   dims[0] = 2;
   dims[1] = 4;
   const int size = dims[0]*dims[1];
-  double_array coords(size);
+  scalar_array coords(size);
 
   ExodusII exofile("data/twotri3_12.2.exo");
   exofile.getVar(&coords[0], dims, ndims, "coord");
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsE[i], coords[i], tolerance);
 } // testGetVarDouble

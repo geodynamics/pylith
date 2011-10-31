@@ -46,7 +46,7 @@ pylith::feassemble::TestElasticityExplicitGrav3DLinear::setUp(void)
   GeometryTet3D geometry;
   _quadrature->refGeometry(&geometry);
 
-  const double g = 1.0e8;
+  const PylithScalar g = 1.0e8;
   _gravityField->gravAcceleration(g);
 
   _material = new materials::ElasticIsotropic3D;

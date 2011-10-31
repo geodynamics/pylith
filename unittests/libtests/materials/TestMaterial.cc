@@ -22,7 +22,7 @@
 
 #include "data/MaterialData.hh" // USES MaterialData
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -79,7 +79,7 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testTimeStep(void) 
 { // testTimeStep
-  const double dt = 2.0;
+  const PylithScalar dt = 2.0;
   ElasticIsotropic3D material;
   material.timeStep(dt);
   
@@ -189,8 +189,8 @@ pylith::materials::TestMaterial::testInitialize(void)
   const int numCorners = 3;
   const int numQuadPts = 2;
   const int spaceDim = 1;
-  const double basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
-  const double basisDeriv[] = { 
+  const PylithScalar basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
+  const PylithScalar basisDeriv[] = { 
     -1.07735027e+00,
     -7.73502692e-02,
     1.15470054e+00,
@@ -198,8 +198,8 @@ pylith::materials::TestMaterial::testInitialize(void)
     1.07735027e+00,
     -1.15470054e+00,
   };
-  const double quadPtsRef[] = { -0.577350269, 0.577350269 };
-  const double quadWts[] = { 1.0, 1.0  };
+  const PylithScalar quadPtsRef[] = { -0.577350269, 0.577350269 };
+  const PylithScalar quadWts[] = { 1.0, 1.0  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -235,27 +235,27 @@ pylith::materials::TestMaterial::testInitialize(void)
   material.normalizer(normalizer);
   material.initialize(mesh, &quadrature);
 
-  const double densityA = 2500.0;
-  const double vsA = 3000.0;
-  const double vpA = vsA*sqrt(3.0);
-  const double muA = vsA*vsA*densityA;
-  const double lambdaA = vpA*vpA*densityA - 2.0*muA;
-  const double densityB = 2000.0;
-  const double vsB = 1200.0;
-  const double vpB = vsB*sqrt(3.0);
-  const double muB = vsB*vsB*densityB;
-  const double lambdaB = vpB*vpB*densityB - 2.0*muB;
-  const double densityE[] = { densityA, densityB };
-  const double muE[] = { muA, muB };
-  const double lambdaE[] = { lambdaA, lambdaB };
+  const PylithScalar densityA = 2500.0;
+  const PylithScalar vsA = 3000.0;
+  const PylithScalar vpA = vsA*sqrt(3.0);
+  const PylithScalar muA = vsA*vsA*densityA;
+  const PylithScalar lambdaA = vpA*vpA*densityA - 2.0*muA;
+  const PylithScalar densityB = 2000.0;
+  const PylithScalar vsB = 1200.0;
+  const PylithScalar vpB = vsB*sqrt(3.0);
+  const PylithScalar muB = vsB*vsB*densityB;
+  const PylithScalar lambdaB = vpB*vpB*densityB - 2.0*muB;
+  const PylithScalar densityE[] = { densityA, densityB };
+  const PylithScalar muE[] = { muA, muB };
+  const PylithScalar lambdaE[] = { lambdaA, lambdaB };
 
   SieveMesh::point_type cell = *cells->begin();
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   CPPUNIT_ASSERT(0 != material._properties);
   const Obj<RealSection>& propertiesSection = material._properties->section();
   CPPUNIT_ASSERT(!propertiesSection.isNull());
-  const double* propertiesCell = propertiesSection->restrictPoint(cell);
+  const PylithScalar* propertiesCell = propertiesSection->restrictPoint(cell);
   CPPUNIT_ASSERT(0 != propertiesCell);
 
   const int p_density = 0;
@@ -355,10 +355,10 @@ pylith::materials::TestMaterial::testDBToProperties(void)
 
   // Test _dbToProperties()
   const int numLocs = _data->numLocs;
-  double_array dbValues(numDBProperties);
+  scalar_array dbValues(numDBProperties);
 
   const int propertiesSize = _data->numPropsQuadPt;
-  double_array properties(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numDBProperties; ++i)
@@ -366,8 +366,8 @@ pylith::materials::TestMaterial::testDBToProperties(void)
 
     _material->_dbToProperties(&properties[0], dbValues);
     
-    const double* const propertiesE = &_data->properties[iLoc*propertiesSize];
-    const double tolerance = 1.0e-06;
+    const PylithScalar* const propertiesE = &_data->properties[iLoc*propertiesSize];
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -390,20 +390,20 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsQuadPt;
-  double_array propertiesNondim(propertiesSize);
-  double_array properties(propertiesSize);
+  scalar_array propertiesNondim(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
     memcpy(&properties[0], &_data->properties[iLoc*propertiesSize],
-	   propertiesSize*sizeof(double));
+	   propertiesSize*sizeof(PylithScalar));
     _material->_nondimProperties(&properties[0], properties.size());
     
-    const double* const propertiesNondimE =
+    const PylithScalar* const propertiesNondimE =
       &_data->propertiesNondim[iLoc*propertiesSize];
     CPPUNIT_ASSERT(0 != propertiesNondimE);
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -426,19 +426,19 @@ pylith::materials::TestMaterial::testDimProperties(void)
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsQuadPt;
-  double_array properties(propertiesSize);
+  scalar_array properties(propertiesSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
     memcpy(&properties[0], &_data->propertiesNondim[iLoc*propertiesSize], 
-	   propertiesSize*sizeof(double));
+	   propertiesSize*sizeof(PylithScalar));
     _material->_dimProperties(&properties[0], properties.size());
     
-    const double* const propertiesE =
+    const PylithScalar* const propertiesE =
       &_data->properties[iLoc*propertiesSize];
     CPPUNIT_ASSERT(0 != propertiesE);
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -471,10 +471,10 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
 
   // Test _dbToStateVars()
   const int numLocs = _data->numLocs;
-  double_array dbValues(numDBStateVars);
+  scalar_array dbValues(numDBStateVars);
 
   const int stateVarsSize = _data->numVarsQuadPt;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     for (int i=0; i < numDBStateVars; ++i)
@@ -482,11 +482,11 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
 
     _material->_dbToStateVars(&stateVars[0], dbValues);
     
-    const double* const stateVarsE = 
+    const PylithScalar* const stateVarsE = 
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -509,20 +509,20 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsQuadPt;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
     memcpy(&stateVars[0], &_data->stateVars[iLoc*stateVarsSize],
-	   stateVarsSize*sizeof(double));
+	   stateVarsSize*sizeof(PylithScalar));
     _material->_nondimStateVars(&stateVars[0], stateVars.size());
     
-    const double* const stateVarsNondimE =
+    const PylithScalar* const stateVarsNondimE =
       (stateVarsSize > 0) ? &_data->stateVarsNondim[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsNondimE) ||
 		    (0 == stateVarsSize && 0 == stateVarsNondimE) );
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsNondimE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
@@ -545,20 +545,20 @@ pylith::materials::TestMaterial::testDimStateVars(void)
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsQuadPt;
-  double_array stateVars(stateVarsSize);
+  scalar_array stateVars(stateVarsSize);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
 
     memcpy(&stateVars[0], &_data->stateVarsNondim[iLoc*stateVarsSize],
-	   stateVarsSize*sizeof(double));
+	   stateVarsSize*sizeof(PylithScalar));
     _material->_dimStateVars(&stateVars[0], stateVars.size());
     
-    const double* const stateVarsE =
+    const PylithScalar* const stateVarsE =
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
     CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 

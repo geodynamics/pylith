@@ -19,6 +19,8 @@
 #if !defined(pylith_bc_dirichletdatamulti_hh)
 #define pylith_bc_dirichletdatamulti_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace bc {
      class DirichletDataMulti;
@@ -51,7 +53,7 @@ public:
   int* constrainedPointsA; ///< Array of indices of constrained points.
   char* dbFilenameA; ///< Filename for db with initial values.
   char* dbFilenameARate; ///< Filename for db with rate of change of values.
-  double tRefA; ///< Reference time for rate of change of values.
+  PylithScalar tRefA; ///< Reference time for rate of change of values.
   //@}
 
   //@{ Boundary condition B
@@ -63,7 +65,7 @@ public:
   int* constrainedPointsB; ///< Array of indices of constrained points.
   char* dbFilenameB; ///< Filename for db with initial values.
   char* dbFilenameBRate; ///< Filename for db with rate of change of values.
-  double tRefB; ///< Reference time for rate of change of values.
+  PylithScalar tRefB; ///< Reference time for rate of change of values.
   //@}
 
   //@{ Boundary condition C
@@ -75,11 +77,11 @@ public:
   int* constrainedPointsC; ///< Array of indices of constrained points.
   char* dbFilenameC; ///< Filename for db with initial values.
   char* dbFilenameCRate; ///< Filename for db with rate of change of values.
-  double tRefC; ///< Reference time for rate of change of values.
+  PylithScalar tRefC; ///< Reference time for rate of change of values.
   //@}
 
-  double* field; ///< Values in field
-  double* fieldIncr; ///< Increment values in field
+  PylithScalar* field; ///< Values in field
+  PylithScalar* fieldIncr; ///< Increment values in field
   int* constraintSizes; ///< Number of constrained DOF at each vertex
   int* constrainedDOF; ///< Indices of constrained DOF at each constrained vertex
 

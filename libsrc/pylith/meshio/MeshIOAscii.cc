@@ -23,7 +23,7 @@
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
+#include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
 
 #include "journal/info.h" // USES journal::info_t
@@ -76,7 +76,7 @@ pylith::meshio::MeshIOAscii::_read(void)
   int numVertices = 0;
   int numCells = 0;
   int numCorners = 0;
-  double_array coordinates;
+  scalar_array coordinates;
   int_array cells;
   int_array materialIds;
 
@@ -223,7 +223,7 @@ pylith::meshio::MeshIOAscii::_write(void) const
 // Read mesh vertices.
 void
 pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parser,
-					   double_array* coordinates,
+					   scalar_array* coordinates,
 					   int* numVertices, 
 					   int* numDims) const
 { // _readVertices
@@ -281,7 +281,7 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 { // _writeVertices
   int spaceDim = 0;
   int numVertices = 0;
-  double_array coordinates;
+  scalar_array coordinates;
   _getVertices(&coordinates, &numVertices, &spaceDim);
 
   fileout

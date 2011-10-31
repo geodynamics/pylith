@@ -20,6 +20,8 @@
 
 #include "TestDataWriterHDF5.hh" // Implementation of class methods
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 #include <hdf5.h> // USES HDF5 API
 
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
@@ -90,6 +92,8 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
       size *= dims[i];
     double* data = (size > 0) ? new double[size] : 0;
     CPPUNIT_ASSERT(size > 0);
+    //const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    //  H5T_NATIVE_DOUBLE : H5T_NATIVE_DOUBLE;
     err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
 		  H5P_DEFAULT, (void*) data);
     CPPUNIT_ASSERT(err >= 0);
@@ -109,9 +113,9 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
     for (int i=0; i < size; ++i)
       if (dataE[i] != 0.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, data[i]/dataE[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, double(data[i])/dataE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], data[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(dataE[i], double(data[i]), tolerance);
 
     delete[] dimsE; dimsE = 0;
     delete[] dataE; dataE = 0;

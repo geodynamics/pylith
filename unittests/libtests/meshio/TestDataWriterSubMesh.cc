@@ -137,7 +137,7 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
       for (topology::SubMesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	   v_iter != verticesEnd;
 	   ++v_iter, ++ipt) {
-	const double* values = &_data->vertexFields[i][ipt*fiberDim];
+	const PylithScalar* values = &_data->vertexFields[i][ipt*fiberDim];
 	section->updatePoint(*v_iter, values);
       } // for
       CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
@@ -189,7 +189,7 @@ pylith::meshio::TestDataWriterSubMesh::_createCellFields(
       for (topology::SubMesh::SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	   c_iter != cellsEnd;
 	   ++c_iter, ++icell) {
-	const double* values = &_data->cellFields[i][icell*fiberDim];
+	const PylithScalar* values = &_data->cellFields[i][icell*fiberDim];
 	section->updatePoint(*c_iter, values);
       } // for
       CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);

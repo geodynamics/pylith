@@ -23,7 +23,6 @@
 #include "pylith/feassemble/ElasticityExplicitLgDeform.hh" // USES ElasticityExplicitLgDeform
 #include "data/ElasticityExplicitData.hh" // USES ElasticityExplicitData
 
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -103,10 +102,10 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
   _initialize(&mesh, &integrator, &fields);
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateResidual(residual, t, &fields);
 
-  const double* valsE = _data->valsResidual;
+  const PylithScalar* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
 #if 0 // DEBUGGING
@@ -118,11 +117,11 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -143,15 +142,15 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidualLumped(
   _initialize(&mesh, &integrator, &fields);
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateResidualLumped(residual, t, &fields);
 
-  const double* valsE = _data->valsResidualLumped;
+  const PylithScalar* valsE = _data->valsResidualLumped;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
@@ -162,7 +161,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidualLumped(
     std::cout << "  " << valsE[i] << std::endl;
 #endif
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -185,12 +184,12 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
 
   topology::Jacobian jacobian(fields.solution());
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.assemble("final_assembly");
 
-  const double* valsE = _data->valsJacobian;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int nrowsE = _data->numVertices * _data->spaceDim;
   const int ncolsE = _data->numVertices * _data->spaceDim;
 
@@ -207,7 +206,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
   MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
-  double_array vals(nrows*ncols);
+  scalar_array vals(nrows*ncols);
   int_array rows(nrows);
   int_array cols(ncols);
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -215,7 +214,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
@@ -247,12 +246,12 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobianLumped(
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   jacobian.allocate();
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
-  const double* valsE = _data->valsJacobianLumped;
+  const PylithScalar* valsE = _data->valsJacobianLumped;
 
 #if 0 // DEBUGGING
   // TEMPORARY
@@ -268,12 +267,12 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobianLumped(
 
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
-  const double* vals = jacobianSection->restrictSpace();
+  const PylithScalar* vals = jacobianSection->restrictSpace();
   const int size = jacobianSection->sizeWithBC();
   const int sizeE = _data->numVertices * _data->spaceDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -293,7 +292,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testUpdateStateVars(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
 
@@ -312,7 +311,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
   CPPUNIT_ASSERT(0 != _material);
 
   const int spaceDim = _data->spaceDim;
-  const double dt = _data->dt;
+  const PylithScalar dt = _data->dt;
 
   // Setup mesh
   spatialdata::geocoords::CSCart cs;
@@ -416,8 +415,8 @@ pylith::feassemble::TestElasticityExplicitLgDeform::_initialize(
   CPPUNIT_ASSERT(!velSection.isNull());
   CPPUNIT_ASSERT(!accSection.isNull());
 
-  double_array velVertex(spaceDim);
-  double_array accVertex(spaceDim);
+  scalar_array velVertex(spaceDim);
+  scalar_array accVertex(spaceDim);
 
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {

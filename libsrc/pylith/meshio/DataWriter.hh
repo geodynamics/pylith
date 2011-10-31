@@ -58,6 +58,12 @@ public :
   virtual
   void deallocate(void);
   
+  /** Set time scale for simulation time.
+   *
+   * @param value Time scale
+   */
+  void timeScale(const PylithScalar value);
+
   /** Prepare for writing files.
    *
    * @param mesh Finite-element mesh. 
@@ -85,7 +91,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   virtual
-  void openTimeStep(const double t,
+  void openTimeStep(const PylithScalar t,
 		    const mesh_type& mesh,
 		    const char* label =0,
 		    const int labelId =0);
@@ -101,7 +107,7 @@ public :
    * @param mesh Mesh associated with output.
   */
   virtual
-  void writeVertexField(const double t,
+  void writeVertexField(const PylithScalar t,
 			field_type& field,
 			const mesh_type& mesh) = 0;
 
@@ -114,7 +120,7 @@ public :
    * @param labelId Value of label defining which cells to include.
    */
   virtual
-  void writeCellField(const double t,
+  void writeCellField(const PylithScalar t,
 		      field_type& field,
 		      const char* label =0,
 		      const int labelId =0) = 0;
@@ -136,6 +142,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
+  PylithScalar _timeScale; ///< Time scale for dimensioning time in output.
   int _numTimeSteps; ///< Expected number of time steps for fields.
   std::string _context; ///< Context of scatters for DataWriter.
 

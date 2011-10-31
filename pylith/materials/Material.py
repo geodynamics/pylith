@@ -150,8 +150,9 @@ class Material(PetscComponent):
               "    number of corners: %d" % \
               (self.label(),
                self.quadrature.cellDim(), self.quadrature.spaceDim(),
+               self.quadrature.cell.numCorners, 
                self.mesh.dimension(), self.mesh.coordsys().spaceDim(),
-               self.quadrature.cell.numCorners, self.mesh.coneSize())
+               self.mesh.coneSize())
     self._eventLogger.eventEnd(logEvent)
     return
   
@@ -190,7 +191,7 @@ class Material(PetscComponent):
 
       self.quadrature = self.inventory.quadrature
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring material "
                        "(%s):\n%s" % (aliases, err.message))

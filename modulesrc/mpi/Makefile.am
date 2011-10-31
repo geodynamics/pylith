@@ -50,7 +50,7 @@ INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_CC_INCLUDES)
 
 if ENABLE_SWIG
 $(srcdir)/mpi_wrap.cxx $(srcdir)/mpi.py: $(swig_sources)
-	$(SWIG) -Wall -c++ -python $<
+	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
 endif
 
 

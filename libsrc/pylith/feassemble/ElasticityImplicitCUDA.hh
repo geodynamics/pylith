@@ -77,7 +77,7 @@ public :
    *
    * @param dt Time step
    */
-  void timeStep(const double dt);
+  void timeStep(const PylithScalar dt);
 
   /** Get stable time step for advancing from time t to time t+dt.
    *
@@ -86,7 +86,7 @@ public :
    * @param mesh Finite-element mesh.
    * @returns Time step
    */
-  double stableTimeStep(const topology::Mesh& mesh) const;
+  PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -110,7 +110,7 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -121,7 +121,7 @@ public :
    * @param fields Solution fields
    */
   void integrateJacobian(topology::Jacobian* jacobian,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
@@ -135,13 +135,13 @@ private :
 
   void setupCUDA(const int dim, const int numBasisFuncs, const int numCells);
   void calculateGrid(const int N, const int blockSize, unsigned int& x, unsigned int& y, unsigned int& z);
-  void calculateGeometry(const int spaceDim, const double coords[], float geometry[]);
+  void calculateGeometry(const int spaceDim, const PylithScalar coords[], float geometry[]);
   void cleanupCUDA();
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _dtm1; ///< Time step for t-dt1 -> t
+  PylithScalar _dtm1; ///< Time step for t-dt1 -> t
 
   float  K[4*3*4*3*3*3];
   float *geometry;

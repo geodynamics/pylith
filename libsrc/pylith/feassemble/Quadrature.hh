@@ -31,7 +31,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // Quadrature -----------------------------------------------------------
 /** @brief Abstract base class for integrating over finite-elements
@@ -89,26 +89,26 @@ public :
    *
    * @returns Array of coordinates of quadrature points in cell
    */
-  const double_array& quadPts(void) const;
+  const scalar_array& quadPts(void) const;
 
   /** Get derivatives of basis fns evaluated at quadrature points.
    *
    * @returns Array of derivatives of basis fns evaluated at
    * quadrature points
    */
-  const double_array& basisDeriv(void) const;
+  const scalar_array& basisDeriv(void) const;
 
   /** Get Jacobians evaluated at quadrature points.
    *
    * @returns Array of Jacobian inverses evaluated at quadrature points.
    */
-  const double_array& jacobian(void) const;
+  const scalar_array& jacobian(void) const;
 
   /** Get determinants of Jacobian evaluated at quadrature points.
    *
    * @returns Array of determinants of Jacobian evaluated at quadrature pts
    */
-  const double_array& jacobianDet(void) const;
+  const scalar_array& jacobianDet(void) const;
 
   /** Get precomputed geometry fields.
    *
@@ -140,7 +140,7 @@ public :
    * @param coordinatesCell Coordinates of vertices in cell.
    * @param cell Finite-element cell
    */
-  void computeGeometry(const double_array& coordinatesCell,
+  void computeGeometry(const scalar_array& coordinatesCell,
 		       const int cell);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////

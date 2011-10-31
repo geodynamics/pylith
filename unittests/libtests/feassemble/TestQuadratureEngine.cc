@@ -36,11 +36,11 @@ void
 pylith::feassemble::TestQuadratureEngine::testCopyConstructor(void)
 { // testClone
   // Semi-random values manually set to check cloning
-  const double quadPtsE[] = { 12.8 };
-  const double jacobianE[] = { 2.56 };
-  const double jacobianInvE[] = { 5.12 };
-  const double jacobianDetE[] = { 10.24 };
-  const double basisDerivE[] = { 0.8, 1.6 };
+  const PylithScalar quadPtsE[] = { 12.8 };
+  const PylithScalar jacobianE[] = { 2.56 };
+  const PylithScalar jacobianInvE[] = { 5.12 };
+  const PylithScalar jacobianDetE[] = { 10.24 };
+  const PylithScalar basisDerivE[] = { 0.8, 1.6 };
 
   QuadratureRefCell refCell;
 
@@ -50,43 +50,43 @@ pylith::feassemble::TestQuadratureEngine::testCopyConstructor(void)
   // Set values
   size = 1;
   engineOrig._quadPts.resize(size);
-  memcpy(&engineOrig._quadPts[0], quadPtsE, size*sizeof(double));
+  memcpy(&engineOrig._quadPts[0], quadPtsE, size*sizeof(PylithScalar));
 
   size = 1;
   engineOrig._jacobian.resize(size);
-  memcpy(&engineOrig._jacobian[0], jacobianE, size*sizeof(double));
+  memcpy(&engineOrig._jacobian[0], jacobianE, size*sizeof(PylithScalar));
 
   size = 1;
   engineOrig._jacobianInv.resize(size);
-  memcpy(&engineOrig._jacobianInv[0], jacobianInvE, size*sizeof(double));
+  memcpy(&engineOrig._jacobianInv[0], jacobianInvE, size*sizeof(PylithScalar));
 
   size = 1;
   engineOrig._jacobianDet.resize(size);
-  memcpy(&engineOrig._jacobianDet[0], jacobianDetE, size*sizeof(double));
+  memcpy(&engineOrig._jacobianDet[0], jacobianDetE, size*sizeof(PylithScalar));
 
   // Copy
   const QuadratureEngine* engine = engineOrig.clone();
   CPPUNIT_ASSERT(0 != engine);
 
-  const double_array& quadPts = engine->quadPts();
+  const scalar_array& quadPts = engine->quadPts();
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, quadPts.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(quadPtsE[i], quadPts[i]);
 
-  const double_array& jacobian = engine->_jacobian;
+  const scalar_array& jacobian = engine->_jacobian;
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, jacobian.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobianE[i], jacobian[i]);
 
-  const double_array& jacobianInv = engine->_jacobianInv;
+  const scalar_array& jacobianInv = engine->_jacobianInv;
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, jacobianInv.size());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobianInvE[i], jacobianInv[i]);
 
-  const double_array& jacobianDet = engine->jacobianDet();
+  const scalar_array& jacobianDet = engine->jacobianDet();
   size = 1;
   CPPUNIT_ASSERT_EQUAL(size, jacobianDet.size());
   for (int i=0; i < size; ++i)
@@ -104,18 +104,18 @@ pylith::feassemble::TestQuadratureEngine::testInitialize(void)
   const int numBasis = 5;
   const int numQuadPts = 1;
   const int spaceDim = 3;
-  const double basis[] = { 
+  const PylithScalar basis[] = { 
     1.1, 1.2, 1.3, 1.4, 1.5
   };
-  const double basisDerivRef[] = {
+  const PylithScalar basisDerivRef[] = {
     2.1, 2.2, 2.3,
     2.4, 2.5, 2.6,
     2.7, 2.8, 2.9,
     2.10, 2.11, 2.12,
     2.13, 2.14, 2.15,
   };
-  const double quadPtsRef[] = { 3.1, 3.2, 3.3 };
-  const double quadWts[] = { 4.0 };
+  const PylithScalar quadPtsRef[] = { 3.1, 3.2, 3.3 };
+  const PylithScalar quadWts[] = { 4.0 };
 
   QuadratureRefCell refCell;
   refCell.initialize(basis, numQuadPts, numBasis,
@@ -157,26 +157,26 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
   const int numBasis = data.numBasis;
   const int numQuadPts = data.numQuadPts;
   const int spaceDim = data.spaceDim;
-  const double* basis = data.basis;
-  const double* basisDerivRef = data.basisDerivRef;
-  const double* quadPtsRef = data.quadPtsRef;
-  const double* quadWts = data.quadWts;
+  const PylithScalar* basis = data.basis;
+  const PylithScalar* basisDerivRef = data.basisDerivRef;
+  const PylithScalar* quadPtsRef = data.quadPtsRef;
+  const PylithScalar* quadWts = data.quadWts;
 
   const int numVertices = data.numVertices;
   const int numCells = data.numCells;
-  const double_array vertCoords(data.vertices, numBasis*spaceDim);
+  const scalar_array vertCoords(data.vertices, numBasis*spaceDim);
   const int* cells = data.cells;
-  const double* quadPtsE = data.quadPts;
-  const double* jacobianE = data.jacobian;
-  const double* jacobianInvE = data.jacobianInv;
-  const double* jacobianDetE = data.jacobianDet;
-  const double* basisDerivE = data.basisDeriv;
+  const PylithScalar* quadPtsE = data.quadPts;
+  const PylithScalar* jacobianE = data.jacobian;
+  const PylithScalar* jacobianInvE = data.jacobianInv;
+  const PylithScalar* jacobianDetE = data.jacobianDet;
+  const PylithScalar* basisDerivE = data.basisDeriv;
 
   CPPUNIT_ASSERT(1 == numCells);
   CPPUNIT_ASSERT(0 != engine);
   CPPUNIT_ASSERT(0 != refCell);
 
-  const double minJacobian = 1.0e-06;
+  const PylithScalar minJacobian = 1.0e-06;
   refCell->minJacobian(minJacobian);
   refCell->initialize(basis, numQuadPts, numBasis,
 		      basisDerivRef, numQuadPts, numBasis, cellDim,
@@ -188,7 +188,7 @@ pylith::feassemble::TestQuadratureEngine::_testComputeGeometry(
   engine->initialize();
   engine->computeGeometry(vertCoords, 0);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   int size = numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPtsE[i], engine->_quadPts[i], tolerance);

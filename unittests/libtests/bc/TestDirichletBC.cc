@@ -102,12 +102,12 @@ pylith::bc::TestDirichletBC::testInitialize(void)
     const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
     CPPUNIT_ASSERT_EQUAL(numFixedDOF, initialFiberDim);
 
-    const double tolerance = 1.0e-06;
+    const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < numPoints; ++i) {
       const int p_value = _data->constrainedPoints[i]+offset;
       CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
 			   parametersSection->getFiberDimension(p_value));
-      const double* parametersVertex = 
+      const PylithScalar* parametersVertex = 
 	parametersSection->restrictPoint(p_value);
       CPPUNIT_ASSERT(parametersVertex);
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
@@ -125,7 +125,7 @@ pylith::bc::TestDirichletBC::testInitialize(void)
       const int p_value = _data->constrainedPoints[i]+offset;
       CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
 			   parametersSection->getFiberDimension(p_value));
-      const double* parametersVertex = 
+      const PylithScalar* parametersVertex = 
 	parametersSection->restrictPoint(p_value);
       CPPUNIT_ASSERT(parametersVertex);
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
@@ -324,7 +324,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
   field.allocate();
   bc.setConstraints(field);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
   field.zero();
@@ -339,7 +339,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
   } // for
 
   // Only unconstrained values should be zero.
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   bc.setField(t, field);
 
   // Create list of unconstrained DOF at constrained DOF
@@ -380,7 +380,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
 	const int index = iConstraint * numFixedDOF + iDOF;
-	const double valueE = (t > _data->tRef) ?
+	const PylithScalar valueE = (t > _data->tRef) ?
 	  _data->valuesInitial[index] + (t-_data->tRef)*_data->valueRate :
 	  _data->valuesInitial[index];
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[_data->fixedDOF[iDOF]],
@@ -418,7 +418,7 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   field.allocate();
   bc.setConstraints(field);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
   field.zero();
@@ -433,8 +433,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   } // for
 
   // Only unconstrained values should be zero.
-  const double t0 = 1.0;
-  const double t1 = 2.0;
+  const PylithScalar t0 = 1.0;
+  const PylithScalar t1 = 2.0;
   bc.setFieldIncr(t0, t1, field);
 
   // Create list of unconstrained DOF at constrained DOF
@@ -475,7 +475,7 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
 	const int index = iConstraint * numFixedDOF + iDOF;
-	const double valueE = (t0 > _data->tRef) ? (t1-t0)*_data->valueRate :
+	const PylithScalar valueE = (t0 > _data->tRef) ? (t1-t0)*_data->valueRate :
 	  (t1 > _data->tRef) ? (t1-_data->tRef)*_data->valueRate : 0.0;
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[_data->fixedDOF[iDOF]],
 				     tolerance);
@@ -530,7 +530,7 @@ pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
   };
   dbRate.setData(names, units, values, numValues);
 
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
   bc->label(_data->label);
   bc->dbInitial(&db);

@@ -147,7 +147,7 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
       ModuleBoundaryCondition.label(self, self.inventory.label)
       self.upDir = map(float, self.inventory.upDir)
       self.perfLogger = self.inventory.perfLogger
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring boundary condition "
                        "(%s):\n%s" % (aliases, err.message))

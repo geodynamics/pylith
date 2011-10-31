@@ -23,7 +23,7 @@
 import unittest
 import numpy
 from pylith.feassemble.FIATSimplex import FIATSimplex
-from pylith.utils.testarray import test_double
+from pylith.utils.testarray import test_scalararray
 
 # ----------------------------------------------------------------------
 class Line2(object):
@@ -71,6 +71,40 @@ class Line2(object):
 
   def N1p(self, p):
     return 0.5
+
+# ----------------------------------------------------------------------
+class Line2Collocated(Line2):
+
+  def __init__(self):
+    """
+    Setup line2 cell.
+    """
+    vertices = numpy.array([[-1.0], [1.0]])
+    quadPts = vertices[:]
+    quadWts = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (2, 2), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (2, 2, 1), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q)],
+                                 dtype=numpy.float64).reshape( (2,) )
+      deriv = numpy.array([[self.N0p(q)], [self.N1p(q)]],
+                          dtype=numpy.float64)      
+      basisDeriv[iQuad] = deriv.reshape((2, 1))
+      iQuad += 1
+
+    self.cellDim = 1
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
 
 # ----------------------------------------------------------------------
 class Line3(object):
@@ -194,6 +228,43 @@ class Tri3(object):
 
   def N2q(self, p):
     return 0.5
+
+
+# ----------------------------------------------------------------------
+class Tri3Collocated(Tri3):
+
+  def __init__(self):
+    """
+    Setup tri33 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0],
+                            [+1.0, -1.0],
+                            [-1.0, +1.0]])
+    quadPts = vertices[:]
+    quadWts = numpy.array( [2.0/3.0, 2.0/3.0, 2.0/3.0])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (3, 3), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (3, 3, 2), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), self.N2(q)],
+                                 dtype=numpy.float64).reshape( (3,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q)],
+                           [self.N1p(q), self.N1q(q)],
+                           [self.N2p(q), self.N2q(q)]])      
+      basisDeriv[iQuad] = deriv.reshape((3, 2))
+      iQuad += 1
+
+    self.cellDim = 2
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
 
 
 # ----------------------------------------------------------------------
@@ -393,6 +464,46 @@ class Tet4(object):
 
 
 # ----------------------------------------------------------------------
+class Tet4Collocated(Tet4):
+
+  def __init__(self):
+    """
+    Setup tri33 cell.
+    """
+    vertices = numpy.array([[-1.0, -1.0, -1.0],
+                            [+1.0, -1.0, -1.0],
+                            [-1.0, +1.0, -1.0],
+                            [-1.0, -1.0, +1.0]])
+    quadPts = vertices[:]
+    quadWts = numpy.array( [1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0])
+
+    # Compute basis fns and derivatives at quadrature points
+    basis = numpy.zeros( (4, 4), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (4, 4, 3), dtype=numpy.float64)
+    iQuad = 0
+    for q in quadPts:
+      basis[iQuad] = numpy.array([self.N0(q), self.N1(q), 
+                                  self.N2(q), self.N3(q)],
+                                 dtype=numpy.float64).reshape( (4,) )
+      deriv = numpy.array([[self.N0p(q), self.N0q(q), self.N0r(q)],
+                           [self.N1p(q), self.N1q(q), self.N1r(q)],
+                           [self.N2p(q), self.N2q(q), self.N2r(q)],
+                           [self.N3p(q), self.N3q(q), self.N3r(q)]])      
+      basisDeriv[iQuad] = deriv.reshape((4, 3))
+      iQuad += 1
+
+    self.cellDim = 3
+    self.numCorners = len(vertices)
+    self.numQuadPts = len(quadPts)
+    self.vertices = vertices
+    self.quadPts = quadPts
+    self.quadWts = quadWts
+    self.basis = basis
+    self.basisDeriv = basisDeriv
+    return
+
+
+# ----------------------------------------------------------------------
 class TestFIATSimplex(unittest.TestCase):
   """
   Unit testing of FIATSimplex object.
@@ -426,12 +537,32 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with line2 cell.
     """
     cell = FIATSimplex()
-    cell.shape  = "line"
-    cell.degree = 1
-    cell.order  = 1
+    cell.inventory.shape  = "line"
+    cell.inventory.degree = 1
+    cell.inventory.order  = 1
+    cell._configure()
     cell.initialize(spaceDim=1)
 
     cellE = Line2()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryLine1D
+    self.failUnless(isinstance(cell.geometry, GeometryLine1D))
+    return
+
+
+  def test_initialize_line2_collodated(self):
+    """
+    Test initialize() with line2 cell.
+    """
+    cell = FIATSimplex()
+    cell.inventory.shape  = "line"
+    cell.inventory.degree = 1
+    cell.inventory.order  = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell.initialize(spaceDim=1)
+
+    cellE = Line2Collocated()
     self._checkVals(cellE, cell)
     from pylith.feassemble.CellGeometry import GeometryLine1D
     self.failUnless(isinstance(cell.geometry, GeometryLine1D))
@@ -443,9 +574,10 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with line3 cell.
     """
     cell = FIATSimplex()
-    cell.shape  = "line"
-    cell.degree = 2
-    cell.order  = 2
+    cell.inventory.shape  = "line"
+    cell.inventory.degree = 2
+    cell.inventory.order  = 2
+    cell._configure()
     cell.initialize(spaceDim=2)
 
     cellE = Line3()
@@ -466,6 +598,24 @@ class TestFIATSimplex(unittest.TestCase):
     cell.initialize(spaceDim=2)
 
     cellE = Tri3()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryTri2D
+    self.failUnless(isinstance(cell.geometry, GeometryTri2D))
+    return
+
+
+  def test_initialize_tri3_collocated(self):
+    """
+    Test initialize() with tri3 cell.
+    """
+    cell = FIATSimplex()
+    cell.inventory.shape  = "triangle"
+    cell.inventory.degree = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell.initialize(spaceDim=2)
+
+    cellE = Tri3Collocated()
     self._checkVals(cellE, cell)
     from pylith.feassemble.CellGeometry import GeometryTri2D
     self.failUnless(isinstance(cell.geometry, GeometryTri2D))
@@ -506,6 +656,24 @@ class TestFIATSimplex(unittest.TestCase):
     return
 
 
+  def test_initialize_tet4_collocated(self):
+    """
+    Test initialize() with tet4 cell.
+    """
+    cell = FIATSimplex()
+    cell.inventory.shape  = "tetrahedron"
+    cell.inventory.degree = 1
+    cell.inventory.collocateQuad = True
+    cell._configure()
+    cell.initialize(spaceDim=3)
+
+    cellE = Tet4Collocated()
+    self._checkVals(cellE, cell)
+    from pylith.feassemble.CellGeometry import GeometryTet3D
+    self.failUnless(isinstance(cell.geometry, GeometryTet3D))
+    return
+
+
   def test_factory(self):
     """
     Test factory method.
@@ -526,11 +694,11 @@ class TestFIATSimplex(unittest.TestCase):
     self.assertEqual(cellE.numQuadPts, cell.numQuadPts)
 
     # Check arrays
-    test_double(self, cellE.vertices, cell.vertices)
-    test_double(self, cellE.quadPts, cell.quadPts)
-    test_double(self, cellE.quadWts, cell.quadWts)
-    test_double(self, cellE.basis, cell.basis)
-    test_double(self, cellE.basisDeriv, cell.basisDeriv)
+    test_scalararray(self, cellE.vertices, cell.vertices)
+    test_scalararray(self, cellE.quadPts, cell.quadPts)
+    test_scalararray(self, cellE.quadWts, cell.quadWts)
+    test_scalararray(self, cellE.basis, cell.basis)
+    test_scalararray(self, cellE.basisDeriv, cell.basisDeriv)
     return
 
 

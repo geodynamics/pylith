@@ -43,8 +43,12 @@ class PrincAxes(Application):
     ## \b Properties
     ## @li \b vtk_input_file  Name of VTK input file.
     ## @li \b vtk_output_file Name of VTK output file.
-    ## @li \b vtk_tensor_index Index indicating which VTK field array contains desired tensor.
-    ## @li \b vtk_tensor_components_order Indices corresponding to xx,yy,zz,xy,yz,xz.
+    ## @li \b vtk_tensor_index Index of desired VTK field array.
+    ## @li \b vtk_tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
+    ## @li \b add_regional_field Add regional stress/strain field?
+    ## @li \b regional_sigma1 Value and direction cosines for sigma_1.
+    ## @li \b regional_sigma2 Value and direction cosines for sigma_2.
+    ## @li \b regional_sigma3 Value and direction cosines for sigma_3.
 
     import pyre.inventory
 
@@ -56,11 +60,26 @@ class PrincAxes(Application):
     vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
     vtkTensorIndex = pyre.inventory.int("vtk_tensor_index", default=1)
-    vtkTensorIndex.meta['tip'] = "Index indicating which VTK field array contains desired tensor."
+    vtkTensorIndex.meta['tip'] = "Index of desired VTK field array."
 
-    vtkTensorComponentsOrder = pyre.inventory.list("vtk_tensor_components_order",
-                                                default=[0, 1, 2, 3, 4, 5])
-    vtkTensorComponentsOrder.meta['tip'] = "Indices corresponding to xx, yy, zz, xy, yz, xz."
+    vtkTensorComponentsOrder = pyre.inventory.list(
+      "vtk_tensor_components_order", default=[0, 1, 2, 3, 4, 5])
+    vtkTensorComponentsOrder.meta['tip'] = "Indices of xx, yy, zz, xy, yz, xz."
+
+    addRegionalField = pyre.inventory.bool("add_regional_field", default=False)
+    addRegionalField.meta['tip'] = "Add regional field?"
+
+    regionalSigma1 = pyre.inventory.list("regional_sigma1",
+                                         default=[-1.5e7, 1.0, 0.0, 0.0])
+    regionalSigma1.meta['tip'] = "Value and direction cosines of sigma1."
+
+    regionalSigma2 = pyre.inventory.list("regional_sigma2",
+                                         default=[-1.0e7, 0.0, 0.0, 1.0])
+    regionalSigma2.meta['tip'] = "Value and direction cosines of sigma2."
+
+    regionalSigma3 = pyre.inventory.list("regional_sigma3",
+                                         default=[-5.0e6, 0.0, 1.0, 0.0])
+    regionalSigma3.meta['tip'] = "Value and direction cosines of sigma3."
     
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -82,6 +101,8 @@ class PrincAxes(Application):
     self.minEigenvalue = None
     self.intEigenvalue = None
     self.maxEigenvalue = None
+
+    self.regionalField = numpy.zeros((3, 3), dtype=numpy.float64)
     return
 
 
@@ -89,6 +110,8 @@ class PrincAxes(Application):
     # import pdb
     # pdb.set_trace()
     self._readVtkFile()
+    if (self.addRegionalField):
+      self._getRegionalField()
     self._getPrincAxes()
     self._writeVtkFile()
     return
@@ -112,6 +135,28 @@ class PrincAxes(Application):
     self.vtkTensorIndex = self.inventory.vtkTensorIndex
     self.vtkTensorComponentsOrder = self.inventory.vtkTensorComponentsOrder
 
+    # Regional field
+    s1 = float(self.inventory.regionalSigma1[0])
+    s2 = float(self.inventory.regionalSigma1[0])
+    s3 = float(self.inventory.regionalSigma1[0])
+    sVec = numpy.array([s1, s2, s3], dtype=numpy.float64)
+    self.regionalSigma = numpy.diag(sVec)
+    self.regionalAxes = numpy.zeros((3,3), dtype=numpy.float64)
+    for i in range(3):
+      self.regionalAxes[0,i] = float(self.inventory.regionalSigma1[i+1])
+      self.regionalAxes[1,i] = float(self.inventory.regionalSigma2[i+1])
+      self.regionalAxes[2,i] = float(self.inventory.regionalSigma3[i+1])
+
+    return
+
+
+  def _getRegionalField(self):
+    """
+    Function to transform regional field from principal axes to mesh
+    coordinates.
+    """
+    t1 = numpy.dot(self.regionalAxes, self.regionalSigma)
+    self.regionalField = numpy.dot(t1, numpy.transpose(self.regionalAxes))
     return
       
 
@@ -135,7 +180,6 @@ class PrincAxes(Application):
     self.vertArray = data._get_points().to_array()
     self.cellType = data.get_cell_type(0)
     (numVerts, self.spaceDim) = self.vertArray.shape
-
 
     # Get cell fields and extract tensor.
     cellData = data._get_cell_data()
@@ -173,9 +217,9 @@ class PrincAxes(Application):
     for point in xrange(self.numTensorPoints):
       tensor = self.tensorSorted[point, :]
       tensorOrdered, eigenValuesOrdered = self._compPrincAxes(tensor)
-      self.minPrincAxis[point,:] = tensorOrdered[0]
-      self.intPrincAxis[point,:] = tensorOrdered[1]
-      self.maxPrincAxis[point,:] = tensorOrdered[2]
+      self.minPrincAxis[point,:] = tensorOrdered[:,0]
+      self.intPrincAxis[point,:] = tensorOrdered[:,1]
+      self.maxPrincAxis[point,:] = tensorOrdered[:,2]
       self.minEigenValue[point] = eigenValuesOrdered[0]
       self.intEigenValue[point] = eigenValuesOrdered[1]
       self.maxEigenValue[point] = eigenValuesOrdered[2]
@@ -185,22 +229,22 @@ class PrincAxes(Application):
 
   def _compPrincAxes(self, tensor):
     """
-    Function to compute 3D principal axes, sort them, and multiply by
-    corresponding eigenvalue.
+    Function to compute 3D principal axes and sort them.
     """
     tensorMat = numpy.array([(tensor[0], tensor[3], tensor[5]),
                              (tensor[3], tensor[1], tensor[4]),
                              (tensor[5], tensor[4], tensor[2])],
                             dtype=numpy.float64)
+    tensorMat += self.regionalField
     (eigenValue, princAxes) = numpy.linalg.eigh(tensorMat)
     idx = eigenValue.argsort()
     eigenValuesOrdered = eigenValue[idx]
     princAxesOrdered = princAxes[:,idx]
-    tensorOrdered = numpy.empty_like(princAxesOrdered)
-    tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
-    tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]
-    tensorOrdered[2,:] = eigenValuesOrdered[2] * princAxesOrdered[2,:]
-    return tensorOrdered, eigenValuesOrdered
+    # tensorOrdered = numpy.empty_like(princAxesOrdered)
+    # tensorOrdered[0,:] = eigenValuesOrdered[0] * princAxesOrdered[0,:]
+    # tensorOrdered[1,:] = eigenValuesOrdered[1] * princAxesOrdered[1,:]
+    # tensorOrdered[2,:] = eigenValuesOrdered[2] * princAxesOrdered[2,:]
+    return princAxesOrdered, eigenValuesOrdered
   
 
   def _writeVtkFile(self):
