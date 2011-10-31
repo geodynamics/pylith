@@ -452,7 +452,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     (scalar_array*,
      const scalar_array&,
      const scalar_array&,
-     const scalar_array&);
+     const scalar_array&,
+     const bool);
 
   assert(0 != fields);
   assert(0 != _quadrature);
@@ -578,10 +579,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Use fault constitutive model to compute traction associated with
     // friction.
     dLagrangeTpdtVertex = 0.0;
+    const bool iterating = true; // Iterating to get friction
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
-					 tractionTpdtVertex);
+					 tractionTpdtVertex,
+					 iterating);
 
     // Rotate traction back to global coordinate system.
     dLagrangeTpdtVertexGlobal = 0.0;
@@ -818,7 +821,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     (scalar_array*,
      const scalar_array&,
      const scalar_array&,
-     const scalar_array&);
+     const scalar_array&,
+     const bool);
 
   assert(0 != fields);
   assert(0 != _quadrature);
@@ -1038,10 +1042,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     // Use fault constitutive model to compute traction associated with
     // friction.
     dLagrangeTpdtVertex = 0.0;
+    const bool iterating = false; // No iteration for friction in lumped soln
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
 					 slipVertex, slipRateVertex,
-					 tractionTpdtVertex);
+					 tractionTpdtVertex,
+					 iterating);
 
     // Rotate traction back to global coordinate system.
     dLagrangeTpdtVertexGlobal = 0.0;
@@ -1916,103 +1922,13 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
 } // _sensitivityUpdateSoln
 
 // ----------------------------------------------------------------------
-// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 1-D.
-void
-pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped1D(
-                                     scalar_array* slip,
-				     const scalar_array& dLagrangeTpdt,
-				     const scalar_array& jacobianN,
-				     const scalar_array& jacobianP)
-{ // _sensitivitySolveLumped1D
-  assert(0 != slip);
-
-  // Sensitivity of slip to changes in the Lagrange multipliers
-  const PylithScalar Spp = 1.0 / jacobianN[0] + 1.0
-    / jacobianP[0];
-
-  const PylithScalar dlp = dLagrangeTpdt[0];
-  (*slip)[0] -= Spp * dlp;
-
-  PetscLogFlops(2);
-} // _sensitivitySolveLumped1D
-
-// ----------------------------------------------------------------------
-// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
-void
-pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped2D(
-                                     scalar_array* slip,
-				     const scalar_array& dLagrangeTpdt,
-				     const scalar_array& jacobianN,
-				     const scalar_array& jacobianP)
-{ // _sensitivitySolveLumped2D
-  assert(0 != slip);
-
-  // Sensitivity of slip to changes in the Lagrange multipliers
-  // Spp = Sqq = 1.0/Aix + 1.0/Ajx
-  assert(jacobianN[0] > 0.0);
-  assert(jacobianP[0] > 0.0);
-
-  // Check to make sure Jacobian is same at all DOF for
-  // vertices i and j (means S is diagonal with equal enties).
-  assert(jacobianN[0] == jacobianN[1]);
-  assert(jacobianP[0] == jacobianP[1]);
-  
-  const PylithScalar Spp = 1.0 / jacobianN[0] + 1.0 / jacobianP[0];
-  const PylithScalar Sqq = Spp;
-
-  const PylithScalar dlp = dLagrangeTpdt[0];
-  const PylithScalar dlq = dLagrangeTpdt[1];
-  (*slip)[0] -= Spp * dlp;
-  (*slip)[1] -= Sqq * dlq;
-
-  PetscLogFlops(7);
-} // _sensitivitySolveLumped2D
-
-// ----------------------------------------------------------------------
-// Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
-void
-pylith::faults::FaultCohesiveDyn::_sensitivitySolveLumped3D(
-                                     scalar_array* slip,
-				     const scalar_array& dLagrangeTpdt,
-				     const scalar_array& jacobianN,
-				     const scalar_array& jacobianP)
-{ // _sensitivitySolveLumped3D
-  assert(0 != slip);
-
-  // Sensitivity of slip to changes in the Lagrange multipliers
-  // Aixjx = 1.0/Aix + 1.0/Ajx
-  assert(jacobianN[0] > 0.0);
-  assert(jacobianP[0] > 0.0);
-
-  // Check to make sure Jacobian is same at all DOF for
-  // vertices i and j (means S is diagonal with equal enties).
-  assert(jacobianN[0] == jacobianN[1] && 
-	 jacobianN[0] == jacobianN[2]);
-  assert(jacobianP[0] == jacobianP[1] && 
-	 jacobianP[0] == jacobianP[2]);
-
-
-  const PylithScalar Spp = 1.0 / jacobianN[0] + 1.0 / jacobianP[0];
-  const PylithScalar Sqq = Spp;
-  const PylithScalar Srr = Spp;
-
-  const PylithScalar dlp = dLagrangeTpdt[0];
-  const PylithScalar dlq = dLagrangeTpdt[1];
-  const PylithScalar dlr = dLagrangeTpdt[2];
-  (*slip)[0] -= Spp * dlp;
-  (*slip)[1] -= Sqq * dlq;
-  (*slip)[2] -= Srr * dlr;
-
-  PetscLogFlops(9);
-} // _sensitivitySolveLumped3D
-
-// ----------------------------------------------------------------------
 // Constrain solution space in 1-D.
 void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
          const scalar_array& slip,
          const scalar_array& sliprate,
-         const scalar_array& tractionTpdt)
+	 const scalar_array& tractionTpdt,
+	 const bool iterating)
 { // _constrainSolnSpace1D
   assert(0 != dLagrangeTpdt);
 
@@ -2034,7 +1950,8 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
          const scalar_array& slip,
          const scalar_array& slipRate,
-         const scalar_array& tractionTpdt)
+	 const scalar_array& tractionTpdt,
+	 const bool iterating)
 { // _constrainSolnSpace2D
   assert(0 != dLagrangeTpdt);
 
@@ -2048,7 +1965,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dLagrangeT
     // if in compression and no opening
     const PylithScalar frictionStress = _friction->calcFriction(slipMag, slipRateMag,
 							  tractionNormal);
-    if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+    if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
 
@@ -2083,7 +2000,8 @@ void
 pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
          const scalar_array& slip,
          const scalar_array& slipRate,
-         const scalar_array& tractionTpdt)
+	 const scalar_array& tractionTpdt,
+	 const bool iterating)
 { // _constrainSolnSpace3D
   assert(0 != dLagrangeTpdt);
 
@@ -2101,7 +2019,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeT
     // if in compression and no opening
     const PylithScalar frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
-    if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+    if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
       

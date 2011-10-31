@@ -199,42 +199,6 @@ private :
    */
   void _sensitivityUpdateSoln(const bool negativeSide);
 
-  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 1-D.
-   *
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
-   * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
-   */
-  void _sensitivitySolveLumped1D(scalar_array* slip,
-                                 const scalar_array& dLagrangeTpdt,
-                                 const scalar_array& jacobianN,
-                                 const scalar_array& jacobianP);
-
-  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
-   *
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
-   * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
-   */
-  void _sensitivitySolveLumped2D(scalar_array* slip,
-                                 const scalar_array& dLagrangeTpdt,
-                                 const scalar_array& jacobianN,
-                                 const scalar_array& jacobianP);
-
-  /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
-   *
-   * @param slip Adjustment to slip assoc. w/Lagrange multiplier vertex.
-   * @param dLagrangeTpdt Change in Lagrange multiplier.
-   * @param jacobianN Jacobian for vertex on - side of the fault.
-   * @param jacobianP Jacobian for vertex on + side of the fault.
-   */
-  void _sensitivitySolveLumped3D(scalar_array* slip,
-                                 const scalar_array& dLagrangeTpdt,
-                                 const scalar_array& jacobianN,
-                                 const scalar_array& jacobianP);
-
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
@@ -243,9 +207,10 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
-           const scalar_array& slip,
-           const scalar_array& slipRate,
-           const scalar_array& tractionTpdt);
+			     const scalar_array& slip,
+			     const scalar_array& slipRate,
+			     const scalar_array& tractionTpdt,
+			     const bool iterating =true);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
@@ -255,9 +220,10 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
-           const scalar_array& slip,
-           const scalar_array& slipRate,
-           const scalar_array& tractionTpdt);
+			     const scalar_array& slip,
+			     const scalar_array& slipRate,
+			     const scalar_array& tractionTpdt,
+			     const bool iterating =true);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
@@ -267,9 +233,10 @@ private :
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
-           const scalar_array& slip,
-           const scalar_array& slipRate,
-           const scalar_array& tractionTpdt);
+			     const scalar_array& slip,
+			     const scalar_array& slipRate,
+			     const scalar_array& tractionTpdt,
+			     const bool iterating =true);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
