@@ -330,7 +330,9 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar slip,
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
-  } // if
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(11);
 

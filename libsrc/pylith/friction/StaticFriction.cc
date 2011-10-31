@@ -158,7 +158,7 @@ pylith::friction::StaticFriction::_calcFriction(const PylithScalar slip,
 
   const PylithScalar friction = (normalTraction <= 0.0) ?
     -properties[p_coef] * normalTraction + properties[p_cohesion]: 
-    0.0;
+    properties[p_cohesion];
 
   PetscLogFlops(2);
 

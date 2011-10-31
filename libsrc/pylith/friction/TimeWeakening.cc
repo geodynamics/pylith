@@ -273,7 +273,9 @@ pylith::friction::TimeWeakening::_calcFriction(const PylithScalar slip,
 	mu_f = properties[p_coefD];
       } // if/else
     friction = - mu_f * normalTraction + properties[p_cohesion];
-  } // if
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(6);
 
@@ -296,15 +298,10 @@ pylith::friction::TimeWeakening::_updateStateVars(const PylithScalar slip,
   assert(numStateVars);
   assert(_TimeWeakening::numStateVars == numStateVars);
 
-  const PylithScalar tolerance = 1.0e-12;
-  if (slipRate > tolerance) {
-    const PylithScalar dt = _dt;
-
-    stateVars[s_time] += dt;
-  } else {
-    stateVars[s_time] = 0.0;
-  } // else
-
+  // Don't reset state variables when sliding stops
+  // (SCEC dynamic rupture branch only).
+  const double dt = _dt;
+  stateVars[s_time] += dt;
 } // _updateStateVars
 
 

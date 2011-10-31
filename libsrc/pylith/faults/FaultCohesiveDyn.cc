@@ -50,6 +50,8 @@
 // slight speed improvement.
 //#define PRECOMPUTE_GEOMETRY
 
+#define NO_FAULT_OPENING
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -2044,11 +2046,17 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dLagrangeT
   const PylithScalar tractionNormal = tractionTpdt[1];
   const PylithScalar tractionShearMag = fabs(tractionTpdt[0]);
 
+#if !defined(NO_FAULT_OPENING)
   if (tractionNormal < 0 && 0.0 == slip[1]) {
+#endif
     // if in compression and no opening
     const PylithScalar frictionStress = _friction->calcFriction(slipMag, slipRateMag,
 							  tractionNormal);
+#if 0
     if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+#else
+    if (tractionShearMag > frictionStress) {
+#endif
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
 
@@ -2068,11 +2076,13 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dLagrangeT
       // no changes to solution
       assert(0.0 == slipRateMag);
     } // if/else
+#if !defined(NO_FAULT_OPENING)
   } else {
     // if in tension, then traction is zero.
     (*dLagrangeTpdt)[0] = -tractionTpdt[0];
     (*dLagrangeTpdt)[1] = -tractionTpdt[1];
   } // else
+#endif
 
   PetscLogFlops(8);
 } // _constrainSolnSpace2D
@@ -2097,11 +2107,17 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeT
     sqrt(tractionTpdt[0] * tractionTpdt[0] +
 	 tractionTpdt[1] * tractionTpdt[1]);
   
+#if !defined(NO_FAULT_OPENING)
   if (tractionNormal < 0.0 && 0.0 == slip[2]) {
+#endif
     // if in compression and no opening
     const PylithScalar frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
+#if 0
     if (tractionShearMag > frictionStress || slipRateMag > 0.0) {
+#else
+    if (tractionShearMag > frictionStress) {
+#endif
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
       
@@ -2127,12 +2143,14 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeT
       // no changes to solution
       assert(0.0 == slipRateMag);
     } // if/else
+#if !defined (NO_FAULT_OPENING)
   } else {
     // if in tension, then traction is zero.
     (*dLagrangeTpdt)[0] = -tractionTpdt[0];
     (*dLagrangeTpdt)[1] = -tractionTpdt[1];
     (*dLagrangeTpdt)[2] = -tractionTpdt[2];
   } // else
+#endif
 
   PetscLogFlops(22);
 } // _constrainSolnSpace3D
