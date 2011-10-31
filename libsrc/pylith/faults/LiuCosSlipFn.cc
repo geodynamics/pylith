@@ -73,7 +73,7 @@ void
 pylith::faults::LiuCosSlipFn::initialize(
 			    const topology::SubMesh& faultMesh,
 			    const spatialdata::units::Nondimensional& normalizer,
-			    const double originTime)
+			    const PylithScalar originTime)
 { // initialize
   assert(0 != _dbFinalSlip);
   assert(0 != _dbSlipTime);
@@ -83,8 +83,8 @@ pylith::faults::LiuCosSlipFn::initialize(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  const double lengthScale = normalizer.lengthScale();
-  const double timeScale = normalizer.timeScale();
+  const PylithScalar lengthScale = normalizer.lengthScale();
+  const PylithScalar timeScale = normalizer.timeScale();
 
   // Get vertices in fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = faultMesh.sieveMesh();
@@ -168,7 +168,7 @@ pylith::faults::LiuCosSlipFn::initialize(
   assert(!coordinates.isNull());
 
   _slipVertex.resize(spaceDim);
-  double_array vCoordsGlobal(spaceDim);
+  scalar_array vCoordsGlobal(spaceDim);
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
@@ -231,7 +231,7 @@ pylith::faults::LiuCosSlipFn::initialize(
 // Get slip on fault surface at time t.
 void
 pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
-				  const double t)
+				  const PylithScalar t)
 { // slip
   assert(0 != slip);
   assert(0 != _parameters);
@@ -269,14 +269,14 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
     riseTimeSection->restrictPoint(*v_iter, &_riseTimeVertex, 1);
 
-    double finalSlipMag = 0.0;
+    PylithScalar finalSlipMag = 0.0;
     for (int i=0; i < spaceDim; ++i)
       finalSlipMag += _slipVertex[i]*_slipVertex[i];
     finalSlipMag = sqrt(finalSlipMag);
 
-    const double slip = _slipFn(t-_slipTimeVertex, finalSlipMag,
+    const PylithScalar slip = _slipFn(t-_slipTimeVertex, finalSlipMag,
 				_riseTimeVertex);
-    const double scale = finalSlipMag > 0.0 ? slip / finalSlipMag : 0.0;
+    const PylithScalar scale = finalSlipMag > 0.0 ? slip / finalSlipMag : 0.0;
     _slipVertex *= scale;
     
     // Update field
@@ -291,8 +291,8 @@ pylith::faults::LiuCosSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 void
 pylith::faults::LiuCosSlipFn::slipIncr(
 				      topology::Field<topology::SubMesh>* slip,
-				      const double t0,
-				      const double t1)
+				      const PylithScalar t0,
+				      const PylithScalar t1)
 { // slipIncr
   assert(0 != slip);
   assert(0 != _parameters);
@@ -330,16 +330,16 @@ pylith::faults::LiuCosSlipFn::slipIncr(
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
     riseTimeSection->restrictPoint(*v_iter, &_riseTimeVertex, 1);
 
-    double finalSlipMag = 0.0;
+    PylithScalar finalSlipMag = 0.0;
     for (int i=0; i < spaceDim; ++i)
       finalSlipMag += _slipVertex[i]*_slipVertex[i];
     finalSlipMag = sqrt(finalSlipMag);
 
-    const double slip0 = _slipFn(t0-_slipTimeVertex, finalSlipMag,
+    const PylithScalar slip0 = _slipFn(t0-_slipTimeVertex, finalSlipMag,
 				 _riseTimeVertex);
-    const double slip1 = _slipFn(t1-_slipTimeVertex, finalSlipMag,
+    const PylithScalar slip1 = _slipFn(t1-_slipTimeVertex, finalSlipMag,
 				 _riseTimeVertex);
-    const double scale = finalSlipMag > 0.0 ? 
+    const PylithScalar scale = finalSlipMag > 0.0 ? 
       (slip1 - slip0) / finalSlipMag : 0.0;
     _slipVertex *= scale;
 

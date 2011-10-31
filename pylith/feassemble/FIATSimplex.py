@@ -39,6 +39,7 @@ def validateShape(shape):
                      name)
   return name
 
+
 # FIATSimplex class
 class FIATSimplex(ReferenceCell):
   """
@@ -75,6 +76,9 @@ class FIATSimplex(ReferenceCell):
 
     order = pyre.inventory.int("quad_order", default=-1)
     order.meta['tip'] = "Order of quadrature rule [-1, order = degree]."
+    
+    collocateQuad = pyre.inventory.bool("collocate_quad", default=False)
+    collocateQuad.meta['tip'] = "Collocate quadrature points with vertices."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -163,9 +167,10 @@ class FIATSimplex(ReferenceCell):
       self.shape = self.inventory.shape
       self.degree = self.inventory.degree
       self.order = self.inventory.order
+      self.collocateQuad = self.inventory.collocateQuad
       if self.order == -1:
         self.order = self.degree
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring quadrature "
                        "(%s):\n%s" % (aliases, err.message))
@@ -254,9 +259,16 @@ class FIATSimplex(ReferenceCell):
     """
     Setup quadrature rule for reference cell.
     """
-    
-    import FIAT.quadrature
-    return FIAT.quadrature.make_quadrature(self._getShape(), self.order)
+    from FIAT.reference_element import default_simplex
+    from FIAT.quadrature import make_quadrature
+    from FIATQuadrature import CollocatedQuadratureRule
+      
+    if not self.collocateQuad:
+      q = make_quadrature(self._getShape(), self.order)
+    else:
+      q = CollocatedQuadratureRule(self._getShape(), self.order)
+
+    return q
 
 
   def _setupBasisFns(self):

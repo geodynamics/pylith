@@ -27,7 +27,7 @@
 #include "faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field<SubMesh>, SubMesh
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
@@ -115,7 +115,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]) = 0;
+		  const PylithScalar upDir[3]) = 0;
 
   /** Get mesh associated with fault fields.
    *

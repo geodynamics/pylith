@@ -105,8 +105,14 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Get integrator for elastic material.
     """
-    from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
-    return ElasticityImplicit()
+    integrator = None
+    if self.useCUDA:
+      from pylith.feassemble.ElasticityImplicitCUDA import ElasticityImplicitCUDA
+      integrator = ElasticityImplicitCUDA()
+    else:
+      from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
+      integrator = ElasticityImplicit()
+    return integrator
 
 
   def initialize(self, dimension, normalizer):
@@ -133,7 +139,7 @@ class Implicit(Formulation, ModuleImplicit):
     dispT.zero()
     residual = self.fields.get("residual")
     residual.zero()
-    residual.createScatter()
+    residual.createScatterMesh(residual.mesh())
 
     lengthScale = normalizer.lengthScale()
     timeScale = normalizer.timeScale()

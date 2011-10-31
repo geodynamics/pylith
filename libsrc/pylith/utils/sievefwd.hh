@@ -25,12 +25,13 @@
 #if !defined(pylith_utils_sievefwd_hh)
 #define pylith_utils_sievefwd_hh
 
+#include "types.hh"
 
 /// Namespace for Sieve package.
 namespace ALE {
  
   /// PETSc mesh
-  template class Mesh<PetscInt,PetscScalar>;
+  template class Mesh<PylithInt,PylithScalar>;
 } // ALE
 
 #endif // pylith_utils_sievefwd_hh

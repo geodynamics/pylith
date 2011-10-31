@@ -60,7 +60,7 @@ INCLUDES += -g $(PYTHON_EGG_CPPFLAGS) -I$(NUMPY_INCDIR) -I$(PYTHON_INCDIR) $(PET
 
 if ENABLE_SWIG
 $(srcdir)/friction_wrap.cxx $(srcdir)/friction.py: $(swig_sources)
-	$(SWIG) -Wall -c++ -python $<
+	$(SWIG) $(PETSC_CC_INCLUDES) -Wall -c++ -python $<
 endif
 
 

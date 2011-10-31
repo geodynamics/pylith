@@ -191,7 +191,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
   MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);
   MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);
 
-  double_array vals(nrows*ncols);
+  scalar_array vals(nrows*ncols);
   int_array rows(nrows);
   int_array cols(ncols);
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -199,14 +199,14 @@ pylith::topology::Jacobian::verifySymmetry(void) const
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   bool isSymmetric = true;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int indexIJ = ncols*iRow+iCol;
       const int indexJI = nrows*iCol+iRow;
-      const double valIJ = vals[indexIJ];
-      const double valJI = vals[indexJI];
+      const PylithScalar valIJ = vals[indexIJ];
+      const PylithScalar valJI = vals[indexJI];
       if (fabs(valIJ) > 1.0)
 	if (fabs(1.0 - valJI/valIJ) > tolerance) {
 	  std::cerr << "Mismatch: " 

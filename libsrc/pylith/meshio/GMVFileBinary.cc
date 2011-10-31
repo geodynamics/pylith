@@ -22,7 +22,7 @@
 
 #include "BinaryIO.hh" // USES readString()
 
-#include "pylith/utils/array.hh" // USES double_array, int_array
+#include "pylith/utils/array.hh" // USES scalar_array, int_array
 
 #include "journal/info.h" // USES journal::info_t
 
@@ -53,7 +53,7 @@ pylith::meshio::GMVFileBinary::~GMVFileBinary(void)
 // ----------------------------------------------------------------------
 // Read binary GMV file.
 void
-pylith::meshio::GMVFileBinary::read(double_array* coordinates,
+pylith::meshio::GMVFileBinary::read(scalar_array* coordinates,
 				    int_array* cells,
 				    int_array* materialIds,
 				    int* meshDim,
@@ -113,7 +113,7 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
 // ----------------------------------------------------------------------
 // Write binary GMV file.
 void
-pylith::meshio::GMVFileBinary::write(const double_array& coordinates,
+pylith::meshio::GMVFileBinary::write(const scalar_array& coordinates,
 				     const int_array& cells,
 				     const int_array& materialIds,
 				     const int meshDim,
@@ -153,7 +153,7 @@ pylith::meshio::GMVFileBinary::_readHeader(std::ifstream& fin)
 // ----------------------------------------------------------------------
 void
 pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
-					     double_array* coordinates,
+					     scalar_array* coordinates,
 					     int* numVertices,
 					     int* spaceDim)
 { // _readVertices

@@ -69,19 +69,6 @@ class DataWriterVTK(DataWriter):
     return
 
 
-  def initialize(self, normalizer):
-    """
-    Initialize writer.
-    """
-    DataWriter.initialize(self, normalizer)
-
-    # Nondimensionalize
-    timeScale = normalizer.timeScale()
-    self.timeConstantN = normalizer.nondimensionalize(self.timeConstant,
-                                                timeScale)
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -90,7 +77,7 @@ class DataWriterVTK(DataWriter):
     """
     try:
       DataWriter._configure(self)
-    except ValueError as err:
+    except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring VTK output "
                        "(%s):\n%s" % (aliases, err.message))

@@ -54,6 +54,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ElasticityExplicitLgDeform.py \
 	feassemble/ElasticityImplicit.py \
 	feassemble/ElasticityImplicitLgDeform.py \
+	feassemble/FIATQuadrature.py \
 	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
@@ -93,6 +94,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/DataWriterVTKMesh.py \
 	meshio/DataWriterVTKSubMesh.py \
 	meshio/DataWriterVTKSubSubMesh.py \
+	meshio/DataWriterVTKPoints.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOLagrit.py \
@@ -107,6 +109,8 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
+	meshio/OutputSolnPoints.py \
+	meshio/PointsList.py \
 	meshio/SingleOutput.py \
 	meshio/VertexFilter.py \
 	meshio/VertexFilterVecNormMesh.py \
@@ -195,8 +199,7 @@ endif
 
 if ENABLE_CUDA
   nobase_pkgpyexec_PYTHON += \
-	feassemble/ElasticityImplicitCUDA.py \
-	problems/ImplicitCUDA.py
+	feassemble/ElasticityImplicitCUDA.py
 endif
 
 if ENABLE_TETGEN

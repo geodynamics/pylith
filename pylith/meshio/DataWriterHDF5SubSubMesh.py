@@ -50,7 +50,10 @@ class DataWriterHDF5SubSubMesh(DataWriterHDF5, ModuleDataWriterHDF5):
     """
     DataWriterHDF5.initialize(self, normalizer)
 
+    timeScale = normalizer.timeScale()
+    
     ModuleDataWriterHDF5.filename(self, self.filename)
+    ModuleDataWriterHDF5.timeScale(self, timeScale.value)
     return
   
 

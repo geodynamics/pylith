@@ -36,6 +36,13 @@ namespace pylith {
       /// Destructor.
       ~RateStateAgeing(void);
 
+      /** Set floor for slip rate used in computing friction. Used to
+       *  avoid zero friction at zero slip rate.
+       *
+       * @param value Floor for slip rate.
+       */
+      void minSlipRate(const PylithScalar value);
+
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
 
@@ -44,15 +51,15 @@ namespace pylith {
        * @param propValues Array of property values.
        * @param dbValues Array of database values.
        */
-      void _dbToProperties(double* const propValues,
-			   const double_array& dbValues) const;
+      void _dbToProperties(PylithScalar* const propValues,
+			   const scalar_array& dbValues) const;
 
       /** Nondimensionalize properties.
        *
        * @param values Array of property values.
        * @param nvalues Number of values.
        */
-      void _nondimProperties(double* const values,
+      void _nondimProperties(PylithScalar* const values,
 			     const int nvalues) const;
 
       /** Dimensionalize properties.
@@ -60,7 +67,7 @@ namespace pylith {
        * @param values Array of property values.
        * @param nvalues Number of values.
        */
-      void _dimProperties(double* const values,
+      void _dimProperties(PylithScalar* const values,
 			  const int nvalues) const;
 
       /** Compute friction from properties and state variables.
@@ -73,12 +80,12 @@ namespace pylith {
        * @param stateVars State variables at location.
        * @param numStateVars Number of state variables.
        */
-      double _calcFriction(const double slip,
-			   const double slipRate,
-			   const double normalTraction,
-			   const double* properties,
+      PylithScalar _calcFriction(const PylithScalar slip,
+			   const PylithScalar slipRate,
+			   const PylithScalar normalTraction,
+			   const PylithScalar* properties,
 			   const int numProperties,
-			   const double* stateVars,
+			   const PylithScalar* stateVars,
 			   const int numStateVars);
 
     }; // class RateStateAgeing

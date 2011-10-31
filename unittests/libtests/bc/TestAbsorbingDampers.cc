@@ -138,13 +138,13 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   // Check damping constants
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
-  double_array dampersCell(fiberDim);
+  scalar_array dampersCell(fiberDim);
   int index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
   const ALE::Obj<SubRealUniformSection>& dampersSection = 
     bc._parameters->section();
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
@@ -152,7 +152,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 				  &dampersCell[0], dampersCell.size());
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int iDim =0; iDim < spaceDim; ++iDim) {
-	const double dampersCellData = _data->dampingConsts[index];
+	const PylithScalar dampersCellData = _data->dampingConsts[index];
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
 				     dampersCell[iQuad*spaceDim+iDim]/dampersCellData,
 				     tolerance);
@@ -177,27 +177,27 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const double t = 0.0;
+  const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
-  const double* valsE = _data->valsResidual;
+  const PylithScalar* valsE = _data->valsResidual;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
 
   const ALE::Obj<RealSection>& residualSection = residual.section();
   CPPUNIT_ASSERT(!residualSection.isNull());
 
-  const double* vals = residualSection->restrictSpace();
+  const PylithScalar* vals = residualSection->restrictSpace();
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual->view("RESIDUAL");
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -229,14 +229,14 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 
   topology::Jacobian jacobian(solution);
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.assemble("final_assembly");
 
   CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
 
-  const double* valsE = _data->valsJacobian;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int nrowsE = totalNumVertices * _data->spaceDim;
   const int ncolsE = totalNumVertices * _data->spaceDim;
@@ -253,7 +253,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
   MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
-  double_array vals(nrows*ncols);
+  scalar_array vals(nrows*ncols);
   int_array rows(nrows);
   int_array cols(ncols);
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -269,7 +269,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
       std::cout << "  iRow: " << iRow << ", iCol: " << iCol << ", value: " << vals[i] << ", valueE: " << valsE[i] << std::endl;
 #endif
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
@@ -311,20 +311,20 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   CPPUNIT_ASSERT(!solutionSection.isNull());
 
-  const double t = 1.0;
+  const PylithScalar t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.complete();
 
-  const double* valsMatrixE = _data->valsJacobian;
+  const PylithScalar* valsMatrixE = _data->valsJacobian;
   const int totalNumVertices = sieveMesh->depthStratum(0)->size();
   const int sizeE = totalNumVertices * _data->spaceDim;
-  double_array valsE(sizeE);
+  scalar_array valsE(sizeE);
   const int spaceDim = _data->spaceDim;
   for (int iVertex=0; iVertex < totalNumVertices; ++iVertex)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       const int indexRow = (iVertex*spaceDim+iDim)*totalNumVertices*spaceDim;
-      double value = 0.0;
+      PylithScalar value = 0.0;
       for (int jVertex=0; jVertex < totalNumVertices; ++jVertex)
 	value += valsMatrixE[indexRow + jVertex*spaceDim+iDim];
       valsE[iVertex*spaceDim+iDim] = value;
@@ -343,11 +343,11 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
 
   const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
   CPPUNIT_ASSERT(!jacobianSection.isNull());
-  const double* vals = jacobianSection->restrictSpace();
+  const PylithScalar* vals = jacobianSection->restrictSpace();
   const int size = jacobianSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
@@ -397,7 +397,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     db.ioHandler(&dbIO);
     db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-    const double upDir[] = { 0.0, 0.0, 1.0 };
+    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
     bc->quadrature(_quadrature);
     bc->timeStep(_data->dt);
@@ -445,8 +445,8 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     CPPUNIT_ASSERT(!velSection.isNull());
     const int offset = numMeshCells;
     const int spaceDim = _data->spaceDim;
-    const double dt = _data->dt;
-    double_array velVertex(spaceDim);
+    const PylithScalar dt = _data->dt;
+    scalar_array velVertex(spaceDim);
     for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
       dispTIncrSection->updatePoint(iVertex+offset, 
 				    &_data->fieldTIncr[iVertex*spaceDim]);

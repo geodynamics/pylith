@@ -70,7 +70,7 @@ void
 pylith::faults::ConstRateSlipFn::initialize(
 			    const topology::SubMesh& faultMesh,
 			    const spatialdata::units::Nondimensional& normalizer,
-			    const double originTime)
+			    const PylithScalar originTime)
 { // initialize
   assert(0 != _dbSlipRate);
   assert(0 != _dbSlipTime);
@@ -79,9 +79,9 @@ pylith::faults::ConstRateSlipFn::initialize(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  const double lengthScale = normalizer.lengthScale();
-  const double timeScale = normalizer.timeScale();
-  const double velocityScale =
+  const PylithScalar lengthScale = normalizer.lengthScale();
+  const PylithScalar timeScale = normalizer.timeScale();
+  const PylithScalar velocityScale =
     normalizer.lengthScale() / normalizer.timeScale();
 
   // Get vertices in fault mesh
@@ -153,7 +153,7 @@ pylith::faults::ConstRateSlipFn::initialize(
   assert(!coordinates.isNull());
 
   _slipRateVertex.resize(spaceDim);
-  double_array vCoordsGlobal(spaceDim);
+  scalar_array vCoordsGlobal(spaceDim);
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
@@ -202,7 +202,7 @@ pylith::faults::ConstRateSlipFn::initialize(
 // Get slip on fault surface at time t.
 void
 pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
-				      const double t)
+				      const PylithScalar t)
 { // slip
   assert(0 != slip);
   assert(0 != _parameters);
@@ -234,8 +234,8 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 				   _slipRateVertex.size());
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    const double relTime = t - _slipTimeVertex;
-    const double elapsedTime = (relTime > 0) ? relTime : 0.0;
+    const PylithScalar relTime = t - _slipTimeVertex;
+    const PylithScalar elapsedTime = (relTime > 0) ? relTime : 0.0;
     _slipRateVertex *= elapsedTime; // Convert slip rate to slip
     
     // Update field
@@ -250,8 +250,8 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 void
 pylith::faults::ConstRateSlipFn::slipIncr(
 				      topology::Field<topology::SubMesh>* slip,
-				      const double t0,
-				      const double t1)
+				      const PylithScalar t0,
+				      const PylithScalar t1)
 { // slipIncr
   assert(0 != slip);
   assert(0 != _parameters);
@@ -283,9 +283,9 @@ pylith::faults::ConstRateSlipFn::slipIncr(
 				   _slipRateVertex.size());
     slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
 
-    const double relTime0 = t0 - _slipTimeVertex;
-    const double relTime1 = t1 - _slipTimeVertex;
-    double elapsedTime = 0.0;
+    const PylithScalar relTime0 = t0 - _slipTimeVertex;
+    const PylithScalar relTime1 = t1 - _slipTimeVertex;
+    PylithScalar elapsedTime = 0.0;
     if (relTime0 > 0)
       elapsedTime = t1 - t0;
     else if (relTime1 > 0)

@@ -46,7 +46,7 @@ namespace pylith {
        * @param upDir Vertical direction (somtimes used in 3-D problems).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
       
       /** Integrate contributions to residual term (r) for operator.
        *
@@ -55,7 +55,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
       /** Verify configuration is acceptable.

@@ -22,6 +22,7 @@
 // Constructor
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriter<mesh_type, field_type>::DataWriter(void) :
+  _timeScale(1.0),
   _numTimeSteps(0),
   _context("")
 { // constructor
@@ -43,6 +44,22 @@ pylith::meshio::DataWriter<mesh_type, field_type>::deallocate(void)
 { // deallocate
 } // deallocate
   
+
+// ----------------------------------------------------------------------
+// Set time scale for simulation time.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar value)
+{ // timeScale
+  if (value <= 0.0) {
+    std::ostringstream msg;
+    msg << "Time scale for simulation time (" << value << " must be positive.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  _timeScale = value;
+} // timeScale
+  
 // ----------------------------------------------------------------------
 // Prepare for writing files.
 template<typename mesh_type, typename field_type>
@@ -56,8 +73,13 @@ pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
 
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  _context = std::string("output_") + sieveMesh->getName() + 
-    ((label) ? std::string("_") + std::string(label) : std::string(""));
+
+  ostringstream s;
+  s << "output_"
+    << sieveMesh->getName();
+  if (label)
+    s << "_" << label << labelId;
+  _context = s.str();
 } // open
 
 // ----------------------------------------------------------------------
@@ -73,7 +95,7 @@ pylith::meshio::DataWriter<mesh_type, field_type>::close(void)
 // Prepare file for data at a new time step.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const double t,
+pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const PylithScalar t,
 						    const mesh_type& mesh,
 						    const char* label,
 						    const int labelId)

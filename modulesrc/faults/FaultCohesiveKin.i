@@ -67,7 +67,7 @@ namespace pylith {
        *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
       
       /** Integrate contributions to residual term (r) for operator that
        * do not require assembly across cells, vertices, or processors.
@@ -77,7 +77,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Get vertex field associated with integrator.

@@ -28,7 +28,7 @@
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
@@ -68,7 +68,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::deallocate(void)
 // ----------------------------------------------------------------------
 // Set time step for advancing from time t to time t+dt.
 void
-pylith::feassemble::ElasticityExplicitLgDeform::timeStep(const double dt)
+pylith::feassemble::ElasticityExplicitLgDeform::timeStep(const PylithScalar dt)
 { // timeStep
   if (_dt != -1.0)
     _dtm1 = _dt;
@@ -83,7 +83,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::timeStep(const double dt)
 // ----------------------------------------------------------------------
 // Set normalized viscosity for numerical damping.
 void
-pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const double viscosity)
+pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const PylithScalar viscosity)
 { // normViscosity
   if (viscosity < 0.0) {
     std::ostringstream msg;
@@ -111,12 +111,12 @@ pylith::feassemble::ElasticityExplicitLgDeform::useSolnIncr(const bool flag)
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
-			  const double t,
+			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidual
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicitLgDeform::*elasticityResidual_fn_type)
-    (const double_array&, const double_array&);
+    (const scalar_array&, const scalar_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -135,7 +135,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -175,10 +175,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array deformCell(numQuadPts*spaceDim*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -191,23 +191,23 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array accCell(numBasis*spaceDim);
+  scalar_array accCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& accSection = 
     fields->get("acceleration(t)").section();
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
 #if 0 // Numerical damping not yet implemented
-  double_array velCell(numBasis*spaceDim);
+  scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  double_array dispAdjCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
 #endif
 
-  double_array dispCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
@@ -215,7 +215,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -223,15 +223,15 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale = 
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
 
-  const double dt = _dt;
+  const PylithScalar dt = _dt;
   assert(_normViscosity > 0.0);
   assert(dt > 0);
-  const double viscosity = dt*_normViscosity;
+  const PylithScalar viscosity = dt*_normViscosity;
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -268,10 +268,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& quadPtsNondim = _quadrature->quadPts();
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
@@ -279,24 +279,25 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
       assert(0 != cs);
       
       // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
+      const scalar_array& density = _material->calcDensity();
 
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				  lengthScale);
 
       // Compute action for element body forces
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+	const int err = db->query(&gravVec[0], gravVec.size(),
 					     &quadPtsGlobal[0], spaceDim, cs);
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), 
 				       gravityScale);
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {
-	  const double valI = wt*basis[iQ+iBasis];
+	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
 	  } // for
@@ -306,14 +307,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     } // if
 
     // Compute action for inertial terms
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
+      const PylithScalar wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQuad*numBasis+iBasis];
+        const PylithScalar valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
+          const PylithScalar valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] -= 
 	      valIJ * accCell[jBasis*spaceDim+iDim];
@@ -334,7 +335,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
 
@@ -351,12 +352,12 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 			  const topology::Field<topology::Mesh>& residual,
-			  const double t,
+			  const PylithScalar t,
 			  topology::SolutionFields* const fields)
 { // integrateResidualLumped
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicitLgDeform::*elasticityResidual_fn_type)
-    (const double_array&, const double_array&);
+    (const scalar_array&, const scalar_array&);
 
   assert(0 != _quadrature);
   assert(0 != _material);
@@ -375,7 +376,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -415,10 +416,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     assert(0);
 
   // Allocate vectors for cell values.
-  double_array deformCell(numQuadPts*spaceDim*spaceDim);
-  double_array strainCell(numQuadPts*tensorSize);
-  double_array gravVec(spaceDim);
-  double_array quadPtsGlobal(numQuadPts*spaceDim);
+  scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
+  scalar_array strainCell(numQuadPts*tensorSize);
+  scalar_array gravVec(spaceDim);
+  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
   const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
@@ -431,23 +432,23 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
-  double_array accCell(numBasis*spaceDim);
+  scalar_array accCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& accSection = 
     fields->get("acceleration(t)").section();
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
 #if 0 // Numerical damping not yet implemented
-  double_array velCell(numBasis*spaceDim);
+  scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  double_array dispAdjCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
 #endif
 
-  double_array dispCell(numBasis*spaceDim);
+  scalar_array dispCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
@@ -455,7 +456,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   const ALE::Obj<RealSection>& residualSection = residual.section();
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -463,13 +464,13 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 				coordinatesCell.size(), &coordinatesCell[0]);
 
   assert(0 != _normalizer);
-  const double lengthScale = _normalizer->lengthScale();
-  const double gravityScale = 
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
 
   // Get parameters used in integration.
-  double_array valuesIJ(numBasis);
+  scalar_array valuesIJ(numBasis);
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
@@ -506,10 +507,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     sieveMesh->restrictClosure(*c_iter, dispVisitor);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-    const double_array& quadPtsNondim = _quadrature->quadPts();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& basisDeriv = _quadrature->basisDeriv();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& quadPtsNondim = _quadrature->quadPts();
 
     // Compute body force vector if gravity is being used.
     if (0 != _gravityField) {
@@ -517,24 +518,25 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
       assert(0 != cs);
       
       // Get density at quadrature points for this cell
-      const double_array& density = _material->calcDensity();
+      const scalar_array& density = _material->calcDensity();
 
       quadPtsGlobal = quadPtsNondim;
       _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
 				  lengthScale);
 
       // Compute action for element body forces
+      spatialdata::spatialdb::SpatialDB* db = _gravityField;
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const int err = _gravityField->query(&gravVec[0], gravVec.size(),
+	const int err = db->query(&gravVec[0], gravVec.size(),
 					     &quadPtsGlobal[0], spaceDim, cs);
 	if (err)
 	  throw std::runtime_error("Unable to get gravity vector for point.");
 	_normalizer->nondimensionalize(&gravVec[0], gravVec.size(), 
 				       gravityScale);
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+	const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis;
 	     iBasis < numBasis; ++iBasis) {
-	  const double valI = wt*basis[iQ+iBasis];
+	  const PylithScalar valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
 	    _cellVector[iBasis*spaceDim+iDim] += valI*gravVec[iDim];
 	  } // for
@@ -544,12 +546,12 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     } // if
 
     // Compute action for inertial terms
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
     valuesIJ = 0.0;
     for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+      const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
       const int iQ = iQuad * numBasis;
-      double valJ = 0.0;
+      PylithScalar valJ = 0.0;
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
 	valJ += basis[iQ + jBasis];
       valJ *= wt;
@@ -573,7 +575,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
-    const double_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
     
@@ -590,7 +592,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 					topology::Jacobian* jacobian,
-					const double t,
+					const PylithScalar t,
 					topology::SolutionFields* fields)
 { // integrateJacobian
   assert(0 != _quadrature);
@@ -609,7 +611,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -639,19 +641,23 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   assert(0 != jacobianMat);
 
   // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
+  const PylithScalar dt = _dt;
+  const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
   const ALE::Obj<SieveMesh::order_type>& globalOrder = 
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solnSection);
   assert(!globalOrder.isNull());
   // We would need to request unique points here if we had an interpolated mesh
+  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  assert(!sieve.isNull());
+  const int closureSize = 
+    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+  assert(closureSize >= 0);
   IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
-				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-					   sieveMesh->depth())*spaceDim);
+				 closureSize*spaceDim);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -681,20 +687,20 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     _resetCellMatrix();
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
+      const PylithScalar wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQ+iBasis];
+        const PylithScalar valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQ+jBasis];
+          const PylithScalar valIJ = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim) {
             const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
             const int jBlock = (jBasis*spaceDim + iDim);
@@ -724,7 +730,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 			    topology::Field<topology::Mesh>* jacobian,
-			    const double t,
+			    const PylithScalar t,
 			    topology::SolutionFields* fields)
 { // integrateJacobian
   assert(0 != _quadrature);
@@ -743,7 +749,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
+  const scalar_array& quadWts = _quadrature->quadWts();
   assert(quadWts.size() == numQuadPts);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -765,8 +771,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get parameters used in integration.
-  const double dt = _dt;
-  const double dt2 = dt*dt;
+  const PylithScalar dt = _dt;
+  const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
   // Get sections
@@ -774,7 +780,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   assert(!jacobianSection.isNull());
   UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
 
-  double_array coordinatesCell(numBasis*spaceDim);
+  scalar_array coordinatesCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& coordinates = 
     sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
@@ -804,20 +810,20 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     _resetCellMatrix();
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const scalar_array& basis = _quadrature->basis();
+    const scalar_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    const double_array& density = _material->calcDensity();
+    const scalar_array& density = _material->calcDensity();
 
     // Compute Jacobian for inertial terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = 
+      const PylithScalar wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const double valI = wt*basis[iQ+iBasis];
+        const PylithScalar valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const double valIJ = valI * basis[iQ+jBasis];
+          const PylithScalar valIJ = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim) {
             const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
             const int jBlock = (jBasis*spaceDim + iDim);

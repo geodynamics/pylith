@@ -104,8 +104,8 @@ namespace pylith {
        */
       void updateSettings(pylith::topology::Jacobian* jacobian,
 			  pylith::topology::SolutionFields* fields,
-			  const double t,
-			  const double dt);
+			  const PylithScalar t,
+			  const PylithScalar dt);
       
       /** Update handles and parameters for reforming the Jacobian and
        *  residual.
@@ -118,8 +118,8 @@ namespace pylith {
        */
       void updateSettings(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
 			  pylith::topology::SolutionFields* fields,
-			  const double t,
-			  const double dt);
+			  const PylithScalar t,
+			  const PylithScalar dt);
 
       /** Reform system residual.
        *

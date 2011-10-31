@@ -22,7 +22,7 @@
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -127,17 +127,17 @@ pylith::friction::SlipWeakening::~SlipWeakening(void)
 // Compute properties from values in spatial database.
 void
 pylith::friction::SlipWeakening::_dbToProperties(
-					   double* const propValues,
-					   const double_array& dbValues) const
+					   PylithScalar* const propValues,
+					   const scalar_array& dbValues) const
 { // _dbToProperties
   assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_SlipWeakening::numDBProperties == numDBValues);
 
-  const double db_static = dbValues[db_coefS];
-  const double db_dynamic = dbValues[db_coefD];
-  const double db_do = dbValues[db_d0];
-  const double db_c = dbValues[db_cohesion];
+  const PylithScalar db_static = dbValues[db_coefS];
+  const PylithScalar db_dynamic = dbValues[db_coefD];
+  const PylithScalar db_do = dbValues[db_d0];
+  const PylithScalar db_c = dbValues[db_cohesion];
 
   if (db_static < 0.0) {
     std::ostringstream msg;
@@ -173,15 +173,15 @@ pylith::friction::SlipWeakening::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::friction::SlipWeakening::_nondimProperties(double* const values,
+pylith::friction::SlipWeakening::_nondimProperties(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _SlipWeakening::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_d0] /= lengthScale;
   values[p_cohesion] /= pressureScale;
@@ -190,15 +190,15 @@ pylith::friction::SlipWeakening::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::friction::SlipWeakening::_dimProperties(double* const values,
+pylith::friction::SlipWeakening::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _SlipWeakening::numProperties);
 
-  const double lengthScale = _normalizer->lengthScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_d0] *= lengthScale;
   values[p_cohesion] *= pressureScale;
@@ -208,15 +208,15 @@ pylith::friction::SlipWeakening::_dimProperties(double* const values,
 // Compute state variables from values in spatial database.
 void
 pylith::friction::SlipWeakening::_dbToStateVars(
-					   double* const stateValues,
-					   const double_array& dbValues) const
+					   PylithScalar* const stateValues,
+					   const scalar_array& dbValues) const
 { // _dbToStateVars
   assert(stateValues);
   const int numDBValues = dbValues.size();
   assert(_SlipWeakening::numDBStateVars == numDBValues);
 
-  const double cumulativeSlip = dbValues[db_slipCum];
-  const double previousSlip = dbValues[db_slipPrev];
+  const PylithScalar cumulativeSlip = dbValues[db_slipCum];
+  const PylithScalar previousSlip = dbValues[db_slipPrev];
  
   stateValues[s_slipCum] = cumulativeSlip;
   stateValues[s_slipPrev] = previousSlip;
@@ -225,14 +225,14 @@ pylith::friction::SlipWeakening::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-pylith::friction::SlipWeakening::_nondimStateVars(double* const values,
+pylith::friction::SlipWeakening::_nondimStateVars(PylithScalar* const values,
 						  const int nvalues) const
 { // _nondimStateVars
   assert(_normalizer);
   assert(values);
   assert(nvalues == _SlipWeakening::numStateVars);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
 
   values[s_slipCum] /= lengthScale;
   values[s_slipPrev] /= lengthScale;
@@ -241,14 +241,14 @@ pylith::friction::SlipWeakening::_nondimStateVars(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-pylith::friction::SlipWeakening::_dimStateVars(double* const values,
+pylith::friction::SlipWeakening::_dimStateVars(PylithScalar* const values,
 					       const int nvalues) const
 { // _dimStateVars
   assert(_normalizer);
   assert(values);
   assert(nvalues == _SlipWeakening::numStateVars);
 
-  const double lengthScale = _normalizer->lengthScale();
+  const PylithScalar lengthScale = _normalizer->lengthScale();
 
   values[s_slipCum] *= lengthScale;
   values[s_slipPrev] *= lengthScale;
@@ -256,13 +256,13 @@ pylith::friction::SlipWeakening::_dimStateVars(double* const values,
 
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
-double
-pylith::friction::SlipWeakening::_calcFriction(const double slip,
-						const double slipRate,
-						const double normalTraction,
-						const double* properties,
+PylithScalar
+pylith::friction::SlipWeakening::_calcFriction(const PylithScalar slip,
+						const PylithScalar slipRate,
+						const PylithScalar normalTraction,
+						const PylithScalar* properties,
 						const int numProperties,
-						const double* stateVars,
+						const PylithScalar* stateVars,
 						const int numStateVars)
 { // _calcFriction
   assert(properties);
@@ -270,8 +270,8 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   assert(stateVars);
   assert(_SlipWeakening::numStateVars == numStateVars);
 
-  double friction = 0.0;
-  double mu_f = 0.0;
+  PylithScalar friction = 0.0;
+  PylithScalar mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
     if (stateVars[s_slipCum] < properties[p_d0]) {
@@ -293,12 +293,12 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::SlipWeakening::_updateStateVars(const double slip,
-						  const double slipRate,
-						  const double normalTraction,
-						  double* const stateVars,
+pylith::friction::SlipWeakening::_updateStateVars(const PylithScalar slip,
+						  const PylithScalar slipRate,
+						  const PylithScalar normalTraction,
+						  PylithScalar* const stateVars,
 						  const int numStateVars,
-						  const double* properties,
+						  const PylithScalar* properties,
 						  const int numProperties)
 { // _updateStateVars
   assert(properties);
@@ -306,9 +306,9 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(stateVars);
   assert(_SlipWeakening::numStateVars == numStateVars);
 
-  const double tolerance = 1.0e-12;
+  const PylithScalar tolerance = 1.0e-12;
   if (slipRate > tolerance) {
-    const double slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
 
     stateVars[s_slipPrev] = stateVars[s_slipCum];
     stateVars[s_slipCum] += fabs(slip - slipPrev);

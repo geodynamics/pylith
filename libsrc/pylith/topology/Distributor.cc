@@ -102,17 +102,17 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   // Setup and allocate field
   const int fiberDim = 1;
   topology::Field<topology::Mesh> partition(mesh);
+  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+  partition.allocate();
   partition.scale(1.0);
   partition.label("partition");
   partition.vectorFieldType(topology::FieldBase::SCALAR);
-  partition.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-  partition.allocate();
   const ALE::Obj<RealSection>& partitionSection = partition.section();
   assert(!partitionSection.isNull());
 
   const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  double rankReal = double(sieveMesh->commRank());
+  PylithScalar rankReal = PylithScalar(sieveMesh->commRank());
   assert(sieveMesh->height() > 0);
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
@@ -126,7 +126,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   } // for
 
   //partition->view("PARTITION");
-  const double t = 0.0;
+  const PylithScalar t = 0.0;
   const int numTimeSteps = 0;
   writer->open(mesh, numTimeSteps);
   writer->openTimeStep(t, mesh);
@@ -206,8 +206,8 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   int localRecvOverlapSize = 0, recvOverlapSize;
   const int commSize = sendMeshOverlap->commSize();
   for (int p = 0; p < commSize; ++p) {
-    localSendOverlapSize += sendMeshOverlap->cone(p)->size();
-    localRecvOverlapSize += recvMeshOverlap->support(p)->size();
+    localSendOverlapSize += sendMeshOverlap->getConeSize(p);
+    localRecvOverlapSize += recvMeshOverlap->getSupportSize(p);
   } // for
   MPI_Allreduce(&localSendOverlapSize, &sendOverlapSize, 1, MPI_INT, MPI_SUM,
 		sendMeshOverlap->comm());
@@ -388,6 +388,11 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePop();
   logger.stagePop(); // Mesh
   //logger.setDebug(0);
+
+#if 0 // DEBUGGING
+  sendParallelMeshOverlap->view("SEND OVERLAP");
+  recvParallelMeshOverlap->view("RECV OVERLAP");
+#endif
 } // distribute
 
 

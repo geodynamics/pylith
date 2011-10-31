@@ -97,7 +97,7 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
-					     const double upDir[3])
+					     const PylithScalar upDir[3])
 { // initialize
   assert(0 != upDir);
   assert(0 != _quadrature);
@@ -119,7 +119,7 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 void
 pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const topology::Field<topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
   assert(0 != fields);
@@ -129,16 +129,20 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const int setupEvent = _logger->eventId("FaIR setup");
   _logger->eventBegin(setupEvent);
 
-  topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-  slip.zero();
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  dispRel.zero();
   // Compute slip field at current time step
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
     EqKinSrc* src = s_iter->second;
     assert(0 != src);
     if (t >= src->originTime())
-      src->slip(&slip, t);
+      src->slip(&dispRel, t);
   } // for
+
+  // Transform slip from local (fault) coordinate system to relative
+  // displacement field in global coordinate system
+  _faultToGlobal(&dispRel);
 
   _logger->eventEnd(setupEvent);
 
@@ -163,11 +167,18 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
 
-  double scale = 0.0;
+  PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& slip = _fields->get("slip");
-    return slip;
+    const topology::Field<topology::SubMesh>& dispRel = 
+      _fields->get("relative disp");
+    _allocateBufferVectorField();
+    topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+    buffer.copy(dispRel);
+    buffer.label("slip");
+    _globalToFault(&buffer);
+    return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     const ALE::Obj<RealSection>& orientationSection = _fields->get(
@@ -227,7 +238,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
         _fields->get("buffer (vector)");
     buffer.copy(s_iter->second->finalSlip());
     assert(value.length() > 0);
-    const std::string& label = std::string("final_slip_") + std::string(value);
+    const std::string& label = (_eqSrcs.size() > 1) ? 
+      std::string("final_slip_") + std::string(value) : "final_slip";
     buffer.label(label.c_str());
 
     return buffer;
@@ -244,7 +256,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
         _fields->get("buffer (scalar)");
     buffer.copy(s_iter->second->slipTime());
     assert(value.length() > 0);
-    const std::string& label = std::string("slip_time_") + std::string(value);
+    const std::string& label = (_eqSrcs.size() > 1) ? 
+      std::string("slip_time_") + std::string(value) : "slip_time";
     buffer.label(label.c_str());
 
     return buffer;
@@ -265,6 +278,9 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
+
+  // Should never get here.
+  throw std::logic_error("Unknown field in FaultCohesiveKin::vertexField().");
 
   // Satisfy return values
   assert(0 != _fields);

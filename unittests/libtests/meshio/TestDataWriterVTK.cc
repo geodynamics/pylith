@@ -31,7 +31,7 @@
 // Check VTK file against archived file.
 void
 pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
-					     const double t,
+					     const PylithScalar t,
 					     const char* timeFormat)
 { // checkFile
 

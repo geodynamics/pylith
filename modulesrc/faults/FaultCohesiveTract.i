@@ -56,7 +56,7 @@ namespace pylith {
        *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
        */
       void initialize(const pylith::topology::Mesh& mesh,
-		      const double upDir[3]);
+		      const PylithScalar upDir[3]);
 
       /** Integrate contribution of cohesive cells to residual term.
        *
@@ -65,7 +65,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -76,7 +76,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
   
       /** Verify configuration is acceptable.

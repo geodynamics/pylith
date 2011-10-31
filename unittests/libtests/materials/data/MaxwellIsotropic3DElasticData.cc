@@ -37,15 +37,15 @@ const int pylith::materials::MaxwellIsotropic3DElasticData::_numPropsQuadPt = 4;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numVarsQuadPt = 12;
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_lengthScale =   1.00000000e+03;
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_lengthScale =   1.00000000e+03;
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_timeScale =   1.00000000e+00;
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_timeScale =   1.00000000e+00;
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_pressureScale =   2.25000000e+10;
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_pressureScale =   2.25000000e+10;
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_dtStableImplicit =   8.88888889e+06;
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_dtStableImplicit =   8.88888889e+06;
 
 const int pylith::materials::MaxwellIsotropic3DElasticData::_numPropertyValues[] = {
 1,
@@ -81,7 +81,7 @@ const char* pylith::materials::MaxwellIsotropic3DElasticData::_dbStateVarValues[
 "viscous-strain-xz",
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_dbProperties[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_dbProperties[] = {
   2.50000000e+03,
   3.00000000e+03,
   5.19615242e+03,
@@ -92,7 +92,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_dbProperties[] =
   1.00000000e+18,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_dbStateVars[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_dbStateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -119,7 +119,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_dbStateVars[] = 
   0.00000000e+00,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_properties[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_properties[] = {
   2.50000000e+03,
   2.25000000e+10,
   2.25000000e+10,
@@ -130,7 +130,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_properties[] = {
   3.47222222e+08,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVars[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_stateVars[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -157,7 +157,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVars[] = {
   0.00000000e+00,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_propertiesNondim[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_propertiesNondim[] = {
   2.50000000e+00,
   1.00000000e+00,
   1.00000000e+00,
@@ -168,7 +168,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_propertiesNondim
   3.47222222e+08,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsNondim[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsNondim[] = {
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -195,12 +195,12 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsNondim[
   0.00000000e+00,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_density[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_density[] = {
   2.50000000e+03,
   2.00000000e+03,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_strain[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_strain[] = {
   1.10000000e-04,
   1.20000000e-04,
   1.30000000e-04,
@@ -215,7 +215,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_strain[] = {
   4.60000000e-04,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_stress[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_stress[] = {
   9.51600000e+06,
   9.92200000e+06,
   1.03280000e+07,
@@ -230,7 +230,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_stress[] = {
   2.32544000e+06,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_elasticConsts[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_elasticConsts[] = {
   6.75000000e+10,
   2.25000000e+10,
   2.25000000e+10,
@@ -305,7 +305,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_elasticConsts[] 
   5.76000000e+09,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStress[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.30000000e+04,
@@ -320,7 +320,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStress[] 
   5.60000000e+04,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStrain[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_initialStrain[] = {
   3.10000000e-05,
   3.20000000e-05,
   3.30000000e-05,
@@ -335,7 +335,7 @@ const double pylith::materials::MaxwellIsotropic3DElasticData::_initialStrain[] 
   6.60000000e-05,
 };
 
-const double pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsUpdated[] = {
+const PylithScalar pylith::materials::MaxwellIsotropic3DElasticData::_stateVarsUpdated[] = {
   1.10000000e-04,
   1.20000000e-04,
   1.30000000e-04,
@@ -381,19 +381,19 @@ pylith::materials::MaxwellIsotropic3DElasticData::MaxwellIsotropic3DElasticData(
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);
   dbStateVarValues = const_cast<char**>(_dbStateVarValues);
-  dbProperties = const_cast<double*>(_dbProperties);
-  dbStateVars = const_cast<double*>(_dbStateVars);
-  properties = const_cast<double*>(_properties);
-  stateVars = const_cast<double*>(_stateVars);
-  propertiesNondim = const_cast<double*>(_propertiesNondim);
-  stateVarsNondim = const_cast<double*>(_stateVarsNondim);
-  density = const_cast<double*>(_density);
-  strain = const_cast<double*>(_strain);
-  stress = const_cast<double*>(_stress);
-  elasticConsts = const_cast<double*>(_elasticConsts);
-  initialStress = const_cast<double*>(_initialStress);
-  initialStrain = const_cast<double*>(_initialStrain);
-  stateVarsUpdated = const_cast<double*>(_stateVarsUpdated);
+  dbProperties = const_cast<PylithScalar*>(_dbProperties);
+  dbStateVars = const_cast<PylithScalar*>(_dbStateVars);
+  properties = const_cast<PylithScalar*>(_properties);
+  stateVars = const_cast<PylithScalar*>(_stateVars);
+  propertiesNondim = const_cast<PylithScalar*>(_propertiesNondim);
+  stateVarsNondim = const_cast<PylithScalar*>(_stateVarsNondim);
+  density = const_cast<PylithScalar*>(_density);
+  strain = const_cast<PylithScalar*>(_strain);
+  stress = const_cast<PylithScalar*>(_stress);
+  elasticConsts = const_cast<PylithScalar*>(_elasticConsts);
+  initialStress = const_cast<PylithScalar*>(_initialStress);
+  initialStrain = const_cast<PylithScalar*>(_initialStrain);
+  stateVarsUpdated = const_cast<PylithScalar*>(_stateVarsUpdated);
 } // constructor
 
 pylith::materials::MaxwellIsotropic3DElasticData::~MaxwellIsotropic3DElasticData(void)

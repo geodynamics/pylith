@@ -110,7 +110,7 @@ public :
    */
   virtual
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Split solution field for separate preconditioning.
    *
@@ -127,7 +127,7 @@ public :
    */
   virtual
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -139,7 +139,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Jacobian* jacobian,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -151,7 +151,7 @@ public :
    */
   virtual
   void integrateJacobian(topology::Field<topology::Mesh>* jacobian,
-				  const double t,
+				  const PylithScalar t,
 				  topology::SolutionFields* const fields);
 
   /** Compute custom fault precoditioner using Schur complement.
@@ -234,6 +234,20 @@ protected :
   void _calcTractionsChange(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
+  /** Transform field from local (fault) coordinate system to
+   * global coordinate system.
+   *
+   * @param field Field to transform.
+   */
+  void _faultToGlobal(topology::Field<topology::SubMesh>* field);
+
+  /** Transform field from global coordinate system to local (fault)
+   * coordinate system.
+   *
+   * @param field Field to transform.
+   */
+  void _globalToFault(topology::Field<topology::SubMesh>* field);
+
   /// Allocate buffer for vector field.
   void _allocateBufferVectorField(void);
 
@@ -255,84 +269,6 @@ protected :
 			       std::map<int,int>* mapGlobalToLocal,
 			       const topology::Jacobian& jacobian,
 			       const topology::SolutionFields& fields);
-
-  /** Adjust solution in lumped formulation to match slip for 1-D.
-   *
-   * @param lagrangeIncr Increment in Lagrange multiplier.
-   * @param dispTIncrN Disp increment assoc. w/vertex on - side of fault.
-   * @param dispTIncrP Disp increment assoc. w/vertex on + side of fault.
-   * @param slip Slip associated with Lagrange multipler vertex.
-   * @param orientation Orientation associated with Lagrange multipluer vertex.
-   * @param dispTN Displacement associated with vertex on - side of fault.
-   * @param dispTP Displacement associated with vertex on + side of fault.
-   * @param residualN Residual associated with vertex on - side of fault.
-   * @param residualP Residual associated with vertex on + side of fault.
-   * @param jacobianN Jacobian associated with vertex on - side of fault.
-   * @param jacobianP Jacobian associated with vertex on + side of fault.
-   */
-  void _adjustSolnLumped1D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
-
-  /** Adjust solution in lumped formulation to match slip for 2-D.
-   *
-   * @param lagrangeIncr Increment in Lagrange multiplier.
-   * @param dispTIncrN Disp increment assoc. w/vertex on - side of fault.
-   * @param dispTIncrP Disp increment assoc. w/vertex on + side of fault.
-   * @param slip Slip associated with Lagrange multipler vertex.
-   * @param orientation Orientation associated with Lagrange multipluer vertex.
-   * @param dispTN Displacement associated with vertex on - side of fault.
-   * @param dispTP Displacement associated with vertex on + side of fault.
-   * @param residualN Residual associated with vertex on - side of fault.
-   * @param residualP Residual associated with vertex on + side of fault.
-   * @param jacobianN Jacobian associated with vertex on - side of fault.
-   * @param jacobianP Jacobian associated with vertex on + side of fault.
-   */
-  void _adjustSolnLumped2D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
-
-  /** Adjust solution in lumped formulation to match slip for 3-D.
-   *
-   * @param lagrangeIncr Increment in Lagrange multiplier.
-   * @param dispTIncrN Disp increment assoc. w/vertex on - side of fault.
-   * @param dispTIncrP Disp increment assoc. w/vertex on + side of fault.
-   * @param slip Slip associated with Lagrange multipler vertex.
-   * @param orientation Orientation associated with Lagrange multipluer vertex.
-   * @param dispTN Displacement associated with vertex on - side of fault.
-   * @param dispTP Displacement associated with vertex on + side of fault.
-   * @param residualN Residual associated with vertex on - side of fault.
-   * @param residualP Residual associated with vertex on + side of fault.
-   * @param jacobianN Jacobian associated with vertex on - side of fault.
-   * @param jacobianP Jacobian associated with vertex on + side of fault.
-   */
-  void _adjustSolnLumped3D(double_array* lagrangeIncr,
-			   double_array* dispTIncrN,
-			   double_array* dispTIncrP,
-			   const double_array& slip,
-			   const double_array& orientation,
-			   const double_array& dispTN,
-			   const double_array& dispTP,
-			   const double_array& residualN,
-			   const double_array& residualP,
-			   const double_array& jacobianN,
-			   const double_array& jacobianP);
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
@@ -356,7 +292,7 @@ private :
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
    */
-  void _calcOrientation(const double upDir[3]);
+  void _calcOrientation(const PylithScalar upDir[3]);
 
   /// Calculate fault area field.
   void _calcArea(void);

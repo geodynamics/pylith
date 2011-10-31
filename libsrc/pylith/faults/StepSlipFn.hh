@@ -27,7 +27,7 @@
 // Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
-#include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // StepSlipFn -----------------------------------------------------------
 /**
@@ -75,7 +75,7 @@ public :
    */
   void initialize(const topology::SubMesh& faultMesh,
 		  const spatialdata::units::Nondimensional& normalizer,
-		  const double originTime =0.0);
+		  const PylithScalar originTime =0.0);
 
   /** Get slip on fault surface at time t.
    *
@@ -85,7 +85,7 @@ public :
    * @returns Slip vector as left-lateral/reverse/normal.
    */
   void slip(topology::Field<topology::SubMesh>* const slipField,
-	    const double t);
+	    const PylithScalar t);
   
   /** Get slip increment on fault surface between time t0 and t1.
    *
@@ -96,8 +96,8 @@ public :
    * @returns Increment in slip vector as left-lateral/reverse/normal.
    */
   void slipIncr(topology::Field<topology::SubMesh>* slipField,
-		const double t0,
-		const double t1);
+		const PylithScalar t0,
+		const PylithScalar t1);
 
   /** Get final slip.
    *
@@ -120,8 +120,8 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  double _slipTimeVertex; ///< Slip time at a vertex.
-  double_array _slipVertex; ///< Final slip at a vertex.
+  PylithScalar _slipTimeVertex; ///< Slip time at a vertex.
+  scalar_array _slipVertex; ///< Final slip at a vertex.
 
   /// Spatial database for final slip
   spatialdata::spatialdb::SpatialDB* _dbFinalSlip;

@@ -107,6 +107,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
     
+    const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+      H5T_IEEE_F64BE : H5T_IEEE_F32BE;
+
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
 
@@ -130,7 +133,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
       sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
     assert(!vNumbering.isNull());
-    coordinates.createScatterWithBC(vNumbering, context);
+    coordinates.createScatterWithBC(mesh, vNumbering, context);
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
@@ -153,7 +156,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       dims[1] = cs->spaceDim();
       _h5->createDatasetRawExternal("/geometry", "vertices", 
 				    filenameVertices.c_str(),
-				    dims, ndims, H5T_IEEE_F64BE);
+				    dims, ndims, scalartype);
     } // if
     
     // Write cells
@@ -178,18 +181,19 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX,
 		     sieveMesh->comm()); CHECK_PETSC_ERROR(err);
 
-    PetscScalar* tmpVertices = 0;
+    PylithScalar* tmpVertices = 0;
     const int ncells = cNumbering->getLocalSize();
     const int conesSize = ncells*numCorners;
-    err = PetscMalloc(sizeof(PetscScalar)*conesSize, &tmpVertices);
+    err = PetscMalloc(sizeof(PylithScalar)*conesSize, &tmpVertices);
     CHECK_PETSC_ERROR(err);
 
     const Obj<sieve_type>& sieve = sieveMesh->getSieve();
     assert(!sieve.isNull());
-    ALE::ISieveVisitor::NConeRetriever<sieve_type> 
-      ncV(*sieve, (size_t) pow((double) sieve->getMaxConeSize(), 
-			       std::max(0, sieveMesh->depth())));
-
+    const int closureSize = 
+      int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
+    assert(closureSize >= 0);
+    ALE::ISieveVisitor::NConeRetriever<sieve_type> ncV(*sieve, closureSize);
+    
     int k = 0;
     const typename label_sequence::const_iterator cellsEnd = cells->end();
     for (typename label_sequence::iterator c_iter=cells->begin();
@@ -201,8 +205,17 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 	const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
 	  ncV.getOrientedPoints();
 	const int coneSize = ncV.getOrientedSize();
-          for (int c=0; c < coneSize; ++c)
-            tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
+	if (coneSize != numCorners) {
+	  std::ostringstream msg;
+	  msg << "Inconsistency in topology found for mesh '"
+	      << sieveMesh->getName() << "' during output.\n"
+	      << "Number of vertices (" << coneSize << ") in cell '"
+	      << *c_iter << "' does not expected number of vertices ("
+	      << numCorners << ").";
+	  throw std::runtime_error(msg.str());
+	} // if
+	for (int c=0; c < coneSize; ++c)
+	  tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
 
     PetscVec elemVec;
@@ -230,7 +243,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       dims[0] = cNumbering->getGlobalSize();
       dims[1] = numCorners;
       _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
-				    dims, ndims, H5T_IEEE_F64BE);
+				    dims, ndims, scalartype);
       const int cellDim = mesh.dimension();
       _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim,
 			  H5T_NATIVE_INT);
@@ -261,11 +274,15 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
   _tstampIndex = 0;
   deallocate();
 
-  Xdmf metafile;
-  const std::string& hdf5filename = _hdf5Filename();
-  const int indexExt = hdf5filename.find(".h5");
-  std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
-  metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  int rank = 0;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+  if (!rank) {
+    Xdmf metafile;
+    const std::string& hdf5filename = _hdf5Filename();
+    const int indexExt = hdf5filename.find(".h5");
+    std::string xdmfFilename = std::string(hdf5filename, 0, indexExt) + ".xmf";
+    metafile.write(xdmfFilename.c_str(), _hdf5Filename().c_str());
+  } // if
 } // close
 
 // ----------------------------------------------------------------------
@@ -273,7 +290,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
-				            const double t,
+				            const PylithScalar t,
 					    field_type& field,
 					    const mesh_type& mesh)
 { // writeVertexField
@@ -296,13 +313,16 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
       sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
       sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
     assert(!vNumbering.isNull());
-    field.createScatterWithBC(vNumbering, context);
+    field.createScatterWithBC(mesh, vNumbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
+
+    const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+      H5T_IEEE_F64BE : H5T_IEEE_F32BE;
 
     // Create external dataset if necessary
     bool createdExternalDataset = false;
@@ -362,7 +382,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 	
 	_h5->createDatasetRawExternal("/vertex_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
-				      maxDims, ndims, H5T_IEEE_F64BE);
+				      maxDims, ndims, scalartype);
 	std::string fullName = std::string("/vertex_fields/") + field.label();
 	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
 			    topology::FieldBase::vectorFieldString(field.vectorFieldType()));
@@ -405,7 +425,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
-				       const double t,
+				       const PylithScalar t,
 				       field_type& field,
 				       const char* label,
 				       const int labelId)
@@ -432,13 +452,16 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     const ALE::Obj<typename mesh_type::SieveMesh::numbering_type>& numbering = 
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
-    field.createScatterWithBC(numbering, context);
+    field.createScatterWithBC(field.mesh(), numbering, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
 
     PetscViewer binaryViewer;
     PetscErrorCode err = 0;
+
+    const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+      H5T_IEEE_F64BE : H5T_IEEE_F32BE;
 
     // Create external dataset if necessary
     bool createdExternalDataset = false;
@@ -499,7 +522,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 	
 	_h5->createDatasetRawExternal("/cell_fields", field.label(),
 				      _datasetFilename(field.label()).c_str(),
-				      maxDims, ndims, H5T_IEEE_F64BE);
+				      maxDims, ndims, scalartype);
 	std::string fullName = std::string("/cell_fields/") + field.label();
 	_h5->writeAttribute(fullName.c_str(), "vector_field_type",
 			    topology::FieldBase::vectorFieldString(field.vectorFieldType()));
@@ -573,11 +596,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_datasetFilename(const 
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
-						  const double t)
+						  const PylithScalar t)
 { // _writeTimeStamp
   assert(_h5);
 
   const int ndims = 3;
+  const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    H5T_NATIVE_DOUBLE : H5T_NATIVE_FLOAT;
 
   // Each time stamp has a size of 1.
   hsize_t dimsChunk[3]; // Use 3 dims for compatibility with PETSc viewer
@@ -593,7 +618,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
     dims[1] = 1;
     dims[2] = 1;
     _h5->createDataset("/", "time", dims, dimsChunk, ndims, 
-		       H5T_NATIVE_DOUBLE);
+		       scalartype);
   } // if
   
   // Write time stamp as chunk to HDF5 file.
@@ -602,8 +627,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::_writeTimeStamp(
   dims[0] = _tstampIndex+1;
   dims[1] = 1;
   dims[2] = 1;
-  _h5->writeDatasetChunk("/", "time", &t, dims, dimsChunk, ndims, 
-			 _tstampIndex, H5T_NATIVE_DOUBLE);
+  const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
+  _h5->writeDatasetChunk("/", "time", &tDim, dims, dimsChunk, ndims, 
+			 _tstampIndex, scalartype);
   
   _tstampIndex++;
 } // _writeTimeStamp

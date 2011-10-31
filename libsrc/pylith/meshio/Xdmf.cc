@@ -23,7 +23,7 @@
 #include "HDF5.hh" // USES HDF5
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase enums
-#include "pylith/utils/array.hh" // USES double_arra
+#include "pylith/utils/array.hh" // USES PylithScalar_arra
 
 #include <string> // USES std::string
 #include <stdexcept> // USES std::runtime_error
@@ -57,7 +57,7 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   std::string cellType;
   int numVertices = 0;
   int spaceDim = 0;
-  double_array timeStamps;
+  scalar_array timeStamps;
   std::vector<FieldMetadata> fieldsMetadata;
 
   HDF5 h5(filenameHDF5, H5F_ACC_RDONLY);
@@ -203,14 +203,16 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 // ----------------------------------------------------------------------
 // Get timestamps from HDF5 file.
 void
-pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
+pylith::meshio::Xdmf::_getTimeStamps(scalar_array* timeStamps,
 				     HDF5& h5)
 { // _getTimeStamps
   assert(timeStamps);
 
   hsize_t* dims = 0;
   int ndims = 0;
-  double* t = 0;
+  PylithScalar* t = 0;
+  const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
+    H5T_NATIVE_DOUBLE : H5T_NATIVE_FLOAT;
 
   if (h5.hasDataset("/time")) {
     h5.getDatasetDims(&dims, &ndims, "/", "time");
@@ -223,7 +225,7 @@ pylith::meshio::Xdmf::_getTimeStamps(double_array* timeStamps,
     timeStamps->resize(numTimeStamps);
     for (int i=0; i < numTimeStamps; ++i) {
       h5.readDatasetChunk("/", "time", (char**)&t,
-			  &dims, &ndims, i, H5T_NATIVE_DOUBLE);
+			  &dims, &ndims, i, scalartype);
       assert(3 == ndims);
       assert(1 == dims[0]);
       assert(1 == dims[1]);
@@ -387,7 +389,7 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 // ----------------------------------------------------------------------
 // Write time stamps.
 void
-pylith::meshio::Xdmf::_writeTimeStamps(const double_array& timeStamps)
+pylith::meshio::Xdmf::_writeTimeStamps(const scalar_array& timeStamps)
 { // _writeTimeStamps
   assert(_file.is_open() && _file.good());
 

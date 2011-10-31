@@ -79,7 +79,7 @@ namespace pylith {
        * @returns Time step
        */
       virtual
-      double stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
+      PylithScalar stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
       /** Set whether elastic or inelastic constitutive relations are used.
        *
@@ -104,10 +104,10 @@ namespace pylith {
        * @param numProperties Number of properties.
        */
       virtual
-      void _calcDensity(double* const density,
-			const double* properties,
+      void _calcDensity(PylithScalar* const density,
+			const PylithScalar* properties,
 			const int numProperties,
-			const double* stateVars,
+			const PylithScalar* stateVars,
 			const int numStateVars) = 0;
       
       /** Compute stress tensor from properties and state variables. If
@@ -132,17 +132,17 @@ namespace pylith {
        * state variables.
        */
       virtual
-      void _calcStress(double* const stress,
+      void _calcStress(PylithScalar* const stress,
 		       const int stressSize,
-		       const double* properties,
+		       const PylithScalar* properties,
 		       const int numProperties,
-		       const double* stateVars,
+		       const PylithScalar* stateVars,
 		       const int numStateVars,
-		       const double* totalStrain,
+		       const PylithScalar* totalStrain,
 		       const int strainSize,
-		       const double* initialStress,
+		       const PylithScalar* initialStress,
 		       const int initialStressSize,
-		       const double* initialStrain,
+		       const PylithScalar* initialStrain,
 		       const int initialStrainSize,
 		       const bool computeStateVars) = 0;
       
@@ -162,17 +162,17 @@ namespace pylith {
        * @param initialStrainSize Size of initial strain array.
        */
       virtual
-      void _calcElasticConsts(double* const elasticConsts,
+      void _calcElasticConsts(PylithScalar* const elasticConsts,
 			      const int numElasticConsts,
-			      const double* properties,
+			      const PylithScalar* properties,
 			      const int numProperties,
-			      const double* stateVars,
+			      const PylithScalar* stateVars,
 			      const int numStateVars,
-			      const double* totalStrain,
+			      const PylithScalar* totalStrain,
 			      const int strainSize,
-			      const double* initialStress,
+			      const PylithScalar* initialStress,
 			      const int initialStressSize,
-			      const double* initialStrain,
+			      const PylithScalar* initialStrain,
 			      const int initialStrainSize) = 0;
       
       /** Get stable time step for implicit time integration.
@@ -185,9 +185,9 @@ namespace pylith {
        * @returns Time step
        */
       virtual
-      double _stableTimeStepImplicit(const double* properties,
+      PylithScalar _stableTimeStepImplicit(const PylithScalar* properties,
 				     const int numProperties,
-				     const double* stateVars,
+				     const PylithScalar* stateVars,
 				     const int numStateVars) const = 0;
       
     }; // class ElasticMaterial

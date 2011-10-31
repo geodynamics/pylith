@@ -19,10 +19,14 @@
 dist_noinst_DATA =\
 	pylithapp.cfg \
 	quad4.mesh \
+	ratestate.cfg \
 	ratestate_stable.cfg \
 	ratestate_weak.cfg \
 	velocitysteps.timedb \
-	plot_friction.py
+	plot_friction.py \
+	tension.cfg \
+	tension_axial.timedb \
+	tension_shear.timedb
 
 
 # End of file 

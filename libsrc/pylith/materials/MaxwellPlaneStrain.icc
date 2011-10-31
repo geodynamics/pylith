@@ -26,7 +26,7 @@
 // Set current time step.
 inline
 void
-pylith::materials::MaxwellPlaneStrain::timeStep(const double dt) {
+pylith::materials::MaxwellPlaneStrain::timeStep(const PylithScalar dt) {
   // Jacobian needs to be reformed if the time step size changes.
   if (_dt > 0.0 && dt != _dt)
     _needNewJacobian = true;
@@ -36,17 +36,17 @@ pylith::materials::MaxwellPlaneStrain::timeStep(const double dt) {
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::MaxwellPlaneStrain::_calcStress(double* const stress,
+pylith::materials::MaxwellPlaneStrain::_calcStress(PylithScalar* const stress,
 						   const int stressSize,
-						   const double* properties,
+						   const PylithScalar* properties,
 						   const int numProperties,
-						   const double* stateVars,
+						   const PylithScalar* stateVars,
 						   const int numStateVars,
-						   const double* totalStrain,
+						   const PylithScalar* totalStrain,
 						   const int strainSize,
-						   const double* initialStress,
+						   const PylithScalar* initialStress,
 						   const int initialStressSize,
-						   const double* initialStrain,
+						   const PylithScalar* initialStrain,
 						   const int initialStrainSize,
 						   const bool computeStateVars) {
   assert(0 != _calcStressFn);
@@ -63,17 +63,17 @@ pylith::materials::MaxwellPlaneStrain::_calcStress(double* const stress,
 inline
 void
 pylith::materials::MaxwellPlaneStrain::_calcElasticConsts(
-						 double* const elasticConsts,
+						 PylithScalar* const elasticConsts,
 						 const int numElasticConsts,
-						 const double* properties,
+						 const PylithScalar* properties,
 						 const int numProperties,
-						 const double* stateVars,
+						 const PylithScalar* stateVars,
 						 const int numStateVars,
-						 const double* totalStrain,
+						 const PylithScalar* totalStrain,
 						 const int strainSize,
-						 const double* initialStress,
+						 const PylithScalar* initialStress,
 						 const int initialStressSize,
-						 const double* initialStrain,
+						 const PylithScalar* initialStrain,
 						 const int initialStrainSize) {
   assert(0 != _calcElasticConstsFn);
   CALL_MEMBER_FN(*this, _calcElasticConstsFn)(elasticConsts, numElasticConsts,
@@ -87,15 +87,15 @@ pylith::materials::MaxwellPlaneStrain::_calcElasticConsts(
 // Update state variables after solve.
 inline
 void
-pylith::materials::MaxwellPlaneStrain::_updateStateVars(double* const stateVars,
+pylith::materials::MaxwellPlaneStrain::_updateStateVars(PylithScalar* const stateVars,
 						  const int numStateVars,
-						  const double* properties,
+						  const PylithScalar* properties,
 						  const int numProperties,
-						  const double* totalStrain,
+						  const PylithScalar* totalStrain,
 						  const int strainSize,
-						  const double* initialStress,
+						  const PylithScalar* initialStress,
 						  const int initialStressSize,
-						  const double* initialStrain,
+						  const PylithScalar* initialStrain,
 						  const int initialStrainSize) {
   assert(0 != _updateStateVarsFn);
   CALL_MEMBER_FN(*this, _updateStateVarsFn)(stateVars, numStateVars,

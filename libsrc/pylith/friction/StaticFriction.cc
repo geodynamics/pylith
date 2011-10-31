@@ -22,7 +22,7 @@
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -89,15 +89,15 @@ pylith::friction::StaticFriction::~StaticFriction(void)
 // Compute properties from values in spatial database.
 void
 pylith::friction::StaticFriction::_dbToProperties(
-					   double* const propValues,
-					   const double_array& dbValues) const
+					   PylithScalar* const propValues,
+					   const scalar_array& dbValues) const
 { // _dbToProperties
   assert(propValues);
   const int numDBValues = dbValues.size();
   assert(_StaticFriction::numDBProperties == numDBValues);
 
-  const double coef = dbValues[db_coef];
-  const double cohesion = dbValues[db_cohesion];
+  const PylithScalar coef = dbValues[db_coef];
+  const PylithScalar cohesion = dbValues[db_cohesion];
  
   if (coef < 0.0) {
     std::ostringstream msg;
@@ -114,14 +114,14 @@ pylith::friction::StaticFriction::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::friction::StaticFriction::_nondimProperties(double* const values,
+pylith::friction::StaticFriction::_nondimProperties(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _StaticFriction::numProperties);
 
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_cohesion] /= pressureScale;
 } // _nondimProperties
@@ -129,34 +129,34 @@ pylith::friction::StaticFriction::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::friction::StaticFriction::_dimProperties(double* const values,
+pylith::friction::StaticFriction::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(_normalizer);
   assert(values);
   assert(nvalues == _StaticFriction::numProperties);
 
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   values[p_cohesion] *= pressureScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
-double
-pylith::friction::StaticFriction::_calcFriction(const double slip,
-						const double slipRate,
-						const double normalTraction,
-						const double* properties,
+PylithScalar
+pylith::friction::StaticFriction::_calcFriction(const PylithScalar slip,
+						const PylithScalar slipRate,
+						const PylithScalar normalTraction,
+						const PylithScalar* properties,
 						const int numProperties,
-						const double* stateVars,
+						const PylithScalar* stateVars,
 						const int numStateVars)
 { // _calcFriction
   assert(properties);
   assert(_StaticFriction::numProperties == numProperties);
   assert(0 == numStateVars);
 
-  const double friction = (normalTraction <= 0.0) ?
+  const PylithScalar friction = (normalTraction <= 0.0) ?
     -properties[p_coef] * normalTraction + properties[p_cohesion]: 
     0.0;
 

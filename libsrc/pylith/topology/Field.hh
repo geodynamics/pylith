@@ -131,13 +131,13 @@ public :
    *
    * @param value Scale associated with field.
    */
-  void scale(const double value);
+  void scale(const PylithScalar value);
 
   /** Get scale for dimensionalizing field.
    *
    * @returns Scale associated with field.
    */
-  double scale(void) const;
+  PylithScalar scale(void) const;
 
   /** Set flag indicating whether it is okay to dimensionalize field.
    *
@@ -267,9 +267,12 @@ public :
    * DOF. Use createScatterWithBC() to include the constrained DOF in
    * the PETSc vector.
    *
+   * @param mesh Mesh associated with scatter.
    * @param context Label for context associated with vector.
    */
-  void createScatter(const char* context ="");
+  template<typename scatter_mesh_type>
+  void createScatter(const scatter_mesh_type& mesh,
+		     const char* context ="");
 
 
   /** Create PETSc vector scatter for field. This is used to transfer
@@ -278,10 +281,13 @@ public :
    * DOF. Use createScatterWithBC() to include the constrained DOF in
    * the PETSc vector.
    *
+   * @param mesh Mesh associated with scatter.
    * @param numbering Numbering used to select points in section.
    * @param context Label for context associated with vector.
    */
-  void createScatter(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+  template<typename scatter_mesh_type>
+  void createScatter(const scatter_mesh_type& mesh,
+		     const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 		     const char* context ="");
 
   /** Create PETSc vector scatter for field. This is used to transfer
@@ -290,9 +296,12 @@ public :
    * DOF. Use createScatter() if constrained DOF should be omitted
    * from the PETSc vector.
    *
+   * @param mesh Mesh associated with scatter.
    * @param context Label for context associated with vector.
    */
-  void createScatterWithBC(const char* context ="");
+  template<typename scatter_mesh_type>
+  void createScatterWithBC(const scatter_mesh_type& mesh,
+			   const char* context ="");
 
 
   /** Create PETSc vector scatter for field. This is used to transfer
@@ -301,10 +310,13 @@ public :
    * DOF. Use createScatter() if constrained DOF should be omitted
    * from the PETSc vector.
    *
+   * @param mesh Mesh associated with scatter.
    * @param numbering Numbering used to select points in section.
    * @param context Label for context associated with vector.
    */
-  void createScatterWithBC(const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+  template<typename scatter_mesh_type>
+  void createScatterWithBC(const scatter_mesh_type& mesh,
+			   const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 		     const char* context ="");
 
   /** Get PETSc vector associated with field.

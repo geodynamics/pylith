@@ -35,7 +35,7 @@
 #include "pylith/topology/Mesh.hh" // ISA Integrator<Mesh>
 #include "Integrator.hh" // ISA Integrator
 
-#include "pylith/utils/arrayfwd.hh" // USES std::vector, double_array
+#include "pylith/utils/arrayfwd.hh" // USES std::vector, scalar_array
 
 // IntegratorElasticity -------------------------------------------------
 /** @brief General elasticity operations for implicit and explicit
@@ -49,9 +49,9 @@ class pylith::feassemble::IntegratorElasticity :
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef void (*totalStrain_fn_type)(double_array*,
-				      const double_array&,
-				      const double_array&,
+  typedef void (*totalStrain_fn_type)(scalar_array*,
+				      const scalar_array&,
+				      const scalar_array&,
 				      const int,
 				      const int);
   
@@ -101,7 +101,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateStateVars(const double t,
+  void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
@@ -165,55 +165,37 @@ protected :
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
-  void _elasticityResidual1D(const double_array& stress);
+  void _elasticityResidual1D(const scalar_array& stress);
 
   /** Integrate elasticity term in residual for 2-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
-  void _elasticityResidual2D(const double_array& stress);
+  void _elasticityResidual2D(const scalar_array& stress);
 
   /** Integrate elasticity term in residual for 3-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
    */
-  void _elasticityResidual3D(const double_array& stress);
+  void _elasticityResidual3D(const scalar_array& stress);
 
   /** Integrate elasticity term in Jacobian for 1-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
-  void _elasticityJacobian1D(const double_array& elasticConsts);
+  void _elasticityJacobian1D(const scalar_array& elasticConsts);
 
   /** Integrate elasticity term in Jacobian for 2-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
-  void _elasticityJacobian2D(const double_array& elasticConsts);
+  void _elasticityJacobian2D(const scalar_array& elasticConsts);
 
   /** Integrate elasticity term in Jacobian for 3-D cells.
    *
    * @param elasticConsts Matrix of elasticity constants at quadrature points.
    */
-  void _elasticityJacobian3D(const double_array& elasticConsts);
-
-  /** Integrate laplacian term in Jacobian preconditioner for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon1D(const double_array& elasticConsts);
-
-  /** Integrate laplacian term in Jacobian preconditioner for 2-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon2D(const double_array& elasticConsts);
-
-  /** Integrate laplacian term in Jacobian preconditioner for 3-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityPrecon3D(const double_array& elasticConsts);
+  void _elasticityJacobian3D(const scalar_array& elasticConsts);
 
   /** Compute total strain in at quadrature points of a cell.
    *
@@ -225,9 +207,9 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain1D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
+  void _calcTotalStrain1D(scalar_array* strain,
+			  const scalar_array& basisDeriv,
+			  const scalar_array& disp,
 			  const int numBasis,
 			  const int numQuadPts);
 
@@ -240,9 +222,9 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain2D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
+  void _calcTotalStrain2D(scalar_array* strain,
+			  const scalar_array& basisDeriv,
+			  const scalar_array& disp,
 			  const int numBasis,
 			  const int numQuadPts);
 
@@ -255,9 +237,9 @@ protected :
    * @param numQuadPts Number of quadrature points.
    */
   static
-  void _calcTotalStrain3D(double_array* strain,
-			  const double_array& basisDeriv,
-			  const double_array& disp,
+  void _calcTotalStrain3D(scalar_array* strain,
+			  const scalar_array& basisDeriv,
+			  const scalar_array& disp,
 			  const int numBasis,
 			  const int numQuadPts);
 
@@ -278,7 +260,7 @@ protected :
 
   typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
   typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
-  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PetscInt> IndicesVisitor;
+  typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

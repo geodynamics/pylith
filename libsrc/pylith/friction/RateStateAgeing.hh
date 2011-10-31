@@ -58,6 +58,13 @@ public :
   /// Destructor.
   ~RateStateAgeing(void);
 
+  /** Set floor for slip rate used in computing friction. Used to
+   *  avoid zero friction at zero slip rate.
+   *
+   * @param value Floor for slip rate.
+   */
+  void minSlipRate(const PylithScalar value);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -68,15 +75,15 @@ protected :
    * @param propValues Array of property values.
    * @param dbValues Array of database values.
    */
-  void _dbToProperties(double* const propValues,
-		       const double_array& dbValues) const;
+  void _dbToProperties(PylithScalar* const propValues,
+		       const scalar_array& dbValues) const;
 
   /** Nondimensionalize properties.
    *
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const;
 
   /** Dimensionalize properties.
@@ -84,7 +91,7 @@ protected :
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const;
 
   /** Compute friction from properties and state variables.
@@ -97,15 +104,15 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  void _dbToStateVars(double* const stateValues,
-		      const double_array& dbValues) const;
+  void _dbToStateVars(PylithScalar* const stateValues,
+		      const scalar_array& dbValues) const;
 
   /** Nondimensionalize state variables.
    *
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  void _nondimStateVars(double* const values,
+  void _nondimStateVars(PylithScalar* const values,
 			   const int nvalues) const;
   
   /** Dimensionalize state variables.
@@ -113,7 +120,7 @@ protected :
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  void _dimStateVars(double* const values,
+  void _dimStateVars(PylithScalar* const values,
 			const int nvalues) const;
 
   /** Compute friction from properties and state variables.
@@ -126,12 +133,12 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  double _calcFriction(const double slip,
-		       const double slipRate,
-		       const double normalTraction,
-		       const double* properties,
+  PylithScalar _calcFriction(const PylithScalar slip,
+		       const PylithScalar slipRate,
+		       const PylithScalar normalTraction,
+		       const PylithScalar* properties,
 		       const int numProperties,
-		       const double* stateVars,
+		       const PylithScalar* stateVars,
 		       const int numStateVars);
 
   /** Update state variables (for next time step).
@@ -144,16 +151,19 @@ protected :
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    */
-  void _updateStateVars(const double slip,
-			const double slipRate,
-			const double normalTraction,
-			double* const stateVars,
+  void _updateStateVars(const PylithScalar slip,
+			const PylithScalar slipRate,
+			const PylithScalar normalTraction,
+			PylithScalar* const stateVars,
 			const int numStateVars,
-			const double* properties,
+			const PylithScalar* properties,
 			const int numProperties);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Floor for slip rate used in friction calculation.
+  PylithScalar _minSlipRate;
 
   /// Indices for properties in section and spatial database.
   static const int p_coef;

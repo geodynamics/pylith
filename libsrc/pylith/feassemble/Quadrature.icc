@@ -42,7 +42,7 @@ pylith::feassemble::Quadrature<mesh_type>::checkConditioning(void) const {
 // Get coordinates of quadrature points in cell (NOT reference cell).
 template<typename mesh_type>
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::Quadrature<mesh_type>::quadPts(void) const {
   assert(0 != _engine);
   return _engine->quadPts();
@@ -51,7 +51,7 @@ pylith::feassemble::Quadrature<mesh_type>::quadPts(void) const {
 // Get derivatives of basis fns evaluated at quadrature points.
 template<typename mesh_type>
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::Quadrature<mesh_type>::basisDeriv(void) const {
   assert(0 != _engine);
   return _engine->basisDeriv();
@@ -60,7 +60,7 @@ pylith::feassemble::Quadrature<mesh_type>::basisDeriv(void) const {
 // Get Jacobians evaluated at quadrature points.
 template<typename mesh_type>
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::Quadrature<mesh_type>::jacobian(void) const {
   assert(0 != _engine);
   return _engine->jacobian();
@@ -69,7 +69,7 @@ pylith::feassemble::Quadrature<mesh_type>::jacobian(void) const {
 // Get determinants of Jacobian evaluated at quadrature points.
 template<typename mesh_type>
 inline
-const pylith::double_array&
+const pylith::scalar_array&
 pylith::feassemble::Quadrature<mesh_type>::jacobianDet(void) const {
   assert(0 != _engine);
   return _engine->jacobianDet();
@@ -87,7 +87,7 @@ pylith::feassemble::Quadrature<mesh_type>::geometryFields(void) const {
 template<typename mesh_type>
 inline
 void
-pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const double_array& coordinatesCell,
+pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const scalar_array& coordinatesCell,
 							   const int cell) {
   assert(0 != _engine);
   _engine->computeGeometry(coordinatesCell, cell);  

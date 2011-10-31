@@ -32,7 +32,8 @@
 #include "pylith/friction/RateStateAgeing.hh"
 #include "pylith/friction/TimeWeakening.hh"
 
-#include "pylith/utils/arrayfwd.hh"
+#include "pylith/utils/types.hh"
+#include "pylith/utils/array.hh"
 #include "pylith/utils/sievetypes.hh"
 %}
 
@@ -48,7 +49,7 @@
  } // exception
 
 %include "typemaps.i"
-%include "../include/doublearray.i"
+%include "../include/scalartypemaps.i"
 
 // Numpy interface stuff
 %{

@@ -46,6 +46,7 @@ testmeshio_SOURCES = \
 	TestDataWriterVTKSubMeshCases.cc \
 	TestOutputManager.cc \
 	TestOutputSolnSubset.cc \
+	TestOutputSolnPoints.cc \
 	TestDataWriterVTKFaultMesh.cc \
 	TestDataWriterVTKFaultMeshCases.cc \
 	test_meshio.cc
@@ -72,6 +73,7 @@ noinst_HEADERS = \
 	TestMeshIOLagrit.hh \
 	TestOutputManager.hh \
 	TestOutputSolnSubset.hh \
+	TestOutputSolnPoints.hh \
 	TestVertexFilterVecNorm.hh
 
 

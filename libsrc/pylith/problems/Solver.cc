@@ -120,7 +120,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     // We have split fields with a custom constraint preconditioner
     // and constraints exist.
 
-    PetscInt M, N, m, n;
+    PylithInt M, N, m, n;
     PetscErrorCode err = 0;
     err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
     err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
@@ -180,8 +180,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     if (_jacobianPCFault) {
       err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
     } // if
-    PetscInt nrows = lagrangeGlobalOrder->getLocalSize();
-    PetscInt ncols = nrows;
+    PylithInt nrows = lagrangeGlobalOrder->getLocalSize();
+    PylithInt ncols = nrows;
 
     err = MatCreate(sieveMesh->comm(), &_jacobianPCFault); CHECK_PETSC_ERROR(err);
     err = MatSetSizes(_jacobianPCFault, nrows, ncols, 

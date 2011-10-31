@@ -38,7 +38,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/utils/array.hh" // USES double_array, std::vector
+#include "pylith/utils/array.hh" // USES scalar_array, std::vector
 
 #include <vector> // USES std::vector
 #include <fstream> // HASA std::ofstream
@@ -88,7 +88,7 @@ private :
    * @param timeStamps Array of time stamps.
    * @param h5 HDF5 file.
    */
-  void _getTimeStamps(double_array* timeStamps,
+  void _getTimeStamps(scalar_array* timeStamps,
 		      HDF5& h5);
 
   /** Get field metadata from HDF5 file.
@@ -119,7 +119,7 @@ private :
    *
    * @param timeStamps Array of time stamps.
    */
-  void _writeTimeStamps(const double_array& timeStamps);
+  void _writeTimeStamps(const scalar_array& timeStamps);
 
   /** Write grid topology information.
    *

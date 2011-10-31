@@ -23,7 +23,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -39,7 +39,7 @@ namespace pylith {
       const int ncells = 1;
       const int ncorners = 4;
       const int cells[] = { 0, 1, 2, 3 };
-      const double coordinates[] = {
+      const PylithScalar coordinates[] = {
 	0.0, 0.0,
 	1.0, 0.0,
 	0.0, 1.0,
@@ -346,8 +346,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
 	 ++v_iter, index += nconstraints[i++])
       section->setConstraintDof(*v_iter, &constraints[index]);
     fieldSrc.zero();
-    fieldSrc.createScatter();
-    fieldSrc.createScatter("A");
+    fieldSrc.createScatter(mesh);
+    fieldSrc.createScatter(mesh, "A");
   } // Setup source field
 
   Field<Mesh> field(mesh);
@@ -388,7 +388,7 @@ pylith::topology::TestFieldMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(1.0, field._metadata.scale);
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata.scale);
   CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._metadata.vectorFieldType);
   CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
 } // testClear
@@ -399,8 +399,8 @@ void
 pylith::topology::TestFieldMesh::testAllocate(void)
 { // testAllocate
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -421,7 +421,7 @@ pylith::topology::TestFieldMesh::testAllocate(void)
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -431,7 +431,7 @@ pylith::topology::TestFieldMesh::testAllocate(void)
     section->updatePoint(*v_iter, &values[0]);
   } // for
 
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -449,8 +449,8 @@ void
 pylith::topology::TestFieldMesh::testZero(void)
 { // testZero
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -471,7 +471,7 @@ pylith::topology::TestFieldMesh::testZero(void)
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -483,7 +483,7 @@ pylith::topology::TestFieldMesh::testZero(void)
 
   field.zero();
 
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
@@ -500,8 +500,8 @@ void
 pylith::topology::TestFieldMesh::testZeroAll(void)
 { // testZeroAll
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -542,7 +542,7 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
     section->setConstraintDof(*v_iter, &constraints[index]);
   field.zero();
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -554,7 +554,7 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
   
   field.zeroAll();
   
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
@@ -571,8 +571,8 @@ void
 pylith::topology::TestFieldMesh::testComplete(void)
 { // testComplete
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -593,7 +593,7 @@ pylith::topology::TestFieldMesh::testComplete(void)
   const ALE::Obj<Mesh::RealSection>& section = field.section();
   CPPUNIT_ASSERT(!section.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -607,7 +607,7 @@ pylith::topology::TestFieldMesh::testComplete(void)
 
   // Expect no change for this serial test
   i = 0;
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
@@ -624,8 +624,8 @@ void
 pylith::topology::TestFieldMesh::testCopy(void)
 { // testCopy
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -647,7 +647,7 @@ pylith::topology::TestFieldMesh::testCopy(void)
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
     int i = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
@@ -667,8 +667,8 @@ pylith::topology::TestFieldMesh::testCopy(void)
   field.copy(fieldSrc);
 
   int i = 0;
-  double_array values(fiberDim);
-  const double tolerance = 1.0e-6;
+  scalar_array values(fiberDim);
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
@@ -685,14 +685,14 @@ void
 pylith::topology::TestFieldMesh::testOperatorAdd(void)
 { // testOperateAdd
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesA[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesA[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
     1.4, 2.5, 3.6,
   };
-  const double valuesB[] = {
+  const PylithScalar valuesB[] = {
     10.1, 20.2, 30.3,
     10.2, 20.3, 30.4,
     10.3, 20.4, 30.5,
@@ -714,7 +714,7 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
     const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
     CPPUNIT_ASSERT(!section.isNull());
     
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
     int i = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
@@ -732,7 +732,7 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
   CPPUNIT_ASSERT(!section.isNull());
   { // Setup destination field
 
-    double_array values(fiberDim);
+    scalar_array values(fiberDim);
     int i = 0;
     for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
 	 v_iter != vertices->end();
@@ -746,14 +746,14 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
   field += fieldSrc;
 
   int i = 0;
-  double_array values(fiberDim);
-  const double tolerance = 1.0e-6;
+  scalar_array values(fiberDim);
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
     section->restrictPoint(*v_iter, &values[0], values.size());
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double valueE = valuesA[i] + valuesB[i];
+      const PylithScalar valueE = valuesA[i] + valuesB[i];
       ++i;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[iDim], tolerance);
     } // for
@@ -766,8 +766,8 @@ void
 pylith::topology::TestFieldMesh::testDimensionalize(void)
 { // testDimensionalize
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -787,7 +787,7 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -802,13 +802,13 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
   field.dimensionalize();
 
   i = 0;
-  const double tolerance = 1.0e-6;
+  const PylithScalar tolerance = 1.0e-6;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
     section->restrictPoint(*v_iter, &values[0], values.size());
     for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const double valueE = valuesNondim[i++]*scale;
+      const PylithScalar valueE = valuesNondim[i++]*scale;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[iDim], tolerance);
     } // for
   } // for
@@ -821,8 +821,8 @@ void
 pylith::topology::TestFieldMesh::testView(void)
 { // testView
   const int fiberDim = 3;
-  const double scale = 2.0;
-  const double valuesNondim[] = {
+  const PylithScalar scale = 2.0;
+  const PylithScalar valuesNondim[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -842,7 +842,7 @@ pylith::topology::TestFieldMesh::testView(void)
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -878,7 +878,7 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   const int sizeE = vertices->size() * fiberDim;
 
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
-  field.createScatter();
+  field.createScatter(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
   const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.scatter);
@@ -895,11 +895,11 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   CPPUNIT_ASSERT_EQUAL(label, std::string(vecname));
 
   // Make sure we can do multiple calls to createScatter().
-  field.createScatter();
+  field.createScatter(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
 
   // Create another scatter.
-  field.createScatter("B");
+  field.createScatter(mesh, "B");
   CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
   const Field<Mesh>::ScatterInfo& sinfoB = field._getScatter("B");
   CPPUNIT_ASSERT(sinfoB.scatter);
@@ -945,7 +945,7 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   const int sizeE = vertices->size() * fiberDim;
 
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
-  field.createScatterWithBC();
+  field.createScatterWithBC(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
   const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.scatter);
@@ -962,11 +962,11 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   CPPUNIT_ASSERT_EQUAL(label, std::string(vecname));
 
   // Make sure we can do multiple calls to createScatterWithBC().
-  field.createScatterWithBC();
+  field.createScatterWithBC(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
 
   // Create another scatter.
-  field.createScatterWithBC("B");
+  field.createScatterWithBC(mesh, "B");
   CPPUNIT_ASSERT_EQUAL(size_t(2), field._scatters.size());
   const Field<Mesh>::ScatterInfo& sinfoB = field._getScatter("B");
   CPPUNIT_ASSERT(sinfoB.scatter);
@@ -1003,7 +1003,7 @@ pylith::topology::TestFieldMesh::testVector(void)
   field.allocate();
   
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
-  field.createScatter();
+  field.createScatter(mesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
   const Field<Mesh>::ScatterInfo& sinfo = field._getScatter("");
   CPPUNIT_ASSERT(sinfo.scatter);
@@ -1031,7 +1031,7 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
 { // testScatterSectionToVector
   const char* context = "abc";
   const int fiberDim = 3;
-  const double valuesE[] = {
+  const PylithScalar valuesE[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -1051,7 +1051,7 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
     sieveMesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -1061,16 +1061,16 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
     section->updatePoint(*v_iter, &values[0]);
   } // for
 
-  field.createScatter(context);
+  field.createScatter(mesh, context);
   field.scatterSectionToVector(context);
   const PetscVec vec = field.vector(context);
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
-  double* valuesVec = 0;
+  PylithScalar* valuesVec = 0;
   VecGetArray(vec, &valuesVec);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int sizeE = vertices->size() * fiberDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
   for (int i=0; i < sizeE; ++i)
@@ -1085,7 +1085,7 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 { // testScatterVectorToSection
   const char* context = "abcd";
   const int fiberDim = 3;
-  const double valuesE[] = {
+  const PylithScalar valuesE[] = {
     1.1, 2.2, 3.3,
     1.2, 2.3, 3.4,
     1.3, 2.4, 3.5,
@@ -1102,25 +1102,25 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
   const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
     sieveMesh->depthStratum(0);
 
-  field.createScatter(context);
+  field.createScatter(mesh, context);
   const PetscVec vec = field.vector(context);
   CPPUNIT_ASSERT(0 != vec);
   int size = 0;
   VecGetSize(vec, &size);
-  double* valuesVec = 0;
+  PylithScalar* valuesVec = 0;
   VecGetArray(vec, &valuesVec);
 
-  const double tolerance = 1.0e-06;
+  const PylithScalar tolerance = 1.0e-06;
   const int sizeE = vertices->size() * fiberDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
   for (int i=0; i < sizeE; ++i)
     valuesVec[i] = valuesE[i];
   VecRestoreArray(vec, &valuesVec);
 
-  field.createScatter(context);
+  field.createScatter(mesh, context);
   field.scatterVectorToSection(context);
 
-  double_array values(fiberDim);
+  scalar_array values(fiberDim);
   int i = 0;
   for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != vertices->end();
@@ -1330,7 +1330,7 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   const int nvertices = _TestFieldMesh::nvertices;
   const int ncorners = _TestFieldMesh::ncorners;
   const int spaceDim = _TestFieldMesh::cellDim;
-  const double* coordinates = _TestFieldMesh::coordinates;
+  const PylithScalar* coordinates = _TestFieldMesh::coordinates;
   const bool interpolate = false;
   ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, ncells, (int*) cells,
 					      nvertices, interpolate, 

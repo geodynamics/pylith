@@ -56,7 +56,7 @@ public :
    *   direction that is not collinear with surface normal.
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -65,7 +65,7 @@ public :
    * @param fields Solution fields.
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Verify configuration is acceptable.
@@ -115,21 +115,21 @@ protected :
   void _queryDB(const char* name,
 		spatialdata::spatialdb::SpatialDB* const db,
 		const int querySize,
-		const double scale);
+		const PylithScalar scale);
 
   /** Convert parameters in local coordinates to global coordinates.
    *
    * @param upDir Direction perpendicular to horizontal surface tangent 
    *   direction that is not collinear with surface normal.
    */
-  void _paramsLocalToGlobal(const double upDir[3]);
+  void _paramsLocalToGlobal(const PylithScalar upDir[3]);
 
   /** Calculate spatial and temporal variation of value over the list
    *  of submesh.
    *
    * @param t Current time.
    */
-  void _calculateValue(const double t);
+  void _calculateValue(const PylithScalar t);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

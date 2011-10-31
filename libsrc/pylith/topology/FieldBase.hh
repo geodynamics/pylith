@@ -63,7 +63,7 @@ public :
   struct Metadata {
     std::string label; // Label for field.
     VectorFieldEnum vectorFieldType; ///< Type of vector field.
-    double scale; // Dimension scale associated with values.
+    PylithScalar scale; // Dimension scale associated with values.
     bool dimsOkay; // Ok to replace nondimensionalized values 
                    // with dimensionalized values.
   }; // Metadata

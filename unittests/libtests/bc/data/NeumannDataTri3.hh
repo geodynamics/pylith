@@ -47,10 +47,10 @@ private:
   // Quadrature information
   static const int _numBasis;
   static const int _numQuadPts;
-  static const double _quadPts[];
-  static const double _quadWts[];
-  static const double _basis[];
-  static const double _basisDerivRef[];
+  static const PylithScalar _quadPts[];
+  static const PylithScalar _quadWts[];
+  static const PylithScalar _basis[];
+  static const PylithScalar _basisDerivRef[];
 
   // BC information
   static const char* _spatialDBFilename;
@@ -66,8 +66,8 @@ private:
   static const int _cells[];
 
   // Calculated values.
-  static const double _tractionsCell[];
-  static const double _valsResidual[];
+  static const PylithScalar _tractionsCell[];
+  static const PylithScalar _valsResidual[];
 
 };
 

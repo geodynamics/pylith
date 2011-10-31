@@ -63,33 +63,33 @@ private:
 
   static const char* _matLabel;
 
-  static const double _dt;
+  static const PylithScalar _dt;
 
-  static const double _gravityVec[];
+  static const PylithScalar _gravityVec[];
 
-  static const double _vertices[];
+  static const PylithScalar _vertices[];
 
   static const int _cells[];
 
-  static const double _verticesRef[];
+  static const PylithScalar _verticesRef[];
 
-  static const double _quadPts[];
+  static const PylithScalar _quadPts[];
 
-  static const double _quadWts[];
+  static const PylithScalar _quadWts[];
 
-  static const double _basis[];
+  static const PylithScalar _basis[];
 
-  static const double _basisDerivRef[];
+  static const PylithScalar _basisDerivRef[];
 
-  static const double _fieldTIncr[];
+  static const PylithScalar _fieldTIncr[];
 
-  static const double _fieldT[];
+  static const PylithScalar _fieldT[];
 
-  static const double _fieldTmdt[];
+  static const PylithScalar _fieldTmdt[];
 
-  static const double _valsResidual[];
+  static const PylithScalar _valsResidual[];
 
-  static const double _valsJacobian[];
+  static const PylithScalar _valsJacobian[];
 
 };
 

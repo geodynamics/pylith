@@ -61,7 +61,7 @@ public:
   char* vertexFilename; ///< Name of file for vertex fields.
   char* cellFilename; ///< Name of file for cell fields.
 
-  double time; ///< Time for fields.
+  PylithScalar time; ///< Time for fields.
   char* timeFormat; ///< Format for time stamp.
 
   char* cellsLabel; ///< Name of label for mesh cells (if using subset or boundary).
@@ -72,7 +72,7 @@ public:
   int numVertexFields; ///< Number of vertex fields.
   int numVertices; ///< Number of vertices.
   FieldStruct* vertexFieldsInfo; ///< Array of vertex field information.
-  double* vertexFields[3]; ///< Array of vertex field values.
+  PylithScalar* vertexFields[3]; ///< Array of vertex field values.
   //@}
 
   /// @name Cell field information.
@@ -80,7 +80,7 @@ public:
   int numCellFields; ///< Number of cell fields.
   int numCells; ///< Number of vertices.
   FieldStruct* cellFieldsInfo; ///< Array of cell fields information.
-  double* cellFields[3]; /// Array of cell field values.
+  PylithScalar* cellFields[3]; /// Array of cell field values.
   //@}
 
 }; // DataWriterData

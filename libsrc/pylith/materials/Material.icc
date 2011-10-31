@@ -72,13 +72,13 @@ pylith::materials::Material::label(void) const {
 // Set current time step.
 inline
 void
-pylith::materials::Material::timeStep(const double dt) {
+pylith::materials::Material::timeStep(const PylithScalar dt) {
   _dt = dt;
 }
 
 // Get current time step.
 inline
-double
+PylithScalar
 pylith::materials::Material::timeStep(void) const {
   return _dt;
 } // timeStep
@@ -116,21 +116,21 @@ pylith::materials::Material::isJacobianSymmetric(void) const {
 // Compute initial state variables from values in spatial database.
 inline
 void
-pylith::materials::Material::_dbToStateVars(double* const stateValues,
-					    const double_array& dbValues)
+pylith::materials::Material::_dbToStateVars(PylithScalar* const stateValues,
+					    const scalar_array& dbValues)
 {}
 
 // Nondimensionalize state variables.
 inline
 void
-pylith::materials::Material::_nondimStateVars(double* const values,
+pylith::materials::Material::_nondimStateVars(PylithScalar* const values,
 					      const int nvalues) const
 {}
   
 // Dimensionalize state variables.
 inline
 void
-pylith::materials::Material::_dimStateVars(double* const values,
+pylith::materials::Material::_dimStateVars(PylithScalar* const values,
 					   const int nvalues) const
 {}
 

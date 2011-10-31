@@ -55,7 +55,7 @@ private:
   static const int _numCellsCohesive; ///< Number of cohesive cells.
   static const int _numCornersCohesive; ///< Number of vertices in cohesive cell.
 
-  static const double _vertices[]; ///< Pointer to coordinates of vertices
+  static const PylithScalar _vertices[]; ///< Pointer to coordinates of vertices
   static const int _cells[]; ///< Pointer to indices of vertices in cells
   static const int _cellsCohesive[]; ///< Pointer to indices of vertices in cohseive cells
   static const int _materialIds[]; ///< Pointer to cell material identifiers

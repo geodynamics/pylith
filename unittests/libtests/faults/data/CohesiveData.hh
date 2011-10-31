@@ -19,6 +19,8 @@
 #if !defined(pylith_faults_cohesivedata_hh)
 #define pylith_faults_cohesivedata_hh
 
+#include "pylith/utils/types.hh" // HASA PylithScalar
+
 namespace pylith {
   namespace faults {
      class CohesiveData;
@@ -45,7 +47,7 @@ public:
   int numCells; ///< Number of cells
   int cellDim; ///< Number of dimensions associated with cell
 
-  double* vertices; ///< Pointer to coordinates of vertices
+  PylithScalar* vertices; ///< Pointer to coordinates of vertices
   int* numCorners; ///< Number of vertices in cell
   int* cells; ///< Pointer to indices of vertices in cells
   int* materialIds; ///< Pointer to cell material identifiers

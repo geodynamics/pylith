@@ -45,9 +45,9 @@ const int pylith::bc::DirichletDataHex8::_fixedDOF[] = { 0, 2 };
 const int pylith::bc::DirichletDataHex8::_numConstrainedPts = 4;
 const int pylith::bc::DirichletDataHex8::_constrainedPoints[] = { 0, 1, 6, 7 };
 
-const double pylith::bc::DirichletDataHex8::_tRef = 0.2;
-const double pylith::bc::DirichletDataHex8::_valueRate = 0.4;
-const double pylith::bc::DirichletDataHex8::_valuesInitial[] = {
+const PylithScalar pylith::bc::DirichletDataHex8::_tRef = 0.2;
+const PylithScalar pylith::bc::DirichletDataHex8::_valueRate = 0.4;
+const PylithScalar pylith::bc::DirichletDataHex8::_valuesInitial[] = {
   -0.2, 0.3,
    0.1, 0.7,
    0.5, 0.4,
@@ -73,7 +73,7 @@ pylith::bc::DirichletDataHex8::DirichletDataHex8(void)
 
   numConstrainedPts = _numConstrainedPts;
   constrainedPoints = const_cast<int*>(_constrainedPoints);
-  valuesInitial = const_cast<double*>(_valuesInitial);
+  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
   meshFilename = const_cast<char*>(_meshFilename);
   dbFilename = const_cast<char*>(_dbFilename);

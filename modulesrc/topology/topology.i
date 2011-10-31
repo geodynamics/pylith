@@ -49,6 +49,7 @@
 %include "typemaps.i"
 %include "../include/chararray.i"
 %include "../include/submeshfield.i"
+%include "../include/scalartypemaps.i"
 
 // Numpy interface stuff
 %{
@@ -74,6 +75,7 @@ import_array();
 %include "ReverseCuthillMcKee.i"
 
 // Template instatiation
+
 %template(MeshField) pylith::topology::Field<pylith::topology::Mesh>;
 %template(SubMeshField) pylith::topology::Field<pylith::topology::SubMesh>;
 %template(MeshFields) pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >;
@@ -81,6 +83,13 @@ import_array();
 
 %template(MeshFieldsNew) pylith::topology::FieldsNew<pylith::topology::Mesh>;
 %template(SubMeshFieldsNew) pylith::topology::FieldsNew<pylith::topology::SubMesh>;
+
+%extend pylith::topology::Field<pylith::topology::Mesh> {
+  %template(createScatterMesh) createScatter<pylith::topology::Mesh>;
+ }
+%extend pylith::topology::Field<pylith::topology::Mesh> {
+  %template(createScatterSubMesh) createScatter<pylith::topology::SubMesh>;
+ }
 
 // End of file
 

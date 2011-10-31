@@ -33,6 +33,30 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
   Factory: friction_model.
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(FrictionModel.Inventory):
+    """
+    Python object for managing RateStateAgeing facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing RateStateAgeing facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b min_slip_rate Floor for nondimensional slip rate used in 
+    ##   friction calculation.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    minSlipRate = pyre.inventory.float("min_slip_rate", default=1.0e-12,
+                                       validator=pyre.inventory.greaterEqual(0.0))
+    minSlipRate.meta['tip'] = "Floor for nondimensional slip rate used in "\
+        "friction calculation."
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="ratestateageing"):
@@ -58,6 +82,20 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
+  def _configure(self):
+    """
+    Setup members using inventory.
+    """
+    try:
+      FrictionModel._configure(self)
+      ModuleRateStateAgeing.minSlipRate(self, self.inventory.minSlipRate)
+    except ValueError, err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring friction model "
+                       "(%s):\n%s" % (aliases, err.message))
+    return
+
+  
   def _createModuleObj(self):
     """
     Call constructor for module object for access to C++ object.

@@ -55,29 +55,29 @@ private:
 
   static const int _numQuadPts;
 
-  static const double _vertices[];
+  static const PylithScalar _vertices[];
 
   static const int _cells[];
 
-  static const double _verticesRef[];
+  static const PylithScalar _verticesRef[];
 
-  static const double _quadPtsRef[];
+  static const PylithScalar _quadPtsRef[];
 
-  static const double _quadWts[];
+  static const PylithScalar _quadWts[];
 
-  static const double _quadPts[];
+  static const PylithScalar _quadPts[];
 
-  static const double _basis[];
+  static const PylithScalar _basis[];
 
-  static const double _basisDerivRef[];
+  static const PylithScalar _basisDerivRef[];
 
-  static const double _basisDeriv[];
+  static const PylithScalar _basisDeriv[];
 
-  static const double _jacobian[];
+  static const PylithScalar _jacobian[];
 
-  static const double _jacobianDet[];
+  static const PylithScalar _jacobianDet[];
 
-  static const double _jacobianInv[];
+  static const PylithScalar _jacobianInv[];
 
 };
 

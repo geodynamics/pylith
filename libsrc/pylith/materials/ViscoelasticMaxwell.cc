@@ -26,31 +26,31 @@
 
 // ----------------------------------------------------------------------
 // Compute viscous strain parameter for a linear Maxwell model.
-double
-pylith::materials::ViscoelasticMaxwell::viscousStrainParam(const double dt,
-							   const double maxwellTime)
+PylithScalar
+pylith::materials::ViscoelasticMaxwell::viscousStrainParam(const PylithScalar dt,
+							   const PylithScalar maxwellTime)
 { // viscousStrainParam
   // Check parameters
   if (maxwellTime <= 0.0)
     throw std::runtime_error("Maxwell time must be greater than 0.");
 
   // Define cutoff values
-  const double timeFrac = 1.0e-10;
+  const PylithScalar timeFrac = 1.0e-10;
 
   // Compute viscous strain parameter.  The ratio of dt and
   // maxwellTime should never approach timeFrac for any reasonable
   // computation, but I have put in alternative solutions just in
   // case.
 
-  double dq = 0.0;
+  PylithScalar dq = 0.0;
 
   // Use series expansion if dt is very small, since default solution
   // blows up otherwise.
 
   if (dt < timeFrac*maxwellTime) {
-    double fSign = 1.0;
-    double factorial = 1.0;
-    double fraction = 1.0;
+    PylithScalar fSign = 1.0;
+    PylithScalar factorial = 1.0;
+    PylithScalar fraction = 1.0;
     dq = 1.0;
 
     const int numTerms = 5;

@@ -22,8 +22,8 @@
  * @brief Python interface to C++ TestArray object.
  */
 
-%apply(double* IN_ARRAY1, int DIM1) {
-  (const double* valuesE,
+%apply(PylithScalar* IN_ARRAY1, int DIM1) {
+  (const PylithScalar* valuesE,
    const int nvalues)
     };
 %inline %{
@@ -34,13 +34,13 @@
    * @param values Array of values to check.
    */
   bool
-  TestArray_checkDouble(const double* valuesE,
+  TestArray_checkScalar(const PylithScalar* valuesE,
 			const int nvalues,
-			const pylith::double_array& values) {
+			const pylith::scalar_array& values) {
     pylith::utils::TestArray::check(valuesE, nvalues, values);
-  } // check(double)
+  } // check(PylithScalar)
 %} // inline
-%clear(const double* valuesE, const int nvalues);
+%clear(const PylithScalar* valuesE, const int nvalues);
 
 
 // End of file 

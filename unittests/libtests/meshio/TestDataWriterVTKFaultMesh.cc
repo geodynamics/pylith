@@ -82,7 +82,7 @@ pylith::meshio::TestDataWriterVTKFaultMesh::testTimeStep(void)
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_faultMesh, numTimeSteps);
@@ -124,7 +124,7 @@ pylith::meshio::TestDataWriterVTKFaultMesh::testWriteVertexField(void)
 
   const int nfields = _data->numVertexFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_faultMesh, numTimeSteps);
@@ -167,7 +167,7 @@ pylith::meshio::TestDataWriterVTKFaultMesh::testWriteCellField(void)
 
   const int nfields = _data->numCellFields;
 
-  const double t = _data->time;
+  const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
   if (0 == _data->cellsLabel) {
     writer.open(*_faultMesh, numTimeSteps);

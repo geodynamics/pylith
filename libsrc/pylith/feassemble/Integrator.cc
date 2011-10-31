@@ -109,7 +109,7 @@ pylith::feassemble::Integrator<quadrature_type>::gravityField(spatialdata::spati
 // ----------------------------------------------------------------------
 // Get stable time step for advancing from time t to time t+dt.
 template<typename quadrature_type>
-double
+PylithScalar
 pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(const topology::Mesh& mesh)
 { // stableTimeStep
   // Assume any time step will work.
@@ -172,7 +172,7 @@ pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
   const int spaceDim = _quadrature->spaceDim();
 
   _cellVector = 0.0;
-  double value = 0.0;
+  PylithScalar value = 0.0;
   for (int iBasis=0; iBasis < numBasis; ++iBasis)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       value = 0.0;

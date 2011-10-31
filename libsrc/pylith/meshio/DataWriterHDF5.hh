@@ -103,7 +103,7 @@ public :
    * @param field Field over vertices.
    * @param mesh Mesh associated with output.
    */
-  void writeVertexField(const double t,
+  void writeVertexField(const PylithScalar t,
 			field_type& field,
 			const mesh_type& mesh);
 
@@ -115,7 +115,7 @@ public :
    *   (=0 means use all cells in mesh).
    * @param labelId Value of label defining which cells to include.
    */
-  void writeCellField(const double t,
+  void writeCellField(const PylithScalar t,
 		      field_type& field,
 		      const char* label =0,
 		      const int labelId =0);
@@ -137,7 +137,7 @@ private :
    * @param t Time in seconds.
    * @param rank Processor rank in MPI communicator.
    */
-  void _writeTimeStamp(const double t,
+  void _writeTimeStamp(const PylithScalar t,
 		       const int rank);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

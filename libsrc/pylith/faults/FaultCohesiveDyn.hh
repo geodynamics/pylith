@@ -67,6 +67,12 @@ public :
    */
   void frictionModel(friction::FrictionModel* const model);
 
+  /** Nondimensional tolerance for detecting near zero values.
+   *
+   * @param value Nondimensional tolerance
+   */
+  void zeroTolerance(const PylithScalar value);
+
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
@@ -76,7 +82,7 @@ public :
    *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
    */
   void initialize(const topology::Mesh& mesh,
-		  const double upDir[3]);
+		  const PylithScalar upDir[3]);
 
   /** Integrate contributions to residual term (r) for operator that
    * do not require assembly across processors.
@@ -90,7 +96,7 @@ public :
    */
   virtual
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const double t,
+			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
   /** Update state variables as needed.
@@ -99,7 +105,7 @@ public :
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void updateStateVars(const double t,
+  void updateStateVars(const PylithScalar t,
 		       topology::SolutionFields* const fields);
 
   /** Constrain solution space based on friction.
@@ -109,7 +115,7 @@ public :
    * @param jacobian Sparse matrix for system Jacobian.
    */
   void constrainSolnSpace(topology::SolutionFields* const fields,
-			  const double t,
+			  const PylithScalar t,
 			  const topology::Jacobian& jacobian);
 
   /** Adjust solution from solver with lumped Jacobian to match Lagrange
@@ -146,18 +152,13 @@ private :
   void _calcTractions(topology::Field<topology::SubMesh>* tractions,
           const topology::Field<topology::Mesh>& solution);
 
-  /** Get initial tractions on fault surface.
-   *
-   * @param tractions Field for tractions.
-   */
-  void _getInitialTractions(topology::Field<topology::SubMesh>* tractions);
-
-  /** Update slip rate associated with Lagrange vertex k corresponding
-   * to diffential velocity between conventional vertices i and j.
+  /** Update relative velocity associated with Lagrange vertex k
+   * corresponding to diffential velocity between conventional
+   * vertices i and j.
    *
    * @param fields Solution fields.
    */
-  void _updateSlipRate(const topology::SolutionFields& fields);
+  void _updateVelRel(const topology::SolutionFields& fields);
 
   /** Setup sensitivity problem to compute change in slip given change
    * in Lagrange multipliers.
@@ -205,10 +206,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped1D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped1D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 2-D.
    *
@@ -217,10 +218,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped2D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped2D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Solve slip/Lagrange multiplier sensitivity problem for case of lumped Jacobian in 3-D.
    *
@@ -229,10 +230,10 @@ private :
    * @param jacobianN Jacobian for vertex on - side of the fault.
    * @param jacobianP Jacobian for vertex on + side of the fault.
    */
-  void _sensitivitySolveLumped3D(double_array* slip,
-                                 const double_array& dLagrangeTpdt,
-                                 const double_array& jacobianN,
-                                 const double_array& jacobianP);
+  void _sensitivitySolveLumped3D(scalar_array* slip,
+                                 const scalar_array& dLagrangeTpdt,
+                                 const scalar_array& jacobianN,
+                                 const scalar_array& jacobianP);
 
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
@@ -240,13 +241,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
@@ -254,13 +253,11 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt);
 
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
@@ -268,16 +265,17 @@ private :
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
-   * @param area Fault area associated w/Lagrange multiplier vertex.
    */
-  void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
-           const double_array& slip,
-           const double_array& slipRate,
-           const double_array& tractionTpdt,
-           const double area);
+  void _constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
+           const scalar_array& slip,
+           const scalar_array& slipRate,
+           const scalar_array& tractionTpdt);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Minimum resolvable value accounting for roundoff errors
+  PylithScalar _zeroTolerance;
 
   /// Database for initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract;
@@ -289,9 +287,6 @@ private :
   topology::Jacobian* _jacobian;
 
   PetscKSP _ksp; ///< PETSc KSP linear solver for sensitivity problem.
-
-  /// Minimum resolvable slip rate accounting for roundoff errors
-  static const double _slipRateTolerance;
 
 // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

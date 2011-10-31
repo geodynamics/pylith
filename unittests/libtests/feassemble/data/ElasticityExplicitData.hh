@@ -44,8 +44,8 @@ public:
 
   /// @name Calculated values.
   //@{
-  double* valsResidualLumped; ///< Expected values from residual calculation (lumped Jacobian).
-  double* valsJacobianLumped; ///< Expected values from lumped Jacobian calculation.
+  PylithScalar* valsResidualLumped; ///< Expected values from residual calculation (lumped Jacobian).
+  PylithScalar* valsJacobianLumped; ///< Expected values from lumped Jacobian calculation.
   //@}
 };
 

@@ -24,7 +24,7 @@
 
 #include "petsc.h" // USES PetscLogFlops
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -33,7 +33,7 @@
 pylith::feassemble::GeometryHex3D::GeometryHex3D(void) :
   CellGeometry(HEXAHEDRON, 3)
 { // constructor
-  const double vertices[] = {
+  const PylithScalar vertices[] = {
     -1.0,  -1.0,  -1.0,
     +1.0,  -1.0,  -1.0,
     +1.0,  +1.0,  -1.0,
@@ -71,9 +71,9 @@ pylith::feassemble::GeometryHex3D::geometryLowerDim(void) const
 // ----------------------------------------------------------------------
 // Transform coordinates in reference cell to global coordinates.
 void
-pylith::feassemble::GeometryHex3D::ptsRefToGlobal(double* ptsGlobal,
-						  const double* ptsRef,
-						  const double* vertices,
+pylith::feassemble::GeometryHex3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
+						  const PylithScalar* ptsRef,
+						  const PylithScalar* vertices,
 						  const int dim,
 						  const int npts) const
 { // ptsRefToGlobal
@@ -83,70 +83,70 @@ pylith::feassemble::GeometryHex3D::ptsRefToGlobal(double* ptsGlobal,
   assert(3 == dim);
   assert(spaceDim() == dim);
 
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double x4 = vertices[12];
-  const double y4 = vertices[13];
-  const double z4 = vertices[14];
+  const PylithScalar x4 = vertices[12];
+  const PylithScalar y4 = vertices[13];
+  const PylithScalar z4 = vertices[14];
 
-  const double x5 = vertices[15];
-  const double y5 = vertices[16];
-  const double z5 = vertices[17];
+  const PylithScalar x5 = vertices[15];
+  const PylithScalar y5 = vertices[16];
+  const PylithScalar z5 = vertices[17];
 
-  const double x6 = vertices[18];
-  const double y6 = vertices[19];
-  const double z6 = vertices[20];
+  const PylithScalar x6 = vertices[18];
+  const PylithScalar y6 = vertices[19];
+  const PylithScalar z6 = vertices[20];
 
-  const double x7 = vertices[21];
-  const double y7 = vertices[22];
-  const double z7 = vertices[23];
+  const PylithScalar x7 = vertices[21];
+  const PylithScalar y7 = vertices[22];
+  const PylithScalar z7 = vertices[23];
 
-  const double f_1 = x1 - x0;
-  const double g_1 = y1 - y0;
-  const double h_1 = z1 - z0;
+  const PylithScalar f_1 = x1 - x0;
+  const PylithScalar g_1 = y1 - y0;
+  const PylithScalar h_1 = z1 - z0;
 
-  const double f_3 = x3 - x0;
-  const double g_3 = y3 - y0;
-  const double h_3 = z3 - z0;
+  const PylithScalar f_3 = x3 - x0;
+  const PylithScalar g_3 = y3 - y0;
+  const PylithScalar h_3 = z3 - z0;
 
-  const double f_4 = x4 - x0;
-  const double g_4 = y4 - y0;
-  const double h_4 = z4 - z0;
+  const PylithScalar f_4 = x4 - x0;
+  const PylithScalar g_4 = y4 - y0;
+  const PylithScalar h_4 = z4 - z0;
 
-  const double f_01 = x2 - x1 - x3 + x0;
-  const double g_01 = y2 - y1 - y3 + y0;
-  const double h_01 = z2 - z1 - z3 + z0;
+  const PylithScalar f_01 = x2 - x1 - x3 + x0;
+  const PylithScalar g_01 = y2 - y1 - y3 + y0;
+  const PylithScalar h_01 = z2 - z1 - z3 + z0;
 
-  const double f_12 = x7 - x3 - x4 + x0;
-  const double g_12 = y7 - y3 - y4 + y0;
-  const double h_12 = z7 - z3 - z4 + z0;
+  const PylithScalar f_12 = x7 - x3 - x4 + x0;
+  const PylithScalar g_12 = y7 - y3 - y4 + y0;
+  const PylithScalar h_12 = z7 - z3 - z4 + z0;
 
-  const double f_02 = x5 - x1 - x4 + x0;
-  const double g_02 = y5 - y1 - y4 + y0;
-  const double h_02 = z5 - z1 - z4 + z0;
+  const PylithScalar f_02 = x5 - x1 - x4 + x0;
+  const PylithScalar g_02 = y5 - y1 - y4 + y0;
+  const PylithScalar h_02 = z5 - z1 - z4 + z0;
 
-  const double f_012 = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
-  const double g_012 = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
-  const double h_012 = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
+  const PylithScalar f_012 = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
+  const PylithScalar g_012 = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
+  const PylithScalar h_012 = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
 
   for (int i=0, iR=0, iG=0; i < npts; ++i) {
-    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p2 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p2 = 0.5 * (1.0 + ptsRef[iR++]);
     assert(0 <= p0 && p0 <= 1.0);
     assert(0 <= p1 && p1 <= 1.0);
     assert(0 <= p2 && p2 <= 1.0);
@@ -164,10 +164,10 @@ pylith::feassemble::GeometryHex3D::ptsRefToGlobal(double* ptsGlobal,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
-					    double* det,
-					    const double_array& vertices,
-					    const double_array& location) const
+pylith::feassemble::GeometryHex3D::jacobian(scalar_array* jacobian,
+					    PylithScalar* det,
+					    const scalar_array& vertices,
+					    const scalar_array& location) const
 { // jacobian
   assert(0 != jacobian);
   assert(0 != det);
@@ -177,60 +177,60 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
   assert(cellDim() == location.size());
   assert(spaceDim()*cellDim() == jacobian->size());
 
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double x4 = vertices[12];
-  const double y4 = vertices[13];
-  const double z4 = vertices[14];
+  const PylithScalar x4 = vertices[12];
+  const PylithScalar y4 = vertices[13];
+  const PylithScalar z4 = vertices[14];
 
-  const double x5 = vertices[15];
-  const double y5 = vertices[16];
-  const double z5 = vertices[17];
+  const PylithScalar x5 = vertices[15];
+  const PylithScalar y5 = vertices[16];
+  const PylithScalar z5 = vertices[17];
 
-  const double x6 = vertices[18];
-  const double y6 = vertices[19];
-  const double z6 = vertices[20];
+  const PylithScalar x6 = vertices[18];
+  const PylithScalar y6 = vertices[19];
+  const PylithScalar z6 = vertices[20];
 
-  const double x7 = vertices[21];
-  const double y7 = vertices[22];
-  const double z7 = vertices[23];
+  const PylithScalar x7 = vertices[21];
+  const PylithScalar y7 = vertices[22];
+  const PylithScalar z7 = vertices[23];
 
-  const double x = 0.5 * (location[0] + 1.0);
-  const double y = 0.5 * (location[1] + 1.0);
-  const double z = 0.5 * (location[2] + 1.0);
+  const PylithScalar x = 0.5 * (location[0] + 1.0);
+  const PylithScalar y = 0.5 * (location[1] + 1.0);
+  const PylithScalar z = 0.5 * (location[2] + 1.0);
   assert(-1.0 <= x && x <= 1.0);
   assert(-1.0 <= y && y <= 1.0);
   assert(-1.0 <= z && z <= 1.0);
 
-  const double f_xy = x2 - x1 - x3 + x0;
-  const double g_xy = y2 - y1 - y3 + y0;
-  const double h_xy = z2 - z1 - z3 + z0;
+  const PylithScalar f_xy = x2 - x1 - x3 + x0;
+  const PylithScalar g_xy = y2 - y1 - y3 + y0;
+  const PylithScalar h_xy = z2 - z1 - z3 + z0;
 
-  const double f_yz = x7 - x3 - x4 + x0;
-  const double g_yz = y7 - y3 - y4 + y0;
-  const double h_yz = z7 - z3 - z4 + z0;
+  const PylithScalar f_yz = x7 - x3 - x4 + x0;
+  const PylithScalar g_yz = y7 - y3 - y4 + y0;
+  const PylithScalar h_yz = z7 - z3 - z4 + z0;
 
-  const double f_xz = x5 - x1 - x4 + x0;
-  const double g_xz = y5 - y1 - y4 + y0;
-  const double h_xz = z5 - z1 - z4 + z0;
+  const PylithScalar f_xz = x5 - x1 - x4 + x0;
+  const PylithScalar g_xz = y5 - y1 - y4 + y0;
+  const PylithScalar h_xz = z5 - z1 - z4 + z0;
 
-  const double f_xyz = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
-  const double g_xyz = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
-  const double h_xyz = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
+  const PylithScalar f_xyz = x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7;
+  const PylithScalar g_xyz = y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7;
+  const PylithScalar h_xyz = z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7;
 
   (*jacobian)[0] = (x1 - x0 + f_xy*y + f_xz*z + f_xyz*y*z) / 2.0;
   (*jacobian)[1] = (x3 - x0 + f_xy*x + f_yz*z + f_xyz*x*z) / 2.0;
@@ -258,10 +258,10 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
 // ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::feassemble::GeometryHex3D::jacobian(double* jacobian,
-					    double* det,
-					    const double* vertices,
-					    const double* ptsRef,
+pylith::feassemble::GeometryHex3D::jacobian(PylithScalar* jacobian,
+					    PylithScalar* det,
+					    const PylithScalar* vertices,
+					    const PylithScalar* ptsRef,
 					    const int dim,
 					    const int npts) const
 { // jacobian
@@ -272,84 +272,84 @@ pylith::feassemble::GeometryHex3D::jacobian(double* jacobian,
   assert(3 == dim);
   assert(spaceDim() == dim);
 
-  const double x0 = vertices[0];
-  const double y0 = vertices[1];
-  const double z0 = vertices[2];
+  const PylithScalar x0 = vertices[0];
+  const PylithScalar y0 = vertices[1];
+  const PylithScalar z0 = vertices[2];
 
-  const double x1 = vertices[3];
-  const double y1 = vertices[4];
-  const double z1 = vertices[5];
+  const PylithScalar x1 = vertices[3];
+  const PylithScalar y1 = vertices[4];
+  const PylithScalar z1 = vertices[5];
 
-  const double x2 = vertices[6];
-  const double y2 = vertices[7];
-  const double z2 = vertices[8];
+  const PylithScalar x2 = vertices[6];
+  const PylithScalar y2 = vertices[7];
+  const PylithScalar z2 = vertices[8];
 
-  const double x3 = vertices[9];
-  const double y3 = vertices[10];
-  const double z3 = vertices[11];
+  const PylithScalar x3 = vertices[9];
+  const PylithScalar y3 = vertices[10];
+  const PylithScalar z3 = vertices[11];
 
-  const double x4 = vertices[12];
-  const double y4 = vertices[13];
-  const double z4 = vertices[14];
+  const PylithScalar x4 = vertices[12];
+  const PylithScalar y4 = vertices[13];
+  const PylithScalar z4 = vertices[14];
 
-  const double x5 = vertices[15];
-  const double y5 = vertices[16];
-  const double z5 = vertices[17];
+  const PylithScalar x5 = vertices[15];
+  const PylithScalar y5 = vertices[16];
+  const PylithScalar z5 = vertices[17];
 
-  const double x6 = vertices[18];
-  const double y6 = vertices[19];
-  const double z6 = vertices[20];
+  const PylithScalar x6 = vertices[18];
+  const PylithScalar y6 = vertices[19];
+  const PylithScalar z6 = vertices[20];
 
-  const double x7 = vertices[21];
-  const double y7 = vertices[22];
-  const double z7 = vertices[23];
+  const PylithScalar x7 = vertices[21];
+  const PylithScalar y7 = vertices[22];
+  const PylithScalar z7 = vertices[23];
 
-  const double f_1 = (x1 - x0) / 2.0;
-  const double g_1 = (y1 - y0) / 2.0;
-  const double h_1 = (z1 - z0) / 2.0;
+  const PylithScalar f_1 = (x1 - x0) / 2.0;
+  const PylithScalar g_1 = (y1 - y0) / 2.0;
+  const PylithScalar h_1 = (z1 - z0) / 2.0;
 
-  const double f_3 = (x3 - x0) / 2.0;
-  const double g_3 = (y3 - y0) / 2.0;
-  const double h_3 = (z3 - z0) / 2.0;
+  const PylithScalar f_3 = (x3 - x0) / 2.0;
+  const PylithScalar g_3 = (y3 - y0) / 2.0;
+  const PylithScalar h_3 = (z3 - z0) / 2.0;
   
-  const double f_4 = (x4 - x0) / 2.0;
-  const double g_4 = (y4 - y0) / 2.0;
-  const double h_4 = (z4 - z0) / 2.0;
+  const PylithScalar f_4 = (x4 - x0) / 2.0;
+  const PylithScalar g_4 = (y4 - y0) / 2.0;
+  const PylithScalar h_4 = (z4 - z0) / 2.0;
 
-  const double f_01 = (x2 - x1 - x3 + x0) / 2.0;
-  const double g_01 = (y2 - y1 - y3 + y0) / 2.0;
-  const double h_01 = (z2 - z1 - z3 + z0) / 2.0;
+  const PylithScalar f_01 = (x2 - x1 - x3 + x0) / 2.0;
+  const PylithScalar g_01 = (y2 - y1 - y3 + y0) / 2.0;
+  const PylithScalar h_01 = (z2 - z1 - z3 + z0) / 2.0;
 
-  const double f_12 = (x7 - x3 - x4 + x0) / 2.0;
-  const double g_12 = (y7 - y3 - y4 + y0) / 2.0;
-  const double h_12 = (z7 - z3 - z4 + z0) / 2.0;
+  const PylithScalar f_12 = (x7 - x3 - x4 + x0) / 2.0;
+  const PylithScalar g_12 = (y7 - y3 - y4 + y0) / 2.0;
+  const PylithScalar h_12 = (z7 - z3 - z4 + z0) / 2.0;
 
-  const double f_02 = (x5 - x1 - x4 + x0) / 2.0;
-  const double g_02 = (y5 - y1 - y4 + y0) / 2.0;
-  const double h_02 = (z5 - z1 - z4 + z0) / 2.0;
+  const PylithScalar f_02 = (x5 - x1 - x4 + x0) / 2.0;
+  const PylithScalar g_02 = (y5 - y1 - y4 + y0) / 2.0;
+  const PylithScalar h_02 = (z5 - z1 - z4 + z0) / 2.0;
 
-  const double f_012 = (x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7) / 2.0;
-  const double g_012 = (y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7) / 2.0;
-  const double h_012 = (z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7) / 2.0;
+  const PylithScalar f_012 = (x6 - x0 + x1 - x2 + x3 + x4 - x5 - x7) / 2.0;
+  const PylithScalar g_012 = (y6 - y0 + y1 - y2 + y3 + y4 - y5 - y7) / 2.0;
+  const PylithScalar h_012 = (z6 - z0 + z1 - z2 + z3 + z4 - z5 - z7) / 2.0;
 
   for (int i=0, iR=0, iJ=0; i < npts; ++i) {
-    const double p0 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p1 = 0.5 * (1.0 + ptsRef[iR++]);
-    const double p2 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p0 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p1 = 0.5 * (1.0 + ptsRef[iR++]);
+    const PylithScalar p2 = 0.5 * (1.0 + ptsRef[iR++]);
     assert(0 <= p0 && p0 <= 1.0);
     assert(0 <= p1 && p1 <= 1.0);
     assert(0 <= p2 && p2 <= 1.0);
-    const double j0 = f_1 + f_01*p1 + f_02*p2 + f_012*p1*p2;
-    const double j1 = f_3 + f_01*p0 + f_12*p2 + f_012*p0*p2;
-    const double j2 = f_4 + f_12*p1 + f_02*p0 + f_012*p0*p1;
+    const PylithScalar j0 = f_1 + f_01*p1 + f_02*p2 + f_012*p1*p2;
+    const PylithScalar j1 = f_3 + f_01*p0 + f_12*p2 + f_012*p0*p2;
+    const PylithScalar j2 = f_4 + f_12*p1 + f_02*p0 + f_012*p0*p1;
     
-    const double j3 = g_1 + g_01*p1 + g_02*p2 + g_012*p1*p2;
-    const double j4 = g_3 + g_01*p0 + g_12*p2 + g_012*p0*p2;
-    const double j5 = g_4 + g_12*p1 + g_02*p0 + g_012*p0*p1;
+    const PylithScalar j3 = g_1 + g_01*p1 + g_02*p2 + g_012*p1*p2;
+    const PylithScalar j4 = g_3 + g_01*p0 + g_12*p2 + g_012*p0*p2;
+    const PylithScalar j5 = g_4 + g_12*p1 + g_02*p0 + g_012*p0*p1;
     
-    const double j6 = h_1 + h_01*p1 + h_02*p2 + h_012*p1*p2;
-    const double j7 = h_3 + h_01*p0 + h_12*p2 + h_012*p0*p2;
-    const double j8 = h_4 + h_12*p1 + h_02*p0 + h_012*p0*p1;
+    const PylithScalar j6 = h_1 + h_01*p1 + h_02*p2 + h_012*p1*p2;
+    const PylithScalar j7 = h_3 + h_01*p0 + h_12*p2 + h_012*p0*p2;
+    const PylithScalar j8 = h_4 + h_12*p1 + h_02*p0 + h_012*p0*p1;
 
     jacobian[iJ++] = j0;
     jacobian[iJ++] = j1;

@@ -43,13 +43,13 @@ namespace pylith {
        *
        * @param dt Time step
        */
-      void timeStep(const double dt);
+      void timeStep(const PylithScalar dt);
 
       /** Set normalized viscosity for numerical damping.
        *
        * @param viscosity Nondimensional viscosity.
        */
-      void normViscosity(const double viscosity);
+      void normViscosity(const PylithScalar viscosity);
 
       /** Set flag for setting constraints for total field solution or
        *  incremental field solution.
@@ -65,7 +65,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to residual term (r) for operator.
@@ -75,7 +75,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidualLumped(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				   const double t,
+				   const PylithScalar t,
 				   pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated with
@@ -86,7 +86,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
       /** Integrate contributions to Jacobian matrix (A) associated
@@ -98,7 +98,7 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
-			     const double t,
+			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
     }; // ElasticityExplicitLgDeform

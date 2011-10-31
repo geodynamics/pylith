@@ -22,7 +22,7 @@ include $(top_srcdir)/subpackage.am
 dist_subpkgdata_DATA = \
 	numpy.i \
 	chararray.i \
-	doublearray.i \
+	scalartypemaps.i \
 	eqkinsrcarray.i \
 	integratorarray.i \
 	submeshfield.i

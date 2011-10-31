@@ -67,14 +67,14 @@ pylith::topology::Field<mesh_type, section_type>::vectorFieldType(void) const {
 template<typename mesh_type, typename section_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::scale(const double value) {
+pylith::topology::Field<mesh_type, section_type>::scale(const PylithScalar value) {
   _metadata.scale = value;
 }
 
 // Get scale for dimensionalizing field.
 template<typename mesh_type, typename section_type>
 inline
-double
+PylithScalar
 pylith::topology::Field<mesh_type, section_type>::scale(void) const {
   return _metadata.scale;
 }

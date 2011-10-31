@@ -26,7 +26,7 @@
 // Set current time step.
 inline
 void
-pylith::materials::DruckerPrager3D::timeStep(const double dt) {
+pylith::materials::DruckerPrager3D::timeStep(const PylithScalar dt) {
   // Not sure what to do here.  If we are using full Newton the Jacobian will
   // always need reforming, but SNES may opt not to reform it sometimes.
   _needNewJacobian = true;
@@ -36,17 +36,17 @@ pylith::materials::DruckerPrager3D::timeStep(const double dt) {
 // Compute stress tensor from parameters.
 inline
 void
-pylith::materials::DruckerPrager3D::_calcStress(double* const stress,
+pylith::materials::DruckerPrager3D::_calcStress(PylithScalar* const stress,
 						const int stressSize,
-						const double* properties,
+						const PylithScalar* properties,
 						const int numProperties,
-						const double* stateVars,
+						const PylithScalar* stateVars,
 						const int numStateVars,
-						const double* totalStrain,
+						const PylithScalar* totalStrain,
 						const int strainSize,
-						const double* initialStress,
+						const PylithScalar* initialStress,
 						const int initialStressSize,
-						const double* initialStrain,
+						const PylithScalar* initialStrain,
 						const int initialStrainSize,
 						const bool computeStateVars)
 {
@@ -64,17 +64,17 @@ pylith::materials::DruckerPrager3D::_calcStress(double* const stress,
 inline
 void
 pylith::materials::DruckerPrager3D::_calcElasticConsts(
-					double* const elasticConsts,
+					PylithScalar* const elasticConsts,
 					const int numElasticConsts,
-					const double* properties,
+					const PylithScalar* properties,
 					const int numProperties,
-					const double* stateVars,
+					const PylithScalar* stateVars,
 					const int numStateVars,
-					const double* totalStrain,
+					const PylithScalar* totalStrain,
 					const int strainSize,
-					const double* initialStress,
+					const PylithScalar* initialStress,
 					const int initialStressSize,
-					const double* initialStrain,
+					const PylithScalar* initialStrain,
 					const int initialStrainSize)
 {
   assert(0 != _calcElasticConstsFn);
@@ -90,15 +90,15 @@ pylith::materials::DruckerPrager3D::_calcElasticConsts(
 inline
 void
 pylith::materials::DruckerPrager3D::_updateStateVars(
-					double* const stateVars,
+					PylithScalar* const stateVars,
 					const int numStateVars,
-					const double* properties,
+					const PylithScalar* properties,
 					const int numProperties,
-					const double* totalStrain,
+					const PylithScalar* totalStrain,
 					const int strainSize,
-					const double* initialStress,
+					const PylithScalar* initialStress,
 					const int initialStressSize,
-					const double* initialStrain,
+					const PylithScalar* initialStrain,
 					const int initialStrainSize)
 {
   assert(0 != _updateStateVarsFn);

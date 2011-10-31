@@ -133,9 +133,23 @@ class MeshQuadrature(QuadratureBase, ModuleMeshQuadrature):
     """
     Initialize C++ quadrature object.
     """
-    ModuleMeshQuadrature.initialize(self, cell.basis, cell.basisDeriv,
-                                    cell.quadPts, cell.quadWts,
-                                    cell.geometry.spaceDim())
+    import numpy
+    from pylith.utils.utils import sizeofPylithScalar
+    size = sizeofPylithScalar()
+    if 8 == size:
+        ModuleMeshQuadrature.initialize(self, cell.basis,
+                                        cell.basisDeriv,
+                                        cell.quadPts,
+                                        cell.quadWts,
+                                        cell.geometry.spaceDim())
+    elif 4 == size:
+        ModuleMeshQuadrature.initialize(self, numpy.float32(cell.basis),
+                                        numpy.float32(cell.basisDeriv),
+                                        numpy.float32(cell.quadPts),
+                                        numpy.float32(cell.quadWts),
+                                        cell.geometry.spaceDim())
+    else:
+        raise ValueError("Unknown size for PylithScalar")
     return
 
 
@@ -165,9 +179,23 @@ class SubMeshQuadrature(QuadratureBase, ModuleSubMeshQuadrature):
     """
     Initialize C++ quadrature object.
     """
-    ModuleSubMeshQuadrature.initialize(self, cell.basis, cell.basisDeriv,
-                                       cell.quadPts, cell.quadWts,
-                                       cell.geometry.spaceDim())
+    import numpy
+    from pylith.utils.utils import sizeofPylithScalar
+    size = sizeofPylithScalar()
+    if 8 == size:
+        ModuleSubMeshQuadrature.initialize(self, cell.basis,
+                                           cell.basisDeriv,
+                                           cell.quadPts,
+                                           cell.quadWts,
+                                           cell.geometry.spaceDim())
+    elif 4 == size:
+        ModuleSubMeshQuadrature.initialize(self, numpy.float32(cell.basis),
+                                           numpy.float32(cell.basisDeriv),
+                                           numpy.float32(cell.quadPts),
+                                           numpy.float32(cell.quadWts),
+                                           cell.geometry.spaceDim())
+    else:
+        raise ValueError("Unknown size for PylithScalar")
     return
 
 

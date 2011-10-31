@@ -54,15 +54,15 @@ private:
 
   static const int _numVarsVertex;
 
-  static const double _lengthScale;
+  static const PylithScalar _lengthScale;
 
-  static const double _timeScale;
+  static const PylithScalar _timeScale;
 
-  static const double _pressureScale;
+  static const PylithScalar _pressureScale;
 
-  static const double _densityScale;
+  static const PylithScalar _densityScale;
 
-  static const double _dt;
+  static const PylithScalar _dt;
 
   static const int _numPropertyValues[];
 
@@ -72,27 +72,27 @@ private:
 
   static const char** _dbStateVarValues;
 
-  static const double _dbProperties[];
+  static const PylithScalar _dbProperties[];
 
-  static const double* _dbStateVars;
+  static const PylithScalar* _dbStateVars;
 
-  static const double _properties[];
+  static const PylithScalar _properties[];
 
-  static const double* _stateVars;
+  static const PylithScalar* _stateVars;
 
-  static const double _propertiesNondim[];
+  static const PylithScalar _propertiesNondim[];
 
-  static const double* _stateVarsNondim;
+  static const PylithScalar* _stateVarsNondim;
 
-  static const double _friction[];
+  static const PylithScalar _friction[];
 
-  static const double _slip[];
+  static const PylithScalar _slip[];
 
-  static const double _slipRate[];
+  static const PylithScalar _slipRate[];
 
-  static const double _normalTraction[];
+  static const PylithScalar _normalTraction[];
 
-  static const double* _stateVarsUpdated;
+  static const PylithScalar* _stateVarsUpdated;
 
 };
 
