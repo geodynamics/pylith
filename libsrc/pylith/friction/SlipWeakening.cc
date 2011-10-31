@@ -306,17 +306,11 @@ pylith::friction::SlipWeakening::_updateStateVars(const PylithScalar slip,
   assert(stateVars);
   assert(_SlipWeakening::numStateVars == numStateVars);
 
-  const PylithScalar tolerance = 1.0e-12;
-  if (slipRate > tolerance) {
-    const PylithScalar slipPrev = stateVars[s_slipPrev];
-
-    stateVars[s_slipPrev] = stateVars[s_slipCum];
-    stateVars[s_slipCum] += fabs(slip - slipPrev);
-  } else {
-    // Sliding has stopped, so reset state variables.
-    stateVars[s_slipPrev] = slip;
-    stateVars[s_slipCum] = 0.0;
-  } // else
+  // Don't reset state variables when sliding stops
+  // (SCEC dynamic rupture branch only).
+  const double slipPrev = stateVars[s_slipPrev];
+  stateVars[s_slipPrev] = stateVars[s_slipCum];
+  stateVars[s_slipCum] += fabs(slip - slipPrev);
 } // _updateStateVars
 
 
