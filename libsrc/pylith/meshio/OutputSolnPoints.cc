@@ -52,15 +52,17 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
 { // deallocate
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
-#if 0 // :MATT: Need DM wrapper for mesh
   if (_interpolator) {
     assert(_mesh);
     const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    PetscErrorCode err = 
-      DMMeshInterpolationDestroy(sieveMesh, &_interpolator);
-    CHECK_PETSC_ERROR(err);
+    DM dm;
+    PetscErrorCode err = 0;
+
+    err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
+    err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
+    err = DMMeshInterpolationDestroy(dm, &_interpolator);CHECK_PETSC_ERROR(err);
+    err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
   } // if
-#endif
 
   _mesh = 0; // :TODO: Use shared pointer
   delete _pointsMesh; _pointsMesh = 0;
@@ -108,26 +110,23 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 			 interpolate);
   _pointsMesh->coordsys(_mesh->coordsys());
 
-#if 0 // :MATT: Need DM wrapper for mesh
   // Setup interpolator object
+  DM dm;
   PetscErrorCode err = 0;
 
-  err = DMMeshInterpolationCreate(_mesh->sieveMesh(), &_interpolator); 
-  CHECK_PETSC_ERROR(err);
+  err = DMMeshCreate(_mesh->sieveMesh()->comm(), &dm);CHECK_PETSC_ERROR(err);
+  err = DMMeshSetMesh(dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
   
-  const spatialdata::geocoords::CoordSys* cs = _pointsMesh().coordsys();
+  const spatialdata::geocoords::CoordSys* cs = _pointsMesh->coordsys();
   assert(0 != cs);
   assert(cs->spaceDim() == spaceDim);
 
-  err = DMMeshInterpolationSetDim(_mesh->sieveMesh(), spaceDim,
-				  _interpolator); CHECK_PETSC_ERROR(err);
-
-  err = DMMeshInterpolationAddPoints(_mesh->sieveMesh(), numPoints, points,
-				     _interpolator); CHECK_PETSC_ERROR(err);
-  
-  err = DMMeshInterpolationSetUp(_mesh->sieveMesh(), _interpolator);
+  err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal *) points, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
   CHECK_PETSC_ERROR(err);
-#endif
 } // createPointsMesh
 
 
@@ -176,15 +175,21 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
-#if 0 // :MATT: Need DM wrapper for mesh
+  DM dm;
+  SectionReal section;
   PetscErrorCode err = 0;
   
-  err = DMMeshInterpolationSetDof(sieveMesh, fiberDim, _interpolator);
-  CHECK_PETSC_ERROR(err);
-  
-  err = DMMeshInterpolationEvaluate(sieveMesh, field.section(), fieldInterpVec,
-				    _interpolator); CHECK_PETSC_ERROR(err);
-#endif  
+  err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
+  err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetDof(dm, fiberDim, _interpolator);CHECK_PETSC_ERROR(err);
+
+  err = SectionRealCreate(sieveMesh->comm(), &section);CHECK_PETSC_ERROR(err);
+  err = SectionRealSetSection(section, field.section());CHECK_PETSC_ERROR(err);
+  err = SectionRealSetBundle(section, sieveMesh);CHECK_PETSC_ERROR(err);
+
+  err = DMMeshInterpolationEvaluate(dm, section, fieldInterpVec, _interpolator);CHECK_PETSC_ERROR(err);
+  err = SectionRealDestroy(&section);CHECK_PETSC_ERROR(err);
+  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
 
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::appendVertexField(t, fieldInterp, mesh);
 } // appendVertexField
