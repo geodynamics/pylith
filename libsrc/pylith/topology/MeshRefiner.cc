@@ -799,6 +799,12 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   // We have to do flexible assembly since we add the new vertices separately
   newSendOverlap->assemble();
   newRecvOverlap->assemble();
+  if (mesh->debug()) {
+    sendOverlap->view("OLD SEND OVERLAP");
+    recvOverlap->view("OLD RECV OVERLAP");
+    newSendOverlap->view("NEW SEND OVERLAP");
+    newRecvOverlap->view("NEW RECV OVERLAP");
+  }
 } // _calcNewOverlap
 
 
