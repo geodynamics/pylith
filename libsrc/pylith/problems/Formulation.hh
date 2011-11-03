@@ -186,6 +186,12 @@ public :
   virtual
   void calcRateFields(void) = 0;
 
+  /// Write state of system
+  void printState(PetscVec* solutionVec,
+		  PetscVec* residualVec,
+		  PetscVec* solution0Vec,
+		  PetscVec* searchDirVec);
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 

@@ -425,5 +425,52 @@ pylith::problems::Formulation::adjustSolnLumped(void)
   solution += adjust;
 } // adjustSolnLumped
 
+#include "pylith/meshio/DataWriterHDF5.hh"
+// ----------------------------------------------------------------------
+void
+pylith::problems::Formulation::printState(PetscVec* solutionVec,
+					  PetscVec* residualVec,
+					  PetscVec* solution0Vec,
+					  PetscVec* searchDirVec)
+{ // printState
+  assert(solutionVec);
+  assert(residualVec);
+  assert(searchDirVec);
+
+  meshio::DataWriterHDF5<topology::Mesh,topology::Field<topology::Mesh> > writer;
+
+  const topology::Mesh& mesh = _fields->mesh();
+
+  writer.filename("state.h5");
+  const int numTimeSteps = 1;
+  writer.open(mesh, numTimeSteps);
+   
+
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+  solution.scatterVectorToSection(*solutionVec);
+  writer.writeVertexField(0.0, solution, mesh);
+  solution.view("DIVERGED_SOLUTION");
+  const char* label = solution.label();
+
+  solution.label("solution_0");
+  solution.scatterVectorToSection(*solution0Vec);
+  writer.writeVertexField(0.0, solution, mesh);
+  solution.view("DIVERGED_SOLUTION0");
+  solution.label(label);
+
+  topology::Field<topology::Mesh>& residual = _fields->get("residual");
+  residual.scatterVectorToSection(*residualVec);
+  writer.writeVertexField(0.0, residual, mesh);
+  residual.view("DIVERGED_RESIDUAL");
+
+  residual.label("search_dir");
+  residual.scatterVectorToSection(*searchDirVec);
+  writer.writeVertexField(0.0, residual, mesh);
+  residual.view("DIVERGED_SEARCHDIR");
+
+  writer.close();
+} // printState
+
+
 
 // End of file 
