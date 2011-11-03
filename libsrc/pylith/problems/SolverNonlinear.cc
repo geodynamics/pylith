@@ -362,6 +362,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
         ierr = PetscViewerASCIISubtractTab(snes->ls_monitor,((PetscObject)snes)->tablevel);CHKERRQ(ierr);
       }
       *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
+      assert(lsctx);
+      Formulation* formulation = (Formulation*) lsctx;
+      assert(formulation);
+      formulation->printState(&w, &g, &x, &y);
       break;
     }
     t1 = .5*((*gnorm)*(*gnorm) - fnorm*fnorm) - lambda*initslope;
@@ -380,11 +384,11 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
       // range. Necessary due to underflow and overflow of a, b, c,
       // and d.
 #if 0 
-      lambdatemp = (-b + sqrt(d))/(3.0*a);
+      lambdatemp = (-b + PetscSqrtScalar(d))/(3.0*a);
 #else
-      if ((-b + sqrt(d) > 0.0 && a > 0.0) ||
-	  (-b + sqrt(d) < 0.0 && a < 0.0)) {
-	lambdatemp = (-b + sqrt(d))/(3.0*a);
+      if ((-b + PetscSqrtScalar(d) > 0.0 && a > 0.0) ||
+	  (-b + PetscSqrtScalar(d) < 0.0 && a < 0.0)) {
+	lambdatemp = (-b + PetscSqrtScalar(d))/(3.0*a);
       } else {
 	lambdatemp = 0.05*lambda;
       } // else
@@ -454,9 +458,9 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 
   // ======================================================================
   // Code to constrain solution space.
-  assert(0 != lsctx);
+  assert(lsctx);
   Formulation* formulation = (Formulation*) lsctx;
-  assert(0 != formulation);
+  assert(formulation);
   formulation->constrainSolnSpace(&w);
 
   ierr = SNESComputeFunction(snes,w,g);CHKERRQ(ierr);
