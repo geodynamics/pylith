@@ -327,23 +327,36 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     
     // Compute slip (in fault coordinates system) from relative displacement.
     double slipNormal = 0.0;
+    double tractionNormal = 0.0;
     const int indexN = spaceDim - 1;
     for (int jDim=0; jDim < spaceDim; ++jDim) {
       slipNormal += 
 	orientationVertex[indexN*spaceDim+jDim] * dispRelVertex[jDim];
+      tractionNormal += 
+	orientationVertex[indexN*spaceDim+jDim] * dispTpdtVertexL[jDim];
     } // for
     
     residualVertexN = 0.0;
     residualVertexL = 0.0;
-    if (slipNormal <= _zeroTolerance) { // if no opening
+    if (slipNormal < _zeroTolerance ||
+	tractionNormal < -_zeroTolerance) { // if no opening
     // Initial (external) tractions oppose (internal) tractions
     // associated with Lagrange multiplier.
       residualVertexN = areaVertex * (dispTpdtVertexL - initialTractionsVertex);
 
+#if 1 // DEBUGGING
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	residualVertexL[iDim] = -areaVertex * 
 	  (dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim] - dispRelVertex[iDim]);
+	if  (fabs(dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim] - dispRelVertex[iDim]) > _zeroTolerance) {
+	  std::cout << "Inconsistent relative displacement"
+		    << ", dispRel["<<iDim<<"]: " << dispRelVertex[iDim]
+		    << ", dispN["<<iDim<<"]: " << dispTpdtVertexN[iDim]
+		    << ", dispP["<<iDim<<"]: " << dispTpdtVertexP[iDim]
+		    << std::endl;
+	} // if
       } // for
+#endif
     } // if
     residualVertexP = -residualVertexN;
 
@@ -804,7 +817,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
     // Compute current estimate of slip.
     for (int iDim=0; iDim < spaceDim; ++iDim) {
-      slipVertex[iDim] = slipVertex[iDim] + dSlipVertex[iDim];
+      slipVertex[iDim] += dSlipVertex[iDim];
     } // for
 
     // Update relative displacement from slip.
@@ -843,7 +856,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     assert(dispRelVertex.size() ==
         dispRelSection->getFiberDimension(v_fault));
     dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
-    
+
     // Update Lagrange multiplier increment.
     assert(dLagrangeTpdtVertex.size() ==
 	   dispTIncrSection->getFiberDimension(v_lagrange));
@@ -1211,7 +1224,6 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 				      9 + // updates
 				      spaceDim*9));
 
-
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
 #endif
@@ -1564,7 +1576,6 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
   const int spaceDim = _quadrature->spaceDim();
 
   // Get section information
-#if 0 // TEMPORARY test case
   const ALE::Obj<RealSection>& dispTSection =
     fields.get("disp(t)").section();
   assert(!dispTSection.isNull());
@@ -1577,7 +1588,6 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
   const ALE::Obj<RealSection>& dispRelSection =
     _fields->get("relative disp").section();
   assert(!dispRelSection.isNull());
-#endif
 
   const ALE::Obj<RealSection>& velocitySection =
       fields.get("velocity(t)").section();
@@ -1594,7 +1604,6 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
-#if 0 // TEMPORARY test case
     // Get displacement values
     assert(spaceDim == dispTSection->getFiberDimension(v_negative));
     const double* dispTVertexN = dispTSection->restrictPoint(v_negative);
@@ -1619,14 +1628,13 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
       const double value = 
 	dispTVertexP[iDim] + dispTIncrVertexP[iDim] 
 	- dispTVertexN[iDim] -  dispTIncrVertexN[iDim];
-      dispRelVertex[iDim] = value > _zeroTolerance ? value : 0.0;
+      dispRelVertex[iDim] = fabs(value) > _zeroTolerance ? value : 0.0;
     } // for
 
     // Update relative displacement field.
     assert(dispRelVertex.size() == 
 	   dispRelSection->getFiberDimension(v_fault));
     dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
-#endif
 
     // Get velocity values
     assert(spaceDim == velocitySection->getFiberDimension(v_negative));
