@@ -25,6 +25,7 @@ volume 1 move x 0 y 0 z {-blockHeight/2.0}
 # Create interface surfaces
 # ----------------------------------------------------------------------
 create planar surface with plane xplane offset 0
+rotate surface 7  angle -30 about z include_merged 
 create sheet extended from surface 7 intersecting volume 1
 delete body 2
 surface 8 name "fault_surface"
@@ -51,4 +52,5 @@ delete vertex all
 # ----------------------------------------------------------------------
 imprint all with volume all
 merge all
+
 
