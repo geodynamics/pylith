@@ -232,7 +232,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
 
-    //dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
+    dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
 
     // Get expected values
     const PylithScalar* valsE = _data->fieldIncrStick; // No change in dispIncr
@@ -277,23 +277,37 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       fault.vertexField("slip").section();
     CPPUNIT_ASSERT(!slipSection.isNull());
 
-    const PylithScalar valE = 0.0; // slip should be zero
+    //slipSection->view("SLIP"); // DEBUGGING
+
+    // Get expected values
+    CPPUNIT_ASSERT(_data->slipStickE);
+    const PylithScalar* valsE = _data->slipStickE;
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = 1.0e-06;
-    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-	   != verticesEnd;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin; 
+	 v_iter != verticesEnd;
 	 ++v_iter, ++iVertex) { // loop over fault vertices
       // Check fiber dimension (number of values at point)
       const int fiberDim = slipSection->getFiberDimension(*v_iter);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
       const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
+      CPPUNIT_ASSERT(vals);
 
       // Check values at point
       for (int i = 0; i < fiberDimE; ++i) {
         const int index = iVertex * spaceDim + i;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+        const PylithScalar valE = valsE[index];
+#if 0 // DEBUGGING
+	std::cout << "SLIP valE: " << valE
+		  << ", val: " << vals[i]
+		  << ", error: " << fabs(1.0-vals[i]/valE)
+		  << std::endl;
+#endif // DEBUGGING
+        if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
       } // for
     } // for
   } // Check slip values
@@ -320,6 +334,54 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+
+  { // Check solution values
+    // Lagrange multipliers should be adjusted according to friction
+    // as reflected in the fieldIncrSlipE data member.
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    CPPUNIT_ASSERT(!sieveMesh.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices =
+      sieveMesh->depthStratum(0);
+    CPPUNIT_ASSERT(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    // Get section containing solution (disp + Lagrange multipliers)
+    const ALE::Obj<RealSection>& dispIncrSection =
+      fields.get("dispIncr(t->t+dt)").section();
+    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+
+    // Get expected values
+    const PylithScalar* valsE = _data->fieldIncrSlipE; // Expected values for dispIncr
+    int iVertex = 0; // variable to use as index into valsE array
+    const int fiberDimE = spaceDim; // number of values per point
+    const PylithScalar tolerance = 1.0e-06;
+    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
+	 v_iter != verticesEnd;
+	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
+      // Check fiber dimension (number of values at point)
+      const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const PylithScalar* vals = dispIncrSection->restrictPoint(*v_iter);
+      CPPUNIT_ASSERT(0 != vals);
+
+      // Check values at point
+      for (int i = 0; i < fiberDimE; ++i) {
+        const int index = iVertex * spaceDim + i;
+        const PylithScalar valE = valsE[index];
+#if 0 // DEBUGGING
+	std::cout << "SOLUTION valE: " << valE
+		  << ", val: " << vals[i]
+		  << ", error: " << fabs(1.0-vals[i]/valE)
+		  << std::endl;
+#endif // DEBUGGING
+	if (fabs(valE) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+        else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Check solution values
 
   { // Check slip values
     // Slip values should be adjusted based on the change in the
@@ -373,54 +435,6 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
       } // for
     } // for
   } // Check slip values
-
-  { // Check solution values
-    // Lagrange multipliers should be adjusted according to friction
-    // as reflected in the fieldIncrSlipE data member.
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-    // Get section containing solution (disp + Lagrange multipliers)
-    const ALE::Obj<RealSection>& dispIncrSection =
-      fields.get("dispIncr(t->t+dt)").section();
-    CPPUNIT_ASSERT(!dispIncrSection.isNull());
-
-    // Get expected values
-    const PylithScalar* valsE = _data->fieldIncrSlipE; // Expected values for dispIncr
-    int iVertex = 0; // variable to use as index into valsE array
-    const int fiberDimE = spaceDim; // number of values per point
-    const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for (SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-	 v_iter != verticesEnd;
-	 ++v_iter, ++iVertex) { // loop over all vertices in mesh
-      // Check fiber dimension (number of values at point)
-      const int fiberDim = dispIncrSection->getFiberDimension(*v_iter);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-      const PylithScalar* vals = dispIncrSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
-
-      // Check values at point
-      for (int i = 0; i < fiberDimE; ++i) {
-        const int index = iVertex * spaceDim + i;
-        const PylithScalar valE = valsE[index];
-#if 0 // DEBUGGING
-	std::cout << "SOLUTION valE: " << valE
-		  << ", val: " << vals[i]
-		  << ", error: " << fabs(1.0-vals[i]/valE)
-		  << std::endl;
-#endif // DEBUGGING
-	if (fabs(valE) > tolerance)
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-        else
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
-      } // for
-    } // for
-  } // Check solution values
 
 } // testConstrainSolnSpaceSlip
 

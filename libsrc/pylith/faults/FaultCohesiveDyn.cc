@@ -808,15 +808,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
 
-    // Solution only changes if Lagrange multiplier changed, so skip
-    // updates if change in Lagrange multiplier is zero.
-    PylithScalar dLagrangeMag = 0.0;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      dLagrangeMag += dLagrangeTpdtVertex[iDim]*dLagrangeTpdtVertex[iDim];
-    if (0.0 == dLagrangeMag) {
-      continue; // No change, so continue
-    } // if
-
     // Get change in relative displacement from sensitivity solve.
     assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
     const PylithScalar* sensDispRelVertex = 
