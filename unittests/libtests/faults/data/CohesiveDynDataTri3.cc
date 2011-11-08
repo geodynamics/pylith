@@ -276,8 +276,11 @@ const PylithScalar pylith::faults::CohesiveDynDataTri3::_fieldIncrStick[] = {
   21.8, 2.8, // 9
 };
 
-// No change in fieldIncr
-// Zero slip
+// No slip
+const PylithScalar pylith::faults::CohesiveDynDataTri3::_slipStickE[] = {
+ 0.0,  0.0,
+ 0.0,  0.0,
+};
 
 // ----------------------------------------------------------------------
 // Slip case
@@ -371,6 +374,7 @@ pylith::faults::CohesiveDynDataTri3::CohesiveDynDataTri3(void)
 
   // Stick
   fieldIncrStick = const_cast<PylithScalar*>(_fieldIncrStick);
+  slipStickE = const_cast<PylithScalar*>(_slipStickE);
 
   // Slip
   fieldIncrSlip = const_cast<PylithScalar*>(_fieldIncrSlip);
