@@ -22,7 +22,6 @@ dist_noinst_DATA = \
 	hex8_1000m.exo \
 	pylithapp.cfg \
 	fieldsplit.cfg \
-	matprops.spatialdb \
 	initial_tractions.spatialdb \
 	cycle.timedb
 
