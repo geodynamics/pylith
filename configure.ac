@@ -326,6 +326,8 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
+		tests/3d/cyclicfriction/Makefile
+		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
 		tests/3d/plasticity/threehex27/Makefile
 		tests/3d/plasticity/threehex27/config/Makefile

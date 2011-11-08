@@ -454,16 +454,20 @@ const double pylith::faults::CohesiveDynDataTri3d::_fieldIncrStick[] = {
   1.4, 2.4,
   1.5, 2.5, // 8
   1.6, 2.6,
-  1.7, 2.7, // 10
-  1.9, 2.9, // 11
-  2.1, 2.1, // 12
+  1.2, 2.2, // 10
+  1.3, 2.3, // 11
+  1.5, 2.5, // 12
   21.8, 22.8, // 13
   21.0, 2.0, // 14
   2.2, 22.2, // 15
 };
 
-// No change in fieldIncr
-// Zero slip
+// No slip
+const double pylith::faults::CohesiveDynDataTri3d::_slipStickE[] = {
+ 0.0,  0.0,
+ 0.0,  0.0,
+ 0.0,  0.0,
+};
 
 // ----------------------------------------------------------------------
 // Slip case
@@ -575,6 +579,7 @@ pylith::faults::CohesiveDynDataTri3d::CohesiveDynDataTri3d(void)
 
   // Stick
   fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  slipStickE = const_cast<double*>(_slipStickE);
 
   // Slip
   fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);
