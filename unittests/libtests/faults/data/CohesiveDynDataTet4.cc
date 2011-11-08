@@ -506,16 +506,20 @@ const double pylith::faults::CohesiveDynDataTet4::_fieldIncrStick[] = {
   1.3, 2.3, 3.3, // 4
   1.4, 2.4, 3.4, // 5
   1.5, 2.5, 3.5,
-  1.6, 2.6, 3.6, // 7
-  1.8, 2.8, 3.8, // 8
-  1.0, 2.0, 3.0, // 9
+  1.2, 2.2, 3.2, // 7
+  1.3, 2.3, 3.3, // 8
+  1.4, 2.4, 3.4, // 9
   41.7, 2.7, 3.7, // 10
   41.9, 2.9, 3.9, // 11
   41.1, 2.1, 3.1, // 12
 };
 
-// No change in fieldIncr
-// Zero slip
+// No slip
+const double pylith::faults::CohesiveDynDataTet4::_slipStickE[] = {
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+};
 
 // ----------------------------------------------------------------------
 // Slip case
@@ -623,6 +627,7 @@ pylith::faults::CohesiveDynDataTet4::CohesiveDynDataTet4(void)
 
   // Stick
   fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  slipStickE = const_cast<double*>(_slipStickE);
 
   // Slip
   fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);

@@ -1128,18 +1128,23 @@ const double pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
   0.0, 2.0, 1.0,
   1.1, 3.1, 2.1,
   1.2, 3.2, 2.2,
-  1.3, 3.3, 2.3, // 14
-  1.5, 3.5, 2.5, // 15
-  1.7, 3.7, 2.7, // 16
-  1.9, 3.9, 2.9, // 17
-  41.4, 3.4, 2.4, // 18
-  41.6, 3.6, 2.6, // 19
-  41.8, 3.8, 2.8, // 20
-  41.0, 3.0, 2.0, // 21
+  0.5, 3.3, 2.3, // 14
+  0.6, 3.5, 2.5, // 15
+  0.7, 3.7, 2.7, // 16
+  0.8, 3.9, 2.9, // 17
+  12.266666666667,  3.6, 4.6, // 18
+  12.066666666667,  5.4, 2.4, // 19
+  16.866666666667,  2.2, 8.2, // 20
+  17.666666666667, 10.0, 2.0, // 21
 };
 
-// No change in fieldIncr
-// Zero slip
+// No slip
+const double pylith::faults::CohesiveDynDataHex8::_slipStickE[] = {
+  -0.8,  0.8,  0.0,
+  -0.9,  0.9,  0.0,
+  -1.0,  1.0,  0.0,
+  -1.1,  1.1,  0.0,
+};
 
 // ----------------------------------------------------------------------
 // Slip case
@@ -1285,6 +1290,7 @@ pylith::faults::CohesiveDynDataHex8::CohesiveDynDataHex8(void)
 
   // Stick
   fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  slipStickE = const_cast<double*>(_slipStickE);
 
   // Slip
   fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);

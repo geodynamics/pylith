@@ -68,6 +68,7 @@ private:
   static const double _orientation[]; ///< Expected values for fault orientation.
   static const double _area[]; ///< Expected values for fault area.
   static const double _initialTractions[]; ///< Expected values for initial tractions.
+  static const double _slipStickE[]; ///< Expected values for slip for stick case.
   static const double _fieldIncrSlipE[]; ///< Expected values for solution increment for slip case.
   static const double _slipSlipE[]; ///< Expected values for slip for slip case.
   static const double _fieldIncrOpenE[]; ///< Expected values for solution increment for opening case.

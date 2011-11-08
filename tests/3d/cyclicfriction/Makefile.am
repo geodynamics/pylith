@@ -17,9 +17,17 @@
 #
 
 dist_noinst_DATA = \
+	geometry.jou \
+	hex8_1000m.jou \
+	hex8_1000m.exo \
 	pylithapp.cfg \
+	fieldsplit.cfg \
 	matprops.spatialdb \
+	initial_tractions.spatialdb \
 	cycle.timedb
+
+SUBDIRS = \
+	output
 
 
 # End of file 

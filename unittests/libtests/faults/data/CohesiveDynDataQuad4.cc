@@ -302,14 +302,17 @@ const double pylith::faults::CohesiveDynDataQuad4::_fieldIncrStick[] = {
   1.4, 2.4, // 5
   1.5, 2.5,
   1.6, 2.6,
-  1.7, 2.7, // 8
-  1.9, 2.9, // 9
-  21.8, 2.8, // 10
-  21.0, 2.0, // 11
+  1.3, 2.7, // 8
+  1.4, 2.9, // 9
+  11.2, 2.20, // 10
+  16.0, 5.40, // 11
 };
 
-// No change in fieldIncr
-// Zero slip
+// No change in slip
+const double pylith::faults::CohesiveDynDataQuad4::_slipStickE[] = {
+ -0.4,  0.0,
+ -0.5,  0.0,
+};
 
 // ----------------------------------------------------------------------
 // Slip case
@@ -411,6 +414,7 @@ pylith::faults::CohesiveDynDataQuad4::CohesiveDynDataQuad4(void)
 
   // Stick
   fieldIncrStick = const_cast<double*>(_fieldIncrStick);
+  slipStickE = const_cast<double*>(_slipStickE);
 
   // Slip
   fieldIncrSlip = const_cast<double*>(_fieldIncrSlip);

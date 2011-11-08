@@ -76,6 +76,7 @@ public:
   double* orientation; ///< Expected values for fault orientation.
   double* area; ///< Expected values for fault area.
   double* initialTractions; ///< Expected values for initial tractions.
+  double* slipStickE; ///< Expected values for slip for sticking case.
   double* fieldIncrSlipE; ///< Expected values for solution increment for slipping case.
   double* slipSlipE; ///< Expected values for slip for slipping case.
   double* fieldIncrOpenE; ///< Expected values for solution increment for opening case.
