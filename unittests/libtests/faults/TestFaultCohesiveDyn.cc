@@ -232,7 +232,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       fields.get("dispIncr(t->t+dt)").section();
     CPPUNIT_ASSERT(!dispIncrSection.isNull());
 
-    dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
+    //dispIncrSection->view("DISP INCREMENT"); // DEBUGGING
 
     // Get expected values
     const double* valsE = _data->fieldIncrStick; // No change in dispIncr
@@ -750,7 +750,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(
   mesh->coordsys(&cs);
   mesh->nondimensionalize(normalizer);
   
-  const double upDir[] = { 0.0, 0.0, 1.0 };
+  const double upDir[3] = { 0.0, 0.0, 1.0 };
   
   fault->initialize(*mesh, upDir);
   
