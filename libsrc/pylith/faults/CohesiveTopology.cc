@@ -661,11 +661,16 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
        v_iter != fVertices2EndNew;
        ++v_iter) {
+    assert(coordinates->getFiberDimension(*v_iter) ==
+	   coordinates->getFiberDimension(vertexRenumber[*v_iter]));
     coordinates->updatePoint(vertexRenumber[*v_iter], 
 			     coordinates->restrictPoint(*v_iter));
-    if (constraintCell)
+    if (constraintCell) {
+      assert(coordinates->getFiberDimension(*v_iter) ==
+	     coordinates->getFiberDimension(vertexLagrangeRenumber[*v_iter]));
       coordinates->updatePoint(vertexLagrangeRenumber[*v_iter],
 			       coordinates->restrictPoint(*v_iter));
+    } // if
   } // for
   if (debug)
     coordinates->view("Coordinates with shadow vertices");
