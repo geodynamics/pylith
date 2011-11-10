@@ -19,6 +19,28 @@ in the INSTALL file bundled with the PyLith Installer utility.
 
 RELEASE NOTES
 
+* Bug fixes
+
+  - Fixed bug in writing tensor data for Xdmf files. Switched Tensor
+    to Tensor6 to account for symmetry.
+
+  - Fixed bug in writing HDF5 files in parallel when one processor
+    does not write any information (e.g., faults and boundary
+    conditions).
+
+  - Added dimensioning of time dataset in HDF5 files. The units are
+    now seconds rather than nondimensional time.
+
+  - Fixed memory allocation error (std::bad_alloc) when a processor
+    did not contain cells for a boundary condition or output. This bug
+    did not show up on all architectures.
+
+  - Increased robustness of spontaneous rupture (fault friction)
+    implementation to broaden the range of conditions it can
+    handle. The implementation now properly handles cases with fault
+    opening and cases with zero shear or normal tractions.
+    
+
 * Internal changes
 
   - Fault implementation
@@ -39,25 +61,6 @@ RELEASE NOTES
     have been improved. This reduces memory use and runtime for this
     stage of the simulations.
 
-
-* Bug fixes
-
-  - Fixed bug in writing HDF5 files in parallel when one processor
-    does not write any information (e.g., faults and boundary
-    conditions).
-
-  - Added dimensioning of time dataset in HDF5 files. The units are
-    now seconds rather than nondimensional time.
-
-  - Fixed memory allocation error (std::bad_alloc) when a processor
-    did not contain cells for a boundary condition or output. This bug
-    did not show up on all architectures.
-
-  - Increased robustness of spontaneous rupture (fault friction)
-    implementation to broaden the range of conditions it can
-    handle. The implementation now properly handles cases with fault
-    opening and cases with zero shear or normal tractions.
-    
 
 KNOWN ISSUES
 
