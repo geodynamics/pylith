@@ -78,6 +78,55 @@ Version 1.6.2
   - Fixed bug in writing tensor data for Xdmf files. Switched Tensor
     to Tensor6 to account for symmetry.
 
+  - Fixed bug in writing HDF5 files in parallel when one processor
+    does not write any information (e.g., faults and boundary
+    conditions).
+
+  - Added dimensioning of time dataset in HDF5 files. The units are
+    now seconds rather than nondimensional time.
+
+  - Fixed memory allocation error (std::bad_alloc) when a processor
+    did not contain cells for a boundary condition or output. This bug
+    did not show up on all architectures.
+
+  - Increased robustness of spontaneous rupture (fault friction)
+    implementation to broaden the range of conditions it can
+    handle. The implementation now properly handles cases with fault
+    opening and cases with zero shear or normal tractions.
+    
+
+* Internal changes
+
+  - Fault implementation
+
+    Several changes have been made to the fault implementation, but
+    none of these affect the user interface. The runtime performance
+    is nearly identical with improved accuracy for spontaneous rupture
+    (fault friction) simulations. These changes involved switching to
+    using tractions (non-integrated quantities) for the Lagrange
+    multipliers in the global coordinate system rather than integrated
+    quantities in the fault coordinate system. Additionally, initial
+    fault tractions are associated with the fault vertices and their
+    interpolation uses the finite-element basis functions.
+
+  - Distribution of mesh among processors
+
+    The data structures used to distribute the mesh among processors
+    have been improved. This reduces memory use and runtime for this
+    stage of the simulations.
+
+
+KNOWN ISSUES
+
+  The custom line search used with the PETSc nonlinear solver (SNES)
+  has difficulty handling cases with fault opening when the fault
+  normal tractions are much larger than the fault shear tractions. The
+  direction of the line search tends to be nearly orthogonal to the
+  residual, resulting in extremely poor convergence. We plan to
+  improve the line search algorithm in a future release in order to
+  resolve this issue and improve the rate of convergence in
+  spontaneous rupture simulations.
+
 
 ----------------------------------------------------------------------
 Version 1.6.1
