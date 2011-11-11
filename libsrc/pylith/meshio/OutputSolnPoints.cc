@@ -114,6 +114,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   DM dm;
   PetscErrorCode err = 0;
 
+  assert(!_mesh->sieveMesh().isNull());
   err = DMMeshCreate(_mesh->sieveMesh()->comm(), &dm);CHECK_PETSC_ERROR(err);
   err = DMMeshSetMesh(dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
