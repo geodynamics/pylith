@@ -777,10 +777,10 @@ pylith::friction::TestFrictionModel::_initialize(
   const int numCorners = 2;
   const int numQuadPts = 2;
   const int spaceDim = 2;
-  const PylithScalar basis[] = { 0.75, 0.25, 0.25, 0.75 };
-  const PylithScalar basisDeriv[] = { -0.5, 0.5, -0.5, 0.5 };
-  const PylithScalar quadPtsRef[] = { -0.5, 0.5 };
-  const PylithScalar quadWts[] = { 1.0, 1.0  };
+  const PylithScalar basis[4] = { 1.0, 0.0, 0.0, 1.0 };
+  const PylithScalar basisDeriv[4] = { -0.5, 0.5, -0.5, 0.5 };
+  const PylithScalar quadPtsRef[2] = { -1.0, 1.0 };
+  const PylithScalar quadWts[2] = { 1.0, 1.0  };
   quadrature.initialize(basis, numQuadPts, numCorners,
 			basisDeriv, numQuadPts, numCorners, cellDim,
 			quadPtsRef, numQuadPts, cellDim,
@@ -811,8 +811,9 @@ pylith::friction::TestFrictionModel::_initialize(
   friction->normalizer(normalizer);
   fault->frictionModel(friction);
   
-  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   fault->initialize(*mesh, upDir);
+  fault->verifyConfiguration(*mesh);
 } // _initialize
 
 

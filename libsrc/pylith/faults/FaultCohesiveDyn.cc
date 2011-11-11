@@ -2210,7 +2210,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace2D(scalar_array* dLagrangeT
     } else {
       // friction exceeds value necessary to stick
       // no changes to solution
-      assert(0.0 == slipRateMag);
+      if (iterating) {
+	assert(0.0 == slipRateMag);
+      } // if
     } // if/else
   } else {
     // if in tension, then traction is zero.
@@ -2270,7 +2272,9 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeT
     } else {
       // else friction exceeds value necessary, so stick
       // no changes to solution
-      assert(0.0 == slipRateMag);
+      if (iterating) {
+	assert(0.0 == slipRateMag);
+      } // if
     } // if/else
   } else {
     // if in tension, then traction is zero.
