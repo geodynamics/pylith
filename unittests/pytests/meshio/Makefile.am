@@ -37,6 +37,7 @@ noinst_PYTHON = \
 	TestOutputSolnSubset.py \
 	TestDataWriterVTK.py \
 	TestDataWriterHDF5.py \
+	TestDataWriterHDF5Ext.py \
 	TestSingleOutput.py \
 	TestXdmf.py
 
