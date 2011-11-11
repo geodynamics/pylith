@@ -119,13 +119,13 @@ Version 1.6.2
 KNOWN ISSUES
 
   The custom line search used with the PETSc nonlinear solver (SNES)
-  has difficulty handling loading cases. In cases where the direction
-  of the line search tends to be nearly orthogonal to the residual,
-  the rate of convergence in the SNES iterations is extremely slow. In
-  other cases the nonlinear solver gets stuck in a local minimum. We
-  plan to improve the line search algorithm in a future release in
-  order to resolve this issue and improve the rate of convergence in
-  spontaneous rupture simulations.
+  has difficulty handling some loading cases. In cases where the
+  direction of the line search tends to be nearly orthogonal to the
+  residual, the rate of convergence in the SNES iterations is
+  extremely slow. In other cases the nonlinear solver gets stuck in a
+  local minimum. We plan to improve the line search algorithm in a
+  future release in order to resolve this issue and improve the rate
+  of convergence in spontaneous rupture simulations.
 
 
 ----------------------------------------------------------------------
