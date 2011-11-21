@@ -49,6 +49,7 @@ PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, M
   PetscFunctionBegin;
   ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
   ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);
+  assert(faultIS);
   ierr = ISEqual(isrow, faultIS, &isFaultRow);CHKERRQ(ierr);
   ierr = ISEqual(iscol, faultIS, &isFaultCol);CHKERRQ(ierr);
   if (isFaultRow && isFaultCol) {
