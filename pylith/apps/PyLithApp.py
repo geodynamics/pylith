@@ -63,6 +63,13 @@ class PyLithApp(PetscApplication):
                                          factory=MemoryLogger)
     perfLogger.meta['tip'] = "Performance and memory logging."
 
+    
+    typos = pyre.inventory.str("typos", default="pedantic",
+                               validator=pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos.meta['tip'] = "Specifies the handling of unknown properties and " \
+        "facilities"
+    
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
