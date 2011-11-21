@@ -266,13 +266,15 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     const ALE::Obj<RealSection>& section = field.section();
     assert(!section.isNull());
 
-    const int localFiberDim = 
+    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
+    int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
     int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		  field.mesh().comm());
     assert(fiberDim > 0);
+
     const int enforceDim =
       (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
 
