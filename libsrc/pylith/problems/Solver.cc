@@ -210,7 +210,21 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
     _ctx.pc = *pc;
     _ctx.A = jacobian.matrix();
-    _ctx.faultFieldName = "3";
+    switch (spaceDim) {
+    case 1 :
+      _ctx.faultFieldName = "1";
+      break;
+    case 2 :
+      _ctx.faultFieldName = "2";
+      break;
+    case 3 :
+      _ctx.faultFieldName = "3";
+      break;
+    default:
+      assert(0);
+      throw std::logic_error("Unknown space dimension in "
+			     "Problems::_setupFieldSplit().");
+    } // switch
     _ctx.faultA = _jacobianPCFault;
   } // if
 } // _setupFieldSplit
