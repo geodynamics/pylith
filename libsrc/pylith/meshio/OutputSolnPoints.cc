@@ -124,7 +124,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(cs->spaceDim() == spaceDim);
 
   err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal *) points, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*) points, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
   CHECK_PETSC_ERROR(err);

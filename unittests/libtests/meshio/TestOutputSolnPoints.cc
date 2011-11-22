@@ -72,11 +72,9 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh.coordsys(&cs);
-#if 0
   MeshIOAscii iohandler;
   iohandler.filename("data/quad4.mesh");
   iohandler.read(&mesh);
-#endif
 
   OutputSolnPoints output;
   output.setupInterpolator(&mesh, points, numPoints, spaceDim);
@@ -147,11 +145,9 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh.coordsys(&cs);
-#if 0
   MeshIOAscii iohandler;
   iohandler.filename("data/hex8.mesh");
   iohandler.read(&mesh);
-#endif
 
   OutputSolnPoints output;
   output.setupInterpolator(&mesh, points, numPoints, spaceDim);
