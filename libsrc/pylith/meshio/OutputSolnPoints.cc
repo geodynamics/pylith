@@ -94,7 +94,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   // Create mesh without cells for points.
   const int meshDim = 0;
   delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim);
-  _pointsMesh->createSieveMesh(0);
+  _pointsMesh->createSieveMesh(meshDim);
   assert(_pointsMesh);
 
   scalar_array pointsArray(points, numPoints*spaceDim);
