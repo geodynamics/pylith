@@ -120,7 +120,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
   
   const spatialdata::geocoords::CoordSys* cs = _pointsMesh->coordsys();
-  assert(0 != cs);
+  assert(cs);
   assert(cs->spaceDim() == spaceDim);
 
   err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
@@ -128,6 +128,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
   CHECK_PETSC_ERROR(err);
+
 } // createPointsMesh
 
 
