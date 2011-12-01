@@ -361,11 +361,16 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 	ierr = PetscViewerASCIIPrintf(snes->ls_monitor,"    Line search: fnorm=%18.16e, gnorm=%18.16e, ynorm=%18.16e, minlambda=%18.16e, lambda=%18.16e, initial slope=%18.16e\n",(double)fnorm,(double)*gnorm,(double)*ynorm,(double)minlambda,(double)lambda,(double)initslope);CHKERRQ(ierr);
         ierr = PetscViewerASCIISubtractTab(snes->ls_monitor,((PetscObject)snes)->tablevel);CHKERRQ(ierr);
       }
-      *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
       assert(lsctx);
       Formulation* formulation = (Formulation*) lsctx;
       assert(formulation);
       formulation->printState(&w, &g, &x, &y);
+#if 0 // TEMPORARY
+      *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
+#else
+      std::cerr << "WARNING: Line search diverged ... continuing nonlinear iterations anyway in hopes that solution will converge anyway."
+		<< std::endl;
+#endif
       break;
     }
     t1 = .5*((*gnorm)*(*gnorm) - fnorm*fnorm) - lambda*initslope;
