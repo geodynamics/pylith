@@ -216,6 +216,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
   const double dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+  fault.updateStateVars(t, &fields);
 
   { // Check solution values
     // No change to Lagrange multipliers for stick case.
@@ -334,6 +335,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   const double dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+  fault.updateStateVars(t, &fields);
 
   { // Check solution values
     // Lagrange multipliers should be adjusted according to friction
@@ -457,6 +459,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
   const double dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+  fault.updateStateVars(t, &fields);
 
   //residual.view("RESIDUAL"); // DEBUGGING
 
