@@ -717,7 +717,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     } // for
 
 #if 0 // debugging
-    std::cout << "slipVertex: ";
+    std::cout << "v_fault: " << v_fault;
+    std::cout << ", slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipVertex[iDim];
     std::cout << ",  slipRateVertex: ";
@@ -807,6 +808,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get change in Lagrange multiplier computed from friction criterion.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
+
+    // If no change in the Lagrange multiplier computed from friction
+    // criterion, there are no updates, so continue.
+    double dLagrangeTpdtMag = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      dLagrangeTpdtMag += dLagrangeTpdtVertex[i]*dLagrangeTpdtVertex[i];
+    if (0.0 == dLagrangeTpdtMag)
+      continue;
 
     // Get change in relative displacement from sensitivity solve.
     assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
@@ -2248,6 +2257,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(double_array* dLagrangeT
     // if in compression and no opening
     const double frictionStress = 
       _friction->calcFriction(slipShearMag, slipRateMag, tractionNormal);
+
     if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip
