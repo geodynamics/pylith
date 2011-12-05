@@ -198,12 +198,12 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     assert(!section.isNull());
     assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
     
-    const int localFiberDim = 
+    int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
     int fiberDim = 0;
-    MPI_Allreduce((void *) &localFiberDim, (void *) &fiberDim, 1, 
-		  MPI_INT, MPI_MAX, field.mesh().comm());
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		  field.mesh().comm());
     assert(fiberDim > 0);
     const int enforceDim =
       (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
@@ -254,8 +254,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
     const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-    const int depth = (0 == label) ? cellDepth : labelId;
-    const std::string labelName = (0 == label) ?
+    const int depth = (!label) ? cellDepth : labelId;
+    const std::string labelName = (!label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
        "censored depth" : "depth") : label;
     assert(!sieveMesh->getFactory().isNull());
