@@ -40,7 +40,7 @@ dist__mpimodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _mpimodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIBS)
+	$(PETSC_LIB)
 if NO_UNDEFINED
 _mpimodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
