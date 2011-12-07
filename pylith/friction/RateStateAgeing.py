@@ -76,7 +76,7 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
          'cell': \
            {'info': [],
             'data': []}}
-    self._loggingPrefix = "FrStat "
+    self._loggingPrefix = "FrRSAg "
     return
 
 
