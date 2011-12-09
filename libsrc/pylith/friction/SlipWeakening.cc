@@ -113,7 +113,8 @@ pylith::friction::SlipWeakening::SlipWeakening(void) :
 				    _SlipWeakening::stateVars,
 				    _SlipWeakening::numStateVars,
 				    _SlipWeakening::dbStateVars,
-				    _SlipWeakening::numDBStateVars))
+				    _SlipWeakening::numDBStateVars)),
+  _forceHealing(false)
 { // constructor
 } // constructor
 
@@ -122,6 +123,14 @@ pylith::friction::SlipWeakening::SlipWeakening(void) :
 pylith::friction::SlipWeakening::~SlipWeakening(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Compute properties from values in spatial database.
+void
+pylith::friction::SlipWeakening::forceHealing(const bool flag)
+{ // forceHealing
+  _forceHealing = flag;
+} // forceHealing
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
@@ -274,11 +283,14 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
   double mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    if (stateVars[s_slipCum] < properties[p_d0]) {
+    const double slipPrev = stateVars[s_slipPrev];
+    const double slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0]) {
 	// if/else linear slip-weakening form of mu_f 
 	mu_f = properties[p_coefS] -
 	  (properties[p_coefS] - properties[p_coefD]) * 
-	  stateVars[s_slipCum] / properties[p_d0];
+	  slipCum / properties[p_d0];
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
@@ -307,7 +319,7 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   assert(_SlipWeakening::numStateVars == numStateVars);
 
   const double tolerance = 1.0e-12;
-  if (slipRate > tolerance) {
+  if (slipRate > tolerance && !_forceHealing) {
     const double slipPrev = stateVars[s_slipPrev];
 
     stateVars[s_slipPrev] = stateVars[s_slipCum];

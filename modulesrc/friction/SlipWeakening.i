@@ -36,6 +36,12 @@ namespace pylith {
       /// Destructor.
       ~SlipWeakening(void);
 
+      /** Compute properties from values in spatial database.
+       *
+       * @param flag True if forcing healing, false otherwise.
+       */
+      void forceHealing(const bool flag);
+
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
 

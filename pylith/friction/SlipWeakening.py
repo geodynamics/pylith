@@ -33,6 +33,28 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
   Factory: friction_model.
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(FrictionModel.Inventory):
+    """
+    Python object for managing SlipWeakening facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing FrictionModel facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b force_healing Force healing after every time step.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    forceHealing = pyre.inventory.bool("force_healing", default=False)
+    forceHealing.meta['tip'] = "Force healing after every time step."
+
+  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="slipweakening"):
@@ -51,11 +73,24 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
          'cell': \
            {'info': [],
             'data': []}}
-    self._loggingPrefix = "FrStat "
+    self._loggingPrefix = "FrSlWk "
     return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Setup members using inventory.
+    """
+    try:
+      FrictionModel._configure(self)
+      ModuleSlipWeakening.forceHealing(self, self.inventory.forceHealing)
+    except ValueError, err:
+      aliases = ", ".join(self.aliases)
+      raise ValueError("Error while configuring friction model "
+                       "(%s):\n%s" % (aliases, err.message))
+    return
 
   def _createModuleObj(self):
     """
