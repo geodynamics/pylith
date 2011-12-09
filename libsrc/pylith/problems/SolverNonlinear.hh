@@ -141,6 +141,18 @@ public :
 			    PetscReal *gnorm,
 			    PetscBool *flag);
 
+  /** Generic C interface for customized PETSc initial guess.
+   *
+   * @param snes PETSc SNES solver.
+   * @param initialGuessVec PETSc vector for initial guess.
+   * @param lsctx Optional context for line search (not used here).
+   * @returns PETSc error code.
+   */
+  static
+  PetscErrorCode initialGuess(PetscSNES snes,
+			      PetscVec initialGuessVec,
+			      void *lsctx);
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
