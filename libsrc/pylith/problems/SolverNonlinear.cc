@@ -98,6 +98,7 @@ pylith::problems::SolverNonlinear::initialize(
 
   err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
   err = SNESLineSearchSet(_snes, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
+  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation); CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
@@ -423,6 +424,18 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 
   PetscFunctionReturn(0);
 } // lineSearch
+
+// ----------------------------------------------------------------------
+// Generic C interface for customized PETSc initial guess.
+#undef __FUNCT__
+#define __FUNCT__ "initialGuess"
+PetscErrorCode
+pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
+						PetscVec initialGuessVec,
+						void *lsctx)
+{ // initialGuess
+  VecSet(initialGuessVec, 0.0);
+} // initialGuess
 
 // ----------------------------------------------------------------------
 // Initialize logger.
