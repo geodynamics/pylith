@@ -133,15 +133,16 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const double t
     err = VTKViewer::writeVertices(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote vertices for " << filename << std::endl;
-    if (0 == label) {
-      err = VTKViewer::writeElements(sieveMesh, _viewer);
-      CHECK_PETSC_ERROR(err);
-    } else {
-      const std::string labelName = 
-	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName, 0, _viewer);      
-      CHECK_PETSC_ERROR(err);
-    } // if
+
+    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    const int depth = (!label) ? cellDepth : labelId;
+    const std::string cLabelName = (!label) ?
+      ((sieveMesh->hasLabel("censored depth")) ?
+       "censored depth" : "depth") : label;
+    const std::string vLabelName = 
+      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+    err = VTKViewer::writeElements(sieveMesh, cLabelName, depth, vLabelName, 0,
+				   _viewer); CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote elements for " << filename << std::endl;
 
     _wroteVertexHeader = false;
