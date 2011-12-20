@@ -72,7 +72,7 @@ namespace pylith {
 
       const int numDBStateVars = 1;
       const char* dbStateVars[1] = {
-            "state-variable"
+	"state-variable",
       };
       
     } // _RateStateAgeing
@@ -255,9 +255,7 @@ pylith::friction::RateStateAgeing::_dbToStateVars(
   const int numDBValues = dbValues.size();
   assert(_RateStateAgeing::numDBStateVars == numDBValues);
 
-  const double stateVariable = dbValues[db_state];
- 
-  stateValues[s_state] = stateVariable;
+  stateValues[s_state] = dbValues[db_state];
 } // _dbToStateVars
 
 // ----------------------------------------------------------------------
@@ -311,6 +309,7 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
+#if 0
     // regularized rate and state equation
     const double f0 = properties[p_coef];
 
@@ -322,14 +321,57 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double a = properties[p_a];
 
     const double theta = stateVars[s_state];
+
     const double L = properties[p_L];
     const double b = properties[p_b];
     const double bLnTerm = b * log(slipRate0 * theta / L);
+
     const double expTerm = exp((f0 + bLnTerm)/a);
     const double sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
 
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
+
+    std::cout << "slip: " << slip
+	      << ", slipRate: " << slipRate
+	      << ", stateVar: " << theta
+	      << ", bLnTermL: " << bLnTerm
+	      << ", expTerm: " << expTerm
+	      << ", sinhArg: " << sinhArg
+	      << ", mu_f: " << mu_f
+	      << std::endl;
+#else
+
+    const double slipRateLinear = _minSlipRate;
+    const double slipRateFactor = 1.0e-3;
+
+    const double f0 = properties[p_coef];
+    const double a = properties[p_a];
+    const double b = properties[p_b];
+    const double L = properties[p_L];
+    const double slipRate0 = properties[p_slipRate0];
+    const double theta = stateVars[s_state];
+
+    if (slipRate > slipRateLinear) {
+      mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
+    } else if (slipRate > slipRateFactor*slipRateLinear) {
+      mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
+	a*(1.0-slipRateFactor) * 
+	(1.0 - slipRate/slipRateLinear) / (1.0 - slipRateFactor);
+    } else {
+      mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
+	a*(1.0-slipRateFactor);
+    } // else
+
+    friction = -mu_f * normalTraction + properties[p_cohesion];
+
+    std::cout << "slip: " << slip
+	      << ", slipRate: " << slipRate
+	      << ", stateVar: " << theta
+	      << ", mu_f: " << mu_f
+	      << std::endl;
+
+#endif
   } // if
 
   PetscLogFlops(11);
@@ -374,7 +416,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
 
   // Since regulatized friction -> 0 as slipRate -> 0, limit slip
   // rate to some minimum value
-  const double slipRateEff = std::max(_minSlipRate, slipRate);
+    const double slipRateEff = std::max(_minSlipRate, slipRate);
 
   const double dt = _dt;
   const double thetaTVertex = stateVars[s_state];
