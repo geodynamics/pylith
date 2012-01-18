@@ -58,7 +58,7 @@ def check_vertex_fields(testcase, filename, mesh, fieldNames):
     testcase.assertEqual(dimE, dim)
 
     scale = 1.0
-    if name == "traction_change":
+    if name == "traction_change" or name == "traction":
       scale *= normalizer.pressureScale().value
 
     for i in xrange(dim):

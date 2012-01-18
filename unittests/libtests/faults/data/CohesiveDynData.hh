@@ -78,6 +78,7 @@ public:
   PylithScalar* orientation; ///< Expected values for fault orientation.
   PylithScalar* area; ///< Expected values for fault area.
   PylithScalar* initialTractions; ///< Expected values for initial tractions.
+  PylithScalar* slipStickE; ///< Expected values for slip for sticking case.
   PylithScalar* fieldIncrSlipE; ///< Expected values for solution increment for slipping case.
   PylithScalar* slipSlipE; ///< Expected values for slip for slipping case.
   PylithScalar* fieldIncrOpenE; ///< Expected values for solution increment for opening case.

@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [1.6.2], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [1.7.0], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -325,6 +325,8 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/Makefile
 		tests/3d/matprops/Makefile
 		tests/3d/slipdir/Makefile
+		tests/3d/cyclicfriction/Makefile
+		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
 		tests/3d/plasticity/threehex27/Makefile
 		tests/3d/plasticity/threehex27/config/Makefile
