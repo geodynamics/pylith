@@ -54,11 +54,11 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   const char* filename = "data/quad4.mesh";
   const int numPoints = 5;
   const PylithScalar points[10] = { 
-    0.0, 0.1,
-    0.3, 0.4,
-    0.6, 0.7,
-    1.0, 1.1,
-    1.3, 1.4,
+    0.0,  0.1,
+    0.3,  0.4,
+   -0.6, -0.7,
+   -1.0,  0.9,
+   -0.3,  0.8,
   };
   const int nvertices = numPoints;
   const int verticesE[5] = { 5, 6, 7, 8, 9 };
@@ -72,11 +72,9 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh.coordsys(&cs);
-#if 0
   MeshIOAscii iohandler;
   iohandler.filename("data/quad4.mesh");
   iohandler.read(&mesh);
-#endif
 
   OutputSolnPoints output;
   output.setupInterpolator(&mesh, points, numPoints, spaceDim);
@@ -129,11 +127,11 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   const char* filename = "data/quad4.mesh";
   const int numPoints = 5;
   const PylithScalar points[15] = { 
-    0.0, 0.1, 0.2,
-    0.3, 0.4, 0.5,
-    0.6, 0.7, 0.8,
-    1.0, 1.1, 1.2,
-    1.3, 1.4, 1.5,
+    0.0,  0.1,  0.2,
+    0.3, -0.4,  0.5,
+    0.6,  0.7, -0.8,
+   -1.0,  0.1, -0.3,
+    0.3,  0.8,  0.5,
   };
   const int nvertices = numPoints;
   const int verticesE[5] = { 5, 6, 7, 8, 9 };
@@ -147,11 +145,9 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh.coordsys(&cs);
-#if 0
   MeshIOAscii iohandler;
   iohandler.filename("data/hex8.mesh");
   iohandler.read(&mesh);
-#endif
 
   OutputSolnPoints output;
   output.setupInterpolator(&mesh, points, numPoints, spaceDim);
