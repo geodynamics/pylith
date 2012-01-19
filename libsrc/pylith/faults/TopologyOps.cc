@@ -169,7 +169,7 @@ pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
   }
 
   // This only works for uninterpolated meshes
-  assert((mesh->depth() == 1) || (mesh->depth() == -1));
+  assert((mesh->depth() == 1) || (mesh->depth() == 0));
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> cV(std::max(1, sieve->getMaxConeSize()));
   for(PointSet::const_iterator fv_iter = fvBegin; fv_iter != fvEnd; ++fv_iter) {
