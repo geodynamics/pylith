@@ -31,6 +31,7 @@ testfriction_SOURCES = \
 	TestFrictionModel.cc \
 	TestStaticFriction.cc \
 	TestSlipWeakening.cc \
+	TestSlipWeakeningTime.cc \
 	TestRateStateAgeing.cc \
 	TestTimeWeakening.cc
 
@@ -39,6 +40,7 @@ noinst_HEADERS = \
 	TestFrictionModel.hh \
 	TestStaticFriction.hh \
 	TestSlipWeakening.hh \
+	TestSlipWeakeningTime.hh \
 	TestRateStateAgeing.hh \
 	TestTimeWeakening.hh
 
@@ -47,6 +49,7 @@ testfriction_SOURCES += \
 	data/FrictionModelData.cc \
 	data/StaticFrictionData.cc \
 	data/SlipWeakeningData.cc \
+	data/SlipWeakeningTimeData.cc \
 	data/RateStateAgeingData.cc \
 	data/TimeWeakeningData.cc
 
@@ -55,6 +58,7 @@ noinst_HEADERS += \
 	data/FrictionModelData.hh \
 	data/StaticFrictionData.hh \
 	data/SlipWeakeningData.hh \
+	data/SlipWeakeningTimeData.hh \
 	data/RateStateAgeingData.hh \
 	data/TimeWeakeningData.hh
 

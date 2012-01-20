@@ -98,10 +98,12 @@ namespace pylith {
        *  multiplier constraints.
        *
        * @param fields Solution fields
+       * @param t Current time.
        * @param jacobian Jacobian of the system.
        */
       virtual
       void adjustSolnLumped(pylith::topology::SolutionFields* fields,
+			    const PylithScalar t,
 			    const pylith::topology::Field<pylith::topology::Mesh>& jacobian);
 
       /** Verify configuration is acceptable.

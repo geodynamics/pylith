@@ -122,10 +122,12 @@ public :
    *  multiplier constraints.
    *
    * @param fields Solution fields.
+   * @param t Current time.
    * @param jacobian Jacobian of the system.
    */
   void adjustSolnLumped(topology::SolutionFields* fields,
-      const topology::Field<topology::Mesh>& jacobian);
+			const PylithScalar t,
+			const topology::Field<topology::Mesh>& jacobian);
 
   /** Get vertex field associated with integrator.
    *
@@ -202,11 +204,13 @@ private :
   /** Constrain solution space with lumped Jacobian in 1-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param t Current time.
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace1D(scalar_array* dLagrangeTpdt,
+			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,
@@ -215,11 +219,13 @@ private :
   /** Constrain solution space with lumped Jacobian in 2-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param t Current time.
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace2D(scalar_array* dLagrangeTpdt,
+			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,
@@ -228,11 +234,13 @@ private :
   /** Constrain solution space with lumped Jacobian in 3-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
+   * @param t Current time.
    * @param slip Slip assoc. w/Lagrange multiplier vertex.
    * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
    * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
    */
   void _constrainSolnSpace3D(scalar_array* dLagrangeTpdt,
+			     const PylithScalar t,
 			     const scalar_array& slip,
 			     const scalar_array& slipRate,
 			     const scalar_array& tractionTpdt,

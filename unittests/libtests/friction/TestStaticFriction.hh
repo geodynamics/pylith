@@ -24,8 +24,8 @@
  * C++ unit testing for StaticFriction.
  */
 
-#if !defined(pylith_friction_testelasticisotropic3d_hh)
-#define pylith_friction_testelasticisotropic3d_hh
+#if !defined(pylith_friction_teststaticfriction_hh)
+#define pylith_friction_teststaticfriction_hh
 
 #include "TestFrictionModel.hh"
 
@@ -74,7 +74,7 @@ public :
 
 }; // class TestStaticFriction
 
-#endif // pylith_friction_testelasticisotropic3d_hh
+#endif // pylith_friction_teststaticfriction_hh
 
 
 // End of file 
