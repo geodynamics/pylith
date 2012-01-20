@@ -304,7 +304,8 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
 // ----------------------------------------------------------------------
 // Compute friction at vertex.
 PylithScalar
-pylith::friction::FrictionModel::calcFriction(const PylithScalar slip,
+pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
+					      const PylithScalar slip,
                                               const PylithScalar slipRate,
                                               const PylithScalar normalTraction)
 { // calcFriction
@@ -316,7 +317,7 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar slip,
     &_propsStateVarsVertex[_propsFiberDim] : 0;
 
   const PylithScalar friction =
-    _calcFriction(slip, slipRate, normalTraction,
+    _calcFriction(t, slip, slipRate, normalTraction,
 		  propertiesVertex, _propsFiberDim,
 		  stateVarsVertex, _varsFiberDim);
   
@@ -326,7 +327,8 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::FrictionModel::updateStateVars(const PylithScalar slip,
+pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
+						 const PylithScalar slip,
 						 const PylithScalar slipRate,
 						 const PylithScalar normalTraction,
 						 const int vertex)
@@ -343,7 +345,7 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar slip,
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   PylithScalar* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
   
-  _updateStateVars(slip, slipRate, normalTraction,
+  _updateStateVars(t, slip, slipRate, normalTraction,
 		   &stateVarsVertex[0], _varsFiberDim,
 		   &propertiesVertex[0], _propsFiberDim);
 
@@ -355,13 +357,15 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::FrictionModel::_updateStateVars(const PylithScalar slip,
-    const PylithScalar slipRate,
-    const PylithScalar normalTraction,
-    PylithScalar* const stateVars,
-    const int numStateVars,
-    const PylithScalar* properties,
-    const int numProperties)
+pylith::friction::FrictionModel::_updateStateVars(
+				const PylithScalar t,
+				const PylithScalar slip,
+				const PylithScalar slipRate,
+				const PylithScalar normalTraction,
+				PylithScalar* const stateVars,
+				const int numStateVars,
+				const PylithScalar* properties,
+				const int numProperties)
 { // _updateStateVars
 } // _updateStateVars
 

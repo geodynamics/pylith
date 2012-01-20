@@ -136,15 +136,17 @@ namespace pylith {
        * @pre Must call retrievePropsAndVars for cell before calling
        * calcFriction().
        *
+       * @param t Current time.
        * @param slip Current slip at location.
        * @param slipRate Current slip rate at location.
        * @param normalTraction Normal traction at location.
        *
        * @returns Friction (magnitude of shear traction) at vertex.
        */
-      PylithScalar calcFriction(const PylithScalar slip,
-			  const PylithScalar slipRate,
-			  const PylithScalar normalTraction);
+      PylithScalar calcFriction(const PylithScalar t,
+				const PylithScalar slip,
+				const PylithScalar slipRate,
+				const PylithScalar normalTraction);
   
 
       /** Compute friction at vertex.
@@ -152,12 +154,14 @@ namespace pylith {
        * @pre Must call retrievePropsAndVars for cell before calling
        * calcFriction().
        *
+       * @param t Current time.
        * @param slip Current slip at location.
        * @param slipRate Current slip rate at location.
        * @param normalTraction Normal traction at location.
        * @param vertex Finite-element vertex on friction interface.
        */
-      void updateStateVars(const PylithScalar slip,
+      void updateStateVars(const PylithScalar t,
+			   const PylithScalar slip,
 			   const PylithScalar slipRate,
 			   const PylithScalar normalTraction,
 			   const int vertex);
@@ -223,6 +227,7 @@ namespace pylith {
 
       /** Compute friction from properties and state variables.
        *
+       * @param t Current time.
        * @param slip Current slip at location.
        * @param slipRate Current slip rate at location.
        * @param normalTraction Normal traction at location.
@@ -232,23 +237,26 @@ namespace pylith {
        * @param numStateVars Number of state variables.
        */
       virtual
-      PylithScalar _calcFriction(const PylithScalar slip,
-			   const PylithScalar slipRate,
-			   const PylithScalar normalTraction,
-			   const PylithScalar* properties,
-			   const int numProperties,
-			   const PylithScalar* stateVars,
-			   const int numStateVars) = 0;
+      PylithScalar _calcFriction(const PylithScalar t,
+				 const PylithScalar slip,
+				 const PylithScalar slipRate,
+				 const PylithScalar normalTraction,
+				 const PylithScalar* properties,
+				 const int numProperties,
+				 const PylithScalar* stateVars,
+				 const int numStateVars) = 0;
 
       /** Update state variables (for next time step).
        *
+       * @param t Current time.
        * @param stateVars State variables at location.
        * @param numStateVars Number of state variables.
        * @param properties Properties at location.
        * @param numProperties Number of properties.
        */
       virtual
-      void _updateStateVars(const PylithScalar slip,
+      void _updateStateVars(const PylithScalar t,
+			    const PylithScalar slip,
 			    const PylithScalar slipRate,
 			    PylithScalar* const stateVars,
 			    const int numStateVars,

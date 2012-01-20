@@ -28,6 +28,7 @@ swig_sources = \
 	FrictionModel.i \
 	StaticFriction.i \
 	SlipWeakening.i \
+	SlipWeakeningTime.i \
 	RateStateAgeing.i \
 	TimeWeakening.i
 
@@ -47,7 +48,7 @@ dist__frictionmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 _frictionmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIBS)
+	$(PETSC_LIB)
 if ENABLE_CUBIT
   _frictionmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif

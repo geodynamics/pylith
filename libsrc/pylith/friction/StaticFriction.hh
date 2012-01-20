@@ -78,6 +78,7 @@ protected :
 
   /** Compute friction from properties and state variables.
    *
+   * @param t Time in simulation.
    * @param slip Current slip at location.
    * @param slipRate Current slip rate at location.
    * @param normalTraction Normal traction at location.
@@ -86,13 +87,14 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  PylithScalar _calcFriction(const PylithScalar slip,
-		       const PylithScalar slipRate,
-		       const PylithScalar normalTraction,
-		       const PylithScalar* properties,
-		       const int numProperties,
-		       const PylithScalar* stateVars,
-		       const int numStateVars);
+  PylithScalar _calcFriction(const PylithScalar t,
+			     const PylithScalar slip,
+			     const PylithScalar slipRate,
+			     const PylithScalar normalTraction,
+			     const PylithScalar* properties,
+			     const int numProperties,
+			     const PylithScalar* stateVars,
+			     const int numStateVars);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
