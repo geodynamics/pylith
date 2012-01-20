@@ -24,8 +24,8 @@
  * C++ unit testing for SlipWeakening.
  */
 
-#if !defined(pylith_friction_testelasticisotropic3d_hh)
-#define pylith_friction_testelasticisotropic3d_hh
+#if !defined(pylith_friction_testslipweakening_hh)
+#define pylith_friction_testslipweakening_hh
 
 #include "TestFrictionModel.hh"
 
@@ -74,7 +74,7 @@ public :
 
 }; // class TestSlipWeakening
 
-#endif // pylith_friction_testelasticisotropic3d_hh
+#endif // pylith_friction_testslipweakening_hh
 
 
 // End of file 

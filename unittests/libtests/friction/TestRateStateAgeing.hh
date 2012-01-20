@@ -24,8 +24,8 @@
  * C++ unit testing for RateStateAgeing.
  */
 
-#if !defined(pylith_friction_testelasticisotropic3d_hh)
-#define pylith_friction_testelasticisotropic3d_hh
+#if !defined(pylith_friction_testslipweakeningtime_hh)
+#define pylith_friction_testslipweakeningtime_hh
 
 #include "TestFrictionModel.hh"
 
@@ -78,7 +78,7 @@ public :
 
 }; // class TestRateStateAgeing
 
-#endif // pylith_friction_testelasticisotropic3d_hh
+#endif // pylith_friction_testslipweakeningtime_hh
 
 
 // End of file 

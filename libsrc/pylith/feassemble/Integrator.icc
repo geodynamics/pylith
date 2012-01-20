@@ -148,6 +148,7 @@ inline
 void
 pylith::feassemble::Integrator<quadrature_type>::adjustSolnLumped(
 			topology::SolutionFields* fields,
+			const PylithScalar t,
 			const topology::Field<topology::Mesh>& jacobian) {
 } // adjustSolnLumped
 

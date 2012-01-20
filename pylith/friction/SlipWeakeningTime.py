@@ -16,17 +16,18 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/friction/SlipWeakening.py
+## @file pylith/friction/SlipWeakeningTime.py
 ##
-## @brief Python object implementing slip Weakening.
+## @brief Python object implementing slip weakening with forced
+## weakening at a give time (sometimes used for nucleation).
 ##
 ## Factory: friction_model.
 
 from FrictionModel import FrictionModel
-from friction import SlipWeakening as ModuleSlipWeakening
+from friction import SlipWeakeningTime as ModuleSlipWeakeningTime
 
-# SlipWeakening class
-class SlipWeakening(FrictionModel, ModuleSlipWeakening):
+# SlipWeakeningTime class
+class SlipWeakeningTime(FrictionModel, ModuleSlipWeakeningTime):
   """
   Python object implementing Slip Weakening.
 
@@ -45,13 +46,14 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
            {'info': ["static_coefficient",
                      "dynamic_coefficient",
                      "slip_weakening_parameter",
-                     "cohesion"],
+                     "cohesion",
+                     "weakening_time"],
             'data': ["cumulative_slip",
                      "previous_slip"]},
          'cell': \
            {'info': [],
             'data': []}}
-    self._loggingPrefix = "FrSW "
+    self._loggingPrefix = "FrSWT "
     return
 
 
@@ -61,7 +63,7 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
     """
     Call constructor for module object for access to C++ object.
     """
-    ModuleSlipWeakening.__init__(self)
+    ModuleSlipWeakeningTime.__init__(self)
     return
   
 
@@ -69,9 +71,9 @@ class SlipWeakening(FrictionModel, ModuleSlipWeakening):
 
 def friction_model():
   """
-  Factory associated with SlipWeakening.
+  Factory associated with SlipWeakeningTime.
   """
-  return SlipWeakening()
+  return SlipWeakeningTime()
 
 
 # End of file 

@@ -2,40 +2,46 @@
 //
 // ----------------------------------------------------------------------
 //
-//                           Brad T. Aagaard
-//                        U.S. Geological Survey
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
 //
-// {LicenseText}
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
 //
 // ----------------------------------------------------------------------
 //
 
 /**
- * @file unittests/libtests/friction/TestTimeWeakening.hh
+ * @file unittests/libtests/friction/TestSlipWeakeningTime.hh
  *
- * @brief C++ TestTimeWeakening object
+ * @brief C++ TestSlipWeakeningTime object
  *
- * C++ unit testing for TimeWeakening.
+ * C++ unit testing for SlipWeakeningTime.
  */
 
-#if !defined(pylith_friction_testtimeweakening_hh)
-#define pylith_friction_testtimeweakening_hh
+#if !defined(pylith_friction_testslipweakeningtime_hh)
+#define pylith_friction_testslipweakeningtime_hh
 
 #include "TestFrictionModel.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace friction {
-    class TestTimeWeakening;
+    class TestSlipWeakeningTime;
   } // friction
 } // pylith
 
-/// C++ unit testing for TimeWeakening
-class pylith::friction::TestTimeWeakening : public TestFrictionModel
-{ // class TestTimeWeakening
+/// C++ unit testing for SlipWeakeningTime
+class pylith::friction::TestSlipWeakeningTime : public TestFrictionModel
+{ // class TestSlipWeakeningTime
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestTimeWeakening );
+  CPPUNIT_TEST_SUITE( TestSlipWeakeningTime );
 
   CPPUNIT_TEST( testPropertiesMetadata );
   CPPUNIT_TEST( testStateVarsMetadata );
@@ -66,9 +72,9 @@ public :
   /// Test hasPropStateVar().
   void testHasPropStateVar(void);
 
-}; // class TestTimeWeakening
+}; // class TestSlipWeakeningTime
 
-#endif // pylith_friction_testtimeweakening_hh
+#endif // pylith_friction_testslipweakeningtime_hh
 
 
 // End of file 

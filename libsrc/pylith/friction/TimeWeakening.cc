@@ -247,13 +247,14 @@ pylith::friction::TimeWeakening::_dimStateVars(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
 PylithScalar
-pylith::friction::TimeWeakening::_calcFriction(const PylithScalar slip,
-						const PylithScalar slipRate,
-						const PylithScalar normalTraction,
-						const PylithScalar* properties,
-						const int numProperties,
-						const PylithScalar* stateVars,
-						const int numStateVars)
+pylith::friction::TimeWeakening::_calcFriction(const PylithScalar t,
+					       const PylithScalar slip,
+					       const PylithScalar slipRate,
+					       const PylithScalar normalTraction,
+					       const PylithScalar* properties,
+					       const int numProperties,
+					       const PylithScalar* stateVars,
+					       const int numStateVars)
 { // _calcFriction
   assert(properties);
   assert(_TimeWeakening::numProperties == numProperties);
@@ -285,7 +286,8 @@ pylith::friction::TimeWeakening::_calcFriction(const PylithScalar slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::TimeWeakening::_updateStateVars(const PylithScalar slip,
+pylith::friction::TimeWeakening::_updateStateVars(const PylithScalar t,
+						  const PylithScalar slip,
 						  const PylithScalar slipRate,
 						  const PylithScalar normalTraction,
 						  PylithScalar* const stateVars,

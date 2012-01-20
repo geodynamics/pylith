@@ -24,6 +24,7 @@ subpkginclude_HEADERS = \
 	FrictionModel.icc \
 	StaticFriction.hh \
 	SlipWeakening.hh \
+	SlipWeakeningTime.hh \
 	RateStateAgeing.hh \
 	TimeWeakening.hh \
 	frictionfwd.hh

@@ -293,13 +293,14 @@ pylith::friction::RateStateAgeing::_dimStateVars(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
 PylithScalar
-pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar slip,
-						const PylithScalar slipRate,
-						const PylithScalar normalTraction,
-						const PylithScalar* properties,
-						const int numProperties,
-						const PylithScalar* stateVars,
-						const int numStateVars)
+pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
+						 const PylithScalar slip,
+						 const PylithScalar slipRate,
+						 const PylithScalar normalTraction,
+						 const PylithScalar* properties,
+						 const int numProperties,
+						 const PylithScalar* stateVars,
+						 const int numStateVars)
 { // _calcFriction
   assert(properties);
   assert(_RateStateAgeing::numProperties == numProperties);
@@ -342,13 +343,14 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::RateStateAgeing::_updateStateVars(const PylithScalar slip,
-						  const PylithScalar slipRate,
-						  const PylithScalar normalTraction,
-						  PylithScalar* const stateVars,
-						  const int numStateVars,
-						  const PylithScalar* properties,
-						  const int numProperties)
+pylith::friction::RateStateAgeing::_updateStateVars(const PylithScalar t,
+						    const PylithScalar slip,
+						    const PylithScalar slipRate,
+						    const PylithScalar normalTraction,
+						    PylithScalar* const stateVars,
+						    const int numStateVars,
+						    const PylithScalar* properties,
+						    const int numProperties)
 { // _updateStateVars
   assert(properties);
   assert(_RateStateAgeing::numProperties == numProperties);
