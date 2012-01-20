@@ -276,6 +276,7 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
+  const PylithScalar t = 1.5;
   const PylithScalar slip = 1.2;
   const PylithScalar slipRate = -2.3;
   const PylithScalar normalTraction = -2.4;
@@ -292,7 +293,8 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 
   friction.timeStep(data.dt);
   friction.retrievePropsStateVars(vertex);
-  const PylithScalar frictionV = friction.calcFriction(slip, slipRate, normalTraction);
+  const PylithScalar frictionV = 
+    friction.calcFriction(t, slip, slipRate, normalTraction);
 
   const PylithScalar tolerance = 1.0e-6;
   if (0.0 != frictionE)
@@ -313,6 +315,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     StaticFrictionData data;
     _initialize(&mesh, &fault, &friction, &data);
     
+    const PylithScalar t = 1.5;
     const PylithScalar slip = 1.2;
     const PylithScalar slipRate = -2.3;
     const PylithScalar normalTraction = -2.4;
@@ -321,7 +324,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     
     friction.timeStep(data.dt);
     friction.retrievePropsStateVars(vertex);
-    friction.updateStateVars(slip, slipRate, normalTraction, vertex);
+    friction.updateStateVars(t, slip, slipRate, normalTraction, vertex);
     
     // no outcome to test
   } // Test with friction model without state variables
@@ -348,6 +351,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     fault.initialize(mesh, upDir);
     const int vertex = 2;
 
+    const PylithScalar t = 1.5;
     const PylithScalar slip = 0.25;
     const PylithScalar slipRate = 0.64;
     const PylithScalar normalTraction = -2.3;
@@ -366,7 +370,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
       friction._propsStateVarsVertex[friction._propsFiberDim+i] = stateVars[i];
 
     friction.timeStep(dt);
-    friction.updateStateVars(slip, slipRate, normalTraction, vertex);
+    friction.updateStateVars(t, slip, slipRate, normalTraction, vertex);
     
     const PylithScalar tolerance = 1.0e-06;
     CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
@@ -656,15 +660,16 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
       properties[i] = _data->properties[iLoc*numPropsVertex+i];
     for (int i=0; i < numVarsVertex; ++i)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
+    const PylithScalar t = 1.5;
     const PylithScalar slip = _data->slip[iLoc];
     const PylithScalar slipRate = _data->slipRate[iLoc];
     const PylithScalar normalTraction = _data->normalTraction[iLoc];
 
     _friction->timeStep(_data->dt);
-    const PylithScalar friction = _friction->_calcFriction(
-					slip, slipRate, normalTraction,
-					&properties[0], properties.size(),
-					&stateVars[0], stateVars.size());
+    const PylithScalar friction = 
+      _friction->_calcFriction(t, slip, slipRate, normalTraction,
+			       &properties[0], properties.size(),
+			       &stateVars[0], stateVars.size());
     
     const PylithScalar frictionE = _data->friction[iLoc];
     
@@ -695,6 +700,7 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
   scalar_array stateVars(numVarsVertex);
 
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    const PylithScalar t = 1.5;
     const PylithScalar slip = _data->slip[iLoc];
     const PylithScalar slipRate = _data->slipRate[iLoc];
     const PylithScalar normalTraction = _data->normalTraction[iLoc];
@@ -704,7 +710,7 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
       stateVars[i] = _data->stateVars[iLoc*numVarsVertex+i];
 
     _friction->timeStep(_data->dt);
-    _friction->_updateStateVars(slip, slipRate, normalTraction,
+    _friction->_updateStateVars(t, slip, slipRate, normalTraction,
 				&stateVars[0], stateVars.size(),
 				&properties[0], properties.size());
     

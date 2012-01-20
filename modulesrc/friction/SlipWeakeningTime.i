@@ -16,25 +16,25 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/friction/SlipWeakening.i
+/** @file modulesrc/friction/SlipWeakeningTime.i
  *
- * Python interface to C++ SlipWeakening object.
+ * Python interface to C++ SlipWeakeningTime object.
  */
 
 namespace pylith {
   namespace friction {
 
-    class SlipWeakening : public FrictionModel
-    { // class SlipWeakening
+    class SlipWeakeningTime : public FrictionModel
+    { // class SlipWeakeningTime
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
 
       /// Default constructor.
-      SlipWeakening(void);
+      SlipWeakeningTime(void);
 
       /// Destructor.
-      ~SlipWeakening(void);
+      ~SlipWeakeningTime(void);
 
       // PROTECTED METHODS //////////////////////////////////////////////
     protected :
@@ -83,7 +83,7 @@ namespace pylith {
 				 const PylithScalar* stateVars,
 				 const int numStateVars);
 
-    }; // class SlipWeakening
+    }; // class SlipWeakeningTime
 
   } // friction
 } // pylith

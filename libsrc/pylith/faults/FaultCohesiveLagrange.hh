@@ -174,10 +174,12 @@ public :
    *  multiplier constraints.
    *
    * @param fields Solution fields
+   * @param t Current time.
    * @param jacobian Jacobian of the system.
    */
   virtual
   void adjustSolnLumped(topology::SolutionFields* fields,
+			const PylithScalar t,
 			const topology::Field<topology::Mesh>& jacobian);
 
   /** Verify configuration is acceptable.

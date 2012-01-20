@@ -29,6 +29,7 @@
 #include "pylith/friction/FrictionModel.hh"
 #include "pylith/friction/StaticFriction.hh"
 #include "pylith/friction/SlipWeakening.hh"
+#include "pylith/friction/SlipWeakeningTime.hh"
 #include "pylith/friction/RateStateAgeing.hh"
 #include "pylith/friction/TimeWeakening.hh"
 
@@ -64,6 +65,7 @@ import_array();
 %include "FrictionModel.i"
 %include "StaticFriction.i"
 %include "SlipWeakening.i"
+%include "SlipWeakeningTime.i"
 %include "RateStateAgeing.i"
 %include "TimeWeakening.i"
 

@@ -597,7 +597,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   jacobian.complete();
 
   topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
-  fault.adjustSolnLumped(&fields, jacobian);
+  fault.adjustSolnLumped(&fields, t, jacobian);
   const topology::Field<topology::Mesh>& dispIncrAdj = 
     fields.get("dispIncr adjust");
   solution += dispIncrAdj;

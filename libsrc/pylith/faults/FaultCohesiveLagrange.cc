@@ -762,6 +762,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 // multiplier constraints.
 void
 pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields* const fields,
+							const PylithScalar t,
                                                         const topology::Field<
 							topology::Mesh>& jacobian)
 { // adjustSolnLumped

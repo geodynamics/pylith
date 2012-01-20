@@ -415,11 +415,11 @@ pylith::problems::Formulation::adjustSolnLumped(void)
 
   int numIntegrators = _meshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _meshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+    _meshIntegrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
 
   numIntegrators = _submeshIntegrators.size();
   for (int i=0; i < numIntegrators; ++i)
-    _submeshIntegrators[i]->adjustSolnLumped(_fields, *_jacobianLumped);
+    _submeshIntegrators[i]->adjustSolnLumped(_fields, _t, *_jacobianLumped);
 
   adjust.complete();
   solution += adjust;

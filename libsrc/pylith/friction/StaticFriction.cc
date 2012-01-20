@@ -144,7 +144,8 @@ pylith::friction::StaticFriction::_dimProperties(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
 PylithScalar
-pylith::friction::StaticFriction::_calcFriction(const PylithScalar slip,
+pylith::friction::StaticFriction::_calcFriction(const PylithScalar t,
+						const PylithScalar slip,
 						const PylithScalar slipRate,
 						const PylithScalar normalTraction,
 						const PylithScalar* properties,
