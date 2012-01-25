@@ -51,11 +51,34 @@ ALE::MeshRefiner<cellrefiner_type>::refine(const Obj<mesh_type>& newMesh,
 				      cellrefiner_type& refiner)
 { // refine
   assert(!mesh.isNull());
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("RefinedMesh");
+
   if (mesh->hasLabel("censored depth")) {
     _refineCensored(newMesh, mesh, refiner);
   } else {
     _refine(newMesh, mesh, refiner);
   } // if/else
+
+  logger.stagePush("RefinedMeshStratification");
+  _stratify(newMesh);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshOverlap");
+  _calcNewOverlap(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshIntSections");
+  _createIntSections(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshLabels");
+  _createLabels(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePop(); // RefinedMesh
 } // refine
 
 // ----------------------------------------------------------------------
@@ -73,7 +96,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(1);
-  logger.stagePush("RefinedMesh");
   logger.stagePush("RefinedMeshCreation");
 
   // Calculate order in old mesh.
@@ -195,27 +217,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
 
   logger.stagePop();
-  logger.stagePush("RefinedMeshStratification");
-
-  _stratify(newMesh);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshOverlap");
-
-  _calcNewOverlap(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshIntSections");
-
-  _createIntSections(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshLabels");
-
-  _createLabels(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePop(); // Mesh
 } // _refine
   
 // ----------------------------------------------------------------------
@@ -431,11 +432,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
   } // for
 
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
-
-  _stratify(newMesh);
-  _calcNewOverlap(newMesh, mesh, refiner);
-  _createIntSections(newMesh, mesh, refiner);
-  _createLabels(newMesh, mesh, refiner);
 
   // Create sensored depth
   const ALE::Obj<SieveFlexMesh::label_type>& censoredLabel = newMesh->createLabel("censored depth");
