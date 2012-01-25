@@ -146,7 +146,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     CHECK_PETSC_ERROR(err);
 
     // Account for censored cells
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    int cellDepth = sieveMesh->depth();
+    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
@@ -221,12 +223,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while opening HDF5 file "
-	<< _filename << ".\n" << err.what();
+	<< _hdf5Filename() << ".\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while opening HDF5 file "
-	<< _filename << ".\n";
+	<< _hdf5Filename() << ".\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // open
@@ -346,12 +348,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _filename << "'.\n" << err.what();
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _filename << "'.\n";
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeVertexField
@@ -372,11 +374,14 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
   
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    PetscErrorCode err = 0;
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    int cellDepth = sieveMesh->depth();
+    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
@@ -400,7 +405,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
 		  field.mesh().comm());
     assert(fiberDim > 0);
 
-    PetscErrorCode err = 0;
     
     if (_timesteps.find(field.label()) == _timesteps.end())
       _timesteps[field.label()] = 0;
@@ -434,12 +438,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _filename << "'.\n" << err.what();
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to HDF5 file '" << _filename << "'.\n";
+	<< t << " to HDF5 file '" << _hdf5Filename() << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeCellField
