@@ -830,7 +830,7 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
     } // if
   } // for
   
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   sendOverlap->view("OLD SEND OVERLAP");
   recvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
