@@ -795,6 +795,47 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   // We have to do flexible assembly since we add the new vertices separately
   newSendOverlap->assemble();
   newRecvOverlap->assemble();
+
+
+  // Verify size of new send/recv overlaps are at least as big as the
+  // original ones.
+  if (newSendOverlap->getNumRanks() != sendOverlap->getNumRanks() ||
+      newRecvOverlap->getNumRanks() != recvOverlap->getNumRanks() ||
+      newSendOverlap->getNumRanks() != newRecvOverlap->getNumRanks()) {
+    
+    std::cerr << "DEBUGGING INFO"
+	      << ", newSendOverlap: " << newSendOverlap->getNumRanks()
+	      << ", sendOverlap: " << sendOverlap->getNumRanks()
+	      << ", newRecvOverlap: " << newRecvOverlap->getNumRanks()
+	      << ", recvOverlap: " << recvOverlap->getNumRanks()
+	      << std::endl;
+    throw std::logic_error("Error in constructing new overlaps during mesh "
+			   "refinement.\nMismatch in number of ranks.");
+  } // if
+
+  const int numRanks = newSendOverlap->getNumRanks();
+  for (int isend=0; isend < numRanks; ++isend) {
+    const int rank = newSendOverlap->getRank(isend);
+    const int irecv = newRecvOverlap->getRankIndex(rank);
+    if (rank != sendOverlap->getRank(isend) ||
+	rank != recvOverlap->getRank(irecv)) {
+      throw std::logic_error("Error in constructing new overlaps during mesh "
+			     "refinement.\nMismatch in ranks.");
+    } // if
+  
+    if (newSendOverlap->getNumPointsByRank(rank) < sendOverlap->getNumPointsByRank(rank) ||
+	newRecvOverlap->getNumPointsByRank(rank) < sendOverlap->getNumPointsByRank(rank)) {
+      throw std::logic_error("Error in constructing new overlaps during mesh "
+			     "refinement.\nInvalid size for new overlaps.");
+    } // if
+  } // for
+  
+#if 1 // DEBUGGING
+  sendOverlap->view("OLD SEND OVERLAP");
+  recvOverlap->view("OLD RECV OVERLAP");
+  newSendOverlap->view("NEW SEND OVERLAP");
+  newRecvOverlap->view("NEW RECV OVERLAP");
+#endif
 } // _calcNewOverlap
 
 
