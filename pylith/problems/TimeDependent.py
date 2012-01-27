@@ -82,8 +82,11 @@ class TimeDependent(Problem):
     bc/quadrature, etc.).
     """
     self._setupLogging()
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
     
-    self._info.log("Pre-initializing problem.")
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing problem.")
     self.mesh = mesh
     self.formulation.preinitialize(mesh, self.materials, self.bc,
                                    self.interfaces, self.gravityField)
@@ -104,7 +107,11 @@ class TimeDependent(Problem):
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
-    self._info.log("Initializing problem.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Initializing problem.")
     self.checkpointTimer.initialize(self.normalizer)
     self.formulation.initialize(self.dimension, self.normalizer)
     return
@@ -114,7 +121,11 @@ class TimeDependent(Problem):
     """
     Solve time dependent problem.
     """
-    self._info.log("Solving problem.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
     t = self.formulation.getStartTime()
@@ -122,7 +133,8 @@ class TimeDependent(Problem):
     while t < self.formulation.getTotalTime():
       self._eventLogger.stagePush("Prestep")
       tsec = self.normalizer.dimensionalize(t, timeScale)
-      self._info.log("Main time loop, current time is t=%s" % tsec)
+      if 0 == comm.rank:
+        self._info.log("Main time loop, current time is t=%s" % tsec)
       
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
@@ -131,19 +143,22 @@ class TimeDependent(Problem):
       dt = self.formulation.getTimeStep()
       dtsec = self.normalizer.dimensionalize(dt, timeScale)
 
-      self._info.log("Preparing to advance solution from time t=%s to t=%s." %\
-                     (tsec, tsec+dtsec))
+      if 0 == comm.rank:
+        self._info.log("Preparing to advance solution from time t=%s to t=%s." %\
+                         (tsec, tsec+dtsec))
       self.formulation.prestep(t, dt)
       self._eventLogger.stagePop()
 
-      self._info.log("Advancing solution from t=%s to t=%s." % \
-                     (tsec, tsec+dtsec))
+      if 0 == comm.rank:
+        self._info.log("Advancing solution from t=%s to t=%s." % \
+                         (tsec, tsec+dtsec))
       self._eventLogger.stagePush("Step")
       self.formulation.step(t, dt)
       self._eventLogger.stagePop()
 
-      self._info.log("Finishing advancing solution from t=%s to t=%s." % \
-                     (tsec, tsec+dtsec))
+      if 0 == comm.rank:
+        self._info.log("Finishing advancing solution from t=%s to t=%s." % \
+                         (tsec, tsec+dtsec))
       self._eventLogger.stagePush("Poststep")
       self.formulation.poststep(t, dt)
       self._eventLogger.stagePop()
