@@ -159,7 +159,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // Write cells
 
     // Account for censored cells
-    int cellDepth = sieveMesh->depth();
+    int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
     err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
 			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
@@ -440,7 +440,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    int cellDepth = sieveMesh->depth();
+    int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
     err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
 			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
