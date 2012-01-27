@@ -144,7 +144,10 @@ class Problem(PetscComponent):
     """
     Verify compatibility of configuration.
     """
-    self._info.log("Verifying compatibility of problem configuration.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Verifying compatibility of problem configuration.")
     if self.dimension != self.mesh.dimension():
       raise ValueError, \
             "Spatial dimension of problem is '%d' but mesh contains cells " \
