@@ -7,7 +7,7 @@ playback 'geometry.jou'
 # Set discretization size
 # ----------------------------------------------------------------------
 volume all scheme tetmesh
-volume all size 500
+volume all size 1500
 
 # ----------------------------------------------------------------------
 # Generate the mesh
