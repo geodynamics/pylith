@@ -33,7 +33,7 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
 { // reorder
-  assert(0 != mesh);
+  assert(mesh);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(1);

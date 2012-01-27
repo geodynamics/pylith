@@ -47,6 +47,12 @@ public :
   /// Destructor.
   ~SlipWeakening(void);
 
+  /** Compute properties from values in spatial database.
+   *
+   * @param flag True if forcing healing, false otherwise.
+   */
+  void forceHealing(const bool flag);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -165,6 +171,8 @@ private :
 
   static const int db_slipCum;
   static const int db_slipPrev;
+
+  bool _forceHealing; ///< Force healing.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
