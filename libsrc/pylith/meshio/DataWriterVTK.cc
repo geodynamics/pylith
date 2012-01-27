@@ -126,7 +126,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    
+
     err = VTKViewer::writeHeader(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote header for " << filename << std::endl;
