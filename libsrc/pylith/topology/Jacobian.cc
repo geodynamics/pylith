@@ -128,6 +128,32 @@ pylith::topology::Jacobian::assemble(const char* mode)
     CHECK_PETSC_ERROR(err);
     err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
+#if 0
+    // Check for empty row
+    const PetscInt *cols;
+    PetscInt        rStart, rEnd, ncols;
+
+    err = MatGetOwnershipRange(_matrix, &rStart, &rEnd);CHECK_PETSC_ERROR(err);
+    for(PetscInt r = rStart; r < rEnd; ++r) {
+      PetscInt c;
+
+      err = MatGetRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      if (!ncols) {
+        std::ostringstream msg;
+        msg << "ERROR: Empty row " << r << " in ["<<rStart<<","<<rEnd<<")" << std::endl;
+        throw std::runtime_error(msg.str().c_str());
+      }
+      for(c = 0; c < ncols; ++c) {
+        if (cols[c] == r) break;
+      }
+      if (c == ncols) {
+        std::ostringstream msg;
+        msg << "ERROR: Row " << r << " in ["<<rStart<<","<<rEnd<<") is missing diagonal element" << std::endl;
+        throw std::runtime_error(msg.str().c_str());
+      }
+      err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    }
+#endif
   } else if (0 == strcmp(mode, "flush_assembly")) {
     err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
