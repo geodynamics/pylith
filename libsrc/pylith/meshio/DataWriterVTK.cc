@@ -126,7 +126,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    
+
     err = VTKViewer::writeHeader(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote header for " << filename << std::endl;
@@ -255,7 +255,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    int cellDepth = sieveMesh->depth();
+    int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
     err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
 			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (!label) ? cellDepth : labelId;

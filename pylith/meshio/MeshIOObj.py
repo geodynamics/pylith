@@ -49,7 +49,10 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
     @returns PETSc mesh object containing finite-element mesh
     """
-    self._info.log("Reading finite-element mesh")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Reading finite-element mesh")
 
     # Set flags
     self.debug(debug)
@@ -76,7 +79,10 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
     @param mesh PETSc mesh object containing finite-element mesh
     """
-    self._info.log("Writing finite-element mesh")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Writing finite-element mesh")
     ModuleMeshIO.write(self, mesh)
     return
 
