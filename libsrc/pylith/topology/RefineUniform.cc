@@ -119,6 +119,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     break;
 
   default :
+    assert(0);
     throw std::logic_error("Unknown dimension.");
   } // switch
 

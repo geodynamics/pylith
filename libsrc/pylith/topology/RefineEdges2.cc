@@ -197,7 +197,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       std::set_intersection(leftRanks.begin(), leftRanks.end(), rightRanks.begin(), rightRanks.end(),
                             std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
 
-#if 0
+#if 0 // DEBUGGING
       std::cout << "[" << myrank << "]   Checking edge " << e_iter->first << std::endl;
       for(std::set<int>::const_iterator r_iter = leftRanks.begin(); r_iter != leftRanks.end(); ++r_iter) {
         std::cout << "[" << myrank << "]     left rank " << *r_iter << std::endl;
@@ -212,7 +212,11 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
         newVerticesSection->addFiberDimension(edgeMin+localMinOffset, 1);
         for(std::set<int>::const_iterator r_iter = ranks.begin(); r_iter != ranks.end(); ++r_iter) {
           bndryEdgeToRank[e_iter->first].push_back(*r_iter);
-          //std::cout << "[" << myrank << "] Added edge " << e_iter->first << " with rank " << *r_iter << std::endl;
+#if 0 // DEBUGGING
+	  const point_type edgeMax = std::max(e_iter->first.first, e_iter->first.second);
+	  const int localMaxOffset = (orderOldMesh.verticesNormal().hasPoint(edgeMax)) ? localNormalOffset : localCensoredOffset;
+          std::cout << "[" << myrank << "] Added edge " << e_iter->first << " now (" << edgeMin+localMinOffset << ", " << edgeMax+localMaxOffset << ") with rank " << *r_iter << std::endl;
+#endif
         } // for
       } // if
     } // if
@@ -245,8 +249,10 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   Obj<ALE::Section<overlap_point_type, EdgeType> > overlapVertices = new ALE::Section<overlap_point_type, EdgeType>(oldMesh->comm());
 
   ALE::Pullback::SimpleCopy::copy(newSendOverlap, newRecvOverlap, newVerticesSection, overlapVertices);
-  //newVerticesSection->view("NEW VERTICES");
-  //overlapVertices->view("OVERLAP VERTICES");
+#if 0 // DEBUGGING
+  newVerticesSection->view("NEW VERTICES");
+  overlapVertices->view("OVERLAP VERTICES");
+#endif
 
   // Merge by translating edge to local points, finding edge in _edgeToVertex, and adding (local new vetex, remote new vertex) to overlap
   for(std::map<EdgeType, std::vector<int> >::const_iterator e_iter = bndryEdgeToRank.begin(); e_iter != bndryEdgeToRank.end(); ++e_iter) {
@@ -284,9 +290,10 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
           break;
         } // if
       } // for
-#if 0
+#if 0 // DEBUGGING
       if (-1 == newRemotePoint) {
-        std::cout << "remoteLeft: " << remoteLeft
+        std::cout << "["<< myrank << "] DISMISSING newLocalPoint: " << newLocalPoint
+		  << ", remoteLeft: " << remoteLeft
                   << ", remoteRight: " << remoteRight
                   << ", rank: " << rank
                   << ", remoteSize: " << remoteSize
