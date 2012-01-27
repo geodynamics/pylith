@@ -98,6 +98,7 @@ pylith::problems::SolverNonlinear::initialize(
 
   err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
   err = SNESLineSearchSet(_snes, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
+  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation); CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
@@ -117,43 +118,6 @@ pylith::problems::SolverNonlinear::solve(
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(0 != solution);
-
-#if 0
-  // Update KSP operators with custom preconditioner if necessary.
-  const ALE::Obj<RealSection>& solutionSection = solution->section();
-  assert(!solutionSection.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
-   assert(!sieveMesh.isNull());
-  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      0 != _jacobianPCFault) {
-    PetscKSP ksp = 0;
-    PetscPC pc = 0;
-    PetscKSP *ksps = 0;
-    PetscMat A = 0;
-    PylithInt num = 0;
-
-    PetscErrorCode err = 0;
-    err = SNESGetKSP(_snes, &ksp); CHECK_PETSC_ERROR(err);
-    err = KSPSetUp(ksp); CHECK_PETSC_ERROR(err);
-    err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
-    err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-    assert(solutionSection->getNumSpaces() == num);
-
-#if 0 // debugging
-    std::cout << "Preconditioner Matrix" << std::endl;
-    MatView(_jacobianPCFault, PETSC_VIEWER_STDOUT_WORLD);
-#endif
-
-
-    MatStructure flag;
-    err = KSPGetOperators(ksps[num-1], &A, 
-			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, 
-			  flag); CHECK_PETSC_ERROR(err);
-    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
-  } // if
-#endif
 
   const int solveEvent = _logger->eventId("SoNl solve");
   const int scatterEvent = _logger->eventId("SoNl scatter");
@@ -361,11 +325,16 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 	ierr = PetscViewerASCIIPrintf(snes->ls_monitor,"    Line search: fnorm=%18.16e, gnorm=%18.16e, ynorm=%18.16e, minlambda=%18.16e, lambda=%18.16e, initial slope=%18.16e\n",(double)fnorm,(double)*gnorm,(double)*ynorm,(double)minlambda,(double)lambda,(double)initslope);CHKERRQ(ierr);
         ierr = PetscViewerASCIISubtractTab(snes->ls_monitor,((PetscObject)snes)->tablevel);CHKERRQ(ierr);
       }
-      *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
       assert(lsctx);
       Formulation* formulation = (Formulation*) lsctx;
       assert(formulation);
       formulation->printState(&w, &g, &x, &y);
+#if 0 // Original PETSc code
+      *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
+#else
+      std::cerr << "WARNING: Line search diverged ... continuing nonlinear iterations anyway in hopes that solution will converge anyway."
+		<< std::endl;
+#endif
       break;
     }
     t1 = .5*((*gnorm)*(*gnorm) - fnorm*fnorm) - lambda*initslope;
@@ -377,24 +346,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     if (a == 0.0) {
       lambdatemp = -initslope/(2.0*b);
     } else {
-
-      // MATT: Check this
-      // 
-      // Temporary fix by Brad to keep lambda in proper
-      // range. Necessary due to underflow and overflow of a, b, c,
-      // and d.
-#if 0 
       lambdatemp = (-b + PetscSqrtScalar(d))/(3.0*a);
-#else
-      if ((-b + PetscSqrtScalar(d) > 0.0 && a > 0.0) ||
-	  (-b + PetscSqrtScalar(d) < 0.0 && a < 0.0)) {
-	lambdatemp = (-b + PetscSqrtScalar(d))/(3.0*a);
-      } else {
-	lambdatemp = 0.05*lambda;
-      } // else
-#endif   
-
- 
     } // if/else
     lambdaprev = lambda;
     gnormprev  = *gnorm;
@@ -404,8 +356,6 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
       lambda = .1*lambda;
     else
       lambda = lambdatemp;
-
-
 
     ierr  = VecWAXPY(w,-lambda,y,x);CHKERRQ(ierr);
     if (snes->nfuncs >= snes->max_funcs) {
@@ -457,12 +407,6 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
   ierr = PetscLogEventEnd(SNES_LineSearch,snes,x,f,g);CHKERRQ(ierr);
 
   // ======================================================================
-  // Code to constrain solution space.
-  assert(lsctx);
-  Formulation* formulation = (Formulation*) lsctx;
-  assert(formulation);
-  formulation->constrainSolnSpace(&w);
-
   ierr = SNESComputeFunction(snes,w,g);CHKERRQ(ierr);
   if (snes->domainerror) {
     ierr = PetscLogEventEnd(SNES_LineSearch,snes,x,f,g);CHKERRQ(ierr);
@@ -480,6 +424,18 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 
   PetscFunctionReturn(0);
 } // lineSearch
+
+// ----------------------------------------------------------------------
+// Generic C interface for customized PETSc initial guess.
+#undef __FUNCT__
+#define __FUNCT__ "initialGuess"
+PetscErrorCode
+pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
+						PetscVec initialGuessVec,
+						void *lsctx)
+{ // initialGuess
+  VecSet(initialGuessVec, 0.0);
+} // initialGuess
 
 // ----------------------------------------------------------------------
 // Initialize logger.

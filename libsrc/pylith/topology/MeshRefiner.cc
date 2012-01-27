@@ -22,6 +22,8 @@
 
 #include "MeshOrder.hh" // USES MeshOrder
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -51,11 +53,34 @@ ALE::MeshRefiner<cellrefiner_type>::refine(const Obj<mesh_type>& newMesh,
 				      cellrefiner_type& refiner)
 { // refine
   assert(!mesh.isNull());
+
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  //logger.setDebug(1);
+  logger.stagePush("RefinedMesh");
+
   if (mesh->hasLabel("censored depth")) {
     _refineCensored(newMesh, mesh, refiner);
   } else {
     _refine(newMesh, mesh, refiner);
   } // if/else
+
+  logger.stagePush("RefinedMeshStratification");
+  _stratify(newMesh);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshOverlap");
+  _calcNewOverlap(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshIntSections");
+  _createIntSections(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePush("RefinedMeshLabels");
+  _createLabels(newMesh, mesh, refiner);
+  logger.stagePop();
+
+  logger.stagePop(); // RefinedMesh
 } // refine
 
 // ----------------------------------------------------------------------
@@ -73,7 +98,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(1);
-  logger.stagePush("RefinedMesh");
   logger.stagePush("RefinedMeshCreation");
 
   // Calculate order in old mesh.
@@ -195,27 +219,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refine(const Obj<mesh_type>& newMesh,
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
 
   logger.stagePop();
-  logger.stagePush("RefinedMeshStratification");
-
-  _stratify(newMesh);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshOverlap");
-
-  _calcNewOverlap(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshIntSections");
-
-  _createIntSections(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePush("RefinedMeshLabels");
-
-  _createLabels(newMesh, mesh, refiner);
-
-  logger.stagePop();
-  logger.stagePop(); // Mesh
 } // _refine
   
 // ----------------------------------------------------------------------
@@ -431,11 +434,6 @@ ALE::MeshRefiner<cellrefiner_type>::_refineCensored(const Obj<mesh_type>& newMes
   } // for
 
   refiner.setCoordsNewVertices(newCoordinates, coordinates);
-
-  _stratify(newMesh);
-  _calcNewOverlap(newMesh, mesh, refiner);
-  _createIntSections(newMesh, mesh, refiner);
-  _createLabels(newMesh, mesh, refiner);
 
   // Create sensored depth
   const ALE::Obj<SieveFlexMesh::label_type>& censoredLabel = newMesh->createLabel("censored depth");
@@ -709,10 +707,12 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
       
       if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
         assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetNormal >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetNormal, rank, remotePoint+remoteOffsetNormal);
       } else {
         assert(localPoint  >= oldVerticesStartFault);
         assert(remotePoint >= oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetFault >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetFault,  rank, remotePoint+remoteOffsetFault);
       }
     } // for
@@ -756,10 +756,12 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
 
       if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
         assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetNormal >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetNormal, rank, remotePoint+remoteOffsetNormal);
       } else {
         assert(localPoint  >= oldVerticesStartFault);
         assert(remotePoint >= oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetFault >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetFault,  rank, remotePoint+remoteOffsetFault);
       }
     }
@@ -799,12 +801,79 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   // We have to do flexible assembly since we add the new vertices separately
   newSendOverlap->assemble();
   newRecvOverlap->assemble();
+
+  // Verify size of new send/recv overlaps are at least as big as the
+  // original ones.
+  PetscErrorCode err = 0;
+  if (newSendOverlap->getNumRanks() != sendOverlap->getNumRanks() ||
+      newRecvOverlap->getNumRanks() != recvOverlap->getNumRanks() ||
+      newSendOverlap->getNumRanks() != newRecvOverlap->getNumRanks()) {
+    
+    throw std::logic_error("Error in constructing new overlaps during mesh "
+			   "refinement.\nMismatch in number of ranks.");
+  } // if
+
+  const int numRanks = newSendOverlap->getNumRanks();
+  for (int isend=0; isend < numRanks; ++isend) {
+    int rank = 0;
+    err = newSendOverlap->getRank(isend, &rank); CHECK_PETSC_ERROR(err);
+    int irecv = 0;
+    err = newRecvOverlap->getRankIndex(rank, &irecv);
+
+    int sendRank = 0;
+    int recvRank = 0;
+    err = sendOverlap->getRank(isend, &sendRank); CHECK_PETSC_ERROR(err);
+    err = recvOverlap->getRank(irecv, &recvRank); CHECK_PETSC_ERROR(err);
+    if (rank != sendRank || rank != recvRank) {
+      throw std::logic_error("Error in constructing new overlaps during mesh "
+			     "refinement.\nMismatch in ranks.");
+    } // if
+  
+    int newSendNumPoints = 0;
+    int oldSendNumPoints = 0;
+    int newRecvNumPoints = 0;
+    int oldRecvNumPoints = 0;
+    err = sendOverlap->getNumPointsByRank(rank, &oldSendNumPoints); CHECK_PETSC_ERROR(err);
+    err = newSendOverlap->getNumPointsByRank(rank, &newSendNumPoints); CHECK_PETSC_ERROR(err);
+    err = recvOverlap->getNumPointsByRank(rank, &oldRecvNumPoints); CHECK_PETSC_ERROR(err);
+    err = newRecvOverlap->getNumPointsByRank(rank, &newRecvNumPoints); CHECK_PETSC_ERROR(err);
+    if (newSendNumPoints < oldSendNumPoints || newRecvNumPoints < oldRecvNumPoints) {
+      throw std::logic_error("Error in constructing new overlaps during mesh "
+			     "refinement.\nInvalid size for new overlaps.");
+    } // if
+  } // for
+  
   if (mesh->debug()) {
     sendOverlap->view("OLD SEND OVERLAP");
     recvOverlap->view("OLD RECV OVERLAP");
     newSendOverlap->view("NEW SEND OVERLAP");
     newRecvOverlap->view("NEW RECV OVERLAP");
-  }
+    
+    int rank = 0;
+    int nprocs = 0;
+    MPI_Comm_rank(mesh->comm(), &rank);
+    MPI_Comm_size(mesh->comm(), &nprocs);
+    MPI_Barrier(mesh->comm());
+    for (int i=0; i < nprocs; ++i) {
+      if (rank == i) {
+	int numNeighbors = newSendOverlap->getNumRanks();
+	assert(numNeighbors == newRecvOverlap->getNumRanks());
+	for (int j=0; j < numNeighbors; ++j) {
+	  int sendRank = 0;
+	  int recvRank = 0;
+	  err = newSendOverlap->getRank(j, &sendRank);CHECK_PETSC_ERROR(err);
+	  err = newRecvOverlap->getRank(j, &recvRank);CHECK_PETSC_ERROR(err);
+	  std::cout << "["<<rank<<"]: "
+		    << "send: " << sendRank
+		    << ", npts: " << newSendOverlap->getNumPoints(j)
+		    << "; recv: " << recvRank
+		    << ", npts: " << newRecvOverlap->getNumPoints(j)
+		    << std::endl;
+	} // for
+      } // if
+      MPI_Barrier(mesh->comm());
+    } // for
+  } // if  
 } // _calcNewOverlap
 
 

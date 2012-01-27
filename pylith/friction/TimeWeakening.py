@@ -50,7 +50,7 @@ class TimeWeakening(FrictionModel, ModuleTimeWeakening):
          'cell': \
            {'info': [],
             'data': []}}
-    self._loggingPrefix = "FrStat "
+    self._loggingPrefix = "FrTmWk "
     return
 
 
