@@ -77,11 +77,15 @@ class QuadratureBase(PetscComponent):
     """
     Setup quadrature object.
     """
-    self._info.log("Initializing reference cell.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Initializing reference cell.")
     cell = self.cell
     cell.initialize(spaceDim)
 
-    self._info.log("Initializing C++ quadrature.")
+    if 0 == comm.rank:
+      self._info.log("Initializing C++ quadrature.")
     self._initialize(cell)
     self.refGeometry(cell.geometry)
     return

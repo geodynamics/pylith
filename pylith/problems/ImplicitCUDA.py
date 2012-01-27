@@ -116,6 +116,9 @@ class Implicit(Formulation, ModuleImplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._initialize(dimension, normalizer)
 
     from pylith.utils.petsc import MemoryLogger
@@ -124,7 +127,8 @@ class Implicit(Formulation, ModuleImplicit):
     memoryLogger.stagePush("Problem")
 
     # Allocate other fields, reusing layout from dispIncr
-    self._info.log("Creating other fields.")
+    if 0 == comm.rank:
+      self._info.log("Creating other fields.")
     self.fields.add("velocity(t)", "velocity")
     self.fields.copyLayout("dispIncr(t->t+dt)")
 
@@ -146,7 +150,8 @@ class Implicit(Formulation, ModuleImplicit):
     memoryLogger.stagePop()
 
     # Allocates memory for nonzero pattern and Jacobian
-    self._info.log("Creating Jacobian matrix.")
+    if 0 == comm.rank:
+      self._info.log("Creating Jacobian matrix.")
     self._setJacobianMatrixType()
     from pylith.topology.Jacobian import Jacobian
     self.jacobian = Jacobian(self.fields.solution(),
@@ -155,7 +160,8 @@ class Implicit(Formulation, ModuleImplicit):
     self._debug.log(resourceUsageString())
 
     memoryLogger.stagePush("Problem")
-    self._info.log("Initializing solver.")
+    if 0 == comm.rank:
+      self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
@@ -184,20 +190,24 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Hook for doing stuff before advancing time step.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
     
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
     needNewJacobian = False
     if 1 == self._stepCount:
-      self._info.log("Switching from total field solution to incremental " \
-                     "field solution.")
+      if 0 == comm.rank:
+        self._info.log("Switching from total field solution to incremental " \
+                         "field solution.")
       for constraint in self.constraints:
         constraint.useSolnIncr(True)
       for integrator in self.integratorsMesh + self.integratorsSubMesh:
         integrator.useSolnIncr(True)
       needNewJacobian = True
 
-    self._info.log("Setting constraints.")
+    if 0 == comm.rank:
+      self._info.log("Setting constraints.")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispIncr.zero()
     if 0 == self._stepCount:
@@ -221,11 +231,15 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Advance to next time step.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
 
     self._reformResidual(t+dt, dt)
 
-    self._info.log("Solving equations.")
+    if 0 == comm.rank:
+      self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     self._eventLogger.stagePush("Solve")
     #self.jacobian.view() # TEMPORARY
@@ -245,6 +259,9 @@ class Implicit(Formulation, ModuleImplicit):
     """
     Hook for doing stuff after advancing time step.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     # Update displacement field from time t to time t+dt.
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     disp = self.fields.get("disp(t)")
@@ -256,7 +273,8 @@ class Implicit(Formulation, ModuleImplicit):
 
     # Write data. Velocity at time t will be based upon displacement
     # at time t-dt and t.
-    self._info.log("Writing solution fields.")
+    if 0 == comm.rank:
+      self._info.log("Writing solution fields.")
     for output in self.output.components():
       output.writeData(t+dt, self.fields)
     self._writeData(t+dt)

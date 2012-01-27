@@ -182,7 +182,11 @@ class Fault(PetscComponent, ModuleFault):
     logEvent = "%swrite" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    self._info.log("Writing fault data.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Writing fault data.")
     self.output.writeData(t, fields)
 
     self._eventLogger.eventEnd(logEvent)
