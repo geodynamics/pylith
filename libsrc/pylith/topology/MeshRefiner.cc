@@ -22,6 +22,8 @@
 
 #include "MeshOrder.hh" // USES MeshOrder
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -705,10 +707,12 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
       
       if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
         assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetNormal >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetNormal, rank, remotePoint+remoteOffsetNormal);
       } else {
         assert(localPoint  >= oldVerticesStartFault);
         assert(remotePoint >= oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetFault >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetFault,  rank, remotePoint+remoteOffsetFault);
       }
     } // for
@@ -752,10 +756,12 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
 
       if (localPoint >= oldVerticesStartNormal && localPoint < oldVerticesStartFault) {
         assert(remotePoint >= oldVerticesStartNormalP[rank] && remotePoint < oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetNormal >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetNormal, rank, remotePoint+remoteOffsetNormal);
       } else {
         assert(localPoint  >= oldVerticesStartFault);
         assert(remotePoint >= oldVerticesStartFaultP[rank]);
+	assert(remotePoint+remoteOffsetFault >= 0);
         newSendOverlap->addArrow(localPoint+localOffsetFault,  rank, remotePoint+remoteOffsetFault);
       }
     }
@@ -799,32 +805,40 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
 
   // Verify size of new send/recv overlaps are at least as big as the
   // original ones.
+  PetscErrorCode err = 0;
   if (newSendOverlap->getNumRanks() != sendOverlap->getNumRanks() ||
       newRecvOverlap->getNumRanks() != recvOverlap->getNumRanks() ||
       newSendOverlap->getNumRanks() != newRecvOverlap->getNumRanks()) {
     
-    std::cerr << "DEBUGGING INFO"
-	      << ", newSendOverlap: " << newSendOverlap->getNumRanks()
-	      << ", sendOverlap: " << sendOverlap->getNumRanks()
-	      << ", newRecvOverlap: " << newRecvOverlap->getNumRanks()
-	      << ", recvOverlap: " << recvOverlap->getNumRanks()
-	      << std::endl;
     throw std::logic_error("Error in constructing new overlaps during mesh "
 			   "refinement.\nMismatch in number of ranks.");
   } // if
 
   const int numRanks = newSendOverlap->getNumRanks();
   for (int isend=0; isend < numRanks; ++isend) {
-    const int rank = newSendOverlap->getRank(isend);
-    const int irecv = newRecvOverlap->getRankIndex(rank);
-    if (rank != sendOverlap->getRank(isend) ||
-	rank != recvOverlap->getRank(irecv)) {
+    int rank = 0;
+    err = newSendOverlap->getRank(isend, &rank); CHECK_PETSC_ERROR(err);
+    int irecv = 0;
+    err = newRecvOverlap->getRankIndex(rank, &irecv);
+
+    int sendRank = 0;
+    int recvRank = 0;
+    err = sendOverlap->getRank(isend, &sendRank); CHECK_PETSC_ERROR(err);
+    err = recvOverlap->getRank(irecv, &recvRank); CHECK_PETSC_ERROR(err);
+    if (rank != sendRank || rank != recvRank) {
       throw std::logic_error("Error in constructing new overlaps during mesh "
 			     "refinement.\nMismatch in ranks.");
     } // if
   
-    if (newSendOverlap->getNumPointsByRank(rank) < sendOverlap->getNumPointsByRank(rank) ||
-	newRecvOverlap->getNumPointsByRank(rank) < sendOverlap->getNumPointsByRank(rank)) {
+    int newSendNumPoints = 0;
+    int oldSendNumPoints = 0;
+    int newRecvNumPoints = 0;
+    int oldRecvNumPoints = 0;
+    err = sendOverlap->getNumPointsByRank(rank, &oldSendNumPoints); CHECK_PETSC_ERROR(err);
+    err = newSendOverlap->getNumPointsByRank(rank, &newSendNumPoints); CHECK_PETSC_ERROR(err);
+    err = recvOverlap->getNumPointsByRank(rank, &oldRecvNumPoints); CHECK_PETSC_ERROR(err);
+    err = newRecvOverlap->getNumPointsByRank(rank, &newRecvNumPoints); CHECK_PETSC_ERROR(err);
+    if (newSendNumPoints < oldSendNumPoints || newRecvNumPoints < oldRecvNumPoints) {
       throw std::logic_error("Error in constructing new overlaps during mesh "
 			     "refinement.\nInvalid size for new overlaps.");
     } // if
@@ -835,6 +849,32 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   recvOverlap->view("OLD RECV OVERLAP");
   newSendOverlap->view("NEW SEND OVERLAP");
   newRecvOverlap->view("NEW RECV OVERLAP");
+
+  int rank = 0;
+  int nprocs = 0;
+  MPI_Comm_rank(mesh->comm(), &rank);
+  MPI_Comm_size(mesh->comm(), &nprocs);
+  MPI_Barrier(mesh->comm());
+  for (int i=0; i < nprocs; ++i) {
+    if (rank == i) {
+      int numNeighbors = newSendOverlap->getNumRanks();
+      assert(numNeighbors == newRecvOverlap->getNumRanks());
+      for (int j=0; j < numNeighbors; ++j) {
+	int sendRank = 0;
+	int recvRank = 0;
+	err = newSendOverlap->getRank(j, &sendRank);CHECK_PETSC_ERROR(err);
+	err = newRecvOverlap->getRank(j, &recvRank);CHECK_PETSC_ERROR(err);
+	std::cout << "["<<rank<<"]: "
+		  << "send: " << sendRank
+		  << ", npts: " << newSendOverlap->getNumPoints(j)
+		  << "; recv: " << recvRank
+		  << ", npts: " << newRecvOverlap->getNumPoints(j)
+		  << std::endl;
+      } // for
+    } // if
+    MPI_Barrier(mesh->comm());
+  } // for
+  
 #endif
 } // _calcNewOverlap
 
