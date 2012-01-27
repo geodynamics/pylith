@@ -97,6 +97,9 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._initialize(dimension, normalizer)
 
     from pylith.utils.petsc import MemoryLogger
@@ -105,7 +108,8 @@ class Explicit(Formulation, ModuleExplicit):
     logger.stagePush("Problem")
 
     # Allocate other fields, reusing layout from dispIncr
-    self._info.log("Creating other fields.")
+    if 0 == comm.rank:
+      self._info.log("Creating other fields.")
     self.fields.add("disp(t-dt)", "displacement")
     self.fields.add("velocity(t)", "velocity")
     self.fields.add("acceleration(t)", "acceleration")
@@ -136,7 +140,8 @@ class Explicit(Formulation, ModuleExplicit):
     self._debug.log(resourceUsageString())
     logger.stagePop()
 
-    self._info.log("Creating Jacobian matrix.")
+    if 0 == comm.rank:
+      self._info.log("Creating Jacobian matrix.")
     self._setJacobianMatrixType()
     from pylith.topology.Jacobian import Jacobian
     self.jacobian = Jacobian(self.fields.solution(),
@@ -145,7 +150,8 @@ class Explicit(Formulation, ModuleExplicit):
     self._debug.log(resourceUsageString())
 
     logger.stagePush("Problem")
-    self._info.log("Initializing solver.")
+    if 0 == comm.rank:
+      self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
@@ -191,9 +197,13 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%sstep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._reformResidual(t, dt)
     
-    self._info.log("Solving equations.")
+    if 0 == comm.rank:
+      self._info.log("Solving equations.")
     residual = self.fields.get("residual")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     self.solver.solve(dispIncr, self.jacobian, residual)
@@ -209,11 +219,15 @@ class Explicit(Formulation, ModuleExplicit):
     logEvent = "%spoststep" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     # The velocity and acceleration at time t depends on the
     # displacement at time t+dt, we want to output BEFORE updating the
     # displacement fields so that the displacement, velocity, and
     # acceleration files are all at time t.
-    self._info.log("Writing solution fields.")
+    if 0 == comm.rank:
+      self._info.log("Writing solution fields.")
     for output in self.output.components():
       output.writeData(t, self.fields)
     self._writeData(t)

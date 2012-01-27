@@ -101,7 +101,11 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     """
     Do pre-initialization setup.
     """
-    self._info.log("Pre-initializing fault '%s'." % self.label())
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing fault '%s'." % self.label())
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
 
@@ -148,7 +152,12 @@ class FaultCohesiveKin(FaultCohesive, Integrator, ModuleFaultCohesiveKin):
     """
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
-    self._info.log("Initializing fault '%s'." % self.label())
+
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Initializing fault '%s'." % self.label())
 
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     
