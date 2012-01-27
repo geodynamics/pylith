@@ -162,7 +162,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // Write cells
 
     // Account for censored cells
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    int cellDepth = sieveMesh->depth();
+    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
@@ -436,14 +438,17 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    PetscErrorCode err = 0;
 
     int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
+    err = MPI_Comm_rank(field.mesh().comm(), &rank);CHECK_PETSC_ERROR(err);
 
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    int cellDepth = sieveMesh->depth();
+    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
@@ -458,7 +463,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     assert(vector);
 
     PetscViewer binaryViewer;
-    PetscErrorCode err = 0;
 
     const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
       H5T_IEEE_F64BE : H5T_IEEE_F32BE;

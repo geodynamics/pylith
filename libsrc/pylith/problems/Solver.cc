@@ -49,6 +49,7 @@ PetscErrorCode  MyMatGetSubMatrix(Mat mat, IS isrow, IS iscol, MatReuse reuse, M
   PetscFunctionBegin;
   ierr = MatShellGetContext(mat, (void **) &ctx);CHKERRQ(ierr);
   ierr = PCFieldSplitGetIS(ctx->pc, ctx->faultFieldName, &faultIS);CHKERRQ(ierr);
+  assert(faultIS);
   ierr = ISEqual(isrow, faultIS, &isFaultRow);CHKERRQ(ierr);
   ierr = ISEqual(iscol, faultIS, &isFaultCol);CHKERRQ(ierr);
   if (isFaultRow && isFaultCol) {
@@ -210,7 +211,21 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
     _ctx.pc = *pc;
     _ctx.A = jacobian.matrix();
-    _ctx.faultFieldName = "3";
+    switch (spaceDim) {
+    case 1 :
+      _ctx.faultFieldName = "1";
+      break;
+    case 2 :
+      _ctx.faultFieldName = "2";
+      break;
+    case 3 :
+      _ctx.faultFieldName = "3";
+      break;
+    default:
+      assert(0);
+      throw std::logic_error("Unknown space dimension in "
+			     "Problems::_setupFieldSplit().");
+    } // switch
     _ctx.faultA = _jacobianPCFault;
   } // if
 } // _setupFieldSplit

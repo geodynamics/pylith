@@ -355,9 +355,11 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 	   residualSection->getFiberDimension(v_positive));
     residualSection->updateAddPoint(v_positive, &residualVertexP[0]);
 
+#if 0 // TEST
     assert(residualVertexL.size() == 
 	   residualSection->getFiberDimension(v_lagrange));
     residualSection->updateAddPoint(v_lagrange, &residualVertexL[0]);
+#endif
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
@@ -532,7 +534,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   scalar_array dDispRelVertex(spaceDim);
 
   // Get sections
-  scalar_array slipVertex(spaceDim);
+  scalar_array slipTpdtVertex(spaceDim);
   const ALE::Obj<RealSection>& dispRelSection = 
     _fields->get("relative disp").section();
   assert(!dispRelSection.isNull());
@@ -635,12 +637,12 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     
     // Compute slip, slip rate, and Lagrange multiplier at time t+dt
     // in fault coordinate system.
-    slipVertex = 0.0;
+    slipTpdtVertex = 0.0;
     slipRateVertex = 0.0;
     tractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
+	slipTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (dispTVertexP[jDim] + dispIncrVertexP[jDim]
 	   - dispTVertexN[jDim] - dispIncrVertexN[jDim]);
 	slipRateVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
@@ -652,43 +654,43 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	slipRateVertex[iDim] = 0.0;
       } // if
     } // for
-    if (fabs(slipVertex[indexN]) < _zeroTolerance) {
-      slipVertex[indexN] = 0.0;
+    if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+      slipTpdtVertex[indexN] = 0.0;
     } // if
 
     PylithScalar dSlipVertexNormal = 0.0;
     PylithScalar dTractionTpdtVertexNormal = 0.0;
-    if (slipVertex[indexN]*tractionTpdtVertex[indexN] < 0.0) {
+    if (slipTpdtVertex[indexN]*tractionTpdtVertex[indexN] < 0.0) {
 #if 0 // DEBUGGING
       std::cout << "STEP 1 CORRECTING NONPHYSICAL SLIP/TRACTIONS"
 		<< ", v_fault: " << v_fault
-		<< ", slipNormal: " << slipVertex[indexN]
+		<< ", slipNormal: " << slipTpdtVertex[indexN]
 		<< ", tractionNormal: " << tractionTpdtVertex[indexN]
 		<< std::endl;
 #endif
       // Don't know what behavior is appropriate so set smaller of
       // traction and slip to zero (should be appropriate if problem
       // is nondimensionalized correctly).
-      if (fabs(slipVertex[indexN]) > fabs(tractionTpdtVertex[indexN])) {
+      if (fabs(slipTpdtVertex[indexN]) > fabs(tractionTpdtVertex[indexN])) {
 	// slip is bigger, so force normal traction back to zero
 	dTractionTpdtVertexNormal = -tractionTpdtVertex[indexN];
 	tractionTpdtVertex[indexN] = 0.0;
       } else {
 	// traction is bigger, so force slip back to zero
-	dSlipVertexNormal = -slipVertex[indexN];
-	slipVertex[indexN] = 0.0;
+	dSlipVertexNormal = -slipTpdtVertex[indexN];
+	slipTpdtVertex[indexN] = 0.0;
       } // if/else
     } // if
-    if (slipVertex[indexN] < 0.0) {
+    if (slipTpdtVertex[indexN] < 0.0) {
 #if 0 // DEBUGGING
       std::cout << "STEP 1 CORRECTING INTERPENETRATION"
 		<< ", v_fault: " << v_fault
-		<< ", slipNormal: " << slipVertex[indexN]
+		<< ", slipNormal: " << slipTpdtVertex[indexN]
 		<< ", tractionNormal: " << tractionTpdtVertex[indexN]
 		<< std::endl;
 #endif
-      dSlipVertexNormal = -slipVertex[indexN];
-      slipVertex[indexN] = 0.0;
+      dSlipVertexNormal = -slipTpdtVertex[indexN];
+      slipTpdtVertex[indexN] = 0.0;
     } // if
 
     // Step 2: Apply friction criterion to trial solution to get
@@ -704,7 +706,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     const bool iterating = true; // Iterating to get friction
     CALL_MEMBER_FN(*this,
 		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
-					 t, slipVertex, slipRateVertex,
+					 t, slipTpdtVertex, slipRateVertex,
 					 tractionTpdtVertex,
 					 iterating);
 
@@ -723,9 +725,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     } // for
 
 #if 0 // debugging
-    std::cout << "slipVertex: ";
+    std::cout << "v_fault: " << v_fault;
+    std::cout << ", slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << slipVertex[iDim];
+      std::cout << "  " << slipTpdtVertex[iDim];
     std::cout << ",  slipRateVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipRateVertex[iDim];
@@ -799,7 +802,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   // Lagrange multipliers) and Step 3 (slip associated with change in
   // Lagrange multipliers).
 
-  scalar_array dSlipVertex(spaceDim);
+  scalar_array slipTVertex(spaceDim);
+  scalar_array dSlipTpdtVertex(spaceDim);
   scalar_array dispRelVertex(spaceDim);
 
   const ALE::Obj<RealSection>& sensDispRelSection =
@@ -813,6 +817,14 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // Get change in Lagrange multiplier computed from friction criterion.
     dLagrangeTpdtSection->restrictPoint(v_fault, &dLagrangeTpdtVertex[0],
 					dLagrangeTpdtVertex.size());
+
+    // If no change in the Lagrange multiplier computed from friction
+    // criterion, there are no updates, so continue.
+    double dLagrangeTpdtMag = 0.0;
+    for (int i=0; i < spaceDim; ++i)
+      dLagrangeTpdtMag += dLagrangeTpdtVertex[i]*dLagrangeTpdtVertex[i];
+    if (0.0 == dLagrangeTpdtMag)
+      continue;
 
     // Get change in relative displacement from sensitivity solve.
     assert(spaceDim == sensDispRelSection->getFiberDimension(v_fault));
@@ -866,66 +878,92 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     // interpenetration with tension or opening with compression).
 
     // Compute slip, change in slip, and tractions in fault coordinates.
-    dSlipVertex = 0.0;
-    slipVertex = 0.0;
+    slipTVertex = 0.0;
+    slipTpdtVertex = 0.0;
+    dSlipTpdtVertex = 0.0;
     tractionTpdtVertex = 0.0;
     dTractionTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	dSlipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
-	  sensDispRelVertex[jDim];
-	slipVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
+	slipTVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
+	  (dispTVertexP[jDim] - dispTVertexN[jDim]);
+	slipTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
 	  (dispTVertexP[jDim] - dispTVertexN[jDim] +
 	   dispIncrVertexP[jDim] - dispIncrVertexN[jDim]);
+	dSlipTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
+	  sensDispRelVertex[jDim];
 	tractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] *
 	  (lagrangeTVertex[jDim] + lagrangeTIncrVertex[jDim]);
 	dTractionTpdtVertex[iDim] += orientationVertex[iDim*spaceDim+jDim] * 
 	  dLagrangeTpdtVertex[jDim];
       } // for
     } // for
-    if (fabs(slipVertex[indexN]) < _zeroTolerance) {
-      slipVertex[indexN] = 0.0;
+    if (fabs(slipTpdtVertex[indexN]) < _zeroTolerance) {
+      slipTpdtVertex[indexN] = 0.0;
     } // if
-    if (fabs(dSlipVertex[indexN]) < _zeroTolerance) {
-      dSlipVertex[indexN] = 0.0;
+    if (fabs(dSlipTpdtVertex[indexN]) < _zeroTolerance) {
+      dSlipTpdtVertex[indexN] = 0.0;
     } // if
 
-    if ((slipVertex[indexN] + dSlipVertex[indexN]) * 
+    if ((slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN]) * 
 	(tractionTpdtVertex[indexN] + dTractionTpdtVertex[indexN])
 	< 0.0) {
 #if 0 // DEBUGGING
       std::cout << "STEP 4a CORRECTING NONPHYSICAL SLIP/TRACTIONS"
 		<< ", v_fault: " << v_fault
-		<< ", slipNormal: " << slipVertex[indexN] + dSlipVertex[indexN]
+		<< ", slipNormal: " << slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN]
 		<< ", tractionNormal: " << tractionTpdtVertex[indexN] + dTractionTpdtVertex[indexN]
 		<< std::endl;
 #endif
       // Don't know what behavior is appropriate so set smaller of
       // traction and slip to zero (should be appropriate if problem
       // is nondimensionalized correctly).
-      if (fabs(slipVertex[indexN] + dSlipVertex[indexN]) > 
+      if (fabs(slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN]) > 
 	  fabs(tractionTpdtVertex[indexN] + dTractionTpdtVertex[indexN])) {
 	// slip is bigger, so force normal traction back to zero
 	dTractionTpdtVertex[indexN] = -tractionTpdtVertex[indexN];
       } else {
 	// traction is bigger, so force slip back to zero
-	dSlipVertex[indexN] = -slipVertex[indexN];
+	dSlipTpdtVertex[indexN] = -slipTpdtVertex[indexN];
       } // if/else
 
     } // if
     // Do not allow fault interpenetration.
-    if (slipVertex[indexN] + dSlipVertex[indexN] < 0.0) {
+    if (slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN] < 0.0) {
 #if 0 // DEBUGGING
       std::cout << "STEP 4a CORRECTING INTERPENETATION"
 		<< ", v_fault: " << v_fault
-		<< ", slipNormal: " << slipVertex[indexN] + dSlipVertex[indexN]
+		<< ", slipNormal: " << slipTpdtVertex[indexN] + dSlipTpdtVertex[indexN]
 		<< std::endl;
 #endif
-      dSlipVertex[indexN] = -slipVertex[indexN];
+      dSlipTpdtVertex[indexN] = -slipTpdtVertex[indexN];
     } // if
 
+    // Prevent over-correction in slip resulting in backslip.
+    double slipDot = 0.0;
+    double tractionSlipDot = 0.0;
+
+    // :TODO:
+    //
+    // Need slipTVertex, slipTpdtVertex, dSlipTpdtVertex
+    // slipDot = (slipTpdtVertex - slipTVertex) dot dSlipVertex
+    //
+    // if slipDot < 0, dSlipVertex = -0.5*(slipTpdtVertex - slipTVertex)
+    
+    for (int iDim=0; iDim < spaceDim-1; ++iDim)  { // :TODO: Optimize this
+      slipDot += (slipTpdtVertex[iDim] - slipTVertex[iDim]) * (slipTpdtVertex[iDim] + dSlipTpdtVertex[iDim] - slipTVertex[iDim]);
+      tractionSlipDot += (tractionTpdtVertex[iDim] + dTractionTpdtVertex[iDim])
+	* (slipTpdtVertex[iDim] + dSlipTpdtVertex[iDim]);
+    } // for
+    if (slipDot < 0.0 && tractionSlipDot < 0.0) {
+      dTractionTpdtVertex *= 0.5; // Use bisection as guess for traction
+      for (int iDim=0; iDim < spaceDim-1; ++iDim) {
+	dSlipTpdtVertex[iDim] *= -0.5*(slipTpdtVertex[iDim] - slipTVertex[iDim]);
+      } // for
+    } // if
+    
     // Update current estimate of slip from t to t+dt.
-    slipVertex += dSlipVertex;
+    slipTpdtVertex += dSlipTpdtVertex;
 
     // Compute relative displacement from slip.
     dispRelVertex = 0.0;
@@ -934,9 +972,9 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
 	dispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
-	  slipVertex[jDim];
+	  slipTpdtVertex[jDim];
 	dDispRelVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] *
-	  dSlipVertex[jDim];
+	  dSlipTpdtVertex[jDim];
 	dLagrangeTpdtVertex[iDim] += orientationVertex[jDim*spaceDim+iDim] * 
 	  dTractionTpdtVertex[jDim];
       } // for
@@ -945,7 +983,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
     } // for
 
-#if 0 // debugging
+#if 1 // debugging
     std::cout << "v_fault: " << v_fault;
     std::cout << ", tractionTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
@@ -953,26 +991,29 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     std::cout << ", dTractionTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << dTractionTpdtVertex[iDim];
-    std::cout << ", dLagrangeTpdtVertex: ";
+    //std::cout << ", dLagrangeTpdtVertex: ";
+    //for (int iDim=0; iDim < spaceDim; ++iDim)
+    //  std::cout << "  " << dLagrangeTpdtVertex[iDim];
+    std::cout << ", slipTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << dLagrangeTpdtVertex[iDim];
-    std::cout << ", slipVertex: ";
+      std::cout << "  " << slipTpdtVertex[iDim];
+    std::cout << ",  dSlipTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << slipVertex[iDim];
-    std::cout << ",  dispRelVertex: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << dispRelVertex[iDim];
-    std::cout << ",  dDispRelVertex: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << dDispRelVertex[iDim];
+      std::cout << "  " << dSlipTpdtVertex[iDim];
+    //std::cout << ",  dDispRelVertex: ";
+    //for (int iDim=0; iDim < spaceDim; ++iDim)
+    //  std::cout << "  " << dDispRelVertex[iDim];
+    std::cout << ", slipDot: " << slipDot
+	      << ", tractionSlipDot: " << tractionSlipDot;
     std::cout << std::endl;
 #endif
 
+#if 0 // TEST
     // Set change in relative displacement.
     assert(dispRelVertex.size() ==
         dispRelSection->getFiberDimension(v_fault));
     dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
-
+#endif
     // Update Lagrange multiplier increment.
     assert(dLagrangeTpdtVertex.size() ==
 	   dispIncrSection->getFiberDimension(v_lagrange));
@@ -2265,6 +2306,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace3D(scalar_array* dLagrangeT
     // if in compression and no opening
     const PylithScalar frictionStress = 
       _friction->calcFriction(t, slipShearMag, slipRateMag, tractionNormal);
+
     if (tractionShearMag > frictionStress || (iterating && slipRateMag > 0.0)) {
       // traction is limited by friction, so have sliding OR
       // friction exceeds traction due to overshoot in slip

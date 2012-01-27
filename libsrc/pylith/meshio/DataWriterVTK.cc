@@ -133,15 +133,16 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     err = VTKViewer::writeVertices(sieveMesh, _viewer);
     CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote vertices for " << filename << std::endl;
-    if (0 == label) {
-      err = VTKViewer::writeElements(sieveMesh, _viewer);
-      CHECK_PETSC_ERROR(err);
-    } else {
-      const std::string labelName = 
-	(sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-      err = VTKViewer::writeElements(sieveMesh, label, labelId, labelName, 0, _viewer);      
-      CHECK_PETSC_ERROR(err);
-    } // if
+
+    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
+    const int depth = (!label) ? cellDepth : labelId;
+    const std::string cLabelName = (!label) ?
+      ((sieveMesh->hasLabel("censored depth")) ?
+       "censored depth" : "depth") : label;
+    const std::string vLabelName = 
+      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+    err = VTKViewer::writeElements(sieveMesh, cLabelName, depth, vLabelName, 0,
+				   _viewer); CHECK_PETSC_ERROR(err);
     //std::cout << "Wrote elements for " << filename << std::endl;
 
     _wroteVertexHeader = false;
@@ -149,12 +150,12 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while preparing for writing data to VTK file "
-	<< _filename << " at time " << t << ".\n" << err.what();
+	<< _vtkFilename(t) << " at time " << t << ".\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Unknown error while preparing for writing data to VTK file "
-	<< _filename << " at time " << t << ".\n";
+	<< _vtkFilename(t) << " at time " << t << ".\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // openTimeStep
@@ -222,12 +223,12 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _filename << "'.\n" << err.what();
+	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _filename << "'.\n";
+	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeVertexField
@@ -246,26 +247,29 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
+    PetscErrorCode err = 0;
     int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
+    err = MPI_Comm_rank(field.mesh().comm(), &rank);CHECK_PETSC_ERROR(err);
 
     // Correctly handle boundary and fault meshes
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-    const int depth = (0 == label) ? cellDepth : labelId;
-    const std::string labelName = (0 == label) ?
+    int cellDepth = sieveMesh->depth();
+    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+			sieveMesh->comm());CHECK_PETSC_ERROR(err);
+    const int depth = (!label) ? cellDepth : labelId;
+    const std::string labelName = (!label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
        "censored depth" : "depth") : label;
     assert(!sieveMesh->getFactory().isNull());
     const ALE::Obj<typename SieveMesh::numbering_type>& numbering = 
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
     assert(!numbering.isNull());
-    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
     const ALE::Obj<RealSection>& section = field.section();
     assert(!section.isNull());
 
+    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
     int fiberDimLocal = 
       (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
       section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
@@ -273,10 +277,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
 		  field.mesh().comm());
     assert(fiberDim > 0);
+
     const int enforceDim =
       (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
 
-    PetscErrorCode err = 0;
     if (!_wroteCellHeader) {
       err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
 				   numbering->getGlobalSize());
@@ -289,12 +293,12 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _filename << "'.\n" << err.what();
+	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n" << err.what();
     throw std::runtime_error(msg.str());
   } catch (...) { 
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _filename << "'.\n";
+	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
 } // writeCellField
