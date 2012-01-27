@@ -51,7 +51,6 @@ class PetscManager(Component):
     """
     Initialize PETSc.
     """
-    self._info.log("Initializing PETSc.")
     import sys
     args = [sys.executable]
     options = self._getOptions()
@@ -59,6 +58,10 @@ class PetscManager(Component):
       for arg in options:
         args.append(arg)
     petsc.initialize(args)
+    from pylith.mpi.Communicator import petsc_comm_world
+    comm = petsc_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Initialized PETSc.")
     return
 
 
@@ -66,7 +69,10 @@ class PetscManager(Component):
     """
     Finalize PETSc.
     """
-    self._info.log("Finalizing PETSc.")
+    from pylith.mpi.Communicator import petsc_comm_world
+    comm = petsc_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Finalizing PETSc.")
     petsc.finalize()
     return
   

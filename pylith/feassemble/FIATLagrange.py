@@ -389,19 +389,22 @@ class FIATLagrange(ReferenceCell):
       self.quadPts = numpy.array([0.0], dtype=numpy.float64)
       self.quadWts = numpy.array([1.0], dtype=numpy.float64)
 
-    self._info.line("Cell geometry: ")
-    self._info.line(self.geometry)
-    self._info.line("Vertices: ")
-    self._info.line(self.vertices)
-    self._info.line("Quad pts:")
-    self._info.line(self.quadPts)
-    self._info.line("Quad wts:")
-    self._info.line(self.quadWts)
-    self._info.line("Basis fns @ quad pts ):")
-    self._info.line(self.basis)
-    self._info.line("Basis fn derivatives @ quad pts:")
-    self._info.line(self.basisDeriv)
-    self._info.log()    
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.line("Cell geometry: ")
+      self._info.line(self.geometry)
+      self._info.line("Vertices: ")
+      self._info.line(self.vertices)
+      self._info.line("Quad pts:")
+      self._info.line(self.quadPts)
+      self._info.line("Quad wts:")
+      self._info.line(self.quadWts)
+      self._info.line("Basis fns @ quad pts ):")
+      self._info.line(self.basis)
+      self._info.line("Basis fn derivatives @ quad pts:")
+      self._info.line(self.basisDeriv)
+      self._info.log()    
     return
 
 

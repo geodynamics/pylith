@@ -160,6 +160,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%spreinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self.timeStep.preinitialize()
     
     self.mesh = mesh
@@ -172,8 +175,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._setupMaterials(materials)
     self._setupBC(boundaryConditions)
     self._setupInterfaces(interfaceConditions)
-    
-    self._info.log("Pre-initializing output.")
+
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing output.")
     for output in self.output.components():
       output.preinitialize()
 
@@ -281,7 +285,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     logEvent = "%sfinalize" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    self._info.log("Formulation finalize.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Formulation finalize.")
     self._debug.log(resourceUsageString())
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.finalize()
@@ -366,7 +374,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     from pylith.feassemble.Integrator import implementsIntegrator
     
-    self._info.log("Pre-initializing materials.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing materials.")
     self._debug.log(resourceUsageString())
     for material in materials.components():
       integrator = self.elasticityIntegrator()
@@ -378,8 +390,9 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.integratorsMesh.append(integrator)
       self._debug.log(resourceUsageString())
 
-      self._info.log("Added elasticity integrator for material '%s'." % \
-                     material.label())
+      if 0 == comm.rank:
+        self._info.log("Added elasticity integrator for material '%s'." % \
+                         material.label())
     return
 
 
@@ -391,7 +404,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     from pylith.feassemble.Constraint import implementsConstraint
     from pylith.bc.PointForce import PointForce
 
-    self._info.log("Pre-initializing boundary conditions.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing boundary conditions.")
     self._debug.log(resourceUsageString())
     for bc in boundaryConditions.components():
       bc.preinitialize(self.mesh)
@@ -402,13 +419,15 @@ class Formulation(PetscComponent, ModuleFormulation):
           self.integratorsSubMesh.append(bc)
         else:
           self.integratorsMesh.append(bc)
-        self._info.log("Added boundary condition '%s' as an integrator." % \
-                       bc.label())
+        if 0 == comm.rank:
+          self._info.log("Added boundary condition '%s' as an integrator." % \
+                           bc.label())
       if implementsConstraint(bc):
         foundType = True
         self.constraints.append(bc)
-        self._info.log("Added boundary condition '%s' as a constraint." % \
-                       bc.label())
+        if 0 == comm.rank:
+          self._info.log("Added boundary condition '%s' as a constraint." % \
+                           bc.label())
       if not foundType:
         raise TypeError, \
               "Could not determine whether boundary condition '%s' is an " \
@@ -424,20 +443,26 @@ class Formulation(PetscComponent, ModuleFormulation):
     from pylith.feassemble.Integrator import implementsIntegrator
     from pylith.feassemble.Constraint import implementsConstraint
 
-    self._info.log("Pre-initializing interior interfaces.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Pre-initializing interior interfaces.")
     for ic in interfaceConditions.components():
       ic.preinitialize(self.mesh)
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
         self.integratorsSubMesh.append(ic)
-        self._info.log("Added interface condition '%s' as an integrator." % \
-                       ic.label())
+        if 0 == comm.rank:
+          self._info.log("Added interface condition '%s' as an integrator." % \
+                           ic.label())
       if implementsConstraint(ic):
         foundType = True
         self.constraints.append(ic)
-        self._info.log("Added interface condition '%s' as a constraint." % \
-                       ic.label())
+        if 0 == comm.rank:
+          self._info.log("Added interface condition '%s' as a constraint." % \
+                           ic.label())
       if not foundType:
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
@@ -450,6 +475,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     Create integrators for each element family.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self.timeStep.initialize(normalizer)
 
     numTimeSteps = self.timeStep.numTimeSteps()
@@ -459,7 +487,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.fields = SolutionFields(self.mesh)
     self._debug.log(resourceUsageString())
 
-    self._info.log("Initializing integrators.")
+    if 0 == comm.rank:
+      self._info.log("Initializing integrators.")
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       if not self.gravityField is None:
         integrator.gravityField(self.gravityField)
@@ -468,12 +497,14 @@ class Formulation(PetscComponent, ModuleFormulation):
     ModuleFormulation.submeshIntegrators(self, self.integratorsSubMesh)
     self._debug.log(resourceUsageString())
 
-    self._info.log("Initializing constraints.")
+    if 0 == comm.rank:
+      self._info.log("Initializing constraints.")
     for constraint in self.constraints:
       constraint.initialize(totalTime, numTimeSteps, normalizer)
     self._debug.log(resourceUsageString())
 
-    self._info.log("Setting up solution output.")
+    if 0 == comm.rank:
+      self._info.log("Setting up solution output.")
     for output in self.output.components():
       output.initialize(self.mesh, normalizer)
       output.writeInfo()
@@ -481,7 +512,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     self._debug.log(resourceUsageString())
 
     # Setup fields
-    self._info.log("Creating solution field.")
+    if 0 == comm.rank:
+      self._info.log("Creating solution field.")
     from pylith.utils.petsc import MemoryLogger
     memoryLogger = MemoryLogger.singleton()
     memoryLogger.setDebug(0)
@@ -533,8 +565,12 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     Reform Jacobian matrix for operator.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._debug.log(resourceUsageString())
-    self._info.log("Integrating Jacobian operator.")
+    if 0 == comm.rank:
+      self._info.log("Integrating Jacobian operator.")
     self._eventLogger.stagePush("Reform Jacobian")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)
@@ -555,7 +591,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     """
     Reform residual vector for operator.
     """
-    self._info.log("Integrating residual term in operator.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Integrating residual term in operator.")
     self._eventLogger.stagePush("Reform Residual")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)

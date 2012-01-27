@@ -89,6 +89,8 @@ class MeshImporter(MeshGenerator):
     Hook for creating mesh.
     """
     from pylith.utils.profiling import resourceUsageString
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
 
     self._setupLogging()
     logEvent = "%screate" % self._loggingPrefix
@@ -104,7 +106,8 @@ class MeshImporter(MeshGenerator):
       logEvent2 = "%sreorder" % self._loggingPrefix
       self._eventLogger.eventBegin(logEvent2)
       self._debug.log(resourceUsageString())
-      self._info.log("Reordering cells and vertices.")
+      if 0 == comm.rank:
+        self._info.log("Reordering cells and vertices.")
       from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
       ordering = ReverseCuthillMcKee()
       ordering.reorder(mesh)
@@ -112,12 +115,14 @@ class MeshImporter(MeshGenerator):
 
     # Adjust topology
     self._debug.log(resourceUsageString())
-    self._info.log("Adjusting topology.")
+    if 0 == comm.rank:
+      self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
 
     # Distribute mesh
     if mesh.getComm().size > 1:
-      self._info.log("Distributing mesh.")
+      if 0 == comm.rank:
+        self._info.log("Distributing mesh.")
       mesh = self.distributor.distribute(mesh, normalizer)
       if self.debug:
         mesh.view("Distributed mesh.")

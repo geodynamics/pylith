@@ -99,8 +99,11 @@ class IntegratorElasticity(Integrator):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    self._info.log("Initializing integrator for material '%s'." % \
-                   self.materialObj.label())
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Initializing integrator for material '%s'." % \
+                       self.materialObj.label())
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     self.materialObj.normalizer(normalizer)
 
@@ -115,7 +118,10 @@ class IntegratorElasticity(Integrator):
     logEvent = "%swrite" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
-    self._info.log("Writing material data.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    if 0 == comm.rank:
+      self._info.log("Writing material data.")
     self.output.writeData(t, fields)
 
     self._eventLogger.eventEnd(logEvent)

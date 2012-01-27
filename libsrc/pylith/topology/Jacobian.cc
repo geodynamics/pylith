@@ -128,10 +128,11 @@ pylith::topology::Jacobian::assemble(const char* mode)
     CHECK_PETSC_ERROR(err);
     err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);
     CHECK_PETSC_ERROR(err);
-#if 0
+
+#if 0 // DEBUGGING
     // Check for empty row
     const PetscInt *cols;
-    PetscInt        rStart, rEnd, ncols;
+    PetscInt rStart, rEnd, ncols;
 
     err = MatGetOwnershipRange(_matrix, &rStart, &rEnd);CHECK_PETSC_ERROR(err);
     for(PetscInt r = rStart; r < rEnd; ++r) {
@@ -154,6 +155,7 @@ pylith::topology::Jacobian::assemble(const char* mode)
       err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
     }
 #endif
+
   } else if (0 == strcmp(mode, "flush_assembly")) {
     err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);
     CHECK_PETSC_ERROR(err);

@@ -285,9 +285,7 @@ pylith::feassemble::TestElasticityExplicitTri3::testIntegrateJacobian(void)
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
-  PetscMat jSparseAIJ;
-  MatConvert(jacobianMat, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
-  MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
+  MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
 
   scalar_array vals(nrows*ncols);
   int_array rows(nrows);
@@ -307,7 +305,6 @@ pylith::feassemble::TestElasticityExplicitTri3::testIntegrateJacobian(void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
     } // for
   MatDestroy(&jDense);
-  MatDestroy(&jSparseAIJ);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
