@@ -90,6 +90,9 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._initialize(dimension, normalizer)
 
     from pylith.utils.petsc import MemoryLogger
@@ -98,7 +101,8 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     logger.stagePush("Problem")
 
     # Allocate other fields, reusing layout from dispIncr
-    self._info.log("Creating other fields.")
+    if 0 == comm.rank:
+      self._info.log("Creating other fields.")
     self.fields.add("disp(t-dt)", "displacement")
     self.fields.add("velocity(t)", "velocity")
     self.fields.add("acceleration(t)", "acceleration")
@@ -129,7 +133,8 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     self._debug.log(resourceUsageString())
     logger.stagePop()
 
-    self._info.log("Creating lumped Jacobian matrix.")
+    if 0 == comm.rank:
+      self._info.log("Creating lumped Jacobian matrix.")
     from pylith.topology.topology import MeshField
     jacobian = MeshField(self.mesh)
     jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
@@ -140,7 +145,8 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     self._debug.log(resourceUsageString())
 
     logger.stagePush("Problem")
-    self._info.log("Initializing solver.")
+    if 0 == comm.rank:
+      self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
@@ -171,7 +177,11 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     """
     Reform residual vector for operator.
     """
-    self._info.log("Integrating residual term in operator.")
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Integrating residual term in operator.")
     self._eventLogger.stagePush("Reform Residual")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)
@@ -186,8 +196,12 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     """
     Reform Jacobian matrix for operator.
     """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     self._debug.log(resourceUsageString())
-    self._info.log("Integrating Jacobian operator.")
+    if 0 == comm.rank:
+      self._info.log("Integrating Jacobian operator.")
     self._eventLogger.stagePush("Reform Jacobian")
 
     self.updateSettings(self.jacobian, self.fields, t, dt)

@@ -100,6 +100,9 @@ class MeshGenerator(PetscComponent):
     logEvent = "%sadjTopo" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
     #self._info.activate()
     #mesh.view("===== MESH BEFORE ADJUSTING TOPOLOGY =====")
 
@@ -108,7 +111,8 @@ class MeshGenerator(PetscComponent):
       firstLagrangeVertex = 0
       firstFaultCell      = 0
       for interface in interfaces:
-        self._info.log("Counting vertices for fault '%s'." % interface.label())
+        if 0 == comm.rank:
+          self._info.log("Counting vertices for fault '%s'." % interface.label())
         nvertices = interface.numVertices(mesh)
         firstLagrangeVertex += nvertices
         firstFaultCell      += nvertices
@@ -116,8 +120,9 @@ class MeshGenerator(PetscComponent):
           firstFaultCell += nvertices
       for interface in interfaces:
         nvertices = interface.numVertices(mesh)
-        self._info.log("Adjusting topology for fault '%s' with %d vertices." % \
-                         (interface.label(), nvertices))
+        if 0 == comm.rank:
+          self._info.log("Adjusting topology for fault '%s' with %d vertices." % \
+                           (interface.label(), nvertices))
         firstFaultVertex, firstLagrangeVertex, firstFaultCell = \
             interface.adjustTopology(mesh, firstFaultVertex, firstLagrangeVertex, firstFaultCell)
         
