@@ -22,70 +22,6 @@
 
 #include <cassert>
 
-// Compute 2D deviatoric stress/strain from vector and mean value.
-// 2 FLOPs per call
-inline
-void
-pylith::materials::ElasticMaterial::calcDeviatoric2D(
-					double* const deviatoric,
-					const double* vec,
-					const double vecMean)
-{
-  deviatoric[0] = vec[0] - vecMean;
-  deviatoric[1] = vec[1] - vecMean;
-  deviatoric[2] = vec[2];
-} // calcDeviatoric2D
-
-// Compute 3D deviatoric stress/strain from vector and mean value.
-// 3 FLOPs per call
-inline
-void
-pylith::materials::ElasticMaterial::calcDeviatoric3D(
-					double* const deviatoric,
-					const double* vec,
-					const double vecMean)
-{
-  deviatoric[0] = vec[0] -vecMean;
-  deviatoric[1] = vec[1] -vecMean;
-  deviatoric[2] = vec[2] -vecMean;
-  deviatoric[3] = vec[3];
-  deviatoric[4] = vec[4];
-  deviatoric[5] = vec[5];
-} // calcDeviatoric3D
-
-
-// Compute 2D scalar product of two tensors represented as vectors.
-// 6 FLOPs per call.
-inline
-double
-pylith::materials::ElasticMaterial::scalarProduct2D(const double* tensor1,
-						    const double* tensor2) const
-{ // scalarProduct2D
-  const double scalarProduct = tensor1[0] * tensor2[0] +
-    tensor1[1] * tensor2[1] + 2.0 * tensor1[2] * tensor2[2];
-  return scalarProduct;
-
-} // scalarProduct2D
-
-
-// Compute 3D scalar product of two tensors represented as vectors.
-// 12 FLOPs per call.
-inline
-double
-pylith::materials::ElasticMaterial::scalarProduct3D(const double* tensor1,
-						    const double* tensor2) const
-{ // scalarProduct3D
-  const double scalarProduct = tensor1[0] * tensor2[0] +
-    tensor1[1] * tensor2[1] +
-    tensor1[2] * tensor2[2] +
-    2.0 * (tensor1[3] * tensor2[3] +
-	   tensor1[4] * tensor2[4] +
-	   tensor1[5] * tensor2[5]);
-  return scalarProduct;
-
-} // scalarProduct3D
-
-
 // Set database for initial stress state.
 inline
 void
@@ -120,6 +56,73 @@ const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >
 pylith::materials::ElasticMaterial::initialFields(void) const {
   return _initialFields;
 } // initialFields
+
+// Compute 2D deviatoric stress/strain from vector and mean value.
+// 2 FLOPs per call
+inline
+void
+pylith::materials::ElasticMaterial::calcDeviatoric2D(
+					double* const deviatoric,
+					const double* vec,
+					const double vecMean)
+{
+  deviatoric[0] = vec[0] - vecMean;
+  deviatoric[1] = vec[1] - vecMean;
+  deviatoric[2] = vec[2];
+} // calcDeviatoric2D
+
+// Compute 3D deviatoric stress/strain from vector and mean value.
+// 3 FLOPs per call
+inline
+void
+pylith::materials::ElasticMaterial::calcDeviatoric3D(
+					double* const deviatoric,
+					const double* vec,
+					const double vecMean)
+{
+  deviatoric[0] = vec[0] - vecMean;
+  deviatoric[1] = vec[1] - vecMean;
+  deviatoric[2] = vec[2] - vecMean;
+  deviatoric[3] = vec[3];
+  deviatoric[4] = vec[4];
+  deviatoric[5] = vec[5];
+} // calcDeviatoric3D
+
+
+// Compute 2D scalar product of two tensors represented as vectors.
+// 6 FLOPs per call.
+inline
+double
+pylith::materials::ElasticMaterial::scalarProduct2D(const double* tensor1,
+						    const double* tensor2)
+{ // scalarProduct2D
+  const double scalarProduct = 
+    tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] + 
+    2.0 * tensor1[2] * tensor2[2];
+  return scalarProduct;
+
+} // scalarProduct2D
+
+
+// Compute 3D scalar product of two tensors represented as vectors.
+// 12 FLOPs per call.
+inline
+double
+pylith::materials::ElasticMaterial::scalarProduct3D(const double* tensor1,
+						    const double* tensor2)
+{ // scalarProduct3D
+  const double scalarProduct = 
+    tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] +
+    tensor1[2] * tensor2[2] +
+    2.0 * (tensor1[3] * tensor2[3] +
+	   tensor1[4] * tensor2[4] +
+	   tensor1[5] * tensor2[5]);
+  return scalarProduct;
+
+} // scalarProduct3D
+
 
 // ----------------------------------------------------------------------
 // Compute density for cell at quadrature points.
