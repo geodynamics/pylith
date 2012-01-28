@@ -26,6 +26,16 @@
 from ElasticMaterial import ElasticMaterial
 from materials import DruckerPrager3D as ModuleDruckerPrager3D
 
+# Validator to fit to Mohr-Coulomb
+def validateFitMohrCoulomb(value):
+  """
+  Validate fit to Mohr-Coulomb yield surface.
+  """
+  if not value in ["inscribed", "middle", "circumscribed"]:
+    raise ValueError("Unknown fit to Mohr-Coulomb yield surface.")
+  return value
+
+
 # DruckerPrager3D class
 class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
   """
@@ -34,6 +44,30 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
 
   Factory: material.
   """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(ElasticMaterial.Inventory):
+    """
+    Python object for managing FaultCohesiveKin facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing FaultCohesiveKin facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b fit_mohr_coulomb Fit to Mohr-Coulomb yield surface.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from pylith.meshio.OutputMatElastic import OutputMatElastic
+    fitMohrCoulomb = pyre.inventory.str("fit_mohr_coulomb", default="inscribed",
+                                        validator=validateFitMohrCoulomb)
+    fitMohrCoulomb.meta['tip'] = "Fit to Mohr-Coulomb yield surface."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -56,6 +90,23 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
+  def _configure(self):
+    """
+    Setup members using inventory.
+    """
+    ElasticMaterial._configure(self)
+    if self.inventory.fitMohrCoulomb == "inscribed":
+      fitEnum = ModuleDruckerPrager3D.MOHR_COULOMB_INSCRIBED
+    elif self.inventory.fitMohrCoulomb == "middle":
+      fitEnum = ModuleDruckerPrager3D.MOHR_COULOMB_MIDDLE
+    elif self.inventory.fitMohrCoulomb == "circumscribed":
+      fitEnum = ModuleDruckerPrager3D.MOHR_COULOMB_CIRCUMSCRIBED
+    else:
+      raise ValueError("Unknown fit to Mohr-Coulomb yield surface.")
+    ModuleDruckerPrager3D.fitMohrCoulomb(self, fitEnum)
+    return
+
+  
   def _createModuleObj(self):
     """
     Call constructor for module object for access to C++ object.
