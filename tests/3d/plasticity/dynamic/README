@@ -1,0 +1,6 @@
+Drucker-Prager P wave and S wave tests from SCEC dynamic rupture
+benchmarks TPV13 and TPV19. See http://scecdata.usc.edu/cvws for more
+information.
+
+Execute the bash script runtest.sh to run the tests and then plot the
+results using plot_data.py (requires PyTables and Matplotlib).
