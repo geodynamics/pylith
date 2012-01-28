@@ -59,42 +59,6 @@ public :
   virtual
   void deallocate(void);
   
-  /** Compute 2D deviatoric stress/strain from vector and mean value.
-   *
-   * @param deviatoric Array for deviatoric tensor.
-   * @param vec Input tensor (as vector).
-   * @param vecMean Tensor trace divided by spatial_dimension.
-   */
-  void calcDeviatoric2D(PylithScalar* const deviatoric,
-			const PylithScalar* vec,
-			const PylithScalar vecMean);
-  
-  /** Compute 3D deviatoric stress/strain from vector and mean value.
-   *
-   * @param deviatoric Array for deviatoric tensor.
-   * @param vec Input tensor (as vector).
-   * @param vecMean Tensor trace divided by spatial_dimension.
-   */
-  void calcDeviatoric3D(PylithScalar* const deviatoric,
-			const PylithScalar* vec,
-			const PylithScalar vecMean);
-  
-  /** Compute 2D scalar product of two tensors represented as vectors.
-   *
-   * @param tensor1 First tensor.
-   * @param tensor2 Second tensor.
-   */
-  PylithScalar scalarProduct2D(const PylithScalar* tensor1,
-			 const PylithScalar* tensor2) const;
-  
-  /** Compute 3D scalar product of two tensors represented as vectors.
-   *
-   * @param tensor1 First tensor.
-   * @param tensor2 Second tensor.
-   */
-  PylithScalar scalarProduct3D(const PylithScalar* tensor1,
-			 const PylithScalar* tensor2) const;
-  
   /** Set database for initial stress state.
    *
    * @param db Spatial database.
@@ -355,6 +319,46 @@ protected :
 				 const PylithScalar* stateVars,
 				 const int numStateVars) const = 0;
 
+  /** Compute 2D deviatoric stress/strain from vector and mean value.
+   *
+   * @param deviatoric Array for deviatoric tensor.
+   * @param vec Input tensor (as vector).
+   * @param vecMean Tensor trace divided by spatial_dimension.
+   */
+  static
+  void calcDeviatoric2D(PylithScalar* const deviatoric,
+			const PylithScalar* vec,
+			const PylithScalar vecMean);
+  
+  /** Compute 3D deviatoric stress/strain from vector and mean value.
+   *
+   * @param deviatoric Array for deviatoric tensor.
+   * @param vec Input tensor (as vector).
+   * @param vecMean Tensor trace divided by spatial_dimension.
+   */
+  static
+  void calcDeviatoric3D(PylithScalar* const deviatoric,
+			const PylithScalar* vec,
+			const PylithScalar vecMean);
+  
+  /** Compute 2D scalar product of two tensors represented as vectors.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  static
+  PylithScalar scalarProduct2D(const PylithScalar* tensor1,
+			       const PylithScalar* tensor2);
+  
+  /** Compute 3D scalar product of two tensors represented as vectors.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  static
+  PylithScalar scalarProduct3D(const PylithScalar* tensor1,
+			       const PylithScalar* tensor2);
+  
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
