@@ -148,6 +148,7 @@ pylith::materials::DruckerPrager3D::DruckerPrager3D(void) :
 			   _DruckerPrager3D::numStateVars,
 			   _DruckerPrager3D::dbStateVars,
 			   _DruckerPrager3D::numDBStateVars)),
+  _fitMohrCoulomb(MOHR_COULOMB_INSCRIBED),
   _calcElasticConstsFn(0),
   _calcStressFn(0),
   _updateStateVarsFn(0)
@@ -160,6 +161,14 @@ pylith::materials::DruckerPrager3D::DruckerPrager3D(void) :
 pylith::materials::DruckerPrager3D::~DruckerPrager3D(void)
 { // destructor
 } // destructor
+
+// ----------------------------------------------------------------------
+// Set fit to Mohr-Coulomb surface.
+void
+pylith::materials::DruckerPrager3D::fitMohrCoulomb(FitMohrCoulombEnum value)
+{ // fitMohrCoulomb
+  _fitMohrCoulomb = value;
+} // fitMohrCoulomb
 
 // ----------------------------------------------------------------------
 // Set whether elastic or inelastic constitutive relations are used.
@@ -222,11 +231,38 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
 
   const PylithScalar mu = density * vs*vs;
   const PylithScalar lambda = density * vp*vp - 2.0*mu;
-  const PylithScalar denomFriction = sqrt(3.0) * (3.0 - sin(frictionAngle));
-  const PylithScalar denomDilatation = sqrt(3.0) * (3.0 - sin(dilatationAngle));
-  const PylithScalar alphaYield = 2.0 * sin(frictionAngle)/denomFriction;
-  const PylithScalar beta = 6.0 * cohesion * cos(frictionAngle)/denomFriction;
-  const PylithScalar alphaFlow = 2.0 * sin(dilatationAngle)/denomDilatation;
+
+  PylithScalar alphaYield = 0.0;
+  PylithScalar beta = 0.0;
+  PylithScalar alphaFlow = 0.0;
+  switch (_fitMohrCoulomb) { // switch
+  case MOHR_COULOMB_INSCRIBED: {
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 - sin(frictionAngle));
+    const PylithScalar denomDilatation = sqrt(3.0) * (3.0 - sin(dilatationAngle));
+    alphaYield = 2.0 * sin(frictionAngle)/denomFriction;
+    beta = 6.0 * cohesion * cos(frictionAngle)/denomFriction;
+    alphaFlow = 2.0 * sin(dilatationAngle)/denomDilatation;
+    break;
+  } // MOHR_COULOMB_INSCRIBED
+  case MOHR_COULOMB_MIDDLE: {
+    alphaYield = sin(frictionAngle)/3.0;
+    beta = cohesion * cos(frictionAngle);
+    alphaFlow = sin(dilatationAngle)/3.0;
+    break;
+  } // MOHR_COULOMB_MIDDLE
+  case MOHR_COULOMB_CIRCUMSCRIBED: {
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 + sin(frictionAngle));
+    const PylithScalar denomDilatation = sqrt(3.0) * (3.0 + sin(dilatationAngle));
+    alphaYield = 2.0 * sin(frictionAngle)/denomFriction;
+    beta = 6.0 * cohesion * cos(frictionAngle)/denomFriction;
+    alphaFlow = 2.0 * sin(dilatationAngle)/denomDilatation;
+    break;
+  } // MOHR_COULOMB_CIRCUMSCRIBED
+  default :
+    assert(0);
+    throw std::logic_error("Unknown Mohr-Coulomb fit.");
+    break;
+  } // switch
 
   if (lambda <= 0.0) {
     std::ostringstream msg;
