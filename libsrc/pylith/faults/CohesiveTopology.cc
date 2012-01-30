@@ -886,17 +886,33 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     renumbering.end();
   for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
        r_iter != renumberingEnd;
-       ++r_iter)
-    if (fRenumbering.find(r_iter->second) != fRenumbering.end())
+       ++r_iter) {
+    if (fRenumbering.find(r_iter->second) != fRenumbering.end()) {
       gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
+    } // if
+  } // for
 
   ALE::SetFromMap<SieveMesh::renumbering_type> globalPoints(gRenumbering);
   ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering,
 					  sendParallelMeshOverlap,
 					  recvParallelMeshOverlap);
   faultSieveMesh->setCalculatedOverlap(true);
-  //sendParallelMeshOverlap->view("Send parallel fault overlap");
-  //recvParallelMeshOverlap->view("Recv parallel fault overlap");
+
+  // Consistency check for parallel overlap.
+  if (fRenumbering.size() > 0) {
+    if (gRenumbering.size() <= 0 ||
+	globalPoints.size() <= 0 ||
+	sendParallelMeshOverlap->getNumPoints() <= 0 ||
+	recvParallelMeshOverlap->getNumPoints() <= 0) {
+      throw std::logic_error("Inconsistent data when computing overlap for "
+			     "parallel fault mesh.");
+    } // if
+  } // if
+  
+#if 0 // DEBUGGING
+  sendParallelMeshOverlap->view("Send parallel fault overlap");
+  recvParallelMeshOverlap->view("Recv parallel fault overlap");
+#endif
 
   logger.stagePop();
 } // createFaultParallel
