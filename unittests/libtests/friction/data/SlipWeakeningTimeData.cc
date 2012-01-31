@@ -150,9 +150,9 @@ const PylithScalar pylith::friction::SlipWeakeningTimeData::_normalTraction[] = 
 
 const PylithScalar pylith::friction::SlipWeakeningTimeData::_stateVarsUpdated[] = {
   0.48,
-  0.4,
+  0.12,
   0.65,
-  0.5,
+  0.25,
 };
 
 pylith::friction::SlipWeakeningTimeData::SlipWeakeningTimeData(void)

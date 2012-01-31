@@ -330,7 +330,7 @@ pylith::friction::SlipWeakeningTime::_updateStateVars(const PylithScalar t,
 
   // Don't reset state variables when sliding stops
   // (SCEC dynamic rupture branch only).
-  const double slipPrev = stateVars[s_slipPrev];
+  const double slipPrev = slip;
   stateVars[s_slipPrev] = stateVars[s_slipCum];
   stateVars[s_slipCum] += fabs(slip - slipPrev);
 } // _updateStateVars
