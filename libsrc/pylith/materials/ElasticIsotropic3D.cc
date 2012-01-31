@@ -211,16 +211,16 @@ pylith::materials::ElasticIsotropic3D::_calcStress(PylithScalar* const stress,
 						   const int initialStrainSize,
 						   const bool computeStateVars)
 { // _calcStress
-  assert(0 != stress);
+  assert(stress);
   assert(_ElasticIsotropic3D::tensorSize == stressSize);
-  assert(0 != properties);
+  assert(properties);
   assert(_numPropsQuadPt == numProperties);
   assert(0 == numStateVars);
-  assert(0 != totalStrain);
+  assert(totalStrain);
   assert(_ElasticIsotropic3D::tensorSize == strainSize);
-  assert(0 != initialStress);
+  assert(initialStress);
   assert(_ElasticIsotropic3D::tensorSize == initialStressSize);
-  assert(0 != initialStrain);
+  assert(initialStrain);
   assert(_ElasticIsotropic3D::tensorSize == initialStrainSize);
 
   const PylithScalar mu = properties[p_mu];
