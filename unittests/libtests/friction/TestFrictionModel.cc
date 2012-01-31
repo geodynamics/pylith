@@ -360,7 +360,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 
     const int numStateVars = 2;
     const PylithScalar stateVars[2] = { 0.5, 0.1 };
-    const PylithScalar stateVarsUpdatedE[2] = { 0.65, 0.5 };
+    const PylithScalar stateVarsUpdatedE[2] = { 0.65, 0.25 };
     
 
     // Set state variables to given values
