@@ -323,7 +323,7 @@ pylith::friction::SlipWeakening::_updateStateVars(const PylithScalar t,
   if (slipRate > tolerance && !_forceHealing) {
     const PylithScalar slipPrev = stateVars[s_slipPrev];
 
-    stateVars[s_slipPrev] = stateVars[s_slipCum];
+    stateVars[s_slipPrev] = slip;
     stateVars[s_slipCum] += fabs(slip - slipPrev);
   } else {
     // Sliding has stopped, so reset state variables.
