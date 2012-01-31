@@ -43,6 +43,15 @@ class pylith::materials::DruckerPrager3D : public ElasticMaterial
 { // class DruckerPrager3D
   friend class TestDruckerPrager3D; // unit testing
 
+  // PUBLIC ENUMS ///////////////////////////////////////////////////////
+public :
+
+  enum FitMohrCoulombEnum {
+    MOHR_COULOMB_CIRCUMSCRIBED=0, 
+    MOHR_COULOMB_MIDDLE=1,
+    MOHR_COULOMB_INSCRIBED=2,
+  }; // FitMohrCoulombType
+
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
@@ -51,6 +60,12 @@ public :
 
   /// Destructor
   ~DruckerPrager3D(void);
+
+  /** Set fit to Mohr-Coulomb surface.
+   *
+   * @param value Mohr-Coulomb surface match type.
+   */
+  void fitMohrCoulomb(FitMohrCoulombEnum value);
 
   /** Set current time step.
    *
@@ -480,6 +495,9 @@ private :
 
   /// Method to use for _updateStateVars().
   updateStateVars_fn_type _updateStateVarsFn;
+
+  /// Fit to Mohr Coulomb surface
+  FitMohrCoulombEnum _fitMohrCoulomb;
 
   static const int p_density;
   static const int p_mu;

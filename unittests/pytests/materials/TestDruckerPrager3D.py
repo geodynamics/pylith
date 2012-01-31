@@ -46,6 +46,14 @@ class TestDruckerPrager3D(unittest.TestCase):
     return
 
 
+  def test_fitMohrCoulomb(self):
+    """
+    Test useElasticBehavior().
+    """
+    self.material.fitMohrCoulomb(self.material.MOHR_COULOMB_MIDDLE)
+    return
+
+
   def test_useElasticBehavior(self):
     """
     Test useElasticBehavior().

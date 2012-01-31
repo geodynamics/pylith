@@ -766,6 +766,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   logger.stagePush("FaultCreation");
 
   // Convert fault to an IMesh
+  //   In general, renumbering[global point number] = local point number
+  //   fRenumbering[mesh point] = fault mesh point
   SieveSubMesh::renumbering_type& fRenumbering =
     faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator fRenumberingEnd = 
@@ -882,21 +884,49 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   SieveMesh::renumbering_type& renumbering = sieveMesh->getRenumbering();
   SieveMesh::renumbering_type gRenumbering;
 
-  const SieveMesh::renumbering_type::const_iterator renumberingEnd =
-    renumbering.end();
-  for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
-       r_iter != renumberingEnd;
-       ++r_iter)
-    if (fRenumbering.find(r_iter->second) != fRenumbering.end())
-      gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
+  if (renumbering.size()) {
+    //std::cout << "Using renumbering to construct Fault Overlap" << std::endl;
+    const SieveMesh::renumbering_type::const_iterator renumberingEnd =
+      renumbering.end();
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
+         r_iter != renumberingEnd;
+         ++r_iter)
+      if (fRenumbering.find(r_iter->second) != fRenumbering.end())
+        gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
+  } else {
+    //std::cout << "Using new numbering to construct Fault Overlap" << std::endl;
+    const SieveMesh::sieve_type::chart_type& chart = sieveMesh->getSieve()->getChart();
+    const ALE::Obj<SieveMesh::numbering_type>& globalNumbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, -1);
+    assert(!globalNumbering.isNull());
+    for(SieveMesh::point_type p = chart.min(); p < chart.max(); ++p) {
+      if (fRenumbering.find(p) != fRenumbering.end()) {
+        gRenumbering[globalNumbering->getIndex(p)] = fRenumbering[p];
+      } // if
+    } // for
+  } // if/else
 
   ALE::SetFromMap<SieveMesh::renumbering_type> globalPoints(gRenumbering);
   ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering,
 					  sendParallelMeshOverlap,
 					  recvParallelMeshOverlap);
   faultSieveMesh->setCalculatedOverlap(true);
-  //sendParallelMeshOverlap->view("Send parallel fault overlap");
-  //recvParallelMeshOverlap->view("Recv parallel fault overlap");
+
+#if 0 // Seems to break unit tests.
+  // Consistency check for parallel overlap.
+  if (fRenumbering.size() > 0) {
+    if (renumbering.size() <= 0 ||
+	gRenumbering.size() <= 0) {
+      throw std::logic_error("Inconsistent data when computing overlap for "
+			     "parallel fault mesh.");
+    } // if
+  } // if
+#endif
+  
+#if 0 // DEBUGGING
+  sendParallelMeshOverlap->view("Send parallel fault overlap");
+  recvParallelMeshOverlap->view("Recv parallel fault overlap");
+#endif
 
   logger.stagePop();
 } // createFaultParallel
