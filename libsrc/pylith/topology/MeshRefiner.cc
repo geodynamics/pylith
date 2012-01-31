@@ -803,6 +803,9 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   newRecvOverlap->assemble();
 
 
+  // Clear out renumbering
+  newMesh->getRenumbering().clear();
+
   // Verify size of new send/recv overlaps are at least as big as the
   // original ones.
   PetscErrorCode err = 0;
