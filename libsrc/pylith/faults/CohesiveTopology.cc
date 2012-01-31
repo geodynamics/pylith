@@ -766,6 +766,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   logger.stagePush("FaultCreation");
 
   // Convert fault to an IMesh
+  //   In general, renumbering[global point number] = local point number
+  //   fRenumbering[mesh point] = fault mesh point
   SieveSubMesh::renumbering_type& fRenumbering =
     faultSieveMesh->getRenumbering();
   const SieveSubMesh::renumbering_type::const_iterator fRenumberingEnd = 
@@ -882,15 +884,27 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   SieveMesh::renumbering_type& renumbering = sieveMesh->getRenumbering();
   SieveMesh::renumbering_type gRenumbering;
 
-  const SieveMesh::renumbering_type::const_iterator renumberingEnd =
-    renumbering.end();
-  for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
-       r_iter != renumberingEnd;
-       ++r_iter) {
-    if (fRenumbering.find(r_iter->second) != fRenumbering.end()) {
-      gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
-    } // if
-  } // for
+  if (renumbering.size()) {
+    //std::cout << "Using renumbering to construct Fault Overlap" << std::endl;
+    const SieveMesh::renumbering_type::const_iterator renumberingEnd =
+      renumbering.end();
+    for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
+         r_iter != renumberingEnd;
+         ++r_iter)
+      if (fRenumbering.find(r_iter->second) != fRenumbering.end())
+        gRenumbering[r_iter->first] = fRenumbering[r_iter->second];
+  } else {
+    //std::cout << "Using new numbering to construct Fault Overlap" << std::endl;
+    const SieveMesh::sieve_type::chart_type& chart = sieveMesh->getSieve()->getChart();
+    const ALE::Obj<SieveMesh::numbering_type>& globalNumbering = 
+      sieveMesh->getFactory()->getNumbering(sieveMesh, -1);
+    assert(!globalNumbering.isNull());
+    for(SieveMesh::point_type p = chart.min(); p < chart.max(); ++p) {
+      if (fRenumbering.find(p) != fRenumbering.end()) {
+        gRenumbering[globalNumbering->getIndex(p)] = fRenumbering[p];
+      } // if
+    } // for
+  } // if/else
 
   ALE::SetFromMap<SieveMesh::renumbering_type> globalPoints(gRenumbering);
   ALE::OverlapBuilder<>::constructOverlap(globalPoints, gRenumbering,
