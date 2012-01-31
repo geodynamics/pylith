@@ -983,7 +983,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
     } // for
 
-#if 1 // debugging
+#if 0 // debugging
     std::cout << "v_fault: " << v_fault;
     std::cout << ", tractionTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
