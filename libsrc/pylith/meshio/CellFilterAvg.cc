@@ -121,7 +121,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
 
   // Allocate field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Output");
+  logger.stagePush("OutputFields");
   if (0 == _fieldAvg) {
     _fieldAvg = new field_type(fieldIn.mesh());
     assert(0 != _fieldAvg);

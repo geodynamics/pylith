@@ -199,44 +199,89 @@ private :
    */
   void _sensitivityUpdateSoln(const bool negativeSide);
 
-  /** Constrain solution space with lumped Jacobian in 1-D.
+  /** Constrain solution space in 1-D.
    *
-   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Slip assoc. w/Lagrange multiplier vertex.
-   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
-   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param slip Fault slip vector.
+   * @param slipRate Fault slip rate vector.
+   * @param tractionTpdt Fault traction vector.
+   * @param iterating True if iterating on solution, false otherwise.
    */
-  void _constrainSolnSpace1D(double_array* dLagrangeTpdt,
+  void _constrainSolnSpace1D(double_array* dTractionTpdt,
 			     const double_array& slip,
 			     const double_array& slipRate,
 			     const double_array& tractionTpdt,
 			     const bool iterating =true);
 
-  /** Constrain solution space with lumped Jacobian in 2-D.
+  /** Constrain solution space in 2-D.
    *
-   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Slip assoc. w/Lagrange multiplier vertex.
-   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
-   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param slip Fault slip vector.
+   * @param slipRate Fault slip rate vector.
+   * @param tractionTpdt Fault traction vector.
+   * @param iterating True if iterating on solution, false otherwise.
    */
-  void _constrainSolnSpace2D(double_array* dLagrangeTpdt,
+  void _constrainSolnSpace2D(double_array* dTractionTpdt,
 			     const double_array& slip,
 			     const double_array& slipRate,
 			     const double_array& tractionTpdt,
 			     const bool iterating =true);
 
-  /** Constrain solution space with lumped Jacobian in 3-D.
+  /** Constrain solution space in 3-D.
    *
-   * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
-   * @param slip Slip assoc. w/Lagrange multiplier vertex.
-   * @param slipRate Slip rate assoc. w/Lagrange multiplier vertex.
-   * @param tractionTpdt Fault traction assoc. w/Lagrange multiplier vertex.
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param slip Fault slip vector.
+   * @param slipRate Fault slip rate vector.
+   * @param tractionTpdt Fault traction vector.
+   * @param iterating True if iterating on solution, false otherwise.
    */
-  void _constrainSolnSpace3D(double_array* dLagrangeTpdt,
+  void _constrainSolnSpace3D(double_array* dTractionTpdt,
 			     const double_array& slip,
 			     const double_array& slipRate,
 			     const double_array& tractionTpdt,
 			     const bool iterating =true);
+
+  /** Improve slip estimate when constraining solution space in 1-D.
+   *
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param dSlipTpdt Adjustment to fault slip vector.
+   * @param slipT Fault slip vector at time t.
+   * @param slipTpdt Fault slip vector at time t+dt (without adjustment).
+   * @param tractionTpdt Fault traction vector (without adjustment).
+   */
+  void _constrainSolnSpaceImprove1D(double_array* dTractionTpdt,
+				    double_array* dSlipTpdt,
+				    const double_array& slipT,
+				    const double_array& slipTpdt,
+				    const double_array& tractionTpdt);
+
+  /** Improve slip estimate when constraining solution space in 2-D.
+   *
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param dSlipTpdt Adjustment to fault slip vector.
+   * @param slipT Fault slip vector at time t.
+   * @param slipTpdt Fault slip vector at time t+dt (without adjustment).
+   * @param tractionTpdt Fault traction vector (without adjustment).
+   */
+  void _constrainSolnSpaceImprove2D(double_array* dTractionTpdt,
+				    double_array* dSlipTpdt,
+				    const double_array& slipT,
+				    const double_array& slipTpdt,
+				    const double_array& tractionTpdt);
+
+  /** Improve slip estimate when constraining solution space in 3-D.
+   *
+   * @param dTractionTpdt Adjustment to fault traction vector.
+   * @param dSlipTpdt Adjustment to fault slip vector.
+   * @param slipT Fault slip vector at time t.
+   * @param slipTpdt Fault slip vector at time t+dt (without adjustment).
+   * @param tractionTpdt Fault traction vector (without adjustment).
+   */
+  void _constrainSolnSpaceImprove3D(double_array* dTractionTpdt,
+				    double_array* dSlipTpdt,
+				    const double_array& slipT,
+				    const double_array& slipTpdt,
+				    const double_array& tractionTpdt);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

@@ -78,10 +78,11 @@ pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
 } // faultMeshFilename
 
 // ----------------------------------------------------------------------
-// Get number of vertices in fault.
+// Get the number of vertices associated with the fault (before
+// fault mesh exists).
 int
-pylith::faults::FaultCohesive::numVertices(const topology::Mesh& mesh) const
-{ // numVertices
+pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) const
+{ // numVerticesNoMesh
   int nvertices = 0;
 
   if (!_useFaultMesh) {
@@ -105,7 +106,7 @@ pylith::faults::FaultCohesive::numVertices(const topology::Mesh& mesh) const
   } // else
 
   return nvertices;
-} // numVertices
+} // numVerticesNoMesh
 
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.

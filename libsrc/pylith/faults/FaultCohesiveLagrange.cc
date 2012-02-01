@@ -105,7 +105,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
     *_faultMesh);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.stagePush("Fault");
+  logger.stagePush("FaultFields");
 
   // Allocate dispRel field
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
@@ -120,6 +120,8 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
+  logger.stagePop();
+
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
       faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());
@@ -130,26 +132,12 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _quadrature->computeGeometry(*_faultMesh, cells);
 #endif
 
-  _fields->add("distribution", "distribution", pylith::topology::FieldBase::CELLS_FIELD, 1);
-  topology::Field<topology::SubMesh>& dist = _fields->get("distribution");
-  dist.allocate();
-  const ALE::Obj<RealSection>& distSection = dist.section();
-  assert(!distSection.isNull());
-  const double rank = (double) distSection->commRank();
-
-  // Loop over cells in fault mesh, set distribution
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
-      != cellsEnd; ++c_iter) {
-    distSection->updatePoint(*c_iter, &rank);
-  } // for
-
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir);
 
   // Compute tributary area for each vertex in fault mesh.
   _calcArea();
 
-  //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -1206,6 +1194,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
   double jacobianDet = 0;
   double_array refCoordsVertex(cohesiveDim);
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("FaultFields");
+
   // Allocate orientation field.
   double_array orientationVertex(orientationSize);
   _fields->add("orientation", "orientation");
@@ -1222,6 +1213,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const double upDir[3])
     orientationSection->setFiberDimension(vertices, spaceDim, iDim);
   orientation.allocate();
   orientation.zero();
+
+  logger.stagePop();
 
   // Get fault cells.
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
@@ -1452,6 +1445,9 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
       vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush("FaultFields");
+
   // Allocate area field.
   _fields->add("area", "area");
   topology::Field<topology::SubMesh>& area = _fields->get("area");
@@ -1464,6 +1460,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
   UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);
+
+  logger.stagePop();
 
   double_array coordinatesCell(numBasis * spaceDim);
   const ALE::Obj<RealSection>& coordinates = faultSieveMesh->getRealSection(
@@ -1551,13 +1549,13 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   const ALE::Obj<RealSection>& tractionsSection = tractions->section();
   if (tractionsSection.isNull()) {
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    //logger.stagePush("Fault");
+    logger.stagePush("FaultFields");
 
     const topology::Field<topology::SubMesh>& dispRel = 
       _fields->get("relative disp");
     tractions->cloneSection(dispRel);
 
-    //logger.stagePop();
+    logger.stagePop();
   } // if
   assert(!tractionsSection.isNull());
   tractions->zero();
@@ -1713,7 +1711,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Output");
+  logger.stagePush("OutputFields");
 
   // Create vector field; use same shape/chart as relative
   // displacement field.
@@ -1739,7 +1737,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Output");
+  logger.stagePush("OutputFields");
 
   // Create vector field; use same shape/chart as area field.
   assert(0 != _faultMesh);
@@ -1854,10 +1852,41 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
                                                  const topology::SolutionFields* fields)
 { // cellField
-  if (0 == strcasecmp("distribution", name)) {
-    const topology::Field<topology::SubMesh>& dist = _fields->get("distribution");
-    return dist;
-  }
+  if (0 == strcasecmp("partition", name)) {
+
+    const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+    assert(!faultSieveMesh.isNull());
+    const ALE::Obj<SieveSubMesh::label_sequence>& cells =
+      faultSieveMesh->heightStratum(0);
+    assert(!cells.isNull());
+    const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
+    const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+
+    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+    logger.stagePush("OutputFields");
+
+    const int fiberDim = 1;
+    _fields->add("partition", "partition", 
+		 pylith::topology::FieldBase::CELLS_FIELD, fiberDim);
+    topology::Field<topology::SubMesh>& partition = _fields->get("partition");
+    partition.allocate();
+    const ALE::Obj<RealSection>& partitionSection = partition.section();
+    assert(!partitionSection.isNull());
+    
+    const double rank = (double) partitionSection->commRank();
+    // Loop over cells in fault mesh, set partition
+    for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; 
+	 c_iter != cellsEnd;
+	 ++c_iter) {
+      partitionSection->updatePoint(*c_iter, &rank);
+    } // for
+
+    logger.stagePop();
+
+    return partition;    
+
+  } // if
+
   // Should not reach this point if requested field was found
   std::ostringstream msg;
   msg << "Request for unknown cell field '" << name << "' for fault '"

@@ -343,7 +343,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 #else
 
     const double slipRateLinear = _minSlipRate;
-    const double slipRateFactor = 1.0e-3;
 
     const double f0 = properties[p_coef];
     const double a = properties[p_a];
@@ -352,15 +351,11 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     const double slipRate0 = properties[p_slipRate0];
     const double theta = stateVars[s_state];
 
-    if (slipRate > slipRateLinear) {
+    if (slipRate >= slipRateLinear) {
       mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
-    } else if (slipRate > slipRateFactor*slipRateLinear) {
-      mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor) * 
-	(1.0 - slipRate/slipRateLinear) / (1.0 - slipRateFactor);
     } else {
       mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor);
+	a*(1.0 - slipRate/slipRateLinear);
     } // else
 
     friction = -mu_f * normalTraction + properties[p_cohesion];
@@ -374,10 +369,46 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 #endif
   } // if
 
-  PetscLogFlops(11);
+  PetscLogFlops(12);
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute change in friction for a change in slip (Jacobian).
+double
+pylith::friction::RateStateAgeing::_calcFrictionSlope(const double slip,
+						      const double slipRate,
+						      const double normalTraction,
+						      const double* properties,
+						      const int numProperties,
+						      const double* stateVars,
+						      const int numStateVars)
+{ // _calcFrictionSlope
+  assert(properties);
+  assert(_RateStateAgeing::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_RateStateAgeing::numStateVars == numStateVars);
+
+  double slope = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+
+    const double a = properties[p_a];
+    const double slipRate0 = properties[p_slipRate0];
+
+    const double slipRateLinear = _minSlipRate;
+    const double slipRateEff = std::max(slipRate, slipRateLinear);
+
+    //slope = -slipRateEff / (slipRate0 * normalTraction * a);
+    slope = -normalTraction * a; // log space
+  } // if
+
+  PetscLogFlops(5);
+
+  return slope;
+} // _calcFrictionSlope
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
