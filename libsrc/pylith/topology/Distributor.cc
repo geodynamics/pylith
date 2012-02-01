@@ -58,30 +58,41 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 { // distribute
   assert(0 != newMesh);
 
+  int rank = 0;
+  MPI_Comm_rank(origMesh.comm(), &rank);
+
   journal::info_t info("distributor");
     
   newMesh->coordsys(origMesh.coordsys());
   
   if (0 == strcasecmp(partitioner, "")) {
-    info << journal::at(__HERE__)
-	 << "Distributing mesh using dumb partitioner." << journal::endl;
+    if (0 == rank) {
+      info << journal::at(__HERE__)
+	   << "Distributing mesh using dumb partitioner." << journal::endl;
+    } // if
     _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
 #if defined(PETSC_HAVE_CHACO)
   } else if (0 == strcasecmp(partitioner, "chaco")) {
-    info << journal::at(__HERE__)
-	 << "Distributing mesh using 'chaco' partitioner." << journal::endl;
+    if (0 == rank) {
+      info << journal::at(__HERE__)
+	   << "Distributing mesh using 'chaco' partitioner." << journal::endl;
+    } // if
     _distribute<ALE::DistributionNew<SieveMesh, ALE::Partitioner<ALE::Chaco::Partitioner<> > > >(newMesh, origMesh);
 #endif
 #if defined(PETSC_HAVE_PARMETIS)
   } else if (0 == strcasecmp(partitioner, "parmetis")) {
-    info << journal::at(__HERE__)
-	 << "Distributing mesh using 'parmetis' partitioner." << journal::endl;
+    if (0 == rank) {
+      info << journal::at(__HERE__)
+	   << "Distributing mesh using 'parmetis' partitioner." << journal::endl;
+    } // if
    _distribute<ALE::DistributionNew<SieveMesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
 #endif
   } else {
-    info << journal::at(__HERE__)
-	 << "Unknown partitioner '" << partitioner
-	 << "', distribution mesh using dumb partitioner." << journal::endl;
+    if (0 == rank) {
+      info << journal::at(__HERE__)
+	   << "Unknown partitioner '" << partitioner
+	   << "', distribution mesh using dumb partitioner." << journal::endl;
+    } // if
     _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
   } // else
 
@@ -96,8 +107,12 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   
   journal::info_t info("distributor");
     
-  info << journal::at(__HERE__)
-       << "Writing partition." << journal::endl;
+  int rank = 0;
+  MPI_Comm_rank(mesh.comm(), &rank);
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Writing partition." << journal::endl;
+  } // if
 
   // Setup and allocate field
   const int fiberDim = 1;
@@ -152,8 +167,12 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 
   journal::info_t info("distributor");
     
-  info << journal::at(__HERE__)
-       << "Partitioning and distributing the mesh." << journal::endl;
+  int rank = 0;
+  MPI_Comm_rank(origMesh.comm(), &rank);
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Partitioning and distributing the mesh." << journal::endl;
+  } // if
 
   ALE::Obj<SieveMesh>& newSieveMesh = newMesh->sieveMesh();
   assert(!newSieveMesh.isNull());
@@ -198,8 +217,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     } // for
   } // if
 
-  info << journal::at(__HERE__)
-       << "Checking the overlap." << journal::endl;
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Checking the overlap." << journal::endl;
+  } // if
 
   // Check overlap
   int localSendOverlapSize = 0, sendOverlapSize;
@@ -225,8 +246,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshCoordinates");
 
   // Distribute the coordinates
-  info << journal::at(__HERE__)
-       << "Distribution the vertex coordinates." << journal::endl;
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Distribution the vertex coordinates." << journal::endl;
+  } // if
 
   const ALE::Obj<RealSection>& coordinates = 
     origSieveMesh->getRealSection("coordinates");
@@ -244,8 +267,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshRealSections");
 
   // Distribute other sections
-  info << journal::at(__HERE__)
-       << "Distribution other sections." << journal::endl;
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Distribution other sections." << journal::endl;
+  } // if
 
   if (origSieveMesh->getRealSections()->size() > 1) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getRealSections();
@@ -322,8 +347,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshLabels");
 
   // Distribute labels
-  info << journal::at(__HERE__)
-       << "Distributing labels." << journal::endl;
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Distributing labels." << journal::endl;
+  } // if
 
   const SieveMesh::labels_type& labels = origSieveMesh->getLabels();
   const SieveMesh::labels_type::const_iterator labelsBegin = labels.begin();
@@ -368,8 +395,10 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshOverlap");
 
   // Create the parallel overlap
-  info << journal::at(__HERE__)
-       << "Creating the parallel overlap." << journal::endl;
+  if (0 == rank) {
+    info << journal::at(__HERE__)
+	 << "Creating the parallel overlap." << journal::endl;
+  } // if
 
   ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap = 
     newSieveMesh->getSendOverlap();
