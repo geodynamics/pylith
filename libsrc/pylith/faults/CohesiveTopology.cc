@@ -51,7 +51,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("xxFaultCohesiveCellsCreation");
+  logger.stagePush("SerialFaultCreation");
 
   faultMesh->coordsys(mesh);
 
@@ -98,10 +98,10 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   fault->setSieve(faultSieve);
 
   logger.stagePop();
-  logger.stagePush("xxFaultCohesiveCellsStratification");
+  logger.stagePush("SerialFaultStratification");
   fault->stratify();
   logger.stagePop();
-  logger.stagePush("xxFaultCohesiveCellsCreation");
+  logger.stagePush("SerialFaultCreation");
   if (debug)
     fault->view("Fault mesh");
 
@@ -143,7 +143,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultCohesiveCellsCreation");
+  logger.stagePush("SerialFaultCreation");
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
@@ -212,7 +212,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 		<< vertexRenumber[*v_iter] << std::endl;
 
     logger.stagePop();
-    logger.stagePush("FaultCohesiveCellsStratification");
+    logger.stagePush("SerialFaultStratification");
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(firstFaultVertex, 1);
@@ -232,7 +232,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       ++firstLagrangeVertex;
     } // if
     logger.stagePop();
-    logger.stagePush("MeshIntSections");
+    logger.stagePush("SerialFaultCreation");
 
     // Add shadow vertices to other groups, don't add constraint
     // vertices (if they exist) because we don't want BC, etc to act
@@ -246,11 +246,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       if (group->getFiberDimension(*v_iter))
         group->addPoint(firstFaultVertex, 1);
     } // for
-    logger.stagePop();
-    logger.stagePush("FaultCohesiveCellsCreation");
   } // for
   logger.stagePop();
-  logger.stagePush("MeshIntSections");
+  logger.stagePush("SerialFaultCreation");
   const std::set<std::string>::const_iterator namesEnd = groupNames->end();
   for(std::set<std::string>::const_iterator name = groupNames->begin();
       name != namesEnd;
@@ -258,7 +256,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
   logger.stagePop();
-  logger.stagePush("FaultCohesiveCellsCreation");
+  logger.stagePush("SerialFault");
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<SieveSubMesh::label_sequence>& faces =
@@ -416,14 +414,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, firstFaultCell, materialId);
     logger.stagePop();
-    logger.stagePush("FaultCohesiveCellsStratification");
+    logger.stagePush("SerialFaultStratification");
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
     sieveMesh->setHeight(firstFaultCell, 0);
     sieveMesh->setDepth(firstFaultCell, 1);
 #endif
     logger.stagePop();
-    logger.stagePush("FaultCohesiveCellsCreation");
+    logger.stagePush("SerialFaultCreation");
     sV2.clear();
     cV2.clear();
   } // for
@@ -612,10 +610,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     delete [] indices;
 #if !defined(FAST_STRATIFY)
   logger.stagePop();
-  logger.stagePush("FaultCohesiveCellsStratification");
+  logger.stagePush("SerialFaultStratification");
   sieveMesh->stratify();
   logger.stagePop();
-  logger.stagePush("FaultCohesiveCellsCreation");
+  logger.stagePush("SerialFaultCreation");
 #endif
   const std::string labelName("censored depth");
 
@@ -929,7 +927,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   } // if
 #endif
   
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   sendParallelMeshOverlap->view("Send parallel fault overlap");
   recvParallelMeshOverlap->view("Recv parallel fault overlap");
 #endif

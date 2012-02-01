@@ -66,11 +66,5 @@ class Fault(Memory):
     memDict['Stratification'] = 2 * self.sizeArrow * (nvertices + ncells)
     memDict['Coordinates'] = (self.sizeDouble * dim * nvertices) + (2 * self.sizeInt * nvertices) + (2 * self.sizeInt * nvertices)
 
-    # coneSize for cohesive cell is 3*coneSize for fault (surface) cell
-    # :TODO: account for fault sieve
-    memDict['CohesiveCells'] = {'Creation': 0,
-                                'Stratification': 0}
-    memDict['CohesiveCells']['Creation'] = self.sizeInt * (2 * (3*coneSize*ncells + 3*nvertices + ncells) + 3*coneSize*ncells)
-    memDict['CohesiveCells']['Stratification'] = 2 * self.sizeArrow * (3*nvertices + ncells)
     return
 
