@@ -356,7 +356,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 
     const int numStateVars = 2;
     const double stateVars[2] = { 0.5, 0.1 };
-    const double stateVarsUpdatedE[2] = { 0.65, 0.5 };
+    const double stateVarsUpdatedE[2] = { 0.65, 0.25 };
     
 
     // Set state variables to given values
@@ -715,7 +715,7 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 
     const double tolerance = 1.0e-06;
     for (int i=0; i < numVarsVertex; ++i) {
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
       std::cout << "valE: " << stateVarsE[i] 
 		<< ", val: " << stateVars[i]
 		<< std::endl;
