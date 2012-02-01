@@ -74,12 +74,11 @@ ALE::MeshOrder::initialize(const ALE::Obj<mesh_type>& mesh)
   } else {
     const int numCells = cells->size();    
     const int numVertices = vertices->size();
-    const int numEntities = numCells + numVertices;
 
     _cellsNormal = ALE::Interval<point_type>(0, numCells);
     _verticesNormal = ALE::Interval<point_type>(numCells, numCells+numVertices);
-    _cellsCensored = ALE::Interval<point_type>(numEntities, numEntities);
-    _verticesCensored = ALE::Interval<point_type>(numEntities, numEntities);
+    _verticesCensored = ALE::Interval<point_type>(numCells+numVertices, numCells+numVertices);
+    _cellsCensored = ALE::Interval<point_type>(numCells+numVertices, numCells+numVertices);
   } // if/else
 } // initialize
 
