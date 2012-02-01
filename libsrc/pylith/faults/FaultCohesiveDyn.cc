@@ -1005,7 +1005,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       dDispTIncrVertexP[iDim] = +0.5*dDispRelVertex[iDim];
     } // for
 
-#if 1 // debugging
+#if 0 // debugging
     std::cout << "v_fault: " << v_fault;
     std::cout << ", tractionTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
@@ -2376,7 +2376,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceImprove2D(
   assert(dTractionTpdt);
   assert(dSlipTpdt);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   std::cout << "BEFORE improvement"
 	    << ", dTractionTpdt:";
   for (int i=0; i < 2; ++i)
@@ -2478,7 +2478,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceImprove2D(
 #endif
     } // if/else
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   std::cout << "AFTER improvement"
 	    << ", dTractionTpdt:";
   for (int i=0; i < 2; ++i)
@@ -2514,7 +2514,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceImprove3D(
   assert(dTractionTpdt);
   assert(dSlipTpdt);
  
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   std::cout << "BEFORE improvement"
 	    << ", dTractionTpdt:";
   for (int i=0; i < 2; ++i)
@@ -2639,7 +2639,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceImprove3D(
 #endif
     } // if
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   std::cout << "AFTER improvement"
 	    << ", dTractionTpdt:";
   for (int i=0; i < 2; ++i)

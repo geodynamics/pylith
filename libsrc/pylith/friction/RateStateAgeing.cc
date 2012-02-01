@@ -332,14 +332,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
 
-    std::cout << "slip: " << slip
-	      << ", slipRate: " << slipRate
-	      << ", stateVar: " << theta
-	      << ", bLnTermL: " << bLnTerm
-	      << ", expTerm: " << expTerm
-	      << ", sinhArg: " << sinhArg
-	      << ", mu_f: " << mu_f
-	      << std::endl;
 #else
 
     const double slipRateLinear = _minSlipRate;
@@ -360,11 +352,13 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 
     friction = -mu_f * normalTraction + properties[p_cohesion];
 
+#if 0
     std::cout << "slip: " << slip
 	      << ", slipRate: " << slipRate
 	      << ", stateVar: " << theta
 	      << ", mu_f: " << mu_f
 	      << std::endl;
+#endif
 
 #endif
   } // if
