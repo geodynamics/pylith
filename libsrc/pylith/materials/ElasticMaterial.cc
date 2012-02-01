@@ -304,7 +304,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Materials");
+  logger.stagePush("MaterialsFields");
 
   assert(0 != _initialFields);
   _initialFields->add("initial stress", "initial_stress");
@@ -450,7 +450,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Materials");
+  logger.stagePush("MaterialsFields");
 
   assert(0 != _initialFields);
   _initialFields->add("initial strain", "initial_strain");

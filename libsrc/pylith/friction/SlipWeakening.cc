@@ -294,13 +294,50 @@ pylith::friction::SlipWeakening::_calcFriction(const double slip,
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
-    friction = - mu_f * normalTraction + properties[p_cohesion];
+    friction = -mu_f * normalTraction + properties[p_cohesion];
   } // if
 
-  PetscLogFlops(6);
+  PetscLogFlops(10);
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute change in friction for a change in slip (Jacobian).
+double
+pylith::friction::SlipWeakening::_calcFrictionSlope(const double slip,
+						    const double slipRate,
+						    const double normalTraction,
+						    const double* properties,
+						    const int numProperties,
+						    const double* stateVars,
+						    const int numStateVars)
+{ // _calcFrictionSlope
+  assert(properties);
+  assert(_SlipWeakening::numProperties == numProperties);
+  assert(stateVars);
+  assert(_SlipWeakening::numStateVars == numStateVars);
+
+  double slope = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+    const double slipPrev = stateVars[s_slipPrev];
+    const double slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+
+    if (slipCum < properties[p_d0]) {
+      // if/else linear slip-weakening form of mu_f 
+      slope = -normalTraction * (properties[p_coefS] - properties[p_coefD]) 
+	/ properties[p_d0];
+      } else {
+      slope = 0.0;
+      } // if/else
+  } // if
+
+  PetscLogFlops(7);
+
+  return slope;
+} // _calcFrictionSlope
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
@@ -322,13 +359,15 @@ pylith::friction::SlipWeakening::_updateStateVars(const double slip,
   if (slipRate > tolerance && !_forceHealing) {
     const double slipPrev = stateVars[s_slipPrev];
 
-    stateVars[s_slipPrev] = stateVars[s_slipCum];
+    stateVars[s_slipPrev] = slip;
     stateVars[s_slipCum] += fabs(slip - slipPrev);
   } else {
     // Sliding has stopped, so reset state variables.
     stateVars[s_slipPrev] = slip;
     stateVars[s_slipCum] = 0.0;
   } // else
+
+  PetscLogFlops(3);
 } // _updateStateVars
 
 
