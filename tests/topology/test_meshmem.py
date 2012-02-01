@@ -60,8 +60,9 @@ class TestApp(Script):
     Run test.
     """
 
-    filenameIn = "data/tet4.exo"
+    #filenameIn = "data/tet4.exo"
     #filenameIn = "tri3_200m_gradient.exo"
+    filenameIn = "tet4_150m.exo"
 
     from pylith.perf.MemoryLogger import MemoryLogger
     self.logger = MemoryLogger()
@@ -135,22 +136,22 @@ class TestApp(Script):
       mesh = dmesh
       
 
-    # Refine mesh (if necessary)
-    from pylith.topology.RefineUniform import RefineUniform
-    refiner = RefineUniform()
-    rmesh = refiner.refine(mesh)
-    rmesh.memLoggingStage = "RefinedMesh"
+    if False: # Refine mesh (if necessary)
+      from pylith.topology.RefineUniform import RefineUniform
+      refiner = RefineUniform()
+      rmesh = refiner.refine(mesh)
+      rmesh.memLoggingStage = "RefinedMesh"
 
-    print "Unrefined mesh logging stage",mesh.memLoggingStage
-    self.logger.logMesh(mesh.memLoggingStage, mesh)
-    material.ncells = MeshOps_numMaterialCells(mesh, material.id())
-    self.logger.logMaterial(mesh.memLoggingStage, material)
+      print "Unrefined mesh logging stage",mesh.memLoggingStage
+      self.logger.logMesh(mesh.memLoggingStage, mesh)
+      material.ncells = MeshOps_numMaterialCells(mesh, material.id())
+      self.logger.logMaterial(mesh.memLoggingStage, material)
     
-    self.logger.logMesh(rmesh.memLoggingStage, rmesh)
-    material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
-    self.logger.logMaterial(rmesh.memLoggingStage, material)
+      self.logger.logMesh(rmesh.memLoggingStage, rmesh)
+      material.ncells = MeshOps_numMaterialCells(rmesh, material.id())
+      self.logger.logMaterial(rmesh.memLoggingStage, material)
 
-    self._showStatus("After refining mesh")
+      self._showStatus("After refining mesh")
 
 
     return

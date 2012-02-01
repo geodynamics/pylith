@@ -142,9 +142,9 @@ const double pylith::friction::SlipWeakeningData::_normalTraction[] = {
 
 const double pylith::friction::SlipWeakeningData::_stateVarsUpdated[] = {
   0.48,
-  0.4,
+  0.12,
   0.65,
-  0.5,
+  0.25,
 };
 
 pylith::friction::SlipWeakeningData::SlipWeakeningData(void)

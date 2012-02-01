@@ -113,13 +113,13 @@ class MeshGenerator(PetscComponent):
       for interface in interfaces:
         if 0 == comm.rank:
           self._info.log("Counting vertices for fault '%s'." % interface.label())
-        nvertices = interface.numVertices(mesh)
+        nvertices = interface.numVerticesNoMesh(mesh)
         firstLagrangeVertex += nvertices
         firstFaultCell      += nvertices
         if interface.useLagrangeConstraints():
           firstFaultCell += nvertices
       for interface in interfaces:
-        nvertices = interface.numVertices(mesh)
+        nvertices = interface.numVerticesNoMesh(mesh)
         if 0 == comm.rank:
           self._info.log("Adjusting topology for fault '%s' with %d vertices." % \
                            (interface.label(), nvertices))

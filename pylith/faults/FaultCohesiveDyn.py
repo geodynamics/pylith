@@ -91,7 +91,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                      "slip_rate",
                      "traction"]},
          'cell': \
-           {'info': ["distribution"],
+           {'info': ["partition"],
             'data': []}}
     return
 
