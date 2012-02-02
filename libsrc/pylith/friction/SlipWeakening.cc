@@ -295,7 +295,9 @@ pylith::friction::SlipWeakening::_calcFriction(const PylithScalar t,
 	mu_f = properties[p_coefD];
       } // if/else
     friction = - mu_f * normalTraction + properties[p_cohesion];
-  } // if
+  } else { // else
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(6);
 
