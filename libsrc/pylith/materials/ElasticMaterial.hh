@@ -329,6 +329,17 @@ protected :
   void calcDeviatoric2D(PylithScalar* const deviatoric,
 			const PylithScalar* vec,
 			const PylithScalar vecMean);
+
+  /** Compute 2D deviatoric stress/strain from vector (length 4) and mean value.
+   *
+   * @param deviatoric Array for deviatoric tensor.
+   * @param vec Input tensor (as vector).
+   * @param vecMean Tensor trace divided by spatial_dimension.
+   */
+  static
+  void calcDeviatoric2DPS(PylithScalar* const deviatoric,
+			  const PylithScalar* vec,
+			  const PylithScalar vecMean);
   
   /** Compute 3D deviatoric stress/strain from vector and mean value.
    *
@@ -349,6 +360,16 @@ protected :
   static
   PylithScalar scalarProduct2D(const PylithScalar* tensor1,
 			       const PylithScalar* tensor2);
+  
+  /** Compute 2D scalar product of two tensors represented as vectors of
+   * length 4.
+   *
+   * @param tensor1 First tensor.
+   * @param tensor2 Second tensor.
+   */
+  static
+  PylithScalar scalarProduct2DPS(const PylithScalar* tensor1,
+				 const PylithScalar* tensor2);
   
   /** Compute 3D scalar product of two tensors represented as vectors.
    *
