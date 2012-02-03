@@ -42,6 +42,8 @@ subpkginclude_HEADERS = \
 	PowerLaw3D.icc \
 	DruckerPrager3D.hh \
 	DruckerPrager3D.icc \
+	DruckerPragerPlaneStrain.hh \
+	DruckerPragerPlaneStrain.icc \
 	Metadata.hh \
 	Metadata.icc \
 	Material.hh \
