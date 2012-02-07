@@ -71,6 +71,22 @@ pylith::materials::ElasticMaterial::calcDeviatoric2D(
   deviatoric[2] = vec[2];
 } // calcDeviatoric2D
 
+// Compute 2D deviatoric stress/strain from vector and mean value.
+// In this case all 3 normal components are present, but only one shear comp.
+// 3 FLOPs per call
+inline
+void
+pylith::materials::ElasticMaterial::calcDeviatoric2DPS(
+					PylithScalar* const deviatoric,
+					const PylithScalar* vec,
+					const PylithScalar vecMean)
+{
+  deviatoric[0] = vec[0] - vecMean;
+  deviatoric[1] = vec[1] - vecMean;
+  deviatoric[2] = vec[2] - vecMean;
+  deviatoric[3] = vec[3];
+} // calcDeviatoric2D
+
 // Compute 3D deviatoric stress/strain from vector and mean value.
 // 3 FLOPs per call
 inline
@@ -103,6 +119,25 @@ pylith::materials::ElasticMaterial::scalarProduct2D(const PylithScalar* tensor1,
 
   return scalarProduct;
 } // scalarProduct2D
+
+
+// Compute 2DPS scalar product of two tensors represented as vectors.
+// In this case all 3 normal components are present, but only one shear comp.
+// 8 FLOPs per call.
+inline
+PylithScalar
+pylith::materials::ElasticMaterial::scalarProduct2DPS(
+						 const PylithScalar* tensor1,
+						 const PylithScalar* tensor2)
+{ // scalarProduct2DPS
+  const PylithScalar scalarProduct = 
+    tensor1[0] * tensor2[0] +
+    tensor1[1] * tensor2[1] + 
+    tensor1[2] * tensor2[2] + 
+    2.0 * tensor1[3] * tensor2[3];
+
+  return scalarProduct;
+} // scalarProduct2DPS
 
 
 // Compute 3D scalar product of two tensors represented as vectors.
