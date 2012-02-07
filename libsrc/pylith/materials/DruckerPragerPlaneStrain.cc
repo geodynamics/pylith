@@ -478,7 +478,7 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastic(
 
   const PylithScalar e11 = totalStrain[0] - initialStrain[0];
   const PylithScalar e22 = totalStrain[1] - initialStrain[1];
-  const PylithScalar e12 = totalStrain[3] - initialStrain[3];
+  const PylithScalar e12 = totalStrain[2] - initialStrain[2];
 
   const PylithScalar s12 = lambda * (e11 + e22);
 
