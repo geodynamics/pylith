@@ -216,7 +216,7 @@ pylith::materials::DruckerPrager3D::_dbToProperties(
   const PylithScalar cohesion = dbValues[db_cohesion];
   const PylithScalar dilatationAngle = dbValues[db_dilatationAngle];
  
-  const double pi = M_PI;
+  const PylithScalar pi = M_PI;
 
   if (density <= 0.0 || vs <= 0.0 || vp <= 0.0 || cohesion < 0.0 ||
       frictionAngle < 0.0 || frictionAngle > pi/2 ||
