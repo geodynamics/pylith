@@ -41,7 +41,8 @@ noinst_PYTHON = \
 	TestGenMaxwellPlaneStrain.py \
 	TestGenMaxwellQpQsIsotropic3D.py \
 	TestPowerLaw3D.py \
-	TestDruckerPrager3D.py
+	TestDruckerPrager3D.py \
+	TestDruckerPragerPlaneStrain.py
 
 
 # End of file 

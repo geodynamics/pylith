@@ -42,6 +42,7 @@ testmaterials_SOURCES = \
 	TestGenMaxwellQpQsIsotropic3D.cc \
 	TestPowerLaw3D.cc \
 	TestDruckerPrager3D.cc \
+	TestDruckerPragerPlaneStrain.cc \
 	TestEffectiveStress.cc \
 	test_materials.cc
 
@@ -62,6 +63,7 @@ noinst_HEADERS = \
 	TestMaxwellPlaneStrain.hh \
 	TestPowerLaw3D.hh \
 	TestDruckerPrager3D.hh \
+	TestDruckerPragerPlaneStrain.hh \
 	TestEffectiveStress.hh
 
 # Source files associated with testing data
@@ -86,7 +88,9 @@ testmaterials_SOURCES += \
 	data/PowerLaw3DElasticData.cc \
 	data/PowerLaw3DTimeDepData.cc \
 	data/DruckerPrager3DElasticData.cc \
-	data/DruckerPrager3DTimeDepData.cc
+	data/DruckerPrager3DTimeDepData.cc \
+	data/DruckerPragerPlaneStrainElasticData.cc \
+	data/DruckerPragerPlaneStrainTimeDepData.cc
 
 
 noinst_HEADERS += \
@@ -111,6 +115,8 @@ noinst_HEADERS += \
 	data/PowerLaw3DTimeDepData.hh \
 	data/DruckerPrager3DElasticData.hh \
 	data/DruckerPrager3DTimeDepData.hh \
+	data/DruckerPragerPlaneStrainElasticData.hh \
+	data/DruckerPragerPlaneStrainTimeDepData.hh \
 	data/header.hh
 
 AM_CPPFLAGS = \

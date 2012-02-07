@@ -98,6 +98,9 @@ class TestApp(Script):
     from TestDruckerPrager3D import TestDruckerPrager3D
     suite.addTest(unittest.makeSuite(TestDruckerPrager3D))
 
+    from TestDruckerPragerPlaneStrain import TestDruckerPragerPlaneStrain
+    suite.addTest(unittest.makeSuite(TestDruckerPragerPlaneStrain))
+
     from TestMaterial import TestMaterial
     suite.addTest(unittest.makeSuite(TestMaterial))
 

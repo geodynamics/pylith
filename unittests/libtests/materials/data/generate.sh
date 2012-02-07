@@ -78,6 +78,11 @@ if [ $1 == "elastic" ] || [ $1 == "all" ]; then
     --data.object=GenMaxwellPlaneStrainElasticData \
     --data.parent=ElasticMaterialData
 
+  python DruckerPragerPlaneStrainElastic.py \
+    --data.namespace=pylith,materials \
+    --data.object=DruckerPragerPlaneStrainElasticData \
+    --data.parent=ElasticMaterialData
+
   # 1-D ----------------------------------------------------------------
 
   python ElasticStrain1D.py \
@@ -128,6 +133,11 @@ if [ $1 == "viscoelastic" ] || [ $1 == "all" ]; then
   python DruckerPrager3DTimeDep.py \
     --data.namespace=pylith,materials \
     --data.object=DruckerPrager3DTimeDepData \
+    --data.parent=ElasticMaterialData
+
+  python DruckerPragerPlaneStrainTimeDep.py \
+    --data.namespace=pylith,materials \
+    --data.object=DruckerPragerPlaneStrainTimeDepData \
     --data.parent=ElasticMaterialData
 
 fi
