@@ -33,6 +33,8 @@
 namespace pylith {
   namespace meshio {
     class TestOutputSolnPoints;
+
+    class OutputSolnPointsData;
   } // meshio
 } // pylith
 
@@ -44,8 +46,11 @@ class pylith::meshio::TestOutputSolnPoints : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestOutputSolnPoints );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testSetupInterpolator2D );
-  CPPUNIT_TEST( testSetupInterpolator3D );
+
+  CPPUNIT_TEST( testSetupInterpolatorTri3 );
+  CPPUNIT_TEST( testSetupInterpolatorQuad4 );
+  CPPUNIT_TEST( testSetupInterpolatorTet4 );
+  CPPUNIT_TEST( testSetupInterpolatorHex8 );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -55,11 +60,26 @@ public :
   /// Test constructor
   void testConstructor(void);
 
-  /// Test setupInterpolator for 2D mesh()
-  void testSetupInterpolator2D(void);
+  /// Test setupInterpolator for tri3 mesh.
+  void testSetupInterpolatorTri3(void);
 
-  /// Test setupInterpolator for 3D mesh()
-  void testSetupInterpolator3D(void);
+  /// Test setupInterpolator for quad4 mesh.
+  void testSetupInterpolatorQuad4(void);
+
+  /// Test setupInterpolator for tet4 mesh.
+  void testSetupInterpolatorTet4(void);
+
+  /// Test setupInterpolator for hex8 mesh.
+  void testSetupInterpolatorHex8(void);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Test setupInterpolator.
+   *
+   * @param data Test data.
+   */
+  void _testSetupInterpolator(const OutputSolnPointsData& data);
 
 }; // class TestOutputSolnPoints
 
