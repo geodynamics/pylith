@@ -51,20 +51,22 @@ pylith::meshio::TestOutputSolnPoints::testConstructor(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
 { // testSetupInterpolator2D
-  const char* filename = "data/quad4.mesh";
-  const int numPoints = 5;
-  const PylithScalar points[10] = { 
-    0.0,  0.1,
+  const char* meshFilename = "data/quad4.mesh";
+  const int numPoints = 7;
+  const PylithScalar points[14] = { 
+    0.0,  0.1, // interior points
     0.3,  0.4,
    -0.6, -0.7,
    -1.0,  0.9,
    -0.3,  0.8,
+    0.3,  0.99999, // edge point
+   -0.999999,  0.99999, // vertex point
   };
   const int nvertices = numPoints;
-  const int verticesE[5] = { 5, 6, 7, 8, 9 };
+  const int verticesE[7] = { 7, 8, 9, 10, 11, 12, 13 };
   const int ncells = numPoints;
   const int ncorners = 1;
-  const int cellsE[5] = { 5, 6, 7, 8, 9 };
+  const int cellsE[7] = { 7, 8, 9, 10, 11, 12, 13 };
   const int spaceDim = 2;
 
   topology::Mesh mesh;
@@ -73,7 +75,7 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   cs.initialize();
   mesh.coordsys(&cs);
   MeshIOAscii iohandler;
-  iohandler.filename("data/quad4.mesh");
+  iohandler.filename(meshFilename);
   iohandler.read(&mesh);
 
   OutputSolnPoints output;
@@ -124,20 +126,22 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
 { // testSetupInterpolator3D
-  const char* filename = "data/quad4.mesh";
-  const int numPoints = 5;
-  const PylithScalar points[15] = { 
-    0.0,  0.1,  0.2,
+  const char* meshFilename = "data/hex8.mesh";
+  const int numPoints = 7;
+  const PylithScalar points[21] = { 
+    0.0,  0.1,  0.2, // interior points
     0.3, -0.4,  0.5,
     0.6,  0.7, -0.8,
    -1.0,  0.1, -0.3,
     0.3,  0.8,  0.5,
+    0.3,  0.9999,  0.9999, // edge point
+    0.0,  0.9999,  -0.999999, // vertex point
   };
   const int nvertices = numPoints;
-  const int verticesE[5] = { 5, 6, 7, 8, 9 };
+  const int verticesE[7] = { 7, 8, 9, 10, 11, 12, 13 };
   const int ncells = numPoints;
   const int ncorners = 1;
-  const int cellsE[5] = { 5, 6, 7, 8, 9 };
+  const int cellsE[7] = { 7, 8, 9, 10, 11, 12, 13 };
   const int spaceDim = 3;
 
   topology::Mesh mesh;
@@ -146,7 +150,7 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   cs.initialize();
   mesh.coordsys(&cs);
   MeshIOAscii iohandler;
-  iohandler.filename("data/hex8.mesh");
+  iohandler.filename(meshFilename);
   iohandler.read(&mesh);
 
   OutputSolnPoints output;
@@ -155,6 +159,8 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   const topology::Mesh& pointsMesh = output.pointsMesh();
   const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
   CPPUNIT_ASSERT(!sievePointsMesh.isNull());
+
+  pointsMesh.view("POINTS MESH");
 
   // Check vertices
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
