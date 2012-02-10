@@ -126,6 +126,11 @@ testmeshio_SOURCES += \
 	data/DataWriterHDF5DataFaultMeshQuad4.cc \
 	data/DataWriterHDF5DataFaultMeshTet4.cc \
 	data/DataWriterHDF5DataFaultMeshHex8.cc \
+	data/OutputSolnPointsData.cc \
+	data/OutputSolnPointsDataTri3.cc \
+	data/OutputSolnPointsDataQuad4.cc \
+	data/OutputSolnPointsDataTet4.cc \
+	data/OutputSolnPointsDataHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -189,6 +194,11 @@ noinst_HEADERS += \
 	data/DataWriterHDF5DataFaultMeshQuad4.hh \
 	data/DataWriterHDF5DataFaultMeshTet4.hh \
 	data/DataWriterHDF5DataFaultMeshHex8.hh \
+	data/OutputSolnPointsData.hh \
+	data/OutputSolnPointsDataTri3.hh \
+	data/OutputSolnPointsDataQuad4.hh \
+	data/OutputSolnPointsDataTet4.hh \
+	data/OutputSolnPointsDataHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \

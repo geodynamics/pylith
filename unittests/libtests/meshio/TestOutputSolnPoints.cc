@@ -28,6 +28,11 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
+#include "data/OutputSolnPointsDataTri3.hh"
+#include "data/OutputSolnPointsDataQuad4.hh"
+#include "data/OutputSolnPointsDataTet4.hh"
+#include "data/OutputSolnPointsDataHex8.hh"
+
 #include <string.h> // USES strcmp()
 
 // ----------------------------------------------------------------------
@@ -47,27 +52,64 @@ pylith::meshio::TestOutputSolnPoints::testConstructor(void)
 
 
 // ----------------------------------------------------------------------
-// Test setupInterpolator() for 2D points.
+// Test setupInterpolator for tri3 mesh.
 void
-pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
-{ // testSetupInterpolator2D
-  const char* meshFilename = "data/quad4.mesh";
-  const int numPoints = 7;
-  const PylithScalar points[14] = { 
-    0.0,  0.1, // interior points
-    0.3,  0.4,
-   -0.6, -0.7,
-   -1.0,  0.9,
-   -0.3,  0.8,
-    0.3,  0.99999, // edge point
-   -0.999999,  0.99999, // vertex point
-  };
-  const int nvertices = numPoints;
-  const int verticesE[7] = { 7, 8, 9, 10, 11, 12, 13 };
-  const int ncells = numPoints;
-  const int ncorners = 1;
-  const int cellsE[7] = { 7, 8, 9, 10, 11, 12, 13 };
-  const int spaceDim = 2;
+pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTri3(void)
+{ // testSetupInterpolatorTri3
+  OutputSolnPoints output;
+  OutputSolnPointsDataTri3 data;
+
+  _testSetupInterpolator(data);
+} // testSetupInterpolatorTri3
+
+
+// ----------------------------------------------------------------------
+// Test setupInterpolator for quad4 mesh.
+void
+pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorQuad4(void)
+{ // testSetupInterpolatorQuad4
+  OutputSolnPoints output;
+  OutputSolnPointsDataQuad4 data;
+
+  _testSetupInterpolator(data);
+} // testSetupInterpolatorQuad4
+
+
+// ----------------------------------------------------------------------
+// Test setupInterpolator for tet4 mesh.
+void
+pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTet4(void)
+{ // testSetupInterpolatorTet4
+  OutputSolnPoints output;
+  OutputSolnPointsDataTet4 data;
+
+  _testSetupInterpolator(data);
+} // testSetupInterpolatorTet4
+
+
+// ----------------------------------------------------------------------
+// Test setupInterpolator for hex8 mesh.
+void
+pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorHex8(void)
+{ // testSetupInterpolatorHex8
+  OutputSolnPoints output;
+  OutputSolnPointsDataHex8 data;
+
+  _testSetupInterpolator(data);
+} // testSetupInterpolatorHex8
+
+
+// ----------------------------------------------------------------------
+// Test setupInterpolator().
+void
+pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPointsData& data)
+{ // _testSetupInterpolator
+  const int numPoints = data.numPoints;
+  const int spaceDim = data.spaceDim;
+
+  const int numVerticesE = numPoints;
+  const int numCellsE = numPoints;
+  const int numCornersE = 1;
 
   topology::Mesh mesh;
   spatialdata::geocoords::CSCart cs;
@@ -75,28 +117,31 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   cs.initialize();
   mesh.coordsys(&cs);
   MeshIOAscii iohandler;
-  iohandler.filename(meshFilename);
+  iohandler.filename(data.meshFilename);
   iohandler.read(&mesh);
 
   OutputSolnPoints output;
-  output.setupInterpolator(&mesh, points, numPoints, spaceDim);
+  CPPUNIT_ASSERT(data.points);
+  output.setupInterpolator(&mesh, data.points, numPoints, spaceDim);
 
   const topology::Mesh& pointsMesh = output.pointsMesh();
   const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
   CPPUNIT_ASSERT(!sievePointsMesh.isNull());
 
-  pointsMesh.view("POINTS MESH");
+  pointsMesh.view("POINTS MESH"); // DEBUGGING
 
   // Check vertices
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
     sievePointsMesh->depthStratum(0);
   const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
+  CPPUNIT_ASSERT_EQUAL(numVerticesE, int(vertices->size()));
   int ipt = 0;
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
        v_iter != verticesEnd;
-       ++v_iter, ++ipt)
-    CPPUNIT_ASSERT_EQUAL(verticesE[ipt], *v_iter);
+       ++v_iter, ++ipt) {
+    const int vertexE = numCellsE + ipt;
+    CPPUNIT_ASSERT_EQUAL(vertexE, *v_iter);
+  } // for
 
   // Check cells
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -105,95 +150,22 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator2D(void)
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sievePointsMesh->getSieve();
   assert(!sieve.isNull());
 
-  CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
+  CPPUNIT_ASSERT_EQUAL(numCellsE, int(cells->size()));
 
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
   int i = 0;
   for (SieveMesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
     sieve->cone(*c_iter, pV);
     const SieveMesh::point_type* cone = pV.getPoints();
-    CPPUNIT_ASSERT_EQUAL(ncorners, (int) pV.getSize());
+    CPPUNIT_ASSERT_EQUAL(numCornersE, (int) pV.getSize());
     for(int p = 0; p < pV.getSize(); ++p, ++i) {
-      CPPUNIT_ASSERT_EQUAL(cellsE[i], cone[p]);
-    }
+      const int coneE = numCellsE+i;
+      CPPUNIT_ASSERT_EQUAL(coneE, cone[p]);
+    } // for
     pV.clear();
   } // for
-} // testSetupInterpolator2D
+} // _testSetupInterpolator
 
-
-// ----------------------------------------------------------------------
-// Test setupInterpolator() for 3D points.
-void
-pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
-{ // testSetupInterpolator3D
-  const char* meshFilename = "data/hex8.mesh";
-  const int numPoints = 7;
-  const PylithScalar points[21] = { 
-    0.0001,  0.1,  0.2, // interior points
-    0.3, -0.4,  0.5,
-    0.6,  0.7, -0.8,
-   -0.9999,  0.1, -0.3,
-    0.3,  0.8,  0.5,
-    0.3,  0.9999,  0.9999, // edge point
-    0.000001,  0.9999,  -0.999999, // vertex point
-  };
-  const int nvertices = numPoints;
-  const int verticesE[7] = { 7, 8, 9, 10, 11, 12, 13 };
-  const int ncells = numPoints;
-  const int ncorners = 1;
-  const int cellsE[7] = { 7, 8, 9, 10, 11, 12, 13 };
-  const int spaceDim = 3;
-
-  topology::Mesh mesh;
-  spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(spaceDim);
-  cs.initialize();
-  mesh.coordsys(&cs);
-  MeshIOAscii iohandler;
-  iohandler.filename(meshFilename);
-  iohandler.read(&mesh);
-
-  OutputSolnPoints output;
-  output.setupInterpolator(&mesh, points, numPoints, spaceDim);
-
-  const topology::Mesh& pointsMesh = output.pointsMesh();
-  const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
-  CPPUNIT_ASSERT(!sievePointsMesh.isNull());
-
-  pointsMesh.view("POINTS MESH");
-
-  // Check vertices
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sievePointsMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
-  int ipt = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt)
-    CPPUNIT_ASSERT_EQUAL(verticesE[ipt], *v_iter);
-
-  // Check cells
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sievePointsMesh->heightStratum(0);
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sievePointsMesh->getSieve();
-  assert(!sieve.isNull());
-
-  CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
-
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  int i = 0;
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
-    sieve->cone(*c_iter, pV);
-    const SieveMesh::point_type *cone = pV.getPoints();
-    CPPUNIT_ASSERT_EQUAL(ncorners, (int) pV.getSize());
-    for(int p = 0; p < pV.getSize(); ++p, ++i) {
-      CPPUNIT_ASSERT_EQUAL(cellsE[i], cone[p]);
-    }
-    pV.clear();
-  } // for
-} // testSetupInterpolator3D
 
 
 // End of file 
