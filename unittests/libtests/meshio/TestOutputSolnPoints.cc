@@ -128,7 +128,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
   const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
   CPPUNIT_ASSERT(!sievePointsMesh.isNull());
 
-  pointsMesh.view("POINTS MESH"); // DEBUGGING
+  //pointsMesh.view("POINTS MESH"); // DEBUGGING
 
   // Check vertices
   const ALE::Obj<SieveMesh::label_sequence>& vertices = 
@@ -165,7 +165,6 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
     pV.clear();
   } // for
 } // _testSetupInterpolator
-
 
 
 // End of file 
