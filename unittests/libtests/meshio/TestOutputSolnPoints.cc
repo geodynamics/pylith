@@ -129,13 +129,13 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolator3D(void)
   const char* meshFilename = "data/hex8.mesh";
   const int numPoints = 7;
   const PylithScalar points[21] = { 
-    0.0,  0.1,  0.2, // interior points
+    0.0001,  0.1,  0.2, // interior points
     0.3, -0.4,  0.5,
     0.6,  0.7, -0.8,
-   -1.0,  0.1, -0.3,
+   -0.9999,  0.1, -0.3,
     0.3,  0.8,  0.5,
     0.3,  0.9999,  0.9999, // edge point
-    0.0,  0.9999,  -0.999999, // vertex point
+    0.000001,  0.9999,  -0.999999, // vertex point
   };
   const int nvertices = numPoints;
   const int verticesE[7] = { 7, 8, 9, 10, 11, 12, 13 };
