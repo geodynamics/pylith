@@ -65,13 +65,38 @@ namespace pylith {
        */
       const char* label(void) const;
 
-      /** Get the number of vertices on the fault.
+      /** Get dimension of mesh.
+       *
+       * @returns Dimension of mesh.
+       */
+      int dimension(void) const;
+
+      /** Get representative cone size for mesh.
+       *
+       * @returns Representative cone size for mesh.
+       */
+      int coneSize(void) const;
+  
+      /** Get number of vertices in mesh.
+       *
+       * @returns Number of vertices in mesh.
+       */
+      int numVertices(void) const;
+  
+      /** Get number of cells in mesh.
+       *
+       * @returns Number of cells in mesh.
+       */
+      int numCells(void) const;
+
+      /** Get the number of vertices associated with the fault (before
+       * fault mesh exists).
        *
        * @param mesh PETSc mesh
        * @return Number of vertices on the fault.
        */
       virtual
-      int numVertices(const topology::Mesh& mesh) const = 0;
+      int numVerticesNoMesh(const topology::Mesh& mesh) const = 0;
 
       /** Adjust mesh topology for fault implementation.
        *
