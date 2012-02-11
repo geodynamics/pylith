@@ -310,4 +310,21 @@ pylith::friction::TimeWeakening::_updateStateVars(const PylithScalar t,
 } // _updateStateVars
 
 
+// ----------------------------------------------------------------------
+// Compute change in friction for a change in slip (Jacobian).
+PylithScalar
+pylith::friction::TimeWeakening::_calcFrictionSlope(const PylithScalar slip,
+						    const PylithScalar slipRate,
+						    const PylithScalar normalTraction,
+						    const PylithScalar* properties,
+						    const int numProperties,
+						    const PylithScalar* stateVars,
+						    const int numStateVars)
+{ // _calcFrictionSlope
+  const PylithScalar slope = 0;
+
+  return slope;
+} // _calcFrictionSlope
+
+
 // End of file 

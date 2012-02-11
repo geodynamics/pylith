@@ -48,5 +48,4 @@ pylith::faults::Fault::label(void) const {
   return _label.c_str();
 }
 
-
 // End of file 

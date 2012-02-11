@@ -325,6 +325,28 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
 } // calcFriction
 
 // ----------------------------------------------------------------------
+// Compute change in friction with change in slip.
+PylithScalar
+pylith::friction::FrictionModel::calcFrictionSlope(const PylithScalar slip,
+						   const PylithScalar slipRate,
+						   const PylithScalar normalTraction)
+{ // calcFrictionSlope
+  assert(_fieldsPropsStateVars);
+  
+  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
+  const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
+  const PylithScalar* stateVarsVertex = (_varsFiberDim > 0) ?
+    &_propsStateVarsVertex[_propsFiberDim] : 0;
+  
+  const PylithScalar slope =
+    _calcFrictionSlope(slip, slipRate, normalTraction,
+		       propertiesVertex, _propsFiberDim,
+		       stateVarsVertex, _varsFiberDim);
+  
+  return slope;
+} // calcFrictionSlope
+
+// ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
 pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
