@@ -61,8 +61,7 @@ class OutputFaultKin(OutputManagerSubMesh):
                                                   "traction_change"])
   vertexDataFields.meta['tip'] = "Names of vertex data fields to output."
 
-  cellInfoFields = pyre.inventory.list("cell_info_fields",
-                                       default=["distribution"])
+  cellInfoFields = pyre.inventory.list("cell_info_fields", default=[])
   cellInfoFields.meta['tip'] = "Names of cell info fields to output."
 
 

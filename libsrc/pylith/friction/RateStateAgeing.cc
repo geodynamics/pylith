@@ -333,52 +333,77 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
     mu_f = a * asinh(sinhArg);
     friction = -mu_f * normalTraction + properties[p_cohesion];
 
-    std::cout << "slip: " << slip
-	      << ", slipRate: " << slipRate
-	      << ", stateVar: " << theta
-	      << ", bLnTermL: " << bLnTerm
-	      << ", expTerm: " << expTerm
-	      << ", sinhArg: " << sinhArg
-	      << ", mu_f: " << mu_f
-	      << std::endl;
 #else
 
-    const double slipRateLinear = _minSlipRate;
-    const double slipRateFactor = 1.0e-3;
+    const PylithScalar slipRateLinear = _minSlipRate;
 
-    const double f0 = properties[p_coef];
-    const double a = properties[p_a];
-    const double b = properties[p_b];
-    const double L = properties[p_L];
-    const double slipRate0 = properties[p_slipRate0];
-    const double theta = stateVars[s_state];
+    const PylithScalar f0 = properties[p_coef];
+    const PylithScalar a = properties[p_a];
+    const PylithScalar b = properties[p_b];
+    const PylithScalar L = properties[p_L];
+    const PylithScalar slipRate0 = properties[p_slipRate0];
+    const PylithScalar theta = stateVars[s_state];
 
-    if (slipRate > slipRateLinear) {
+    if (slipRate >= slipRateLinear) {
       mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
-    } else if (slipRate > slipRateFactor*slipRateLinear) {
-      mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor) * 
-	(1.0 - slipRate/slipRateLinear) / (1.0 - slipRateFactor);
     } else {
       mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor);
+	a*(1.0 - slipRate/slipRateLinear);
     } // else
 
     friction = -mu_f * normalTraction + properties[p_cohesion];
 
+#if 0
     std::cout << "slip: " << slip
 	      << ", slipRate: " << slipRate
 	      << ", stateVar: " << theta
 	      << ", mu_f: " << mu_f
 	      << std::endl;
+#endif
 
 #endif
   } // if
 
-  PetscLogFlops(11);
+  PetscLogFlops(12);
 
   return friction;
 } // _calcFriction
+
+// ----------------------------------------------------------------------
+// Compute change in friction for a change in slip (Jacobian).
+PylithScalar
+pylith::friction::RateStateAgeing::_calcFrictionSlope(const PylithScalar slip,
+						      const PylithScalar slipRate,
+						      const PylithScalar normalTraction,
+						      const PylithScalar* properties,
+						      const int numProperties,
+						      const PylithScalar* stateVars,
+						      const int numStateVars)
+{ // _calcFrictionSlope
+  assert(properties);
+  assert(_RateStateAgeing::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_RateStateAgeing::numStateVars == numStateVars);
+
+  PylithScalar slope = 0.0;
+  if (normalTraction <= 0.0) {
+    // if fault is in compression
+
+    const PylithScalar a = properties[p_a];
+    const PylithScalar slipRate0 = properties[p_slipRate0];
+
+    const PylithScalar slipRateLinear = _minSlipRate;
+    const PylithScalar slipRateEff = std::max(slipRate, slipRateLinear);
+
+    //slope = -slipRateEff / (slipRate0 * normalTraction * a);
+    slope = -normalTraction * a; // log space
+  } // if
+
+  PetscLogFlops(5);
+
+  return slope;
+} // _calcFrictionSlope
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

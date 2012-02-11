@@ -92,6 +92,12 @@ class DirichletBC(BoundaryCondition,
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
 
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Initializing Dirichlet boundary '%s'." % self.label())
+
     self.normalizer(normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 

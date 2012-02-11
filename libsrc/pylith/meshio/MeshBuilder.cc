@@ -222,7 +222,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(fault->debug()/2);
-  logger.stagePush("FaultCreation");
+  logger.stagePush("Creation");
 
   if (0 == rank) {
     assert(coordinates.size() == numVertices*spaceDim);
@@ -256,7 +256,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
     faultBd = ALE::Selection<SieveFlexMesh>::boundary(tmpMesh);
 
     logger.stagePop();
-    logger.stagePush("FaultStratification");
+    logger.stagePush("Stratification");
     fault->stratify();
     logger.stagePop();
   } else {
@@ -265,7 +265,7 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
     faultBd = ALE::Selection<SieveFlexMesh>::boundary(tmpMesh);
 
     logger.stagePop();
-    logger.stagePush("FaultStratification");
+    logger.stagePush("Stratification");
     fault->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
     fault->getSieve()->allocate();
     fault->stratify();
@@ -275,20 +275,20 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 #if defined(ALE_MEM_LOGGING)
   std::cout
     << std::endl
-    << "FaultCreation " << logger.getNumAllocations("FaultCreation")
-    << " allocations " << logger.getAllocationTotal("FaultCreation")
+    << "FaultCreation " << logger.getNumAllocations("Creation")
+    << " allocations " << logger.getAllocationTotal("Creation")
     << " bytes" << std::endl
     
-    << "FaultCreation " << logger.getNumDeallocations("FaultCreation")
-    << " deallocations " << logger.getDeallocationTotal("FaultCreation")
+    << "FaultCreation " << logger.getNumDeallocations("Creation")
+    << " deallocations " << logger.getDeallocationTotal("Creation")
     << " bytes" << std::endl
     
-    << "FaultStratification " << logger.getNumAllocations("FaultStratification")
-    << " allocations " << logger.getAllocationTotal("FaultStratification")
+    << "FaultStratification " << logger.getNumAllocations("Stratification")
+    << " allocations " << logger.getAllocationTotal("Stratification")
     << " bytes" << std::endl
     
-    << "FaultStratification " << logger.getNumDeallocations("FaultStratification")
-    << " deallocations " << logger.getDeallocationTotal("FaultStratification")
+    << "FaultStratification " << logger.getNumDeallocations("Stratification")
+    << " deallocations " << logger.getDeallocationTotal("Stratification")
     << " bytes" << std::endl << std::endl;
 #endif
 

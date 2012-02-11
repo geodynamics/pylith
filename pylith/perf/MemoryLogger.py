@@ -145,10 +145,12 @@ class MemoryLogger(Logger):
     import pylith.perf.Field
 
     if not stage in self.memory: self.memory[stage] = {}
+    if not 'Fields' in self.memory[stage]:
+      self.memory[stage]['Fields'] = {}
     if not field is None:
       fieldModel = pylith.perf.Field.Field(field.label(), field.sectionSize(), 
                                            field.chartSize())
-      fieldModel.tabulate(self.memory[stage])
+      fieldModel.tabulate(self.memory[stage]['Fields'])
     return
 
 
@@ -183,7 +185,8 @@ class MemoryLogger(Logger):
     import pylith.perf.Fault
 
     if not stage in self.memory: self.memory[stage] = {}
-    faultModel = pylith.perf.Fault.Fault()
+    faultModel = pylith.perf.Fault.Fault(mesh.dimension(), mesh.coneSize(),
+                                         mesh.numVertices(), mesh.numCells())
     faultModel.tabulate(self.memory[stage])
     return
 
