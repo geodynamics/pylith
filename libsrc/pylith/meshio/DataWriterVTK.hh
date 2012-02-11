@@ -37,6 +37,7 @@ class pylith::meshio::DataWriterVTK : public DataWriter<mesh_type,field_type>
   friend class TestDataWriterVTKSubMesh; // unit testing
   friend class TestDataWriterVTKBCMesh; // unit testing
   friend class TestDataWriterVTKFaultMesh; // unit testing
+  friend class TestDataWriterVTKPoints; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

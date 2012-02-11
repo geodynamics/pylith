@@ -85,7 +85,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 						    const PylithScalar* points,
 						    const int numPoints,
 						    const int spaceDim)
-{ // createPointsMesh
+{ // setupInterpolator
   assert(mesh);
   assert(points);
 
@@ -123,13 +123,50 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(cs);
   assert(cs->spaceDim() == spaceDim);
 
-  err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*) points, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetDim(dm, spaceDim, 
+				  _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)points, 
+				     _interpolator);CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
   CHECK_PETSC_ERROR(err);
 
-} // createPointsMesh
+  if (!_fields) {
+    _fields = new topology::Fields<topology::Field<topology::Mesh> >(*_pointsMesh);
+  } // if
+} // setupInterpolator
+
+
+// ----------------------------------------------------------------------
+// Prepare for output.
+void
+pylith::meshio::OutputSolnPoints::open(const topology::Mesh& mesh,
+				       const int numTimeSteps,
+				       const char* label,
+				       const int labelId)
+{ // open
+  assert(!label);
+  assert(!labelId);
+
+  assert(_pointsMesh);
+  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::open(*_pointsMesh, numTimeSteps, label, labelId);
+} // open
+
+
+// ----------------------------------------------------------------------
+// Setup file for writing fields at time step.
+void
+pylith::meshio::OutputSolnPoints::openTimeStep(const PylithScalar t,
+					       const topology::Mesh& mesh,
+					       const char* label,
+					       const int labelId)
+{ // openTimeStep
+  assert(!label);
+  assert(!labelId);
+
+  assert(_pointsMesh);
+  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::openTimeStep(t, *_pointsMesh, label, labelId);
+} // openTimeStep
 
 
 // ----------------------------------------------------------------------
@@ -148,8 +185,19 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     pointsSieveMesh->depthStratum(0);
   assert(!vertices.isNull());
 
-  const int fiberDim = (vertices->begin() != vertices->end()) ?
-    field.section()->getFiberDimension(*vertices->begin()) : 0;
+  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  assert(!sieveMesh.isNull());
+  const std::string labelName = 
+    (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
+  assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
+  assert(!field.section().isNull());
+  int fiberDimLocal = 
+    (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
+    field.section()->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
+  int fiberDim = 0;
+  MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
+		field.mesh().comm());
+  assert(fiberDim > 0);
 
   // Create field if necessary for interpolated values or recreate
   // field if mismatch in size between buffer and field.
@@ -163,6 +211,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     _fields->get("buffer (interpolated)");
   if (vertices->size()*fiberDim != fieldInterp.sectionSize()) {
     fieldInterp.newSection(vertices, fiberDim);
+    fieldInterp.label(field.label());
     fieldInterp.allocate();
   } // if
   logger.stagePop();
@@ -170,12 +219,11 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   fieldInterp.zero();
   fieldInterp.vectorFieldType(field.vectorFieldType());
   fieldInterp.scale(field.scale());
-  
-  PetscVec fieldInterpVec = fieldInterp.vector();
-  assert(fieldInterpVec);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
+  const char* context = field.label();
+  fieldInterp.createScatter(*_pointsMesh, context);
+  PetscVec fieldInterpVec = fieldInterp.vector(context);
+  assert(fieldInterpVec);
 
   DM dm;
   SectionReal section;
@@ -183,17 +231,21 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   
   err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
   err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationSetDof(dm, fiberDim, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationSetDof(dm, fiberDim, 
+				  _interpolator);CHECK_PETSC_ERROR(err);
 
   err = SectionRealCreate(sieveMesh->comm(), &section);CHECK_PETSC_ERROR(err);
   err = SectionRealSetSection(section, field.section());CHECK_PETSC_ERROR(err);
   err = SectionRealSetBundle(section, sieveMesh);CHECK_PETSC_ERROR(err);
 
-  err = DMMeshInterpolationEvaluate(dm, section, fieldInterpVec, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationEvaluate(dm, section, fieldInterpVec, 
+				    _interpolator);CHECK_PETSC_ERROR(err);
   err = SectionRealDestroy(&section);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
 
-  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::appendVertexField(t, fieldInterp, mesh);
+  fieldInterp.scatterVectorToSection(context);
+
+  OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::appendVertexField(t, fieldInterp, *_pointsMesh);
 } // appendVertexField
 
 
