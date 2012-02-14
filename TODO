@@ -2,6 +2,15 @@
 CURRENT ISSUES/PRIORITIES (1.7.0)
 ======================================================================
 
+* --BUGS--
+
+  DruckerPragerPlaneStrain, DruckerPrager3D
+    High-frequency oscillation in dynamic simulations
+    Extra plastic strain in quasi-static simulations
+    Charles' test (which one?) shows same behavior in 2-D and 3-D, so error is 
+      in both
+  
+
 * Manual
 
   - Order of tensor components for Xdmf files
@@ -37,16 +46,30 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
   Need to redo Maxwell time calculation. Use ratio.
   Create benchmark for test (compare against fk)
 
+* Cleanup
+
+    Add elasticPrestep() to Formulation (called from Problem)
+    Remove solnIncr, keep setField()
+
+======================================================================
+1.8.0
+======================================================================
+
 * GPU utilization
+
+  Finite-element integrations
 
   Modeled on snes/examples/tutorials/ex52.
 
-  Refactor integration routine so that it uses batches rather than individual cells.
+  Refactor integration routine so that it uses batches rather than
+  individual cells.
 
   + Implicit elasticity finite-element integration
   + Explicit elasticity finite-element integration
 
 * Reimplement parameters to use PackedFields. [BRAD]
+
+    Coordinate this with Matt's new Section stuff.
 
     Fields
     FieldsNew -> PackedFields
@@ -54,33 +77,11 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
       Use PackedFields for acc, vel, disp(t+dt), disp(t), etc?
       Use Field for dispIncr(t->t+dt), residual(t)
 
-* Cleanup
-
-    Add elasticPrestep() to Formulation (called from Problem)
-    Remove solnIncr, keep setField()
-
-* Scalable distribution [MATT]
-
-  + It appears that topology adjustment is not currently limiting the runs
-  + Need a more memory scalable Distribution
-    + Consider simple distribution, followed by cleanup
-  + I think the Overlap structure is probably taking up all the memory
-    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
-      + Can we use a lighter-weight structure to sit in copy()?
-
-  + Need ribbon around fault in order to develop algorithm
-
-======================================================================
-CURRENT ISSUES/PRIORITIES (1.8.0)
-======================================================================
-
-* GPU finite-element integrations (possible promotion to 1.7)
-
 * Higher order
 
 * Coupling
 
-* Field split. DELAY??
+* Field split.
 
     Add flag to material [default is false] for creating null vector
     When setting up solver, create null vector, and pass it to KSP
@@ -93,7 +94,16 @@ CURRENT ISSUES/PRIORITIES (1.8.0)
 
 
 
+* Scalable distribution [MATT]
 
+  + It appears that topology adjustment is not currently limiting the runs
+  + Need a more memory scalable Distribution
+    + Consider simple distribution, followed by cleanup
+  + I think the Overlap structure is probably taking up all the memory
+    + send/recvMeshOverlap is only used in completeConesV() to call SimpleCopy::copy()
+      + Can we use a lighter-weight structure to sit in copy()?
+
+  + Need ribbon around fault in order to develop algorithm
 
 ----------------------------------------
 MISCELLANEOUS
@@ -105,18 +115,6 @@ MISCELLANEOUS
   as Creation. Because we set the logging stages in PyLith and these
   are lumped together within the same Sieve routine, we cannot
   separate them.
-
-  (2) When we deallocate the distributed mesh, we do not deallocate all of
-  the memory. This suggests some object is leaking memory.
-
-  (3) The memory used by the distributed mesh is much greater than
-  that predicted by the memory model. MATT- Could this be related to
-  each processor having lots of gaps in the range of cells and
-  vertices it has?
-
-  - Can Fusion be leaking memory?
-
-  - How do we separate parallel stratification?
 
   IntSections - Matt improved distribution to use allow IntSections
   over vertices or cells rather than vertices + cells. This cuts
@@ -131,7 +129,7 @@ SECONDARY PRIORITIES
 * Paper
 
   General paper - focus on fault implementation
-  - BSSA, GGG
+  - JGR, GGG
   
   geometry processing (adjusting topology)
   discretization (cohesive cells)
