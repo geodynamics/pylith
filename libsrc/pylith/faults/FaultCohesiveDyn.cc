@@ -538,7 +538,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 
   // Allocate arrays for vertex values
   scalar_array tractionTpdtVertex(spaceDim);
-  scalar_array dTractionTpdtVertex(spaceDim);
   scalar_array dDispRelVertex(spaceDim);
 
   // Get sections
@@ -565,8 +564,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispIncrSection.isNull());
 
+  scalar_array dTractionTpdtVertex(spaceDim);
   scalar_array dLagrangeTpdtVertex(spaceDim);
-  scalar_array dLagrangeTpdtVertexGlobal(spaceDim);
   const ALE::Obj<RealSection>& dLagrangeTpdtSection =
       _fields->get("sensitivity dLagrange").section();
   assert(!dLagrangeTpdtSection.isNull());
@@ -709,7 +708,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     } // if
 
     // Step 2: Apply friction criterion to trial solution to get
-    // change in Lagrange multiplier (dLagrangeTpdtVertex) in fault
+    // change in Lagrange multiplier (dTractionTpdtVertex) in fault
     // coordinate system.
 
     // Get friction properties and state variables.
@@ -1027,12 +1026,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     std::cout << std::endl;
 #endif
 
-#if 0 // TEST
-    // Set change in relative displacement.
-    assert(dispRelVertex.size() ==
-        dispRelSection->getFiberDimension(v_fault));
-    dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
-#endif
     // Update Lagrange multiplier increment.
     assert(dLagrangeTpdtVertex.size() ==
 	   dispIncrSection->getFiberDimension(v_lagrange));
@@ -1105,8 +1098,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   // Allocate arrays for vertex values
   scalar_array tractionTpdtVertex(spaceDim);
   scalar_array lagrangeTpdtVertex(spaceDim);
+  scalar_array dTractionTpdtVertex(spaceDim);
   scalar_array dLagrangeTpdtVertex(spaceDim);
-  scalar_array dLagrangeTpdtVertexGlobal(spaceDim);
 
   // Update time step in friction (can vary).
   _friction->timeStep(_dt);
@@ -1291,20 +1284,20 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 
     // Use fault constitutive model to compute traction associated with
     // friction.
-    dLagrangeTpdtVertex = 0.0;
+    dTractionTpdtVertex = 0.0;
     const bool iterating = false; // No iteration for friction in lumped soln
     CALL_MEMBER_FN(*this,
-		   constrainSolnSpaceFn)(&dLagrangeTpdtVertex,
+		   constrainSolnSpaceFn)(&dTractionTpdtVertex,
 					 t, slipVertex, slipRateVertex,
 					 tractionTpdtVertex,
 					 iterating);
 
     // Rotate traction back to global coordinate system.
-    dLagrangeTpdtVertexGlobal = 0.0;
+    dLagrangeTpdtVertex = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       for (int jDim=0; jDim < spaceDim; ++jDim) {
-	dLagrangeTpdtVertexGlobal[iDim] += 
-	  orientationVertex[jDim*spaceDim+iDim] * dLagrangeTpdtVertex[jDim];
+	dLagrangeTpdtVertex[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] * dTractionTpdtVertex[jDim];
       } // for
     } // for
 
@@ -1318,27 +1311,27 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     std::cout << ", slipVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipVertex[iDim];
-    std::cout << ",  slipRateVertex: ";
+    std::cout << ", slipRateVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << slipRateVertex[iDim];
     std::cout << ", orientationVertex: ";
     for (int iDim=0; iDim < spaceDim*spaceDim; ++iDim)
       std::cout << "  " << orientationVertex[iDim];
-    std::cout << ",  tractionVertex: ";
+    std::cout << ", tractionVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << tractionTpdtVertex[iDim];
-    std::cout << ",  lagrangeTVertex: ";
+    std::cout << ", lagrangeTVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << lagrangeTVertex[iDim];
-    std::cout << ",  lagrangeTIncrVertex: ";
+    std::cout << ", lagrangeTIncrVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << lagrangeTIncrVertex[iDim];
-    std::cout << ",  dLagrangeTpdtVertex: ";
+    std::cout << ", dTractionTpdtVertex: ";
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      std::cout << "  " << dTractionTpdtVertex[iDim];
+    std::cout << ", dLagrangeTpdtVertex: ";
     for (int iDim=0; iDim < spaceDim; ++iDim)
       std::cout << "  " << dLagrangeTpdtVertex[iDim];
-    std::cout << ",  dLagrangeTpdtVertexGlobal: ";
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      std::cout << "  " << dLagrangeTpdtVertexGlobal[iDim];
     std::cout << std::endl;
 #endif
 
@@ -1348,16 +1341,12 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
       assert(jacobianVertexN[iDim] > 0.0);
 
       dispIncrVertexN[iDim] += 
-	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexN[iDim];
+	areaVertex * dLagrangeTpdtVertex[iDim] / jacobianVertexN[iDim];
       dispIncrVertexP[iDim] -= 
-	areaVertex * dLagrangeTpdtVertexGlobal[iDim] / jacobianVertexP[iDim];
-
-      // Set increment in relative displacement.
-      dispRelVertex[iDim] = -areaVertex * 2.0*dLagrangeTpdtVertexGlobal[iDim] / 
-	(jacobianVertexN[iDim] + jacobianVertexP[iDim]);
+	areaVertex * dLagrangeTpdtVertex[iDim] / jacobianVertexP[iDim];
 
       // Update increment in Lagrange multiplier.
-      lagrangeTIncrVertex[iDim] += dLagrangeTpdtVertexGlobal[iDim];
+      lagrangeTIncrVertex[iDim] += dLagrangeTpdtVertex[iDim];
     } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -1380,19 +1369,14 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
     } // if
 
     // The Lagrange multiplier and relative displacement are NOT
-    // assembled across processors.
+    // assembled across processors, so update even if Lagrange vertex
+    // is not local.
 
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry in Jacobian of 1.0.
     assert(lagrangeTIncrVertex.size() == 
 	   dispIncrSection->getFiberDimension(v_lagrange));
     dispIncrSection->updatePoint(v_lagrange, &lagrangeTIncrVertex[0]);
-
-    // Update the relative displacement estimate based on adjustment
-    // to the Lagrange multiplier values.
-    assert(dispRelVertex.size() ==
-	   dispRelSection->getFiberDimension(v_fault));
-    dispRelSection->updateAddPoint(v_fault, &dispRelVertex[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
