@@ -16,6 +16,11 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
   - Order of tensor components for Xdmf files
   - Drucker Prager fit to yield surface
   - Slip-weakening healing parameter
+  - Green's functions
+    + Interpolation
+      * Approximate for quad4 and hex8 cells
+        (assume Jacobian is uniform throughout cell =? rhomboid)
+        (should be much better than nearest)
 
 * configure
   

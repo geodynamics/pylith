@@ -139,6 +139,9 @@ testmeshio_SOURCES += \
 	data/OutputSolnPointsDataHex8.cc \
 	data/DataWriterDataPoints.cc \
 	data/DataWriterVTKDataPointsTri3.cc \
+	data/DataWriterVTKDataPointsQuad4.cc \
+	data/DataWriterVTKDataPointsTet4.cc \
+	data/DataWriterVTKDataPointsHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -209,6 +212,9 @@ noinst_HEADERS += \
 	data/OutputSolnPointsDataHex8.hh \
 	data/DataWriterDataPoints.hh \
 	data/DataWriterVTKDataPointsTri3.hh \
+	data/DataWriterVTKDataPointsQuad4.hh \
+	data/DataWriterVTKDataPointsTet4.hh \
+	data/DataWriterVTKDataPointsHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \
