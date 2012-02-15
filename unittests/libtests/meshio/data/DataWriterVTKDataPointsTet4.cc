@@ -43,7 +43,7 @@ const int pylith::meshio::DataWriterVTKDataPointsTet4::_numVertices = 11;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataPointsTet4::_vertexFields[] = {
-  { "displacements", topology::FieldBase::VECTOR, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };

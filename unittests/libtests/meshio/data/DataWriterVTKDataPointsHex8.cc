@@ -43,7 +43,7 @@ const int pylith::meshio::DataWriterVTKDataPointsHex8::_numVertices = 20;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataPointsHex8::_vertexFields[] = {
-  { "displacements", topology::FieldBase::VECTOR, 2 },
+  { "displacements", topology::FieldBase::VECTOR, 3 },
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
