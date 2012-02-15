@@ -21,16 +21,16 @@
 #include "TestDataWriterVTKPointsCases.hh" // Implementation of class methods
 
 #include "data/DataWriterVTKDataPointsTri3.hh" // USES DataWriterVTKDataPointsTri3
-//#include "data/DataWriterVTKDataPointsQuad4.hh" // USES DataWriterVTKDataPointsQuad4
-//#include "data/DataWriterVTKDataPointsTet4.hh" // USES DataWriterVTKDataPointsTet4
-//#include "data/DataWriterVTKDataPointsHex8.hh" // USES DataWriterVTKDataPointsHex8
+#include "data/DataWriterVTKDataPointsQuad4.hh" // USES DataWriterVTKDataPointsQuad4
+#include "data/DataWriterVTKDataPointsTet4.hh" // USES DataWriterVTKDataPointsTet4
+#include "data/DataWriterVTKDataPointsHex8.hh" // USES DataWriterVTKDataPointsHex8
 
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsTri3 );
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsQuad4 );
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsTet4 );
-//CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsHex8 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsQuad4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsHex8 );
 
 
 // ----------------------------------------------------------------------
@@ -45,7 +45,6 @@ pylith::meshio::TestDataWriterVTKPointsTri3::setUp(void)
 } // setUp
 
 
-#if 0
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
@@ -80,7 +79,6 @@ pylith::meshio::TestDataWriterVTKPointsHex8::setUp(void)
   _flipFault = true;
   _initialize();
 } // setUp
-#endif
 
 
 // End of file 

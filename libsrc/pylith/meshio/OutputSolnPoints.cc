@@ -97,6 +97,10 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   _pointsMesh->createSieveMesh(meshDim);
   assert(_pointsMesh);
 
+  const spatialdata::geocoords::CoordSys* csMesh = mesh->coordsys();
+  assert(csMesh);
+  assert(csMesh->spaceDim() == spaceDim);
+
   scalar_array pointsArray(points, numPoints*spaceDim);
   int_array cells(numPoints);
   for (int i=0; i < numPoints; ++i)

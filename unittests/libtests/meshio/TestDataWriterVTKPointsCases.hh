@@ -32,9 +32,9 @@
 namespace pylith {
   namespace meshio {
     class TestDataWriterVTKPointsTri3;
-    //class TestDataWriterVTKPointsQuad4;
-    //class TestDataWriterVTKPointsTet4;
-    //class TestDataWriterVTKPointsHex8;
+    class TestDataWriterVTKPointsQuad4;
+    class TestDataWriterVTKPointsTet4;
+    class TestDataWriterVTKPointsHex8;
   } // meshio
 } // pylith
 
@@ -61,7 +61,6 @@ public :
 }; // class TestDataWriterVTKPointsTri3
 
 
-#if 0
 // ----------------------------------------------------------------------
 /// C++ unit testing for DataWriterVTK
 class pylith::meshio::TestDataWriterVTKPointsQuad4 : public TestDataWriterVTKPoints
@@ -126,7 +125,6 @@ public :
   void setUp(void);
 
 }; // class TestDataWriterVTKPointsHex8
-#endif
 
 
 #endif // pylith_meshio_testdatawritervtkpointscases_hh

@@ -188,7 +188,13 @@ dist_noinst_DATA = \
 	hex8_fault_vertex.h5 \
 	hex8_fault_cell.h5 \
 	tri3_points_t10.vtk \
-	tri3_points_vertex_t10.vtk
+	tri3_points_vertex_t10.vtk \
+	quad4_points_t10.vtk \
+	quad4_points_vertex_t10.vtk \
+	tet4_points_t10.vtk \
+	tet4_points_vertex_t10.vtk \
+	hex8_points_t10.vtk \
+	hex8_points_vertex_t10.vtk
 
 noinst_TMP =
 
