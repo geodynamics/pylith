@@ -324,28 +324,6 @@ pylith::friction::FrictionModel::calcFriction(const double slip,
 } // calcFriction
 
 // ----------------------------------------------------------------------
-// Compute change in friction with change in slip.
-double
-pylith::friction::FrictionModel::calcFrictionSlope(const double slip,
-						   const double slipRate,
-						   const double normalTraction)
-{ // calcFrictionSlope
-  assert(_fieldsPropsStateVars);
-  
-  assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
-  const double* propertiesVertex = &_propsStateVarsVertex[0];
-  const double* stateVarsVertex = (_varsFiberDim > 0) ?
-    &_propsStateVarsVertex[_propsFiberDim] : 0;
-  
-  const double slope =
-    _calcFrictionSlope(slip, slipRate, normalTraction,
-		       propertiesVertex, _propsFiberDim,
-		       stateVarsVertex, _varsFiberDim);
-  
-  return slope;
-} // calcFrictionSlope
-
-// ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
 pylith::friction::FrictionModel::updateStateVars(const double slip,
