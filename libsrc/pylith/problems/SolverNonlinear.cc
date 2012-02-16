@@ -23,6 +23,7 @@
 #include "Formulation.hh" // USES Formulation
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXDOUBLE
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <petscsnes.h> // USES PetscSNES
@@ -243,7 +244,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     *ynorm = snes->maxstep;
   }
   ierr      = VecMaxPointwiseDivide(y,x,&rellength);CHKERRQ(ierr);
-  minlambda = snes->steptol/rellength;
+
+  // Place reasonable absolute limit on minimum lambda
+  minlambda = std::max(snes->steptol/rellength, 1.0/PYLITH_MAXDOUBLE);
+
   ierr      = MatMult(snes->jacobian,y,w);CHKERRQ(ierr);
 #if defined(PETSC_USE_COMPLEX)
   ierr      = VecDot(f,w,&cinitslope);CHKERRQ(ierr);

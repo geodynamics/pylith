@@ -369,42 +369,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
 } // _calcFriction
 
 // ----------------------------------------------------------------------
-// Compute change in friction for a change in slip (Jacobian).
-double
-pylith::friction::RateStateAgeing::_calcFrictionSlope(const double slip,
-						      const double slipRate,
-						      const double normalTraction,
-						      const double* properties,
-						      const int numProperties,
-						      const double* stateVars,
-						      const int numStateVars)
-{ // _calcFrictionSlope
-  assert(properties);
-  assert(_RateStateAgeing::numProperties == numProperties);
-  assert(numStateVars);
-  assert(_RateStateAgeing::numStateVars == numStateVars);
-
-  double slope = 0.0;
-  if (normalTraction <= 0.0) {
-    // if fault is in compression
-
-    const double a = properties[p_a];
-    const double slipRate0 = properties[p_slipRate0];
-
-    const double slipRateLinear = _minSlipRate;
-    const double slipRateEff = std::max(slipRate, slipRateLinear);
-
-    //slope = -slipRateEff / (slipRate0 * normalTraction * a);
-    slope = -normalTraction * a; // log space
-  } // if
-
-  PetscLogFlops(5);
-
-  return slope;
-} // _calcFrictionSlope
-
-
-// ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
 pylith::friction::RateStateAgeing::_updateStateVars(const double slip,
