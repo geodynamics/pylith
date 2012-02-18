@@ -45,7 +45,7 @@ const double pylith::materials::ElasticPlaneStressData::_pressureScale =   2.250
 
 const double pylith::materials::ElasticPlaneStressData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::ElasticPlaneStressData::_dtStableImplicit =   1.00000000e+30;
+const double pylith::materials::ElasticPlaneStressData::_dtStableImplicit =   1.00000000e+99;
 
 const int pylith::materials::ElasticPlaneStressData::_numPropertyValues[] = {
 1,

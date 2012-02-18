@@ -45,7 +45,7 @@ const double pylith::materials::DruckerPrager3DTimeDepData::_pressureScale =   2
 
 const double pylith::materials::DruckerPrager3DTimeDepData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::DruckerPrager3DTimeDepData::_dtStableImplicit =   1.00000000e+30;
+const double pylith::materials::DruckerPrager3DTimeDepData::_dtStableImplicit =   1.00000000e+99;
 
 const int pylith::materials::DruckerPrager3DTimeDepData::_numPropertyValues[] = {
 1,
