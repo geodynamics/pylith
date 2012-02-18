@@ -390,7 +390,7 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
   _initialize(&mesh, &integrator, &fields);
 
   const double stableTimeStep = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(1.0e+30, stableTimeStep);
+  CPPUNIT_ASSERT_EQUAL(PYLITH_MAXDOUBLE, stableTimeStep);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

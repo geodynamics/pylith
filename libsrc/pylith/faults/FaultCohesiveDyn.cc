@@ -1032,7 +1032,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     if (slipDot < 0.0 &&
 	sqrt(fabs(slipDot)) > _zeroTolerance && 
 	tractionSlipDot < 0.0) {
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
       std::cout << "STEP 5d CORRECTING BACKSLIP"
 		<< ", v_fault: " << v_fault
 		<< ", slipDot: " << slipDot
