@@ -45,7 +45,7 @@ const double pylith::materials::ElasticStrain1DData::_pressureScale =   2.250000
 
 const double pylith::materials::ElasticStrain1DData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::ElasticStrain1DData::_dtStableImplicit =   1.00000000e+30;
+const double pylith::materials::ElasticStrain1DData::_dtStableImplicit =   1.00000000e+99;
 
 const int pylith::materials::ElasticStrain1DData::_numPropertyValues[] = {
 1,

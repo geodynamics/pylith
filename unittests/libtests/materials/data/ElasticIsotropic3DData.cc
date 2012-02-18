@@ -45,7 +45,7 @@ const double pylith::materials::ElasticIsotropic3DData::_pressureScale =   2.250
 
 const double pylith::materials::ElasticIsotropic3DData::_densityScale =   1.00000000e+03;
 
-const double pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+30;
+const double pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+99;
 
 const int pylith::materials::ElasticIsotropic3DData::_numPropertyValues[] = {
 1,
