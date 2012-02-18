@@ -813,6 +813,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       // if residual is very small, we prefer the full step
       break;
 
+#if 0
     std::cout << "alphaL: " << pow(10.0, logAlphaL)
 	      << ", residuaL: " << residualL
 	      << ", alphaM: " << pow(10.0, logAlphaM)
@@ -820,26 +821,27 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	      << ", alphaR: " << pow(10.0, logAlphaR)
 	      << ", residualR: " << residualR
 	      << std::endl;
+#endif
 
-    if (residualL <= residualML && residualL <= residualM && residualL <= residualMR && residualL <= residualR) {
+    if (residualL < residualML && residualL < residualM && residualL < residualMR && residualL < residualR) {
       logAlphaL = logAlphaL;
       logAlphaR = logAlphaM;
       residualL = residualL;
       residualR = residualM;
       residualM = residualML;
-    } else if (residualML <= residualL  && residualML <= residualM && residualML <= residualMR && residualML <= residualR) {
+    } else if (residualML <= residualL  && residualML < residualM && residualML < residualMR && residualML < residualR) {
       logAlphaL = logAlphaL;
       logAlphaR = logAlphaM;
       residualL = residualL;
       residualR = residualM;
       residualM = residualML;
-    } else if (residualM <= residualL  && residualM <= residualML && residualM <= residualMR && residualM <= residualR) {
+    } else if (residualM <= residualL  && residualM <= residualML && residualM < residualMR && residualM < residualR) {
       logAlphaL = logAlphaML;
       logAlphaR = logAlphaMR;
       residualL = residualML;
       residualR = residualMR;
       residualM = residualM;
-    } else if (residualMR <= residualL  && residualMR <= residualML && residualMR <= residualM && residualMR <= residualR) {
+    } else if (residualMR <= residualL  && residualMR <= residualML && residualMR <= residualM && residualMR < residualR) {
       logAlphaL = logAlphaM;
       logAlphaR = logAlphaR;
       residualL = residualM;
@@ -1014,6 +1016,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
       
     } // if/else      
 
+#if 0 // UNNECESSARY????
     // Step 5d: Prevent over-correction in shear slip resulting in backslip
     double slipDot = 0.0;
     double tractionSlipDot = 0.0;
@@ -1030,7 +1033,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	sqrt(fabs(slipDot)) > _zeroTolerance && 
 	tractionSlipDot < 0.0) {
 #if 1 // DEBUGGING
-      std::cout << "STEP 5c CORRECTING BACKSLIP"
+      std::cout << "STEP 5d CORRECTING BACKSLIP"
 		<< ", v_fault: " << v_fault
 		<< ", slipDot: " << slipDot
 		<< ", tractionSlipDot: " << tractionSlipDot
@@ -1042,6 +1045,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
 	dSlipTpdtVertex[iDim] = 0.5*(slipTVertex[iDim] - slipTpdtVertex[iDim]);
       } // for
     } // if/else
+#endif
     
     // Update current estimate of slip from t to t+dt.
     slipTpdtVertex += dSlipTpdtVertex;
@@ -2339,6 +2343,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const double alpha,
       fields->get("dispIncr(t->t+dt)").section();
   assert(!dispIncrSection.isNull());
 
+  bool isOpening = false;
   double norm2 = 0.0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -2452,6 +2457,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const double alpha,
       slipTpdtVertex[indexN] = 0.0;
     } // if
 
+    if (slipTpdtVertex[indexN] > _zeroTolerance) {
+      isOpening = true;
+    } // if
+
     // Apply friction criterion to trial solution to get change in
     // Lagrange multiplier (dLagrangeTpdtVertex) in fault coordinate
     // system.
@@ -2495,6 +2504,10 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const double alpha,
       norm2 += tractionMisfitVertex[iDim]*tractionMisfitVertex[iDim];
     } // for
   } // for
+
+  if (isOpening && alpha < 1.0) {
+    norm2 = PYLITH_MAXDOUBLE;
+  } // if
 
   return sqrt(norm2) / numVertices;
 } // _constrainSolnSpaceNorm
