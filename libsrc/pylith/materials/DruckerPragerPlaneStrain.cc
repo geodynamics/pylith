@@ -54,7 +54,7 @@ namespace pylith {
       const int numProperties = 6;
 
       /// Physical properties.
-      const Metadata::ParamDescription properties[] = {
+      const Metadata::ParamDescription properties[numProperties] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -78,7 +78,7 @@ namespace pylith {
       const int numStateVars = 2;
 
       /// State variables.
-      const Metadata::ParamDescription stateVars[] = {
+      const Metadata::ParamDescription stateVars[numStateVars] = {
 	{ "stress_zz_initial", 1, pylith::topology::FieldBase::SCALAR },
 	{ "plastic_strain", 4, pylith::topology::FieldBase::OTHER }
       };
@@ -657,9 +657,10 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
     // time step has already been computed.
   } else {
     const PylithScalar mu2 = 2.0 * mu;
-    const PylithScalar plasticStrainTpdt[tensorSize] = {
+    const PylithScalar plasticStrainTpdt[tensorSizePS] = {
       stateVars[s_plasticStrain],
       stateVars[s_plasticStrain + 1],
+      stateVars[s_plasticStrain + 2],
       stateVars[s_plasticStrain + 3]
     };
 
@@ -667,10 +668,11 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
       initialStrain[0];
     const PylithScalar e22 = totalStrain[1] - plasticStrainTpdt[1] -
       initialStrain[1];
-    const PylithScalar e12 = totalStrain[2] - plasticStrainTpdt[2] -
+    const PylithScalar e33 = -plasticStrainTpdt[2];
+    const PylithScalar e12 = totalStrain[2] - plasticStrainTpdt[3] -
       initialStrain[2];
 
-    const PylithScalar traceStrainTpdt = e11 + e22;
+    const PylithScalar traceStrainTpdt = e11 + e22 + e33;
     const PylithScalar s12 = lambda * traceStrainTpdt;
 
     stress[0] = s12 + mu2 * e11 + initialStress[0];
@@ -1038,7 +1040,7 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   PylithScalar devPlasticStrainT[tensorSizePS];
   calcDeviatoric2DPS(devPlasticStrainT, plasticStrainT, meanPlasticStrainT);
 
-  const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diag[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
 
   // Initial stress values
   const PylithScalar meanStressInitial = (initialStress[0] +
