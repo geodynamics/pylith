@@ -273,7 +273,9 @@ pylith::friction::TimeWeakening::_calcFriction(const double slip,
 	mu_f = properties[p_coefD];
       } // if/else
     friction = - mu_f * normalTraction + properties[p_cohesion];
-  } // if
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(6);
 

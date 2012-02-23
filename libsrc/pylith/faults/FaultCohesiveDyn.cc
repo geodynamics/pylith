@@ -795,7 +795,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
   // model and the deformation. We also search in log space because
   // some fault constitutive models depend on the log of slip rate.
 
-#if 1
   const double residualTol = _zeroTolerance; // L2 misfit in tractions
   const int maxIter = 16;
   double logAlphaL = log10(_zeroTolerance); // minimum step
@@ -875,11 +874,10 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(
     residualM = residualL;
   } // if/else
   const double alpha = pow(10.0, logAlphaM); // alphaM is our best guess
+#if 0 // DEBUGGING
   std::cout << "ALPHA: " << alpha
 	    << ", residual: " << residualM
 	    << std::endl;
-#else
-  const double alpha = 1.0;
 #endif
 
   double_array slipTVertex(spaceDim);
@@ -2478,7 +2476,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const double alpha,
 					 tractionTpdtVertex,
 					 iterating);
 
-#if 0
+#if 0 // DEBUGGING
     std::cout << "alpha: " << alpha
 	      << ", v_fault: " << v_fault;
     std::cout << ", misfit:";
