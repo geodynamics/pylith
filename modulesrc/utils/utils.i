@@ -23,6 +23,7 @@
 %{
 #include "pylith/utils/EventLogger.hh"
 #include "pylith/utils/TestArray.hh"
+#include "pylith/utils/constdefs.h"
 
 #include <petsclog.h> // USES PetscLogEventBegin/End() in inline methods
 #include "pylith/utils/arrayfwd.hh" // USES double_array
@@ -54,6 +55,7 @@ import_array();
 // Interfaces
 %include "EventLogger.i"
 %include "TestArray.i"
+%include "constdefs.i"
 
 // End of file
 

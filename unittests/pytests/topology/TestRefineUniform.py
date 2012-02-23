@@ -94,7 +94,7 @@ class TestRefineUniform(unittest.TestCase):
       fault.inventory.faultLabel = faultGroup
       fault._configure()
 
-      nvertices = fault.numVertices(mesh)
+      nvertices = fault.numVerticesNoMesh(mesh)
       firstFaultVertex = 0
       firstLagrangeVertex = nvertices
       firstFaultCell      = 2*nvertices

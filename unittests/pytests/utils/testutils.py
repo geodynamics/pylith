@@ -65,6 +65,9 @@ class TestApp(Script):
     from TestEventLogger import TestEventLogger
     suite.addTest(unittest.makeSuite(TestEventLogger))
 
+    from TestConstants import TestConstants
+    suite.addTest(unittest.makeSuite(TestConstants))
+
     return suite
 
 

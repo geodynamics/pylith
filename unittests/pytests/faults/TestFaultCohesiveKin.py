@@ -117,7 +117,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.inventory.faultLabel = "fault"
     fault._configure()
 
-    nvertices = fault.numVertices(mesh)
+    nvertices = fault.numVerticesNoMesh(mesh)
     firstFaultVertex = 0
     firstLagrangeVertex = nvertices
     firstFaultCell      = 2*nvertices
@@ -161,7 +161,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    self.assertEqual(1.0e+30, fault.stableTimeStep(mesh))
+    from pylith.utils.utils import maxdouble
+    self.assertAlmostEqual(1.0, fault.stableTimeStep(mesh)/maxdouble(), 7)
     return
 
   
@@ -347,7 +348,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     eqsrc.inventory.slipfn = slipfn
     eqsrc._configure()
 
-    nvertices = fault.numVertices(mesh)
+    nvertices = fault.numVerticesNoMesh(mesh)
     firstFaultVertex = 0
     firstLagrangeVertex = nvertices
     firstFaultCell      = 2*nvertices
