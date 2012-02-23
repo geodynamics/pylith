@@ -309,31 +309,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
-#if 0
-    // regularized rate and state equation
-    const double f0 = properties[p_coef];
-
-    // Since regulatized friction -> 0 as slipRate -> 0, limit slip
-    // rate to some minimum value
-    const double slipRateEff = std::max(_minSlipRate, slipRate);
-
-    const double slipRate0 = properties[p_slipRate0];
-    const double a = properties[p_a];
-
-    const double theta = stateVars[s_state];
-
-    const double L = properties[p_L];
-    const double b = properties[p_b];
-    const double bLnTerm = b * log(slipRate0 * theta / L);
-
-    const double expTerm = exp((f0 + bLnTerm)/a);
-    const double sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
-
-    mu_f = a * asinh(sinhArg);
-    friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#else
-
     const double slipRateLinear = _minSlipRate;
 
     const double f0 = properties[p_coef];
@@ -349,19 +324,11 @@ pylith::friction::RateStateAgeing::_calcFriction(const double slip,
       mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
 	a*(1.0 - slipRate/slipRateLinear);
     } // else
-
     friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#if 0
-    std::cout << "slip: " << slip
-	      << ", slipRate: " << slipRate
-	      << ", stateVar: " << theta
-	      << ", mu_f: " << mu_f
-	      << std::endl;
-#endif
-
-#endif
-  } // if
+    
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(12);
 
