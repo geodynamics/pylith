@@ -159,7 +159,8 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
       for (int iField=0; iField < numFields; ++iField) {
 	if (2 == spaceDim && 
 	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
-	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType) ) {
+	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
+	     std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
 	  const int fiberDim = fieldsMetadata[iField].fiberDim;
 	  for (int component=0; component < fiberDim; ++component)
 	    _writeGridAttributeComponent(fieldsMetadata[iField],
@@ -181,7 +182,8 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
 	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
-	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType) ) {
+	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
+	     std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
 	const int fiberDim = fieldsMetadata[iField].fiberDim;
 	for (int component=0; component < fiberDim; ++component)
 	  _writeGridAttributeComponent(fieldsMetadata[iField],
@@ -552,6 +554,10 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
 	throw std::logic_error(msg.str());
       } // default
     } // switch
+  } else if (std::string("Matrix") == metadata.vectorFieldType) {
+    std::ostringstream sname;
+    sname << metadata.name << "_" << component;
+    componentName = sname.str();
   } else {
     std::ostringstream msg;
     msg << "Unknown vector field type " << metadata.vectorFieldType
