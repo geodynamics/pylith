@@ -1,0 +1,78 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.6.3, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release fixes several bugs in PyLith v1.6.2. We strongly
+recommend all users of previous PyLith releases switch to this latest
+release, especially anyone running in parallel or using fault friction.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms
+in the INSTALL file bundled with the PyLith Installer utility.
+
+
+RELEASE NOTES
+
+* Bug fixes
+
+  - Improved error messages for problems encountered during
+    configuration. A backtrace of the object hierarchy is now included
+    to pinpoint in which object the rror occurred.
+
+  - Added a line search to the inner friction solve in quasi-static
+    simulations to increase the robustness of the nonlinear
+    solve. Simulations using rate and state friction now converge
+    under a much wider range of circumstances.
+
+  - Fixed bug in updating slip state variable in slip-weakening
+    friction. This caused slight errors in the cumulative slip. We
+    also added a parameter that forces healing to occur in a single
+    time step. This is used to confine slip to a single time step in
+    quasi-static simulations. See examples/3d/hex8/step13.cfg for an
+    exanple.
+
+  - Tuned parameters in the slip-weakening friction and rate and state
+    friction examples (step13.cfg and step14.cfg, respectively) in
+    examples/3d/hex8 to give stick-slip behavior.
+
+  - Fixed communication issue associated with writing boundary
+    condition information output in parallel. 
+
+  - Added the ability to specify non-derived units (e.g., degree and
+    radian). This is useful in specifying parameters for the
+    Drucker-Prager elastoplastic rheologies. If no units are
+    specified, radians are assumed.
+
+* Internal changes
+
+  - Rate and state friction with ageing law
+
+    The implementation of rate and state friction with ageing law was
+    modified to work better with the iterative solver. We switched to
+    the conventional, unregularized formulation but added a minimum
+    cutoff for the slip rate. Below this cutoff friction has a linear
+    rather than logarithmic dependence on slip rate. As long as this
+    cutoff is close to the SNES solver tolerance, the difference in
+    behavior is negligible while improving the ability of the solver
+    to converge for very small deformations.
+
+KNOWN ISSUES
+
+  The rate and state friction with ageing law has not been tested for
+  dynamic rupture simulations. We plan to run the SCEC Dynamic Rupture
+  benchmarks for rate and state friction as soon as we add a
+  spatial-temporal specification of initial fault tractions, which are
+  required for the benchmark problems.
+
+  Running simulations with more than a million cells and large faults
+  in parallel can result in severe memory imbalances among
+  processors. Some processors around the fault may use 10x more memory
+  than processors away from the fault. We expect this problem to
+  disappear in v1.7 when we switch to new, more efficient Sieve
+  implementation.
