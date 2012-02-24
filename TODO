@@ -1,5 +1,5 @@
 ======================================================================
-CURRENT ISSUES/PRIORITIES (1.7.0)
+CURRENT ISSUES/PRIORITIES
 ======================================================================
 
 * --BUGS--
@@ -46,10 +46,6 @@ CURRENT ISSUES/PRIORITIES (1.7.0)
   spatial and temporal variation in shear/normal stress for nucleation
 
 * GenMaxwellQpQs [BRAD]
-
-  2-D and 3-D versions
-  Need to redo Maxwell time calculation. Use ratio.
-  Create benchmark for test (compare against fk)
 
 * Cleanup
 

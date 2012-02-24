@@ -45,7 +45,7 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_pres
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_densityScale =   1.00000000e+03;
 
-const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_dtStableImplicit =   1.00000000e+30;
+const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_dtStableImplicit =   1.00000000e+99;
 
 const int pylith::materials::DruckerPragerPlaneStrainTimeDepData::_numPropertyValues[] = {
 1,

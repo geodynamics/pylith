@@ -23,7 +23,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -303,43 +303,6 @@ pylith::friction::SlipWeakening::_calcFriction(const PylithScalar t,
 
   return friction;
 } // _calcFriction
-
-// ----------------------------------------------------------------------
-// Compute change in friction for a change in slip (Jacobian).
-PylithScalar
-pylith::friction::SlipWeakening::_calcFrictionSlope(const PylithScalar slip,
-						    const PylithScalar slipRate,
-						    const PylithScalar normalTraction,
-						    const PylithScalar* properties,
-						    const int numProperties,
-						    const PylithScalar* stateVars,
-						    const int numStateVars)
-{ // _calcFrictionSlope
-  assert(properties);
-  assert(_SlipWeakening::numProperties == numProperties);
-  assert(stateVars);
-  assert(_SlipWeakening::numStateVars == numStateVars);
-
-  PylithScalar slope = 0.0;
-  if (normalTraction <= 0.0) {
-    // if fault is in compression
-    const PylithScalar slipPrev = stateVars[s_slipPrev];
-    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
-
-    if (slipCum < properties[p_d0]) {
-      // if/else linear slip-weakening form of mu_f 
-      slope = -normalTraction * (properties[p_coefS] - properties[p_coefD]) 
-	/ properties[p_d0];
-      } else {
-      slope = 0.0;
-      } // if/else
-  } // if
-
-  PetscLogFlops(7);
-
-  return slope;
-} // _calcFrictionSlope
-
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

@@ -23,7 +23,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -310,31 +310,6 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
-#if 0
-    // regularized rate and state equation
-    const PylithScalar f0 = properties[p_coef];
-
-    // Since regulatized friction -> 0 as slipRate -> 0, limit slip
-    // rate to some minimum value
-    const PylithScalar slipRateEff = std::max(_minSlipRate, slipRate);
-
-    const PylithScalar slipRate0 = properties[p_slipRate0];
-    const PylithScalar a = properties[p_a];
-
-    const PylithScalar theta = stateVars[s_state];
-
-    const PylithScalar L = properties[p_L];
-    const PylithScalar b = properties[p_b];
-    const PylithScalar bLnTerm = b * log(slipRate0 * theta / L);
-
-    const PylithScalar expTerm = exp((f0 + bLnTerm)/a);
-    const PylithScalar sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
-
-    mu_f = a * asinh(sinhArg);
-    friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#else
-
     const PylithScalar slipRateLinear = _minSlipRate;
 
     const PylithScalar f0 = properties[p_coef];
@@ -350,59 +325,16 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
       mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
 	a*(1.0 - slipRate/slipRateLinear);
     } // else
-
     friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#if 0
-    std::cout << "slip: " << slip
-	      << ", slipRate: " << slipRate
-	      << ", stateVar: " << theta
-	      << ", mu_f: " << mu_f
-	      << std::endl;
-#endif
-
-#endif
-  } // if
+    
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(12);
 
   return friction;
 } // _calcFriction
-
-// ----------------------------------------------------------------------
-// Compute change in friction for a change in slip (Jacobian).
-PylithScalar
-pylith::friction::RateStateAgeing::_calcFrictionSlope(const PylithScalar slip,
-						      const PylithScalar slipRate,
-						      const PylithScalar normalTraction,
-						      const PylithScalar* properties,
-						      const int numProperties,
-						      const PylithScalar* stateVars,
-						      const int numStateVars)
-{ // _calcFrictionSlope
-  assert(properties);
-  assert(_RateStateAgeing::numProperties == numProperties);
-  assert(numStateVars);
-  assert(_RateStateAgeing::numStateVars == numStateVars);
-
-  PylithScalar slope = 0.0;
-  if (normalTraction <= 0.0) {
-    // if fault is in compression
-
-    const PylithScalar a = properties[p_a];
-    const PylithScalar slipRate0 = properties[p_slipRate0];
-
-    const PylithScalar slipRateLinear = _minSlipRate;
-    const PylithScalar slipRateEff = std::max(slipRate, slipRateLinear);
-
-    //slope = -slipRateEff / (slipRate0 * normalTraction * a);
-    slope = -normalTraction * a; // log space
-  } // if
-
-  PetscLogFlops(5);
-
-  return slope;
-} // _calcFrictionSlope
 
 
 // ----------------------------------------------------------------------

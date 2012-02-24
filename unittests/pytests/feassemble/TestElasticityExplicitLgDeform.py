@@ -121,7 +121,8 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     (mesh, integrator) = self._preinitialize()
     fields = self._initialize(mesh, integrator)
 
-    self.assertAlmostEqual(1.0, integrator.stableTimeStep(mesh)/1.0e+30, places=5)
+    from pylith.utils.utils import maxscalar
+    self.assertAlmostEqual(1.0, integrator.stableTimeStep(mesh)/maxscalar(), 7)
     return
 
 

@@ -1876,7 +1876,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
     const ALE::Obj<RealSection>& partitionSection = partition.section();
     assert(!partitionSection.isNull());
     
-    const double rank = (double) partitionSection->commRank();
+    const PylithScalar rank = (double) partitionSection->commRank();
     // Loop over cells in fault mesh, set partition
     for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; 
 	 c_iter != cellsEnd;
