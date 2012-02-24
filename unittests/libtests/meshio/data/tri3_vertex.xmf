@@ -76,18 +76,40 @@
 	  </DataItem>
 	</Attribute>
 	<Attribute
-	   Name="other"
-	   Type="Matrix"
+	   Name="other_0"
+	   Type="Scalar"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 6 2"
+		    Dimensions="1 6 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 6 2
+              1 6 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 6 2"
+	       Format="HDF">
+	      &HeavyData;:/vertex_fields/other
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="other_1"
+	   Type="Scalar"
+	   Center="Node">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 6 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 1
+              1 1 1
+              1 6 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
