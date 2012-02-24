@@ -23,7 +23,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -274,7 +274,9 @@ pylith::friction::TimeWeakening::_calcFriction(const PylithScalar t,
 	mu_f = properties[p_coefD];
       } // if/else
     friction = - mu_f * normalTraction + properties[p_cohesion];
-  } // if
+  } else {
+    friction = properties[p_cohesion];
+  } // if/else
 
   PetscLogFlops(6);
 
@@ -308,23 +310,6 @@ pylith::friction::TimeWeakening::_updateStateVars(const PylithScalar t,
   } // else
 
 } // _updateStateVars
-
-
-// ----------------------------------------------------------------------
-// Compute change in friction for a change in slip (Jacobian).
-PylithScalar
-pylith::friction::TimeWeakening::_calcFrictionSlope(const PylithScalar slip,
-						    const PylithScalar slipRate,
-						    const PylithScalar normalTraction,
-						    const PylithScalar* properties,
-						    const int numProperties,
-						    const PylithScalar* stateVars,
-						    const int numStateVars)
-{ // _calcFrictionSlope
-  const PylithScalar slope = 0;
-
-  return slope;
-} // _calcFrictionSlope
 
 
 // End of file 

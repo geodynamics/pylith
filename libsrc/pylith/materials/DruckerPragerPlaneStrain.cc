@@ -23,7 +23,7 @@
 #include "Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -435,7 +435,7 @@ pylith::materials::DruckerPragerPlaneStrain::_stableTimeStepImplicit(
   assert(_numVarsQuadPt == numStateVars);
   // It's unclear what to do for an elasto-plastic material, which has no
   // inherent time scale. For now, just set dtStable to a large value.
-  const PylithScalar dtStable = pylith::PYLITH_MAXDOUBLE;
+  const PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
 
   return dtStable;
 } // _stableTimeStepImplicit

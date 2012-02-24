@@ -23,7 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES scalar_array, std::vector
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -243,7 +243,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   assert(_initialStressCell.size() == numQuadPts*_tensorSize);
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
-  PylithScalar dtStable = pylith::PYLITH_MAXDOUBLE;
+  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
 
   // Get cells associated with material
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();

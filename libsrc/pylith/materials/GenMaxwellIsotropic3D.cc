@@ -24,7 +24,7 @@
 #include "Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -294,7 +294,7 @@ pylith::materials::GenMaxwellIsotropic3D::_dbToProperties(
     PylithScalar muRatio = dbValues[db_shearRatio + imodel];
     PylithScalar viscosity = dbValues[db_viscosity + imodel];
     PylithScalar muFac = muRatio*mu;
-    PylithScalar maxwellTime = pylith::PYLITH_MAXDOUBLE;
+    PylithScalar maxwellTime = pylith::PYLITH_MAXSCALAR;
     if (muFac > 0.0)
       maxwellTime = viscosity / muFac;
     if (muRatio < 0.0 || viscosity < 0.0 || muFac < 0.0 || maxwellTime < 0.0) {
@@ -697,7 +697,7 @@ pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   PylithScalar shearRatio = 0.0;
   for (int imodel = 0; imodel < numMaxwellModels; ++imodel) {
     shearRatio = properties[p_shearRatio + imodel];
-    PylithScalar maxwellTime = pylith::PYLITH_MAXDOUBLE;
+    PylithScalar maxwellTime = pylith::PYLITH_MAXSCALAR;
     visFrac += shearRatio;
     if (shearRatio != 0.0) {
       maxwellTime = properties[p_maxwellTime + imodel];
@@ -882,7 +882,7 @@ pylith::materials::GenMaxwellIsotropic3D::_stableTimeStepImplicit(
   assert(0 != stateVars);
   assert(_numVarsQuadPt == numStateVars);
 
-  PylithScalar dtStable = pylith::PYLITH_MAXDOUBLE;
+  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
 
   const int numMaxwellModels = _GenMaxwellIsotropic3D::numMaxwellModels;
   for (int i=0; i < numMaxwellModels; ++i) {

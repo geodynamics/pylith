@@ -83,26 +83,6 @@ namespace pylith {
 				 const PylithScalar* stateVars,
 				 const int numStateVars);
 
-      /** Compute change in friction for a change in slip (Jacobian).
-       *
-       * @param slip Current slip at location.
-       * @param slipRate Current slip rate at location.
-       * @param normalTraction Normal traction at location.
-       * @param properties Properties at location.
-       * @param numProperties Number of properties.
-       * @param stateVars State variables at location.
-       * @param numStateVars Number of state variables.
-       *
-       * @returns Change in friction for a chance in slip (dT/dD).
-       */
-      PylithScalar _calcFrictionSlope(const PylithScalar slip,
-				const PylithScalar slipRate,
-				const PylithScalar normalTraction,
-				const PylithScalar* properties,
-				const int numProperties,
-				const PylithScalar* stateVars,
-				const int numStateVars);
-  
     }; // class SlipWeakeningTime
 
   } // friction
