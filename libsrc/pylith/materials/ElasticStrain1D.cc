@@ -23,7 +23,7 @@
 #include "Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -293,7 +293,7 @@ pylith::materials::ElasticStrain1D::_calcElasticConsts(
 PylithScalar
 pylith::materials::ElasticStrain1D::stableTimeStepImplicit(
 					const topology::Mesh& mesh) {
-  return pylith::PYLITH_MAXDOUBLE;
+  return pylith::PYLITH_MAXSCALAR;
 }
 
 // ----------------------------------------------------------------------
@@ -305,7 +305,7 @@ pylith::materials::ElasticStrain1D::_stableTimeStepImplicit(
 					      const PylithScalar* stateVars,
 					      const int numStateVars) const
 { // _stableTimeStepImplicit
-  return pylith::PYLITH_MAXDOUBLE;
+  return pylith::PYLITH_MAXSCALAR;
 } // _stableTimeStepImplicit
 
 

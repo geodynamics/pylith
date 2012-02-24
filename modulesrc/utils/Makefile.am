@@ -41,7 +41,8 @@ utils_swig_sources = \
 	utils.i \
 	pylith_general.i \
 	EventLogger.i \
-	TestArray.i
+	TestArray.i \
+	constdefs.i
 
 utils_swig_generated = \
 	utils_wrap.cxx \

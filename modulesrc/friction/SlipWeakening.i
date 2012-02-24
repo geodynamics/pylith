@@ -89,6 +89,24 @@ namespace pylith {
 				 const PylithScalar* stateVars,
 				 const int numStateVars);
 
+      /** Update state variables (for next time step).
+       *
+       * @param slip Current slip at location.
+       * @param slipRate Current slip rate at location.
+       * @param normalTraction Normal traction at location.
+       * @param stateVars State variables at location.
+       * @param numStateVars Number of state variables.
+       * @param properties Properties at location.
+       * @param numProperties Number of properties.
+       */
+      void _updateStateVars(const PylithScalar slip,
+			    const PylithScalar slipRate,
+			    const PylithScalar normalTraction,
+			    PylithScalar* const stateVars,
+			    const int numStateVars,
+			    const PylithScalar* properties,
+			    const int numProperties);
+      
     }; // class SlipWeakening
 
   } // friction

@@ -23,7 +23,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -310,63 +310,32 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
-#if 0
-    // regularized rate and state equation
+    const PylithScalar slipRateLinear = _minSlipRate;
+
     const PylithScalar f0 = properties[p_coef];
-
-    // Since regulatized friction -> 0 as slipRate -> 0, limit slip
-    // rate to some minimum value
-    const PylithScalar slipRateEff = std::max(_minSlipRate, slipRate);
-
-    const PylithScalar slipRate0 = properties[p_slipRate0];
     const PylithScalar a = properties[p_a];
-
+    const PylithScalar b = properties[p_b];
+    const PylithScalar L = properties[p_L];
+    const PylithScalar slipRate0 = properties[p_slipRate0];
     const PylithScalar theta = stateVars[s_state];
 
-    const PylithScalar L = properties[p_L];
-    const PylithScalar b = properties[p_b];
-    const PylithScalar bLnTerm = b * log(slipRate0 * theta / L);
-
-    const PylithScalar expTerm = exp((f0 + bLnTerm)/a);
-    const PylithScalar sinhArg = 0.5 * slipRateEff / slipRate0 * expTerm;
-
-    mu_f = a * asinh(sinhArg);
-    friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#else
-
-    const double slipRateLinear = _minSlipRate;
-    const double slipRateFactor = 1.0e-3;
-
-    const double f0 = properties[p_coef];
-    const double a = properties[p_a];
-    const double b = properties[p_b];
-    const double L = properties[p_L];
-    const double slipRate0 = properties[p_slipRate0];
-    const double theta = stateVars[s_state];
-
-    if (slipRate > slipRateLinear) {
+    if (slipRate >= slipRateLinear) {
       mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
-    } else if (slipRate > slipRateFactor*slipRateLinear) {
-      mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor) * 
-	(1.0 - slipRate/slipRateLinear) / (1.0 - slipRateFactor);
     } else {
       mu_f = f0 + a*log(slipRateLinear / slipRate0) + b*log(slipRate0*theta/L) -
-	a*(1.0-slipRateFactor);
+	a*(1.0 - slipRate/slipRateLinear);
     } // else
-
     friction = -mu_f * normalTraction + properties[p_cohesion];
-
-#endif
-  } else { // if/else
+    
+  } else {
     friction = properties[p_cohesion];
   } // if/else
 
-  PetscLogFlops(11);
+  PetscLogFlops(12);
 
   return friction;
 } // _calcFriction
+
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).

@@ -201,7 +201,23 @@ private :
    */
   void _sensitivityUpdateSoln(const bool negativeSide);
 
-  /** Constrain solution space with lumped Jacobian in 1-D.
+  /** Compute norm of residual associated with matching fault
+   *  constitutive model using update from sensitivity solve. We use
+   *  this in a line search to find a good update (required because
+   *  fault constitutive model may have a complex nonlinear feedback
+   *  with deformation).
+   *
+   * @param alpha Current step in line search.
+   * @param t Current time.
+   * @param fields Solution fields.
+   *
+   * @returns L2 norm of residual.
+   */
+  PylithScalar _constrainSolnSpaceNorm(const PylithScalar alpha,
+				       const PylithScalar t,
+				       topology::SolutionFields* const fields);
+
+  /** Constrain solution space in 1-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
    * @param t Current time.
@@ -216,7 +232,7 @@ private :
 			     const scalar_array& tractionTpdt,
 			     const bool iterating =true);
 
-  /** Constrain solution space with lumped Jacobian in 2-D.
+  /** Constrain solution space in 2-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
    * @param t Current time.
@@ -231,7 +247,7 @@ private :
 			     const scalar_array& tractionTpdt,
 			     const bool iterating =true);
 
-  /** Constrain solution space with lumped Jacobian in 3-D.
+  /** Constrain solution space in 3-D.
    *
    * @param dLagrangeTpdt Adjustment to Lagrange multiplier.
    * @param t Current time.

@@ -255,8 +255,9 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
     const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
-    int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-    err = MPI_Allreduce(&cellDepth, &cellDepth, 1, MPI_INT, MPI_MAX, 
+    int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
+    int cellDepth = 0;
+    err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, 
 			sieveMesh->comm());CHECK_PETSC_ERROR(err);
     const int depth = (!label) ? cellDepth : labelId;
     const std::string labelName = (!label) ?

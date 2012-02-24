@@ -169,7 +169,10 @@ public :
    */
   int sectionSize(void) const;
 
-  /// Create sieve section.
+  /** Create sieve section.
+   *
+   * @note Don't forget to call label().
+   */
   void newSection(void);
 
   /** Create sieve section and set chart and fiber dimesion for
@@ -177,6 +180,8 @@ public :
    *
    * @param points Points over which to define section.
    * @param dim Fiber dimension for section.
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
    */
   void newSection(const ALE::Obj<label_sequence>& points,
 		  const int fiberDim);
@@ -186,6 +191,8 @@ public :
    *
    * @param points Points over which to define section.
    * @param dim Fiber dimension for section.
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
    */
   void newSection(const int_array& points,
 		  const int fiberDim);
@@ -195,6 +202,8 @@ public :
    * @param domain Type of points over which to define section.
    * @param dim Fiber dimension for section.
    * @param stratum Stratum depth (for vertices) and height (for cells).
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
    */
   void newSection(const DomainEnum domain,
 		  const int fiberDim,
@@ -204,6 +213,8 @@ public :
    *
    * @param sec Field defining layout.
    * @param fiberDim Fiber dimension.
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
    */
   void newSection(const Field& src,
 		  const int fiberDim);
@@ -214,6 +225,8 @@ public :
    * usage.
    *
    * @param sec Field defining layout.
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
    */
   void cloneSection(const Field& src);
 

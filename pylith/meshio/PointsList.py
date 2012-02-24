@@ -57,7 +57,8 @@ class PointsList(Component):
 
   import pyre.inventory
 
-  filename = pyre.inventory.str("filename", default="", validator=validateFilename)
+  filename = pyre.inventory.str("filename", default="", 
+                                validator=validateFilename)
   filename.meta['tip'] = "Filename for list of points."
 
   commentDelimiter = pyre.inventory.str("comment_delimiter", default="#")
@@ -86,7 +87,8 @@ class PointsList(Component):
       points = numpy.loadtxt(self.filename, comments=self.commentDelimiter)
     else:
       points = numpy.loadtxt(self.filename,
-                             comments=self.commentDelimiter, delimiter=self.valueDelimiter)
+                             comments=self.commentDelimiter, 
+                             delimiter=self.valueDelimiter)
     return points
   
 

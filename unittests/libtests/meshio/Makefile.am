@@ -49,10 +49,20 @@ testmeshio_SOURCES = \
 	TestOutputSolnPoints.cc \
 	TestDataWriterVTKFaultMesh.cc \
 	TestDataWriterVTKFaultMeshCases.cc \
+	TestDataWriterPoints.cc \
+	TestDataWriterVTKPoints.cc \
+	TestDataWriterVTKPointsCases.cc \
 	test_meshio.cc
 
 
 noinst_HEADERS = \
+	TestMeshIO.hh \
+	TestMeshIOAscii.hh \
+	TestMeshIOLagrit.hh \
+	TestOutputManager.hh \
+	TestOutputSolnSubset.hh \
+	TestOutputSolnPoints.hh \
+	TestVertexFilterVecNorm.hh \
 	TestCellFilterAvg.hh \
 	TestDataWriterMesh.hh \
 	TestDataWriterVTK.hh \
@@ -68,13 +78,9 @@ noinst_HEADERS = \
 	TestDataWriterVTKFaultMeshCases.hh \
 	TestDataWriterVTKBCMesh.hh \
 	TestDataWriterVTKBCMeshCases.hh \
-	TestMeshIO.hh \
-	TestMeshIOAscii.hh \
-	TestMeshIOLagrit.hh \
-	TestOutputManager.hh \
-	TestOutputSolnSubset.hh \
-	TestOutputSolnPoints.hh \
-	TestVertexFilterVecNorm.hh
+	TestDataWriterPoints.hh \
+	TestDataWriterVTKPoints.hh \
+	TestDataWriterVTKPointsCases.hh
 
 
 # Source files associated with testing data
@@ -126,6 +132,16 @@ testmeshio_SOURCES += \
 	data/DataWriterHDF5DataFaultMeshQuad4.cc \
 	data/DataWriterHDF5DataFaultMeshTet4.cc \
 	data/DataWriterHDF5DataFaultMeshHex8.cc \
+	data/OutputSolnPointsData.cc \
+	data/OutputSolnPointsDataTri3.cc \
+	data/OutputSolnPointsDataQuad4.cc \
+	data/OutputSolnPointsDataTet4.cc \
+	data/OutputSolnPointsDataHex8.cc \
+	data/DataWriterDataPoints.cc \
+	data/DataWriterVTKDataPointsTri3.cc \
+	data/DataWriterVTKDataPointsQuad4.cc \
+	data/DataWriterVTKDataPointsTet4.cc \
+	data/DataWriterVTKDataPointsHex8.cc \
 	data/MeshData.cc \
 	data/MeshData1D.cc \
 	data/MeshData1Din3D.cc \
@@ -189,6 +205,16 @@ noinst_HEADERS += \
 	data/DataWriterHDF5DataFaultMeshQuad4.hh \
 	data/DataWriterHDF5DataFaultMeshTet4.hh \
 	data/DataWriterHDF5DataFaultMeshHex8.hh \
+	data/OutputSolnPointsData.hh \
+	data/OutputSolnPointsDataTri3.hh \
+	data/OutputSolnPointsDataQuad4.hh \
+	data/OutputSolnPointsDataTet4.hh \
+	data/OutputSolnPointsDataHex8.hh \
+	data/DataWriterDataPoints.hh \
+	data/DataWriterVTKDataPointsTri3.hh \
+	data/DataWriterVTKDataPointsQuad4.hh \
+	data/DataWriterVTKDataPointsTet4.hh \
+	data/DataWriterVTKDataPointsHex8.hh \
 	data/MeshData.hh \
 	data/MeshData1D.hh \
 	data/MeshData1Din2D.hh \

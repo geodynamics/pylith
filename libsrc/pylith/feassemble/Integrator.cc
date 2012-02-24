@@ -20,7 +20,7 @@
 
 #include "Quadrature.hh" // USES Quadrature
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
@@ -113,7 +113,7 @@ PylithScalar
 pylith::feassemble::Integrator<quadrature_type>::stableTimeStep(const topology::Mesh& mesh)
 { // stableTimeStep
   // Assume any time step will work.
-  return pylith::PYLITH_MAXDOUBLE;
+  return pylith::PYLITH_MAXSCALAR;
 } // stableTimeStep
 
 // ----------------------------------------------------------------------

@@ -85,7 +85,7 @@ const PylithScalar* pylith::friction::StaticFrictionData::_stateVarsNondim = 0;
 
 const PylithScalar pylith::friction::StaticFrictionData::_friction[] = {
   1000001.32,
-  0.0,
+  1.0e+6,
 };
 
 const PylithScalar pylith::friction::StaticFrictionData::_slip[] = {

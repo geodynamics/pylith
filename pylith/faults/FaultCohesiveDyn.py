@@ -91,7 +91,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                      "slip_rate",
                      "traction"]},
          'cell': \
-           {'info': ["distribution"],
+           {'info': ["partition"],
             'data': []}}
     return
 
@@ -154,8 +154,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     if 0 == comm.rank:
       self._info.log("Initializing fault '%s'." % self.label())
 
-    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
-    
+    Integrator.initialize(self, totalTime, numTimeSteps, normalizer)    
     FaultCohesive.initialize(self, totalTime, numTimeSteps, normalizer)
 
     self._eventLogger.eventEnd(logEvent)

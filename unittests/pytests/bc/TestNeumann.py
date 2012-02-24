@@ -80,7 +80,8 @@ class TestNeumann(unittest.TestCase):
     """
     (mesh, bc, fields) = self._initialize()
 
-    self.assertAlmostEqual(1.0, bc.stableTimeStep(mesh)/1.0e+30, 5)
+    from pylith.utils.utils import maxscalar
+    self.assertAlmostEqual(1.0, bc.stableTimeStep(mesh)/maxscalar(), 7)
     return
 
   

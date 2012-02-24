@@ -88,7 +88,7 @@ class ElasticMaterialApp(Script):
     self.densityScale = 0
 
     # Elastic material information
-    self.dtStableImplicit = 1.0e+30
+    self.dtStableImplicit = 1.0e+99
     self.density = None
     self.strain = None
     self.stress = None

@@ -57,7 +57,8 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMeshTri3::_vertexField0[] = 
   7.7, 8.8,
   9.9, 10.0,
   11.1, 12.2,
-  13.3, 14.4
+  13.3, 14.4,
+  15.5, 16.6,
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataMeshTri3::_vertexField1[] = {
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8
@@ -69,7 +70,8 @@ const PylithScalar pylith::meshio::DataWriterVTKDataMeshTri3::_vertexField2[] = 
   7.8, 8.9,
   9.0, 10.1,
   11.2, 12.3,
-  13.4, 14.5
+  13.4, 14.5,
+  15.6, 16.7,
 };
 
 const int pylith::meshio::DataWriterVTKDataMeshTri3::_numCellFields = 3;
