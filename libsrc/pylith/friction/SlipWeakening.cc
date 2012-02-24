@@ -23,7 +23,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/constdefs.h" // USES MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -283,8 +283,8 @@ pylith::friction::SlipWeakening::_calcFriction(const PylithScalar t,
   PylithScalar mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
-    const double slipPrev = stateVars[s_slipPrev];
-    const double slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
+    const PylithScalar slipPrev = stateVars[s_slipPrev];
+    const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
 
     if (slipCum < properties[p_d0]) {
 	// if/else linear slip-weakening form of mu_f 
@@ -294,12 +294,12 @@ pylith::friction::SlipWeakening::_calcFriction(const PylithScalar t,
       } else {
 	mu_f = properties[p_coefD];
       } // if/else
-    friction = - mu_f * normalTraction + properties[p_cohesion];
+    friction = -mu_f * normalTraction + properties[p_cohesion];
   } else { // else
     friction = properties[p_cohesion];
   } // if/else
 
-  PetscLogFlops(6);
+  PetscLogFlops(10);
 
   return friction;
 } // _calcFriction
@@ -326,6 +326,8 @@ pylith::friction::SlipWeakening::_updateStateVars(const PylithScalar t,
   const double slipPrev = stateVars[s_slipPrev];
   stateVars[s_slipPrev] = slip;
   stateVars[s_slipCum] += fabs(slip - slipPrev);
+
+  PetscLogFlops(3);
 } // _updateStateVars
 
 

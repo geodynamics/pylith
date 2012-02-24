@@ -117,7 +117,7 @@ pylith::materials::Material::initialize(
   assert(0 != quadrature);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Materials");
+  logger.stagePush("MaterialsFields");
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
@@ -384,7 +384,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("Output");
+      logger.stagePush("OutputFields");
       field->newSection(cells, totalFiberDim);
       field->allocate();
       logger.stagePop();
@@ -454,7 +454,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("Output");
+      logger.stagePush("OutputFields");
       field->newSection(cells, totalFiberDim);
       field->allocate();
       logger.stagePop();

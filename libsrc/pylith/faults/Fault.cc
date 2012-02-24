@@ -54,4 +54,44 @@ pylith::faults::Fault::faultMesh(void) const
   return *_faultMesh;
 } // faultMesh
 
+
+// ----------------------------------------------------------------------
+// Get dimension of mesh.
+int
+pylith::faults::Fault::dimension(void) const
+{ // dimension
+  return (_faultMesh) ? _faultMesh->dimension() : 0;
+} // dimension
+
+
+// ----------------------------------------------------------------------
+// Get representative cone size for mesh.
+int
+pylith::faults::Fault::coneSize(void) const
+{ // coneSize
+  
+  return (_faultMesh && numCells() > 0) ? 
+    _faultMesh->sieveMesh()->getSieve()->getConeSize(*_faultMesh->sieveMesh()->heightStratum(1)->begin()) : 0;
+} // coneSize
+
+
+// ----------------------------------------------------------------------
+// Get number of vertices in mesh.
+int
+pylith::faults::Fault::numVertices(void) const
+{ // numVertices
+  return (_faultMesh) ? _faultMesh->numVertices() : 0;
+} // numVertices
+
+
+// ----------------------------------------------------------------------
+// Get number of cells in mesh.
+int
+pylith::faults::Fault::numCells(void) const
+{ // numCells
+  return (_faultMesh && !_faultMesh->sieveMesh().isNull() && _faultMesh->sieveMesh()->height() > 0) ? 
+    _faultMesh->sieveMesh()->heightStratum(1)->size() : 0;
+} // numCells
+
+
 // End of file 

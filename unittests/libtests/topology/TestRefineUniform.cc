@@ -148,7 +148,7 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
     faultA.id(100);
     if (0 != data.faultA) {
       faultA.label(data.faultA);
-      const int nvertices = faultA.numVertices(*mesh);
+      const int nvertices = faultA.numVerticesNoMesh(*mesh);
       firstLagrangeVertex += nvertices;
       firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
     } // if
@@ -157,7 +157,7 @@ pylith::topology::TestRefineUniform::_setupMesh(Mesh* const mesh,
     faultB.id(101);
     if (0 != data.faultB) {
       faultA.label(data.faultB);
-      const int nvertices = faultB.numVertices(*mesh);
+      const int nvertices = faultB.numVerticesNoMesh(*mesh);
       firstLagrangeVertex += nvertices;
       firstFaultCell += 2*nvertices; // shadow + Lagrange vertices
     } // if

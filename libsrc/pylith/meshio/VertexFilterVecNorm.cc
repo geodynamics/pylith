@@ -91,7 +91,7 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
 
   // Allocation field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Output");
+  logger.stagePush("OutputFields");
   if (0 == _fieldVecNorm) {
     _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");

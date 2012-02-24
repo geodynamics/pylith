@@ -121,6 +121,12 @@ class Neumann(BoundaryCondition,
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)
     
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    if 0 == comm.rank:
+      self._info.log("Initializing Neumann boundary '%s'." % self.label())
+
     Integrator.initialize(self, totalTime, numTimeSteps, normalizer)
     BoundaryCondition.initialize(self, totalTime, numTimeSteps, normalizer)
 

@@ -85,7 +85,8 @@ class TestElasticPlaneStress(unittest.TestCase):
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
     dt = self.material.stableTimeStepImplicit(mesh)
-    self.failIf(dt < 1.0e+30)
+    from pylith.utils.utils import maxdouble
+    self.assertAlmostEqual(1.0, dt/maxdouble())
   
 
   def test_factory(self):

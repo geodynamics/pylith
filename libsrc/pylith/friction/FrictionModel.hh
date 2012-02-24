@@ -254,6 +254,8 @@ protected :
    * @param numProperties Number of properties.
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
+   *
+   * @returns Friction (magnitude of shear traction) at vertex.
    */
   virtual
   PylithScalar _calcFriction(const PylithScalar t,

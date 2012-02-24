@@ -88,7 +88,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     fault.inventory.faultLabel = "fault"
     fault._configure()
 
-    nvertices = fault.numVertices(mesh)
+    nvertices = fault.numVerticesNoMesh(mesh)
     firstFaultVertex = 0
     firstLagrangeVertex = nvertices
     firstFaultCell      = 2*nvertices
@@ -132,7 +132,8 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    self.assertAlmostEqual(1.0, fault.stableTimeStep(mesh)/1.0e+30, 5)
+    from pylith.utils.utils import maxscalar
+    self.assertAlmostEqual(1.0, fault.stableTimeStep(mesh)/maxscalar(), 7)
     return
 
   
@@ -315,7 +316,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     fault.inventory.friction = friction
     fault._configure()
 
-    nvertices = fault.numVertices(mesh)
+    nvertices = fault.numVerticesNoMesh(mesh)
     firstFaultVertex = 0
     firstLagrangeVertex = nvertices
     firstFaultCell      = 2*nvertices

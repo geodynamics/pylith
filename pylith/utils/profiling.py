@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/utils/profile.py
+## @file pylith/utils/profiling.py
 
 # ----------------------------------------------------------------------
 def resourceUsage():
@@ -42,7 +42,11 @@ def resourceUsageString():
   """
   Get CPU time and memory usage as a string.
   """
-  return "CPU time: %s, Memory usage: %.2f MB" % resourceUsage()
+  from pylith.mpi.Communicator import mpi_comm_world
+  comm = mpi_comm_world()
+  (cputime, memory) = resourceUsage()
+  return "[%d] CPU time: %s, Memory usage: %.2f MB" % \
+      (comm.rank, cputime, memory)
 
 
 # End of file

@@ -23,6 +23,7 @@
 #include "Formulation.hh" // USES Formulation
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <petscsnes.h> // USES PetscSNES
@@ -243,7 +244,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
     *ynorm = snes->maxstep;
   }
   ierr      = VecMaxPointwiseDivide(y,x,&rellength);CHKERRQ(ierr);
-  minlambda = snes->steptol/rellength;
+
+  // Place reasonable absolute limit on minimum lambda
+  minlambda = std::max(snes->steptol/rellength, 1.0/PYLITH_MAXSCALAR);
+
   ierr      = MatMult(snes->jacobian,y,w);CHKERRQ(ierr);
 #if defined(PETSC_USE_COMPLEX)
   ierr      = VecDot(f,w,&cinitslope);CHKERRQ(ierr);
@@ -325,10 +329,12 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNES snes,
 	ierr = PetscViewerASCIIPrintf(snes->ls_monitor,"    Line search: fnorm=%18.16e, gnorm=%18.16e, ynorm=%18.16e, minlambda=%18.16e, lambda=%18.16e, initial slope=%18.16e\n",(double)fnorm,(double)*gnorm,(double)*ynorm,(double)minlambda,(double)lambda,(double)initslope);CHKERRQ(ierr);
         ierr = PetscViewerASCIISubtractTab(snes->ls_monitor,((PetscObject)snes)->tablevel);CHKERRQ(ierr);
       }
+#if 0 // DEBUGGING
       assert(lsctx);
       Formulation* formulation = (Formulation*) lsctx;
       assert(formulation);
       formulation->printState(&w, &g, &x, &y);
+#endif
 #if 0 // Original PETSc code
       *flag = PETSC_FALSE; // DIVERGED_LINE_SEARCH
 #else

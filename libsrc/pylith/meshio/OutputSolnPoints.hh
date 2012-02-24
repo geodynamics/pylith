@@ -73,6 +73,32 @@ public :
 			 const int numPoints,
 			 const int spaceDim);
   
+  /** Prepare for output.
+   *
+   * @param mesh Finite-element mesh object.
+   * @param numTimeSteps Expected number of time steps.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
+   */
+  void open(const topology::Mesh& mesh,
+	    const int numTimeSteps,
+	    const char* label =0,
+	    const int labelId =0);
+
+  /** Setup file for writing fields at time step.
+   *
+   * @param t Time of time step.
+   * @param mesh Finite-element mesh object.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
+   */
+  void openTimeStep(const PylithScalar t,
+		    const topology::Mesh& mesh,
+		    const char* label =0,
+		    const int labelId =0);
+
   /** Append finite-element vertex field to file.
    *
    * @param t Time associated with field.
