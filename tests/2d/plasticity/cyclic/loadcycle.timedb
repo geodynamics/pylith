@@ -1,0 +1,18 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+#TIME HISTORY ascii
+TimeHistory {
+  num-points = 11 // number of points in time history
+  time-units = year // units for time
+}
+ 0.0  0.0
+10.0  1.0
+20.0  1.0
+30.0  0.0
+40.0  0.0
+50.0  1.0
+60.0  1.0
+70.0  0.0
+80.0  0.0
+90.0  1.0
+100.0 1.0
