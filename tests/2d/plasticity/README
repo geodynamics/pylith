@@ -1,6 +1,9 @@
 This is a simple test of the DruckerPragerPlaneStrain elastoplastic model.
 The results may be compared against the results from a 3D model with the
-z-displacements constrained to zero.  There are four models:
+z-displacements constrained to zero.  There are two sets of models:  cyclic
+and static. The cyclic models involve time-varying displacement BC applied
+to a single cell. The static models involve initial displacements (either
+axial or shear), followed by yield occurring in the time-dependent solution.
 
 Plane strain axial displacement problem:
 pylith planestrain2d.cfg axialdisp2d.cfg
