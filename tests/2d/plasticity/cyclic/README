@@ -1,0 +1,24 @@
+The tests in this directory involve time-varying displacements applied to a
+model consisting of a single cell. The dof are all constrained, so there are
+no variables for which to solve.
+There are four models:
+
+Plane strain axial displacement problem, displacements either on or off:
+pylith planestrain_onecell_2d.cfg cycle_cont2d.cfg
+
+3D simulated plane strain axial displacement problem, displacements either
+on or off:
+pylith planestrain_onecell_3d.cfg cycle_cont3d.cfg
+
+Plane strain axial displacement problem, sinusoidal displacements over
+multiple cycles.
+pylith planestrain_onecell_2d.cfg cycle_sin2d.cfg
+
+3D simulated plane strain axial displacement problem, sinusoidal
+displacements over multiple cycles.
+pylith planestrain_onecell_3d.cfg cycle_sin3d.cfg
+
+To run all of the simulations, use the run-models.sh script.
+
+The 2D and 3D problems should yield the same displacements, strains,
+stresses, and plastic strains when the appropriate components are compared.
