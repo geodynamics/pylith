@@ -1,0 +1,4 @@
+pylith planestrain_onecell_2d.cfg cycle_cont2d.cfg
+pylith planestrain_onecell_3d.cfg cycle_cont3d.cfg
+pylith planestrain_onecell_2d.cfg cycle_sin2d.cfg
+pylith planestrain_onecell_3d.cfg cycle_sin3d.cfg

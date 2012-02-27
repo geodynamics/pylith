@@ -1,0 +1,8 @@
+pylith planestrain_twocells_2d.cfg axialdisp_twocells_2d.cfg
+pylith planestrain_twocells_3d.cfg axialdisp_twocells_3d.cfg
+pylith planestrain_twocells_2d.cfg sheardisp_twocells_2d.cfg
+pylith planestrain_twocells_3d.cfg sheardisp_twocells_3d.cfg
+pylith planestrain_fine_2d.cfg axialdisp_fine_2d.cfg
+pylith planestrain_fine_3d.cfg axialdisp_fine_3d.cfg
+pylith planestrain_fine_2d.cfg sheardisp_fine_2d.cfg
+pylith planestrain_fine_3d.cfg sheardisp_fine_3d.cfg
