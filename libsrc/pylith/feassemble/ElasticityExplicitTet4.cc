@@ -378,7 +378,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
        d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
        b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
-    const scalar_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, false);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(196);
@@ -703,7 +703,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
        d2 * dispAdjCell[3] + b1 * dispAdjCell[2] + 
        b4 * dispAdjCell[11] + d1 * dispAdjCell[0]) / 2.0;
 
-    const scalar_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, false);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(196);
