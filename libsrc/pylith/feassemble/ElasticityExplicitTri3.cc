@@ -347,7 +347,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(
 		     c1*dispAdjCell[2] + b0*dispAdjCell[1] + c0*dispAdjCell[0]) / 2.0;
 
 
-    const scalar_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, false);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(34);
@@ -632,7 +632,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidualLumped(
     strainCell[2] = (b2*dispAdjCell[5] + c2*dispAdjCell[4] + b1*dispAdjCell[3] + 
 		     c1*dispAdjCell[2] + b0*dispAdjCell[1] + c0*dispAdjCell[0]) / 2.0;
 
-    const scalar_array& stressCell = _material->calcStress(strainCell, true);
+    const scalar_array& stressCell = _material->calcStress(strainCell, false);
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(34);
