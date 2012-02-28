@@ -64,8 +64,8 @@ pylab.plot(quasi2D['time'], quasi2D['total_strain'][:,0,1], 'b-',
 ax = pylab.subplot(3, 3, 7)
 pylab.plot(quasi2D['time'], quasi2D['total_strain'][:,0,2], 'b-',
            dyn2D['time'], dyn2D['total_strain'][:,0,2], 'r--',
-           quasi3D['time'], quasi3D['total_strain'][:,0,2], 'g-',
-           dyn3D['time'], dyn3D['total_strain'][:,0,2], 'm--',
+           quasi3D['time'], quasi3D['total_strain'][:,0,3], 'g-',
+           dyn3D['time'], dyn3D['total_strain'][:,0,3], 'm--',
     )
 ax.set_xlabel("Time (yr)")
 
@@ -113,8 +113,8 @@ pylab.plot(quasi2D['time'], quasi2D['stress'][:,0,1], 'b-',
 ax = pylab.subplot(3, 3, 9)
 pylab.plot(quasi2D['time'], quasi2D['stress'][:,0,2], 'b-',
            dyn2D['time'], dyn2D['stress'][:,0,2], 'r--',
-           quasi3D['time'], quasi3D['stress'][:,0,2], 'b-',
-           dyn3D['time'], dyn3D['stress'][:,0,2], 'r--',
+           quasi3D['time'], quasi3D['stress'][:,0,3], 'b-',
+           dyn3D['time'], dyn3D['stress'][:,0,3], 'r--',
     )
 ax.set_xlabel("Time (yr)")
 
