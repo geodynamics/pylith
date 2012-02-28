@@ -542,10 +542,11 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
     const PylithScalar stressZZInitial = stateVars[s_stressZZInitial];
 
     const PylithScalar plasticStrainT[tensorSizePS] = {
-      stateVars[s_plasticStrain],
+      stateVars[s_plasticStrain    ],
       stateVars[s_plasticStrain + 1],
       stateVars[s_plasticStrain + 2],
-      stateVars[s_plasticStrain + 3]};
+      stateVars[s_plasticStrain + 3]
+    };
     const PylithScalar meanPlasticStrainT = (plasticStrainT[0] +
 					     plasticStrainT[1] +
 					     plasticStrainT[2])/3.0;
@@ -562,7 +563,8 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
       initialStress[0] - meanStressInitial,
       initialStress[1] - meanStressInitial,
       stressZZInitial - meanStressInitial,
-      initialStress[2]};
+      initialStress[2]
+    };
 
     // Initial strain values
     const PylithScalar meanStrainInitial = (initialStrain[0] +
@@ -570,21 +572,21 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
     const PylithScalar devStrainInitial[tensorSizePS] = {
       initialStrain[0] - meanStrainInitial,
       initialStrain[1] - meanStrainInitial,
-      -meanStrainInitial,
-      initialStrain[2]};
+                       - meanStrainInitial,
+      initialStrain[2],
+    };
 
     // Values for current time step
     const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1])/3.0;
-    const PylithScalar meanStrainPPTpdt = meanStrainTpdt - meanPlasticStrainT -
-      meanStrainInitial;
+    const PylithScalar meanStrainPPTpdt = meanStrainTpdt - meanPlasticStrainT - meanStrainInitial;
 
-    const PylithScalar strainPPTpdt[tensorSizePS] =
-      { totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] -
-	devStrainInitial[0],
-	totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] -
-	devStrainInitial[1],
-	- meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
-	totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3] };
+    // devStrainPPTpdt
+    const PylithScalar strainPPTpdt[tensorSizePS] = {
+      totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] - devStrainInitial[0],
+      totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] - devStrainInitial[1],
+                     - meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
+      totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3]
+    };
 
     // Compute trial elastic stresses and yield function to see if yield should
     // occur.
@@ -594,8 +596,7 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
       strainPPTpdt[2]/ae + devStressInitial[2],
       strainPPTpdt[3]/ae + devStressInitial[3]
     };
-    const PylithScalar trialMeanStress = meanStrainPPTpdt/am +
-      meanStressInitial;
+    const PylithScalar trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
     const PylithScalar stressInvar2 =
       sqrt(0.5 * scalarProduct2DPS(trialDevStress, trialDevStress));
     const PylithScalar yieldFunction = 3.0 * alphaYield * trialMeanStress +
@@ -620,25 +621,59 @@ pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic(
 	sqrt(ae * ae * devStressInitialProd + 2.0 * ae *
 	     scalarProduct2DPS(devStressInitial, strainPPTpdt) +
 	     strainPPTpdtProd);
-      const PylithScalar plasticMult = 2.0 * ae * am *
-	(3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
-	(6.0 * alphaYield * alphaFlow * ae + am);
-      const PylithScalar meanStressTpdt =
-	(meanStrainPPTpdt - plasticMult * alphaFlow)/am + meanStressInitial;
+      const PylithScalar plasticMult = 
+	std::min(sqrt(2.0)*d,
+		 2.0 * ae * am * (3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
+		 (6.0 * alphaYield * alphaFlow * ae + am));
+      const PylithScalar meanStressTpdt = (meanStrainPPTpdt - plasticMult * alphaFlow) / am + meanStressInitial;
       PylithScalar deltaDevPlasticStrain = 0.0;
       PylithScalar devStressTpdt = 0.0;
       PylithScalar totalStress[tensorSizePS];
-      for (int iComp=0; iComp < tensorSizePS; ++iComp) {
-	deltaDevPlasticStrain = plasticMult *(strainPPTpdt[iComp] +
-					      ae * devStressInitial[iComp])/
-	  (sqrt(2.0) * d);
-	devStressTpdt = (strainPPTpdt[iComp] - deltaDevPlasticStrain)/ae +
-	  devStressInitial[iComp];
-	totalStress[iComp] = devStressTpdt + diag[iComp] * meanStressTpdt;
-      } // for
+
+#if 0 // DEBUGGING
+      std::cout << "YIELDING\n";
+      std::cout << "  totalStrain\n";
+      for (int i=0; i < tensorSize; ++i)
+	std::cout << "    " << totalStrain[i] << "\n";
+      std::cout << "  plasticStrainT\n";
+      for (int i=0; i < tensorSizePS; ++i)
+	std::cout << "    " << plasticStrainT[i] << "\n";
+      std::cout << "  devPlasticStrainT\n";
+      for (int i=0; i < tensorSizePS; ++i)
+	std::cout << "    " << devPlasticStrainT[i] << "\n";
+      std::cout << "  strainPPTpdt\n";
+      for (int i=0; i < tensorSizePS; ++i)
+	std::cout << "    " << strainPPTpdt[i] << "\n";
+      std::cout << "  meanPlasticStrainT: " << meanPlasticStrainT << "\n"
+		<< "  meanStressInitial: " << meanStressInitial << "\n"
+		<< "  meanStrainInitial: " << meanStrainInitial << "\n"
+		<< "  meanStrainTpdt: " << meanStrainTpdt << "\n"
+		<< "  meanStrainPPTpdt: " << meanStrainPPTpdt << "\n"
+		<< "  plasticMult: " << plasticMult
+		<< std::endl;
+#endif
+
+      if (d > 0.0) {
+	for (int iComp=0; iComp < tensorSizePS; ++iComp) {
+	  deltaDevPlasticStrain = plasticMult * (strainPPTpdt[iComp] + ae * devStressInitial[iComp]) / (sqrt(2.0) * d);
+	  devStressTpdt = (strainPPTpdt[iComp] - deltaDevPlasticStrain)/ae + devStressInitial[iComp];
+	  totalStress[iComp] = devStressTpdt + diag[iComp] * meanStressTpdt;
+	} // for
+      } else {
+	for (int iComp=0; iComp < tensorSizePS; ++iComp) {
+	  devStressTpdt = (strainPPTpdt[iComp])/ae + devStressInitial[iComp];
+	  totalStress[iComp] = devStressTpdt + diag[iComp] * meanStressTpdt;
+	} // for
+      } // if/else
       stress[0] = totalStress[0];
       stress[1] = totalStress[1];
       stress[2] = totalStress[3];
+
+#if 0 // DEBUGGING
+      std::cout << "  totalStress\n";
+      for (int i=0; i < tensorSizePS; ++i)
+	std::cout << "    " << totalStress[i] << "\n";
+#endif
 
     PetscLogFlops(51 + 11 * tensorSizePS);
 
@@ -811,7 +846,7 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
   
   // Get state variables from previous time step
   const PylithScalar plasticStrainT[tensorSizePS] = {
-    stateVars[s_plasticStrain],
+    stateVars[s_plasticStrain    ],
     stateVars[s_plasticStrain + 1],
     stateVars[s_plasticStrain + 2],
     stateVars[s_plasticStrain + 3]};
@@ -847,13 +882,12 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
   const PylithScalar meanStrainPPTpdt = meanStrainTpdt - meanPlasticStrainT -
     meanStrainInitial;
   
-  const PylithScalar strainPPTpdt[tensorSizePS] =
-    { totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] -
-      devStrainInitial[0],
-      totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] -
-      devStrainInitial[1],
-      -meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
-      totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3]};
+  const PylithScalar strainPPTpdt[tensorSizePS] = {
+    totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] - devStrainInitial[0],
+    totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] - devStrainInitial[1],
+                   - meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
+    totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3],
+  };
   
   // Compute trial elastic stresses and yield function to see if yield should
   // occur.
@@ -861,12 +895,12 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
     strainPPTpdt[0]/ae + devStressInitial[0],
     strainPPTpdt[1]/ae + devStressInitial[1],
     strainPPTpdt[2]/ae + devStressInitial[2],
-    strainPPTpdt[3]/ae + devStressInitial[3]};
+    strainPPTpdt[3]/ae + devStressInitial[3],
+  };
   const PylithScalar trialMeanStress = meanStrainPPTpdt/am + meanStressInitial;
   const PylithScalar stressInvar2 =
     sqrt(0.5 * scalarProduct2DPS(trialDevStress, trialDevStress));
-  const PylithScalar yieldFunction = 3.0 * alphaYield * trialMeanStress +
-    stressInvar2 - beta;
+  const PylithScalar yieldFunction = 3.0 * alphaYield * trialMeanStress + stressInvar2 - beta;
 #if 0 // DEBUGGING
   std::cout << "Function _calcElasticConstsElastoPlastic:" << std::endl;
   std::cout << "  alphaYield:       " << alphaYield << std::endl;
@@ -892,8 +926,9 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
       (6.0 * alphaYield * alphaFlow * ae + am);
     const PylithScalar meanStrainFac = 3.0 * alphaYield/am;
     const PylithScalar dFac = 1.0/(sqrt(2.0) * ae);
-    const PylithScalar plasticMult = plasticFac *
-      (meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
+    const PylithScalar plasticMult = 
+      std::min(sqrt(2.0)*d,
+	       plasticFac * (meanStrainFac * meanStrainPPTpdt + dFac * d - beta));
 
     // Define some constants, vectors, and matrices.
     const PylithScalar third = 1.0/3.0;
@@ -901,34 +936,46 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
       { 2.0 * third,      -third,      0.0},
       {      -third, 2.0 * third,      0.0},
       {         0.0,         0.0,      1.0}};
-    const PylithScalar vec1[3] = {strainPPTpdt[0] + ae * devStressInitial[0],
-				  strainPPTpdt[1] + ae * devStressInitial[1],
-				  strainPPTpdt[3] + ae * devStressInitial[3]};
-    const PylithScalar dDdEpsilon[3] = {vec1[0]/d,
-					vec1[1]/d,
-					2.0 * vec1[2]/d};
-    const PylithScalar dLambdadEpsilon[3] = {
-      plasticFac * (alphaYield/am + dFac * dDdEpsilon[0]),
-      plasticFac * (alphaYield/am + dFac * dDdEpsilon[1]),
-      plasticFac * (                dFac * dDdEpsilon[2])};
+    const PylithScalar vec1[3] = {
+      strainPPTpdt[0] + ae * devStressInitial[0],
+      strainPPTpdt[1] + ae * devStressInitial[1],
+      strainPPTpdt[3] + ae * devStressInitial[3],
+    };
     
-    const PylithScalar dFac2 = 1.0/(sqrt(2.0) * d);
+    const PylithScalar dFac2 = (d > 0.0) ? 1.0/(sqrt(2.0) * d) : 0.0;
     PylithScalar dDeltaEdEpsilon = 0.0;
 
     // Compute elasticity matrix.
-    for (int iComp=0; iComp < tensorSize; ++iComp) {
-      for (int jComp=0; jComp < tensorSize; ++jComp) {
-	int iCount = jComp + tensorSize * iComp;
-	dDeltaEdEpsilon = dFac2 * (vec1[iComp] *
-				   (dLambdadEpsilon[jComp] -
-				    plasticMult * dDdEpsilon[jComp]/d) +
-				   plasticMult * dEdEpsilon[iComp][jComp]);
-	elasticConsts[iCount] = (dEdEpsilon[iComp][jComp] -
-				 dDeltaEdEpsilon)/ae +
-	  diag[iComp] * (third * diag[jComp] -
-			 alphaFlow * dLambdadEpsilon[jComp])/am;
+    if (d > 0.0) {
+      const PylithScalar dDdEpsilon[3] = {vec1[0]/d,
+					  vec1[1]/d,
+					  2.0 * vec1[2]/d};
+      const PylithScalar dLambdadEpsilon[3] = {
+	plasticFac * (alphaYield/am + dFac * dDdEpsilon[0]),
+	plasticFac * (alphaYield/am + dFac * dDdEpsilon[1]),
+	plasticFac * (                dFac * dDdEpsilon[2])};
+      for (int iComp=0; iComp < tensorSize; ++iComp) {
+	for (int jComp=0; jComp < tensorSize; ++jComp) {
+	  int iCount = jComp + tensorSize * iComp;
+	  dDeltaEdEpsilon = dFac2 * (vec1[iComp] * (dLambdadEpsilon[jComp] - plasticMult * dDdEpsilon[jComp]/d) +
+				     plasticMult * dEdEpsilon[iComp][jComp]);
+	  elasticConsts[iCount] = (dEdEpsilon[iComp][jComp] - dDeltaEdEpsilon)/ae +
+	    diag[iComp] * (third * diag[jComp] - alphaFlow * dLambdadEpsilon[jComp])/am;
+	} // for
       } // for
-    } // for
+    } else {
+      const PylithScalar dLambdadEpsilon[3] = {
+	plasticFac * (alphaYield/am),
+	plasticFac * (alphaYield/am),
+	0.0};
+      for (int iComp=0; iComp < tensorSize; ++iComp) {
+	for (int jComp=0; jComp < tensorSize; ++jComp) {
+	  int iCount = jComp + tensorSize * iComp;
+	  elasticConsts[iCount] = (dEdEpsilon[iComp][jComp])/ae +
+	    diag[iComp] * (third * diag[jComp] - alphaFlow * dLambdadEpsilon[jComp])/am;
+	} // for
+      } // for
+    } // if/else
 
     PetscLogFlops(76 + tensorSize * tensorSize * 15);
 
@@ -1030,7 +1077,7 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   const PylithScalar stressZZInitial = stateVars[s_stressZZInitial];
 
   const PylithScalar plasticStrainT[tensorSizePS] = {
-    stateVars[s_plasticStrain],
+    stateVars[s_plasticStrain    ],
     stateVars[s_plasticStrain + 1],
     stateVars[s_plasticStrain + 2],
     stateVars[s_plasticStrain + 3]};
@@ -1050,7 +1097,8 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
     initialStress[0] - meanStressInitial,
     initialStress[1] - meanStressInitial,
     stressZZInitial - meanStressInitial,
-    initialStress[2]};
+    initialStress[2]
+  };
 
   // Initial strain values
   const PylithScalar meanStrainInitial = (initialStrain[0] +
@@ -1058,7 +1106,7 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   const PylithScalar devStrainInitial[tensorSizePS] = {
     initialStrain[0] - meanStrainInitial,
     initialStrain[1] - meanStrainInitial,
-    -meanStrainInitial,
+    0.0 - meanStrainInitial,
     initialStrain[2]};
 
   // Values for current time step
@@ -1066,13 +1114,12 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
   const PylithScalar meanStrainPPTpdt = meanStrainTpdt - meanPlasticStrainT -
     meanStrainInitial;
 
-  const PylithScalar strainPPTpdt[tensorSizePS] =
-    { totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] -
-      devStrainInitial[0],
-      totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] -
-      devStrainInitial[1],
-      -meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
-      totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3]};
+  const PylithScalar strainPPTpdt[tensorSizePS] = {
+    totalStrain[0] - meanStrainTpdt - devPlasticStrainT[0] - devStrainInitial[0],
+    totalStrain[1] - meanStrainTpdt - devPlasticStrainT[1] - devStrainInitial[1],
+    0.0 - meanStrainTpdt - devPlasticStrainT[2] - devStrainInitial[2],
+    totalStrain[2] - devPlasticStrainT[3] - devStrainInitial[3]
+  };
 
   // Compute trial elastic stresses and yield function to see if yield should
   // occur.
@@ -1107,19 +1154,26 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
       sqrt(ae * ae * devStressInitialProd + 2.0 * ae *
 	   scalarProduct2DPS(devStressInitial, strainPPTpdt) +
 	   strainPPTpdtProd);
-    const PylithScalar plasticMult = 2.0 * ae * am *
-      (3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
-      (6.0 * alphaYield * alphaFlow * ae + am);
+    const PylithScalar plasticMult = 
+      std::min(sqrt(2.0)*d, 
+	       2.0 * ae * am * (3.0 * alphaYield * meanStrainPPTpdt/am + d/(sqrt(2.0) * ae) - beta)/
+	       (6.0 * alphaYield * alphaFlow * ae + am));
     const PylithScalar deltaMeanPlasticStrain = plasticMult * alphaFlow;
     PylithScalar deltaDevPlasticStrain = 0.0;
-    for (int iComp=0; iComp < tensorSizePS; ++iComp) {
-      deltaDevPlasticStrain = plasticMult *(strainPPTpdt[iComp] +
-					    ae * devStressInitial[iComp])/
-	(sqrt(2.0) * d);
-      stateVars[s_plasticStrain+iComp] += deltaDevPlasticStrain +
-	diag[iComp] * deltaMeanPlasticStrain;
-    } // for
-
+    if (d > 0.0) {
+      for (int iComp=0; iComp < tensorSizePS; ++iComp) {
+	deltaDevPlasticStrain = plasticMult *(strainPPTpdt[iComp] +
+					      ae * devStressInitial[iComp])/
+	  (sqrt(2.0) * d);
+	stateVars[s_plasticStrain+iComp] += deltaDevPlasticStrain +
+	  diag[iComp] * deltaMeanPlasticStrain;
+      } // for
+    } else {
+      for (int iComp=0; iComp < tensorSizePS; ++iComp) {
+	stateVars[s_plasticStrain+iComp] += diag[iComp] * deltaMeanPlasticStrain;
+      } // for
+    } // if/else
+    
     PetscLogFlops(48 + 9 * tensorSizePS);
 
   } // if
