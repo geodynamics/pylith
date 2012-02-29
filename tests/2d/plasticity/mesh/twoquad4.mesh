@@ -61,10 +61,10 @@ mesh = {
     // List the material ID's associated with each cell.
     // Different ID's may be used to specify a different material type, or
     // to use a different spatial database for each material ID.
-    // In this example, cells 0 and 1 both are associated with material ID 0.
+    // In this example, cells 0 and 1 both are associated with material ID 1.
     material-ids = {
-             0   0
-             1   0
+             0   1
+             1   1
     }
   }
 
