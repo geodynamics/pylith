@@ -174,9 +174,9 @@ const PylithScalar pylith::materials::DruckerPrager3DElasticData::_density[] = {
 };
 
 const PylithScalar pylith::materials::DruckerPrager3DElasticData::_strain[] = {
-  1.10000000e-04,
-  1.20000000e-04,
-  1.30000000e-04,
+ -1.10000000e-04,
+ -1.20000000e-04,
+ -1.30000000e-04,
   1.40000000e-04,
   1.50000000e-04,
   1.60000000e-04,
@@ -189,9 +189,9 @@ const PylithScalar pylith::materials::DruckerPrager3DElasticData::_strain[] = {
 };
 
 const PylithScalar pylith::materials::DruckerPrager3DElasticData::_stress[] = {
- -2.24790000e+07,
- -2.24780000e+07,
- -2.24770000e+07,
+ -4.85790000e+07,
+ -4.94780000e+07,
+ -5.03770000e+07,
  -8.97600000e+06,
  -8.97500000e+06,
  -8.97400000e+06,

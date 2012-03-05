@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2012 University of California, Davis
 //
 // See COPYING for license information.
 //
@@ -94,12 +94,12 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_dbPr
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_dbStateVars[] = {
-  1.07500000e+04,
+  2.30000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
-  2.57500000e+04,
+  5.40000000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -122,12 +122,12 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_prop
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stateVars[] = {
-  1.07500000e+04,
+  2.30000000e+04,
   4.10000000e-05,
   4.20000000e-05,
   4.40000000e-05,
   4.50000000e-05,
-  2.57500000e+04,
+  5.40000000e+04,
   1.10000000e-05,
   1.20000000e-05,
   1.40000000e-05,
@@ -150,16 +150,16 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_prop
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stateVarsNondim[] = {
-  4.77777778e-07,
-  4.77777778e-07,
-  4.77777778e-07,
-  4.77777778e-07,
-  4.77777778e-07,
-  1.14444444e-06,
-  1.14444444e-06,
-  1.14444444e-06,
-  1.14444444e-06,
-  1.14444444e-06,
+  1.02222222e-06,
+  1.02222222e-06,
+  1.02222222e-06,
+  1.02222222e-06,
+  1.02222222e-06,
+  2.40000000e-06,
+  2.40000000e-06,
+  2.40000000e-06,
+  2.40000000e-06,
+  2.40000000e-06,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_density[] = {
@@ -168,73 +168,73 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_dens
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_strain[] = {
-  1.10000000e-04,
+ -2.10000000e-04,
   1.20000000e-04,
-  1.40000000e-04,
+  1.10000000e-05,
   4.10000000e-04,
   4.20000000e-04,
-  4.40000000e-04,
+  1.40000000e-04,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stress[] = {
- -4.95807185e+05,
- -3.82197636e+05,
-  7.08863124e+05,
-  5.51473672e+05,
-  5.45142209e+05,
- -2.85351554e+05,
+ -1.92922457e+07,
+ -4.93459240e+06,
+ -2.89163969e+06,
+  2.05547473e+06,
+  2.05547473e+06,
+  1.45519152e-11,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_elasticConsts[] = {
-  2.44487161e+10,
-  1.17789183e+10,
- -1.66473214e+10,
-  1.09997245e+10,
-  2.10335485e+10,
- -1.62468306e+10,
- -1.31854142e+10,
- -1.29851687e+10,
-  1.38346134e+10,
-  1.73722726e+09,
-  2.48498883e+09,
- -2.42123101e+09,
-  2.48498825e+09,
-  1.68402528e+09,
- -2.37432763e+09,
- -1.21061568e+09,
- -1.18716349e+09,
-  1.33926043e+09,
+  6.78169280e+10,
+  3.08737531e+10,
+ -2.64315493e+09,
+  1.98734119e+10,
+  2.43162760e+10,
+  1.57343177e+10,
+  8.93897377e+08,
+  1.00826339e+10,
+  3.98038772e+10,
+  3.37901525e+09,
+  3.25490593e+09,
+ -1.82383531e+09,
+  3.37901525e+09,
+  3.25490593e+09,
+ -1.82383531e+09,
+  0.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_initialStress[] = {
   2.10000000e+04,
   2.20000000e+04,
   2.40000000e+04,
-  5.10000000e+04,
-  5.20000000e+04,
-  5.40000000e+04,
+  5.60000000e+04,
+  5.50000000e+04,
+  5.30000000e+04,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_initialStrain[] = {
   3.60000000e-05,
   3.50000000e-05,
   3.30000000e-05,
-  6.10000000e-05,
-  6.20000000e-05,
   6.60000000e-05,
+  6.50000000e-05,
+  6.20000000e-05,
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainTimeDepData::_stateVarsUpdated[] = {
-  1.07500000e+04,
-  7.52490579e-05,
-  8.37466235e-05,
-  2.04754109e-05,
-  9.17808195e-05,
-  2.57500000e+04,
-  3.24452570e-04,
-  3.34725393e-04,
- -7.68586819e-05,
-  4.32915200e-04,
+  2.30000000e+04,
+  3.64658670e-05,
+  4.84291274e-05,
+  4.75397462e-05,
+  4.27919930e-05,
+  5.40000000e+04,
+  2.05251755e-04,
+  2.16078144e-04,
+ -1.39095468e-04,
+  8.72013889e-05,
 };
 
 pylith::materials::DruckerPragerPlaneStrainTimeDepData::DruckerPragerPlaneStrainTimeDepData(void)
