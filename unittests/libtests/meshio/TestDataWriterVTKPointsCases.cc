@@ -64,7 +64,7 @@ pylith::meshio::TestDataWriterVTKPointsTet4::setUp(void)
 { // setUp
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsTet4;
-  _flipFault = false;
+  _flipFault = true;
   _initialize();
 } // setUp
 
@@ -76,7 +76,7 @@ pylith::meshio::TestDataWriterVTKPointsHex8::setUp(void)
 { // setUp
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsHex8;
-  _flipFault = true;
+  _flipFault = false;
   _initialize();
 } // setUp
 

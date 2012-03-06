@@ -904,9 +904,13 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
       (6.0 * alphaYield * alphaFlow * ae + am);
     const PylithScalar meanStrainFac = 3.0 * alphaYield/am;
     const PylithScalar dFac = 1.0/(sqrt(2.0) * ae);
-    const PylithScalar plasticMult = 
-      std::min(sqrt(2.0)*d,
-	       plasticFac * (meanStrainFac * meanStrainPPTpdt + dFac * d - beta));
+    const PylithScalar testMult = plasticFac *
+      (meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
+    const PylithScalar plasticMult = std::min(sqrt(2.0)*d, testMult);
+	       
+    bool tensileYield = false;
+    if (plasticMult == sqrt(2.0) * d)
+      tensileYield = true;
 
     // Define some constants, vectors, and matrices.
     const PylithScalar third = 1.0/3.0;
@@ -925,6 +929,7 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
       strainPPTpdt[4] + ae * devStressInitial[4],
       strainPPTpdt[5] + ae * devStressInitial[5]
     };
+    const PylithScalar dFac2 = (d > 0.0) ? 1.0/(sqrt(2.0) * d) : 0.0;
     PylithScalar dDeltaEdEpsilon = 0.0;
 
     // Compute elasticity matrix.
@@ -935,15 +940,25 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 						   2.0 * vec1[3]/d,
 						   2.0 * vec1[4]/d,
 						   2.0 * vec1[5]/d};
-      const PylithScalar dLambdadEpsilon[tensorSize] = {
-	plasticFac * (alphaYield/am + dFac * dDdEpsilon[0]),
-	plasticFac * (alphaYield/am + dFac * dDdEpsilon[1]),
-	plasticFac * (alphaYield/am + dFac * dDdEpsilon[2]),
-	plasticFac * (                dFac * dDdEpsilon[3]),
-	plasticFac * (                dFac * dDdEpsilon[4]),
-	plasticFac * (                dFac * dDdEpsilon[5])
-      };
-      const PylithScalar dFac2 = 1.0/(sqrt(2.0) * d);
+      PylithScalar dLambdadEpsilon[tensorSize];
+      if (tensileYield) {
+	dLambdadEpsilon[0] = sqrt(2.0) * dDdEpsilon[0];
+	dLambdadEpsilon[1] = sqrt(2.0) * dDdEpsilon[1];
+	dLambdadEpsilon[2] = sqrt(2.0) * dDdEpsilon[2];
+	dLambdadEpsilon[3] = sqrt(2.0) * dDdEpsilon[3];
+	dLambdadEpsilon[4] = sqrt(2.0) * dDdEpsilon[4];
+	dLambdadEpsilon[5] = sqrt(2.0) * dDdEpsilon[5];
+      } else {
+	dLambdadEpsilon[0] = plasticFac *
+	  (alphaYield/am + dFac * dDdEpsilon[0]);
+	dLambdadEpsilon[1] = plasticFac *
+	  (alphaYield/am + dFac * dDdEpsilon[1]);
+	dLambdadEpsilon[2] = plasticFac *
+	  (alphaYield/am + dFac * dDdEpsilon[2]);
+	dLambdadEpsilon[3] = plasticFac * dFac * dDdEpsilon[3];
+	dLambdadEpsilon[4] = plasticFac * dFac * dDdEpsilon[4];
+	dLambdadEpsilon[5] = plasticFac * dFac * dDdEpsilon[5];
+      } // else
       for (int iComp=0; iComp < tensorSize; ++iComp) {
 	for (int jComp=0; jComp < tensorSize; ++jComp) {
 	  int iCount = jComp + tensorSize * iComp;
@@ -958,14 +973,12 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 	} // for
       } // for
     } else {
-      const PylithScalar dLambdadEpsilon[tensorSize] = {
-	plasticFac * (alphaYield/am),
-	plasticFac * (alphaYield/am),
-	plasticFac * (alphaYield/am),
-	0.0,
-	0.0,
-	0.0,
-      };
+      const PylithScalar dLambdadEpsilon[tensorSize] = {0.0,
+							0.0,	
+							0.0,	
+							0.0,
+							0.0,
+							0.0};
       for (int iComp=0; iComp < tensorSize; ++iComp) {
 	for (int jComp=0; jComp < tensorSize; ++jComp) {
 	  int iCount = jComp + tensorSize * iComp;

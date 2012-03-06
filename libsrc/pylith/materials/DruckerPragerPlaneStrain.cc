@@ -926,9 +926,13 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
       (6.0 * alphaYield * alphaFlow * ae + am);
     const PylithScalar meanStrainFac = 3.0 * alphaYield/am;
     const PylithScalar dFac = 1.0/(sqrt(2.0) * ae);
-    const PylithScalar plasticMult = 
-      std::min(sqrt(2.0)*d,
-	       plasticFac * (meanStrainFac * meanStrainPPTpdt + dFac * d - beta));
+    const PylithScalar testMult = plasticFac *
+      (meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
+    const PylithScalar plasticMult = std::min(sqrt(2.0)*d, testMult);
+
+    bool tensileYield = false;
+    if (plasticMult == sqrt(2.0) * d)
+      tensileYield = true;
 
     // Define some constants, vectors, and matrices.
     const PylithScalar third = 1.0/3.0;
@@ -950,29 +954,42 @@ pylith::materials::DruckerPragerPlaneStrain::_calcElasticConstsElastoplastic(
       const PylithScalar dDdEpsilon[3] = {vec1[0]/d,
 					  vec1[1]/d,
 					  2.0 * vec1[2]/d};
-      const PylithScalar dLambdadEpsilon[3] = {
-	plasticFac * (alphaYield/am + dFac * dDdEpsilon[0]),
-	plasticFac * (alphaYield/am + dFac * dDdEpsilon[1]),
-	plasticFac * (                dFac * dDdEpsilon[2])};
+
+      PylithScalar dLambdadEpsilon[tensorSize];
+      if (tensileYield) {
+	dLambdadEpsilon[0] = sqrt(2.0) * dDdEpsilon[0];
+	dLambdadEpsilon[1] = sqrt(2.0) * dDdEpsilon[1];
+	dLambdadEpsilon[2] = sqrt(2.0) * dDdEpsilon[2];
+      } else {
+	dLambdadEpsilon[0] = plasticFac *
+	  (alphaYield/am + dFac * dDdEpsilon[0]);
+	dLambdadEpsilon[1] = plasticFac *
+	  (alphaYield/am + dFac * dDdEpsilon[1]);
+	dLambdadEpsilon[2] = plasticFac * dFac * dDdEpsilon[2];
+      } // else
       for (int iComp=0; iComp < tensorSize; ++iComp) {
 	for (int jComp=0; jComp < tensorSize; ++jComp) {
 	  int iCount = jComp + tensorSize * iComp;
-	  dDeltaEdEpsilon = dFac2 * (vec1[iComp] * (dLambdadEpsilon[jComp] - plasticMult * dDdEpsilon[jComp]/d) +
+	  dDeltaEdEpsilon = dFac2 * (vec1[iComp] *
+				     (dLambdadEpsilon[jComp] -
+				      plasticMult * dDdEpsilon[jComp]/d) +
 				     plasticMult * dEdEpsilon[iComp][jComp]);
-	  elasticConsts[iCount] = (dEdEpsilon[iComp][jComp] - dDeltaEdEpsilon)/ae +
-	    diag[iComp] * (third * diag[jComp] - alphaFlow * dLambdadEpsilon[jComp])/am;
+	  elasticConsts[iCount] = (dEdEpsilon[iComp][jComp] -
+				   dDeltaEdEpsilon)/ae +
+	    diag[iComp] * (third * diag[jComp] -
+			   alphaFlow * dLambdadEpsilon[jComp])/am;
 	} // for
       } // for
     } else {
-      const PylithScalar dLambdadEpsilon[3] = {
-	plasticFac * (alphaYield/am),
-	plasticFac * (alphaYield/am),
-	0.0};
+      const PylithScalar dLambdadEpsilon[3] = {0.0,	
+					       0.0,	
+					       0.0};
       for (int iComp=0; iComp < tensorSize; ++iComp) {
 	for (int jComp=0; jComp < tensorSize; ++jComp) {
 	  int iCount = jComp + tensorSize * iComp;
 	  elasticConsts[iCount] = (dEdEpsilon[iComp][jComp])/ae +
-	    diag[iComp] * (third * diag[jComp] - alphaFlow * dLambdadEpsilon[jComp])/am;
+	    diag[iComp] * (third * diag[jComp] -
+			   alphaFlow * dLambdadEpsilon[jComp])/am;
 	} // for
       } // for
     } // if/else
