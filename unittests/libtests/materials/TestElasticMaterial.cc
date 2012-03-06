@@ -564,12 +564,14 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
     
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (int i=0; i < numConsts; ++i)
-      if (fabs(elasticConstsE[i]) > tolerance)
+      if (fabs(elasticConstsE[i]) > tolerance) {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i], 
 				     tolerance);
-      else
+      } else {
+	const double stressScale = 1.0e+9;
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], elasticConsts[i],
-				     tolerance);
+				     tolerance*stressScale);
+      } // if/else
   } // for
 } // _testCalcElasticConsts
 

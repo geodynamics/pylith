@@ -79,7 +79,7 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     frictionAngleA = math.radians(30.0)
     dilatationAngleA = math.radians(20.0)
     cohesionA = 3.0e5
-    strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
+    strainA = [-2.1e-4, 1.2e-4, 1.3e-4, 1.1e-5, 1.1e-5, 1.1e-5]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
     initialStrainA = [3.6e-5, 3.5e-5, 3.4e-5, 3.3e-5, 3.2e-5, 3.1e-5]
     # initialStressA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -102,9 +102,9 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     # frictionAngleB = 0.0
     # dilatationAngleB = 0.0
     cohesionB = 1.0e4
-    strainB = [4.1e-4, 4.2e-4, 4.3e-4, 4.4e-4, 4.5e-4, 4.6e-4]
-    initialStressB = [5.1e4, 5.2e4, 5.3e4, 5.4e4, 5.5e4, 5.6e4]
-    initialStrainB = [6.1e-5, 6.2e-5, 6.3e-5, 6.6e-5, 6.5e-5, 6.4e-5]
+    strainB = [4.1e-4, 4.2e-4, 4.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
+    initialStressB = [5.6e4, 5.5e4, 5.4e4, 5.3e4, 5.2e4, 5.1e4]
+    initialStrainB = [6.6e-5, 6.5e-5, 6.4e-5, 6.3e-5, 6.2e-5, 6.1e-5]
     # initialStressB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     # initialStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     muB = vsB*vsB*densityB
@@ -277,10 +277,12 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
                     2.0 * ae * self._scalarProduct(devStressInitial, \
                                                    strainPPTpdt) + \
                     strainPPTpdtProd)
-      plasticMult = 2.0 * ae * am * \
-                    (3.0 * alphaYieldV * meanStrainPPTpdt/am + \
-                     d/(math.sqrt(2.0) * ae) - betaV)/ \
-                     (6.0 * alphaYieldV * alphaFlowV * ae + am)
+      dFac = math.sqrt(2.0) * d
+      testMult = 2.0 * ae * am * \
+                 (3.0 * alphaYieldV * meanStrainPPTpdt/am + \
+                  d/(math.sqrt(2.0) * ae) - betaV)/ \
+                  (6.0 * alphaYieldV * alphaFlowV * ae + am)
+      plasticMult = min(testMult, dFac)
       deltaMeanPlasticStrain = plasticMult * alphaFlowV
       meanStressTpdt = (meanStrainPPTpdt - deltaMeanPlasticStrain)/am + \
                        meanStressInitial
@@ -292,7 +294,7 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
       for iComp in range(tensorSize):
         deltaDevPlasticStrain = plasticMult * (strainPPTpdt[iComp] + \
                                                ae * devStressInitial[iComp])/ \
-                                               (math.sqrt(2.0) * d)
+                                               dFac
         devStressTpdt = (strainPPTpdt[iComp] - deltaDevPlasticStrain)/ae + \
                         devStressInitial[iComp]
         stressTpdt[iComp] = devStressTpdt + diag[iComp] * meanStressTpdt

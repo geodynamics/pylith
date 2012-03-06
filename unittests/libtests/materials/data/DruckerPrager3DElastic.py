@@ -74,7 +74,7 @@ class DruckerPrager3DElastic(ElasticMaterialApp):
     frictionAngleA = math.radians(30.0)
     dilatationAngleA = math.radians(20.0)
     cohesionA = 3.0e5
-    strainA = [1.1e-4, 1.2e-4, 1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
+    strainA = [-1.1e-4, -1.2e-4, -1.3e-4, 1.4e-4, 1.5e-4, 1.6e-4]
     initialStressA = [2.1e4, 2.2e4, 2.3e4, 2.4e4, 2.5e4, 2.6e4]
     initialStrainA = [3.1e-4, 3.2e-4, 3.3e-4, 3.4e-4, 3.5e-4, 3.6e-4]
     muA = vsA*vsA*densityA
