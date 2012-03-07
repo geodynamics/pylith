@@ -396,6 +396,14 @@ class OutputManager(PetscComponent):
     return
   
 
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    self.deallocate()
+    return
+    
+
   def _open(self):
     raise NotImplementedError("Implement _open() in derived class.")
 

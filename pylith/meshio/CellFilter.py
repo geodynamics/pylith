@@ -96,6 +96,14 @@ class CellFilter(PetscComponent):
     return
 
 
+  def _cleanup(self):
+    """
+    Deallocate locally managed data structures.
+    """
+    self.deallocate()
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def output_cell_filter():
