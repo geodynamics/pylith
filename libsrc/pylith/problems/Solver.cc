@@ -89,12 +89,14 @@ pylith::problems::Solver::deallocate(void)
 { // deallocate
   _formulation = 0; // Handle only, do not manage memory.
   delete _logger; _logger = 0;
-  if (0 != _jacobianPC) {
-    PetscErrorCode err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
-  } // if
-  if (0 != _jacobianPCFault) {
-    PetscErrorCode err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
-  } // if
+
+  PetscErrorCode err = 0;
+  err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
+
+  _ctx.pc = 0; // KSP PC (managed separately)
+  _ctx.A = 0; // Jacobian (managed separately)
+  _ctx.faultA  = 0; // Handle to _jacobianPCFault
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -104,7 +106,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 				     const topology::Jacobian& jacobian,
 				     Formulation* const formulation)
 { // initialize
-  assert(0 != formulation);
+  assert(formulation);
   _formulation = formulation;
 
   // Make global preconditioner matrix
@@ -123,6 +125,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 
     PetscInt M, N, m, n;
     PetscErrorCode err = 0;
+    err = MatDestroy(&_jacobianPC);CHECK_PETSC_ERROR(err);
     err = MatGetSize(jacobianMat, &M, &N);CHECK_PETSC_ERROR(err);
     err = MatGetLocalSize(jacobianMat, &m, &n);CHECK_PETSC_ERROR(err);
     err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);
@@ -178,9 +181,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
                                               solutionSection, spaceDim);
     assert(!lagrangeGlobalOrder.isNull());
 
-    if (_jacobianPCFault) {
-      err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
-    } // if
+    err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
     PetscInt nrows = lagrangeGlobalOrder->getLocalSize();
     PetscInt ncols = nrows;
 
@@ -190,20 +191,11 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatSetType(_jacobianPCFault, MATAIJ);
     err = MatSetFromOptions(_jacobianPCFault); CHECK_PETSC_ERROR(err);
     
-#if 1
     // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
 				    PETSC_NULL); CHECK_PETSC_ERROR(err);
     err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, PETSC_NULL, 
 				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
-#else
-    // Allocate full matrix (overestimate).
-    err = MatSeqAIJSetPreallocation(_jacobianPCFault, ncols, 
-				    PETSC_NULL); CHECK_PETSC_ERROR(err);
-    err = MatMPIAIJSetPreallocation(_jacobianPCFault, ncols, PETSC_NULL, 
-				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
-#endif
-    
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 

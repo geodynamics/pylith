@@ -61,9 +61,9 @@ pylith::problems::Formulation::deallocate(void)
 
 #if 0   // :KLUDGE: Assume Solver deallocates matrix.
   PetscErrorCode err = 0;
-  if (0 != _customConstraintPCMat) {
-    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);
-    _customConstraintPCMat = 0; CHECK_PETSC_ERROR(err);
+  if (_customConstraintPCMat) {
+    err = PetscObjectDereference((PetscObject) _customConstraintPCMat);CHECK_PETSC_ERROR(err);
+    _customConstraintPCMat = 0;
   } // if
 #else
   _customConstraintPCMat = 0;
@@ -319,7 +319,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   // Assemble jacobian.
   _jacobian->assemble("final_assembly");
 
-  if (0 != _customConstraintPCMat) {
+  if (_customConstraintPCMat) {
     // Recalculate preconditioner.
     numIntegrators = _meshIntegrators.size();
     for (int i=0; i < numIntegrators; ++i)

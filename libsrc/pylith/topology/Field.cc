@@ -75,17 +75,11 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
   for (typename scatter_map_type::iterator s_iter=_scatters.begin();
        s_iter != scattersEnd;
        ++s_iter) {
-    if (s_iter->second.vector) {
-      err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
-    } // if
+    std::cout << "SCATTER DESTROY, label: " << label() << ", context: " << s_iter->first << std::endl;
 
-    if (s_iter->second.scatter) {
-      err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
-    } // if
-
-    if (s_iter->second.scatterVec) {
-      err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
-    } // if
+    err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
+    err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
   } // for
   _scatters.clear();
 } // deallocate
@@ -364,6 +358,8 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	ScatterInfo sinfo;
 	sinfo.vector = 0;
 	sinfo.scatterVec = 0;
+
+    std::cout << "SCATTER COPY, label: " << label() << ", context: " << s_iter->first << std::endl;
 
 	// Copy scatter
 	sinfo.scatter = s_iter->second.scatter;
@@ -763,6 +759,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_me
     return;
   } // if
 
+    std::cout << "SCATTER CREATE, label: " << label() << ", context: " << context << std::endl;
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
@@ -834,6 +832,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(
     assert(sinfo.vector);
     return;
   } // if
+
+  std::cout << "SCATTER CREATE, label: " << label() << ", context: " << context << std::endl;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
@@ -919,6 +919,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
     return;
   } // if
 
+    std::cout << "SCATTER CREATE, label: " << label() << ", context: " << context << std::endl;
+
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
@@ -989,6 +991,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
     assert(sinfo.vector);
     return;
   } // if
+
+    std::cout << "SCATTER CREATE, label: " << label() << ", context: " << context << std::endl;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
