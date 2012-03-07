@@ -54,6 +54,7 @@ pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
   Solver::deallocate();
 
+  std::cout << "Destroying KSP." << std::endl;
   PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
 } // deallocate
   
@@ -91,14 +92,16 @@ pylith::problems::SolverLinear::solve(
 			      topology::Jacobian* jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solution);
-  assert(0 != jacobian);
-  assert(0 != _formulation);
+  assert(solution);
+  assert(jacobian);
+  assert(_formulation);
 
   const int setupEvent = _logger->eventId("SoLi setup");
   const int solveEvent = _logger->eventId("SoLi solve");
   const int scatterEvent = _logger->eventId("SoLi scatter");
   _logger->eventBegin(scatterEvent);
+
+  PetscFunctionBegin;
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
@@ -164,6 +167,8 @@ pylith::problems::SolverLinear::solve(
 
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
+
+  PetscFunctionReturnVoid();
 } // solve
 
 // ----------------------------------------------------------------------
