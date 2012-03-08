@@ -54,7 +54,6 @@ pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
   Solver::deallocate();
 
-  std::cout << "Destroying KSP." << std::endl;
   PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
 } // deallocate
   
