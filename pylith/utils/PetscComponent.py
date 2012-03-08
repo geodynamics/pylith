@@ -64,7 +64,6 @@ class PetscComponent(Component):
     """
     Deallocate data structures.
     """
-    print "CLEANUP",self.name
     for component in self.components():
       if isinstance(component, PetscComponent):
         component.cleanup()
