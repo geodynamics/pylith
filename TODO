@@ -2,10 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-FaultCohesiveDyn::constrainSolnSpace()
-
-  Use line search (log then linear) to find projection
-
 ----------------------------------------
 MISCELLANEOUS
 ----------------------------------------
@@ -38,24 +34,6 @@ MISCELLANEOUS
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
-
-* Paper
-
-  
-  geometry processing (adjusting topology)
-  discretization (cohesive cells)
-  model (Lagrange multipliers)
-    Slip functions
-    Fault constitutive models
-  solver
-  benchmarks
-    Savage and Prescott
-    Dynamic
-  real problem  
-
-  General paper - focus on fault implementation
-
-  Custom preconditioner
 
 * Fault preconditioner [BRAD]
 
@@ -360,8 +338,6 @@ Release 1.7
   2. 2-D materials
     + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
     + PowerLawPlaneStrain (power law plane strain )
-
-  3. Scalable mesh distribution
 
 ----------------------------------------------------------------------
 Release 2.0
