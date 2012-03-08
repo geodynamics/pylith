@@ -265,7 +265,6 @@ class Fault(PetscComponent, ModuleFault):
     """
     Deallocate locally managed data structures.
     """
-    print "CLEANUP fault"
     self.deallocate()
     return
 
