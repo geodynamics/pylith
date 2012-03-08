@@ -329,16 +329,12 @@ AC_CONFIG_FILES([Makefile
 		tests/3d/cyclicfriction/Makefile
 		tests/3d/cyclicfriction/output/Makefile
 		tests/3d/plasticity/Makefile
-		tests/3d/plasticity/threehex27/Makefile
-		tests/3d/plasticity/threehex27/config/Makefile
-		tests/3d/plasticity/threehex27/mesh/Makefile
-		tests/3d/plasticity/threehex27/results/Makefile
-		tests/3d/plasticity/threehex27/spatialdb/Makefile
 		tests/3d/plasticity/threehex8/Makefile
 		tests/3d/plasticity/threehex8/config/Makefile
 		tests/3d/plasticity/threehex8/mesh/Makefile
 		tests/3d/plasticity/threehex8/results/Makefile
 		tests/3d/plasticity/threehex8/spatialdb/Makefile
+		tests/3d/plasticity/dynamic/Makefile
 		tests/topology/Makefile
 		tests/refinefaulttip/Makefile
                 doc/Makefile
@@ -373,7 +369,6 @@ AC_CONFIG_FILES([Makefile
 		examples/greensfns/hex8/gfresponses/Makefile
 		examples/greensfns/hex8/gfspatialdb/Makefile
 		examples/twocells/twohex8/Makefile
-		examples/twocells/twohex27-cubit/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
 		examples/twocells/twotet4-geoproj/Makefile
