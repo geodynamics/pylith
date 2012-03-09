@@ -113,9 +113,11 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     # Convert to mesh coordinate system
     from spatialdata.geocoords.Converter import convert
     convert(points, mesh.coordsys(), self.coordsys)
+    print "LENGTH SCALE",normalizer.lengthScale()
+    points /= normalizer.lengthScale().value
 
     ModuleOutputSolnPoints.setupInterpolator(self, mesh, points)
-    self.mesh = ModuleOutputSolnPoints.createPointsMesh(self)
+    self.mesh = ModuleOutputSolnPoints.pointsMesh(self)
 
     self._eventLogger.eventEnd(logEvent)
     return
