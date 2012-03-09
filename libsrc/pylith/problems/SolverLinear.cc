@@ -100,7 +100,7 @@ pylith::problems::SolverLinear::solve(
   const int scatterEvent = _logger->eventId("SoLi scatter");
   _logger->eventBegin(scatterEvent);
 
-  PetscFunctionBegin;
+  //PetscFunctionBegin; // DEBUGGING
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
@@ -167,7 +167,7 @@ pylith::problems::SolverLinear::solve(
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
 
-  PetscFunctionReturnVoid();
+  //PetscFunctionReturnVoid(); // DEBUGGING
 } // solve
 
 // ----------------------------------------------------------------------
