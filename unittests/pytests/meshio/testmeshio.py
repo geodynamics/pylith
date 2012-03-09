@@ -98,6 +98,9 @@ class TestApp(Script):
     from TestOutputSolnSubset import TestOutputSolnSubset
     suite.addTest(unittest.makeSuite(TestOutputSolnSubset))
 
+    from TestOutputSolnPoints import TestOutputSolnPoints
+    suite.addTest(unittest.makeSuite(TestOutputSolnPoints))
+
     from TestSingleOutput import TestSingleOutput
     suite.addTest(unittest.makeSuite(TestSingleOutput))
 

@@ -22,7 +22,8 @@ dist_noinst_DATA = \
 	cube2_ascii.pset \
 	cube2.txt \
 	twohex8.exo \
-	twohex8.txt
+	twohex8.txt \
+	points.txt
 
 noinst_TMP = \
 	cube2_test.txt \
