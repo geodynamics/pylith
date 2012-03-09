@@ -37,6 +37,7 @@
 #include "pylith/meshio/DataWriterVTK.hh"
 #include "pylith/meshio/OutputManager.hh"
 #include "pylith/meshio/OutputSolnSubset.hh"
+#include "pylith/meshio/OutputSolnPoints.hh"
 #if defined(ENABLE_HDF5)
 #include "pylith/meshio/DataWriterHDF5.hh"
 #include "pylith/meshio/DataWriterHDF5Ext.hh"
@@ -60,6 +61,15 @@
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
 
+// Numpy interface stuff
+%{
+#define SWIG_FILE_WITH_INIT
+%}
+%include "../include/numpy.i"
+%init %{
+import_array();
+%}
+
 // Interfaces
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
@@ -77,6 +87,7 @@
 %include "DataWriterVTK.i"
 %include "OutputManager.i"
 %include "OutputSolnSubset.i"
+%include "OutputSolnPoints.i"
 #if defined(ENABLE_HDF5)
 %include "DataWriterHDF5.i"
 %include "DataWriterHDF5Ext.i"
@@ -101,6 +112,7 @@
 %template(MeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::Mesh> >;
 %template(SubSubMeshDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::SubMesh, pylith::topology::Field<pylith::topology::SubMesh> >;
+%template(PointsDataWriterVTK) pylith::meshio::DataWriterVTK<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;
 
 #if defined(ENABLE_HDF5)
 %template(MeshDataWriterHDF5) pylith::meshio::DataWriterHDF5<pylith::topology::Mesh, pylith::topology::Field<pylith::topology::Mesh> >;

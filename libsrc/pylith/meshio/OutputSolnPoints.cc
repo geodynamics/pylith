@@ -101,6 +101,16 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(csMesh);
   assert(csMesh->spaceDim() == spaceDim);
 
+#if 1 // DEBUGGING
+  std::cout << "OUTPUT SOLN POINTS" << std::endl;
+  for (int i=0; i < numPoints; ++i) {
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
+      std::cout << " " << points[i*spaceDim+iDim];
+    } // for
+    std::cout << "\n";
+  } // for
+#endif
+
   scalar_array pointsArray(points, numPoints*spaceDim);
   int_array cells(numPoints);
   for (int i=0; i < numPoints; ++i)

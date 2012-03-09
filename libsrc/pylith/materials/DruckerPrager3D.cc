@@ -906,8 +906,9 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
     const PylithScalar dFac = 1.0/(sqrt(2.0) * ae);
     const PylithScalar testMult = plasticFac *
       (meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
-    const bool tensileYield = (sqrt(2.0) * d < testMult) ? true: false;
-    const PylithScalar plasticMult = tensileYield ? sqrt(2.0) * d: testMult;
+
+    const bool tensileYield = (sqrt(2.0)*d < testMult) ? true : false;
+    const PylithScalar plasticMult = (tensileYield) ? sqrt(2.0)*d : testMult;
 
     // Define some constants, vectors, and matrices.
     const PylithScalar third = 1.0/3.0;
