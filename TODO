@@ -2,15 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* --BUGS--
-
-  DruckerPragerPlaneStrain, DruckerPrager3D
-    High-frequency oscillation in dynamic simulations
-    Extra plastic strain in quasi-static simulations
-    Charles' test (which one?) shows same behavior in 2-D and 3-D, so error is 
-      in both
-  
-
 * Manual
 
   - Order of tensor components for Xdmf files
@@ -21,6 +12,8 @@ CURRENT ISSUES/PRIORITIES
       * Approximate for quad4 and hex8 cells
         (assume Jacobian is uniform throughout cell =? rhomboid)
         (should be much better than nearest)
+  - Examples/Tutorials
+    + Table with concepts/features
 
 * configure
   
