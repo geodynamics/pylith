@@ -75,17 +75,10 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
   for (typename scatter_map_type::iterator s_iter=_scatters.begin();
        s_iter != scattersEnd;
        ++s_iter) {
-    if (s_iter->second.vector) {
-      err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
-    } // if
 
-    if (s_iter->second.scatter) {
-      err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
-    } // if
-
-    if (s_iter->second.scatterVec) {
-      err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
-    } // if
+    err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
+    err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
   } // for
   _scatters.clear();
 } // deallocate

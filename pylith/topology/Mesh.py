@@ -85,4 +85,14 @@ class Mesh(ModuleMesh):
     return groups
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _cleanup(self):
+    """
+    Deallocate locally managed data structures.
+    """
+    self.deallocate()
+    return
+
+
 # End of file
