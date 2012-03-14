@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
-sim = "ratestate_stable"
+import sys
+
+if len(sys.argv) != 2:
+    raise ValueError("usage: plot_friction.py [weak | stable]")
+
+sim = sys.argv[1]
+
+if not sim in ['weak', 'stable']:
+    raise ValueError("Unknown sim '%s'." % sim)
 
 # ======================================================================
 import tables
@@ -12,10 +20,10 @@ from math import exp
 dt = 0.01
 t = numpy.arange(0.0, 14.001, dt)
 mu0 = 0.6
-if sim == "ratestate_stable":
+if sim == "stable":
     a = 0.016
     b = 0.012
-elif sim == "ratestate_weak":
+elif sim == "weak":
     a = 0.008
     b = 0.012
 else:
@@ -64,7 +72,7 @@ muE = mu0 + a*numpy.log(slipRateE/V0) + b*numpy.log(V0*stateVarE/L)
 
 # ----------------------------------------------------------------------
 
-h5 = tables.openFile("output/%s-fault.h5" % sim, "r")
+h5 = tables.openFile("output/ratestate_%s-fault.h5" % sim, "r")
 time = h5.root.time[:].ravel()
 slip = h5.root.vertex_fields.slip[:]
 slipRate = h5.root.vertex_fields.slip_rate[:]

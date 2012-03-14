@@ -46,6 +46,14 @@ class TestDruckerPrager3D(unittest.TestCase):
     return
 
 
+  def test_allowTensileYield(self):
+    """
+    Test allowTensileYield().
+    """
+    self.material.allowTensileYield(True)
+    return
+
+
   def test_fitMohrCoulomb(self):
     """
     Test useElasticBehavior().

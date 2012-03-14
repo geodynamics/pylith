@@ -37,7 +37,8 @@ swig_sources = \
 	DataWriter.i \
 	DataWriterVTK.i \
 	OutputManager.i \
-	OutputSolnSubset.i
+	OutputSolnSubset.i \
+	OutputSolnPoints.i
 
 swig_generated = \
 	meshio_wrap.cxx \

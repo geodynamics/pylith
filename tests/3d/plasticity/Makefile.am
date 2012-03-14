@@ -18,6 +18,6 @@
 
 SUBDIRS = \
 	threehex8 \
-	threehex27
+	dynamic
 
 # End of file 

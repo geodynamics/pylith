@@ -98,15 +98,6 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     return
   
 
-  def verifyConfiguration(self, mesh):
-    """
-    Verify compatibility of configuration.
-    """
-    OutputManager.verifyConfiguration(self, mesh)
-    ModuleOutputSolnPoints.verifyConfiguration(self, mesh)
-    return
-
-
   def initialize(self, mesh, normalizer):
     """
     Initialize output manager.
@@ -114,10 +105,19 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     logEvent = "%sinit" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    points = self.reader.read()
-    ModuleOutputSolnPoints.setupInterpolator(self, mesh, points)
-    self.mesh = ModuleOutputSolnPoints.createPointsMesh(self)
     OutputManager.initialize(self, normalizer)
+
+    # Read points
+    points = self.reader.read()
+    
+    # Convert to mesh coordinate system
+    from spatialdata.geocoords.Converter import convert
+    convert(points, mesh.coordsys(), self.coordsys)
+    print "LENGTH SCALE",normalizer.lengthScale()
+    points /= normalizer.lengthScale().value
+
+    ModuleOutputSolnPoints.setupInterpolator(self, mesh, points)
+    self.mesh = ModuleOutputSolnPoints.pointsMesh(self)
 
     self._eventLogger.eventEnd(logEvent)
     return
@@ -153,8 +153,6 @@ class OutputSolnPoints(OutputManager, ModuleOutputSolnPoints):
     """
     try:
       OutputManager._configure(self)
-      ModuleOutputSolnPoints.label(self, self.label)
-      ModuleOutputSolnPoints.coordsys(self, self.inventory.coordsys)
       ModuleOutputSolnPoints.writer(self, self.inventory.writer)
       from pylith.utils.NullComponent import NullComponent
       if not isinstance(self.inventory.vertexFilter, NullComponent):

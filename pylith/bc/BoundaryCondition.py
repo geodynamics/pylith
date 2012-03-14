@@ -155,6 +155,14 @@ class BoundaryCondition(PetscComponent, ModuleBoundaryCondition):
     return
 
 
+  def _cleanup(self):
+    """
+    Deallocate locally managed data structures.
+    """
+    self.deallocate()
+    return
+
+
   def _createModuleObj(self):
     """
     Call constructor for module object for access to C++ object.

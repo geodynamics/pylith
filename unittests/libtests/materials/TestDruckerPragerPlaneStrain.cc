@@ -36,7 +36,11 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::setUp(void)
 { // setUp
   _material = new DruckerPragerPlaneStrain();
-  _matElastic = new DruckerPragerPlaneStrain();
+  DruckerPragerPlaneStrain* matTmp = new DruckerPragerPlaneStrain();
+  CPPUNIT_ASSERT(matTmp);
+  matTmp->allowTensileYield(true);
+  _matElastic = matTmp;
+
   _data = new DruckerPragerPlaneStrainElasticData();
   _dataElastic = new DruckerPragerPlaneStrainElasticData();
   setupNormalizer();
@@ -96,6 +100,18 @@ pylith::materials::TestDruckerPragerPlaneStrain::testUseElasticBehavior(void)
       material._updateStateVarsFn);
   } // if
 } // testUseElasticBehavior
+
+// ----------------------------------------------------------------------
+// Test allowTensileYield()
+void
+pylith::materials::TestDruckerPragerPlaneStrain::testAllowTensileYield(void)
+{ // testAllowTensileYield
+  DruckerPragerPlaneStrain material;
+  CPPUNIT_ASSERT(!material._allowTensileYield);
+
+  material.allowTensileYield(true);
+  CPPUNIT_ASSERT(material._allowTensileYield);
+} // testAllowTensileYield
 
 // ----------------------------------------------------------------------
 // Test usesHasStateVars()
