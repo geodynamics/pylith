@@ -69,14 +69,6 @@ class SolverNonlinear(Solver, ModuleSolverNonlinear):
     return
 
 
-  def _cleanup(self):
-    """
-    Deallocate PETSc and local data structures.
-    """
-    self.deallocate()
-    return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def solver():

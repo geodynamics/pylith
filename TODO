@@ -120,23 +120,6 @@ MISCELLANEOUS
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
 
-* Paper
-
-  General paper - focus on fault implementation
-  - JGR, GGG
-  
-  geometry processing (adjusting topology)
-  discretization (cohesive cells)
-  model (Lagrange multipliers)
-    Slip functions
-    Fault constitutive models
-  solver (saddle point)
-    custom preconditioner
-  benchmarks
-    Savage and Prescott
-    Dynamic
-  real problem  
-
 * Fault preconditioner [BRAD]
 
   FaultCohesiveLagrange::calcPreconditioner() [need unit test]
@@ -440,8 +423,6 @@ Release 1.7
   2. 2-D materials
     + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
     + PowerLawPlaneStrain (power law plane strain )
-
-  3. Scalable mesh distribution
 
 ----------------------------------------------------------------------
 Release 2.0

@@ -144,6 +144,7 @@ class PyLithApp(PetscApplication):
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     self.perfLogger = self.inventory.perfLogger
+    self.typos = self.inventory.typos
 
     import journal
     self._debug = journal.debug(self.name)

@@ -70,7 +70,7 @@ class PetscComponent(Component):
 
       # Facility arrays are not PetscComponents but have components().
       elif hasattr(component, "components"):
-        for subcomponent in self.components():
+        for subcomponent in component.components():
           if isinstance(subcomponent, PetscComponent):
             subcomponent.cleanup()
 
