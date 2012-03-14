@@ -67,6 +67,12 @@ public :
    */
   void fitMohrCoulomb(FitMohrCoulombEnum value);
 
+  /** Set flag for whether to allow tensile yield.
+   *
+   * @param flag True if tensile yield is allowed.
+   */
+  void allowTensileYield(const bool flag);
+
   /** Set current time step.
    *
    * @param dt Current time step.
@@ -498,6 +504,9 @@ private :
 
   /// Fit to Mohr Coulomb surface
   FitMohrCoulombEnum _fitMohrCoulomb;
+
+  /// Whether to allow tensile yield
+  bool _allowTensileYield;
 
   static const int p_density;
   static const int p_mu;
