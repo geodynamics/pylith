@@ -27,7 +27,7 @@
 // Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-// Powerlaw3D -----------------------------------------------------------
+// DruckerPrager3D ------------------------------------------------------
 /** @brief 3-D, isotropic, Drucker-Prager elastic/perfectly plastic material. 
  *
  * The physical properties are specified using density, shear-wave
@@ -66,6 +66,12 @@ public :
    * @param value Mohr-Coulomb surface match type.
    */
   void fitMohrCoulomb(FitMohrCoulombEnum value);
+
+  /** Set flag for whether to allow tensile yield.
+   *
+   * @param flag True if tensile yield is allowed.
+   */
+  void allowTensileYield(const bool flag);
 
   /** Set current time step.
    *
@@ -498,6 +504,9 @@ private :
 
   /// Fit to Mohr Coulomb surface
   FitMohrCoulombEnum _fitMohrCoulomb;
+
+  /// Whether to allow tensile yield
+  bool _allowTensileYield;
 
   static const int p_density;
   static const int p_mu;

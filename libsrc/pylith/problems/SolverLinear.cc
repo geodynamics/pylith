@@ -54,10 +54,7 @@ pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
   Solver::deallocate();
 
-  if (0 != _ksp) {
-    PetscErrorCode err = KSPDestroy(&_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -68,23 +65,20 @@ pylith::problems::SolverLinear::initialize(
 				   const topology::Jacobian& jacobian,
 				   Formulation* formulation)
 { // initialize
-  assert(0 != formulation);
+  assert(formulation);
 
   _initializeLogger();
   Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
-  if (0 != _ksp) {
-    err = KSPDestroy(&_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if    
-  err = KSPCreate(fields.mesh().comm(), &_ksp); CHECK_PETSC_ERROR(err);
-  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE); CHECK_PETSC_ERROR(err);
-  err = KSPSetFromOptions(_ksp); CHECK_PETSC_ERROR(err);
+  err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
+  err = KSPCreate(fields.mesh().comm(), &_ksp);CHECK_PETSC_ERROR(err);
+  err = KSPSetInitialGuessNonzero(_ksp, PETSC_FALSE);CHECK_PETSC_ERROR(err);
+  err = KSPSetFromOptions(_ksp);CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscPC pc = 0;
-    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
+    err = KSPGetPC(_ksp, &pc);CHECK_PETSC_ERROR(err);
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
 } // initialize
@@ -97,14 +91,16 @@ pylith::problems::SolverLinear::solve(
 			      topology::Jacobian* jacobian,
 			      const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solution);
-  assert(0 != jacobian);
-  assert(0 != _formulation);
+  assert(solution);
+  assert(jacobian);
+  assert(_formulation);
 
   const int setupEvent = _logger->eventId("SoLi setup");
   const int solveEvent = _logger->eventId("SoLi solve");
   const int scatterEvent = _logger->eventId("SoLi scatter");
   _logger->eventBegin(scatterEvent);
+
+  //PetscFunctionBegin; // DEBUGGING
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
@@ -116,10 +112,10 @@ pylith::problems::SolverLinear::solve(
   const PetscMat jacobianMat = jacobian->matrix();
   if (!jacobian->valuesChanged()) {
     err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			  SAME_PRECONDITIONER); CHECK_PETSC_ERROR(err);
+			  SAME_PRECONDITIONER);CHECK_PETSC_ERROR(err);
   } else {
     err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			  DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
+			  DIFFERENT_NONZERO_PATTERN);CHECK_PETSC_ERROR(err);
   } // else
   jacobian->resetValuesChanged();
 
@@ -144,12 +140,10 @@ pylith::problems::SolverLinear::solve(
     assert(solutionSection->getNumSpaces() == num);
 
     MatStructure flag;
-    err = KSPGetOperators(ksps[num-1], &A, 
-			  PETSC_NULL, &flag); CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) A); CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, 
-			  flag); CHECK_PETSC_ERROR(err);
-    err = PetscFree(ksps); CHECK_PETSC_ERROR(err);
+    err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag);CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) A);CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, flag);CHECK_PETSC_ERROR(err);
+    err = PetscFree(ksps);CHECK_PETSC_ERROR(err);
   } // if
 #endif
 
@@ -172,6 +166,8 @@ pylith::problems::SolverLinear::solve(
 
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
+
+  //PetscFunctionReturnVoid(); // DEBUGGING
 } // solve
 
 // ----------------------------------------------------------------------

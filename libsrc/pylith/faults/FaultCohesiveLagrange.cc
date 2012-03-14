@@ -581,11 +581,11 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
 				   topology::Jacobian* const jacobian,
 				   topology::SolutionFields* const fields)
 { // calcPreconditioner
-  assert(0 != precondMatrix);
-  assert(0 != jacobian);
-  assert(0 != fields);
-  assert(0 != _fields);
-  assert(0 != _logger);
+  assert(precondMatrix);
+  assert(jacobian);
+  assert(fields);
+  assert(_fields);
+  assert(_logger);
 
   /** We have A = [K L^T]
    *              [L   0]
@@ -737,7 +737,7 @@ pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = MatDestroy(&jacobianNP); CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&jacobianNP);CHECK_PETSC_ERROR(err);
   PetscLogFlops(numVertices*spaceDim*6);
 
 #if !defined(DETAILED_EVENT_LOGGING)

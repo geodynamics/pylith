@@ -18,7 +18,6 @@
 
 SUBDIRS = \
 	twohex8 \
-	twohex27-cubit \
 	twoquad4 \
 	twotet4 \
 	twotet4-geoproj \

@@ -57,6 +57,8 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
     ##
     ## \b Properties
     ## @li \b fit_mohr_coulomb Fit to Mohr-Coulomb yield surface.
+    ## @li \b allow_tensile_yield If true, allow yield beyond tensile strength;
+    ##   otherwise an exception occurs for excessive tensile sttress.
     ##
     ## \b Facilities
     ## @li None
@@ -67,6 +69,10 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
     fitMohrCoulomb = pyre.inventory.str("fit_mohr_coulomb", default="inscribed",
                                         validator=validateFitMohrCoulomb)
     fitMohrCoulomb.meta['tip'] = "Fit to Mohr-Coulomb yield surface."
+    allowTensileYield = pyre.inventory.bool("allow_tensile_yield",
+                                            default=False)
+    allowTensileYield.meta['tip'] = "If true, allow yield beyond tensile " \
+      "strength; otherwise, an exception is thrown."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -104,6 +110,8 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
     else:
       raise ValueError("Unknown fit to Mohr-Coulomb yield surface.")
     ModuleDruckerPrager3D.fitMohrCoulomb(self, fitEnum)
+    ModuleDruckerPrager3D.allowTensileYield(self,
+                                            self.inventory.allowTensileYield)
     return
 
   

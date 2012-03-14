@@ -2,15 +2,6 @@
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* --BUGS--
-
-  DruckerPragerPlaneStrain, DruckerPrager3D
-    High-frequency oscillation in dynamic simulations
-    Extra plastic strain in quasi-static simulations
-    Charles' test (which one?) shows same behavior in 2-D and 3-D, so error is 
-      in both
-  
-
 * Manual
 
   - Order of tensor components for Xdmf files
@@ -21,6 +12,8 @@ CURRENT ISSUES/PRIORITIES
       * Approximate for quad4 and hex8 cells
         (assume Jacobian is uniform throughout cell =? rhomboid)
         (should be much better than nearest)
+  - Examples/Tutorials
+    + Table with concepts/features
 
 * configure
   
@@ -126,23 +119,6 @@ MISCELLANEOUS
 ----------------------------------------------------------------------
 SECONDARY PRIORITIES
 ----------------------------------------------------------------------
-
-* Paper
-
-  General paper - focus on fault implementation
-  - JGR, GGG
-  
-  geometry processing (adjusting topology)
-  discretization (cohesive cells)
-  model (Lagrange multipliers)
-    Slip functions
-    Fault constitutive models
-  solver (saddle point)
-    custom preconditioner
-  benchmarks
-    Savage and Prescott
-    Dynamic
-  real problem  
 
 * Fault preconditioner [BRAD]
 
@@ -447,8 +423,6 @@ Release 1.7
   2. 2-D materials
     + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
     + PowerLawPlaneStrain (power law plane strain )
-
-  3. Scalable mesh distribution
 
 ----------------------------------------------------------------------
 Release 2.0

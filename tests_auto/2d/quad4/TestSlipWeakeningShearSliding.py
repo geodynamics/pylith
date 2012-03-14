@@ -134,8 +134,8 @@ class TestSlipWeakeningShearSliding(TestQuad4):
     strikeDir = (0.0, -1.0)
     normalDir = (-1.0, 0.0)
     initialTraction = (0.0, -1.0e+6)
-    staticCoefficient = 0.6
-    dynamicCoefficient = 0.59
+    staticCoefficient = 0.61
+    dynamicCoefficient = 0.60
     slipWeakeningParameter = 0.2
 
     uy_l = 1.0
@@ -196,6 +196,7 @@ class TestSlipWeakeningShearSliding(TestQuad4):
 
     elif name == "previous_slip":
       field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
+      field[:] = cumulativeSlip
 
     else:
       raise ValueError("Unknown fault field '%s'." % name)

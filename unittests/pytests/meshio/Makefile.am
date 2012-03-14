@@ -35,6 +35,7 @@ noinst_PYTHON = \
 	TestOutputManagerMesh.py \
 	TestOutputManagerSubMesh.py \
 	TestOutputSolnSubset.py \
+	TestOutputSolnPoints.py \
 	TestDataWriterVTK.py \
 	TestDataWriterHDF5.py \
 	TestDataWriterHDF5Ext.py \
