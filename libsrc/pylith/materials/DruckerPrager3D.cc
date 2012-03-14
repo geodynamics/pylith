@@ -949,14 +949,17 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
 
     PylithScalar plasticMult = 0.0;
     bool tensileYield = false;
+    PylithScalar dFac2 = 0.0;
     if (_allowTensileYield) {
       const PylithScalar testMult = plasticFac *
 	(meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
       tensileYield = (sqrt(2.0)*d < testMult) ? true : false;
       plasticMult = (tensileYield) ? sqrt(2.0)*d : testMult;
+      dFac2 = (d > 0.0) ? 1.0/(sqrt(2.0) * d) : 0.0;
     } else {
       plasticMult = plasticFac *
 	(meanStrainFac * meanStrainPPTpdt + dFac * d - beta);
+      dFac2 = 1.0/(sqrt(2.0) * d);
     } // if/else
 
     // Define some constants, vectors, and matrices.
@@ -976,7 +979,6 @@ pylith::materials::DruckerPrager3D::_calcElasticConstsElastoplastic(
       strainPPTpdt[4] + ae * devStressInitial[4],
       strainPPTpdt[5] + ae * devStressInitial[5]
     };
-    const PylithScalar dFac2 = (d > 0.0) ? 1.0/(sqrt(2.0) * d) : 0.0;
     PylithScalar dDeltaEdEpsilon = 0.0;
 
     // Compute elasticity matrix.
@@ -1242,6 +1244,7 @@ pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic(
       throw std::runtime_error(msg.str());
     } // if
   } // if
+
 #if 0 // DEBUGGING
   std::cout << "Function _updateStateVarsElastoPlastic:" << std::endl;
   std::cout << "  alphaYield:       " << alphaYield << std::endl;

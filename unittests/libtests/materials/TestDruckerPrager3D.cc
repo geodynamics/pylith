@@ -36,7 +36,6 @@ void
 pylith::materials::TestDruckerPrager3D::setUp(void)
 { // setUp
   _material = new DruckerPrager3D();
-  // _matElastic = new DruckerPrager3D();
   DruckerPrager3D* matTmp = new DruckerPrager3D();
   CPPUNIT_ASSERT(matTmp);
   matTmp->allowTensileYield(true);
@@ -157,9 +156,6 @@ pylith::materials::TestDruckerPrager3D::test_calcStressTimeDep(void)
 { // test_calcStressTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
   _matElastic->useElasticBehavior(false);
-  // pylith::materials::DruckerPrager3D->allowTensileYield(true);
-  // _matElastic->allowTensileYield(true);
-  // _matElastic._allowTensileYield = true;
 
   delete _dataElastic; _dataElastic = new DruckerPrager3DTimeDepData();
 
