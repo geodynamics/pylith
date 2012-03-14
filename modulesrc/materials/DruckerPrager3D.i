@@ -50,6 +50,12 @@ namespace pylith {
        * @param value Mohr-Coulomb surface match type.
        */
       void fitMohrCoulomb(FitMohrCoulombEnum value);
+      
+      /** Set boolean for whether tensile yield is allowed.
+       *
+       * @param flag True if tensile yield is allowed, false otherwise.
+       */
+      void allowTensileYield(const bool flag);
 
       /** Set current time step.
        *
