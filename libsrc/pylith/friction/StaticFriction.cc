@@ -158,7 +158,7 @@ pylith::friction::StaticFriction::_calcFriction(const PylithScalar t,
   assert(0 == numStateVars);
 
   const PylithScalar friction = (normalTraction <= 0.0) ?
-    -properties[p_coef] * normalTraction + properties[p_cohesion]: 
+    properties[p_cohesion] - properties[p_coef] * normalTraction :
     properties[p_cohesion];
 
   PetscLogFlops(2);
