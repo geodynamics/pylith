@@ -157,7 +157,7 @@ pylith::friction::StaticFriction::_calcFriction(const double slip,
   assert(0 == numStateVars);
 
   const double friction = (normalTraction <= 0.0) ?
-    -properties[p_coef] * normalTraction + properties[p_cohesion]: 
+    properties[p_cohesion] - properties[p_coef] * normalTraction :
     properties[p_cohesion];
 
   PetscLogFlops(2);
