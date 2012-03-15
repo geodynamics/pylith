@@ -1,2 +1,2 @@
 svn up
-svn merge -r 16682:HEAD svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/trunk .
+svn merge -r REV_FROM_LAST_MERGE:HEAD svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/trunk .
