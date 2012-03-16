@@ -128,18 +128,7 @@ public :
    * @returns PETSc error code.
    */
   static
-  PetscErrorCode lineSearch(PetscSNES snes,
-			    void *lsctx,
-			    PetscVec x,
-			    PetscVec f,
-			    PetscVec y,
-			    PetscReal fnorm,
-			    PetscReal xnorm,
-			    PetscVec g,
-			    PetscVec w,
-			    PetscReal *ynorm,
-			    PetscReal *gnorm,
-			    PetscBool *flag);
+  PetscErrorCode lineSearch(PetscLineSearch linesearch, void *lsctx);
 
   /** Generic C interface for customized PETSc initial guess.
    *
