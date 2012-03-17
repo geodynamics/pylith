@@ -112,23 +112,13 @@ public :
 
   /** Generic C interface for customized PETSc line search.
    *
-   * @param snes PETSc SNES solver.
+   * @param linesearch PETSc line search.
    * @param lsctx Optional context for line search (not used here).
-   * @param x Current iterate.
-   * @param f Residual evaluated at x.
-   * @param y Search direction.
-   * @param w Work vector
-   * @param f 2-norm of f.
-   * @param xnorm Norm of x if known, otherwise 0.
-   * @param g Residual evaluated at new iterate y.
-   * @param w New iterate.
-   * @param gnorm 2-norm of g.
-   * @param ynorm 2-norm of search length.
-   * @param PETSC_TRUE if line search succeeds; PETSC_FALSE on failure.
    * @returns PETSc error code.
    */
   static
-  PetscErrorCode lineSearch(PetscLineSearch linesearch, void *lsctx);
+  PetscErrorCode lineSearch(PetscLineSearch linesearch, 
+			    void *lsctx);
 
   /** Generic C interface for customized PETSc initial guess.
    *
