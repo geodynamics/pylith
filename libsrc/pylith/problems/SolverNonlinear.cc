@@ -189,15 +189,16 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 #undef __FUNCT__
 #define __FUNCT__ "lineSearch"
 PetscErrorCode
-pylith::problems::SolverNonlinear::lineSearch(PetscLineSearch linesearch, void *lsctx)
+pylith::problems::SolverNonlinear::lineSearch(PetscLineSearch linesearch, 
+					      void *lsctx)
 { // lineSearch
   // Note that for line search purposes we work with with the related
   // minimization problem:
   // min  z(x):  R^n -> R,
   // where z(x) = .5 * fnorm*fnorm, and fnorm = || f ||_2.
-  SNES           snes;
-  Vec            x, f, g, y, w;
-  PetscReal      fnorm, xnorm, ynorm, gnorm;
+  PetscSNES snes;
+  PetscVec x, f, g, y, w;
+  PetscReal fnorm, xnorm, ynorm, gnorm;
 
   PetscReal      initslope,lambdaprev,gnormprev,a,b,d,t1,t2,rellength;
   PetscReal      minlambda,lambda,lambdatemp;
