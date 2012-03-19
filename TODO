@@ -1,4 +1,18 @@
 ======================================================================
+CURRENT BUGS
+======================================================================
+
+* Deallocation with field split
+
+  Not all PETSc memory is being freed when using field split.
+
+  Test cases (examine True_0):
+    cd examples/3d/tet4
+    pylith step02.cfg ../../../share/debug_malloc.cfg
+    pylith step04.cfg ../../../share/debug_malloc.cfg
+
+
+======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
@@ -6,12 +20,11 @@ CURRENT ISSUES/PRIORITIES
 
   - Order of tensor components for Xdmf files
   - Drucker Prager fit to yield surface
+  - Drucker Prage allow tensile yield
   - Slip-weakening healing parameter
   - Green's functions
     + Interpolation
-      * Approximate for quad4 and hex8 cells
-        (assume Jacobian is uniform throughout cell =? rhomboid)
-        (should be much better than nearest)
+      * Accuracy of interpolation?
   - Examples/Tutorials
     + Table with concepts/features
 
@@ -31,10 +44,7 @@ CURRENT ISSUES/PRIORITIES
 
 * 2-D materials
 
-  + DruckerPragerPlaneStrain (Drucker-Prager plane strain ) [Charles]
   + PowerLawPlaneStrain (power law plane strain ) [Charles]
-
-* GenMaxwellQpQs [BRAD]
 
 * Cleanup
 
@@ -48,6 +58,8 @@ CURRENT ISSUES/PRIORITIES
 * Make nucleation for spontaneous rupture modular [BRAD]
 
   spatial and temporal variation in shear/normal stress for nucleation
+
+* GenMaxwellQpQs [BRAD]
 
 * GPU utilization
 
