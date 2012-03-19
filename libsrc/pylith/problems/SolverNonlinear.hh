@@ -117,7 +117,7 @@ public :
    * @returns PETSc error code.
    */
   static
-  PetscErrorCode lineSearch(PetscLineSearch linesearch, 
+  PetscErrorCode lineSearch(PetscSNESLineSearch linesearch, 
 			    void *lsctx);
 
   /** Generic C interface for customized PETSc initial guess.
