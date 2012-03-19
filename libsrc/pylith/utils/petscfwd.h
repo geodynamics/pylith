@@ -43,6 +43,9 @@ typedef struct _p_KSP* PetscKSP;
 /// forward declaration for PETSc SNES
 typedef struct _p_SNES* PetscSNES;
 
+/// forward declatation for PETSc line search
+typedef struct _p_LineSearch* PetscSNESLineSearch;
+
 /// forward declaration for PETSc PC
 typedef struct _p_PC* PetscPC;
 
