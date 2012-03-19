@@ -84,7 +84,8 @@ void
 pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 						    const PylithScalar* points,
 						    const int numPoints,
-						    const int spaceDim)
+						    const int spaceDim,
+						    const spatialdata::units::Nondimensional& normalizer)
 { // setupInterpolator
   assert(mesh);
   assert(points);
@@ -123,6 +124,10 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 			 cells, numCells, numCorners, meshDim,
 			 interpolate);
   _pointsMesh->coordsys(_mesh->coordsys());
+  _pointsMesh->nondimensionalize(normalizer);
+#if 1 // DEBUGGING
+  _pointsMesh->view("POINTS MESH");
+#endif
 
   // Setup interpolator object
   DM dm;
@@ -139,7 +144,13 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
   err = DMMeshInterpolationSetDim(dm, spaceDim, 
 				  _interpolator);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)points, 
+
+  assert(!_pointsMesh->sieveMesh().isNull());
+  assert(_pointsMesh->sieveMesh()->hasRealSection("coordinates"));
+  const ALE::Obj<topology::Mesh::RealSection>& coordinatesSection = _pointsMesh->sieveMesh()->getRealSection("coordinates");
+  assert(!coordinatesSection.isNull());
+  const PylithScalar* coordinates = coordinatesSection->restrictSpace();
+  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)coordinates, 
 				     _interpolator);CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);

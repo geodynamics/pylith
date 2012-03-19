@@ -52,7 +52,7 @@ namespace pylith {
       /** Setup interpolator.
        *
        * @param mesh Domain mesh.
-       * @param points Array of coordinates for points [numPoints*spaceDim].
+       * @param points Array of dimensioned coordinates for points [numPoints*spaceDim].
        * @param numPoints Number of points.
        * @param spaceDim Spatial dimension for coordinates.
        */
@@ -64,7 +64,8 @@ namespace pylith {
       void setupInterpolator(pylith::topology::Mesh* mesh,
 			     const PylithScalar* points,
 			     const int numPoints,
-			     const int spaceDim);
+			     const int spaceDim,
+			     const spatialdata::units::Nondimensional& normalizer);
       %clear(const PylithScalar* points, const int numPoints, const int spaceDim);
   
       /** Prepare for output.
