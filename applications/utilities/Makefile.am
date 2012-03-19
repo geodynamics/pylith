@@ -16,10 +16,50 @@
 # ----------------------------------------------------------------------
 #
 
-dist_bin_SCRIPTS = \
+bin_SCRIPTS = \
 	pylithinfo \
 	pylith_genxdmf \
 	powerlaw_gendb.py
+
+
+INTERPRETER = $(PYTHON)
+noinstINTERPRETER = $(PYTHON)
+
+do_build = sed -e s%[@]INTERPRETER[@]%$(noinstINTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(noinstPYTHONPATH)%g
+do_install = sed -e s%[@]INTERPRETER[@]%$(INTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(PYTHONPATH)%g
+
+pylithinfo:  $(srcdir)/pylithinfo.in Makefile
+	$(do_build) <  $(srcdir)/pylithinfo.in > $@ || (rm -f $@ && exit 1)
+	chmod +x $@
+
+pylith_genxdmf:  $(srcdir)/pylith_genxdmf.in Makefile
+	$(do_build) <  $(srcdir)/pylith_genxdmf.in > $@ || (rm -f $@ && exit 1)
+	chmod +x $@
+
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f "$$p.in"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f $$d$$p.in; then \
+	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	    echo " $(do_install) '$$d$$p.in' > '$(DESTDIR)$(bindir)/$$f'"; \
+	    $(do_install) "$$d$$p.in" > "$(DESTDIR)$(bindir)/$$f"; \
+	    echo " chmod +x '$(DESTDIR)$(bindir)/$$f'"; \
+	    chmod +x "$(DESTDIR)$(bindir)/$$f"; \
+	  else :; fi; \
+	done
+
+EXTRA_DIST = \
+	pylithinfo.in \
+	pylith_genxdmf.in
+
+CLEANFILES = $(bin_SCRIPTS)
+
+
+# End of file 
+
+
 
 
 # End of file 
