@@ -35,6 +35,8 @@
 #define isnan std::isnan // TEMPORARY
 #define isinf std::isinf // TEMPORARY
 
+// Customized line search based on PETSc code in
+// src/snes/linesearch/bt/linesearchbt.c.
 #include <private/snesimpl.h>
 #include <private/linesearchimpl.h>
 
