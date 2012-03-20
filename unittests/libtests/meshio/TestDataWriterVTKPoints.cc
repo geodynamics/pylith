@@ -74,12 +74,13 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
 
   OutputSolnPoints output;
   DataWriterVTK<topology::Mesh, MeshField> writer;
+  spatialdata::units::Nondimensional normalizer;
 
   writer.filename(_data->timestepFilename);
   writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
   output.setupInterpolator(_mesh, _data->points, 
-			   _data->numPoints, _data->spaceDim);
+			   _data->numPoints, _data->spaceDim, normalizer);
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
@@ -109,6 +110,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
 
   OutputSolnPoints output;
   DataWriterVTK<topology::Mesh, MeshField> writer;
+  spatialdata::units::Nondimensional normalizer;
 
   topology::Fields<MeshField> vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
@@ -117,7 +119,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
   output.setupInterpolator(_mesh, _data->points, 
-			   _data->numPoints, _data->spaceDim);
+			   _data->numPoints, _data->spaceDim, normalizer);
 
   const int nfields = _data->numVertexFields;
 

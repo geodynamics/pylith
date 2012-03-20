@@ -113,6 +113,8 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
 
   topology::Mesh mesh;
   spatialdata::geocoords::CSCart cs;
+  spatialdata::units::Nondimensional normalizer;
+
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh.coordsys(&cs);
@@ -122,7 +124,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
 
   OutputSolnPoints output;
   CPPUNIT_ASSERT(data.points);
-  output.setupInterpolator(&mesh, data.points, numPoints, spaceDim);
+  output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, normalizer);
 
   const topology::Mesh& pointsMesh = output.pointsMesh();
   const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
