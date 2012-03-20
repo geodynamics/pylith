@@ -11,6 +11,16 @@ CURRENT BUGS
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
 
+* Point interpolation
+
+  Fails in parallel.
+
+  Test case:
+    cd examples/3d/hex8
+    pylith step19.cfg --nodes=1 # OK
+    pylith step19.cfg --nodes=2 # ERROR
+      [0]PETSC ERROR: Petsc has generated inconsistent data!
+      [0]PETSC ERROR: Invalid number of points located 9 should be 8! 
 
 ======================================================================
 CURRENT ISSUES/PRIORITIES
