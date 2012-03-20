@@ -64,14 +64,16 @@ public :
   /** Setup interpolator.
    *
    * @param mesh Domain mesh.
-   * @param points Array of coordinates for points [numPoints*spaceDim].
+   * @param points Array of dimensioned coordinates for points [numPoints*spaceDim].
    * @param numPoints Number of points.
    * @param spaceDim Spatial dimension for coordinates.
+   * @param normalizer Nondimensionalizer.
    */
   void setupInterpolator(topology::Mesh* mesh,
 			 const PylithScalar* points,
 			 const int numPoints,
-			 const int spaceDim);
+			 const int spaceDim,
+			 const spatialdata::units::Nondimensional& normalizer);
   
   /** Prepare for output.
    *

@@ -249,7 +249,15 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
   PylithScalar p2 =  upDir[0]*r1 - upDir[1]*r0;
   // Make unit vector
   mag = sqrt(p0*p0 + p1*p1 + p2*p2);
-  assert(mag > 0.0);
+  if (0.0 == mag) {
+    std::ostringstream msg;
+    msg << "Error computing orientation of cell face.\nUp direction ("
+	<< upDir[0] << ", " << upDir[1] << ", " << upDir[2] << ") "
+	<< " cannot be parallel to the face normal ("
+	<< r0 << ", " << r1 << ", " << r2 << ").\n"
+	<< "Adjust the up_dir parameter.";
+    throw std::runtime_error(msg.str());
+  } // if
   p0 /= mag;
   p1 /= mag;
   p2 /= mag;
