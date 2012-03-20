@@ -97,6 +97,9 @@ CURRENT ISSUES/PRIORITIES
 
 * Coupling
 
+  Use slip rate threshold for quasi-static -> dynamic transition.
+  Use velocity threshold for dynamic -> quasi-static transition.
+
 * Field split.
 
     Add flag to material [default is false] for creating null vector
