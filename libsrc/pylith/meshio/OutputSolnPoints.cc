@@ -90,20 +90,19 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(mesh);
   assert(points);
 
+  assert(!_interpolator); // Insure clean starting point
+
   _mesh = mesh;
 
-  // Create mesh without cells for points.
-  const int meshDim = 0;
-  delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim);
-  _pointsMesh->createSieveMesh(meshDim);
-  assert(_pointsMesh);
-
-  const spatialdata::geocoords::CoordSys* csMesh = mesh->coordsys();
-  assert(csMesh);
-  assert(csMesh->spaceDim() == spaceDim);
+  // Create nondimensionalized array of point locations
+  const int size = numPoints * spaceDim;
+  scalar_array pointsNondim(size);
+  for (int i=0; i < size; ++i) {
+    pointsNondim[i] = points[i] / normalizer.lengthScale();
+  } // for
 
 #if 1 // DEBUGGING
-  std::cout << "OUTPUT SOLN POINTS" << std::endl;
+  std::cout << "OUTPUT SOLN POINTS (dimensioned)" << std::endl;
   for (int i=0; i < numPoints; ++i) {
     for (int iDim=0; iDim < spaceDim; ++iDim) {
       std::cout << " " << points[i*spaceDim+iDim];
@@ -112,23 +111,9 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   } // for
 #endif
 
-  scalar_array pointsArray(points, numPoints*spaceDim);
-  int_array cells(numPoints);
-  for (int i=0; i < numPoints; ++i)
-    cells[i] = i;
-  const int numCells = numPoints;
-  const int numCorners = 1;
-  const bool interpolate = false;
-  // Build mesh creates mesh on proc 0
-  MeshBuilder::buildMesh(_pointsMesh,
-			 &pointsArray, numPoints, spaceDim,
-			 cells, numCells, numCorners, meshDim,
-			 interpolate);
-  _pointsMesh->coordsys(_mesh->coordsys());
-  _pointsMesh->nondimensionalize(normalizer);
-#if 1 // DEBUGGING
-  _pointsMesh->view("POINTS MESH");
-#endif
+  const spatialdata::geocoords::CoordSys* csMesh = mesh->coordsys();
+  assert(csMesh);
+  assert(csMesh->spaceDim() == spaceDim);
 
   // Setup interpolator object
   DM dm;
@@ -139,29 +124,66 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   err = DMMeshSetMesh(dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
   
-  const spatialdata::geocoords::CoordSys* cs = _pointsMesh->coordsys();
-  assert(cs);
-  assert(cs->spaceDim() == spaceDim);
+  err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
 
-  err = DMMeshInterpolationSetDim(dm, spaceDim, 
-				  _interpolator);CHECK_PETSC_ERROR(err);
-
-  assert(!_pointsMesh->sieveMesh().isNull());
-  assert(_pointsMesh->sieveMesh()->hasRealSection("coordinates"));
-  const ALE::Obj<topology::Mesh::RealSection>& coordinatesSection = _pointsMesh->sieveMesh()->getRealSection("coordinates");
-  assert(!coordinatesSection.isNull());
-  assert(0 == coordinatesSection->sizeWithBC() % spaceDim);
-  const int numPointsLocal = coordinatesSection->sizeWithBC() / spaceDim;
-  const PylithScalar* coordinates = (numPointsLocal) ? coordinatesSection->restrictSpace() : 0;
-  err = DMMeshInterpolationAddPoints(dm, numPointsLocal, (PetscReal*)coordinates, 
-				     _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)&pointsNondim[0], _interpolator);CHECK_PETSC_ERROR(err);
+  const bool pointsAllProcs = true;
+#if 0 // WAITING FOR MATT TO IMPLEMENT
+  err = DMMeshInterpolationSetUp(dm, _interpolator, pointsAllProcs);CHECK_PETSC_ERROR(err);
+#else
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
+#endif
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
-  CHECK_PETSC_ERROR(err);
+
+  // Create mesh corresponding to points.
+  const int meshDim = 0;
+  delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim);
+  _pointsMesh->createSieveMesh(meshDim);
+  assert(_pointsMesh);
+
+  const int numPointsLocal = _interpolator->n;
+  PylithScalar* pointsLocal = 0;
+  err = VecGetArray(_interpolator->coords, &pointsLocal);CHECK_PETSC_ERROR(err);
+  scalar_array pointsArray(numPointsLocal*spaceDim);
+  const int sizeLocal = numPointsLocal*spaceDim;
+  for (int i=0; i < sizeLocal; ++i) {
+    // Must scale by length scale because we gave interpolator nondimensioned coordinates
+    pointsArray[i] = pointsLocal[i]*normalizer.lengthScale();
+  } // for
+  int_array cells(numPointsLocal);
+  for (int i=0; i < numPointsLocal; ++i)
+    cells[i] = i;
+  const int numCells = numPointsLocal;
+  const int numCorners = 1;
+  const bool interpolate = false;
+  const bool isParallel = true;
+  MeshBuilder::buildMesh(_pointsMesh, &pointsArray, numPointsLocal, spaceDim,
+			 cells, numCells, numCorners, meshDim, interpolate, isParallel);
+  err = VecRestoreArray(_interpolator->coords, &pointsLocal);CHECK_PETSC_ERROR(err);
+
+  // Set coordinate system and create nondimensionalized coordinates
+  _pointsMesh->coordsys(_mesh->coordsys());
+  _pointsMesh->nondimensionalize(normalizer);
+
+  // Create empty overlaps. MATT - IS THIS OKAY?
+  assert(!_pointsMesh->sieveMesh().isNull());
+  ALE::Obj<SieveSubMesh::send_overlap_type> sendOverlap = _pointsMesh->sieveMesh()->getSendOverlap();
+  assert(!sendOverlap.isNull());
+  ALE::Obj<SieveSubMesh::recv_overlap_type> recvOverlap = _pointsMesh->sieveMesh()->getRecvOverlap();
+  assert(!recvOverlap.isNull());
+  SieveMesh::renumbering_type emptyRenumbering;
+  ALE::SetFromMap<SieveMesh::renumbering_type> emptyPoints(emptyRenumbering);  
+  ALE::OverlapBuilder<>::constructOverlap(emptyPoints, emptyRenumbering, sendOverlap, recvOverlap);
+  _pointsMesh->sieveMesh()->setCalculatedOverlap(true);
+
+#if 1 // DEBUGGING
+  _pointsMesh->view("POINTS MESH");
+#endif
 
   if (!_fields) {
     _fields = new topology::Fields<topology::Field<topology::Mesh> >(*_pointsMesh);
   } // if
+
 } // setupInterpolator
 
 
