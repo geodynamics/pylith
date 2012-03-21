@@ -45,11 +45,12 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 				       const int numCells,
 				       const int numCorners,
 				       const int meshDim,
-				       const bool interpolate)
+				       const bool interpolate,
+				       const bool isParallel)
 { // buildMesh
-  assert(0 != mesh);
+  assert(mesh);
 
-  assert(0 != coordinates);
+  assert(coordinates);
   MPI_Comm comm = mesh->comm();
   int dim = meshDim;
   int rank = 0;
@@ -87,7 +88,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   //logger.setDebug(1);
 
   logger.stagePush("MeshCreation");
-  if (0 == rank) {
+  if (0 == rank || isParallel) {
     assert(coordinates->size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
     if (!interpolate) {
@@ -149,11 +150,11 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       for(int c = 0; c < numCells+numVertices; ++c) {
         height->setConeSize(c, 1);
         depth->setConeSize(c, 1);
-      }
-      if (numCells+numVertices)
+      } // for
+      if (numCells+numVertices) {
 	height->setSupportSize(0, numCells+numVertices);
-      if (numCells+numVertices)
 	depth->setSupportSize(0, numCells+numVertices);
+      } // if
       height->allocate();
       depth->allocate();
 #endif
