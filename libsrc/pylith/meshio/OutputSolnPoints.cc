@@ -119,6 +119,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   const int numCells = numPoints;
   const int numCorners = 1;
   const bool interpolate = false;
+  // Build mesh creates mesh on proc 0
   MeshBuilder::buildMesh(_pointsMesh,
 			 &pointsArray, numPoints, spaceDim,
 			 cells, numCells, numCorners, meshDim,
@@ -149,8 +150,10 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(_pointsMesh->sieveMesh()->hasRealSection("coordinates"));
   const ALE::Obj<topology::Mesh::RealSection>& coordinatesSection = _pointsMesh->sieveMesh()->getRealSection("coordinates");
   assert(!coordinatesSection.isNull());
-  const PylithScalar* coordinates = coordinatesSection->restrictSpace();
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)coordinates, 
+  assert(0 == coordinatesSection->sizeWithBC() % spaceDim);
+  const int numPointsLocal = coordinatesSection->sizeWithBC() / spaceDim;
+  const PylithScalar* coordinates = (numPointsLocal) ? coordinatesSection->restrictSpace() : 0;
+  err = DMMeshInterpolationAddPoints(dm, numPointsLocal, (PetscReal*)coordinates, 
 				     _interpolator);CHECK_PETSC_ERROR(err);
   err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
