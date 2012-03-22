@@ -197,6 +197,7 @@ public :
 private :
 
   ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
+  DM _newMesh;
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   MPI_Comm _comm; ///< MPI communicator for mesh.
   bool _debug; ///< Debugging flag for mesh.
