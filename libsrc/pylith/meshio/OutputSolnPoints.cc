@@ -127,12 +127,8 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
 
   err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)&pointsNondim[0], _interpolator);CHECK_PETSC_ERROR(err);
-  const bool pointsAllProcs = true;
-#if 0 // WAITING FOR MATT TO IMPLEMENT
+  const PetscBool pointsAllProcs = PETSC_TRUE;
   err = DMMeshInterpolationSetUp(dm, _interpolator, pointsAllProcs);CHECK_PETSC_ERROR(err);
-#else
-  err = DMMeshInterpolationSetUp(dm, _interpolator);CHECK_PETSC_ERROR(err);
-#endif
   err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
 
   // Create mesh corresponding to points.
