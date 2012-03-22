@@ -248,7 +248,7 @@ pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(field_type& fie
 	throw std::logic_error("Unknown field type");
       } // switch
     
-    if (0 == _fields)
+    if (!_fields)
       _fields = new topology::Fields<field_type>(fieldIn.mesh());
     
     if (!_fields->hasField(fieldName.c_str())) {

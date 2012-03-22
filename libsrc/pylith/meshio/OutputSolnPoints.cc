@@ -255,7 +255,7 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
 
   topology::Field<topology::Mesh>& fieldInterp = 
     _fields->get("buffer (interpolated)");
-  if (vertices->size()*fiberDim != fieldInterp.sectionSize()) {
+  if (fieldInterp.section().isNull() || vertices->size()*fiberDim != fieldInterp.sectionSize()) {
     fieldInterp.newSection(vertices, fiberDim);
     fieldInterp.label(field.label());
     fieldInterp.allocate();
