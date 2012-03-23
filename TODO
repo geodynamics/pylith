@@ -13,18 +13,20 @@ CURRENT BUGS
 
 * Point interpolation
 
-  Fails in parallel.
+  Fails in parallel when points are on boundary between procs.
 
   Test case:
     cd examples/3d/hex8
     pylith step19.cfg --nodes=1 # OK
     pylith step19.cfg --nodes=2 # ERROR
-      [0]PETSC ERROR: Petsc has generated inconsistent data!
-      [0]PETSC ERROR: Invalid number of points located 9 should be 8! 
 
 ======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
+
+* Time steppers
+
+  Add initial start time (default is 0.0).
 
 * Manual
 
@@ -37,6 +39,10 @@ CURRENT ISSUES/PRIORITIES
       * Accuracy of interpolation?
   - Examples/Tutorials
     + Table with concepts/features
+  - Linear prestep
+    + Turned on by default
+    + Static solution is linear prestep
+    + Inelastic solution requires increment in driving forces
 
 * configure
   
@@ -58,8 +64,6 @@ CURRENT ISSUES/PRIORITIES
 
 * Cleanup
 
-    Add elasticPrestep() to Formulation (called from Problem)
-    Remove solnIncr, keep setField()
 
 ======================================================================
 1.8.0
