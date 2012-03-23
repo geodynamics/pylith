@@ -47,7 +47,6 @@ class TimeStepAdapt(TimeStep):
     ## Python object for managing TimeStepAdapt facilities and properties.
     ##
     ## \b Properties
-    ## @li \b total_time Time duration for simulation.
     ## @li \b max_dt Maximum time step.
     ## @li \b adapt_skip Number of time steps to skip between adjusting value.
     ## @li \b stability_factor "Safety factor" for stable time step.
@@ -58,10 +57,6 @@ class TimeStepAdapt(TimeStep):
     import pyre.inventory
 
     from pyre.units.time import second
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                          validator=pyre.inventory.greaterEqual(0.0*second))
-    totalTime.meta['tip'] = "Time duration for simulation."
-
     maxDt = pyre.inventory.dimensional("max_dt", default=1.0*second,
                                     validator=pyre.inventory.greater(0.0*second))
     maxDt.meta['tip'] = "Maximum time step permitted."
@@ -138,7 +133,6 @@ class TimeStepAdapt(TimeStep):
     Set members based using inventory.
     """
     TimeStep._configure(self)
-    self.totalTime = self.inventory.totalTime
     self.maxDt = self.inventory.maxDt
     self.adaptSkip = self.inventory.adaptSkip
     self.stabilityFactor = self.inventory.stabilityFactor
