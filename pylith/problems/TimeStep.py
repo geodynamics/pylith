@@ -33,6 +33,34 @@ class TimeStep(PetscComponent):
   Factory: time_step.
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(PetscComponent.Inventory):
+    """
+    Python object for managing TimeStepUniform facilities and properties.
+    """
+
+    ## @class Inventory
+    ## Python abstract base class for managing TimeStep facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b total_time Time duration for simulation.
+    ## @li \b start_time Starting time for simulation.
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    from pyre.units.time import second
+    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
+                          validator=pyre.inventory.greaterEqual(0.0*second))
+    totalTime.meta['tip'] = "Time duration for simulation."
+
+    startTime = pyre.inventory.dimensional("start_time", default=0.0*second)
+    startTime.meta['tip'] = "Time duration for simulation."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="timestep"):
@@ -43,8 +71,10 @@ class TimeStep(PetscComponent):
     from pyre.units.time import second
     self.timeScale = 1.0*second
     self.totalTime = 0.0*second
+    self.startTime = 0.0*second
     self.dt = 0.0*second
     self.totalTimeN = 0.0 # Nondimensionalized total time
+    self.startTimeN = 0.0 # Nondimensionalized start time
     self.dtN = 0.0 # Nondimenionalized time step
     return
 
@@ -82,6 +112,7 @@ class TimeStep(PetscComponent):
     # Nondimensionalize time scales
     timeScale = normalizer.timeScale()
     self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
+    self.startTimeN = normalizer.nondimensionalize(self.startTime, timeScale)
     self.dtN = normalizer.nondimensionalize(self.dt, timeScale)
     self.timeScale = timeScale
 
@@ -119,6 +150,8 @@ class TimeStep(PetscComponent):
     Set members based using inventory.
     """
     PetscComponent._configure(self)
+    self.totalTime = self.inventory.totalTime
+    self.startTime = self.inventory.startTime
     return
 
 
