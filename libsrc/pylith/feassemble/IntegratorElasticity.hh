@@ -82,13 +82,6 @@ public :
    */
   bool needNewJacobian(void);
 
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  void useSolnIncr(const bool flag);
-
   /** Initialize integrator.
    *
    * @param mesh Finite-element mesh.

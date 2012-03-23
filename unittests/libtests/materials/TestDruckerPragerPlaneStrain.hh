@@ -58,7 +58,7 @@ class pylith::materials::TestDruckerPragerPlaneStrain : public TestElasticMateri
 
   // Need to test Drucker-Prager elastoplastic specific behavior.
   CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testUseElasticBehavior );
+  CPPUNIT_TEST( testUseLinearBehavior );
   CPPUNIT_TEST( testAllowTensileYield );
   CPPUNIT_TEST( testHasStateVars );
 
@@ -83,8 +83,8 @@ public :
   /// Test timeStep()
   void testTimeStep(void);
 
-  /// Test useElasticBehavior()
-  void testUseElasticBehavior(void);
+  /// Test useLinearBehavior()
+  void testUseLinearBehavior(void);
 
   /// Test allowTensileYield()
   void testAllowTensileYield(void);

@@ -44,14 +44,6 @@ pylith::feassemble::Integrator<quadrature_type>::isJacobianSymmetric(void) const
   return _isJacobianSymmetric;
 } // needsVelocity
 
-// Set flag for setting constraints for total field solution or
-template<typename quadrature_type>
-inline
-void
-pylith::feassemble::Integrator<quadrature_type>::useSolnIncr(const bool flag) {
-  _useSolnIncr = flag;
-} // useSolnIncr
-
 // Initialize integrator.
 template<typename quadrature_type>
 inline

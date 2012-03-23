@@ -86,7 +86,7 @@ namespace pylith {
        * @param flag True to use elastic, false to use inelastic.
        */
       virtual
-      void useElasticBehavior(const bool flag);
+      void useLinearBehavior(const bool flag);
 
       /** Get initial stress/strain fields.
        *

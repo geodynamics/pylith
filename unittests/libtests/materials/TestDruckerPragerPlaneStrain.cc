@@ -67,13 +67,13 @@ pylith::materials::TestDruckerPragerPlaneStrain::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test useElasticBehavior()
+// Test useLinearBehavior()
 void
-pylith::materials::TestDruckerPragerPlaneStrain::testUseElasticBehavior(void)
-{ // testUseElasticBehavior
+pylith::materials::TestDruckerPragerPlaneStrain::testUseLinearBehavior(void)
+{ // testUseLinearBehavior
   DruckerPragerPlaneStrain material;
 
-  material.useElasticBehavior(true);
+  material.useLinearBehavior(true);
   // Some compilers/operating systems (cygwin) don't allow comparing
   // pointers. Use first test to determine if we can compare pointers.
   if (&pylith::materials::DruckerPragerPlaneStrain::_calcStressElastic == 
@@ -88,7 +88,7 @@ pylith::materials::TestDruckerPragerPlaneStrain::testUseElasticBehavior(void)
       &pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastic ==
       material._updateStateVarsFn);
 
-    material.useElasticBehavior(false);
+    material.useLinearBehavior(false);
     CPPUNIT_ASSERT(
       &pylith::materials::DruckerPragerPlaneStrain::_calcStressElastoplastic ==
       material._calcStressFn);
@@ -99,7 +99,7 @@ pylith::materials::TestDruckerPragerPlaneStrain::testUseElasticBehavior(void)
       &pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic ==
       material._updateStateVarsFn);
   } // if
-} // testUseElasticBehavior
+} // testUseLinearBehavior
 
 // ----------------------------------------------------------------------
 // Test allowTensileYield()
@@ -128,7 +128,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_calcStressElastic(void)
 { // test_calcStressElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_calcStress();
 } // test_calcStressElastic
@@ -139,7 +139,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_calcElasticConstsElastic(void)
 { // test_calcElasticConstsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_calcElasticConsts();
 } // test_calcElasticConstsElastic
@@ -150,7 +150,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_updateStateVarsElastic(void)
 { // test_updateStateVarsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_updateStateVars();
 } // test_updateStateVarsElastic
@@ -161,7 +161,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_calcStressTimeDep(void)
 { // test_calcStressTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new DruckerPragerPlaneStrainTimeDepData();
 
@@ -176,7 +176,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_calcElasticConstsTimeDep(void)
 { // test_calcElasticConstsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new DruckerPragerPlaneStrainTimeDepData();
 
@@ -191,7 +191,7 @@ void
 pylith::materials::TestDruckerPragerPlaneStrain::test_updateStateVarsTimeDep(void)
 { // test_updateStateVarsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new DruckerPragerPlaneStrainTimeDepData();
 

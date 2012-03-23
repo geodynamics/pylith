@@ -95,18 +95,6 @@ pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const PylithScalar
 } // normViscosity
 
 // ----------------------------------------------------------------------
-// Set flag for setting constraints for total field solution or
-// incremental field solution.
-void
-pylith::feassemble::ElasticityExplicitLgDeform::useSolnIncr(const bool flag)
-{ // useSolnIncr
-  if (!flag)
-    throw std::logic_error("Non-incremental solution not supported for "
-			   "explicit time integration of elasticity "
-			   "equation.");
-} // useSolnIncr
-
-// ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
 pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(

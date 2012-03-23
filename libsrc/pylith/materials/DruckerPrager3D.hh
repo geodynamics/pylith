@@ -83,7 +83,7 @@ public :
    *
    * @param flag True to use elastic, false to use inelastic.
    */
-  void useElasticBehavior(const bool flag);
+  void useLinearBehavior(const bool flag);
 
 
   // PROTECTED METHODS //////////////////////////////////////////////////

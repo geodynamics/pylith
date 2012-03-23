@@ -199,7 +199,7 @@ pylith::materials::GenMaxwellIsotropic3D::GenMaxwellIsotropic3D(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)  
 { // constructor
-  useElasticBehavior(true);
+  useLinearBehavior(false);
   _viscousStrain.resize(_GenMaxwellIsotropic3D::numMaxwellModels*_tensorSize);
 } // constructor
 
@@ -212,8 +212,8 @@ pylith::materials::GenMaxwellIsotropic3D::~GenMaxwellIsotropic3D(void)
 // ----------------------------------------------------------------------
 // Set whether elastic or inelastic constitutive relations are used.
 void
-pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag)
-{ // useElasticBehavior
+pylith::materials::GenMaxwellIsotropic3D::useLinearBehavior(const bool flag)
+{ // useLinearBehavior
   if (flag) {
     _calcStressFn = 
       &pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic;
@@ -230,7 +230,7 @@ pylith::materials::GenMaxwellIsotropic3D::useElasticBehavior(const bool flag)
     _updateStateVarsFn = 
       &pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsViscoelastic;
   } // if/else
-} // useElasticBehavior
+} // useLinearBehavior
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.

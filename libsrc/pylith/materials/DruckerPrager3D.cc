@@ -159,7 +159,7 @@ pylith::materials::DruckerPrager3D::DruckerPrager3D(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useLinearBehavior(false);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -187,8 +187,8 @@ pylith::materials::DruckerPrager3D::fitMohrCoulomb(FitMohrCoulombEnum value)
 // ----------------------------------------------------------------------
 // Set whether elastic or inelastic constitutive relations are used.
 void
-pylith::materials::DruckerPrager3D::useElasticBehavior(const bool flag)
-{ // useElasticBehavior
+pylith::materials::DruckerPrager3D::useLinearBehavior(const bool flag)
+{ // useLinearBehavior
   if (flag) {
     _calcStressFn = 
       &pylith::materials::DruckerPrager3D::_calcStressElastic;
@@ -205,7 +205,7 @@ pylith::materials::DruckerPrager3D::useElasticBehavior(const bool flag)
     _updateStateVarsFn = 
       &pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic;
   } // if/else
-} // useElasticBehavior
+} // useLinearBehavior
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
