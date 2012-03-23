@@ -43,6 +43,7 @@ CURRENT ISSUES/PRIORITIES
     + Turned on by default
     + Static solution is linear prestep
     + Inelastic solution requires increment in driving forces
+  - User specified start time
 
 * configure
   
