@@ -137,28 +137,6 @@ pylith::feassemble::TestElasticityExplicitTet4::testNeedNewJacobian(void)
 } // testNeedNewJacobian
 
 // ----------------------------------------------------------------------
-// Test useSolnIncr().
-void
-pylith::feassemble::TestElasticityExplicitTet4::testUseSolnIncr(void)
-{ // testUseSolnIncr
-  ElasticityExplicitTet4 integrator;
-
-  materials::ElasticIsotropic3D material;
-  integrator.material(&material);
-  CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
-  try {
-    integrator.useSolnIncr(false);
-
-    // Should have thrown exception, so don't make it here.
-    CPPUNIT_ASSERT(false);
-  } catch (const std::logic_error& err) {
-    // Expect logic error so don't do anything.
-  } catch (...) {
-    CPPUNIT_ASSERT(false);
-  } // try/catch
-} // testUseSolnIncr
-
-// ----------------------------------------------------------------------
 // Test initialize().
 void 
 pylith::feassemble::TestElasticityExplicitTet4::testInitialize(void)

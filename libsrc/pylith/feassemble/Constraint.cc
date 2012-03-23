@@ -25,8 +25,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::Constraint::Constraint(void) :
-  _normalizer(new spatialdata::units::Nondimensional),
-  _useSolnIncr(false)
+  _normalizer(new spatialdata::units::Nondimensional)
 { // constructor
 } // constructor
 

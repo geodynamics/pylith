@@ -98,15 +98,6 @@ class TestDirichletBoundary(unittest.TestCase):
     return
 
 
-  def test_useSolnIncr(self):
-    """
-    Test useSolnIncr().
-    """
-    (mesh, bc, field) = self._initialize()
-    bc.useSolnIncr(True)
-    return
-
-
   def test_setField(self):
     """
     Test setField().

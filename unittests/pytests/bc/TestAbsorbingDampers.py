@@ -94,15 +94,6 @@ class TestAbsorbingDampers(unittest.TestCase):
     return
 
   
-  def test_useSolnIncr(self):
-    """
-    Test useSolnIncr().
-    """
-    (mesh, bc, fields) = self._initialize()
-    bc.useSolnIncr(True)
-    return
-
-
   def test_integrateResidual(self):
     """
     Test integrateResidual().

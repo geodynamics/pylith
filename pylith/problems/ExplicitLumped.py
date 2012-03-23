@@ -150,12 +150,6 @@ class ExplicitLumped(Explicit, ModuleExplicit):
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    # Solve for increment in displacement field.
-    for constraint in self.constraints:
-      constraint.useSolnIncr(True)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.useSolnIncr(True)
-
     logger.stagePop()
     logger.setDebug(0)
     self._eventLogger.eventEnd(logEvent)

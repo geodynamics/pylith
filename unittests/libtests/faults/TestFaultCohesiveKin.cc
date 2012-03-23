@@ -119,17 +119,6 @@ pylith::faults::TestFaultCohesiveKin::testNeedNewJacobian(void)
 } // testNeedNewJacobian
 
 // ----------------------------------------------------------------------
-/// Test useSolnIncr()
-void
-pylith::faults::TestFaultCohesiveKin::testUseSolnIncr(void)
-{ // testUseSolnIncr
-  FaultCohesiveKin fault;
-  CPPUNIT_ASSERT_EQUAL(false, fault._useSolnIncr);
-  fault.useSolnIncr(true);
-  CPPUNIT_ASSERT_EQUAL(true, fault._useSolnIncr);
-} // testUseSolnIncr
-
-// ----------------------------------------------------------------------
 // Test useLagrangeConstraints().
 void
 pylith::faults::TestFaultCohesiveKin::testUseLagrangeConstraints(void)
@@ -285,7 +274,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   fault.timeStep(dt);
 
   { // Integrate residual with disp (as opposed to disp increment).
-    fault.useSolnIncr(false);
     fault.integrateResidual(residual, t, &fields);
 
     //residual.view("RESIDUAL"); // DEBUGGING
@@ -316,7 +304,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 
   residual.zero();
   { // Integrate residual with disp increment.
-    fault.useSolnIncr(true);
     fault.integrateResidual(residual, t, &fields);
 
     //residual.view("RESIDUAL"); // DEBUGGING

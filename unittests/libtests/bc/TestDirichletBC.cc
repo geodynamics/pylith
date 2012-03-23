@@ -399,8 +399,7 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   topology::Mesh mesh;
   DirichletBC bc;
   _initialize(&mesh, &bc);
-  CPPUNIT_ASSERT(0 != _data);
-  bc.useSolnIncr(true);
+  CPPUNIT_ASSERT(_data);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());

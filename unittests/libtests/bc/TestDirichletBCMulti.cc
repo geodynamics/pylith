@@ -214,10 +214,7 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   DirichletBC bcB;
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
-  CPPUNIT_ASSERT(0 != _data);
-  bcA.useSolnIncr(true);
-  bcB.useSolnIncr(true);
-  bcC.useSolnIncr(true);
+  CPPUNIT_ASSERT(_data);
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());

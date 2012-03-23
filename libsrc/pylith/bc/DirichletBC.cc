@@ -243,8 +243,6 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 				      const PylithScalar t1,
 				      const topology::Field<topology::Mesh>& field)
 { // setFieldIncr
-  assert(_useSolnIncr);
-
   const int numFixedDOF = _bcDOF.size();
   if (0 == numFixedDOF)
     return;

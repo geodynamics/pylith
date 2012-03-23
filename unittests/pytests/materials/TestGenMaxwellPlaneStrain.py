@@ -46,11 +46,11 @@ class TestGenMaxwellPlaneStrain(unittest.TestCase):
     return
 
 
-  def test_useElasticBehavior(self):
+  def test_useLinearBehavior(self):
     """
-    Test useElasticBehavior().
+    Test useLinearBehavior().
     """
-    self.material.useElasticBehavior(False)
+    self.material.useLinearBehavior(False)
     return
 
 

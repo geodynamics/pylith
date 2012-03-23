@@ -155,12 +155,6 @@ class Explicit(Formulation, ModuleExplicit):
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    # Solve for increment in displacement field.
-    for constraint in self.constraints:
-      constraint.useSolnIncr(True)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.useSolnIncr(True)
-
     logger.stagePop()
     logger.setDebug(0)
     self._eventLogger.eventEnd(logEvent)
@@ -245,6 +239,31 @@ class Explicit(Formulation, ModuleExplicit):
     Formulation.poststep(self, t, dt)
 
     self._eventLogger.eventEnd(logEvent)    
+    return
+
+
+  def prestepLinear(self, t, dt):
+    """
+    Hook for doing stuff before advancing time step.
+    """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    
+    if 0 == comm.rank:
+      self._info.log("Setting constraints.")
+    disp = self.fields.get("dispIncr(t->t+dt)")
+    disp.zero()
+    for constraint in self.constraints:
+      constraint.setField(t+dt, disp)
+
+    needNewJacobian = False
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.timeStep(dt)
+      if integrator.needNewJacobian():
+        needNewJacobian = True
+    if needNewJacobian:
+      self._reformJacobian(t, dt)
+
     return
 
 

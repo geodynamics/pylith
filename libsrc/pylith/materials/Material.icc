@@ -113,6 +113,12 @@ pylith::materials::Material::isJacobianSymmetric(void) const {
   return _isJacobianSymmetric;
 } // isJacobianSymmetric
 
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::Material::useLinearBehavior(const bool flag) {
+} // useLinearBehavior
+
 // Compute initial state variables from values in spatial database.
 inline
 void

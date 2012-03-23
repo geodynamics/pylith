@@ -63,13 +63,13 @@ pylith::materials::TestPowerLaw3D::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test useElasticBehavior()
+// Test useLinearBehavior()
 void
-pylith::materials::TestPowerLaw3D::testUseElasticBehavior(void)
-{ // testUseElasticBehavior
+pylith::materials::TestPowerLaw3D::testUseLinearBehavior(void)
+{ // testUseLinearBehavior
   PowerLaw3D material;
 
-  material.useElasticBehavior(true);
+  material.useLinearBehavior(true);
   // Some compilers/operating systems (cygwin) don't allow comparing
   // pointers. Use first test to determine if we can compare pointers.
   if (&pylith::materials::PowerLaw3D::_calcStressElastic == 
@@ -81,7 +81,7 @@ pylith::materials::TestPowerLaw3D::testUseElasticBehavior(void)
     CPPUNIT_ASSERT(&pylith::materials::PowerLaw3D::_updateStateVarsElastic ==
 		   material._updateStateVarsFn);
 
-    material.useElasticBehavior(false);
+    material.useLinearBehavior(false);
     CPPUNIT_ASSERT(&pylith::materials::PowerLaw3D::_calcStressViscoelastic ==
 		   material._calcStressFn);
     CPPUNIT_ASSERT(&pylith::materials::PowerLaw3D::_calcElasticConstsViscoelastic ==
@@ -89,7 +89,7 @@ pylith::materials::TestPowerLaw3D::testUseElasticBehavior(void)
     CPPUNIT_ASSERT(&pylith::materials::PowerLaw3D::_updateStateVarsViscoelastic ==
 		   material._updateStateVarsFn);
   } // if
-} // testUseElasticBehavior
+} // testUseLinearBehavior
 
 // ----------------------------------------------------------------------
 // Test usesHasStateVars()
@@ -106,7 +106,7 @@ void
 pylith::materials::TestPowerLaw3D::test_calcStressElastic(void)
 { // test_calcStressElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_calcStress();
 } // test_calcStressElastic
@@ -117,7 +117,7 @@ void
 pylith::materials::TestPowerLaw3D::test_calcElasticConstsElastic(void)
 { // test_calcElasticConstsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_calcElasticConsts();
 } // test_calcElasticConstsElastic
@@ -128,7 +128,7 @@ void
 pylith::materials::TestPowerLaw3D::test_updateStateVarsElastic(void)
 { // test_updateStateVarsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(true);
+  _matElastic->useLinearBehavior(true);
 
   test_updateStateVars();
 } // test_updateStateVarsElastic
@@ -139,7 +139,7 @@ void
 pylith::materials::TestPowerLaw3D::test_calcStressTimeDep(void)
 { // test_calcStressTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new PowerLaw3DTimeDepData();
 
@@ -154,7 +154,7 @@ void
 pylith::materials::TestPowerLaw3D::test_calcElasticConstsTimeDep(void)
 { // test_calcElasticConstsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new PowerLaw3DTimeDepData();
 
@@ -169,7 +169,7 @@ void
 pylith::materials::TestPowerLaw3D::test_updateStateVarsTimeDep(void)
 { // test_updateStateVarsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useElasticBehavior(false);
+  _matElastic->useLinearBehavior(false);
 
   delete _dataElastic; _dataElastic = new PowerLaw3DTimeDepData();
 

@@ -166,6 +166,13 @@ public :
   /// current state.
   void resetNeedNewJacobian(void);
 
+  /** Set whether elastic or inelastic constitutive relations are used.
+   *
+   * @param flag True to use elastic, false to use inelastic.
+   */
+  virtual
+  void useLinearBehavior(const bool flag);
+
   /** Check whether material has a field as a property.
    *
    * @param name Name of field.

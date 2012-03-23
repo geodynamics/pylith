@@ -52,6 +52,9 @@ class TimeDependent(Problem):
 
     import pyre.inventory
 
+    linearPrestep = pyre.inventory.bool("linear_prestep", default=True)
+    linearPrestep.meta['tip'] = "Include a static calculation with linear behavior before time stepping."
+
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
                                           family="pde_formulation",
@@ -128,6 +131,42 @@ class TimeDependent(Problem):
       self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
+    # Linear prestep
+    if self.linearPrestep:
+      if 0 == comm.rank:
+        self._info.log("Preparing for prestep with linear behavior.")
+      self._eventLogger.stagePush("Prestep")
+
+      t = self.formulation.getStartTime()
+      dt = self.formulation.getTimeStep()
+      t -= dt
+
+      # Limit material behavior to linear regime
+      for material in self.materials.components():
+        material.useLinearBehavior(True)
+
+      self.formulation.prestepLinear(t, dt)
+      self._eventLogger.stagePop()
+
+      if 0 == comm.rank:
+        self._info.log("Computing prestep with linear behavior.")
+      self._eventLogger.stagePush("Step")
+      self.formulation.step(t, dt)
+      self._eventLogger.stagePop()
+
+      if 0 == comm.rank:
+        self._info.log("Finishing prestep with linear behavior.")
+      self._eventLogger.stagePush("Poststep")
+      self.formulation.poststep(t, dt)
+      self._eventLogger.stagePop()
+
+
+    # Allow nonlinear behavior
+    for material in self.materials.components():
+      material.useLinearBehavior(False)
+
+
+    # Normal time loop
     t = self.formulation.getStartTime()
     timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
@@ -197,6 +236,7 @@ class TimeDependent(Problem):
     Set members based using inventory.
     """
     Problem._configure(self)
+    self.linearPrestep = self.inventory.linearPrestep
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return
