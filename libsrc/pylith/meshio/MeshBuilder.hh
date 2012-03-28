@@ -60,6 +60,9 @@ public :
    * @param numCells Number of cells.
    * @param numCorners Number of vertices per cell.
    * @param meshDim Dimension of cells in mesh.
+   * @param interpolate Create interpolated mesh.
+   * @param isParallel Create parallel mesh if true, otherwise only build 
+   *   mesh on proc 0.
    */
   static
   void buildMesh(topology::Mesh* mesh,
@@ -70,7 +73,8 @@ public :
 		 const int numCells,
 		 const int numCorners,
 		 const int meshDim,
-		 const bool interpolate);
+		 const bool interpolate,
+		 const bool isParallel =false);
 
   /** Build fault mesh topology.
    *
