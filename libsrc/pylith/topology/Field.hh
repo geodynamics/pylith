@@ -414,6 +414,8 @@ private :
   Metadata _metadata;
   const mesh_type& _mesh; ///< Mesh associated with section.
   ALE::Obj<section_type> _section; ///< Real section with data.
+  PetscSection _newSection;
+  Vec          _newLocalVec;
   scatter_map_type _scatters; ///< Collection of scatters.
 
 
