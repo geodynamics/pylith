@@ -233,24 +233,11 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     } // if
     int i = 0;
 
-#ifdef IMESH_NEW_LABELS
-    labelMaterials->setChart(sieveMesh->getSieve()->getChart());
-    for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
-	e_iter != cellsEnd;
-	++e_iter) {
-      labelMaterials->setConeSize(*e_iter, 1);
-    }
-    if (cells->size()) {labelMaterials->setSupportSize(0, cells->size());}
-    labelMaterials->allocate();
-#endif
     for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
 	e_iter != cellsEnd;
 	++e_iter) {
       sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
     }
-#ifdef IMESH_NEW_LABELS
-    labelMaterials->recalculateLabel();
-#endif
   } // if
   logger.stagePop();
   ///logger.setDebug(0);

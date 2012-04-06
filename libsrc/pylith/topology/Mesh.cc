@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -32,6 +33,7 @@
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::Mesh::Mesh(void) :
+  _newMesh(PETSC_NULL),
   _coordsys(0),
   _comm(PETSC_COMM_WORLD),
   _debug(false)
@@ -43,10 +45,12 @@ pylith::topology::Mesh::Mesh(void) :
 pylith::topology::Mesh::Mesh(const int dim,
 			     const MPI_Comm& comm) :
   _mesh(new SieveMesh(comm, dim)),
+  _newMesh(PETSC_NULL),
   _coordsys(0),
   _comm(comm),
   _debug(false)
 { // constructor
+  createDMMesh(dim);
   _mesh->setName("domain");
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
@@ -66,6 +70,7 @@ pylith::topology::Mesh::deallocate(void)
 { // deallocate
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
+  PetscErrorCode err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -80,6 +85,19 @@ pylith::topology::Mesh::createSieveMesh(const int dim)
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
 } // createSieveMesh
+  
+// ----------------------------------------------------------------------
+// Create DMComplex mesh.
+void
+pylith::topology::Mesh::createDMMesh(const int dim)
+{ // createDMMesh
+  PetscErrorCode err;
+  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMCreate(_comm, &_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMSetType(_newMesh, DMCOMPLEX);CHECK_PETSC_ERROR(err);
+  err = DMComplexSetDimension(_newMesh, dim);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
+} // createDMMesh
 
 // ----------------------------------------------------------------------
 // Set coordinate system.

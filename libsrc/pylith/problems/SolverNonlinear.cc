@@ -114,7 +114,7 @@ pylith::problems::SolverNonlinear::initialize(
   PetscSNESLineSearch ls;
 
   err = SNESGetSNESLineSearch(_snes, &ls); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSetType(ls, SNESSHELL); CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSetType(ls, SNESLINESEARCHSHELL); CHECK_PETSC_ERROR(err);
   err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
