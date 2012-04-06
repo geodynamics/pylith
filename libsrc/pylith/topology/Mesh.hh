@@ -106,6 +106,18 @@ public :
    * @returns Sieve mesh.
    */
   ALE::Obj<SieveMesh>& sieveMesh(void);
+  
+  /** Create DMComplex mesh.
+   *
+   * @param dim Dimension associated with mesh cells.
+   */
+  void createDMMesh(const int dim=3); 
+
+  /** Get DMComplex mesh.
+   *
+   * @returns DMComplex mesh.
+   */
+  DM dmMesh(void);
 
   /** Set coordinate system.
    *

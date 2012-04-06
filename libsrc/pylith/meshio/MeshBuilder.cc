@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -54,6 +55,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   MPI_Comm comm = mesh->comm();
   int dim = meshDim;
   int rank = 0;
+  PetscErrorCode err;
 
   { // Check to make sure every vertex is in at least one cell.
     // This is required by Sieve
@@ -77,6 +79,10 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   mesh->createSieveMesh(dim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  /* DMComplex */
+  mesh->createDMMesh(dim);
+  DM complexMesh = mesh->dmMesh();
+  assert(complexMesh);
 
   ALE::Obj<SieveMesh::sieve_type> sieve = 
     new SieveMesh::sieve_type(mesh->comm());
@@ -117,6 +123,22 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       delete[] coneO; coneO = 0;
       // Symmetrize to fill up supports
       sieve->symmetrize();
+      /* DMComplex */
+      err = DMComplexSetChart(complexMesh, 0, numCells+numVertices);CHECK_PETSC_ERROR(err);
+      for(PetscInt c = 0; c < numCells; ++c) {
+        err = DMComplexSetConeSize(complexMesh, c, numCorners);CHECK_PETSC_ERROR(err);
+      }
+      err = DMSetUp(complexMesh);CHECK_PETSC_ERROR(err);
+      PetscInt *cone2 = new PetscInt[numCorners];
+      for(PetscInt c = 0; c < numCells; ++c) {
+        for(PetscInt v = 0; v < numCorners; ++v) {
+          cone2[v] = cells[c*numCorners+v]+numCells;
+        }
+        err = DMComplexSetCone(complexMesh, c, cone2);CHECK_PETSC_ERROR(err);
+      } // for
+      delete [] cone2; cone2 = 0;
+      err = DMComplexSymmetrize(complexMesh);CHECK_PETSC_ERROR(err);
+      err = DMComplexStratify(complexMesh);CHECK_PETSC_ERROR(err);
     } else {
       // Same old thing
       ALE::Obj<SieveFlexMesh::sieve_type> s =
@@ -144,20 +166,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       const ALE::Obj<SieveMesh::label_type>& depth =
 	sieveMesh->createLabel("depth");
 
-#ifdef IMESH_NEW_LABELS
-      height->setChart(sieveMesh->getSieve()->getChart());
-      depth->setChart(sieveMesh->getSieve()->getChart());
-      for(int c = 0; c < numCells+numVertices; ++c) {
-        height->setConeSize(c, 1);
-        depth->setConeSize(c, 1);
-      } // for
-      if (numCells+numVertices) {
-	height->setSupportSize(0, numCells+numVertices);
-	depth->setSupportSize(0, numCells+numVertices);
-      } // if
-      height->allocate();
-      depth->allocate();
-#endif
       for(int c = 0; c < numCells; ++c) {
         height->setCone(0, c);
         depth->setCone(1, c);
@@ -166,10 +174,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         height->setCone(1, v);
         depth->setCone(0, v);
       } // for
-#ifdef IMESH_NEW_LABELS
-      height->recalculateLabel();
-      depth->recalculateLabel();
-#endif
       sieveMesh->setHeight(1);
       sieveMesh->setDepth(1);
     } else {
@@ -188,6 +192,32 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   logger.stagePush("MeshCoordinates");
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 &(*coordinates)[0]);
+  /* DMComplex */
+  PetscSection coordSection;
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = DMComplexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(complexMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, numCells, numCells+numVertices);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = numCells; v < numCells+numVertices; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = 0; v < numVertices; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v+numCells, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = (*coordinates)[v*spaceDim+d];
+    }
+  }
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   logger.stagePop(); // Coordinates
 
   sieveMesh->getFactory()->clear();
