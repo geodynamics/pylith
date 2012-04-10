@@ -176,10 +176,14 @@ class OutputManager(PetscComponent):
     logEvent = "%sopen" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    nsteps = self._estimateNumSteps(totalTime, numTimeSteps)
+    if len(self.vertexInfoFields) > 0 or \
+          len(self.cellInfoFields) > 0 or \
+          len(self.vertexDataFields) > 0 or \
+          len(self.cellDataFields) > 0:
+      nsteps = self._estimateNumSteps(totalTime, numTimeSteps)
 
-    (mesh, label, labelId) = self.dataProvider.getDataMesh()
-    self._open(mesh, nsteps, label, labelId)
+      (mesh, label, labelId) = self.dataProvider.getDataMesh()
+      self._open(mesh, nsteps, label, labelId)
 
     self._eventLogger.eventEnd(logEvent)    
     return
@@ -192,7 +196,11 @@ class OutputManager(PetscComponent):
     logEvent = "%sclose" % self._loggingPrefix
     self._eventLogger.eventBegin(logEvent)    
 
-    self._close()
+    if len(self.vertexInfoFields) > 0 or \
+          len(self.cellInfoFields) > 0 or \
+          len(self.vertexDataFields) > 0 or \
+          len(self.cellDataFields) > 0:
+      self._close()
 
     self._eventLogger.eventEnd(logEvent)    
     return
