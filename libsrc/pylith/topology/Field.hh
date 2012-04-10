@@ -379,6 +379,14 @@ private :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
+  /** Get fiber dimension associated with section (only works if fiber
+   * dimension is uniform).
+   *
+   * Fiber dimension is determined from the first point on each
+   * processor with the maximum value gathered across the processors.
+   */
+  int _getFiberDim(void);
+
   /** Get scatter for given context.
    *
    * @param context Context for scatter.
