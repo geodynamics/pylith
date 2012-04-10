@@ -26,6 +26,10 @@ CURRENT BUGS
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+=======
+* FIATSimplex
+  cell.shape -> cell.dimension
+
 * Manual
 
   - Order of tensor components for Xdmf files
@@ -37,6 +41,12 @@ CURRENT ISSUES/PRIORITIES
       * Accuracy of interpolation?
   - Examples/Tutorials
     + Table with concepts/features
+  - Linear prestep
+    + Turned on by default
+    + Static solution is linear prestep
+    + Inelastic solution requires increment in driving forces
+  - User specified start time (default is 0.0)
+  - PETSc w/CUDA
 
 * configure
   
