@@ -15,9 +15,8 @@ CURRENT BUGS
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* Time steppers
-
-  Add initial start time (default is 0.0).
+* FIATSimplex
+  cell.shape -> cell.dimension
 
 * Manual
 
@@ -34,7 +33,8 @@ CURRENT ISSUES/PRIORITIES
     + Turned on by default
     + Static solution is linear prestep
     + Inelastic solution requires increment in driving forces
-  - User specified start time
+  - User specified start time (default is 0.0)
+  - PETSc w/CUDA
 
 * configure
   
