@@ -134,16 +134,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
-    int blockSize = 1;
-    err = VecGetBlockSize(coordinatesVector, &blockSize); // get block size
-    CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinatesVector, cs->spaceDim()); // bs for output
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/geometry"); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordinatesVector, blockSize); // reset block size
-    CHECK_PETSC_ERROR(err);
 
     // Account for censored cells
     int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
@@ -204,15 +197,14 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       } // if
 
     PetscVec elemVec;
-    err = VecCreateMPIWithArray(sieveMesh->comm(), conesSize, PETSC_DETERMINE,
-				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) elemVec,
-			     "cells");CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/topology"); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(elemVec, numCorners); CHECK_PETSC_ERROR(err);
-    err = VecView(elemVec, _viewer); CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
+    err = VecCreateMPIWithArray(sieveMesh->comm(), numCorners, conesSize, PETSC_DETERMINE,
+				tmpVertices, &elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/topology");CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(elemVec, numCorners);CHECK_PETSC_ERROR(err);
+    err = VecView(elemVec, _viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&elemVec);CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
 
     hid_t h5 = -1;
@@ -297,21 +289,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     PetscVec vector = field.vector(context);
     assert(vector);
 
-    const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
-    assert(!section.isNull());
-    const std::string labelName = 
-      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-    assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    int fiberDimLocal = 
-      (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
-    int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
-		  field.mesh().comm());
-    assert(fiberDim > 0);
-
-    PetscErrorCode err = 0;
-
     if (_timesteps.find(field.label()) == _timesteps.end())
       _timesteps[field.label()] = 0;
     else
@@ -327,16 +304,11 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     VecView(vector, PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-    // Set temporary block size that matches fiber dimension for output.
-    int blockSize = 0;
-    err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5SetTimestep(_viewer, istep); CHECK_PETSC_ERROR(err);
-    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = 0;
+    err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep);CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
 
     if (0 == istep) {
       hid_t h5 = -1;
@@ -396,18 +368,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
-    const ALE::Obj<typename mesh_type::RealSection>& section = field.section();
-    assert(!section.isNull());      
-    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
-    int fiberDimLocal = 
-      (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
-    int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
-		  field.mesh().comm());
-    assert(fiberDim > 0);
 
-    
     if (_timesteps.find(field.label()) == _timesteps.end())
       _timesteps[field.label()] = 0;
     else
@@ -418,16 +379,10 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     if (_tstampIndex == istep)
       _writeTimeStamp(t, rank);
 
-    // Set temporary block size that matches fiber dimension for output.
-    int blockSize = 0;
-    err = VecGetBlockSize(vector, &blockSize); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(vector, fiberDim); CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5SetTimestep(_viewer, istep); CHECK_PETSC_ERROR(err);
-    err = VecView(vector, _viewer); CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(vector, blockSize); CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5SetTimestep(_viewer, istep);CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
 
     if (0 == istep) {
       hid_t h5 = -1;
