@@ -222,7 +222,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       } // if
 
     PetscVec elemVec;
-    err = VecCreateMPIWithArray(sieveMesh->comm(), conesSize, PETSC_DETERMINE,
+    err = VecCreateMPIWithArray(sieveMesh->comm(), numCorners, conesSize, PETSC_DETERMINE,
 				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec,
 			     "cells");CHECK_PETSC_ERROR(err);
