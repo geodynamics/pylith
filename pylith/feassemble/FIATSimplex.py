@@ -27,17 +27,10 @@ from ReferenceCell import ReferenceCell
 
 import numpy
 
-def validateShape(shape):
-  name = shape.lower()
-  if not ("tetrahedron" == name or 
-          "triangle" == name or 
-          "line" == name or
-          "point" == name):
-    raise ValueError("Unknown shape '%s' for reference finite-element " \
-                     "cell.\n" \
-                     "Known shapes: 'tetrahedron', 'triangle', 'line', 'point'" % \
-                     name)
-  return name
+def validateDimension(dim):
+  if dim < 1 or dim > 3:
+    raise ValueError("Dimension of simplex cell must be 1, 2, or 3.")
+  return dim
 
 
 # FIATSimplex class
@@ -58,18 +51,19 @@ class FIATSimplex(ReferenceCell):
     ## Python object for managing FIATSimplex facilities and properties.
     ##
     ## \b Properties
-    ## @li \b shape Shape of finite-element cell
+    ## @li \b dimension Dimension of finite-element cell.
     ## @li \b degree Degree of finite-element cell 
     ## @li \b quad_order Order of quadrature rule
+    ## @li \b collocate_quad Collocate quadrature points with vertices.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
 
-    shape = pyre.inventory.str("shape", default="tetrahedron",
-                               validator=validateShape)
-    shape.meta['tip'] = "Shape of finite-element cell."
+    dimension = pyre.inventory.int("dimension", default=3,
+                                   validator=validateDimension)
+    dimension.meta['tip'] = "Dimension of finite-element cell."
 
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
@@ -97,7 +91,7 @@ class FIATSimplex(ReferenceCell):
     """
     self._setupGeometry(spaceDim)
 
-    if "point" == self.shape.lower():
+    if self.cellDim == 0:
       # Need 0-D quadrature for boundary conditions of 1-D meshes
       self.cellDim = 0
       self.numCorners = 1
@@ -167,10 +161,11 @@ class FIATSimplex(ReferenceCell):
     """
     try:
       ReferenceCell._configure(self)
-      self.shape = self.inventory.shape
+      self.cellDim = self.inventory.dimension
       self.degree = self.inventory.degree
       self.order = self.inventory.order
       self.collocateQuad = self.inventory.collocateQuad
+
       if self.order == -1:
         self.order = self.degree
     except ValueError, err:
@@ -228,23 +223,22 @@ class FIATSimplex(ReferenceCell):
     import CellGeometry
 
     self.geometry = None
-    name = self.shape.lower()
-    if "tetrahedron" == name:
+    if self.cellDim == 3:
       if 3 == spaceDim:
         self.geometry = CellGeometry.GeometryTet3D()
-    elif "triangle" == name:
+    elif self.cellDim == 2:
       if 2 == spaceDim:
         self.geometry = CellGeometry.GeometryTri2D()
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryTri3D()
-    elif "line" == name:
+    elif self.cellDim == 1:
       if 1 == spaceDim:
         self.geometry = CellGeometry.GeometryLine1D()
       elif 2 == spaceDim:
         self.geometry = CellGeometry.GeometryLine2D()
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryLine3D()
-    elif "point" == name:
+    elif self.cellDim == 0:
       if 1 == spaceDim:
         self.geometry = CellGeometry.GeometryPoint1D()
       elif 2 == spaceDim:
@@ -252,8 +246,8 @@ class FIATSimplex(ReferenceCell):
       elif 3 == spaceDim:
         self.geometry = CellGeometry.GeometryPoint3D()
     if None == self.geometry:
-      raise ValueError("Could not set shape '%s' of cell for '%s' in spatial " \
-                       "dimension '%s'." % (name, self.name, spaceDim))
+      raise ValueError("Could not set geometry of cell with dimension '%d' for '%s' in spatial " \
+                       "dimension '%s'." % (self.cellDim, self.name, spaceDim))
 
     return
   
@@ -295,20 +289,17 @@ class FIATSimplex(ReferenceCell):
     Parse string into FIAT shape.
     """
     from FIAT.reference_element import default_simplex
-    name = self.shape.lower()
-    if "tetrahedron" == name:
+    if self.cellDim == 3:
       shape = default_simplex(3)
-    elif "triangle" == name:
+    elif self.cellDim == 2:
       shape = default_simplex(2)
-    elif "line" == name:
+    elif self.cellDim == 1:
       shape = default_simplex(1)
-    elif "point" == name:
+    elif self.cellDim == 0:
       shape = None
     else:
-      raise ValueError("Unknown shape '%s' for reference finite-element " \
-                       "cell.\n" \
-                       "Known shapes: 'tetrahedron', 'triangle', 'line'" % \
-                       name)
+      raise ValueError("Unknown dimension '%d' for reference finite-element " \
+                       "cell.\n" % self.cellDim)
     return shape
 
 

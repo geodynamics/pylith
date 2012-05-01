@@ -49,7 +49,7 @@ class TestCellFilterAvgMesh(unittest.TestCase):
     
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
@@ -99,7 +99,7 @@ class TestCellFilterAvgSubMesh(unittest.TestCase):
     
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
