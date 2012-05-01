@@ -338,7 +338,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    dispAdjCell = dispCell + _normViscosity*dt * velCell;
+    dispAdjCell = dispCell + viscosity * velCell;
 
     // Compute B(transpose) * sigma, first computing strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispAdjCell, 

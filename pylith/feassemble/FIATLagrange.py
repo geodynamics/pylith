@@ -32,7 +32,7 @@ import numpy
 
 def validateDimension(dim):
   if dim < 1 or dim > 3:
-    raise ValueError("Dimension of Lagrange element must be 1, 2, or 3.")
+    raise ValueError("Dimension of Lagrange cell must be 1, 2, or 3.")
   return dim
 
 
