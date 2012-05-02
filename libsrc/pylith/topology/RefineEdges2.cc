@@ -170,8 +170,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
   const Obj<mesh_type::recv_overlap_type>& oldRecvOverlap = oldMesh->getRecvOverlap();
   assert(!oldRecvOverlap.isNull());
 
-  int myrank = 0;
-  MPI_Comm_rank(oldMesh->comm(), &myrank);
+  const int commRank = oldMesh->commRank();
 
   // Check edges in edgeToVertex for both endpoints sent to same process
   //   Put it in section with point being the lowest numbered vertex and value (other endpoint, new vertex)
@@ -198,12 +197,12 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
                             std::insert_iterator<std::set<int> >(ranks, ranks.begin()));
 
 #if 0 // DEBUGGING
-      std::cout << "[" << myrank << "]   Checking edge " << e_iter->first << std::endl;
+      std::cout << "[" << commRank << "]   Checking edge " << e_iter->first << std::endl;
       for(std::set<int>::const_iterator r_iter = leftRanks.begin(); r_iter != leftRanks.end(); ++r_iter) {
-        std::cout << "[" << myrank << "]     left rank " << *r_iter << std::endl;
+        std::cout << "[" << commRank << "]     left rank " << *r_iter << std::endl;
       }
       for(std::set<int>::const_iterator r_iter = rightRanks.begin(); r_iter != rightRanks.end(); ++r_iter) {
-        std::cout << "[" << myrank << "]     right rank " << *r_iter << std::endl;
+        std::cout << "[" << commRank << "]     right rank " << *r_iter << std::endl;
       }
 #endif
       if (ranks.size()) {
@@ -215,7 +214,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
 #if 0 // DEBUGGING
 	  const point_type edgeMax = std::max(e_iter->first.first, e_iter->first.second);
 	  const int localMaxOffset = (orderOldMesh.verticesNormal().hasPoint(edgeMax)) ? localNormalOffset : localCensoredOffset;
-          std::cout << "[" << myrank << "] Added edge " << e_iter->first << " now (" << edgeMin+localMinOffset << ", " << edgeMax+localMaxOffset << ") with rank " << *r_iter << std::endl;
+          std::cout << "[" << commRank << "] Added edge " << e_iter->first << " now (" << edgeMin+localMinOffset << ", " << edgeMax+localMaxOffset << ") with rank " << *r_iter << std::endl;
 #endif
         } // for
       } // if
@@ -292,7 +291,7 @@ ALE::RefineEdges2::overlapAddNewVertices(const Obj<mesh_type>& newMesh,
       } // for
 #if 0 // DEBUGGING
       if (-1 == newRemotePoint) {
-        std::cout << "["<< myrank << "] DISMISSING newLocalPoint: " << newLocalPoint
+        std::cout << "["<< commRank << "] DISMISSING newLocalPoint: " << newLocalPoint
 		  << ", remoteLeft: " << remoteLeft
                   << ", remoteRight: " << remoteRight
                   << ", rank: " << rank
