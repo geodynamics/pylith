@@ -39,10 +39,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh)
   //logger.setDebug(1);
   logger.stagePush("MeshReordering");
 
-  int rank = 0;
-  MPI_Comm_rank(mesh->comm(), &rank);
-
-  if (0 == rank) {
+  const int commRank = mesh->commRank();
+  if (0 == commRank) {
     const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
     assert(!sieveMesh.isNull());
     ALE::Obj<ALE::Ordering<>::perm_type> perm = 

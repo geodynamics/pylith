@@ -96,8 +96,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     _timesteps.clear();
     _tstampIndex = 0;
-    const int rank = sieveMesh->commRank();
-    const int localSize = (!rank) ? 1 : 0;
+    const int commRank = sieveMesh->commRank();
+    const int localSize = (!commRank) ? 1 : 0;
     err = VecCreateMPI(mesh.comm(), localSize, 1, &_tstamp);
     CHECK_PETSC_ERROR(err);
     assert(_tstamp);
@@ -295,9 +295,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
     // Add time stamp to "/time" if necessary.
-    const int rank = sieveMesh->commRank();
+    const int commRank = sieveMesh->commRank();
     if (_tstampIndex == istep)
-      _writeTimeStamp(t, rank);
+      _writeTimeStamp(t, commRank);
 
 #if 0 // debugging
     field.view("writeVertexField");
@@ -375,9 +375,9 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
       _timesteps[field.label()] += 1;
     const int istep = _timesteps[field.label()];
     // Add time stamp to "/time" if necessary.
-    const int rank = sieveMesh->commRank();
+    const int commRank = sieveMesh->commRank();
     if (_tstampIndex == istep)
-      _writeTimeStamp(t, rank);
+      _writeTimeStamp(t, commRank);
 
     err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5SetTimestep(_viewer, istep);CHECK_PETSC_ERROR(err);
@@ -430,12 +430,12 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type,field_type>::_writeTimeStamp(
 						    const PylithScalar t,
-						    const int rank)
+						    const int commRank)
 { // _writeTimeStamp
   assert(_tstamp);
   PetscErrorCode err = 0;
 
-  if (0 == rank) {
+  if (0 == commRank) {
     const PylithScalar tDim = t * DataWriter<mesh_type, field_type>::_timeScale;
     err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES); CHECK_PETSC_ERROR(err);
   } // if

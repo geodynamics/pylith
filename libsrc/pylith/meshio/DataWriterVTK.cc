@@ -184,11 +184,9 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
-    int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
-
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
+
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     const ALE::Obj<typename SieveMesh::numbering_type>& numbering =
@@ -248,8 +246,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 
   try {
     PetscErrorCode err = 0;
-    int rank = 0;
-    err = MPI_Comm_rank(field.mesh().comm(), &rank);CHECK_PETSC_ERROR(err);
 
     // Correctly handle boundary and fault meshes
     //   Cannot just use mesh->depth() because boundaries report the wrong thing
