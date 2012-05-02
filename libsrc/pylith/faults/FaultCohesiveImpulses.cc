@@ -249,14 +249,9 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     return buffer;
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (scalar)");
-    return buffer;
-
-  } else if (0 == strcasecmp("impulses", name)) {
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (scalar)");
-    return buffer;
+    topology::Field<topology::SubMesh>& amplitude =
+        _fields->get("impulse amplitude");
+    return amplitude;
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(fields);
@@ -369,10 +364,10 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   // Close properties database
   _dbImpulseAmp->close();
 
-  amplitude.view("IMPULSE AMPLITUDE"); // DEBUGGING
+  //amplitude.view("IMPULSE AMPLITUDE"); // DEBUGGING
 
   _setupImpulseOrder(pointOrder);
-} // _setupImpulss
+} // _setupImpulses
 
 
 // ----------------------------------------------------------------------
@@ -399,7 +394,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     localOffset += numImpulsesAll[i];
   } // for
 
-  const int ncomps = numComponents(); // number of components per point
+  const int ncomps = _impulseDOF.size();
 
   _impulsePoints.clear();
   ImpulseInfoStruct impulseInfo;
@@ -409,12 +404,13 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     const int offset = localOffset+piter->second;
     for (int icomp=0; icomp < ncomps; ++icomp) {
       const int impulse = ncomps*offset + icomp;
-      impulseInfo.indexDOF = icomp;
+      impulseInfo.indexDOF = _impulseDOF[icomp];
       _impulsePoints[impulse] = impulseInfo;
+      std::cout << "Adding impulse " << impulse << ", iCohesive: " << impulseInfo.indexCohesive << ", offset: " << offset << ", icomp: " << impulseInfo.indexDOF << std::endl;
     } // for
   } // for
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   int impulse = 0;
   for (int irank=0; irank < commSize; ++irank) {
     MPI_Barrier(comm);
@@ -469,11 +465,11 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
     assert(indexDOF >= 0 && indexDOF < spaceDim);
     dispRelVertex[indexDOF] = amplitudeVertex[0];
 
-    assert(dispRelVertex.size() == dispRelSection->getFiberDimension(v_lagrange));
-    dispRelSection->updatePoint(v_lagrange, &dispRelVertex[0]);
+    assert(dispRelVertex.size() == dispRelSection->getFiberDimension(v_fault));
+    dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
   } // if
 
-  dispRel.view("DISP RELATIVE"); // DEBUGGING
+  //dispRel.view("DISP RELATIVE"); // DEBUGGING
 } // _setRelativeDisp
 
 

@@ -891,8 +891,8 @@ pylith::faults::TestFaultCohesiveKin::_initialize(
 // ----------------------------------------------------------------------
 // Determine if vertex is a Lagrange multiplier constraint vertex.
 bool
-pylith::faults::TestFaultCohesiveKin::_isLagrangeVertex(const int vertex) const
-{ // _isLagrangeVertex
+pylith::faults::TestFaultCohesiveKin::_isConstraintVertex(const int vertex) const
+{ // _isConstraintVertex
   CPPUNIT_ASSERT(_data);
 
   const int numFaultVertices = _data->numFaultVertices;
@@ -903,7 +903,7 @@ pylith::faults::TestFaultCohesiveKin::_isLagrangeVertex(const int vertex) const
       break;
     } // if
   return isFound;
-} // _isLagrangeVertex
+} // _isConstraintVertex
 
 
 // End of file 
