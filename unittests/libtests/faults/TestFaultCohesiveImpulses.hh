@@ -17,58 +17,62 @@
 //
 
 /**
- * @file unittests/libtests/faults/TestFaultCohesiveKin.hh
+ * @file unittests/libtests/faults/TestFaultCohesiveImpulses.hh
  *
- * @brief C++ TestFaultCohesiveKin object
+ * @brief C++ TestFaultCohesiveImpulses object
  *
- * C++ unit testing for FaultCohesiveKin.
+ * C++ unit testing for FaultCohesiveImpulses.
  */
 
-#if !defined(pylith_faults_testfaultcohesivekin_hh)
-#define pylith_faults_testfaultcohesivekin_hh
+#if !defined(pylith_faults_testfaultcohesiveimpulses_hh)
+#define pylith_faults_testfaultcohesiveimpulses_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Quadrature
-
+#include "pylith/friction/frictionfwd.hh" // HOLDSA FrictionModel
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include <vector> // HASA std::vector
-
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveKin;
+    class TestFaultCohesiveImpulses;
 
-    class CohesiveKinData;
+    class CohesiveImpulsesData;
   } // faults
 } // pylith
 
-/// C++ unit testing for FaultCohesiveKin
-class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
-{ // class TestFaultCohesiveKin
+/// C++ unit testing for FaultCohesiveImpulses
+class pylith::faults::TestFaultCohesiveImpulses: public CppUnit::TestFixture
+{ // class TestFaultCohesiveImpulses
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveKin );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveImpulses );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testEqsrc );
-  CPPUNIT_TEST( testNeedNewJacobian );
-  CPPUNIT_TEST( testUseLagrangeConstraints );
+  CPPUNIT_TEST( testDBImpulseAmp );
+  CPPUNIT_TEST( testThreshold );
+  CPPUNIT_TEST( testImpulseDOF );
+
+  // Tests in derived classes:
+  // testNumImpulses()
+  // testInitialize()
+  // testIntegrateResidual()
 
   CPPUNIT_TEST_SUITE_END();
 
   // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
+protected:
 
-  CohesiveKinData* _data; ///< Data for testing
+  CohesiveImpulsesData* _data; ///< Data for testing
   feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
-  std::vector<EqKinSrc*> _eqsrcs; ///< Array of Kinematic earthquake sources.
-  std::vector<BruneSlipFn*> _slipfns; ///< Slip time function.
+  spatialdata::spatialdb::SpatialDB* _dbImpulseAmp; ///< Initial tractions.
   bool _flipFault; ///< If true, flip fault orientation.
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+public:
 
   /// Setup testing data.
   void setUp(void);
@@ -79,14 +83,17 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test eqsrc().
-  void testEqsrc(void);
+  /// Test dbInitialTract().
+  void testDBImpulseAmp(void);
 
-  /// Test needNewJacobian()
-  void testNeedNewJacobian(void);
+  /// Test threshold().
+  void testThreshold(void);
 
-  /// Test useLagrangeConstraints().
-  void testUseLagrangeConstraints(void);
+  /// Test impulseDOF().
+  void testImpulseDOF(void);
+
+  /// Test numImpulses().
+  void testNumImpulses(void);
 
   /// Test initialize().
   void testInitialize(void);
@@ -94,33 +101,18 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateJacobian().
-  void testIntegrateJacobian(void);
-
-  /// Test integrateJacobian() with lumped Jacobian.
-  void testIntegrateJacobianLumped(void);
-
-  /// Test adjustSolnLumped().
-  void testAdjustSolnLumped(void);
-
-  /// Test _calcTractionsChange().
-  void testCalcTractionsChange(void);
-
-  /// Test splitField().
-  void testSplitField(void);
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
+private:
 
-  /** Initialize FaultCohesiveKin interface condition.
+  /** Initialize FaultCohesiveImpulses interface condition.
    *
    * @param mesh PETSc mesh to initialize
    * @param fault Cohesive fault interface condition to initialize.
    * @param fields Solution fields.
    */
   void _initialize(topology::Mesh* const mesh,
-		   FaultCohesiveKin* const fault,
-		   topology::SolutionFields* const fields) const;
+		   FaultCohesiveImpulses* const fault,
+		   topology::SolutionFields* const fields);
 
   /** Determine if vertex is a Lagrange multiplier constraint vertex.
    *
@@ -129,11 +121,9 @@ private :
    * @returns True if vertex is a constraint vertex, false otherwise.
    */
   bool _isConstraintVertex(const int vertex) const;
-  
 
-}; // class TestFaultCohesiveKin
+}; // class TestFaultCohesiveImpulses
 
-#endif // pylith_faults_testfaultcohesivekin_hh
-
+#endif // pylith_faults_testfaultcohesiveimpulses_hh
 
 // End of file 

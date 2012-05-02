@@ -24,8 +24,6 @@
 
 #include "data/CohesiveDynData.hh" // USES CohesiveDynData
 
-#include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
-#include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
