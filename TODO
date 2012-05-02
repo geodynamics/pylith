@@ -15,14 +15,15 @@ CURRENT BUGS
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* FIATSimplex
-  cell.shape -> cell.dimension
 
 * FaultCohesiveDyn
   Add switch for turning on/off zero tractions for fault opening
+  Add example
 
 * Manual
 
+   - FIATSimplex
+     cell.shape -> cell.dimension
   - Order of tensor components for Xdmf files
   - Drucker Prager fit to yield surface
   - Drucker Prage allow tensile yield

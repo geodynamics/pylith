@@ -37,6 +37,7 @@ namespace pylith {
     class FaultCohesiveLagrange;
     class FaultCohesiveKin;
     class FaultCohesiveDyn;
+    class FaultCohesiveImpulses;
     class FaultCohesiveTract;
 
     class EqKinSrc;
