@@ -133,7 +133,7 @@ pylith::faults::FaultCohesiveImpulses::numComponents(void) const
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveImpulses::initialize(const topology::Mesh& mesh,
-					     const PylithScalar upDir[3])
+						  const PylithScalar upDir[3])
 { // initialize
   assert(upDir);
   assert(_quadrature);
@@ -142,8 +142,7 @@ pylith::faults::FaultCohesiveImpulses::initialize(const topology::Mesh& mesh,
   FaultCohesiveLagrange::initialize(mesh, upDir);
 
   // Setup impulses
-  _setupImpulseAmp();
-  _setupImpulseOrder();
+  _setupImpulses();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -289,10 +288,10 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 // ----------------------------------------------------------------------
 // Setup amplitudes of impulses.
 void
-pylith::faults::FaultCohesiveImpulses::_setupImpulseAmp(void)
-{ // _setupImpulseAmp
+pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
+{ // _setupImpulses
   // If no impulse amplitude specified, leave method
-  if (0 == _dbImpulseAmp)
+  if (!_dbImpulseAmp)
     return;
 
   assert(_normalizer);
@@ -305,7 +304,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseAmp(void)
   topology::Field<topology::SubMesh>& amplitude = 
     _fields->get("impulse amplitude");
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
-  amplitude.cloneSection(dispRel);
+  const int fiberDim = 1;
+  amplitude.newSection(dispRel, fiberDim);
+  amplitude.allocate();
   amplitude.scale(lengthScale);
 
   PylithScalar amplitudeVertex;
@@ -328,6 +329,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseAmp(void)
   const char* valueNames[1] = { "slip" };
   _dbImpulseAmp->queryVals(valueNames, 1);
 
+  std::map<int, int> pointOrder;
+  int count = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -348,7 +351,16 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseAmp(void)
 	  << "using spatial database '" << _dbImpulseAmp->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
+
+    if (fabs(amplitudeVertex) < _threshold) {
+      amplitudeVertex = 0.0;
+    } // if
     _normalizer->nondimensionalize(&amplitudeVertex, 1, lengthScale);
+
+    if (fabs(amplitudeVertex) > 0.0) {
+      pointOrder[iVertex] = count;
+      ++count;
+    } // if
 
     assert(1 == amplitudeSection->getFiberDimension(v_fault));
     amplitudeSection->updatePoint(v_fault, &amplitudeVertex);
@@ -358,18 +370,62 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseAmp(void)
   _dbImpulseAmp->close();
 
   amplitude.view("IMPULSE AMPLITUDE"); // DEBUGGING
-} // _setupImpulseAmp
+
+  _setupImpulseOrder(pointOrder);
+} // _setupImpulss
 
 
 // ----------------------------------------------------------------------
-// Setup amplitudes of impulses.
+// Setup order of implulses.
 void
-pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(void)
+pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int>& pointOrder)
 { // _setupImpulseOrder
-  // If no impulse amplitude specified, leave method
-  if (0 == _dbImpulseAmp)
-    return;
+  // Order of impulses is set by processor rank and order of points in
+  // mesh, using only those points with nonzero amplitudes.
 
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+
+  // Gather number of points on each processor.
+  const int numImpulsesLocal = pointOrder.size();
+  const int commSize = faultSieveMesh->commSize();
+  const int commRank = faultSieveMesh->commRank();
+  int_array numImpulsesAll(commSize);
+  MPI_Comm comm = faultSieveMesh->comm();
+  MPI_Allgather((void*)&numImpulsesLocal, 1, MPI_INT, (void*)&numImpulsesAll[0], commSize, MPI_INT, comm);
+  
+  int localOffset = 0;
+  for (int i=0; i < commRank; ++i) {
+    localOffset += numImpulsesAll[i];
+  } // for
+
+  const int ncomps = numComponents(); // number of components per point
+
+  _impulsePoints.clear();
+  ImpulseInfoStruct impulseInfo;
+  const std::map<int,int>::const_iterator pointOrderEnd = pointOrder.end();
+  for (std::map<int,int>::const_iterator piter=pointOrder.begin(); piter != pointOrderEnd; ++piter) {
+    impulseInfo.indexCohesive = piter->first;
+    const int offset = localOffset+piter->second;
+    for (int icomp=0; icomp < ncomps; ++icomp) {
+      const int impulse = ncomps*offset + icomp;
+      impulseInfo.indexDOF = icomp;
+      _impulsePoints[impulse] = impulseInfo;
+    } // for
+  } // for
+
+#if 1 // DEBUGGING
+  int impulse = 0;
+  for (int irank=0; irank < commSize; ++irank) {
+    MPI_Barrier(comm);
+    if (commRank == irank) {
+      for (int i=0; i < _impulsePoints.size(); ++i, ++impulse) {
+	const ImpulseInfoStruct& info = _impulsePoints[impulse];
+	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << ")" << std::endl;
+      } // for
+    } // if
+  } // for
+#endif
 } // _setupImpulseOrder
 
 
@@ -382,7 +438,7 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
   assert(_fields);
 
   // If no impulse amplitude specified, leave method
-  if (0 == _dbImpulseAmp)
+  if (!_dbImpulseAmp)
     return;
 
   const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
@@ -416,7 +472,8 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
     assert(dispRelVertex.size() == dispRelSection->getFiberDimension(v_lagrange));
     dispRelSection->updatePoint(v_lagrange, &dispRelVertex[0]);
   } // if
-  
+
+  dispRel.view("DISP RELATIVE"); // DEBUGGING
 } // _setRelativeDisp
 
 

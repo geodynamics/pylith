@@ -123,11 +123,14 @@ public :
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /// Setup amplitudes of impulses.
-  void _setupImpulseAmp(void);
+  /// Setup impulses.
+  void _setupImpulses(void);
 
-  /// Setup impulse order.
-  void _setupImpulseOrder(void);
+  /** Setup impulse order.
+   *
+   * @param pointOrder Map from point to impulse (local) index.
+   */
+  void _setupImpulseOrder(const std::map<int, int>& pointOrder);
 
   /** Set relative displacemet associated with impulse.
    *
