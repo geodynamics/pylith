@@ -67,6 +67,7 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveLagrange.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveImpulses.cc \
 	faults/FaultCohesiveTract.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \

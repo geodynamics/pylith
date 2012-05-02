@@ -68,7 +68,7 @@ class Fault(PetscComponent, ModuleFault):
 
   \b Properties
   @li \b id Fault identifier
-  @li \b name Name of fault
+  @li \b label Label identifier for fault.
   @li \b up_dir Up-dip or up direction
     (perpendicular to along-strike and not collinear with fault normal;
     applies to fault surfaces in 2-D and 3-D).

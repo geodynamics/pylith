@@ -34,6 +34,7 @@ subpkginclude_HEADERS = \
 	FaultCohesiveTract.hh \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
+	FaultCohesiveImpulses.hh \
 	LiuCosSlipFn.hh \
 	LiuCosSlipFn.icc \
 	SlipTimeFn.hh \
