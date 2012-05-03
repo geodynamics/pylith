@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	strikeslip \
-	reverse
+dist_noinst_DATA =
 
 
 # End of file 
