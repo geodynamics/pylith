@@ -147,6 +147,10 @@ class GreensFns(Problem):
       self._info.log("Computing Green's functions.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
 
+    # Limit material behavior to linear regime
+    for material in self.materials.components():
+      material.useLinearBehavior(True)
+
     nimpulses = self.source.numImpulses()*self.source.numComponents()
     ipulse = 0;
     dt = 1.0
@@ -155,7 +159,9 @@ class GreensFns(Problem):
       if 0 == comm.rank:
         self._info.log("Main loop, impulse %d of %d." % (ipulse+1, nimpulses))
       
-      t = float(ipulse)
+      # Implicit time stepping computes solution at t+dt, so set
+      # t=ipulse-dt, so that t+dt corresponds to the impulse
+      t = float(ipulse)-dt
 
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
