@@ -33,6 +33,7 @@
 #include "pylith/faults/FaultCohesiveLagrange.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
 #include "pylith/faults/FaultCohesiveDyn.hh"
+#include "pylith/faults/FaultCohesiveImpulses.hh"
 #include "pylith/faults/FaultCohesiveTract.hh"
 
 #include "pylith/topology/SubMesh.hh"
@@ -85,6 +86,7 @@ import_array();
 %include "FaultCohesiveLagrange.i"
 %include "FaultCohesiveKin.i"
 %include "FaultCohesiveDyn.i"
+%include "FaultCohesiveImpulses.i"
 %include "FaultCohesiveTract.i"
 
 // End of file

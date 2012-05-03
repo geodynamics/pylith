@@ -70,7 +70,7 @@ public :
    *
    * @param value Threshold for detecting nonzero amplitude.
    */
-  void threshold(const double value);
+  void threshold(const PylithScalar value);
 
   /** Get number of impulses.
    *
