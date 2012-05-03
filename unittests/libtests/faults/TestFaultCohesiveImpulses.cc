@@ -263,7 +263,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   { // Integrate residual with disp increment.
     fault.integrateResidual(residual, t, &fields);
 
-    residual.view("RESIDUAL"); // DEBUGGING
+    //residual.view("RESIDUAL"); // DEBUGGING
 
     // Check values
     const PylithScalar* valsE = _data->residualIncr;

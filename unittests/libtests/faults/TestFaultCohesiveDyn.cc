@@ -110,6 +110,20 @@ pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
  } // zeroTolerance
 
 // ----------------------------------------------------------------------
+// Test openFreeSurf().
+void
+pylith::faults::TestFaultCohesiveDyn::testOpenFreeSurf(void)
+{ // testOpenFreeSurf
+  FaultCohesiveDyn fault;
+
+  CPPUNIT_ASSERT_EQUAL(true, fault._openFreeSurf); // default
+
+  const bool value = false;
+  fault.openFreeSurf(value);
+  CPPUNIT_ASSERT_EQUAL(value, fault._openFreeSurf);
+ } // testOpenFreeSurf
+
+// ----------------------------------------------------------------------
 // Test initialize().
 void
 pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
