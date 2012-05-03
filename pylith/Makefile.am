@@ -147,6 +147,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SolverNonlinear.py \
 	problems/SolverLumped.py \
 	problems/TimeDependent.py \
+	problems/GreensFns.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \

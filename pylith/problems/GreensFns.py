@@ -117,7 +117,7 @@ class GreensFns(Problem):
     if not "numImpulses" in dir(self.source) or not "numComponents" in dir(self.source):
       raise ValueError("Incompatible source for green's function impulses "
                        "with id '%d' and label '%s'." % \
-                         (self.source.id(), self.source.label())
+                         (self.source.id(), self.source.label()))
     return
   
 
@@ -149,11 +149,14 @@ class GreensFns(Problem):
 
     nimpulses = self.source.numImpulses()*self.source.numComponents()
     ipulse = 0;
+    dt = 1.0
     while ipulse < nimpulses:
       self._eventLogger.stagePush("Prestep")
       if 0 == comm.rank:
         self._info.log("Main loop, impulse %d of %d." % (ipulse+1, nimpulses))
       
+      t = float(ipulse)
+
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
 
@@ -177,8 +180,8 @@ class GreensFns(Problem):
       self.formulation.poststep(t, dt)
       self._eventLogger.stagePop()
 
-      # Update time
-      t += dt
+      # Update time/impulse
+      ipulse += 1
     return
 
 
