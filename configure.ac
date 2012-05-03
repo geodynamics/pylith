@@ -352,6 +352,11 @@ AC_CONFIG_FILES([Makefile
 		examples/2d/Makefile
 		examples/2d/subduction/Makefile
 		examples/2d/subduction/output/Makefile
+		examples/2d/greensfns/Makefile
+		examples/2d/greensfns/strikeslip/Makefile
+		examples/2d/greensfns/strikeslip/output/Makefile
+		examples/2d/greensfns/reverse/Makefile
+		examples/2d/greensfns/reverse/output/Makefile
 		examples/bar_shearwave/Makefile
 		examples/twocells/Makefile
 		examples/bar_shearwave/hex8/Makefile

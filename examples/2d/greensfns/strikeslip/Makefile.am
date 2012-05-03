@@ -22,13 +22,14 @@ dist_noinst_DATA = \
 	eqsim.cfg \
 	greensfns.cfg \
 	geometry.jou \
-	tri3.jou \
 	gradient.jou \
 	createbc.jou \
+	mesh_tri3.jou \
 	mesh_tri3.exo \
 	eqslip.spatialdb \
 	impulse_amplitude.spatialdb \
-	mat_elastic.spatialdb
+	mat_elastic.spatialdb \
+	output_points.txt
 
 
 SUBDIRS = \
