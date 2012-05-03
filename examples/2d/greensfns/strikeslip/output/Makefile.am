@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	subduction \
-	greensfns
+dist_noinst_DATA =
 
 
 # End of file 

@@ -1,0 +1,88 @@
+The example in this directory demonstrates the use of computing static
+Green's functions using PyLith and using them in a simple inversion
+for slip on a strike-slip fault.
+
+The main features of this example are:
+
+  * Generating a finite-element mesh using CUBIT
+    + Variable mesh resolution
+  * Spatially variable slip
+  * Computing Green's functions using PyLith
+
+The examples consists of two simulations. In the first simulation we
+compute the displacements due to a variable slip on a strike-slip
+fault (idealized in a 2-D model with plane-strain); this serves as the
+"observed" displacements. In the second simulation we compute Green's
+functions for the fault. We use these Green's functions in the second
+simulation and the observed displacements from the first simulation to
+invert for the slip (in the first simulation).
+
+The imposed slip in the first simulation includes a region of uniform
+slip with a linear taper at each end. We use uniform linear elastic
+properties with a plane-strain formulation.
+
+The parameters for the bulk constitutive models are defined in
+  mat_elastic.spatialdb
+
+The simulation will output the displacements on the ground surface as
+well as a selection of points (defined in output_points.txt).
+
+For each of the simulations, we recommend examining the displacements,
+stress field, and fault slip. 
+
+
+Mesh generation (optional)
+
+  NOTE: The result of this step will overwrite the included file
+        tri3_mesh.exo. You may want to copy/rename this file so that
+        you have a backup copy in case you have difficulty running
+        CUBIT.
+
+  Start CUBIT and play the journal file "mesh_tri3.jou". We highly
+  recommend that you study the contents of the journal files to
+  understand the mesh generation process.
+
+
+Step 1. Forward simulation
+
+  This simulation mimics an earthquake generating an observed
+  displacement field.
+
+  The parameters for the earthquake slip are defined in
+    eqslip.spatialdb
+
+  Run the simulation via the following command:
+    pylith eqsim.cfg.
+
+
+Step 2. Generate Green's functions
+
+  This simulation generates Green's functions for a subset of the fault.
+
+  The parameters for the amplitude (and sign) of the slip impulses are
+  defined in
+    impulse_amplitude.spatialdb
+
+  Run the simulation via the following command:
+    pylith --problem.pylith.problems.GreensFns
+
+
+Step 3. Invert for coseismic slip
+
+  ADD STUFF HERE
+
+
+Suggestions variations
+
+  The list below includes some suggested modifications to the problem
+  that will allow you to become more familiar with PyLith while
+  examining some interesting physics.
+
+  * Create a spatial variation in material properties. For example you
+    might create a velocity contrast across the fault.
+
+  * Adjust the slip distribution.
+
+  * Adjust the location and number of the observation points.
+
+  * Increase/decrease the resolution of the mesh.

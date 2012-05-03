@@ -16,9 +16,23 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_DATA = \
+	README \
+	pylithapp.cfg \
+	eqsim.cfg \
+	greensfns.cfg \
+	geometry.jou \
+	tri3.jou \
+	gradient.jou \
+	createbc.jou \
+	mesh_tri3.exo \
+	eqslip.spatialdb \
+	impulse_amplitude.spatialdb \
+	mat_elastic.spatialdb
+
+
 SUBDIRS = \
-	subduction \
-	greensfns
+	output
 
 
 # End of file 
