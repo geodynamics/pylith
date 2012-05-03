@@ -63,6 +63,7 @@ typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,
 // Default constructor.
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _zeroTolerance(1.0e-10),
+  _openFreeSurf(true),
   _dbInitialTract(0),
   _friction(0),
   _jacobian(0),
@@ -87,7 +88,7 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
   _friction = 0; // :TODO: Use shared pointer
 
   delete _jacobian; _jacobian = 0;
-  if (0 != _ksp) {
+  if (_ksp) {
     PetscErrorCode err = KSPDestroy(&_ksp); _ksp = 0;
     CHECK_PETSC_ERROR(err);
   } // if
@@ -125,14 +126,23 @@ pylith::faults::FaultCohesiveDyn::zeroTolerance(const PylithScalar value)
 } // zeroTolerance
 
 // ----------------------------------------------------------------------
+// Set flag used to determine when fault is traction free when it
+// opens or it still imposes any initial tractions.
+void
+pylith::faults::FaultCohesiveDyn::openFreeSurf(const bool value)
+{ // openFreeSurf
+  _openFreeSurf = value;
+} // openFreeSurf
+
+// ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 					     const PylithScalar upDir[3])
 { // initialize
-  assert(0 != upDir);
-  assert(0 != _quadrature);
-  assert(0 != _normalizer);
+  assert(upDir);
+  assert(_quadrature);
+  assert(_normalizer);
 
   FaultCohesiveLagrange::initialize(mesh, upDir);
 
@@ -140,14 +150,14 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   _setupInitialTractions();
 
   // Setup fault constitutive model.
-  assert(0 != _friction);
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
+  assert(_friction);
+  assert(_faultMesh);
+  assert(_fields);
   _friction->normalizer(*_normalizer);
   _friction->initialize(*_faultMesh, _quadrature);
 
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  assert(0 != cs);
+  assert(cs);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("FaultFields");
@@ -172,9 +182,9 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
-  assert(0 != fields);
-  assert(0 != _fields);
-  assert(0 != _logger);
+  assert(fields);
+  assert(_fields);
+  assert(_logger);
 
   // Cohesive cells with conventional vertices N and P, and constraint
   // vertex L make contributions to the assembled residual:
@@ -332,7 +342,10 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     
     residualVertexN = 0.0;
     residualVertexL = 0.0;
-    if (slipNormal < _zeroTolerance) { // if no opening
+    if (slipNormal < _zeroTolerance || !_openFreeSurf) { 
+      // if no opening or flag indicates to still impose initial
+      // tractions when fault is open.
+      //
       // Initial (external) tractions oppose (internal) tractions
       // associated with Lagrange multiplier.
       residualVertexN = areaVertex * (dispTpdtVertexL - initialTractionsVertex);
@@ -381,8 +394,8 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(
 				      const PylithScalar t,
 				      topology::SolutionFields* const fields)
 { // updateStateVars
-  assert(0 != fields);
-  assert(0 != _fields);
+  assert(fields);
+  assert(_fields);
 
   _updateRelMotion(*fields);
 
@@ -1127,8 +1140,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
      const scalar_array&,
      const bool);
 
-  assert(0 != fields);
-  assert(0 != _quadrature);
+  assert(fields);
+  assert(_quadrature);
 
   // Cohesive cells with conventional vertices i and j, and constraint
   // vertex k require three adjustments to the solution:
@@ -1462,11 +1475,11 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
                                                const topology::SolutionFields* fields)
 { // vertexField
-  assert(0 != _faultMesh);
-  assert(0 != _quadrature);
-  assert(0 != _normalizer);
-  assert(0 != _fields);
-  assert(0 != _friction);
+  assert(_faultMesh);
+  assert(_quadrature);
+  assert(_normalizer);
+  assert(_fields);
+  assert(_friction);
 
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
@@ -1541,7 +1554,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     return buffer;
 
   } else if (0 == strcasecmp("initial_traction", name)) {
-    assert(0 != _dbInitialTract);
+    assert(_dbInitialTract);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
         _fields->get("buffer (vector)");
@@ -1552,7 +1565,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     return buffer;
 
   } else if (0 == strcasecmp("traction", name)) {
-    assert(0 != fields);
+    assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer =
@@ -1574,7 +1587,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   throw std::logic_error("Unknown field in FaultCohesiveDyn::vertexField().");
 
   // Satisfy return values
-  assert(0 != _fields);
+  assert(_fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get(
     "buffer (vector)");
 
@@ -1585,13 +1598,13 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 void
 pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
 { // _setupInitialTractions
-  assert(0 != _normalizer);
+  assert(_normalizer);
 
   // If no initial tractions specified, leave method
   if (0 == _dbInitialTract)
     return;
 
-  assert(0 != _normalizer);
+  assert(_normalizer);
   const PylithScalar pressureScale = _normalizer->pressureScale();
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
@@ -1616,7 +1629,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   assert(!orientationSection.isNull());
 
   const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-  assert(0 != cs);
+  assert(cs);
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
@@ -1627,7 +1640,7 @@ pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
   assert(!coordsSection.isNull());
 
 
-  assert(0 != _dbInitialTract);
+  assert(_dbInitialTract);
   _dbInitialTract->open();
   switch (spaceDim) { // switch
   case 1: {
@@ -1713,10 +1726,10 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
     topology::Field<topology::SubMesh>* tractions,
     const topology::Field<topology::Mesh>& dispT)
 { // _calcTractions
-  assert(0 != tractions);
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-  assert(0 != _normalizer);
+  assert(tractions);
+  assert(_faultMesh);
+  assert(_fields);
+  assert(_normalizer);
 
   // Fiber dimension of tractions matches spatial dimension.
   const int spaceDim = _quadrature->spaceDim();
@@ -1791,7 +1804,7 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(
 void
 pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionFields& fields)
 { // _updateRelMotion
-  assert(0 != _fields);
+  assert(_fields);
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -1885,8 +1898,8 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& jacobian)
 { // _sensitivitySetup
-  assert(0 != _fields);
-  assert(0 != _quadrature);
+  assert(_fields);
+  assert(_quadrature);
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -1934,7 +1947,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
   // Setup Jacobian sparse matrix for sensitivity solve.
   if (0 == _jacobian)
     _jacobian = new topology::Jacobian(solution, jacobian.matrixType());
-  assert(0 != _jacobian);
+  assert(_jacobian);
   _jacobian->zero();
 
   // Setup PETSc KSP linear solver.
@@ -1970,8 +1983,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
                                                              const topology::Jacobian& jacobian,
                                                              const topology::SolutionFields& fields)
 { // _sensitivityUpdateJacobian
-  assert(0 != _quadrature);
-  assert(0 != _fields);
+  assert(_quadrature);
+  assert(_fields);
 
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
@@ -1997,7 +2010,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   // Visitor for Jacobian matrix associated with domain.
   scalar_array jacobianSubCell(submatrixSize);
   const PetscMat jacobianDomainMatrix = jacobian.matrix();
-  assert(0 != jacobianDomainMatrix);
+  assert(jacobianDomainMatrix);
   const ALE::Obj<SieveMesh::order_type>& globalOrderDomain =
     sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionDomainSection);
   assert(!globalOrderDomain.isNull());
@@ -2020,9 +2033,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   assert(!solutionFaultSection.isNull());
 
   // Visitor for Jacobian matrix associated with fault.
-  assert(0 != _jacobian);
+  assert(_jacobian);
   const PetscMat jacobianFaultMatrix = _jacobian->matrix();
-  assert(0 != jacobianFaultMatrix);
+  assert(jacobianFaultMatrix);
   const ALE::Obj<SieveSubMesh::order_type>& globalOrderFault =
     faultSieveMesh->getFactory()->getGlobalOrder(faultSieveMesh, "default", solutionFaultSection);
   assert(!globalOrderFault.isNull());
@@ -2041,7 +2054,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     const int coneSize = ncV.getSize();
     assert(coneSize == 3*numBasis);
     const SieveMesh::point_type *cohesiveCone = ncV.getPoints();
-    assert(0 != cohesiveCone);
+    assert(cohesiveCone);
 
     const SieveMesh::point_type c_fault = _cohesiveToFault[*c_iter];
     jacobianSubCell = 0.0;
@@ -2196,9 +2209,9 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 { // _sensitivitySolve
-  assert(0 != _fields);
-  assert(0 != _jacobian);
-  assert(0 != _ksp);
+  assert(_fields);
+  assert(_jacobian);
+  assert(_ksp);
 
   const topology::Field<topology::SubMesh>& residual =
       _fields->get("sensitivity residual");
@@ -2232,8 +2245,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 void
 pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide)
 { // _sensitivityUpdateSoln
-  assert(0 != _fields);
-  assert(0 != _quadrature);
+  assert(_fields);
+  assert(_quadrature);
 
   const int spaceDim = _quadrature->spaceDim();
 
@@ -2530,7 +2543,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpace1D(scalar_array* dTractionT
 	 const scalar_array& tractionTpdt,
 	 const bool iterating)
 { // _constrainSolnSpace1D
-  assert(0 != dTractionTpdt);
+  assert(dTractionTpdt);
 
   if (fabs(slip[0]) < _zeroTolerance) {
     // if compression, then no changes to solution
