@@ -406,18 +406,20 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
       const int impulse = ncomps*offset + icomp;
       impulseInfo.indexDOF = _impulseDOF[icomp];
       _impulsePoints[impulse] = impulseInfo;
-      std::cout << "Adding impulse " << impulse << ", iCohesive: " << impulseInfo.indexCohesive << ", offset: " << offset << ", icomp: " << impulseInfo.indexDOF << std::endl;
     } // for
   } // for
 
 #if 0 // DEBUGGING
+  const ALE::Obj<RealSection>& amplitudeSection = _fields->get("impulse amplitude").section();
+  assert(!amplitudeSection.isNull());
   int impulse = 0;
   for (int irank=0; irank < commSize; ++irank) {
     MPI_Barrier(comm);
     if (commRank == irank) {
       for (int i=0; i < _impulsePoints.size(); ++i, ++impulse) {
 	const ImpulseInfoStruct& info = _impulsePoints[impulse];
-	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << ")" << std::endl;
+	const PylithScalar* amplitudeVertex = amplitudeSection->restrictPoint(_cohesiveVertices[info.indexCohesive].fault);
+	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << "), v_fault: " << _cohesiveVertices[info.indexCohesive].fault << ", amplitude: " << amplitudeVertex[0] << std::endl;
       } // for
     } // if
   } // for
@@ -469,7 +471,10 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
     dispRelSection->updatePoint(v_fault, &dispRelVertex[0]);
   } // if
 
-  //dispRel.view("DISP RELATIVE"); // DEBUGGING
+#if 0 // DEBUGGING
+  std::cout << "impulse: " << impulse << std::endl;
+  dispRel.view("DISP RELATIVE"); // DEBUGGING
+#endif
 } // _setRelativeDisp
 
 
