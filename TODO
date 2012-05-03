@@ -11,14 +11,15 @@ CURRENT BUGS
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
 
+* Poor trap of detecting point outside the domain in OutputSolnPoints.
+
 ======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+* 2-D materials
 
-* FaultCohesiveDyn
-  Add switch for turning on/off zero tractions for fault opening
-  Add example
+  + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
 * Manual
 
@@ -39,6 +40,12 @@ CURRENT ISSUES/PRIORITIES
     + Inelastic solution requires increment in driving forces
   - User specified start time (default is 0.0)
   - PETSc w/CUDA
+  - FaultCohesiveDyn
+    Add switch for turning on/off zero tractions for fault opening
+    Added step20
+  - Green's functions
+    examples/2d/greensfns
+
 
 * configure
   
@@ -51,12 +58,6 @@ CURRENT ISSUES/PRIORITIES
   + We want the _wrap.cxx files to work independent of PyLith and
     PETSc configure options (for example, with/without HDF5 and
     single/double precision).
-
-* Green's functions
-
-* 2-D materials
-
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
 * Cleanup
 
@@ -439,15 +440,11 @@ PLANNED RELEASES
 ======================================================================
 
 ----------------------------------------------------------------------
-Release 1.7
+Release 1.8
 ----------------------------------------------------------------------
 
   1. Damping for Q
     Generalized Maxwell approach for attenuation
-
-  2. 2-D materials
-    + DruckerPragerPlaneStrain (Drucker-Prager plane strain)
-    + PowerLawPlaneStrain (power law plane strain )
 
 ----------------------------------------------------------------------
 Release 2.0
@@ -457,8 +454,6 @@ Release 2.0
     Checkpointing
     Spin up
     Saving quasi-static information is probably more important
-
-  2. Green's functions
 
   3. Coupling of quasi-static and dynamic simulations
 
