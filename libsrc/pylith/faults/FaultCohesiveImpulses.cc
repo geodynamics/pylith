@@ -101,7 +101,7 @@ pylith::faults::FaultCohesiveImpulses::impulseDOF(const int* flags,
 // ----------------------------------------------------------------------
 // Set threshold for nonzero impulse amplitude.
 void
-pylith::faults::FaultCohesiveImpulses::threshold(const double value)
+pylith::faults::FaultCohesiveImpulses::threshold(const PylithScalar value)
 { // threshold
   if (value < 0) {
     std::ostringstream msg;

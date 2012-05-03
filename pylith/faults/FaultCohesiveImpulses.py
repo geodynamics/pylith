@@ -77,8 +77,12 @@ class FaultCohesiveImpulses(FaultCohesive, Integrator, ModuleFaultCohesiveImpuls
   impulseDOF = pyre.inventory.list("impulse_dof", default=[], validator=validateDOF)
   impulseDOF.meta['tip'] = "Indices of impulse components " \
       "(0=1st DOF, 1=2nd DOF, etc)."
+
+  from spatialdata.spatialdb.SimpleDB import SimpleDB
+  dbImpulseAmp = pyre.inventory.facility("db_impulse_amplitude", family="spatial_database", factory=SimpleDB)
+  dbImpulseAmp.meta['tip'] = "Amplitude of slip impulses."
   
-  from pylith.meshio.OutputFaultKin import OutputFaultImpulses
+  from pylith.meshio.OutputFaultImpulses import OutputFaultImpulses
   output = pyre.inventory.facility("output", family="output_manager",
                                    factory=OutputFaultImpulses)
   output.meta['tip'] = "Output manager associated with fault data."
@@ -201,11 +205,14 @@ class FaultCohesiveImpulses(FaultCohesive, Integrator, ModuleFaultCohesiveImpuls
     """
     Setup members using inventory.
     """
+    import numpy
     FaultCohesive._configure(self)
     self.output = self.inventory.output
 
-    ModuleFaultCohesiveImpulses.threshold(self, self.inventory.threshold)
-    ModuleFaultCohesiveImpulses.impulseDOF(self, self.inventory.impulseDOF)
+    ModuleFaultCohesiveImpulses.threshold(self, self.inventory.threshold.value)
+    impulseDOF = numpy.array(self.inventory.impulseDOF, dtype=numpy.int32)
+    ModuleFaultCohesiveImpulses.impulseDOF(self, impulseDOF)
+    ModuleFaultCohesiveImpulses.dbImpulseAmp(self, self.inventory.dbImpulseAmp)
     return
 
 

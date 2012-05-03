@@ -32,6 +32,7 @@ noinst_PYTHON = \
 	TestEqKinSrc.py \
 	TestFaultCohesiveKin.py \
 	TestFaultCohesiveDyn.py \
+	TestFaultCohesiveImpulses.py \
 	TestLiuCosSlipFn.py \
 	TestSingleRupture.py \
 	TestStepSlipFn.py \

@@ -51,14 +51,19 @@ namespace pylith {
        * @param flags Array of indices for degrees of freedom.
        * @param size Size of array
        */
+      %apply(int* INPLACE_ARRAY1, int DIM1) {
+	(const int* flags, 
+	 const int size)
+	  };
       void impulseDOF(const int* flags,
 		      const int size);  
+      %clear(const int* flags, const int size);
       
       /** Set threshold for nonzero impulse amplitude.
        *
        * @param value Threshold for detecting nonzero amplitude.
        */
-      void threshold(const double value);
+      void threshold(const PylithScalar value);
       
       /** Get number of impulses.
        *
@@ -108,6 +113,16 @@ namespace pylith {
 	vertexField(const char* name,
 		    const pylith::topology::SolutionFields* fields =0);
       
+      /** Get cell field associated with integrator.
+       *
+       * @param name Name of cell field.
+       * @param fields Solution fields.
+       * @returns Cell field.
+       */
+      const pylith::topology::Field<pylith::topology::SubMesh>&
+      cellField(const char* name,
+		const pylith::topology::SolutionFields* fields =0);
+
     }; // class FaultCohesiveImpulses
 
   } // faults
