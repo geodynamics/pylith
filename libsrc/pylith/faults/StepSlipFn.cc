@@ -245,54 +245,6 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 } // slip
 
 // ----------------------------------------------------------------------
-// Get increment of slip on fault surface between time t0 and t1.
-void
-pylith::faults::StepSlipFn::slipIncr(topology::Field<topology::SubMesh>* slip,
-				     const PylithScalar t0,
-				     const PylithScalar t1)
-{ // slipIncr
-  assert(0 != slip);
-  assert(0 != _parameters);
-
-  // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const label_sequence::iterator verticesBegin = vertices->begin();
-  const label_sequence::iterator verticesEnd = vertices->end();
-
-  // Get sections
-  const topology::Field<topology::SubMesh>& finalSlip = 
-    _parameters->get("final slip");
-  const ALE::Obj<RealSection>& finalSlipSection = finalSlip.section();
-  assert(!finalSlipSection.isNull());
-  const topology::Field<topology::SubMesh>& slipTime =
-    _parameters->get("slip time");
-  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
-  assert(!slipTimeSection.isNull());
-  const ALE::Obj<RealSection>& slipSection = slip->section();
-  assert(!slipSection.isNull());
-
-  for (label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    finalSlipSection->restrictPoint(*v_iter, &_slipVertex[0], _slipVertex.size());
-    slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
-
-    const PylithScalar relTime0 = t0 - _slipTimeVertex;
-    const PylithScalar relTime1 = t1 - _slipTimeVertex;
-    if (relTime1 < 0.0 || relTime0 >= 0.0)
-      _slipVertex = 0.0;
-    
-    // Update field
-    slipSection->updateAddPoint(*v_iter, &_slipVertex[0]);
-  } // for
-
-  PetscLogFlops(vertices->size() * 2);
-} // slipIncr
-
-// ----------------------------------------------------------------------
 // Get final slip.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::StepSlipFn::finalSlip(void)

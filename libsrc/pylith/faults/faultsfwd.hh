@@ -48,6 +48,11 @@ namespace pylith {
     class StepSlipFn;
     class TimeHistorySlipFn;
 
+    class Nucleator;
+    class TractPerturbation;
+    class StaticPerturbation;
+    class SpaceTimePerturbation;
+
     class TopologyOps;
     template<typename Sieve, typename Renumbering> class ReplaceVisitor;
     template<typename Sieve> class ClassifyVisitor;
