@@ -158,17 +158,32 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   const topology::Field<topology::Mesh>& solution = fields.solution();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   assert(!solutionSection.isNull());
+  const int spaceDim = sieveMesh->getDimension();
+  const int numSpaces = solutionSection->getNumSpaces();
 
   err = PCSetType(*pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
   err = PCSetOptionsPrefix(*pc, "fs_"); CHECK_PETSC_ERROR(err);
   err = PCSetFromOptions(*pc); CHECK_PETSC_ERROR(err);
 
-  constructFieldSplit(solutionSection, 
-		      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-							      solutionSection), 
-		      solution.vector(), *pc);
+  bool separateComponents = formulation->splitFieldComponents();
+  if (separateComponents) {
+    constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
+			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
+								solutionSection), 
+			solution.vector(), *pc);
+  } else {
+    int numFields[2] = {spaceDim, (numSpaces > spaceDim) ? 1 : 0};
+    int* fields = new int[numSpaces];
+    for(PetscInt f=0; f < numSpaces; ++f) {
+      fields[f] = f;
+    } // for
+    constructFieldSplit(solutionSection, 2, numFields, fields,
+			sieveMesh->getFactory()->getGlobalOrder(sieveMesh,
+"default", solutionSection),
+			solution.vector(), *pc);
+    delete[] fields;
+  } // if/else
 
-  const int spaceDim = sieveMesh->getDimension();
   if (formulation->splitFields() && 
       formulation->useCustomConstraintPC() &&
       solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
@@ -208,10 +223,10 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
       _ctx.faultFieldName = "1";
       break;
     case 2 :
-      _ctx.faultFieldName = "2";
+      _ctx.faultFieldName = (separateComponents) ? "2" : "1";
       break;
     case 3 :
-      _ctx.faultFieldName = "3";
+      _ctx.faultFieldName = (separateComponents) ? "3" : "1";
       break;
     default:
       assert(0);

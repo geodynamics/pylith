@@ -75,6 +75,8 @@ class Formulation(PetscComponent, ModuleFormulation):
     ## @li \b use_cuda Enable use of CUDA for finite-element integrations.
     ## @li \b matrix_type Type of PETSc sparse matrix.
     ## @li \b split_fields Split solution fields into displacements
+    ## and Lagrange constraints.
+    ## @li \b split_field_components Split fields into components.
     ## @li \b use_custom_constraint_pc Use custom preconditioner for
     ##   Lagrange constraints.
     ## @li \b view_jacobian Flag to output Jacobian matrix when it is
@@ -98,6 +100,9 @@ class Formulation(PetscComponent, ModuleFormulation):
     useSplitFields = pyre.inventory.bool("split_fields", default=False)
     useSplitFields.meta['tip'] = "Split solution fields into displacements "\
         "and Lagrange multipliers for separate preconditioning."
+
+    useSplitFieldComponents = pyre.inventory.bool("split_field_components", default=False)
+    useSplitFieldComponents.meta['tip'] = "Split solution fields into components for separate preconditioning."
 
     useCustomConstraintPC = pyre.inventory.bool("use_custom_constraint_pc",
                                                 default=False)
@@ -333,6 +338,7 @@ class Formulation(PetscComponent, ModuleFormulation):
       self.inventory.useSplitFields = True
 
     ModuleFormulation.splitFields(self, self.inventory.useSplitFields)
+    ModuleFormulation.splitFieldComponents(self, self.inventory.useSplitFieldComponents)
     ModuleFormulation.useCustomConstraintPC(self,
                                             self.inventory.useCustomConstraintPC)
 
