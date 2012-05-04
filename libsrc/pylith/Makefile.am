@@ -54,13 +54,6 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/PointForce.cc \
 	faults/Fault.cc \
-	faults/SlipTimeFn.cc \
-	faults/StepSlipFn.cc \
-	faults/ConstRateSlipFn.cc \
-	faults/BruneSlipFn.cc \
-	faults/TimeHistorySlipFn.cc \
-	faults/LiuCosSlipFn.cc \
-	faults/EqKinSrc.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \
 	faults/FaultCohesive.cc \
@@ -69,6 +62,16 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveDyn.cc \
 	faults/FaultCohesiveImpulses.cc \
 	faults/FaultCohesiveTract.cc \
+	faults/EqKinSrc.cc \
+	faults/SlipTimeFn.cc \
+	faults/StepSlipFn.cc \
+	faults/ConstRateSlipFn.cc \
+	faults/BruneSlipFn.cc \
+	faults/TimeHistorySlipFn.cc \
+	faults/LiuCosSlipFn.cc \
+	faults/Nucleator.cc \
+	faults/TractPerturbation.cc \
+	faults/StaticPerturbation.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
