@@ -18,7 +18,8 @@
 
 /** @file libsrc/faults/TractPerturbation.hh
  *
- * @brief C++ abstract base class for traction perturbation function.
+ * @brief C++ implementation of a spatial and temporal perturbation in
+ * tractions.
  */
 
 #if !defined(pylith_faults_tractperturbation_hh)
@@ -26,18 +27,18 @@
 
 // Include directives ---------------------------------------------------
 #include "faultsfwd.hh" // forward declarations
+#include "pylith/bc/TimeDependent.hh" // ISA TimeDependent
 
-#include "pylith/topology/topologyfwd.hh" // USES Fields<SubMesh>
+#include "pylith/topology/topologyfwd.hh" // HOLSA FieldsNew
 
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // TractPerturbation -----------------------------------------------------------
 /**
- * @brief Abstract base class for traction perturbation function.
- *
- * Interface definition for traction perturbation function.
+ * @brief C++ implementation of a spatial and temporal perturbation in
+ * tractions.
  */
-class pylith::faults::TractPerturbation
+class pylith::faults::TractPerturbation : public pylith::bc::TimeDependent
 { // class TractPerturbation
   friend class TestTractPerturbation; // unit testing
 
@@ -55,45 +56,87 @@ public :
   virtual
   void deallocate(void);
   
+  /** Set label for traction perturbation.
+   *
+   * @param value Label.
+   */
+  void label(const char* value);
+
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh
+   * @param faultOrientation Orientation of fault.
    * @param normalizer Nondimensionalization of scales.
-   * @param originTime Origin time for earthquake source.
    */
-  virtual
   void initialize(const topology::SubMesh& faultMesh,
-		  const spatialdata::units::Nondimensional& normalizer) = 0;
+		  const topology::Field<topology::SubMesh>& faultOrientation,
+		  const spatialdata::units::Nondimensional& normalizer);
 
   /** Get traction perturbation on fault surface at time t.
    *
-   * @param tractionField Traction field over fault surface.
+   * @param tractionField Traction field over fault surface [output].
    * @param t Time t.
    */
-  virtual
   void traction(topology::Field<topology::SubMesh>* const tractionField,
-		const PylithScalar t) = 0;
+		const PylithScalar t);
   
-  /** Get amplitude of traction perturbation.
-   *
-   * @returns Traction field.
-   */
-  virtual
-  const topology::Field<topology::SubMesh>& amplitude(void) = 0;
-
   /** Get parameter fields.
    *
    * @returns Parameter fields.
    */
-  const topology::Fields<topology::Field<topology::SubMesh> >*
-  parameterFields(void) const;
+  const topology::FieldsNew<topology::SubMesh>* parameterFields(void) const;
+  
+  /** Get vertex field with traction perturbation information.
+   *
+   * @param name Name of field.
+   * @param fields Solution fields.
+   *
+   * @returns Traction vector field.
+   */
+  const topology::Field<topology::SubMesh>&
+  vertexField(const char* name,
+	      topology::SolutionFields* const fields =0);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
+  // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /// Parameters for slip time function.
-  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
+  /** Get label of boundary condition surface.
+   *
+   * @returns Label of surface (from mesh generator).
+   */
+  const char* _getLabel(void) const;
+
+  /** Query database for values.
+   *
+   * @param name Name of field associated with database.
+   * @param db Spatial database with values.
+   * @param querySize Number of values at each location.
+   * @param scale Dimension scale associated with values.
+   * @param normalizer Nondimensionalization of scales.
+   */
+  void _queryDB(const char* name,
+		spatialdata::spatialdb::SpatialDB* const db,
+		const int querySize,
+		const PylithScalar scale,
+		const spatialdata::units::Nondimensional& normalizer);
+
+  /** Calculate spatial and temporal variation of value.
+   *
+   * @param t Current time.
+   */
+  void _calculateValue(const PylithScalar t);
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+  
+  /// Parameters for perturbations.
+  topology::FieldsNew<topology::SubMesh>* _parameters;
+
+  /// Time scale for current time.
+  PylithScalar _timeScale;
+
+  /// Label for traction perturbation.
+  std::string _label;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
