@@ -1484,6 +1484,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
+  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
@@ -1494,7 +1496,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
         _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
-    _globalToFault(&buffer);
+    FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
 
   } else if (0 == strcasecmp("slip_rate", name)) {
@@ -1505,7 +1507,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
         _fields->get("buffer (vector)");
     buffer.copy(velRel);
     buffer.label("slip_rate");
-    _globalToFault(&buffer);
+    FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
@@ -1561,7 +1563,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     topology::Field<topology::SubMesh>& tractions =
         _fields->get("initial traction");
     buffer.copy(tractions);
-    _globalToFault(&buffer);
+    FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
 
   } else if (0 == strcasecmp("traction", name)) {

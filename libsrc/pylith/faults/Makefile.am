@@ -42,9 +42,7 @@ subpkginclude_HEADERS = \
 	StepSlipFn.icc \
 	TimeHistorySlipFn.hh \
 	TimeHistorySlipFn.icc \
-	Nucleator.hh \
 	TractPerturbation.hh \
-	StaticPerturbation.hh \
 	faultsfwd.hh
 
 noinst_HEADERS = \
