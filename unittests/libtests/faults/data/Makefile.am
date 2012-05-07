@@ -41,6 +41,7 @@ dist_noinst_DATA = \
 	tri3d_risetime.spatialdb \
 	tri3_initialtract.spatialdb \
 	tri3d_initialtract.spatialdb \
+	tri3_impulses.spatialdb \
 	quad4.mesh \
 	quad4b.mesh \
 	quad4c.mesh \
@@ -56,6 +57,7 @@ dist_noinst_DATA = \
 	quad4e_sliptime.spatialdb \
 	quad4e_risetime.spatialdb \
 	quad4_initialtract.spatialdb \
+	quad4_impulses.spatialdb \
 	tet4.mesh \
 	tet4b.mesh \
 	tet4c.mesh \
@@ -74,6 +76,7 @@ dist_noinst_DATA = \
 	tet4e_sliptime.spatialdb \
 	tet4e_risetime.spatialdb \
 	tet4_initialtract.spatialdb \
+	tet4_impulses.spatialdb \
 	hex8.mesh \
 	hex8b.mesh \
 	hex8c.mesh \
@@ -87,10 +90,7 @@ dist_noinst_DATA = \
 	hex8_sliptime.spatialdb \
 	hex8_risetime.spatialdb \
 	hex8_initialtract.spatialdb \
-	tri3traction.mesh \
-	quad4traction.mesh \
-	tet4traction.mesh \
-	hex8traction.mesh
+	hex8_impulses.spatialdb 
 
 noinst_TMP =
 

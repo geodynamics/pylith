@@ -92,10 +92,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    int rank = 0;
-    MPI_Comm_rank(mesh.comm(), &rank);
-    
-    if (!rank) {
+    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
+
+    const int commRank = sieveMesh->commRank();
+    if (!commRank) {
       _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
       // Create groups
@@ -109,9 +110,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     
     const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
       H5T_IEEE_F64BE : H5T_IEEE_F32BE;
-
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
 
     // Write vertex coordinates
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
@@ -149,7 +147,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
     
     // Create external dataset for coordinates    
-    if (!rank) {
+    if (!commRank) {
       const hsize_t ndims = 2;
       hsize_t dims[ndims];
       dims[0] = vNumbering->getGlobalSize();
@@ -240,7 +238,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
 
     // Create external dataset for cells
-    if (!rank) {
+    if (!commRank) {
       const hsize_t ndims = 2;
       hsize_t dims[ndims];
       dims[0] = cNumbering->getGlobalSize();
@@ -277,9 +275,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::close(void)
   _tstampIndex = 0;
   deallocate();
 
-  int rank = 0;
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-  if (!rank) {
+  int commRank = 0;
+  MPI_Comm_rank(PETSC_COMM_WORLD, &commRank);
+  if (!commRank) {
     Xdmf metafile;
     const std::string& hdf5filename = _hdf5Filename();
     const int indexExt = hdf5filename.find(".h5");
@@ -304,11 +302,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    int rank = 0;
-    MPI_Comm_rank(mesh.comm(), &rank);
-
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
+
+    const int commRank = sieveMesh->commRank();
+
     const std::string labelName = 
       (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
     ALE::Obj<numbering_type> vNumbering = 
@@ -364,7 +362,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 		  field.mesh().comm());
     assert(fiberDim > 0);
 
-    if (!rank) {
+    if (!commRank) {
       if (createdExternalDataset) {
 	// Add new external dataset to HDF5 file.
 	const int numTimeSteps
@@ -441,12 +439,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     PetscErrorCode err = 0;
 
-    int rank = 0;
-    err = MPI_Comm_rank(field.mesh().comm(), &rank);CHECK_PETSC_ERROR(err);
-
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = 
       field.mesh().sieveMesh();
     assert(!sieveMesh.isNull());
+
+    const int commRank = sieveMesh->commRank();
+
     int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
     int cellDepth = 0;
     err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, 
@@ -506,7 +504,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     assert(fiberDim > 0);
 
 
-    if (!rank) {
+    if (!commRank) {
       if (createdExternalDataset) {
       // Add new external dataset to HDF5 file.
 

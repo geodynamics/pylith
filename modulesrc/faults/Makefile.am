@@ -37,6 +37,7 @@ swig_sources = \
 	FaultCohesiveLagrange.i \
 	FaultCohesiveKin.i \
 	FaultCohesiveDyn.i \
+	FaultCohesiveImpulses.i \
 	FaultCohesiveTract.i \
 	../topology/SubMesh.i \
 	../feassemble/Quadrature.i \

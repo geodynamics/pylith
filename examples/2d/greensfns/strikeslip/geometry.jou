@@ -1,0 +1,64 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for strike-slip Green's functions
+# example.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 150.0 km x 100.0 km
+# -50.0 km <= x <= 50.0 km
+# -75.0 km <= y <= 75.0 km
+#
+#{blockWidth=100*km}
+#{blockLength=150*km}
+#{blockHeight=10*km}
+#
+#{faultLength=50.0*km}
+#
+brick x {blockWidth} y {blockLength} z {blockHeight}
+create midsurface volume 1 surface 1 2
+delete volume 1
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+
+# Create fault (yz plane) at x = 0.0
+split surface 7 across location position 0 {-blockLength/2.0} 0 location position 0 {blockLength/2.0} 0
+split curve 17 at position 0.0 {faultLength/2.0} 0.0
+split curve 23 at position 0.0 {-faultLength/2.0} 0.0
+curve 25 name "fault_surface"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all
+merge all

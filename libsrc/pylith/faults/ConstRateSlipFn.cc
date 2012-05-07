@@ -246,60 +246,6 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 } // slip
 
 // ----------------------------------------------------------------------
-// Get increment of slip on fault surface between time t0 and t1.
-void
-pylith::faults::ConstRateSlipFn::slipIncr(
-				      topology::Field<topology::SubMesh>* slip,
-				      const PylithScalar t0,
-				      const PylithScalar t1)
-{ // slipIncr
-  assert(0 != slip);
-  assert(0 != _parameters);
-
-  // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const label_sequence::iterator verticesBegin = vertices->begin();
-  const label_sequence::iterator verticesEnd = vertices->end();
-
-  // Get sections
-  const topology::Field<topology::SubMesh>& slipRate = 
-    _parameters->get("slip rate");
-  const ALE::Obj<RealSection>& slipRateSection = slipRate.section();
-  assert(!slipRateSection.isNull());
-  const topology::Field<topology::SubMesh>& slipTime =
-    _parameters->get("slip time");
-  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
-  assert(!slipTimeSection.isNull());
-  const ALE::Obj<RealSection>& slipSection = slip->section();
-  assert(!slipSection.isNull());
-
-  for (label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    slipRateSection->restrictPoint(*v_iter, &_slipRateVertex[0],
-				   _slipRateVertex.size());
-    slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
-
-    const PylithScalar relTime0 = t0 - _slipTimeVertex;
-    const PylithScalar relTime1 = t1 - _slipTimeVertex;
-    PylithScalar elapsedTime = 0.0;
-    if (relTime0 > 0)
-      elapsedTime = t1 - t0;
-    else if (relTime1 > 0)
-      elapsedTime = t1 - _slipTimeVertex;
-    _slipRateVertex *= elapsedTime; // Convert slip rate to slip
-    
-    // Update field
-    slipSection->updateAddPoint(*v_iter, &_slipRateVertex[0]);
-  } // for
-
-  PetscLogFlops(vertices->size() * (4 + _slipRateVertex.size()));
-} // slipIncr
-
-// ----------------------------------------------------------------------
 // Get final slip.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::ConstRateSlipFn::finalSlip(void)

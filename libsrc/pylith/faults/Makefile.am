@@ -34,6 +34,7 @@ subpkginclude_HEADERS = \
 	FaultCohesiveTract.hh \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
+	FaultCohesiveImpulses.hh \
 	LiuCosSlipFn.hh \
 	LiuCosSlipFn.icc \
 	SlipTimeFn.hh \
@@ -41,6 +42,7 @@ subpkginclude_HEADERS = \
 	StepSlipFn.icc \
 	TimeHistorySlipFn.hh \
 	TimeHistorySlipFn.icc \
+	TractPerturbation.hh \
 	faultsfwd.hh
 
 noinst_HEADERS = \

@@ -1,0 +1,60 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+# Set vertex spacing with increasing spacing away from fault
+# ----------------------------------------------------------------------
+#{bias_factor=1.05}
+
+# Function for computing discretization size at end of curve with bias
+#{fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+
+# ----------------------------------------------------------------------
+# Compute sizes at curve endpoints
+# ----------------------------------------------------------------------
+
+# dxA - size at vertex 13 14
+#{dxStart=dx}{curveL=Length(22)}{execute("dxA="//fun_dx)}
+
+# dxB - size at vertex 9 10 11 12
+#{dxStart=dxA}{curveL=Length(21)}{execute("dxC="//fun_dx)}
+
+# ----------------------------------------------------------------------
+# Reset sizes
+# ----------------------------------------------------------------------
+curve all scheme default
+surface all sizing function none
+
+# Set size on faults
+curve fault_surface size {dx}
+
+# Set bias on curves extending from faults
+curve 22 scheme bias fine size {dx} factor {bias_factor} start vertex 15
+curve 24 scheme bias fine size {dx} factor {bias_factor} start vertex 16
+
+# A to B
+curve 18 scheme bias fine size {dxA} factor {bias_factor} start vertex 13
+curve 21 scheme bias fine size {dxA} factor {bias_factor} start vertex 13
+curve 19 scheme bias fine size {dxA} factor {bias_factor} start vertex 14
+curve 20 scheme bias fine size {dxA} factor {bias_factor} start vertex 14
+
+# B to B
+curve 16 size {dxC}
+curve 14 size {dxC}
+
+surface 8 9 sizing function type bias start curve fault_surface factor {bias_factor}
+
+# End of file
+
+

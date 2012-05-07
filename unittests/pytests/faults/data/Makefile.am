@@ -24,6 +24,7 @@ dist_noinst_DATA = \
 	tri3_peakrate.spatialdb \
 	tri3_initialtractions.spatialdb \
 	tri3_staticfriction.spatialdb \
+	tri3_impulses.spatialdb \
 	slipfn.timedb
 
 noinst_TMP =

@@ -86,6 +86,9 @@ class TestApp(Script):
     from TestFaultCohesiveDyn import TestFaultCohesiveDyn
     suite.addTest(unittest.makeSuite(TestFaultCohesiveDyn))
 
+    from TestFaultCohesiveImpulses import TestFaultCohesiveImpulses
+    suite.addTest(unittest.makeSuite(TestFaultCohesiveImpulses))
+
     from TestSingleRupture import TestSingleRupture
     suite.addTest(unittest.makeSuite(TestSingleRupture))
 

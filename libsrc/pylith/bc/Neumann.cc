@@ -23,7 +23,6 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -63,6 +62,7 @@ pylith::bc::Neumann::~Neumann(void)
 void
 pylith::bc::Neumann::deallocate(void)
 { // deallocate
+  TimeDependent::deallocate();
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -259,7 +259,7 @@ pylith::bc::Neumann::_queryDatabases(void)
     _parameters->add("rate", "traction_rate",
 		     numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
 		     rateScale);
-    _parameters->add("rate time", "traction_rate__time",
+    _parameters->add("rate time", "traction_rate_time",
 		     numQuadPts, topology::FieldBase::MULTI_SCALAR,
 		     timeScale);
   } // if

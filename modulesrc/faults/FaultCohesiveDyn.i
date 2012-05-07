@@ -59,6 +59,16 @@ namespace pylith {
        */
       void zeroTolerance(const PylithScalar value);
 
+      /** Set flag used to determine when fault is traction free when it
+       * opens or it still imposes any initial tractions.
+       *
+       * If true, acts as a frictional contact. If false, one can simulate
+       * a dike opening.
+       *
+       * @param value Nondimensional tolerance
+       */
+      void openFreeSurf(const bool value);
+
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.
        *

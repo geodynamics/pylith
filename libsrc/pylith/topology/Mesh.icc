@@ -101,6 +101,15 @@ pylith::topology::Mesh::comm(void) const {
   return _comm;
 }
     
+// Get MPI rank.
+inline
+int
+pylith::topology::Mesh::commRank(void) const {
+  int rank = 0;
+  MPI_Comm_rank(_comm, &rank);
+  return rank;
+}
+    
 // Print mesh to stdout.
 inline
 void

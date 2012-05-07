@@ -58,22 +58,21 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 { // distribute
   assert(0 != newMesh);
 
-  int rank = 0;
-  MPI_Comm_rank(origMesh.comm(), &rank);
+  const int commRank = origMesh.commRank();
 
   journal::info_t info("distributor");
     
   newMesh->coordsys(origMesh.coordsys());
   
   if (0 == strcasecmp(partitioner, "")) {
-    if (0 == rank) {
+    if (0 == commRank) {
       info << journal::at(__HERE__)
 	   << "Distributing mesh using dumb partitioner." << journal::endl;
     } // if
     _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
 #if defined(PETSC_HAVE_CHACO)
   } else if (0 == strcasecmp(partitioner, "chaco")) {
-    if (0 == rank) {
+    if (0 == commRank) {
       info << journal::at(__HERE__)
 	   << "Distributing mesh using 'chaco' partitioner." << journal::endl;
     } // if
@@ -81,14 +80,14 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 #endif
 #if defined(PETSC_HAVE_PARMETIS)
   } else if (0 == strcasecmp(partitioner, "parmetis")) {
-    if (0 == rank) {
+    if (0 == commRank) {
       info << journal::at(__HERE__)
 	   << "Distributing mesh using 'parmetis' partitioner." << journal::endl;
     } // if
    _distribute<ALE::DistributionNew<SieveMesh, ALE::Partitioner<ALE::ParMetis::Partitioner<> > > >(newMesh, origMesh);
 #endif
   } else {
-    if (0 == rank) {
+    if (0 == commRank) {
       info << journal::at(__HERE__)
 	   << "Unknown partitioner '" << partitioner
 	   << "', distribution mesh using dumb partitioner." << journal::endl;
@@ -107,9 +106,8 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   
   journal::info_t info("distributor");
     
-  int rank = 0;
-  MPI_Comm_rank(mesh.comm(), &rank);
-  if (0 == rank) {
+  const int commRank = mesh.commRank();
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Writing partition." << journal::endl;
   } // if
@@ -127,7 +125,7 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
 
   const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  PylithScalar rankReal = PylithScalar(sieveMesh->commRank());
+  PylithScalar rankReal = PylithScalar(commRank);
   assert(sieveMesh->height() > 0);
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
     sieveMesh->heightStratum(0);
@@ -167,9 +165,8 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 
   journal::info_t info("distributor");
     
-  int rank = 0;
-  MPI_Comm_rank(origMesh.comm(), &rank);
-  if (0 == rank) {
+  const int commRank = origMesh.commRank();
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Partitioning and distributing the mesh." << journal::endl;
   } // if
@@ -206,18 +203,18 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 				      renumbering, 
 				      sendMeshOverlap, recvMeshOverlap);
   if (origSieveMesh->debug()) {
-    std::cout << "["<<origSieveMesh->commRank()<<"]: Mesh Renumbering:"
+    std::cout << "["<<commRank<<"]: Mesh Renumbering:"
 	      << std::endl;
     for (SieveMesh::renumbering_type::const_iterator r_iter = renumbering.begin();
 	 r_iter != renumbering.end();
 	 ++r_iter) {
-      std::cout << "["<<origSieveMesh->commRank()<<"]:   global point " 
+      std::cout << "["<<commRank<<"]:   global point " 
 		<< r_iter->first << " --> " << " local point " 
 		<< r_iter->second << std::endl;
     } // for
   } // if
 
-  if (0 == rank) {
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Checking the overlap." << journal::endl;
   } // if
@@ -246,7 +243,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshCoordinates");
 
   // Distribute the coordinates
-  if (0 == rank) {
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Distribution the vertex coordinates." << journal::endl;
   } // if
@@ -267,7 +264,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshRealSections");
 
   // Distribute other sections
-  if (0 == rank) {
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Distribution other sections." << journal::endl;
   } // if
@@ -347,7 +344,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshLabels");
 
   // Distribute labels
-  if (0 == rank) {
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Distributing labels." << journal::endl;
   } // if
@@ -395,7 +392,7 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   logger.stagePush("DistributedMeshOverlap");
 
   // Create the parallel overlap
-  if (0 == rank) {
+  if (0 == commRank) {
     info << journal::at(__HERE__)
 	 << "Creating the parallel overlap." << journal::endl;
   } // if

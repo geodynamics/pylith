@@ -54,6 +54,7 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDBInitialTract );
   CPPUNIT_TEST( testZeroTolerance );
+  CPPUNIT_TEST( testOpenFreeSurf );
 
   // Tests in derived classes:
   // testInitialize()
@@ -92,6 +93,9 @@ public:
 
   /// Test zeroTolerance().
   void testZeroTolerance(void);
+
+  /// Test openFreeSurf().
+  void testOpenFreeSurf(void);
 
   /// Test initialize().
   void testInitialize(void);

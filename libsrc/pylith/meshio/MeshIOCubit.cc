@@ -62,7 +62,7 @@ pylith::meshio::MeshIOCubit::_read(void)
 { // _read
   assert(_mesh);
 
-  int rank = 0;
+  const int commRank = _mesh->commRank();
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -72,8 +72,7 @@ pylith::meshio::MeshIOCubit::_read(void)
   int_array cells;
   int_array materialIds;
 
-  MPI_Comm_rank(_mesh->comm(), &rank);
-  if (0 == rank) {
+  if (0 == commRank) {
     try {
       ExodusII exofile(_filename.c_str());
 

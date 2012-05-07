@@ -43,6 +43,9 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   
   \b Properties
   @li \b zero_tolerance Tolerance for detecting zero values.
+  @li \b open_free_surface If True, enforce traction free surface when
+    the fault opens, otherwise use initial tractions even when the
+    fault opens.
   
   \b Facilities
   @li \b db_initial_tractions Spatial database for initial tractions.
@@ -59,6 +62,11 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   zeroTolerance = pyre.inventory.float("zero_tolerance", default=1.0e-10,
                                        validator=pyre.inventory.greaterEqual(0.0))
   zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
+
+  openFreeSurf = pyre.inventory.bool("open_free_surface", default=False)
+  openFreeSurf.meta['tip'] = "If True, enforce traction free surface when " \
+    "the fault opens, otherwise use initial tractions even when the " \
+    "fault opens."
 
   db = pyre.inventory.facility("db_initial_tractions", family="spatial_database",
                                factory=NullComponent)
@@ -205,6 +213,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
       ModuleFaultCohesiveDyn.dbInitialTract(self, self.inventory.db)
     ModuleFaultCohesiveDyn.frictionModel(self, self.inventory.friction)
     ModuleFaultCohesiveDyn.zeroTolerance(self, self.inventory.zeroTolerance)
+    ModuleFaultCohesiveDyn.openFreeSurf(self, self.inventory.openFreeSurf)
     self.output = self.inventory.output
     return
 

@@ -135,10 +135,10 @@ private :
   /** Write time stamp to file.
    *
    * @param t Time in seconds.
-   * @param rank Processor rank in MPI communicator.
+   * @param commRank Processor rank in MPI communicator.
    */
   void _writeTimeStamp(const PylithScalar t,
-		       const int rank);
+		       const int commRank);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

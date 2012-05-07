@@ -58,7 +58,8 @@ dist_noinst_DATA = \
 	spatialdb/powerlaw/powerlaw_gendb.cfg \
 	spatialdb/powerlaw/powerlaw_params.spatialdb \
 	spatialdb/powerlaw/powerlaw_points.txt \
-	spatialdb/powerlaw/temperature.spatialdb
+	spatialdb/powerlaw/temperature.spatialdb \
+	spatialdb/tractions_opening.spatialdb
 
 
 SUBDIRS = \

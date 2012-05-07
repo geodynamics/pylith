@@ -271,7 +271,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     # Setup quadrature
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 1
     cell.inventory.order = 1
     cell._configure()

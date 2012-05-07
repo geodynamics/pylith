@@ -137,7 +137,7 @@ pylith::problems::SolverLinear::solve(
     err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
     err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-    assert(solutionSection->getNumSpaces() == num);
+    // Now only true if splitting components assert(solutionSection->getNumSpaces() == num);
 
     MatStructure flag;
     err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag);CHECK_PETSC_ERROR(err);
