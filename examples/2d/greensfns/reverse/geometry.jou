@@ -1,0 +1,69 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for strike-slip Green's functions
+# example.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 150.0 km x 80.0 km
+# -75.0 km <= x <= 75.0 km
+# -80.0 km <= y <= 0.0 km
+#
+#{blockWidth=150*km}
+#{blockHeight=80*km}
+#{blockLength=10*km}
+#
+#{faultWidth=30.0*km}
+#{faultDipAngle=45.0}
+#
+#{xoffset=0.5*faultWidth*cosd(faultDipAngle)}
+
+brick x {blockWidth} y {blockHeight} z {blockLength}
+volume 1 move x {-xoffset} y {-blockHeight/2.0} z 0.0
+
+create midsurface volume 1 surface 1 2
+delete volume 1
+
+# ----------------------------------------------------------------------
+# Create fault surface
+# ----------------------------------------------------------------------
+
+# Create fault (yz plane) at x = 0.0
+split surface 7 across location position 0 0 0 location position {-blockHeight/tand(faultDipAngle)} {-blockHeight} 0
+split curve 17 at position {-faultWidth*cosd(faultDipAngle)} {-faultWidth*sind(faultDipAngle)} 0
+curve 23 name "fault_surface"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint all
+merge all
+

@@ -91,6 +91,14 @@ protected :
 		   const topology::Jacobian& jacobian,
 		   const topology::SolutionFields& fields);
 
+  /**
+   */
+  static
+  int
+  _epsilon(int i,
+	   int j,
+	   int k);
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 

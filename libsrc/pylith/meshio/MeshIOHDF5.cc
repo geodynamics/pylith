@@ -49,8 +49,7 @@ void
 MeshIOHDF5::read(ALE::Obj<ALE::PetscMesh>* pMesh)
 { // read
   assert(0 != pMesh);
-  MPI_Comm comm = PETSC_COMM_WORLD;
-  int rank;
+  const int commRank = pMesh->commRank();
   int meshDim = 0;
   int numDims = 0;
   int numVertices = 0;
@@ -59,8 +58,7 @@ MeshIOHDF5::read(ALE::Obj<ALE::PetscMesh>* pMesh)
   PylithScalar* coordinates = 0;
   int* elements = 0;
 
-  MPI_Comm_rank(comm, &rank);
-  if (!rank) {
+  if (!commRank) {
     hid_t filein = H5Fopen(_filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
     if (filein < 0) {
       std::ostringstream msg;

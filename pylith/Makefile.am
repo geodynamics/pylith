@@ -40,6 +40,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
 	faults/FaultCohesiveDyn.py \
+	faults/FaultCohesiveImpulses.py \
 	faults/FaultCohesiveTract.py \
 	faults/LiuCosSlipFn.py \
 	faults/SingleRupture.py \
@@ -108,6 +109,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputFaultDyn.py \
+	meshio/OutputFaultImpulses.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
@@ -145,6 +147,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SolverNonlinear.py \
 	problems/SolverLumped.py \
 	problems/TimeDependent.py \
+	problems/GreensFns.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \

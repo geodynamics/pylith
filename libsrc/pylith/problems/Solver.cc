@@ -158,17 +158,99 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   const topology::Field<topology::Mesh>& solution = fields.solution();
   const ALE::Obj<RealSection>& solutionSection = solution.section();
   assert(!solutionSection.isNull());
+  const int spaceDim = sieveMesh->getDimension();
+  const int numSpaces = solutionSection->getNumSpaces();
 
   err = PCSetType(*pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
   err = PCSetOptionsPrefix(*pc, "fs_"); CHECK_PETSC_ERROR(err);
   err = PCSetFromOptions(*pc); CHECK_PETSC_ERROR(err);
 
-  constructFieldSplit(solutionSection, 
-		      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", 
-							      solutionSection), 
-		      solution.vector(), *pc);
+  bool separateComponents = formulation->splitFieldComponents();
+  if (separateComponents) {
+    constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
+			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), PETSC_NULL,
+			solution.vector(), *pc);
+  } else {
+    int numFields[2] = {spaceDim, (numSpaces > spaceDim) ? 1 : 0};
+    MatNullSpace nullsp[2] = {PETSC_NULL, PETSC_NULL};
+    int* fields = new int[numSpaces];
+    
+    /* Create rigid body null space */
+    const ALE::Obj<RealSection>& coordinatesSection = sieveMesh->getRealSection("coordinates");
+    assert(!coordinatesSection.isNull());
+    const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+    assert(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+    PetscInt dim = spaceDim;
+    Vec mode[6];
 
-  const int spaceDim = sieveMesh->getDimension();
+    if (dim > 1) {
+      PetscInt n;
+      err = VecGetLocalSize(solution.vector(), &n);CHECK_PETSC_ERROR(err);
+      const int m = (dim * (dim + 1)) / 2;
+      err = VecCreate(sieveMesh->comm(), &mode[0]);CHECK_PETSC_ERROR(err);
+      err = VecSetSizes(mode[0], n, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+      err = VecSetUp(mode[0]);CHECK_PETSC_ERROR(err);
+      for (int i = 1; i < m; ++i) {
+	err = VecDuplicate(mode[0], &mode[i]);CHECK_PETSC_ERROR(err);
+      } // for
+      // :KLUDGE: Assume P1
+      for (int d=0; d < dim; ++d) {
+        PetscScalar values[3] = {0.0, 0.0, 0.0};
+	
+        values[d] = 1.0;
+        solutionSection->zero();
+        for(SieveMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
+          solutionSection->updatePoint(*v_iter, values);
+        } // for
+        solution.scatterSectionToVector();
+        err = VecCopy(solution.vector(), mode[d]);CHECK_PETSC_ERROR(err);
+      } // for
+      for (int d = dim; d < m; ++d) {
+        PetscInt k = (dim > 2) ? d - dim : d;
+	
+        solutionSection->zero();
+        for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
+          PetscScalar values[3] = {0.0, 0.0, 0.0};
+          const PylithScalar* coords  = coordinatesSection->restrictPoint(*v_iter);
+
+          for (int i=0; i < dim; ++i) {
+            for (int j=0; j < dim; ++j) {
+              values[j] += _epsilon(i, j, k)*coords[i];
+            } // for
+          } // for
+          solutionSection->updatePoint(*v_iter, values);
+        }
+        solution.scatterSectionToVector();
+        err = VecCopy(solution.vector(), mode[d]);CHECK_PETSC_ERROR(err);
+      } // for
+      for (int i=0; i < dim; ++i) {
+	err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
+      } // for
+      /* Orthonormalize system */
+      for (int i = dim; i < m; ++i) {
+        PetscScalar dots[6];
+
+        err = VecMDot(mode[i], i, mode, dots);CHECK_PETSC_ERROR(err);
+        for(int j=0; j < i; ++j) dots[j] *= -1.0;
+        err = VecMAXPY(mode[i], i, dots, mode);CHECK_PETSC_ERROR(err);
+        err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
+      } // for
+      err = MatNullSpaceCreate(sieveMesh->comm(), PETSC_FALSE, m, mode, &nullsp[0]);CHECK_PETSC_ERROR(err);
+      for(int i=0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
+    } // if
+
+    for (PetscInt f=0; f < numSpaces; ++f) {
+      fields[f] = f;
+    } // for
+    constructFieldSplit(solutionSection, 2, numFields, fields,
+                        sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), nullsp,
+                        solution.vector(), *pc);
+    err = MatNullSpaceDestroy(&nullsp[0]);CHECK_PETSC_ERROR(err);
+    delete [] fields;
+  } // if/else
+
   if (formulation->splitFields() && 
       formulation->useCustomConstraintPC() &&
       solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
@@ -208,10 +290,10 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
       _ctx.faultFieldName = "1";
       break;
     case 2 :
-      _ctx.faultFieldName = "2";
+      _ctx.faultFieldName = (separateComponents) ? "2" : "1";
       break;
     case 3 :
-      _ctx.faultFieldName = "3";
+      _ctx.faultFieldName = (separateComponents) ? "3" : "1";
       break;
     default:
       assert(0);
@@ -221,6 +303,65 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     _ctx.faultA = _jacobianPCFault;
   } // if
 } // _setupFieldSplit
+
+// ----------------------------------------------------------------------
+int
+pylith::problems::Solver::_epsilon(int i, 
+				   int j, 
+				   int k)
+{ // _epsilon
+  switch(i) {
+  case 0:
+    switch(j) {
+    case 0: return 0;
+    case 1:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 0;
+      case 2: return 1;
+      }
+    case 2:
+      switch(k) {
+      case 0: return 0;
+      case 1: return -1;
+      case 2: return 0;
+      }
+    }
+  case 1:
+    switch(j) {
+    case 0:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 0;
+      case 2: return -1;
+      }
+    case 1: return 0;
+    case 2:
+      switch(k) {
+      case 0: return 1;
+      case 1: return 0;
+      case 2: return 0;
+      }
+    }
+  case 2:
+    switch(j) {
+    case 0:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 1;
+      case 2: return 0;
+      }
+    case 1:
+      switch(k) {
+      case 0: return -1;
+      case 1: return 0;
+      case 2: return 0;
+      }
+    case 2: return 0;
+    }
+  }
+  return 0;
+} // _epsilon
 
 
 // End of file

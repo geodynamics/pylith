@@ -24,8 +24,6 @@
 
 #include "data/CohesiveDynData.hh" // USES CohesiveDynData
 
-#include "pylith/faults/EqKinSrc.hh" // USES EqKinSrc
-#include "pylith/faults/BruneSlipFn.hh" // USES BruneSlipFn
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
@@ -110,6 +108,20 @@ pylith::faults::TestFaultCohesiveDyn::testZeroTolerance(void)
   fault.zeroTolerance(value);
   CPPUNIT_ASSERT_EQUAL(value, fault._zeroTolerance);
  } // zeroTolerance
+
+// ----------------------------------------------------------------------
+// Test openFreeSurf().
+void
+pylith::faults::TestFaultCohesiveDyn::testOpenFreeSurf(void)
+{ // testOpenFreeSurf
+  FaultCohesiveDyn fault;
+
+  CPPUNIT_ASSERT_EQUAL(true, fault._openFreeSurf); // default
+
+  const bool value = false;
+  fault.openFreeSurf(value);
+  CPPUNIT_ASSERT_EQUAL(value, fault._openFreeSurf);
+ } // testOpenFreeSurf
 
 // ----------------------------------------------------------------------
 // Test initialize().

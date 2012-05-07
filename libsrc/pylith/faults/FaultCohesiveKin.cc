@@ -142,7 +142,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 
   // Transform slip from local (fault) coordinate system to relative
   // displacement field in global coordinate system
-  _faultToGlobal(&dispRel);
+  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  FaultCohesiveLagrange::faultToGlobal(&dispRel, orientation);
 
   _logger->eventEnd(setupEvent);
 
@@ -164,6 +165,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
 
+  const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+
   const int slipStrLen = strlen("final_slip");
   const int timeStrLen = strlen("slip_time");
 
@@ -177,7 +180,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
         _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
-    _globalToFault(&buffer);
+    FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {

@@ -29,6 +29,8 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+
 #include "pylith/utils/types.hh" // HASA PylithScalar
 #include "pylith/utils/array.hh" // HASA scalar_array
 
@@ -79,7 +81,6 @@ public :
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
-   * @param cs Coordinate system for mesh
    * @param normalizer Nondimensionalization of scales.
    * @param originTime Origin time for earthquake source.
    */
@@ -97,18 +98,6 @@ public :
   void slip(topology::Field<topology::SubMesh>* const slipField,
 	    const PylithScalar t);
   
-  /** Get slip increment on fault surface between time t0 and t1.
-   *
-   * @param slipField Slip field over fault surface.
-   * @param t0 Time t.
-   * @param t1 Time t+dt.
-   * 
-   * @returns Increment in slip vector as left-lateral/reverse/normal.
-   */
-  void slipIncr(topology::Field<topology::SubMesh>* slipField,
-		const PylithScalar t0,
-		const PylithScalar t1);
-
   /** Get final slip.
    *
    * @returns Final slip.
