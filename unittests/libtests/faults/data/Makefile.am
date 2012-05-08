@@ -40,6 +40,7 @@ dist_noinst_DATA = \
 	tri3d_sliptime.spatialdb \
 	tri3d_risetime.spatialdb \
 	tri3_initialtract.spatialdb \
+	tri3_changetract.spatialdb \
 	tri3d_initialtract.spatialdb \
 	tri3_impulses.spatialdb \
 	quad4.mesh \

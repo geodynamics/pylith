@@ -108,7 +108,7 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
     _parameters->add("change", "change_traction", spaceDim, topology::FieldBase::VECTOR, pressureScale);
     _parameters->add("change time", "change_traction_time", 1, topology::FieldBase::SCALAR, timeScale);
   } // if
-  _parameters->allocate(topology::FieldBase::VERTICES_FIELD, 1);
+  _parameters->allocate(topology::FieldBase::VERTICES_FIELD, 0);
   const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
   assert(!parametersSection.isNull());
 
@@ -247,22 +247,17 @@ pylith::faults::TractPerturbation::traction(topology::Field<topology::SubMesh>* 
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   // Get sections
-  scalar_array tractionsVertex(spaceDim);
-  const ALE::Obj<SubRealUniformSection>& parametersSection =
-    _parameters->section();
+  const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
   assert(!parametersSection.isNull());
   const int parametersFiberDim = _parameters->fiberDim();
   const int valueIndex = _parameters->sectionIndex("value");
   const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueFiberDim == tractionsVertex.size());
   assert(valueIndex+valueFiberDim <= parametersFiberDim);
 
   const ALE::Obj<RealSection>& tractionSection = tractionField->section();
   assert(!tractionSection.isNull());
 
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
     assert(parametersFiberDim == parametersSection->getFiberDimension(*v_iter));
     const PylithScalar* parametersVertex = parametersSection->restrictPoint(*v_iter);
     assert(parametersVertex);
@@ -270,8 +265,8 @@ pylith::faults::TractPerturbation::traction(topology::Field<topology::SubMesh>* 
     assert(tractionVertex);
 
     // Update field
-    assert(spaceDim == tractionSection->getFiberDimension(*v_iter));
-    tractionSection->updateAddPoint(*v_iter, &tractionsVertex[0]);
+    assert(valueFiberDim == tractionSection->getFiberDimension(*v_iter));
+    tractionSection->updateAddPoint(*v_iter, tractionVertex);
   } // for
 
 } // traction
@@ -359,8 +354,8 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   scalar_array coordsVertexGlobal(spaceDim);
 
   // Get sections.
-  const ALE::Obj<RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
+  const ALE::Obj<RealSection>& coordsSection = sieveMesh->getRealSection("coordinates");
+  assert(!coordsSection.isNull());
 
   const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
   assert(!parametersSection.isNull());
@@ -372,6 +367,8 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
 
   // Loop over cells in boundary mesh and perform queries.
   for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter != verticesEnd; ++v_iter) {
+    assert(spaceDim == coordsSection->getFiberDimension(*v_iter));
+    coordsSection->restrictPoint(*v_iter, &coordsVertexGlobal[0], coordsVertexGlobal.size());
     normalizer.dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
     
     valuesVertex = 0.0;

@@ -253,7 +253,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
   if (formulation->splitFields() && 
       formulation->useCustomConstraintPC() &&
-      solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
+      numSpaces > spaceDim) {
     // We have split fields with a custom constraint preconditioner
     // and constraints exist.
 
