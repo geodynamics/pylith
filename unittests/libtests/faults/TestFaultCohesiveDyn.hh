@@ -52,7 +52,7 @@ class pylith::faults::TestFaultCohesiveDyn: public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestFaultCohesiveDyn );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testDBInitialTract );
+  CPPUNIT_TEST( testTractPerturbation );
   CPPUNIT_TEST( testZeroTolerance );
   CPPUNIT_TEST( testOpenFreeSurf );
 
@@ -71,6 +71,7 @@ protected:
 
   CohesiveDynData* _data; ///< Data for testing
   feassemble::Quadrature<topology::SubMesh>* _quadrature; ///< Fault quad.
+  TractPerturbation* _tractPerturbation; ///< Initial tractions.
   spatialdata::spatialdb::SpatialDB* _dbInitialTract; ///< Initial tractions.
   friction::FrictionModel* _friction; ///< Friction model
   spatialdata::spatialdb::SpatialDB* _dbFriction; ///< Friction parameters.
@@ -88,8 +89,8 @@ public:
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test dbInitialTract().
-  void testDBInitialTract(void);
+  /// Test tractPerturbation().
+  void testTractPerturbation(void);
 
   /// Test zeroTolerance().
   void testZeroTolerance(void);

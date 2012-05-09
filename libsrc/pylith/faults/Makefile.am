@@ -26,6 +26,14 @@ subpkginclude_HEADERS = \
 	ConstRateSlipFn.icc \
 	CohesiveTopology.hh \
 	EqKinSrc.hh \
+	LiuCosSlipFn.hh \
+	LiuCosSlipFn.icc \
+	SlipTimeFn.hh \
+	StepSlipFn.hh \
+	StepSlipFn.icc \
+	TimeHistorySlipFn.hh \
+	TimeHistorySlipFn.icc \
+	TractPerturbation.hh \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
@@ -35,14 +43,6 @@ subpkginclude_HEADERS = \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
 	FaultCohesiveImpulses.hh \
-	LiuCosSlipFn.hh \
-	LiuCosSlipFn.icc \
-	SlipTimeFn.hh \
-	StepSlipFn.hh \
-	StepSlipFn.icc \
-	TimeHistorySlipFn.hh \
-	TimeHistorySlipFn.icc \
-	TractPerturbation.hh \
 	faultsfwd.hh
 
 noinst_HEADERS = \

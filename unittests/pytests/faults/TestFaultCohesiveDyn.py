@@ -268,7 +268,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     quadrature.inventory.cell = cell
     quadrature._configure()
 
-    # Setup earthquake source
+    # Setup rupture info
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     ioTractions = SimpleIOAscii()
@@ -278,7 +278,11 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     dbTractions.inventory.iohandler = ioTractions
     dbTractions.inventory.label = "initial tractions"
     dbTractions._configure()
-    
+    from pylith.faults.TractPerturbation import TractPerturbation
+    tract = TractPerturbation()
+    tract.inventory.dbInitial = dbTractions
+    tract._configure()
+
     ioFriction = SimpleIOAscii()
     ioFriction.inventory.filename = "data/tri3_staticfriction.spatialdb"
     ioFriction._configure()
@@ -301,6 +305,7 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     fault.inventory.faultLabel = "fault"
     fault.inventory.upDir = [0, 0, 1]
     fault.inventory.faultQuadrature = quadrature
+    fault.inventory.tract = tract
     fault.inventory.friction = friction
     fault._configure()
 

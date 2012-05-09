@@ -26,6 +26,8 @@
 from DirichletBC import DirichletBC
 from bc import DirichletBoundary as ModuleDirichletBoundary
 
+from pylith.utils.NullComponent import NullComponent
+
 # DirichletBoundary class
 class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
   """
@@ -69,12 +71,7 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     self._loggingPrefix = "DiBC "
     self.availableFields = \
         {'vertex': \
-           {'info': ["initial-value", 
-                     "rate-of-change", 
-                     "change-in-value", 
-                     "rate-start-time", 
-                     "change-start-time",
-                     ],
+           {'info': [],
             'data': []},
          'cell': \
            {'info': [],
@@ -88,6 +85,15 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
     """
     DirichletBC.preinitialize(self, mesh)
     self.output.preinitialize(self)
+
+    fields = []
+    if not isinstance(self.inventory.dbInitial, NullComponent):
+      fields += ["initial_displacement"]
+    if not isinstance(self.inventory.dbRate, NullComponent):
+      fields += ["rate_displacement", "rate_time_displacement"]
+    if not isinstance(self.inventory.dbChange, NullComponent):
+      fields += ["change_displacement", "change_time_displacement"]
+    self.availableFields['vertex']['info'] += fields
     return
 
 
