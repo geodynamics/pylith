@@ -17,6 +17,12 @@ CURRENT BUGS
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
+* Add pytables to PyLith binary
+
+* Add pytables to PyLith installer
+
+* Setup fieldsplit for SolverNonlinear [Matt]
+
 * 2-D materials
 
   + PowerLawPlaneStrain (power law plane strain ) [Charles]
