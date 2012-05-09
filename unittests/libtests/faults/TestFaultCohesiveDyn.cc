@@ -185,7 +185,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   if (fault._tractPerturbation) {
     // :KLUDGE: Only check initial value
     const ALE::Obj<RealSection>& initialTractionsSection = 
-      fault.vertexField("initial_traction").section();
+      fault.vertexField("initial_value").section();
     CPPUNIT_ASSERT(!initialTractionsSection.isNull());
 
     //initialTractionsSection->view("INITIAL TRACTIONS"); // DEBUGGING

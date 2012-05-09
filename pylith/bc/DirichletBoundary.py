@@ -88,11 +88,11 @@ class DirichletBoundary(DirichletBC, ModuleDirichletBoundary):
 
     fields = []
     if not isinstance(self.inventory.dbInitial, NullComponent):
-      fields += ["initial_displacement"]
+      fields += ["initial_value"]
     if not isinstance(self.inventory.dbRate, NullComponent):
-      fields += ["rate_displacement", "rate_time_displacement"]
+      fields += ["rate_of_change", "rate_start_time"]
     if not isinstance(self.inventory.dbChange, NullComponent):
-      fields += ["change_displacement", "change_time_displacement"]
+      fields += ["change_in_value", "change_start_time"]
     self.availableFields['vertex']['info'] += fields
     return
 

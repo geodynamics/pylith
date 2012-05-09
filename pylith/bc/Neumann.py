@@ -88,11 +88,11 @@ class Neumann(BoundaryCondition,
 
     fields = []
     if not isinstance(self.inventory.dbInitial, NullComponent):
-      fields += ["initial_traction"]
+      fields += ["initial_value"]
     if not isinstance(self.inventory.dbRate, NullComponent):
-      fields += ["rate_traction", "rate_time_traction"]
+      fields += ["rate_of_change", "rate_start_time"]
     if not isinstance(self.inventory.dbChange, NullComponent):
-      fields += ["change_traction", "change_time_traction"]
+      fields += ["change_in_value", "change_start_time"]
     self.availableFields['cell']['info'] += fields
     return
 
