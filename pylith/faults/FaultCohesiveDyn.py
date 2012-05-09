@@ -126,6 +126,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                                                  "dip_dir"]
 
     if not isinstance(self.tract, NullComponent):
+      print "HERE",self.tract.availableFields
       self.availableFields['vertex']['info'] += self.tract.availableFields['vertex']['info']
 
     self.availableFields['vertex']['info'] += \
