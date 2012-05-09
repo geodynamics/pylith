@@ -104,15 +104,15 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
   logger.stagePop();
 
-  if (0 == strcasecmp(name, "initial-value"))
+  if (0 == strcasecmp(name, "initial_value"))
     return _bufferVector("initial", "initial_displacement", lengthScale);
-  else if (0 == strcasecmp(name, "rate-of-change"))
+  else if (0 == strcasecmp(name, "rate_of_change"))
     return _bufferVector("rate", "velocity", rateScale);
-  else if (0 == strcasecmp(name, "change-in-value"))
+  else if (0 == strcasecmp(name, "change_in_value"))
     return _bufferVector("change", "displacement_change", lengthScale);
-  else if (0 == strcasecmp(name, "rate-start-time"))
+  else if (0 == strcasecmp(name, "rate_start_time"))
     return _bufferScalar("rate time", "velocity_start_time", timeScale);
-  else if (0 == strcasecmp(name, "change-start-time"))
+  else if (0 == strcasecmp(name, "change_start_time"))
     return _bufferScalar("change time", "change_start_time", timeScale);
   else {
     std::ostringstream msg;
