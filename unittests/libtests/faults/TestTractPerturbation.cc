@@ -64,6 +64,48 @@ pylith::faults::TestTractPerturbation::testLabel(void)
 } // testLabel
 
 // ----------------------------------------------------------------------
+// Test hasParameter().
+void
+pylith::faults::TestTractPerturbation::testHasParameter(void)
+{ // testHasParameter
+  spatialdata::spatialdb::SimpleDB db;
+  
+  TractPerturbation tract;
+
+  // no values
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("initial_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_time_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_time_traction"));
+
+  // initial value
+  tract.dbInitial(&db);
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_time_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_time_traction"));
+
+  // change value
+  tract.dbChange(&db);
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_traction"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("change_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_time_traction"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("change_time_traction"));
+
+  // rate value, remove change
+  tract.dbRate(&db);
+  tract.dbChange(0);
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_traction"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("rate_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_traction"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("rate_time_traction"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_time_traction"));
+} // testHasParameter
+
+// ----------------------------------------------------------------------
 // Test initialize() using 2-D mesh.
 void
 pylith::faults::TestTractPerturbation::testInitialize(void)
@@ -77,10 +119,10 @@ pylith::faults::TestTractPerturbation::testInitialize(void)
 } // testInitialize
 
 // ----------------------------------------------------------------------
-// Test traction() using 2-D mesh().
+// Test calculate() using 2-D mesh().
 void
-pylith::faults::TestTractPerturbation::testTraction(void)
-{ // testTraction
+pylith::faults::TestTractPerturbation::testCalculate(void)
+{ // testCalculate
   const PylithScalar tractionE[4] = { 
     -1.0*(-2.0+1.0), -1.0*(1.0-0.5), // initial + change
     -1.0*(-2.1), -1.0*(1.1), // initial
@@ -91,40 +133,44 @@ pylith::faults::TestTractPerturbation::testTraction(void)
   TractPerturbation tract;
   _initialize(&mesh, &faultMesh, &tract);
   
+  const PylithScalar t = 2.134;
+  tract.calculate(t);
+
+
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
   CPPUNIT_ASSERT(cs);
-
   const int spaceDim = cs->spaceDim();
+
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
   const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  topology::Field<topology::SubMesh> traction(faultMesh);
-  traction.newSection(vertices, spaceDim);
-  traction.allocate();
-
-  const PylithScalar t = 2.134;
-  tract.traction(&traction, t);
 
   //traction.view("TRACTION"); // DEBUGGING
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
 
-  const ALE::Obj<RealSection>& tractionSection = traction.section();
-  CPPUNIT_ASSERT(!tractionSection.isNull());
+  CPPUNIT_ASSERT(tract._parameters);
+  const ALE::Obj<RealUniformSection>& paramsSection = tract._parameters->section();
+  CPPUNIT_ASSERT(!paramsSection.isNull());
+  const int fiberDim = tract._parameters->fiberDim();
+  const int valueIndex = tract._parameters->sectionIndex("value");
+  const int valueFiberDim = tract._parameters->sectionFiberDim("value");
+  CPPUNIT_ASSERT_EQUAL(spaceDim, valueFiberDim);
+  CPPUNIT_ASSERT(valueIndex + valueFiberDim < fiberDim);
+  
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter, ++iPoint) {
-    const int fiberDim = tractionSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* vals = tractionSection->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, paramsSection->getFiberDimension(*v_iter));
+    const PylithScalar* vals = paramsSection->restrictPoint(*v_iter);
     CPPUNIT_ASSERT(vals);
-
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
+    
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
       const PylithScalar valueE = tractionE[iPoint*spaceDim+iDim];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[iDim], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[valueIndex+iDim], tolerance);
     } // for
   } // for
-} // testTraction
+} // testCalculate
 
 // ----------------------------------------------------------------------
 // Test parameterFields() using 2-D mesh.
@@ -176,7 +222,7 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
     1.5,
     2.5,
   };
-  const char* label = "change-start-time";
+  const char* label = "change_time_traction";
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;

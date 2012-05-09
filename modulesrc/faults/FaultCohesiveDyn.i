@@ -41,11 +41,11 @@ namespace pylith {
       virtual
       void deallocate(void);
       
-      /** Sets the spatial database for the inital tractions.
+      /** Sets the traction perturbation for prescribed tractions.
        *
-       * @param db spatial database for initial tractions
+       * @param tract Spatial and temporal variation of tractions.
        */
-      void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
+      void tractPerturbation(TractPerturbation* tract);
   
       /** Set the friction (constitutive) model.
        *

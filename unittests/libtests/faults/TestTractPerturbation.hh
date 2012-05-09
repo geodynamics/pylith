@@ -48,8 +48,9 @@ class pylith::faults::TestTractPerturbation : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testLabel );
+  CPPUNIT_TEST( testHasParameter );
   CPPUNIT_TEST( testInitialize );
-  CPPUNIT_TEST( testTraction );
+  CPPUNIT_TEST( testCalculate );
   CPPUNIT_TEST( testParameterFields );
   CPPUNIT_TEST( testVertexField );
 
@@ -64,11 +65,14 @@ public :
   /// Test label().
   void testLabel(void);
 
+  /// Test hasParameter().
+  void testHasParameter(void);
+
   /// Test initialize() with 2-D mesh.
   void testInitialize(void);
 
-  /// Test traction() with 2-D mesh.
-  void testTraction(void);
+  /// Test calculate() with 2-D mesh.
+  void testCalculate(void);
 
   /// Test parameterFields() with 2-D mesh.
   void testParameterFields(void);
