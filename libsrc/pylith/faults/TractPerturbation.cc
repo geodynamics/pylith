@@ -339,15 +339,15 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
 bool
 pylith::faults::TractPerturbation::hasParameter(const char* name) const
 { // hasParameter
-  if (0 == strcasecmp(name, "initial_value"))
+  if (0 == strcasecmp(name, "traction_initial_value"))
     return (0 != _dbInitial);
-  else if (0 == strcasecmp(name, "rate_of_change"))
+  else if (0 == strcasecmp(name, "traction_rate_of_change"))
     return (0 != _dbRate);
-  else if (0 == strcasecmp(name, "change_in_value"))
+  else if (0 == strcasecmp(name, "traction_change_in_value"))
     return (0 != _dbChange);
-  else if (0 == strcasecmp(name, "rate_start_time"))
+  else if (0 == strcasecmp(name, "traction_rate_start_time"))
     return (0 != _dbRate);
-  else if (0 == strcasecmp(name, "change_start_time"))
+  else if (0 == strcasecmp(name, "traction_change_start_time"))
     return (0 != _dbChange);
   else
     return false;
@@ -362,19 +362,19 @@ pylith::faults::TractPerturbation::vertexField(const char* name,
   assert(_parameters);
   assert(name);
 
-  if (0 == strcasecmp(name, "initial_value"))
+  if (0 == strcasecmp(name, "traction_initial_value"))
     return _parameters->get("initial");
 
-  else if (0 == strcasecmp(name, "rate_of_change"))
+  else if (0 == strcasecmp(name, "traction_rate_of_change"))
     return _parameters->get("rate");
 
-  else if (0 == strcasecmp(name, "change_in_value"))
+  else if (0 == strcasecmp(name, "traction_change_in_value"))
     return _parameters->get("change");
 
-  else if (0 == strcasecmp(name, "rate_start_time"))
+  else if (0 == strcasecmp(name, "traction_rate_start_time"))
     return _parameters->get("rate time");
 
-  else if (0 == strcasecmp(name, "change_start_time"))
+  else if (0 == strcasecmp(name, "traction_change_start_time"))
     return _parameters->get("change time");
 
   else {

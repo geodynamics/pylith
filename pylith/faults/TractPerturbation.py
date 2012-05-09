@@ -58,11 +58,11 @@ class TractPerturbation(TimeDependent, ModuleTractPerturbation):
     """
     fields = []
     if not isinstance(self.inventory.dbInitial, NullComponent):
-      fields += ["initial_value"]
+      fields += ["traction_initial_value"]
     if not isinstance(self.inventory.dbRate, NullComponent):
-      fields += ["rate_of_change", "rate_start_time"]
+      fields += ["traction_rate_of_change", "traction_rate_start_time"]
     if not isinstance(self.inventory.dbChange, NullComponent):
-      fields += ["change_in_value", "change_start_time"]
+      fields += ["traction_change_in_value", "traction_change_start_time"]
 
     self.availableFields = \
         {'vertex': {'info': fields,

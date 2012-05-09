@@ -73,36 +73,36 @@ pylith::faults::TestTractPerturbation::testHasParameter(void)
   TractPerturbation tract;
 
   // no values
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("initial_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_of_change"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_in_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_start_time"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_start_time"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_initial_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_of_change"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_in_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_start_time"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_start_time"));
 
   // initial value
   tract.dbInitial(&db);
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_of_change"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_in_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_start_time"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_start_time"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_initial_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_of_change"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_in_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_start_time"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_start_time"));
 
   // change value
   tract.dbChange(&db);
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_of_change"));
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("change_in_value"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("rate_start_time"));
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("change_start_time"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_initial_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_of_change"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_change_in_value"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_rate_start_time"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_change_start_time"));
 
   // rate value, remove change
   tract.dbRate(&db);
   tract.dbChange(0);
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("initial_value"));
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("rate_of_change"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_in_value"));
-  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("rate_start_time"));
-  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("change_start_time"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_initial_value"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_rate_of_change"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_in_value"));
+  CPPUNIT_ASSERT_EQUAL(true, tract.hasParameter("traction_rate_start_time"));
+  CPPUNIT_ASSERT_EQUAL(false, tract.hasParameter("traction_change_start_time"));
 } // testHasParameter
 
 // ----------------------------------------------------------------------
@@ -222,7 +222,7 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
     1.5,
     2.5,
   };
-  const char* label = "change_start_time";
+  const char* label = "traction_change_start_time";
 
   topology::Mesh mesh;
   topology::SubMesh faultMesh;
