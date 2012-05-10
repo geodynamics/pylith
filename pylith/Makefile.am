@@ -36,17 +36,18 @@ nobase_pkgpyexec_PYTHON = \
 	faults/BruneSlipFn.py \
 	faults/ConstRateSlipFn.py \
 	faults/EqKinSrc.py \
+	faults/LiuCosSlipFn.py \
+	faults/SingleRupture.py \
+	faults/SlipTimeFn.py \
+	faults/StepSlipFn.py \
+	faults/TimeHistorySlipFn.py \
+	faults/TractPerturbation.py \
 	faults/Fault.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
 	faults/FaultCohesiveDyn.py \
 	faults/FaultCohesiveImpulses.py \
 	faults/FaultCohesiveTract.py \
-	faults/LiuCosSlipFn.py \
-	faults/SingleRupture.py \
-	faults/SlipTimeFn.py \
-	faults/StepSlipFn.py \
-	faults/TimeHistorySlipFn.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \

@@ -57,6 +57,7 @@ testfaults_SOURCES = \
 	TestFaultCohesiveDynQuad4.cc \
 	TestFaultCohesiveDynTet4.cc \
 	TestFaultCohesiveDynHex8.cc \
+	TestTractPerturbation.cc \
 	TestFaultCohesiveImpulses.cc \
 	TestFaultCohesiveImpulsesCases.cc \
 	test_faults.cc
@@ -93,6 +94,7 @@ noinst_HEADERS = \
 	TestFaultCohesiveDynQuad4.hh \
 	TestFaultCohesiveDynTet4.hh \
 	TestFaultCohesiveDynHex8.hh \
+	TestTractPerturbation.hh \
 	TestFaultCohesiveImpulses.hh \
 	TestFaultCohesiveImpulsesCases.hh
 

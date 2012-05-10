@@ -24,7 +24,7 @@
 namespace pylith {
   namespace bc {
 
-    class pylith::bc::TimeDependent
+    class TimeDependent
     { // class TimeDependent
 
       // PUBLIC METHODS /////////////////////////////////////////////////
@@ -80,13 +80,6 @@ namespace pylith {
        */
       virtual
       const char* _getLabel(void) const = 0;
-      
-      /** Get manager of scales used to nondimensionalize problem.
-       *
-       * @returns Nondimensionalizer.
-       */
-      virtual
-      const spatialdata::units::Nondimensional& _getNormalizer(void) const = 0;
       
     }; // class TimeDependent
 

@@ -21,6 +21,7 @@
 #include "FaultCohesiveDyn.hh" // implementation of object methods
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology
+#include "TractPerturbation.hh" // HOLDSA TractPerturbation
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
@@ -28,6 +29,7 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
@@ -55,6 +57,7 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
+typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
@@ -66,7 +69,7 @@ typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,
 pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void) :
   _zeroTolerance(1.0e-10),
   _openFreeSurf(true),
-  _dbInitialTract(0),
+  _tractPerturbation(0),
   _friction(0),
   _jacobian(0),
   _ksp(0)
@@ -86,7 +89,7 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
 { // deallocate
   FaultCohesiveLagrange::deallocate();
 
-  _dbInitialTract = 0; // :TODO: Use shared pointer
+  _tractPerturbation = 0; // :TODO: Use shared pointer
   _friction = 0; // :TODO: Use shared pointer
 
   delete _jacobian; _jacobian = 0;
@@ -99,10 +102,10 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
 // ----------------------------------------------------------------------
 // Sets the spatial database for the inital tractions
 void
-pylith::faults::FaultCohesiveDyn::dbInitialTract(spatialdata::spatialdb::SpatialDB* db)
-{ // dbInitial
-  _dbInitialTract = db;
-} // dbInitial
+pylith::faults::FaultCohesiveDyn::tractPerturbation(TractPerturbation* tract)
+{ // tractPerturbation
+  _tractPerturbation = tract;
+} // tractPerturbation
 
 // ----------------------------------------------------------------------
 // Get the friction (constitutive) model.  
@@ -149,7 +152,10 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   FaultCohesiveLagrange::initialize(mesh, upDir);
 
   // Get initial tractions using a spatial database.
-  _setupInitialTractions();
+  if (_tractPerturbation) {
+    const topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+    _tractPerturbation->initialize(*_faultMesh, orientation, *_normalizer);
+  } // if
 
   // Setup fault constitutive model.
   assert(_friction);
@@ -226,11 +232,22 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   scalar_array dispTpdtVertexP(spaceDim);
   scalar_array dispTpdtVertexL(spaceDim);
 
-  scalar_array initialTractionsVertex(spaceDim);
-  ALE::Obj<RealSection> initialTractionsSection;
-  if (_dbInitialTract) {
-    initialTractionsSection = _fields->get("initial traction").section();
-    assert(!initialTractionsSection.isNull());
+  scalar_array tractPerturbVertex(spaceDim);
+  ALE::Obj<RealUniformSection> tractPerturbSection;
+  int tractPerturbIndex = 0;
+  int tractPerturbFiberDim = 0;
+  if (_tractPerturbation) {
+    _tractPerturbation->calculate(t);
+    
+    const topology::FieldsNew<topology::SubMesh>* params = _tractPerturbation->parameterFields();
+    assert(params);
+    tractPerturbSection = params->section();
+    assert(!tractPerturbSection.isNull());
+
+    tractPerturbFiberDim = params->fiberDim();
+    tractPerturbIndex = params->sectionIndex("value");
+    const int valueFiberDim = params->sectionFiberDim("value");
+    assert(valueFiberDim == spaceDim);
   } // if
 
   const ALE::Obj<RealSection>& areaSection = _fields->get("area").section();
@@ -269,13 +286,17 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
     _logger->eventBegin(restrictEvent);
 #endif
 
-    // Get initial tractions at fault vertex.
-    if (_dbInitialTract) {
-      initialTractionsSection->restrictPoint(v_fault, 
-					     &initialTractionsVertex[0], 
-					     initialTractionsVertex.size());
+    // Get prescribed traction perturbation at fault vertex.
+    if (_tractPerturbation) {
+      assert(tractPerturbFiberDim == tractPerturbSection->getFiberDimension(v_fault));
+      const PylithScalar* paramsVertex = tractPerturbSection->restrictPoint(v_fault);
+      assert(paramsVertex);
+      
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	tractPerturbVertex[iDim] = paramsVertex[tractPerturbIndex+iDim];
+      } // for
     } else {
-      initialTractionsVertex = 0.0;
+      tractPerturbVertex = 0.0;
     } // if/else
 
     // Get orientation associated with fault vertex.
@@ -350,7 +371,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
       //
       // Initial (external) tractions oppose (internal) tractions
       // associated with Lagrange multiplier.
-      residualVertexN = areaVertex * (dispTpdtVertexL - initialTractionsVertex);
+      residualVertexN = areaVertex * (dispTpdtVertexL - tractPerturbVertex);
 
     } else { // opening, normal traction should be zero
       if (fabs(tractionNormal) > _zeroTolerance) {
@@ -1475,7 +1496,7 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
-                                               const topology::SolutionFields* fields)
+					      const topology::SolutionFields* fields)
 { // vertexField
   assert(_faultMesh);
   assert(_quadrature);
@@ -1557,17 +1578,6 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(dirSection);
     return buffer;
 
-  } else if (0 == strcasecmp("initial_traction", name)) {
-    assert(_dbInitialTract);
-    _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
-    topology::Field<topology::SubMesh>& tractions =
-        _fields->get("initial traction");
-    buffer.copy(tractions);
-    FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-    return buffer;
-
   } else if (0 == strcasecmp("traction", name)) {
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
@@ -1579,6 +1589,19 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 
   } else if (_friction->hasPropStateVar(name)) {
     return _friction->getField(name);
+
+  } else if (_tractPerturbation && _tractPerturbation->hasParameter(name)) {
+    const topology::Field<topology::SubMesh>& param = _tractPerturbation->vertexField(name, fields);
+    if (param.vectorFieldType() == topology::FieldBase::VECTOR) {
+      _allocateBufferVectorField();
+      topology::Field<topology::SubMesh>& buffer =
+        _fields->get("buffer (vector)");
+      buffer.copy(param);
+      FaultCohesiveLagrange::globalToFault(&buffer, orientation);
+      return buffer;
+    } else {
+      return param;
+    } // if/else
 
   } else {
     std::ostringstream msg;
@@ -1597,131 +1620,6 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 
   return buffer;
 } // vertexField
-
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesiveDyn::_setupInitialTractions(void)
-{ // _setupInitialTractions
-  assert(_normalizer);
-
-  // If no initial tractions specified, leave method
-  if (0 == _dbInitialTract)
-    return;
-
-  assert(_normalizer);
-  const PylithScalar pressureScale = _normalizer->pressureScale();
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-
-  const int spaceDim = _quadrature->spaceDim();
-
-  // Create section to hold initial tractions.
-  _fields->add("initial traction", "initial_traction");
-  topology::Field<topology::SubMesh>& initialTractions = 
-    _fields->get("initial traction");
-  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
-  initialTractions.cloneSection(dispRel);
-  initialTractions.scale(pressureScale);
-
-  scalar_array initialTractionsVertex(spaceDim);
-  scalar_array initialTractionsVertexGlobal(spaceDim);
-  const ALE::Obj<RealSection>& initialTractionsSection = 
-    initialTractions.section();
-  assert(!initialTractionsSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-    _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
-  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-  assert(cs);
-
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-
-  scalar_array coordsVertex(spaceDim);
-  const ALE::Obj<RealSection>& coordsSection =
-    faultSieveMesh->getRealSection("coordinates");
-  assert(!coordsSection.isNull());
-
-
-  assert(_dbInitialTract);
-  _dbInitialTract->open();
-  switch (spaceDim) { // switch
-  case 1: {
-    const char* valueNames[] = { "traction-normal" };
-    _dbInitialTract->queryVals(valueNames, 1);
-    break;
-  } // case 1
-  case 2: {
-    const char* valueNames[] = { "traction-shear", "traction-normal" };
-    _dbInitialTract->queryVals(valueNames, 2);
-    break;
-  } // case 2
-  case 3: {
-    const char* valueNames[] = { "traction-shear-leftlateral",
-				 "traction-shear-updip", "traction-normal" };
-    _dbInitialTract->queryVals(valueNames, 3);
-    break;
-  } // case 3
-  default:
-    std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-    assert(0);
-    throw std::logic_error("Bad spatial dimension in Neumann.");
-  } // switch
-
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-
-    coordsSection->restrictPoint(v_fault, &coordsVertex[0], coordsVertex.size());
-
-    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-    const PylithScalar* orientationVertex = 
-      orientationSection->restrictPoint(v_fault);
-    assert(orientationVertex);
-
-    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
-				lengthScale);
-
-    initialTractionsVertex = 0.0;
-    int err = _dbInitialTract->query(&initialTractionsVertex[0], 
-				     initialTractionsVertex.size(),
-				     &coordsVertex[0], coordsVertex.size(), cs);
-    if (err) {
-      std::ostringstream msg;
-      msg << "Could not find parameters for physical properties at \n" << "(";
-      for (int i = 0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
-      msg << ") in friction model " << label() << "\n"
-	  << "using spatial database '" << _dbInitialTract->label() << "'.";
-      throw std::runtime_error(msg.str());
-    } // if
-    _normalizer->nondimensionalize(&initialTractionsVertex[0],
-				   initialTractionsVertex.size(), 
-				   pressureScale);
-
-    // Rotate tractions from fault coordinate system to global
-    // coordinate system
-    initialTractionsVertexGlobal = 0.0;
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      for (int jDim=0; jDim < spaceDim; ++jDim) {
-	initialTractionsVertexGlobal[iDim] += 
-	  orientationVertex[jDim*spaceDim+iDim] *
-	  initialTractionsVertex[jDim];
-      } // for
-    } // for
-
-    assert(initialTractionsVertexGlobal.size() ==
-	   initialTractionsSection->getFiberDimension(v_fault));
-    initialTractionsSection->updatePoint(v_fault, 
-					 &initialTractionsVertexGlobal[0]);
-  } // for
-
-  // Close properties database
-  _dbInitialTract->close();
-
-  //initialTractions.view("INITIAL TRACTIONS"); // DEBUGGING
-} // _setupInitialTractions
 
 // ----------------------------------------------------------------------
 // Compute tractions on fault surface using solution.

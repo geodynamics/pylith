@@ -21,6 +21,7 @@
 #include "TestFaultCohesiveDyn.hh" // Implementation of class methods
 
 #include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultCohesiveDyn
+#include "pylith/faults/TractPerturbation.hh" // USES TractPerturbation
 
 #include "data/CohesiveDynData.hh" // USES CohesiveDynData
 
@@ -54,7 +55,7 @@ pylith::faults::TestFaultCohesiveDyn::setUp(void)
   _data = 0;
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
   CPPUNIT_ASSERT(0 != _quadrature);
-  _dbInitialTract = 0;
+  _tractPerturbation = 0;
   _friction = 0;
   _dbFriction = 0;
   _flipFault = false;
@@ -67,7 +68,7 @@ pylith::faults::TestFaultCohesiveDyn::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
-  delete _dbInitialTract; _dbInitialTract = 0;
+  delete _tractPerturbation; _tractPerturbation = 0;
   delete _friction; _friction = 0;
   delete _dbFriction; _dbFriction = 0;
 } // tearDown
@@ -81,19 +82,18 @@ pylith::faults::TestFaultCohesiveDyn::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test dbInitialTract().
+// Test tractPerturbation().
 void
-pylith::faults::TestFaultCohesiveDyn::testDBInitialTract(void)
-{ // testDBInitialTract
+pylith::faults::TestFaultCohesiveDyn::testTractPerturbation(void)
+{ // testTractPerturbation
   FaultCohesiveDyn fault;
 
   const std::string& label = "test database";
-  spatialdata::spatialdb::SimpleDB db;
-  db.label(label.c_str());
-  fault.dbInitialTract(&db);
-  CPPUNIT_ASSERT(0 != fault._dbInitialTract);
-  CPPUNIT_ASSERT_EQUAL(label, std::string(fault._dbInitialTract->label()));
- } // testDBInitialTract
+  TractPerturbation tract;
+  tract.label(label.c_str());
+  fault.tractPerturbation(&tract);
+  CPPUNIT_ASSERT(fault._tractPerturbation);
+ } // testTractPerturbation
 
 // ----------------------------------------------------------------------
 // Test zeroTolerance().
@@ -128,7 +128,7 @@ pylith::faults::TestFaultCohesiveDyn::testOpenFreeSurf(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 { // testInitialize
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -181,12 +181,15 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
     } // for
   } // for
 
-  // Initial tractions
-  if (0 != fault._dbInitialTract) {
-    //fault._fields->get("initial traction").view("INITIAL TRACTIONS"); // DEBUGGING
+  // Prescribed traction perturbation
+  if (fault._tractPerturbation) {
+    // :KLUDGE: Only check initial value
     const ALE::Obj<RealSection>& initialTractionsSection = 
-      fault._fields->get("initial traction").section();
+      fault.vertexField("traction_initial_value").section();
     CPPUNIT_ASSERT(!initialTractionsSection.isNull());
+
+    //initialTractionsSection->view("INITIAL TRACTIONS"); // DEBUGGING
+
     const int spaceDim = _data->spaceDim;
     iVertex = 0;
     for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
@@ -719,15 +722,17 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(
 			  _data->quadWts, _data->numQuadPts,
 			  _data->spaceDim);
   
-  // Setup initial tractions
-  spatialdata::spatialdb::SimpleDB* db =
-      new spatialdata::spatialdb::SimpleDB("initial tractions");
-  CPPUNIT_ASSERT(0 != db);
+  // Setup prescribed traction perturbation
+  delete _tractPerturbation; _tractPerturbation = new TractPerturbation();
+  _tractPerturbation->label("traction perturbation");
+  spatialdata::spatialdb::SimpleDB* db = new spatialdata::spatialdb::SimpleDB("initial tractions");
+  CPPUNIT_ASSERT(db);
   spatialdata::spatialdb::SimpleIOAscii ioInitialTract;
   ioInitialTract.filename(_data->initialTractFilename);
   db->ioHandler(&ioInitialTract);
   delete _dbInitialTract; _dbInitialTract = db;
-  fault->dbInitialTract(db);
+  _tractPerturbation->dbInitial(db);
+  fault->tractPerturbation(_tractPerturbation);
 
   // Setup friction
   spatialdata::spatialdb::SimpleDB* dbFriction =
