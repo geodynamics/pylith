@@ -167,15 +167,21 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
   bool separateComponents = formulation->splitFieldComponents();
   if (separateComponents) {
+    PetscMat* precon = new PetscMat[numSpaces];
+    for (int i=0; i < numSpaces; ++i) {
+      precon[i] = PETSC_NULL;
+    } // for
+    precon[numSpaces-1] = _jacobianPCFault;
     constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
-			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), PETSC_NULL,
-			solution.vector(), *pc);
+			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, PETSC_NULL, solution.vector(), *pc);
+    delete[] precon; precon = 0;
   } else {
     int numFields[2] = {spaceDim, (numSpaces > spaceDim) ? 1 : 0};
     MatNullSpace nullsp[2] = {PETSC_NULL, PETSC_NULL};
+    PetscMat precon[2] = {PETSC_NULL, _jacobianPCFault};
     int* fields = new int[numSpaces];
     
-    /* Create rigid body null space */
+    // Create rigid body null space.
     const ALE::Obj<RealSection>& coordinatesSection = sieveMesh->getRealSection("coordinates");
     assert(!coordinatesSection.isNull());
     const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
@@ -183,7 +189,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
     const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
     PetscInt dim = spaceDim;
-    Vec mode[6];
+    PetscVec mode[6];
 
     if (dim > 1) {
       PetscInt n;
@@ -241,14 +247,14 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
       for(int i=0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
     } // if
 
-    for (PetscInt f=0; f < numSpaces; ++f) {
+    for (int f=0; f < numSpaces; ++f) {
       fields[f] = f;
     } // for
     constructFieldSplit(solutionSection, 2, numFields, fields,
-                        sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), nullsp,
+                        sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, nullsp,
                         solution.vector(), *pc);
     err = MatNullSpaceDestroy(&nullsp[0]);CHECK_PETSC_ERROR(err);
-    delete [] fields;
+    delete[] fields;
   } // if/else
 
   if (formulation->splitFields() && 
