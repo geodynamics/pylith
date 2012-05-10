@@ -28,8 +28,8 @@ from ReferenceCell import ReferenceCell
 import numpy
 
 def validateDimension(dim):
-  if dim < 1 or dim > 3:
-    raise ValueError("Dimension of simplex cell must be 1, 2, or 3.")
+  if dim < 0 or dim > 3:
+    raise ValueError("Dimension of simplex cell must be 0, 1, 2, or 3.")
   return dim
 
 
