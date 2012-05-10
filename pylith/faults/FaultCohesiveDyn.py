@@ -63,7 +63,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                                        validator=pyre.inventory.greaterEqual(0.0))
   zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
 
-  openFreeSurf = pyre.inventory.bool("open_free_surface", default=False)
+  openFreeSurf = pyre.inventory.bool("open_free_surface", default=True)
   openFreeSurf.meta['tip'] = "If True, enforce traction free surface when " \
     "the fault opens, otherwise use initial tractions even when the " \
     "fault opens."
@@ -115,7 +115,6 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
       self._info.log("Pre-initializing fault '%s'." % self.label())
     FaultCohesive.preinitialize(self, mesh)
     Integrator.preinitialize(self, mesh)
-    self.tract.preinitialize(mesh)
 
     ModuleFaultCohesiveDyn.quadrature(self, self.faultQuadrature)
 
@@ -126,7 +125,7 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                                                  "dip_dir"]
 
     if not isinstance(self.tract, NullComponent):
-      print "HERE",self.tract.availableFields
+      self.tract.preinitialize(mesh)
       self.availableFields['vertex']['info'] += self.tract.availableFields['vertex']['info']
 
     self.availableFields['vertex']['info'] += \
