@@ -19,7 +19,7 @@ CURRENT ISSUES/PRIORITIES
 
 * Add h5py to PyLith binary
 
-* Use h5py for automated full-scale tests.
+* Use HDF5/h5py in automated full-scale tests.
 
 * Setup fieldsplit for SolverNonlinear [Matt]
 
