@@ -437,9 +437,10 @@ const int pylith::faults::CohesiveDynDataTri3d::_constraintVertices[] = {
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataTri3d::_initialTractions[] = {
-  3.0*0.70710678118654757, 0.70710678118654757,
-  2.1, -1.1,
-  1.2,  2.2,
+  // Fault coordinate frame
+  1.0, -2.0,
+  1.1, -2.1,
+  1.2, -2.2,
 };
 
 

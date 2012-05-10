@@ -203,19 +203,19 @@ pylith::bc::Neumann::cellField(const char* name,
   assert(_parameters);
   assert(name);
 
-  if (0 == strcasecmp(name, "initial-value"))
+  if (0 == strcasecmp(name, "initial_value"))
     return _parameters->get("initial");
 
-  else if (0 == strcasecmp(name, "rate-of-change"))
+  else if (0 == strcasecmp(name, "rate_of_change"))
     return _parameters->get("rate");
 
-  else if (0 == strcasecmp(name, "change-in-value"))
+  else if (0 == strcasecmp(name, "change_in_value"))
     return _parameters->get("change");
 
-  else if (0 == strcasecmp(name, "rate-start-time"))
+  else if (0 == strcasecmp(name, "rate_start_time"))
     return _parameters->get("rate time");
 
-  else if (0 == strcasecmp(name, "change-start-time"))
+  else if (0 == strcasecmp(name, "change_start_time"))
     return _parameters->get("change time");
 
   else {

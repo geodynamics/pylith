@@ -27,6 +27,8 @@ from TimeDependent import TimeDependent
 from pylith.feassemble.Integrator import Integrator
 from bc import Neumann as ModuleNeumann
 
+from pylith.utils.NullComponent import NullComponent
+
 # Neumann class
 class Neumann(BoundaryCondition, 
               TimeDependent,
@@ -68,12 +70,7 @@ class Neumann(BoundaryCondition,
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["initial-value",
-                     "rate-of-change",
-                     "rate-start-time",
-                     "change-in-value",
-                     "change-start-time",
-                     ],
+           {'info': [],
             'data': []}}
     return
 
@@ -88,6 +85,15 @@ class Neumann(BoundaryCondition,
     self.quadrature(self.bcQuadrature)
     self.createSubMesh(mesh)
     self.output.preinitialize(self)
+
+    fields = []
+    if not isinstance(self.inventory.dbInitial, NullComponent):
+      fields += ["initial_value"]
+    if not isinstance(self.inventory.dbRate, NullComponent):
+      fields += ["rate_of_change", "rate_start_time"]
+    if not isinstance(self.inventory.dbChange, NullComponent):
+      fields += ["change_in_value", "change_start_time"]
+    self.availableFields['cell']['info'] += fields
     return
 
 

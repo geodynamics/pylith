@@ -75,6 +75,14 @@ pylith::faults::TractPerturbation::label(const char* value)
 } // label
 
 // ----------------------------------------------------------------------
+// Get parameter fields.
+const pylith::topology::FieldsNew<pylith::topology::SubMesh>*
+pylith::faults::TractPerturbation::parameterFields(void) const
+{ // parameterFields
+  return _parameters;
+} // parameterFields
+
+// ----------------------------------------------------------------------
 // Initialize traction perturbation function.
 void
 pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh,
@@ -99,16 +107,16 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
   // Create section to hold time dependent values
   _parameters->add("value", "traction", spaceDim, topology::FieldBase::VECTOR, pressureScale);
   if (_dbInitial) 
-    _parameters->add("initial", "initial_traction", spaceDim, topology::FieldBase::VECTOR, pressureScale);
+    _parameters->add("initial", "traction_initial", spaceDim, topology::FieldBase::VECTOR, pressureScale);
   if (_dbRate) {
     _parameters->add("rate", "traction_rate", spaceDim, topology::FieldBase::VECTOR, rateScale);
-    _parameters->add("rate time", "traction_rate_time", 1, topology::FieldBase::SCALAR, timeScale);
+    _parameters->add("rate time", "rate_start_time", 1, topology::FieldBase::SCALAR, timeScale);
   } // if
   if (_dbChange) {
-    _parameters->add("change", "change_traction", spaceDim, topology::FieldBase::VECTOR, pressureScale);
-    _parameters->add("change time", "change_traction_time", 1, topology::FieldBase::SCALAR, timeScale);
+    _parameters->add("change", "traction_change", spaceDim, topology::FieldBase::VECTOR, pressureScale);
+    _parameters->add("change time", "change_start_time", 1, topology::FieldBase::SCALAR, timeScale);
   } // if
-  _parameters->allocate(topology::FieldBase::VERTICES_FIELD, 1);
+  _parameters->allocate(topology::FieldBase::VERTICES_FIELD, 0);
   const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
   assert(!parametersSection.isNull());
 
@@ -127,8 +135,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 	break;
       } // case 2
       case 3 : {
-	const char* valueNames[] = {"traction-shear-horiz",
-				    "traction-shear-vert",
+	const char* valueNames[] = {"traction-shear-leftlateral",
+				    "traction-shear-updip",
 				    "traction-normal"};
 	_dbInitial->queryVals(valueNames, 3);
 	break;
@@ -160,8 +168,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 	break;
       } // case 2
       case 3 : {
-	const char* valueNames[] = {"traction-rate-shear-horiz",
-				    "traction-rate-shear-vert",
+	const char* valueNames[] = {"traction-rate-shear-leftlateral",
+				    "traction-rate-shear-updip",
 				    "traction-rate-normal"};
 	_dbRate->queryVals(valueNames, 3);
 	break;
@@ -196,8 +204,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 	break;
       } // case 2
       case 3 : {
-	const char* valueNames[] = {"traction-shear-horiz",
-				    "traction-shear-vert",
+	const char* valueNames[] = {"traction-shear-leftlateral",
+				    "traction-shear-updip",
 				    "traction-normal"};
 	_dbChange->queryVals(valueNames, 3);
 	break;
@@ -224,185 +232,10 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get traction perturbation on fault surface at time t.
-void
-pylith::faults::TractPerturbation::traction(topology::Field<topology::SubMesh>* const tractionField,
-					    const PylithScalar t)
-{ // traction
-  assert(tractionField);
-  assert(_parameters);
-
-  _calculateValue(t);
-
-  const spatialdata::geocoords::CoordSys* cs = tractionField->mesh().coordsys();
-  assert(cs);
-  const int spaceDim = cs->spaceDim();
-
-  // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = tractionField->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-  // Get sections
-  scalar_array tractionsVertex(spaceDim);
-  const ALE::Obj<SubRealUniformSection>& parametersSection =
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueFiberDim == tractionsVertex.size());
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
-
-  const ALE::Obj<RealSection>& tractionSection = tractionField->section();
-  assert(!tractionSection.isNull());
-
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    assert(parametersFiberDim == parametersSection->getFiberDimension(*v_iter));
-    const PylithScalar* parametersVertex = parametersSection->restrictPoint(*v_iter);
-    assert(parametersVertex);
-    const PylithScalar* tractionVertex = &parametersVertex[valueIndex];
-    assert(tractionVertex);
-
-    // Update field
-    assert(spaceDim == tractionSection->getFiberDimension(*v_iter));
-    tractionSection->updateAddPoint(*v_iter, &tractionsVertex[0]);
-  } // for
-
-} // traction
-  
-// ----------------------------------------------------------------------
-// Get parameter fields.
-const pylith::topology::FieldsNew<pylith::topology::SubMesh>*
-pylith::faults::TractPerturbation::parameterFields(void) const
-{ // parameterFields
-  return _parameters;
-} // parameterFields
-
-// ----------------------------------------------------------------------
-// Get vertex field with traction perturbation information.
-const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::TractPerturbation::vertexField(const char* name,
-					       topology::SolutionFields* const fields)
-{ // vertexField
-  assert(_parameters);
-  assert(name);
-
-  if (0 == strcasecmp(name, "initial-value"))
-    return _parameters->get("initial");
-
-  else if (0 == strcasecmp(name, "rate-of-change"))
-    return _parameters->get("rate");
-
-  else if (0 == strcasecmp(name, "change-in-value"))
-    return _parameters->get("change");
-
-  else if (0 == strcasecmp(name, "rate-start-time"))
-    return _parameters->get("rate time");
-
-  else if (0 == strcasecmp(name, "change-start-time"))
-    return _parameters->get("change time");
-
-  else {
-    std::ostringstream msg;
-    msg << "Unknown field '" << name << "' requested for fault traction perturbation '" 
-	<< _label << "'.";
-    throw std::runtime_error(msg.str());
-  } // else
-
-  return _parameters->get("traction"); // Satisfy method definition
-} // vertexField
-
-// ----------------------------------------------------------------------
-// Get label of boundary condition surface.
-const char*
-pylith::faults::TractPerturbation::_getLabel(void) const
-{ // _getLabel
-  return _label.c_str();
-} // _getLabel
-
-// ----------------------------------------------------------------------
-// Query database for values.
-void
-pylith::faults::TractPerturbation::_queryDB(const char* name,
-					    spatialdata::spatialdb::SpatialDB* const db,
-					    const int querySize,
-					    const PylithScalar scale,
-					    const spatialdata::units::Nondimensional& normalizer)
-{ // _queryDB
-  assert(name);
-  assert(db);
-  assert(_parameters);
-
-  // Get vertices.
-  const ALE::Obj<SieveSubMesh>& sieveMesh = _parameters->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
-  assert(cs);
-  const int spaceDim = cs->spaceDim();
-
-  const PylithScalar lengthScale = normalizer.lengthScale();
-
-  // Containers for database query results and quadrature coordinates in
-  // reference geometry.
-  scalar_array valuesVertex(querySize);
-  scalar_array coordsVertexGlobal(spaceDim);
-
-  // Get sections.
-  const ALE::Obj<RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-
-  const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex(name);
-  const int valueFiberDim = _parameters->sectionFiberDim(name);
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
-  scalar_array parametersVertex(parametersFiberDim);
-
-  // Loop over cells in boundary mesh and perform queries.
-  for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter != verticesEnd; ++v_iter) {
-    normalizer.dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
-    
-    valuesVertex = 0.0;
-    const int err = db->query(&valuesVertex[0], querySize, &coordsVertexGlobal[0], spaceDim, cs);
-    if (err) {
-      std::ostringstream msg;
-      msg << "Could not find values at (";
-      for (int i=0; i < spaceDim; ++i)
-	msg << " " << coordsVertexGlobal[i];
-      msg << ") for traction boundary condition " << _label << "\n"
-	  << "using spatial database " << db->label() << ".";
-      throw std::runtime_error(msg.str());
-    } // if
-
-    normalizer.nondimensionalize(&valuesVertex[0], valuesVertex.size(), scale);
-
-    // Update section
-    assert(parametersFiberDim == parametersSection->getFiberDimension(*v_iter));
-    parametersSection->restrictPoint(*v_iter, &parametersVertex[0], parametersVertex.size());
-    for (int i=0; i < valueFiberDim; ++i)
-      parametersVertex[valueIndex+i] = valuesVertex[i];
-    
-    parametersSection->updatePoint(*v_iter, &parametersVertex[0]);
-  } // for
-} // _queryDB
-
-// ----------------------------------------------------------------------
 // Calculate temporal and spatial variation of value over the list of Submesh.
 void
-pylith::faults::TractPerturbation::_calculateValue(const PylithScalar t)
-{ // _calculateValue
+pylith::faults::TractPerturbation::calculate(const PylithScalar t)
+{ // calculate
   assert(_parameters);
 
   const PylithScalar timeScale = _timeScale;
@@ -498,7 +331,142 @@ pylith::faults::TractPerturbation::_calculateValue(const PylithScalar t)
     
     parametersSection->updatePoint(*v_iter, &parametersVertex[0]);
   } // for
-}  // _calculateValue
+}  // calculate
 
+
+// ----------------------------------------------------------------------
+// Determine if perturbation has a given parameter.
+bool
+pylith::faults::TractPerturbation::hasParameter(const char* name) const
+{ // hasParameter
+  if (0 == strcasecmp(name, "traction_initial_value"))
+    return (0 != _dbInitial);
+  else if (0 == strcasecmp(name, "traction_rate_of_change"))
+    return (0 != _dbRate);
+  else if (0 == strcasecmp(name, "traction_change_in_value"))
+    return (0 != _dbChange);
+  else if (0 == strcasecmp(name, "traction_rate_start_time"))
+    return (0 != _dbRate);
+  else if (0 == strcasecmp(name, "traction_change_start_time"))
+    return (0 != _dbChange);
+  else
+    return false;
+} // hasParameter
+
+// ----------------------------------------------------------------------
+// Get vertex field with traction perturbation information.
+const pylith::topology::Field<pylith::topology::SubMesh>&
+pylith::faults::TractPerturbation::vertexField(const char* name,
+					       const topology::SolutionFields* const fields)
+{ // vertexField
+  assert(_parameters);
+  assert(name);
+
+  if (0 == strcasecmp(name, "traction_initial_value"))
+    return _parameters->get("initial");
+
+  else if (0 == strcasecmp(name, "traction_rate_of_change"))
+    return _parameters->get("rate");
+
+  else if (0 == strcasecmp(name, "traction_change_in_value"))
+    return _parameters->get("change");
+
+  else if (0 == strcasecmp(name, "traction_rate_start_time"))
+    return _parameters->get("rate time");
+
+  else if (0 == strcasecmp(name, "traction_change_start_time"))
+    return _parameters->get("change time");
+
+  else {
+    std::ostringstream msg;
+    msg << "Unknown field '" << name << "' requested for fault traction perturbation '" 
+	<< _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // else
+
+  return _parameters->get("traction"); // Satisfy method definition
+} // vertexField
+
+// ----------------------------------------------------------------------
+// Get label of boundary condition surface.
+const char*
+pylith::faults::TractPerturbation::_getLabel(void) const
+{ // _getLabel
+  return _label.c_str();
+} // _getLabel
+
+// ----------------------------------------------------------------------
+// Query database for values.
+void
+pylith::faults::TractPerturbation::_queryDB(const char* name,
+					    spatialdata::spatialdb::SpatialDB* const db,
+					    const int querySize,
+					    const PylithScalar scale,
+					    const spatialdata::units::Nondimensional& normalizer)
+{ // _queryDB
+  assert(name);
+  assert(db);
+  assert(_parameters);
+
+  // Get vertices.
+  const ALE::Obj<SieveSubMesh>& sieveMesh = _parameters->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
+  assert(cs);
+  const int spaceDim = cs->spaceDim();
+
+  const PylithScalar lengthScale = normalizer.lengthScale();
+
+  // Containers for database query results and quadrature coordinates in
+  // reference geometry.
+  scalar_array valuesVertex(querySize);
+  scalar_array coordsVertexGlobal(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& coordsSection = sieveMesh->getRealSection("coordinates");
+  assert(!coordsSection.isNull());
+
+  const ALE::Obj<SubRealUniformSection>& parametersSection = _parameters->section();
+  assert(!parametersSection.isNull());
+  const int parametersFiberDim = _parameters->fiberDim();
+  const int valueIndex = _parameters->sectionIndex(name);
+  const int valueFiberDim = _parameters->sectionFiberDim(name);
+  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  scalar_array parametersVertex(parametersFiberDim);
+
+  // Loop over cells in boundary mesh and perform queries.
+  for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter != verticesEnd; ++v_iter) {
+    assert(spaceDim == coordsSection->getFiberDimension(*v_iter));
+    coordsSection->restrictPoint(*v_iter, &coordsVertexGlobal[0], coordsVertexGlobal.size());
+    normalizer.dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
+    
+    valuesVertex = 0.0;
+    const int err = db->query(&valuesVertex[0], querySize, &coordsVertexGlobal[0], spaceDim, cs);
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not find values at (";
+      for (int i=0; i < spaceDim; ++i)
+	msg << " " << coordsVertexGlobal[i];
+      msg << ") for traction boundary condition " << _label << "\n"
+	  << "using spatial database " << db->label() << ".";
+      throw std::runtime_error(msg.str());
+    } // if
+
+    normalizer.nondimensionalize(&valuesVertex[0], valuesVertex.size(), scale);
+
+    // Update section
+    assert(parametersFiberDim == parametersSection->getFiberDimension(*v_iter));
+    parametersSection->restrictPoint(*v_iter, &parametersVertex[0], parametersVertex.size());
+    for (int i=0; i < valueFiberDim; ++i)
+      parametersVertex[valueIndex+i] = valuesVertex[i];
+    
+    parametersSection->updatePoint(*v_iter, &parametersVertex[0]);
+  } // for
+} // _queryDB
 
 // End of file

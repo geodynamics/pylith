@@ -62,6 +62,12 @@ public :
    */
   void label(const char* value);
 
+  /** Get parameter fields.
+   *
+   * @returns Parameter fields.
+   */
+  const topology::FieldsNew<topology::SubMesh>* parameterFields(void) const;
+  
   /** Initialize slip time function.
    *
    * @param faultMesh Finite-element mesh of fault.
@@ -72,20 +78,19 @@ public :
 		  const topology::Field<topology::SubMesh>& faultOrientation,
 		  const spatialdata::units::Nondimensional& normalizer);
 
-  /** Get traction perturbation on fault surface at time t.
+  /** Calculate spatial and temporal variation of value.
    *
-   * @param tractionField Traction field over fault surface [output].
-   * @param t Time t.
+   * @param t Current time.
    */
-  void traction(topology::Field<topology::SubMesh>* const tractionField,
-		const PylithScalar t);
-  
-  /** Get parameter fields.
+  void calculate(const PylithScalar t);
+
+  /** Determine if perturbation has a given parameter.
    *
-   * @returns Parameter fields.
+   * @param name Name of parameter field.
+   * @returns True if perturbation has parameter field, false otherwise.
    */
-  const topology::FieldsNew<topology::SubMesh>* parameterFields(void) const;
-  
+  bool hasParameter(const char* name) const;
+
   /** Get vertex field with traction perturbation information.
    *
    * @param name Name of field.
@@ -95,7 +100,7 @@ public :
    */
   const topology::Field<topology::SubMesh>&
   vertexField(const char* name,
-	      topology::SolutionFields* const fields =0);
+	      const topology::SolutionFields* const fields =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -119,12 +124,6 @@ protected :
 		const int querySize,
 		const PylithScalar scale,
 		const spatialdata::units::Nondimensional& normalizer);
-
-  /** Calculate spatial and temporal variation of value.
-   *
-   * @param t Current time.
-   */
-  void _calculateValue(const PylithScalar t);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
