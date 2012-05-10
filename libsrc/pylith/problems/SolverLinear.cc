@@ -125,7 +125,7 @@ pylith::problems::SolverLinear::solve(
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
 
-#if 1 // :TODO: Does this get replaced by the use of the MatShell like SNES?
+#if 0 // OBSOLETE? Replaced by stuff in Solver?
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
       _jacobianPCFault) {
     
