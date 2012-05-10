@@ -83,7 +83,7 @@ class TestFrictionOpening(TestQuad4):
       return
 
     filename = "%s-fault_info.vtk" % self.outputRoot
-    fields = ["strike_dir", "normal_dir", "initial_traction","friction_coefficient","cohesion"]
+    fields = ["strike_dir", "normal_dir", "traction_initial","friction_coefficient","cohesion"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return
@@ -149,7 +149,7 @@ class TestFrictionOpening(TestQuad4):
       field[:,0] = normalDir[0]
       field[:,1] = normalDir[1]
 
-    elif name == "initial_traction":
+    elif name == "traction_initial":
       field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
       field[:,0] = initialTraction[0]
       field[:,1] = initialTraction[1]
