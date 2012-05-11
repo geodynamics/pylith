@@ -73,6 +73,7 @@ class FaultCohesiveImpulses(FaultCohesive, Integrator, ModuleFaultCohesiveImpuls
   from pyre.units.length import m
 
   threshold = pyre.inventory.dimensional("threshold", default=1.0e-6*m)
+  threshold.meta['tip'] = "Threshold for non-zero amplitude."
 
   impulseDOF = pyre.inventory.list("impulse_dof", default=[], validator=validateDOF)
   impulseDOF.meta['tip'] = "Indices of impulse components " \

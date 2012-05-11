@@ -29,32 +29,35 @@ CURRENT ISSUES/PRIORITIES
 
 * Manual
 
-   - FIATSimplex
-     cell.shape -> cell.dimension
   - Order of tensor components for Xdmf files
   - Drucker Prager fit to yield surface
   - Drucker Prager allow tensile yield
-  - Output soln points
-    + Interpolation
-      * Accuracy of interpolation?
-  - Examples/Tutorials
-    + Table with concepts/features
+  - Output soln points [DONE]
+    + Interpolation [DONE]
+    + PointsList [DONE]
   - Linear prestep
     + Turned on by default
     + Static solution is linear prestep
     + Inelastic solution requires increment in driving forces
-  - User specified start time (default is 0.0)
-  - PETSc w/CUDA
+  - User specified start time (default is 0.0) [DONE]
   - FaultCohesiveDyn
-    + Add switch for turning on/off zero tractions for fault opening
-      Added step20
-    + Switched to time-dependent formulation for prescribed tractions
-    + friction
-      - Slip-weakening healing parameter
-      - Changed regularization of rate and state friction
+    + Add switch for turning on/off zero tractions for fault opening [DONE]
+    + Switched to time-dependent formulation for prescribed tractions [DONE]
+    + Slip-weakening healing parameter [DONE]
+    + Changed regularization of rate and state friction [DONE]
   - Green's functions
-    examples/2d/greensfns
-
+    + GreensFns problem [DONE]
+    + FaultCohesiveImpulses [DONE]
+  - URL for PyLith FAQ for Troubleshooting (Section 5.7)
+  - Update field split settings (Section 5.1)
+  - PETSc w/CUDA (Add to Section 5.1)
+  - Update Components appendix [DONE?, need to check]
+  - FIATSimplex, FIATLagrange
+     cell.shape -> cell.dimension
+  - Examples/Tutorials
+    + Table with concepts/features
+    + examples/3d/hex8/step20 (dike opening)
+    + examples/2d/greensfns
 
 * configure
   
