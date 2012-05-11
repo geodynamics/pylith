@@ -160,12 +160,64 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   assert(!solutionSection.isNull());
   const int spaceDim = sieveMesh->getDimension();
   const int numSpaces = solutionSection->getNumSpaces();
+  const bool separateComponents = formulation->splitFieldComponents();
 
   err = PCSetType(*pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
   err = PCSetOptionsPrefix(*pc, "fs_"); CHECK_PETSC_ERROR(err);
   err = PCSetFromOptions(*pc); CHECK_PETSC_ERROR(err);
 
-  bool separateComponents = formulation->splitFieldComponents();
+  if (formulation->splitFields() && 
+      formulation->useCustomConstraintPC() &&
+      numSpaces > spaceDim) {
+    // We have split fields with a custom constraint preconditioner
+    // and constraints exist.
+
+    // Get total number of DOF associated with constraints field split
+    const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
+                                              solutionSection, spaceDim);
+    assert(!lagrangeGlobalOrder.isNull());
+
+    err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
+    PylithInt nrows = lagrangeGlobalOrder->getLocalSize();
+    PylithInt ncols = nrows;
+
+    err = MatCreate(sieveMesh->comm(), &_jacobianPCFault); CHECK_PETSC_ERROR(err);
+    err = MatSetSizes(_jacobianPCFault, nrows, ncols, 
+		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
+    err = MatSetType(_jacobianPCFault, MATAIJ);
+    err = MatSetFromOptions(_jacobianPCFault); CHECK_PETSC_ERROR(err);
+    
+    // Allocate just the diagonal.
+    err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
+				    PETSC_NULL); CHECK_PETSC_ERROR(err);
+    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, PETSC_NULL, 
+				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+    // Set preconditioning matrix in formulation
+    formulation->customPCMatrix(_jacobianPCFault);
+
+    assert(_jacobianPCFault);
+
+    _ctx.pc = *pc;
+    _ctx.A = jacobian.matrix();
+    switch (spaceDim) {
+    case 1 :
+      _ctx.faultFieldName = "1";
+      break;
+    case 2 :
+      _ctx.faultFieldName = (separateComponents) ? "2" : "1";
+      break;
+    case 3 :
+      _ctx.faultFieldName = (separateComponents) ? "3" : "1";
+      break;
+    default:
+      assert(0);
+      throw std::logic_error("Unknown space dimension in "
+			     "Problems::_setupFieldSplit().");
+    } // switch
+    _ctx.faultA = _jacobianPCFault;
+  } // if
+
   if (separateComponents) {
     PetscMat* precon = new PetscMat[numSpaces];
     for (int i=0; i < numSpaces; ++i) {
@@ -256,58 +308,6 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatNullSpaceDestroy(&nullsp[0]);CHECK_PETSC_ERROR(err);
     delete[] fields;
   } // if/else
-
-  if (formulation->splitFields() && 
-      formulation->useCustomConstraintPC() &&
-      numSpaces > spaceDim) {
-    // We have split fields with a custom constraint preconditioner
-    // and constraints exist.
-
-    // Get total number of DOF associated with constraints field split
-    const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
-                                              solutionSection, spaceDim);
-    assert(!lagrangeGlobalOrder.isNull());
-
-    err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
-    PylithInt nrows = lagrangeGlobalOrder->getLocalSize();
-    PylithInt ncols = nrows;
-
-    err = MatCreate(sieveMesh->comm(), &_jacobianPCFault); CHECK_PETSC_ERROR(err);
-    err = MatSetSizes(_jacobianPCFault, nrows, ncols, 
-		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
-    err = MatSetType(_jacobianPCFault, MATAIJ);
-    err = MatSetFromOptions(_jacobianPCFault); CHECK_PETSC_ERROR(err);
-    
-    // Allocate just the diagonal.
-    err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
-				    PETSC_NULL); CHECK_PETSC_ERROR(err);
-    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, PETSC_NULL, 
-				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
-    // Set preconditioning matrix in formulation
-    formulation->customPCMatrix(_jacobianPCFault);
-
-    assert(_jacobianPCFault);
-
-    _ctx.pc = *pc;
-    _ctx.A = jacobian.matrix();
-    switch (spaceDim) {
-    case 1 :
-      _ctx.faultFieldName = "1";
-      break;
-    case 2 :
-      _ctx.faultFieldName = (separateComponents) ? "2" : "1";
-      break;
-    case 3 :
-      _ctx.faultFieldName = (separateComponents) ? "3" : "1";
-      break;
-    default:
-      assert(0);
-      throw std::logic_error("Unknown space dimension in "
-			     "Problems::_setupFieldSplit().");
-    } // switch
-    _ctx.faultA = _jacobianPCFault;
-  } // if
 } // _setupFieldSplit
 
 // ----------------------------------------------------------------------

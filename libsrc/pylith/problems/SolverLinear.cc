@@ -130,20 +130,23 @@ pylith::problems::SolverLinear::solve(
       _jacobianPCFault) {
     
     PetscPC pc = 0;
-    PetscKSP *ksps = 0;
-    PetscMat A = 0;
-    PylithInt num = 0;
+    PCCompositeType ctype;
     
     err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
     err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-    // Now only true if splitting components assert(solutionSection->getNumSpaces() == num);
+    err = PCFieldSplitGetType(pc, &ctype); CHECK_PETSC_ERROR(err);
+    if (ctype != PC_COMPOSITE_SCHUR) {
+      PetscKSP    *ksps = 0;
+      PylithInt    num  = 0;
+      PetscMat     A    = 0;
+      MatStructure flag;
 
-    MatStructure flag;
-    err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag);CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) A);CHECK_PETSC_ERROR(err);
-    err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, flag);CHECK_PETSC_ERROR(err);
-    err = PetscFree(ksps);CHECK_PETSC_ERROR(err);
+      err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
+      err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag);CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) A);CHECK_PETSC_ERROR(err);
+      err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, flag);CHECK_PETSC_ERROR(err);
+      err = PetscFree(ksps);CHECK_PETSC_ERROR(err);
+    }
   } // if
 #endif
 
