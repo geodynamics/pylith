@@ -56,6 +56,7 @@ pylith::faults::TestFaultCohesiveDyn::setUp(void)
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
   CPPUNIT_ASSERT(0 != _quadrature);
   _tractPerturbation = 0;
+  _dbInitialTract = 0;
   _friction = 0;
   _dbFriction = 0;
   _flipFault = false;
@@ -69,6 +70,7 @@ pylith::faults::TestFaultCohesiveDyn::tearDown(void)
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
   delete _tractPerturbation; _tractPerturbation = 0;
+  delete _dbInitialTract; _dbInitialTract = 0;
   delete _friction; _friction = 0;
   delete _dbFriction; _dbFriction = 0;
 } // tearDown
@@ -698,16 +700,15 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveDyn interface condition.
 void
-pylith::faults::TestFaultCohesiveDyn::_initialize(
-					topology::Mesh* const mesh,
-					FaultCohesiveDyn* const fault,
-					topology::SolutionFields* const fields)
+pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
+						  FaultCohesiveDyn* const fault,
+						  topology::SolutionFields* const fields)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != fault);
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(fault);
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_quadrature);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
