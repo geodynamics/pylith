@@ -190,8 +190,8 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-Binary executables are available for Linux, Mac OS X (Intel 10.4/10.5 and
- Intel 10.6), and Windows from the PyLith web page 
+Binary executables are available for Linux, Mac OS X (Intel 10.5 and Intel
+ 10.6/10.7), and Windows from the PyLith web page 
 \begin_inset Flex URL
 status collapsed
 
@@ -253,7 +253,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.6.1-linux-i686.tgz
+$ tar -xzf pylith-1.7.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -323,12 +323,12 @@ $HOME/pylith
 
 \begin_layout Enumerate
 Unpack the tarball.
- For 10.4.x or 10.5.x operating system,
+ For the 10.5.x operating system
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.6.1-darwin-10.4.tgz
+$ tar -xzf pylith-1.7.0-darwin-10.5.tgz
 \end_layout
 
 \end_deeper
@@ -453,7 +453,7 @@ If you are installing PyLith on a cluster with a batch system, you can configure
 pylith
 \family default
  command automatically submits jobs to the batch queue.
- Pyre contains support for the LSF, PBS, and Globus batch systems.
+ Pyre contains support for the LSF, PBS, SGE, and Globus batch systems.
 \end_layout
 
 \begin_layout Standard

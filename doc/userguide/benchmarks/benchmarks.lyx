@@ -176,19 +176,21 @@ scecdata.usc.edu/cvws/cgi-bin/cvws.cgi
  through a vertical strike-slip fault), TPV205 (vertical strike-slip fault
  with high and low stress asperities), TPV210-2D (vertical slice through
  a 60 degree dipping normal fault), TPV210 (60 degree dipping normal fault),
- TPV14-2D and TPV15-2D (horizontal slice through a verticel strike-slip
- fault with a branch) and TPV14 and TPV15 (vertical strike-slip fault with
- a branch).
+ TPV11, TPV12, TPV13, TPV14-2D and TPV15-2D (horizontal slice through a
+ verticel strike-slip fault with a branch), TPV14 and TPV15 (vertical strike-sli
+p fault with a branch), and TPV 16 and 17.
 \end_layout
 
 \begin_layout Standard
 The benchmark results indicate that triangular and tetrahedral cells generate
  less numerical noise than quadrilateral or hexahedral cells.
- TPV14-2D, TPV15-2D, TPV14, and TPV15 use the numerical damping via an artificia
-l viscosity available in PyLith v1.6 to these high-frequency oscillations.
- All of the other results without high frequency oscillations posted on
- the SCEC benchmarks web page employ damping via similar methods to reduce
- numerical artifacts.
+ Results for all of the benchmarks listed above except TPV14-2D, TPV15-2D,
+ TPV14, and TPV15 have been updated using PyLith 1.7, which provides much
+ closer agreement with the other codes comapred to previous versions of
+ PyLith.
+ We attribute the closer agreement to small adjustments of the fault implementat
+ion and some small bugfixes to the slip-weakening friction formulation.
+ 
 \end_layout
 
 \end_body
