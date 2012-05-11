@@ -315,7 +315,7 @@ tive model.
  See Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Fault-Constitutive-Models"
+reference "sec:fault:constitutive:models"
 
 \end_inset
 
@@ -459,7 +459,14 @@ Dynamic Fault with Slip-Weakening Friction
 
 \begin_layout Standard
 The parameters specific to this example are related to the use of the slip-weake
-ning friction fault constitutive model (see Section ??).
+ning friction fault constitutive model (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault:constitutive:models"
+
+\end_inset
+
+).
  We set the fault constitutive model via
 \end_layout
 
@@ -586,7 +593,14 @@ Dynamic Fault with Rate-State Friction
 
 \begin_layout Standard
 The parameters specific to this example are related to the use of the rate-
- and state-friction fault constitutive model (see Section ??).
+ and state-friction fault constitutive model (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault:constitutive:models"
+
+\end_inset
+
+).
  The evolution of the state variable uses the ageing law.
  We set the fault constitutive model via
 \end_layout
