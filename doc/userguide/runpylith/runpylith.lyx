@@ -1400,13 +1400,15 @@ problem
 The problem component specifies the basic parameters of the simulation,
  including the physical properties, the boundary conditions, and interface
  conditions (faults).
- The current release of PyLith contains one type of problem, 
+ The current release of PyLith contains two types of problem, 
 \family typewriter
 TimeDependent
 \family default
- for use in static, quasi-static, and dynamic simulations.
- Future releases may contain multiple types of problems, for example, computing
- Green's functions, as additional applications are developed.
+ for use in static, quasi-static, and dynamic simulations and 
+\family typewriter
+GreensFns
+\family default
+ for computing static Green's functions.
  The general facilities include:
 \end_layout
 
@@ -2836,8 +2838,8 @@ Time-Dependent Problem
 \end_layout
 
 \begin_layout Standard
-PyLith currently only contains this one type of problem which is used for
- static, quasi-static, and dynamic simulations.
+This type of problem applies to transient static, quasi-static, and dynamic
+ simulations.
  The time-dependent problem adds the 
 \family typewriter
 formulation
@@ -2847,8 +2849,6 @@ formulation
  elasticity equation.
  PyLith provides several alternative formulations, each specific to a different
  type of problem.
- Future versions of PyLith will likely include support for additional formulatio
-ns, such as large deformations with a lumped Jacobian matrix.
 \end_layout
 
 \begin_layout Description
@@ -3167,7 +3167,11 @@ With a uniform, user-specified time step, the user selects the time step
 \end_layout
 
 \begin_layout Description
-total_time Time duration for simulation.
+total_time Time duration for simulation (default is 0.0 s).
+\end_layout
+
+\begin_layout Description
+start_time Start time for simulation (default is 0.0 s)
 \end_layout
 
 \begin_layout Description
@@ -3348,6 +3352,109 @@ adapt_skip = 10 ; Default value
 
 \begin_layout LyX-Code
 stability_factor = 2.0 ; Default value
+\end_layout
+
+\begin_layout Section
+Green's Functions Problem
+\end_layout
+
+\begin_layout Standard
+This type of problem applies to computing static Green's functions for elastic
+ deformation.
+ The 
+\family typewriter
+GreensFns
+\family default
+ problem specializes the time-dependent facility to the case of static simulatio
+ns with slip impulses on a fault.
+ The default formulation is the Implicit formulation and should not be changed
+ as the other formulations are not applicable to static Green's functions.
+ In the output files, the deformation at each 
+\begin_inset Quotes eld
+\end_inset
+
+time step
+\begin_inset Quotes erd
+\end_inset
+
+ is the deformation for a different slip impulse.
+ The properties provide the ability to select which fault to use for slip
+ impulses.
+ The only fault component available for use with the 
+\family typewriter
+GreensFns
+\family default
+ problem is the 
+\family typewriter
+FaultCohesiveImpulses
+\family default
+ component discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault:cohesive:impulses"
+
+\end_inset
+
+.
+ The 
+\family typewriter
+GreensFns
+\family default
+ properties include:
+\end_layout
+
+\begin_layout Description
+fault_id Id of fault on which to impose slip impulses.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the GreensFns problem in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp]
+\end_layout
+
+\begin_layout LyX-Code
+problem = pylith.problems.GreensFns ; Change problem type from the default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.greensfns]
+\end_layout
+
+\begin_layout LyX-Code
+fault_id = 100 ; Default value
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
+ 
+\color inherit
+The 
+\family typewriter
+GreensFns
+\family default
+ problem generates slip impulses on a fault.
+ The current version of PyLith requires that impulses can only be applied
+ to a single fault and the fault facility must be set to 
+\family typewriter
+FaultCohesiveImpulses
+\family default
+.
 \end_layout
 
 \begin_layout Section
@@ -3881,7 +3988,7 @@ quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.shape = tetrahedron
+quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
@@ -4254,9 +4361,21 @@ Output of the solution over the entire domain for large problems generates
  the surface of the boundary.
  As with several of the boundary conditions, the boundary must be a simply-conne
 cted surface.
- The OutputSolnSubset is the specialized OutputManager that implements this
- feature and, by default, includes the displacement field in the output.
- In addition to the OutputManager parameters, the OutputSolnSubset includes:
+ The 
+\family typewriter
+OutputSolnSubset
+\family default
+ is the specialized OutputManager that implements this feature and, by default,
+ includes the displacement field in the output.
+ In addition to the 
+\family typewriter
+OutputManager
+\family default
+ parameters, the 
+\family typewriter
+OutputSolnSubset
+\family default
+ includes:
 \end_layout
 
 \begin_layout Description
@@ -4266,6 +4385,90 @@ label Label of group of vertices defining boundary surface.
 \begin_layout Description
 vertex_data_fields Names of vertex data fields to output (default is [``displace
 ments'']).
+\end_layout
+
+\begin_layout Subsection
+Output at Arbitrary Points
+\end_layout
+
+\begin_layout Standard
+In many situations with recorded observations, one would like to extract
+ the solution at the same locations as the recorded observation.
+ Rather than forcing the finite-element discretization to be consistent
+ with the observation points, PyLith includes a specialized output manager,
+ 
+\family typewriter
+OutputSolnPoints
+\family default
+, to interpolate the solution to arbitrary points.
+ By default, the output manager will include the displaceent time histories
+ in the output.
+ The locations are specified in a text file.
+ In addition to the 
+\family typewriter
+OutputManager
+\family default
+ parameters, the 
+\family typewriter
+OutputSolnSubset
+\family default
+ includes:
+\end_layout
+
+\begin_layout Description
+vertex_data_fields Names of vertex data fields to output (default is [``displace
+ments'']).
+\end_layout
+
+\begin_layout Description
+reader Reader for points list (default is 
+\family typewriter
+PointsList
+\family default
+).
+\end_layout
+
+\begin_layout Description
+writer Writer for output (default is 
+\family typewriter
+DataWriterVTKPoints
+\family default
+).
+ In most cases users will want to use the 
+\family typewriter
+DataWriterHDF5Mesh
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+PointsList Reader
+\end_layout
+
+\begin_layout Standard
+This object corresponds to a simple text file containing a list of points
+ (one per line) where output is desired.
+ The points are specified in the coordinate system specified by OutputSolnPoints.
+ The coordinates will be transformed into the coordinate system of the mesh
+ prior to interpolation.
+ The properties available to customize the behavior of 
+\family typewriter
+PointsList
+\family default
+ are:
+\end_layout
+
+\begin_layout Description
+filename Names of file containing list of points.
+\end_layout
+
+\begin_layout Description
+comment_delimiter Delimiter at beginning of line to identify comments (default
+ is #).
+\end_layout
+
+\begin_layout Description
+value_delimiter Delimiter used to separate values (default is whitespace).
 \end_layout
 
 \begin_layout Subsection
@@ -4448,9 +4651,11 @@ reference "sec:Tutorial-Subduction"
 \end_inset
 
  for an example).
- Accessing the datasets in the HDF5 files using tools such as PyTables with
- visualization through MayaVi circumvents this problem, but requires writing
- Python scripts and a deeper knowledge of the visualization interface.
+ Accessing the datasets in the HDF5 files using tools such as h5py (included
+ with the PyLith binary and installed by default with the PyLith Installer)
+ and PyTables with visualization through MayaVi circumvents this problem,
+ but requires writing Python scripts and a deeper knowledge of the visualization
+ interface.
 \end_layout
 
 \begin_layout Standard
@@ -4716,8 +4921,8 @@ Start with a uniform-resolution coarse mesh to debug the problem setup.
 
 \begin_layout Itemize
 Merge materials using the same material model.
- This will result in only one VTK file for each material model rather than
- several files.
+ This will result in only one VTK or HDF5 file for each material model rather
+ than several files.
 \end_layout
 
 \begin_layout Itemize
@@ -4787,6 +4992,11 @@ name "sec:Troubleshooting"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+Consult the PyLith FAQ webpage (ADD URL HERE) which contains a growing list
+ of common problems and their corresponding solutions.
 \end_layout
 
 \begin_layout Itemize
