@@ -469,13 +469,6 @@ private :
 				    const PylithScalar* initialStrain,
 				    const int initialStrainSize);
 
-  /** Compute scalar product, assuming vector form of a tensor.
-   *
-   * @param tensor1 First tensor.
-   * @param tensor2 Second tensor.
-   */
-  PylithScalar _scalarProduct(const PylithScalar* tensor1,
-			const PylithScalar* tensor2) const;
 
   // PRIVATE STRUCTS ////////////////////////////////////////////////////
 private :

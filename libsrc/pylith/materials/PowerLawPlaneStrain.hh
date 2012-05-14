@@ -9,69 +9,47 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2011 University of California, Davis
+// Copyright (c) 2010-2012 University of California, Davis
 //
 // See COPYING for license information.
 //
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/DruckerPragerPlaneStrain.hh
+/** @file libsrc/materials/PowerLawPlaneStrain.hh
  *
- * @brief 2-D, plane strain, Drucker-Prager elastic/perfectly plastic material. 
+ * @brief 2-D, plane strain, power-law viscoelastic material. 
  */
 
-#if !defined(pylith_materials_druckerpragerplanestrain_hh)
-#define pylith_materials_druckerpragerplanestrain_hh
+#if !defined(pylith_materials_powerlawplanestrain_hh)
+#define pylith_materials_powerlawplanestrain_hh
 
 // Include directives ---------------------------------------------------
 #include "ElasticMaterial.hh" // ISA ElasticMaterial
 
-// DruckerPragerPlaneStrain ---------------------------------------------
-/** @brief 2-D, plane strain, Drucker-Prager elastic/perfectly plastic material.
+// PowerlawPlaneStrain----------------------------------------------------------
+/** @brief 2-D, plane strain, power-law viscoelastic material. 
  *
  * The physical properties are specified using density, shear-wave
- * speed, friction angle, cohesion, dilatation angle, and
+ * speed, viscosity coefficient, power-law exponent, and
  * compressional-wave speed.  The physical properties are stored
  * internally using density, lambda, mu, which are directly related to
  * the elasticity constants used in the finite-element
- * integration. The plasticity information is retained as alpha_yield,
- * beta, and alpha_flow.
+ * integration. The viscosity information is retained as specified.
  */
 
-class pylith::materials::DruckerPragerPlaneStrain : public ElasticMaterial
-{ // class DruckerPragerPlaneStrain
-  friend class TestDruckerPragerPlaneStrain; // unit testing
-
-  // PUBLIC ENUMS ///////////////////////////////////////////////////////
-public :
-
-  enum FitMohrCoulombEnum {
-    MOHR_COULOMB_CIRCUMSCRIBED=0, 
-    MOHR_COULOMB_MIDDLE=1,
-    MOHR_COULOMB_INSCRIBED=2,
-  }; // FitMohrCoulombType
+class pylith::materials::PowerLawPlaneStrain : public ElasticMaterial
+{ // class PowerLawPlaneStrain
+  friend class TestPowerLawPlaneStrain; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  DruckerPragerPlaneStrain(void);
+  PowerLawPlaneStrain(void);
 
   /// Destructor
-  ~DruckerPragerPlaneStrain(void);
-
-  /** Set fit to Mohr-Coulomb surface.
-   *
-   * @param value Mohr-Coulomb surface match type.
-   */
-  void fitMohrCoulomb(FitMohrCoulombEnum value);
-
-  /** Set flag for whether to allow tensile yield.
-   *
-   * @param flag True if tensile yield is allowed.
-   */
-  void allowTensileYield(const bool flag);
+  ~PowerLawPlaneStrain(void);
 
   /** Set current time step.
    *
@@ -85,6 +63,32 @@ public :
    */
   void useLinearBehavior(const bool flag);
 
+  /** Compute effective stress function.
+   *
+   * @param effStressTpdt Effective stress value.
+   *
+   * @returns Effective stress function value.
+   */
+  PylithScalar effStressFunc(const PylithScalar effStressTpdt);
+
+  /** Compute effective stress function derivative.
+   *
+   * @param effStressTpdt Effective stress value.
+   *
+   * @returns Effective stress function derivative value.
+   */
+  PylithScalar effStressDerivFunc(const PylithScalar effStressTpdt);
+
+  /** Compute effective stress function and derivative.
+   *
+   * @param func Returned effective stress function value.
+   * @param dfunc Returned effective stress function derivative value.
+   * @param effStressTpdt Effective stress value.
+   *
+   */
+  void effStressFuncDerivFunc(PylithScalar* func,
+			      PylithScalar* dfunc,
+			      const PylithScalar effStressTpdt);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -257,7 +261,7 @@ protected :
 private :
 
   /// Member prototype for _calcStress()
-  typedef void (pylith::materials::DruckerPragerPlaneStrain::*calcStress_fn_type)
+  typedef void (pylith::materials::PowerLawPlaneStrain::*calcStress_fn_type)
     (PylithScalar* const,
      const int,
      const PylithScalar*,
@@ -273,7 +277,7 @@ private :
      const bool);
 
   /// Member prototype for _calcElasticConsts()
-  typedef void (pylith::materials::DruckerPragerPlaneStrain::*calcElasticConsts_fn_type)
+  typedef void (pylith::materials::PowerLawPlaneStrain::*calcElasticConsts_fn_type)
     (PylithScalar* const,
      const int,
      const PylithScalar*,
@@ -288,7 +292,7 @@ private :
      const int);
 
   /// Member prototype for _updateStateVars()
-  typedef void (pylith::materials::DruckerPragerPlaneStrain::*updateStateVars_fn_type)
+  typedef void (pylith::materials::PowerLawPlaneStrain::*updateStateVars_fn_type)
     (PylithScalar* const,
      const int,
      const PylithScalar*,
@@ -333,7 +337,7 @@ private :
 			  const int initialStrainSize,
 			  const bool computeStateVars);
 
-  /** Compute stress tensor from properties as an elastoplastic material.
+  /** Compute stress tensor from properties as an viscoelastic material.
    *
    * @param stress Array for stress tensor.
    * @param stressSize Size of stress tensor.
@@ -349,19 +353,19 @@ private :
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state vars.
    */
-  void _calcStressElastoplastic(PylithScalar* const stress,
-				const int stressSize,
-				const PylithScalar* properties,
-				const int numProperties,
-				const PylithScalar* stateVars,
-				const int numStateVars,
-				const PylithScalar* totalStrain,
-				const int strainSize,
-				const PylithScalar* initialStress,
-				const int initialStressSize,
-				const PylithScalar* initialStrain,
-				const int initialStrainSize,
-				const bool computeStateVars);
+  void _calcStressViscoelastic(PylithScalar* const stress,
+			       const int stressSize,
+			       const PylithScalar* properties,
+			       const int numProperties,
+			       const PylithScalar* stateVars,
+			       const int numStateVars,
+			       const PylithScalar* totalStrain,
+			       const int strainSize,
+			       const PylithScalar* initialStress,
+			       const int initialStressSize,
+			       const PylithScalar* initialStrain,
+			       const int initialStrainSize,
+			       const bool computeStateVars);
 
   /** Compute derivatives of elasticity matrix from properties as an
    * elastic material.
@@ -392,8 +396,8 @@ private :
 				 const PylithScalar* initialStrain,
 				 const int initialStrainSize);
 
-  /** Compute derivatives of elasticity matrix from properties as an
-   * elastoplastic material.
+  /** Compute derivatives of elasticity matrix from properties as a
+   * viscoelastic material.
    *
    * @param elasticConsts Array for elastic constants.
    * @param numElasticConsts Number of elastic constants.
@@ -408,19 +412,19 @@ private :
    * @param initialStrain Initial strain values.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _calcElasticConstsElastoplastic(PylithScalar* const elasticConsts,
-				       const int numElasticConsts,
-				       const PylithScalar* properties,
-				       const int numProperties,
-				       const PylithScalar* stateVars,
-				       const int numStateVars,
-				       const PylithScalar* totalStrain,
-				       const int strainSize,
-				       const PylithScalar* initialStress,
-				       const int initialStressSize,
-				       const PylithScalar* initialStrain,
-				       const int initialStrainSize);
-  
+  void _calcElasticConstsViscoelastic(PylithScalar* const elasticConsts,
+				      const int numElasticConsts,
+				      const PylithScalar* properties,
+				      const int numProperties,
+				      const PylithScalar* stateVars,
+				      const int numStateVars,
+				      const PylithScalar* totalStrain,
+				      const int strainSize,
+				      const PylithScalar* initialStress,
+				      const int initialStressSize,
+				      const PylithScalar* initialStrain,
+				      const int initialStrainSize);
+
   /** Update state variables after solve as an elastic material.
    *
    * @param stateVars State variables at locations.
@@ -445,7 +449,7 @@ private :
 			       const PylithScalar* initialStrain,
 			       const int initialStrainSize);
 
-  /** Update state variables after solve as an elastoplastic material.
+  /** Update state variables after solve as a viscoelastic material.
    *
    * @param properties Properties at location.
    * @param numProperties Number of properties.
@@ -454,20 +458,39 @@ private :
    * @param initialState Initial state values.
    * @param initialStateSize Size of initial state array.
    */
-  void _updateStateVarsElastoplastic(PylithScalar* const stateVars,
-				     const int numStateVars,
-				     const PylithScalar* properties,
-				     const int numProperties,
-				     const PylithScalar* totalStrain,
-				     const int strainSize,
-				     const PylithScalar* initialStress,
-				     const int initialStressSize,
-				     const PylithScalar* initialStrain,
-				     const int initialStrainSize);
+  void _updateStateVarsViscoelastic(PylithScalar* const stateVars,
+				    const int numStateVars,
+				    const PylithScalar* properties,
+				    const int numProperties,
+				    const PylithScalar* totalStrain,
+				    const int strainSize,
+				    const PylithScalar* initialStress,
+				    const int initialStressSize,
+				    const PylithScalar* initialStrain,
+				    const int initialStrainSize);
 
+
+  // PRIVATE STRUCTS ////////////////////////////////////////////////////
+private :
+
+  struct EffStressStruct {
+    PylithScalar ae;
+    PylithScalar b;
+    PylithScalar c;
+    PylithScalar d;
+    PylithScalar alpha;
+    PylithScalar dt;
+    PylithScalar effStressT;
+    PylithScalar powerLawExp;
+    PylithScalar referenceStrainRate;
+    PylithScalar referenceStress;
+  };
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Structure to hold parameters for effective stress computation.
+  EffStressStruct _effStressParams;
 
   /// Method to use for _calcElasticConsts().
   calcElasticConsts_fn_type _calcElasticConstsFn;
@@ -478,41 +501,37 @@ private :
   /// Method to use for _updateStateVars().
   updateStateVars_fn_type _updateStateVarsFn;
 
-  /// Fit to Mohr Coulomb surface
-  FitMohrCoulombEnum _fitMohrCoulomb;
-
-  /// Whether to allow tensile yield
-  bool _allowTensileYield;
-
   static const int p_density;
   static const int p_mu;
   static const int p_lambda;
-  static const int p_alphaYield;
-  static const int p_beta;
-  static const int p_alphaFlow;
+  static const int p_referenceStrainRate;
+  static const int p_referenceStress;
+  static const int p_powerLawExponent;
   static const int db_density;
   static const int db_vs;
   static const int db_vp;
-  static const int db_frictionAngle;
-  static const int db_cohesion;
-  static const int db_dilatationAngle;
+  static const int db_referenceStrainRate;
+  static const int db_referenceStress;
+  static const int db_powerLawExponent;
 
   static const int s_stressZZInitial;
-  static const int s_plasticStrain;
+  static const int s_viscousStrain;
+  static const int s_stress4;
   static const int db_stressZZInitial;
-  static const int db_plasticStrain;
+  static const int db_viscousStrain;
+  static const int db_stress4;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
-  DruckerPragerPlaneStrain(const DruckerPragerPlaneStrain&); ///< Not implemented
-  const DruckerPragerPlaneStrain& operator=(const DruckerPragerPlaneStrain&); ///< Not implemented
+  PowerLawPlaneStrain(const PowerLawPlaneStrain&); ///< Not implemented
+  const PowerLawPlaneStrain& operator=(const PowerLawPlaneStrain&); ///< Not implemented
 
-}; // class DruckerPragerPlaneStrain
+}; // class PowerLawPlaneStrain
 
-#include "DruckerPragerPlaneStrain.icc" // inline methods
+#include "PowerLawPlaneStrain.icc" // inline methods
 
-#endif // pylith_materials_druckerpragerplanestrain_hh
+#endif // pylith_materials_powerlawplanestrain_hh
 
 
 // End of file 

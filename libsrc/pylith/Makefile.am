@@ -122,6 +122,7 @@ libpylith_la_SOURCES = \
 	materials/MaxwellIsotropic3D.cc \
 	materials/MaxwellPlaneStrain.cc \
 	materials/PowerLaw3D.cc \
+	materials/PowerLawPlaneStrain.cc \
 	materials/DruckerPrager3D.cc \
 	materials/DruckerPragerPlaneStrain.cc \
 	meshio/BinaryIO.cc \
