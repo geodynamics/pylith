@@ -38,6 +38,7 @@ swig_sources = \
 	GenMaxwellPlaneStrain.i \
 	GenMaxwellQpQsIsotropic3D.i \
 	PowerLaw3D.i \
+	PowerLawPlaneStrain.i \
 	DruckerPrager3D.i \
 	DruckerPragerPlaneStrain.i
 
