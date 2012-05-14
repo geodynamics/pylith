@@ -55,7 +55,7 @@ class GenMaxwellPlaneStrain(ElasticMaterial, ModuleGenMaxwellPlaneStrain):
                      "viscous_strain_2", 
                      "viscous_strain_3",
                      ]}}
-    self._loggingPrefix = "MaMx2D "
+    self._loggingPrefix = "MaGM2D "
     return
 
 

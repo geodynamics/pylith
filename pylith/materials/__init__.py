@@ -32,6 +32,7 @@ __all__ = ['ElasticMaterial',
            'Material',
            'MaxwellIsotropic3D',
            'PowerLaw3D',
+           'PowerLawPlaneStrain',
            'DruckerPrager3D',
            ]
 
