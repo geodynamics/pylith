@@ -54,7 +54,7 @@ class GenMaxwellIsotropic3D(ElasticMaterial, ModuleGenMaxwellIsotropic3D):
                      "viscous_strain_2", 
                      "viscous_strain_3",
                      ]}}
-    self._loggingPrefix = "MaMx3D "
+    self._loggingPrefix = "MaGM3D "
     return
 
 

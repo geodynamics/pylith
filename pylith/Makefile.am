@@ -87,6 +87,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaxwellIsotropic3D.py \
 	materials/MaxwellPlaneStrain.py \
 	materials/PowerLaw3D.py \
+	materials/PowerLawPlaneStrain.py \
 	materials/DruckerPrager3D.py \
 	materials/DruckerPragerPlaneStrain.py \
 	meshio/__init__.py \
