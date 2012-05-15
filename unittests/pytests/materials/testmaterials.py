@@ -95,6 +95,9 @@ class TestApp(Script):
     from TestPowerLaw3D import TestPowerLaw3D
     suite.addTest(unittest.makeSuite(TestPowerLaw3D))
 
+    from TestPowerLawPlaneStrain import TestPowerLawPlaneStrain
+    suite.addTest(unittest.makeSuite(TestPowerLawPlaneStrain))
+
     from TestDruckerPrager3D import TestDruckerPrager3D
     suite.addTest(unittest.makeSuite(TestDruckerPrager3D))
 
