@@ -135,8 +135,7 @@ class PowerLawPlaneStrainElastic(ElasticMaterialApp):
     self.dbStateVars[0,0] = stressZZInitialA
     self.dbStateVars[1,0] = stressZZInitialB
 
-    self.stateVars = numpy.zeros( (numLocs, 1 + 4 + 4),
-                                  dtype=numpy.float64)
+    self.stateVars = numpy.zeros( (numLocs, 1 + 4 + 4), dtype=numpy.float64)
     self.stateVars[0,0] = stressZZInitialA
     self.stateVars[1,0] = stressZZInitialB
 
@@ -156,8 +155,8 @@ class PowerLawPlaneStrainElastic(ElasticMaterialApp):
     stressZZInitialANondim = stressZZInitialA/mu0
     stressZZInitialBNondim = stressZZInitialB/mu0
     
-    self.stateVarsNondim = self.stateVars # no scaling
-
+    self.stateVarsNondim = numpy.zeros( (numLocs, 1 + 4 + 4),
+                                        dtype=numpy.float64)
     self.stateVarsNondim[0, 0] = stressZZInitialANondim
     self.stateVarsNondim[1, 0] = stressZZInitialBNondim
 

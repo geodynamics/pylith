@@ -135,7 +135,7 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_propertie
 };
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_stateVars[] = {
-  4.77955556e-07,
+  1.07540000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
@@ -144,7 +144,7 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_stateVars
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
-  1.14444444e-06,
+  2.57500000e+04,
   0.00000000e+00,
   0.00000000e+00,
   0.00000000e+00,
