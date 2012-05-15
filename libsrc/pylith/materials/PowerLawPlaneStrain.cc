@@ -398,20 +398,23 @@ pylith::materials::PowerLawPlaneStrain::_stableTimeStepImplicit(
   assert(_numPropsQuadPt == numProperties);
   assert(0 != stateVars);
   assert(_numVarsQuadPt == numStateVars);
+
+  const int tensorSizePS = 4;
+
   const PylithScalar mu = properties[p_mu];
   const PylithScalar referenceStrainRate = properties[p_referenceStrainRate];
   const PylithScalar referenceStress = properties[p_referenceStress];
   const PylithScalar powerLawExp = properties[p_powerLawExponent];
 
-  const PylithScalar stress4[] = {stateVars[s_stress4],
-				  stateVars[s_stress4 + 1],
-				  stateVars[s_stress4 + 2],
-				  stateVars[s_stress4 + 3]};
+  const PylithScalar stress4[tensorSizePS] = {stateVars[s_stress4],
+					      stateVars[s_stress4 + 1],
+					      stateVars[s_stress4 + 2],
+					      stateVars[s_stress4 + 3]};
   const PylithScalar meanStress = (stress4[0] + stress4[1] + stress4[2])/3.0;
-  const PylithScalar devStress[] = {stress4[0] - meanStress,
-				    stress4[1] - meanStress,
-				    stress4[2] - meanStress,
-				    stress4[3]};
+  const PylithScalar devStress[tensorSizePS] = {stress4[0] - meanStress,
+						stress4[1] - meanStress,
+						stress4[2] - meanStress,
+						stress4[3]};
   const PylithScalar devStressProd = scalarProduct2DPS(devStress, devStress);
   const PylithScalar effStress = sqrt(0.5 * devStressProd);
   PylithScalar dtTest = 0.0;
@@ -1073,13 +1076,15 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsElastic(
 		     initialStrain, initialStrainSize,
 		     computeStateVars);
 
-  for (int iComp=0; iComp < _tensorSize; ++iComp) {
-    stateVars[s_viscousStrain + iComp] = 0.0;
-    stateVars[s_stress4 + iComp] = stress[iComp];
-  } // for
+  stateVars[s_viscousStrain] = 0.0;
+  stateVars[s_viscousStrain + 1] = 0.0;
+  stateVars[s_viscousStrain + 2] = 0.0;
   stateVars[s_viscousStrain + 3] = 0.0;
-  stateVars[s_stress4 + 3] = lambda * (totalStrain[0] + totalStrain[1]) +
+  stateVars[s_stress4] = stress[0];
+  stateVars[s_stress4 + 1] = stress[1];
+  stateVars[s_stress4 + 2] = lambda * (totalStrain[0] + totalStrain[1]) +
     stressZZInitial;
+  stateVars[s_stress4 + 3] = stress[2];
 
   _needNewJacobian = true;
 } // _updateStateVarsElastic
