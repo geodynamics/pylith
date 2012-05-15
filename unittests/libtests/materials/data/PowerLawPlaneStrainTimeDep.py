@@ -170,10 +170,8 @@ class PowerLawPlaneStrainTimeDep(ElasticMaterialApp):
                              dtype=numpy.float64)
     visStrainB = numpy.array([1.1e-5, 1.2e-5, 1.3e-5, 1.4e-5],
                              dtype=numpy.float64)
-    stress4A = numpy.array([3.1e4, 3.2e4, stressZZInitialA, 3.4e4],
-                           dtype=numpy.float64)
-    stress4B = numpy.array([5.1e4, 5.2e4, stressZZInitialB, 5.4e4],
-                           dtype=numpy.float64)
+    stress4A = numpy.array([3.1e4, 3.2e4, 3.3e4, 3.4e4], dtype=numpy.float64)
+    stress4B = numpy.array([5.1e4, 5.2e4, 5.3e4, 5.4e4], dtype=numpy.float64)
     stressNondimA = stress4A/mu0
     stressNondimB = stress4B/mu0
     stressZZInitialANondim = stressZZInitialA/mu0
@@ -377,8 +375,8 @@ class PowerLawPlaneStrainTimeDep(ElasticMaterialApp):
     initialStress4 = numpy.array([initialStress[0], initialStress[1],
                                   stateVars[0], initialStress[2]],
                                  dtype=numpy.float64)
-    meanStressInitial = (initialStress[0] + initialStress[1] +
-                         stateVars[0])/3.0
+    meanStressInitial = (initialStress4[0] + initialStress4[1] +
+                         initialStress4[3])/3.0
     devStressInitial = initialStress4 - meanStressInitial * diag
     stressInvar2Initial = 0.5 * self._scalarProduct(devStressInitial,
                                                     devStressInitial)
