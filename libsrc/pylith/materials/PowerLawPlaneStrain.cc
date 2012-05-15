@@ -55,7 +55,7 @@ namespace pylith {
       const int numProperties = 6;
 
       /// Physical properties.
-      const Metadata::ParamDescription properties[] = {
+      const Metadata::ParamDescription properties[6] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -66,16 +66,16 @@ namespace pylith {
 
       // Values expected in properties spatial database
       const int numDBProperties = 6;
-      const char* dbProperties[] = {"density", "vs", "vp" ,
+      const char* dbProperties[6] = {"density", "vs", "vp" ,
 				    "reference-strain-rate",
 				    "reference-stress",
 				    "power-law-exponent"};
 
       /// Number of state variables.
-      const int numStateVars = 2;
+      const int numStateVars = 3;
 
       /// State variables.
-      const Metadata::ParamDescription stateVars[] = {
+      const Metadata::ParamDescription stateVars[3] = {
 	{ "stress_zz_initial", 1, pylith::topology::FieldBase::SCALAR },
 	{ "viscous_strain", 4, pylith::topology::FieldBase::OTHER },
 	{ "stress4", 4, pylith::topology::FieldBase::OTHER }
@@ -83,15 +83,15 @@ namespace pylith {
 
       // Values expected in state variables spatial database.
       const int numDBStateVars = 9;
-      const char* dbStateVars[] = { "stress-zz-initial",
-				    "viscous-strain-xx",
-				    "viscous-strain-yy",
-				    "viscous-strain-zz",
-				    "viscous-strain-xy",
-				    "stress4-xx",
-				    "stress4-yy",
-				    "stress4-zz",
-				    "stress4-xy"
+      const char* dbStateVars[9] = { "stress-zz-initial",
+				     "viscous-strain-xx",
+				     "viscous-strain-yy",
+				     "viscous-strain-zz",
+				     "viscous-strain-xy",
+				     "stress4-xx",
+				     "stress4-yy",
+				     "stress4-zz",
+				     "stress4-xy"
       };
 
     } // _PowerLawPlaneStrain
