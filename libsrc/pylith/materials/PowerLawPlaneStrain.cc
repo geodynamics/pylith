@@ -46,7 +46,7 @@ namespace pylith {
       const int dimension = 2;
 
       /// Number of entries in stress/strain tensors.
-      const int tensorSize = 4;
+      const int tensorSize = 3;
 
       /// Number of entries in derivative of elasticity matrix.
       const int numElasticConsts = 9;
@@ -67,9 +67,9 @@ namespace pylith {
       // Values expected in properties spatial database
       const int numDBProperties = 6;
       const char* dbProperties[6] = {"density", "vs", "vp" ,
-				    "reference-strain-rate",
-				    "reference-stress",
-				    "power-law-exponent"};
+				     "reference-strain-rate",
+				     "reference-stress",
+				     "power-law-exponent"};
 
       /// Number of state variables.
       const int numStateVars = 3;
@@ -545,7 +545,7 @@ pylith::materials::PowerLawPlaneStrain::_calcStressViscoelastic(
     const PylithScalar mu2 = 2.0 * mu;
     const PylithScalar bulkModulus = lambda + mu2/3.0;
     const PylithScalar ae = 1.0/mu2;
-    const PylithScalar diag[] = { 1.0, 1.0, 1.0, 0.0 };
+    const PylithScalar diagg[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
 
     // Need to figure out how time integration parameter alpha is going to be
     // specified.  It should probably be specified in the problem definition and
@@ -651,9 +651,12 @@ pylith::materials::PowerLawPlaneStrain::_calcStressViscoelastic(
       devStressTpdt = factor1 *
 	(strainPPTpdt[iComp] - factor2 * devStressT[iComp] +
 	 ae * devStressInitial[iComp]);
-      totalStress[iComp] = devStressTpdt + diag[iComp] *
+      totalStress[iComp] = devStressTpdt + diagg[iComp] *
 	(meanStressTpdt + meanStressInitial);
     } // for
+    stress[0] = totalStress[0];
+    stress[1] = totalStress[1];
+    stress[2] = totalStress[3];
     PetscLogFlops(14 + 8 * tensorSizePS);
 
     // If state variables have already been updated, current stress is already
@@ -880,7 +883,7 @@ pylith::materials::PowerLawPlaneStrain::_calcElasticConstsViscoelastic(
   const PylithScalar mu2 = 2.0 * mu;
   const PylithScalar bulkModulus = lambda + mu2/3.0;
   const PylithScalar ae = 1.0/mu2;
-  const PylithScalar diag[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diagg[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
     
   // Need to figure out how time integration parameter alpha is going to be
   // specified.  It should probably be specified in the problem definition and
@@ -1144,7 +1147,7 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic(
   const PylithScalar mu2 = 2.0 * mu;
   const PylithScalar bulkModulus = lambda + mu2/3.0;
   const PylithScalar ae = 1.0/mu2;
-  const PylithScalar diag[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
+  const PylithScalar diagg[tensorSizePS] = { 1.0, 1.0, 1.0, 0.0 };
 
   // Need to figure out how time integration parameter alpha is going to be
   // specified.  It should probably be specified in the problem definition and
@@ -1170,7 +1173,7 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic(
 					  initialStrain[1])/3.0;
   
   // Values for current time step
-  const PylithScalar meanStrainTpdt = (initialStrain[0] + initialStrain[1])/3.0
+  const PylithScalar meanStrainTpdt = (totalStrain[0] + totalStrain[1])/3.0
     - meanStrainInitial;
   const PylithScalar meanStressTpdt = 3.0 * bulkModulus * meanStrainTpdt;
 
@@ -1250,7 +1253,7 @@ pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic(
     devStressTpdt = factor1 *
       (strainPPTpdt[iComp] - factor2 * devStressT[iComp] +
        ae * devStressInitial[iComp]);
-    stateVars[s_stress4 + iComp] = devStressTpdt + diag[iComp] *
+    stateVars[s_stress4 + iComp] = devStressTpdt + diagg[iComp] *
       (meanStressTpdt + meanStressInitial);
     devStressTau = (1.0 - alpha) * devStressT[iComp] + alpha * devStressTpdt;
     stateVars[s_viscousStrain+iComp] += _dt * gammaTau * devStressTau;
