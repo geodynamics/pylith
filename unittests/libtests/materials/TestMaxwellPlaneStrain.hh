@@ -58,7 +58,7 @@ class pylith::materials::TestMaxwellPlaneStrain : public TestElasticMaterial
 
   // Need to test Maxwell viscoelastic specific behavior.
   CPPUNIT_TEST( testTimeStep );
-  CPPUNIT_TEST( testUseLinearBehavior );
+  CPPUNIT_TEST( testUseElasticBehavior );
   CPPUNIT_TEST( testHasStateVars );
 
   CPPUNIT_TEST( test_calcStressElastic );
@@ -82,8 +82,8 @@ public :
   /// Test timeStep()
   void testTimeStep(void);
 
-  /// Test useLinearBehavior()
-  void testUseLinearBehavior(void);
+  /// Test useElasticBehavior()
+  void testUseElasticBehavior(void);
 
   /// Test hasStateVars()
   void testHasStateVars(void);

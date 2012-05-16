@@ -64,13 +64,13 @@ pylith::materials::TestGenMaxwellIsotropic3D::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test useLinearBehavior()
+// Test useElasticBehavior()
 void
-pylith::materials::TestGenMaxwellIsotropic3D::testUseLinearBehavior(void)
-{ // testUseLinearBehavior
+pylith::materials::TestGenMaxwellIsotropic3D::testUseElasticBehavior(void)
+{ // testUseElasticBehavior
   GenMaxwellIsotropic3D material;
 
-  material.useLinearBehavior(true);
+  material.useElasticBehavior(true);
   // Some compilers/operating systems (cygwin) don't allow comparing
   // pointers. Use first test to determine if we can compare pointers.
   if (&pylith::materials::GenMaxwellIsotropic3D::_calcStressElastic == 
@@ -82,7 +82,7 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUseLinearBehavior(void)
     CPPUNIT_ASSERT(&pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsElastic ==
 		   material._updateStateVarsFn);
 
-    material.useLinearBehavior(false);
+    material.useElasticBehavior(false);
     CPPUNIT_ASSERT(&pylith::materials::GenMaxwellIsotropic3D::_calcStressViscoelastic ==
 		   material._calcStressFn);
     CPPUNIT_ASSERT(&pylith::materials::GenMaxwellIsotropic3D::_calcElasticConstsViscoelastic == 
@@ -90,7 +90,7 @@ pylith::materials::TestGenMaxwellIsotropic3D::testUseLinearBehavior(void)
   CPPUNIT_ASSERT(&pylith::materials::GenMaxwellIsotropic3D::_updateStateVarsViscoelastic ==
 		 material._updateStateVarsFn);
   } // if
-} // testUseLinearBehavior
+} // testUseElasticBehavior
 
 // ----------------------------------------------------------------------
 // Test usesHasStateVars()
@@ -107,7 +107,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcStressElastic(void)
 { // testCalcStressElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_calcStress();
 } // testCalcStressElastic
@@ -118,7 +118,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcElasticConstsElastic(void)
 { // testElasticConstsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_calcElasticConsts();
 } // testElasticConstsElastic
@@ -129,7 +129,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsElastic(void)
 { // testUpdateStateVarsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_updateStateVars();
 } // testUpdateStateVarsElastic
@@ -140,7 +140,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcStressTimeDep(void)
 { // testCalcStressTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(false);
+  _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
 
@@ -155,7 +155,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_calcElasticConstsTimeDep(void)
 { // testElasticConstsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(false);
+  _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
 
@@ -170,7 +170,7 @@ void
 pylith::materials::TestGenMaxwellIsotropic3D::test_updateStateVarsTimeDep(void)
 { // testUpdateStateVarsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(false);
+  _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new GenMaxwellIsotropic3DTimeDepData();
 

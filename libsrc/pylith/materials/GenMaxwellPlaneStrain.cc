@@ -194,7 +194,7 @@ pylith::materials::GenMaxwellPlaneStrain::GenMaxwellPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)  
 { // constructor
-  useLinearBehavior(false);
+  useElasticBehavior(false);
   _viscousStrain.resize(_GenMaxwellPlaneStrain::numMaxwellModels * 4);
 } // constructor
 
@@ -207,8 +207,8 @@ pylith::materials::GenMaxwellPlaneStrain::~GenMaxwellPlaneStrain(void)
 // ----------------------------------------------------------------------
 // Set whether elastic or inelastic constitutive relations are used.
 void
-pylith::materials::GenMaxwellPlaneStrain::useLinearBehavior(const bool flag)
-{ // useLinearBehavior
+pylith::materials::GenMaxwellPlaneStrain::useElasticBehavior(const bool flag)
+{ // useElasticBehavior
   if (flag) {
     _calcStressFn = 
       &pylith::materials::GenMaxwellPlaneStrain::_calcStressElastic;
@@ -225,7 +225,7 @@ pylith::materials::GenMaxwellPlaneStrain::useLinearBehavior(const bool flag)
     _updateStateVarsFn = 
       &pylith::materials::GenMaxwellPlaneStrain::_updateStateVarsViscoelastic;
   } // if/else
-} // useLinearBehavior
+} // useElasticBehavior
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.

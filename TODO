@@ -22,6 +22,7 @@ CURRENT ISSUES/PRIORITIES
 * Use HDF5/h5py in automated full-scale tests.
 
 * Setup fieldsplit for SolverNonlinear [Matt]
+  Need to verify
 
 * 2-D materials
 
@@ -35,7 +36,7 @@ CURRENT ISSUES/PRIORITIES
   - Output soln points [DONE]
     + Interpolation [DONE]
     + PointsList [DONE]
-  - Linear prestep
+  - Elastic prestep
     + Turned on by default
     + Static solution is linear prestep
     + Inelastic solution requires increment in driving forces

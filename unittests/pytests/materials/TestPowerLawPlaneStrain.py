@@ -46,11 +46,11 @@ class TestPowerLawPlaneStrain(unittest.TestCase):
     return
 
 
-  def test_useLinearBehavior(self):
+  def test_useElasticBehavior(self):
     """
-    Test useLinearBehavior().
+    Test useElasticBehavior().
     """
-    self.material.useLinearBehavior(False)
+    self.material.useElasticBehavior(False)
     return
 
 
