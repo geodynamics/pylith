@@ -21,14 +21,13 @@ CURRENT ISSUES/PRIORITIES
 
 * Use HDF5/h5py in automated full-scale tests.
 
-* Setup fieldsplit for SolverNonlinear [Matt]
-  Need to verify
-
 * 2-D materials
 
   + PowerLawPlaneStrain (power law plane strain ) [Charles]
 
 * Manual
+
+  STILL TO DO
 
   - Drucker Prager fit to yield surface
   - Drucker Prager allow tensile yield
@@ -44,23 +43,25 @@ CURRENT ISSUES/PRIORITIES
 
   - Update Components appendix [DONE?, need to check]
 
-  - Order of tensor components for Xdmf files [DONE]
-  - Output soln points [DONE]
-    + Interpolation [DONE]
-    + PointsList [DONE]
-  - Elastic prestep [DONE]
+  DONE
+
+  - Order of tensor components for Xdmf files
+  - Output soln points
+    + Interpolation
+    + PointsList
+  - Elastic prestep
     + Turned on by default
     + Static solution is linear prestep
     + Inelastic solution requires increment in driving forces
-  - User specified start time (default is 0.0) [DONE]
+  - User specified start time (default is 0.)
   - FaultCohesiveDyn
-    + Add switch for turning on/off zero tractions for fault opening [DONE]
-    + Switched to time-dependent formulation for prescribed tractions [DONE]
-    + Slip-weakening healing parameter [DONE]
-    + Changed regularization of rate and state friction [DONE]
+    + Add switch for turning on/off zero tractions for fault opening
+    + Switched to time-dependent formulation for prescribed tractions 
+    + Slip-weakening healing parameter
+    + Changed regularization of rate and state friction
   - Green's functions
-    + GreensFns problem [DONE]
-    + FaultCohesiveImpulses [DONE]
+    + GreensFns problem
+    + FaultCohesiveImpulses
 
 
 * configure
