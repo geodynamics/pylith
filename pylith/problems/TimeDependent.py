@@ -145,7 +145,7 @@ class TimeDependent(Problem):
       for material in self.materials.components():
         material.useElasticBehavior(True)
 
-      self.formulation.prestepElastic(t, dt)
+      self.formulation.prestep(t, dt)
       self._eventLogger.stagePop()
 
       if 0 == comm.rank:
