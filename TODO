@@ -29,8 +29,11 @@ CURRENT ISSUES/PRIORITIES
 
   STILL TO DO
 
-  - Drucker Prager fit to yield surface
-  - Drucker Prager allow tensile yield
+  - Drucker-Prager Pyre properties
+    + fit to yield surface
+    + allow tensile yield
+    + Derivation of fit to yield surface (insert immediately before table)
+
   - Update field split settings (Section 5.1)
   - PETSc w/CUDA (Add to Section 5.1)
   - FIATSimplex, FIATLagrange
