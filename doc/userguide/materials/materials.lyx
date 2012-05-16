@@ -1520,7 +1520,7 @@ ve models.
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1545,7 +1545,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1570,7 +1570,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1595,7 +1595,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1981,7 +1981,7 @@ Available viscoelastic materials for PyLith.
 <column alignment="left" valignment="top" width="2.85in">
 <column alignment="center" valignment="top" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2005,7 +2005,7 @@ Description
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2025,7 +2025,7 @@ Plane strain Maxwell material with linear viscous rheology
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2045,7 +2045,7 @@ Plane strain generalized Maxwell material (3 Maxwell models in parallel)
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2065,7 +2065,7 @@ Plane strain Maxwell material with power-law viscous rheology
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2085,7 +2085,7 @@ Isotropic Maxwell material with linear viscous rheology
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2105,7 +2105,7 @@ Generalized model consisting of 3 Maxwell models in parallel
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3016,7 +3016,7 @@ Values in spatial database used as parameters in the linear Maxwell viscoelastic
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3041,7 +3041,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3066,7 +3066,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3091,7 +3091,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3116,7 +3116,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3186,7 +3186,7 @@ Values in spatial database used as parameters in the generalized linear
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3211,7 +3211,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3236,7 +3236,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3261,7 +3261,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3286,7 +3286,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3311,7 +3311,7 @@ shear-ratio-1
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3336,7 +3336,7 @@ shear-ratio-2
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3361,7 +3361,7 @@ shear-ratio-3
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3386,7 +3386,7 @@ viscosity-1
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3411,7 +3411,7 @@ viscosity-2
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4484,7 +4484,7 @@ Values in spatial database used as parameters in the nonlinear power-law
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4509,7 +4509,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4534,7 +4534,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4559,7 +4559,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4584,7 +4584,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4609,7 +4609,7 @@ reference-strain-rate
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4634,7 +4634,7 @@ reference-stress
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4849,7 +4849,7 @@ d by the
 \family typewriter
 fit_mohr_coulomb
 \family default
- material parameter.
+ property.
  The options are listed in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4872,10 +4872,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -4886,11 +4882,11 @@ name "tab:fit_mohr_coulomb"
 \end_inset
 
 Options for fitting the Drucker-Prager plastic parameters to a Mohr-Coulomb
- model using the 
+ model using 
 \family typewriter
 fit_mohr_coulomb
 \family default
- parameter.
+.
 \end_layout
 
 \end_inset
@@ -4899,6 +4895,7 @@ fit_mohr_coulomb
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="4">
 <features tabularvalignment="middle">
@@ -5828,6 +5825,10 @@ dilatation-angle
 
 \end_layout
 
+\begin_layout Standard
+:TODO: ADD PYRE PROPERTIES HERE
+\end_layout
+
 \begin_layout Section
 Initial State Variables
 \end_layout
@@ -5931,7 +5932,7 @@ reference "tab:material-model-output"
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5956,7 +5957,7 @@ Values in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5978,7 +5979,7 @@ stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
