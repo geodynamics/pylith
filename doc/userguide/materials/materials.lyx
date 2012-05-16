@@ -4675,11 +4675,10 @@ Elastoplastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are two elastoplastic material models available in PyLith.
- Both materials make use of the Drucker-Prager yield criterion.
- The only difference is that one model includes hardening/softening, and
- the other is for the case of perfect plasticity.
- Additional elastoplastic materials will be available in future versions.
+PyLith presently contains just a single elastoplastic material that implements
+ the Drucker-Prager yield criterion.
+ Future releases of PyLith may contain additional elastoplastic materials,
+ such as Drucker-Prager with hardening/softening.
 \end_layout
 
 \begin_layout Subsection
