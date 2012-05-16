@@ -2909,8 +2909,64 @@ ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
 \end_layout
 
 \begin_layout Standard
-An example of setting the formulation facility to the implicit time stepping
- component is:
+In many quasi-static simulations it is convenient to compute a static problem
+ with elastic deformation prior to computing a transient response.
+ Up through PyLith version 1.6 this was hardwired into the Implicit Forumulation
+ as advancing from time step 
+\begin_inset Formula $t=-\Delta t$
+\end_inset
+
+ to 
+\begin_inset Formula $t=0$
+\end_inset
+
+, and it could not be turned off.
+ PyLith now includes a property, 
+\family typewriter
+elastic_prestep
+\family default
+ in the TimeDependent component to turn on/off this behavior (the default
+ is to retain the previous behavior of computing the elastic deformation).
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Turning off the elastic prestep calculation means the model only deforms
+ when an 
+\family typewriter
+\shape italic
+\color inherit
+increment
+\family default
+\shape default
+\color none
+ in loading or deformation is applied, because we the time-stepping formulation
+ is implemented using the increment in displacement.
+\end_layout
+
+\begin_layout Standard
+The TimeDependent properties and facilities include
+\end_layout
+
+\begin_layout Description
+elastic_preset If true, perform a static calculation with elastic behavior
+ before time stepping (default is True).
+\end_layout
+
+\begin_layout Description
+formulation Formulation for solving the partial differential equation.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties and components in a .cfg file is
 \end_layout
 
 \begin_layout LyX-Code
@@ -2918,11 +2974,17 @@ An example of setting the formulation facility to the implicit time stepping
 \end_layout
 
 \begin_layout LyX-Code
-formulation = pylith.problems.Implicit
+formulation = pylith.problems.Implicit ; default
+\end_layout
+
+\begin_layout LyX-Code
+elastic_preset = True ; default
 \end_layout
 
 \begin_layout Standard
-The formulation can be set to the other formulations in a similar fashion.
+The formulation value can be set to the other formulations in a similar
+ fashion.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -4771,9 +4833,42 @@ The binary PyLith packages include this feature and it is a default setting
 \end_layout
 
 \begin_layout Standard
-Accessing the datasets for additional analysis or visualization is identical
- in the two methods because the use of external data files is completely
- transparent to the user except for the presence of the additional files.
+Accessing the datasets for additional analysis or visualization is nearly
+ identical in the two methods because the use of external data files is
+ completely transparent to the user except for the presence of the additional
+ files.
+ Note that in order for ParaView to find the HDF5 and external data files,
+ it must be run from the same relative location where the simulation was
+ run.
+ For example, if the simulation was run from a directory called 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ and the HDF5/Xdmf files were written to 
+\begin_inset Quotes eld
+\end_inset
+
+work/output
+\begin_inset Quotes erd
+\end_inset
+
+, then ParaView should be run from the 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ directory.
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsubsection
