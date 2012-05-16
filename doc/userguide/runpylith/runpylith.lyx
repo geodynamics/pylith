@@ -4867,10 +4867,6 @@ work
  directory.
 \end_layout
 
-\begin_layout Standard
-
-\end_layout
-
 \begin_layout Subsubsection
 HDF5 utilities
 \end_layout
@@ -5090,8 +5086,19 @@ name "sec:Troubleshooting"
 \end_layout
 
 \begin_layout Itemize
-Consult the PyLith FAQ webpage (ADD URL HERE) which contains a growing list
- of common problems and their corresponding solutions.
+Consult the PyLith FAQ webpage (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.geodynamics.org/cig/community/workinggroups/short/workarea/pylith-wiki
+\end_layout
+
+\end_inset
+
+) which contains a growing list of common problems and their corresponding
+ solutions.
 \end_layout
 
 \begin_layout Itemize
