@@ -1575,7 +1575,7 @@ Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are five viscoelastic material models available in PyLith
+At present, there are six viscoelastic material models available in PyLith
  (Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1618,9 +1618,23 @@ reference "cha:Alternative-Formulations"
 \begin_inset Formula $\sigma_{33}^{I}$
 \end_inset
 
- is provided.
+ is provided (
+\family typewriter
+stress_zz_initial
+\family default
+).
  Note that this is not an issue for the 2D elastic models, since this initial
  stress component is not needed.
+ For the PowerLawPlaneStrain model, all four of the stress components are
+ needed, so a 4-component stress state variable (
+\family typewriter
+stress4
+\family default
+) is provided in addition to the normal 3-component 
+\family typewriter
+stress
+\family default
+ state variable.
 \end_layout
 
 \begin_layout Standard
@@ -1651,7 +1665,7 @@ Available viscoelastic materials for PyLith.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="2">
+<lyxtabular version="3" rows="7" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2.85in">
 <column alignment="center" valignment="top" width="2.47in">
@@ -1714,6 +1728,26 @@ GenMaxwellPlaneStrain
 
 \begin_layout Plain Layout
 Plane strain generalized Maxwell material (3 Maxwell models in parallel)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PowerLawPlaneStrain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plane strain Maxwell material with power-law viscous rheology
 \end_layout
 
 \end_inset
@@ -4462,23 +4496,20 @@ f\left(\underline{\sigma},k\right)=\alpha_{f}I_{1}+\sqrt{J_{2}^{\prime}}-\beta\:
 
 \end_inset
 
-where
+and a flow rule given by:
 \begin_inset Formula 
 \begin{equation}
-\alpha_{f}=\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}\:,\label{eq:101}
+g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:.\label{eq:101}
 \end{equation}
 
 \end_inset
 
-and
-\begin_inset Formula 
-\begin{equation}
-\beta=\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}\:.\label{eq:102}
-\end{equation}
 
-\end_inset
+\end_layout
 
-The friction angle, 
+\begin_layout Standard
+The yield surface represents a circular cone in principal stress space,
+ and the parameters can be related to the friction angle, 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -4486,57 +4517,290 @@ The friction angle,
 \begin_inset Formula $\bar{c}$
 \end_inset
 
-, may both be functions of the internal state parameter, and they correspond
- to the values used in the Mohr-Coulomb model.
- The initial friction angle is given by 
-\begin_inset Formula $\phi_{0}$
-\end_inset
-
-.
- The yield surface defined by Equations 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:100"
-
-\end_inset
-
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:101"
-
-\end_inset
-
-, and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:102"
-
-\end_inset
-
- represents a circular cone in principal stress space that is coincident
- with the outer apices of the corresponding Mohr-Coulomb yield surface.
- The flow rule is given by:
-\begin_inset Formula 
-\begin{equation}
-g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:,\label{eq:103}
-\end{equation}
-
-\end_inset
-
-where
-\begin_inset Formula 
-\begin{equation}
-\alpha_{g}=\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}\:.\label{eq:104}
-\end{equation}
-
-\end_inset
-
-The dilatation angle, 
+, of the Mohr-Coulomb model.
+ There are several ways of doing this, depending on whether we want to yield
+ surface to be coincident with the outer apices of the Mohr-Coulomb model
+ (inscribed version), the inner apices of the Mohr-Coulomb model (circumscribed
+ version), or halfway between the two (middle version).
+ Similarly, the flow rule can be related to the dilatation angle, 
 \begin_inset Formula $\psi$
 \end_inset
 
-, may also be a function of the internal state parameter.
+, of a Mohr-Coulomb model.
+ It is also possible for the Mohr-Coulomb parameters to be functions of
+ the internal state parameter, 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ In PyLith, the fit to the Mohr-Coulomb yield surface and flow rule is controlle
+d by the 
+\family typewriter
+fit_mohr_coulomb
+\family default
+ material parameter.
+ The options are listed in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit_mohr_coulomb"
+
+\end_inset
+
+.
+ The parameter 
+\begin_inset Formula $\phi_{0}$
+\end_inset
+
+ refers to the initial friction angle.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit_mohr_coulomb"
+
+\end_inset
+
+Options for fitting the Drucker-Prager plastic parameters to a Mohr-Coulomb
+ model using the 
+\family typewriter
+fit_mohr_coulomb
+\family default
+ parameter.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Parameter Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\beta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{g}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+inscribed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+middle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\sin\phi\left(k\right)}{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\bar{c}\left(k\right)\cos\left(\phi_{0}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\sin\psi\left(k\right)}{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+circumscribed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3+\sin\phi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3+\sin\phi_{0}\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\psi(k)}{\sqrt{3}\left(3+\sin\psi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4629,7 +4893,7 @@ reference "tab:druckerPrager"
 
 \end_inset
 
- refer to 
+ refer respectively to 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -4641,41 +4905,39 @@ reference "tab:druckerPrager"
 \begin_inset Formula $\psi$
 \end_inset
 
- in Equations 
+ in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:101"
+reference "tab:fit_mohr_coulomb"
 
 \end_inset
 
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:102"
-
-\end_inset
-
-, and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:104"
-
-\end_inset
-
-, respectively.
+.
  These are then converted to the properties 
 \begin_inset Formula $\alpha_{f}$
 \end_inset
 
- (alpha-yield), 
+ (
+\family typewriter
+alpha-yield
+\family default
+), 
 \begin_inset Formula $\beta$
 \end_inset
 
- (beta), and 
+ (
+\family typewriter
+beta
+\family default
+), and 
 \begin_inset Formula $\alpha_{g}$
 \end_inset
 
- (alpha-flow), as shown in Table 
+ (
+\family typewriter
+alpha-flow
+\family default
+), as shown in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:material-model-output"
@@ -4746,7 +5008,7 @@ reference "eq:108"
  as:
 \begin_inset Formula 
 \begin{equation}
-^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)\:.\label{eq:113}
+^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)+P^{I}\:.\label{eq:113}
 \end{equation}
 
 \end_inset
@@ -4837,6 +5099,54 @@ reference "eq:105"
 \end_inset
 
  to obtain the deviatoric plastic strains and the deviatoric stresses.
+\end_layout
+
+\begin_layout Standard
+In certain cases where the mean stress is tensile, it is possible that the
+ flow rule will not allow the stresses to project back to the yield surface,
+ since they would project beyond the tip of the cone.
+ Although this stress state is not likely to be encountered for quasi-static
+ tectonic problems, it can occur for dynamic problems.
+ One simple solution is to redefine the plastic multiplier, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ We do this by taking the smaller of the values yielded by Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:114"
+
+\end_inset
+
+ or by the following relation:
+\begin_inset Formula 
+\begin{equation}
+\lambda=\sqrt{2}\,\phantom{}^{t+\Delta t}d\:.\label{eq:127}
+\end{equation}
+
+\end_inset
+
+This is equivalent to setting the second deviatoric stress invariant to
+ zero in Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:110"
+
+\end_inset
+
+.
+ By default, PyLith does not allow such tensile yield, since this would
+ generally represent an error in problem setup for tectonic problems; however,
+ for cases where such behavior is necessary, the material flag 
+\family typewriter
+allow_tensile_yield
+\family default
+ may be set to 
+\family typewriter
+True
+\family default
+.
 \end_layout
 
 \begin_layout Standard
