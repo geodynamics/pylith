@@ -47,7 +47,12 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 	    $(do_install) "$$d$$p.in" > "$(DESTDIR)$(bindir)/$$f"; \
 	    echo " chmod +x '$(DESTDIR)$(bindir)/$$f'"; \
 	    chmod +x "$(DESTDIR)$(bindir)/$$f"; \
-	  else :; fi; \
+	  else : \
+	    echo " $(do_install) '$$d$$p' > '$(DESTDIR)$(bindir)/$$p'"; \
+	    $(do_install) "$$d$$p" > "$(DESTDIR)$(bindir)/$$p"; \
+	    echo " chmod +x '$(DESTDIR)$(bindir)/$$p'"; \
+	    chmod +x "$(DESTDIR)$(bindir)/$$p"; \
+	 fi; \
 	done
 
 EXTRA_DIST = \
