@@ -4865,6 +4865,21 @@ work
 \end_inset
 
  directory.
+ See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material:output:components"
+
+\end_inset
+
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+for a table of component values for tensor output.
 \end_layout
 
 \begin_layout Subsubsection
