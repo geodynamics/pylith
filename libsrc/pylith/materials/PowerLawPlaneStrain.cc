@@ -170,7 +170,7 @@ pylith::materials::PowerLawPlaneStrain::PowerLawPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useLinearBehavior(false);
+  useElasticBehavior(false);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -182,8 +182,8 @@ pylith::materials::PowerLawPlaneStrain::~PowerLawPlaneStrain(void)
 // ----------------------------------------------------------------------
 // Set whether elastic or inelastic constitutive relations are used.
 void
-pylith::materials::PowerLawPlaneStrain::useLinearBehavior(const bool flag)
-{ // useLinearBehavior
+pylith::materials::PowerLawPlaneStrain::useElasticBehavior(const bool flag)
+{ // useElasticBehavior
   if (flag) {
     _calcStressFn = 
       &pylith::materials::PowerLawPlaneStrain::_calcStressElastic;
@@ -200,7 +200,7 @@ pylith::materials::PowerLawPlaneStrain::useLinearBehavior(const bool flag)
     _updateStateVarsFn = 
       &pylith::materials::PowerLawPlaneStrain::_updateStateVarsViscoelastic;
   } // if/else
-} // useLinearBehavior
+} // useElasticBehavior
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.

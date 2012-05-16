@@ -171,7 +171,7 @@ public :
    * @param flag True to use elastic, false to use inelastic.
    */
   virtual
-  void useLinearBehavior(const bool flag);
+  void useElasticBehavior(const bool flag);
 
   /** Check whether material has a field as a property.
    *

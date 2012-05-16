@@ -63,13 +63,13 @@ pylith::materials::TestMaxwellPlaneStrain::testTimeStep(void)
 } // testTimeStep
 
 // ----------------------------------------------------------------------
-// Test useLinearBehavior()
+// Test useElasticBehavior()
 void
-pylith::materials::TestMaxwellPlaneStrain::testUseLinearBehavior(void)
-{ // testUseLinearBehavior
+pylith::materials::TestMaxwellPlaneStrain::testUseElasticBehavior(void)
+{ // testUseElasticBehavior
   MaxwellPlaneStrain material;
 
-  material.useLinearBehavior(true);
+  material.useElasticBehavior(true);
   
   // Some compilers/operating systems (cygwin) don't allow comparing
   // pointers. Use first test to determine if we can compare pointers.
@@ -82,7 +82,7 @@ pylith::materials::TestMaxwellPlaneStrain::testUseLinearBehavior(void)
     CPPUNIT_ASSERT(&pylith::materials::MaxwellPlaneStrain::_updateStateVarsElastic ==
 		   material._updateStateVarsFn);
 
-    material.useLinearBehavior(false);
+    material.useElasticBehavior(false);
     CPPUNIT_ASSERT(&pylith::materials::MaxwellPlaneStrain::_calcStressViscoelastic ==
 		   material._calcStressFn);
     CPPUNIT_ASSERT(&pylith::materials::MaxwellPlaneStrain::_calcElasticConstsViscoelastic ==
@@ -90,7 +90,7 @@ pylith::materials::TestMaxwellPlaneStrain::testUseLinearBehavior(void)
     CPPUNIT_ASSERT(&pylith::materials::MaxwellPlaneStrain::_updateStateVarsViscoelastic ==
 		   material._updateStateVarsFn);
   } // if
-} // testUseLinearBehavior
+} // testUseElasticBehavior
 
 // ----------------------------------------------------------------------
 // Test usesHasStateVars()
@@ -107,7 +107,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_calcStressElastic(void)
 { // test_calcStressElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_calcStress();
 } // test_calcStressElastic
@@ -118,7 +118,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_calcElasticConstsElastic(void)
 { // test_calcElasticConstsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_calcElasticConsts();
 } // test_calcElasticConstsElastic
@@ -129,7 +129,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_updateStateVarsElastic(void)
 { // test_updateStateVarsElastic
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(true);
+  _matElastic->useElasticBehavior(true);
 
   test_updateStateVars();
 } // test_updateStateVarsElastic
@@ -140,7 +140,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_calcStressTimeDep(void)
 { // test_calcStressTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(false);
+  _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new MaxwellPlaneStrainTimeDepData();
 
@@ -155,7 +155,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_calcElasticConstsTimeDep(void)
 { // test_calcElasticConstsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-  _matElastic->useLinearBehavior(false);
+  _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new MaxwellPlaneStrainTimeDepData();
 
@@ -170,7 +170,7 @@ void
 pylith::materials::TestMaxwellPlaneStrain::test_updateStateVarsTimeDep(void)
 { // test_updateStateVarsTimeDep
   CPPUNIT_ASSERT(0 != _matElastic);
-   _matElastic->useLinearBehavior(false);
+   _matElastic->useElasticBehavior(false);
 
   delete _dataElastic; _dataElastic = new MaxwellPlaneStrainTimeDepData();
 

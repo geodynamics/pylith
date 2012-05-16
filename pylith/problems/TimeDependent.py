@@ -52,8 +52,8 @@ class TimeDependent(Problem):
 
     import pyre.inventory
 
-    linearPrestep = pyre.inventory.bool("linear_prestep", default=True)
-    linearPrestep.meta['tip'] = "Include a static calculation with linear behavior before time stepping."
+    elasticPrestep = pyre.inventory.bool("elastic_prestep", default=True)
+    elasticPrestep.meta['tip'] = "Include a static calculation with elastic behavior before time stepping."
 
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
@@ -131,39 +131,39 @@ class TimeDependent(Problem):
       self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
-    # Linear prestep
-    if self.linearPrestep:
+    # Elastic prestep
+    if self.elasticPrestep:
       if 0 == comm.rank:
-        self._info.log("Preparing for prestep with linear behavior.")
+        self._info.log("Preparing for prestep with elastic behavior.")
       self._eventLogger.stagePush("Prestep")
 
       t = self.formulation.getStartTime()
       dt = self.formulation.getTimeStep()
       t -= dt
 
-      # Limit material behavior to linear regime
+      # Limit material behavior to elastic regime
       for material in self.materials.components():
-        material.useLinearBehavior(True)
+        material.useElasticBehavior(True)
 
-      self.formulation.prestepLinear(t, dt)
+      self.formulation.prestepElastic(t, dt)
       self._eventLogger.stagePop()
 
       if 0 == comm.rank:
-        self._info.log("Computing prestep with linear behavior.")
+        self._info.log("Computing prestep with elastic behavior.")
       self._eventLogger.stagePush("Step")
       self.formulation.step(t, dt)
       self._eventLogger.stagePop()
 
       if 0 == comm.rank:
-        self._info.log("Finishing prestep with linear behavior.")
+        self._info.log("Finishing prestep with elastic behavior.")
       self._eventLogger.stagePush("Poststep")
       self.formulation.poststep(t, dt)
       self._eventLogger.stagePop()
 
 
-    # Allow nonlinear behavior
+    # Allow inelastic behavior
     for material in self.materials.components():
-      material.useLinearBehavior(False)
+      material.useElasticBehavior(False)
 
 
     # Normal time loop
@@ -236,7 +236,7 @@ class TimeDependent(Problem):
     Set members based using inventory.
     """
     Problem._configure(self)
-    self.linearPrestep = self.inventory.linearPrestep
+    self.elasticPrestep = self.inventory.elasticPrestep
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return
