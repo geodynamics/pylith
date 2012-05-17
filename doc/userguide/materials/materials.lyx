@@ -4828,10 +4828,76 @@ The yield surface represents a circular cone in principal stress space,
 \end_inset
 
 , of the Mohr-Coulomb model.
- There are several ways of doing this, depending on whether we want to yield
- surface to be coincident with the outer apices of the Mohr-Coulomb model
- (inscribed version), the inner apices of the Mohr-Coulomb model (circumscribed
- version), or halfway between the two (middle version).
+ The yield surface in Haigh-Westergaard space (
+\begin_inset Formula $\zeta=\frac{1}{\sqrt{3}}I_{1},p=\sqrt{2J_{2}},\cos(3\theta)=\frac{3\sqrt{3}}{2}\frac{J_{3}}{J_{2}^{3/2}}$
+\end_inset
+
+) is
+\begin_inset Formula 
+\begin{equation}
+\left(\sqrt{3}\sin\left(\theta+\frac{\pi}{3}\right)-\sin\phi\cos\left(\theta+\frac{\pi}{3}\right)\right)p-\sqrt{2}\sin\phi\zeta=\sqrt{6}\overline{c}\cos\theta.\label{eq:drucker:prager:haigh:westergaard}
+\end{equation}
+
+\end_inset
+
+The yield surface can be fit to the Mohr-Coulomb model in several different
+ ways.
+ The yield surface can touch the outer apices (
+\begin_inset Formula $\theta=\pi/3$
+\end_inset
+
+) of the Mohr-Coulomb model (inscribed version), the inner apices (
+\begin_inset Formula $\theta=0$
+\end_inset
+
+) of the Mohr-Coulomb model (circumscribed version), or halfway between
+ the two (
+\begin_inset Formula $\theta=pi/6,$
+\end_inset
+
+middle version).
+ Substituting these values for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ into equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:drucker:prager:haigh:westergaard"
+
+\end_inset
+
+) and casting it into the same form as equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:101"
+
+\end_inset
+
+) yields the values of 
+\begin_inset Formula $\alpha_{f}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta$
+\end_inset
+
+, and 
+\begin_inset Formula $\alpha_{g}$
+\end_inset
+
+ given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fit_mohr_coulomb"
+
+\end_inset
+
+, where 
+\begin_inset Formula $\phi_{0}$
+\end_inset
+
+ refers to the initial friction angle.
  Similarly, the flow rule can be related to the dilatation angle, 
 \begin_inset Formula $\psi$
 \end_inset
@@ -4849,19 +4915,7 @@ d by the
 fit_mohr_coulomb
 \family default
  property.
- The options are listed in Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:fit_mohr_coulomb"
-
-\end_inset
-
-.
- The parameter 
-\begin_inset Formula $\phi_{0}$
-\end_inset
-
- refers to the initial friction angle.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5825,7 +5879,55 @@ dilatation-angle
 \end_layout
 
 \begin_layout Standard
-:TODO: ADD PYRE PROPERTIES HERE
+In addition to the properties available for every material, the properties
+ for the Drucker-Prager model also includes:
+\end_layout
+
+\begin_layout Description
+fit_mohr_coulomb Fit to the yield surface to the Mohr-Coulomb model (default
+ is a inscribed).
+\end_layout
+
+\begin_layout Description
+allow_tensile_yield If true, allow yield beyond tensile strength; otherwise
+ an error message will occur when the model fails beyond the tensile strength
+ (default is false).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+materials = [plastic]
+\end_layout
+
+\begin_layout LyX-Code
+materials.plastic = pylith.materials.DruckerPrager3D
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.plastic]
+\end_layout
+
+\begin_layout LyX-Code
+fit_mohr_coulomb = inscribed ; default
+\end_layout
+
+\begin_layout LyX-Code
+allow_tensile_yield = False ; default
 \end_layout
 
 \begin_layout Section
