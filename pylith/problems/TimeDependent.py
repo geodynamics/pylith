@@ -44,7 +44,7 @@ class TimeDependent(Problem):
     ## Python object for managing TimeDependent facilities and properties.
     ##
     ## \b Properties
-    ## None
+    ## @li \b elastic_prestep Include a static calculation with elastic behavior before time stepping.
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
@@ -145,7 +145,7 @@ class TimeDependent(Problem):
       for material in self.materials.components():
         material.useElasticBehavior(True)
 
-      self.formulation.prestep(t, dt)
+      self.formulation.prestepElastic(t, dt)
       self._eventLogger.stagePop()
 
       if 0 == comm.rank:

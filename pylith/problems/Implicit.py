@@ -255,7 +255,7 @@ class Implicit(Formulation, ModuleImplicit):
     return
 
 
-  def prestepLinear(self, t, dt):
+  def prestepElastic(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
