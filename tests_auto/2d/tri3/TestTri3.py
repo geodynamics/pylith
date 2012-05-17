@@ -23,6 +23,8 @@
 import unittest
 import numpy
 
+from pylith.tests import has_h5py
+
 class TestTri3(unittest.TestCase):
   """
   Generic tests for problems using 2-D mesh.
@@ -35,8 +37,13 @@ class TestTri3(unittest.TestCase):
     self.mesh = {'ncells': 124,
                  'ncorners': 3,
                  'nvertices': 79,
-                 'spaceDim': 3,
+                 'spaceDim': 2,
                  'tensorSize': 3}
+
+    if has_h5py():
+      self.checkResults = True
+    else:
+      self.checkResults = False
     return
 
 
@@ -44,17 +51,17 @@ class TestTri3(unittest.TestCase):
     """
     Check elastic info.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
     ncells= self.mesh['ncells']
 
-    filename = "%s-elastic_info.vtk" % self.outputRoot
+    filename = "%s-elastic_info.h5" % self.outputRoot
     from axialdisp_soln import p_mu,p_lambda,p_density
 
-    propMu =  p_mu*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propLambda = p_lambda*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propDensity = p_density*numpy.ones( (ncells, 2), dtype=numpy.float64)
+    propMu =  p_mu*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
+    propLambda = p_lambda*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
+    propDensity = p_density*numpy.ones( (1, ncells, 1), dtype=numpy.float64)
 
     properties = {'mu': propMu,
                   'lambda': propLambda,
@@ -70,10 +77,10 @@ class TestTri3(unittest.TestCase):
     """
     Check solution (displacement) field.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s_t0000000.vtk" % self.outputRoot
+    filename = "%s.h5" % self.outputRoot
     from pylith.tests.Solution import check_displacements
     check_displacements(self, filename, self.mesh)
 
@@ -84,10 +91,10 @@ class TestTri3(unittest.TestCase):
     """
     Check elastic state variables.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-elastic_t0000000.vtk" % self.outputRoot
+    filename = "%s-elastic.h5" % self.outputRoot
 
     from pylith.tests.StateVariables import check_state_variables
     stateVars = ["total_strain", "stress"]
