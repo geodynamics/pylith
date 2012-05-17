@@ -17,7 +17,7 @@ CURRENT BUGS
 CURRENT ISSUES/PRIORITIES
 ======================================================================
 
-* Add h5py to PyLith binary
+* Add h5py to PyLith binary (cygwin)
 
 * Use HDF5/h5py in automated full-scale tests.
 
@@ -28,11 +28,6 @@ CURRENT ISSUES/PRIORITIES
 * Manual
 
   STILL TO DO
-
-  - Drucker-Prager Pyre properties
-    + fit to yield surface
-    + allow tensile yield
-    + Derivation of fit to yield surface (insert immediately before table)
 
   - Update field split settings (Section 5.1)
   - PETSc w/CUDA (Add to Section 5.1)
@@ -65,7 +60,10 @@ CURRENT ISSUES/PRIORITIES
   - Green's functions
     + GreensFns problem
     + FaultCohesiveImpulses
-
+  - Drucker-Prager Pyre properties
+    + fit to yield surface
+    + allow tensile yield
+    + Derivation of fit to yield surface (insert immediately before table)
 
 * configure
   
