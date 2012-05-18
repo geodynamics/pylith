@@ -19,8 +19,6 @@ CURRENT ISSUES/PRIORITIES
 
 * Add h5py to PyLith binary (cygwin)
 
-* Use HDF5/h5py in automated full-scale tests.
-
 * 2-D materials
 
   + PowerLawPlaneStrain (power law plane strain ) [Charles]
