@@ -2265,7 +2265,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
 
   bool isOpening = false;
   PylithScalar norm2 = 0.0;
-  const int numVertices = _cohesiveVertices.size();
+  int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -2429,7 +2429,17 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
     norm2 = PYLITH_MAXFLOAT;
   } // if
 
-  return sqrt(norm2) / numVertices;
+  PylithScalar norm2Total = 0.0;
+  int numVerticesTotal = 0;
+  if (sizeof(PylithScalar) == 8) {
+    MPI_Allreduce(&norm2, &norm2Total, 1, MPI_DOUBLE, MPI_SUM, fields->mesh().comm());
+  } else {
+    MPI_Allreduce(&norm2, &norm2Total, 1, MPI_FLOAT, MPI_SUM, fields->mesh().comm());
+  } // if/else
+  MPI_Allreduce(&numVertices, &numVerticesTotal, 1, MPI_INT, MPI_SUM, fields->mesh().comm());
+
+  assert(numVerticesTotal > 0);
+  return sqrt(norm2Total) / numVerticesTotal;
 } // _constrainSolnSpaceNorm
 
 
