@@ -16,11 +16,17 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	maxwell \
-	powerlaw \
-	slipdir \
-	frictionslide
+dist_noinst_DATA = \
+	README \
+	axialdisp2d.cfg \
+	axialdisp3d.cfg \
+	planestrain2d.cfg \
+	planestrain3d.cfg \
+	pylithapp.cfg \
+	sheardisp2d.cfg \
+	sheardisp3d.cfg \
+	twohex8.mesh \
+	twoquad4.mesh
 
 
 # End of file 
