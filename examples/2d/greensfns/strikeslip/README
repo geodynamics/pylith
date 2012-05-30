@@ -64,7 +64,7 @@ Step 2. Generate Green's functions
     impulse_amplitude.spatialdb
 
   Run the simulation via the following command:
-    pylith --problem.pylith.problems.GreensFns
+    pylith --problem=pylith.problems.GreensFns
 
 
 Step 3. Invert for coseismic slip
