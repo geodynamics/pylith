@@ -1591,6 +1591,68 @@ wave_period = 1.0*s
 \end_layout
 
 \begin_layout Subsection
+Finite-Element Integration Settings
+\end_layout
+
+\begin_layout Standard
+PyLith uses numerical quadrature to evaluate the finite-element integrals
+ for the residual and system Jacobian (see Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Governing-Equations"
+
+\end_inset
+
+).
+ PyLith employs FIAT (finite element automatic tabulator) to compute the
+ basis functions and their derivatives at the quadrature points for various
+ quadrature schemes and cell shapes.
+ The parameters for Lagrange cells (lines, quadrilaterals, hexahedra) are
+ specified using the FIATLagrange object, whereas the parameters for Simplex
+ cells (lines, triangles, tetrahedra) are specified using the FIATSimplex
+ object.
+ Both objects use the same set of parameters and PyLith will setup the basis
+ functions and quadrature scheme appropriately for the two families of cells.
+ The quadrature scheme and basis functions must be set for each material
+ and boundary condition involving finite-element integrations (Dirichlet
+ boundary conditions are constraints and do not involve integrations).
+ Furthermore, the integration schemes can be set independently.
+ The current version of PyLith supports basis functions with linear variations
+ in the field (P1); support for higher order cells will be added in the
+ future.
+ The properties for the FIATLagrange and FIATSimplex objects are
+\end_layout
+
+\begin_layout Description
+dimension Dimension of the cell (0,1,2,3; default is 3).
+\end_layout
+
+\begin_layout Description
+degree Degree of the finite-element cell (default is 1).
+\end_layout
+
+\begin_layout Description
+order Order of quadrature rule (default is degree+1); hardwired to be equal
+ to degree for faults.
+\end_layout
+
+\begin_layout Description
+collocate_quad Collocate quadrature points with vertices (default is False);
+ hardwired to True for faults.
+\end_layout
+
+\begin_layout Standard
+See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for an example of setting these properties for a material.
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:petsc:options"
