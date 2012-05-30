@@ -17,10 +17,6 @@ CURRENT ISSUES/PRIORITIES
 
 * Add h5py to PyLith binary (cygwin)
 
-* 2-D materials
-
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
-
 * Manual
 
   STILL TO DO
