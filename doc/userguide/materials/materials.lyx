@@ -880,7 +880,7 @@ Order of components in tensor state-variables for material models.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="4">
+<lyxtabular version="3" rows="5" columns="4">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.25in">
 <column alignment="center" valignment="top" width="0.5in">
@@ -937,7 +937,7 @@ State Variable
 \begin_inset Text
 
 \begin_layout Plain Layout
-total_strain, viscous_strain
+total_strain
 \end_layout
 
 \end_inset
@@ -1083,16 +1083,16 @@ stress
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-plastic_strain
+viscous_strain, plastic_strain
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1104,7 +1104,7 @@ plastic_strain
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1128,7 +1128,7 @@ plastic_strain
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1155,6 +1155,59 @@ plastic_strain
 \begin_inset Formula $\epsilon_{xz}$
 \end_inset
 
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stress4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xx}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{yy}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{zz}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{xy}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -1945,7 +1998,14 @@ stress4
 \family typewriter
 stress
 \family default
- state variable.
+ state variable (see Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
