@@ -93,6 +93,10 @@ Dirichlet boundary conditions
 Elastic material
 \end_layout
 
+\begin_layout Itemize
+Output of solution at user-defined locations
+\end_layout
+
 \begin_layout Subsubsection
 Overview
 \end_layout
@@ -103,6 +107,8 @@ This set of examples describes a set of problems for PyLith involving surface
  The first example demonstrates the use of a surface load in a static problem,
  and the second example demonstates how to apply a cyclic load in a quasi-static
  problem.
+ The second problem also includes output of the solution at user-defined
+ locations.
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
@@ -476,6 +482,20 @@ reference "fig:step19-stress-t200"
 \end_inset
 
 .
+ We also output the solution at user-defined locations, which are given
+ in the file 
+\family typewriter
+output_points.txt.
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:output:points"
+
+\end_inset
+
+ for a discussion of the output parameters.
+ This type of output is designed for comparison against observations and
+ inversions and output via HDF5 files (see Section ??).
 \end_layout
 
 \begin_layout Standard
