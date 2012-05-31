@@ -276,7 +276,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
 
 #if defined(PYLITH_CUSTOM_LINESEARCH)
   // Place reasonable absolute limit on minimum lambda
-  minlambda = std::max(steptol/rellength, 1.0/PYLITH_MAXSCALAR);
+  minlambda = std::max(steptol/rellength, PylithScalar(1.0)/PYLITH_MAXSCALAR);
 #else // ORIGINAL
   minlambda = steptol/rellength;
 #endif
