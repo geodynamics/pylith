@@ -320,6 +320,7 @@ AC_CONFIG_FILES([Makefile
 		tests/Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
+		tests/2d/powerlaw/Makefile
 		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
 		tests/3d/Makefile
