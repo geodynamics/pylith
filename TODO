@@ -26,9 +26,7 @@ CURRENT ISSUES/PRIORITIES
       + Add link to PETSc CUDA http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
       + Add table with PETSc options (see solvertest/pc_fieldsplit_gpu.cfg).
   - Examples/Tutorials
-    + examples/3d/hex8/step20 (dike opening)
     + examples/2d/greensfns
-    + examples/2d/subduction/step04.cfg [stress driven afterslip via friction]
     + Table with concepts/features
 
   - Update Components appendix [DONE?, need to check]
@@ -58,6 +56,9 @@ CURRENT ISSUES/PRIORITIES
     + Derivation of fit to yield surface (insert immediately before table)
   - FIATSimplex, FIATLagrange
      cell.shape -> cell.dimension
+  - Examples/Tutorials
+    + examples/3d/hex8/step20 (dike opening)
+    + examples/2d/subduction/step04.cfg [stress driven afterslip via friction]
 
   Fixed bug in using friction in quasi-static simulation in parallel.
 
