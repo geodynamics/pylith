@@ -902,7 +902,7 @@ pylith::materials::PowerLawPlaneStrain::_calcElasticConstsViscoelastic(
     initialStress[0] - meanStressInitial,
     initialStress[1] - meanStressInitial,
     stressZZInitial - meanStressInitial,
-    initialStress[3]
+    initialStress[2]
   };
   const PylithScalar stressInvar2Initial =
     0.5 * scalarProduct2DPS(devStressInitial, devStressInitial);
