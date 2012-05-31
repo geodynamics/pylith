@@ -4512,6 +4512,12 @@ ments'']).
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:output:points"
+
+\end_inset
+
 Output at Arbitrary Points
 \end_layout
 
