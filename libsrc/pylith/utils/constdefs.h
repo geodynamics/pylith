@@ -30,7 +30,7 @@
 namespace pylith {
   static const double PYLITH_MAXDOUBLE = 1.0e+99;
   static const float PYLITH_MAXFLOAT = 1.0e+30;
-  static const PylithScalar PYLITH_MAXSCALAR = (sizeof(PylithScalar) == sizeof(double)) ? PYLITH_MAXDOUBLE : PYLITH_MAXSCALAR;
+  static const PylithScalar PYLITH_MAXSCALAR = (sizeof(PylithScalar) == sizeof(double)) ? PYLITH_MAXDOUBLE : PYLITH_MAXFLOAT;
 }
     
 
