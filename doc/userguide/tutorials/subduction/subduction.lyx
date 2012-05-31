@@ -148,7 +148,7 @@ Plane Maxwell linear viscoelastic material
 \end_layout
 
 \begin_layout Itemize
-Kinematic fault interface conditions
+Prescribed slip
 \end_layout
 
 \begin_deeper
@@ -166,6 +166,20 @@ Spatially variable coseismic slip
 
 \begin_layout Itemize
 Spatially variable aseismic creep
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Afterslip via fault friction
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Static fault rupture
+\end_layout
+
+\begin_layout Itemize
+Static friction
 \end_layout
 
 \end_deeper
@@ -202,7 +216,8 @@ reference "fig:tutorial:subduction:steps"
  Step 1 focuses on the coseismic slip, Step 2 focuses on interseismic deformatio
 n, and Step 3 combines the two into a pseudo-earthquake cycle deformation
  simulation.
- 
+ Step 4 focuses on using the change in tractions from Step 1 to construct
+ a simulation with afterslip controlled by frictional sliding.
 \end_layout
 
 \begin_layout Standard
@@ -680,7 +695,7 @@ reference "fig:tutorial:subduction:step01"
 \end_layout
 
 \begin_layout LyX-Code
-displacement_x*iHat + displacement_y*jHat + 0*kHat
+displacement_x*iHat + displacement_y*jHat
 \end_layout
 
 \begin_layout Standard
@@ -994,6 +1009,188 @@ Solution for Step 3 at 150 years (immediately following the earthquake rupture).
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:step03"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 4: Frictional Afterslip Simulation
+\end_layout
+
+\begin_layout Standard
+This simulation demonstrates how to combine the change in tractions associated
+ with coseismic slip with a background stress field to compute afterslip
+ controlled by static friction.
+ The Python script 
+\family typewriter
+afterslip_tractions.py
+\family default
+ will create a spatial database file with initial tractions based on the
+ change in tractions from Step 1 and a background stress field.
+ The background stress field is simply normal tractions consistent with
+ the overburden (lithostatic load) for a uniform half-space and shear tractions
+ consistent with a coefficient of friction of 0.6.
+ The 
+\family typewriter
+afterslip_tractions.spatialdb
+\family default
+ file is provided, so you do not need to run the Python script 
+\family typewriter
+afterslip_tractions.py
+\family default
+; however, you can do so by typing
+\end_layout
+
+\begin_layout LyX-Code
+python afterslip_tractions.py
+\end_layout
+
+\begin_layout Standard
+We provide 2.0 MPa of strength excess associated with the background stress
+ field by using a cohesion of 2.0 MPa in the static friction model.
+ Slip will occur in regions where the coseismic slip increased the shear
+ tractions by more than 2.0 MPa.
+ On the lateral and bottom boundaries of the domain, we fix the degrees
+ of freedom perpendicular to the boundary as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:steps"
+
+\end_inset
+
+.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+step04.cfg
+\family default
+.
+ These settings are:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.formulation.time_step Adjust the total simulation time
+ to 0 years (static simulation).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent Selects the nonlinear solver and specifies the array
+ of boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.
+\shape italic
+BOUNDARY
+\shape default
+ Defines the settings for boundary 
+\shape italic
+BOUNDARY
+\shape default
+, including which degrees of freedom are being constrained (x or y), the
+ label (defined in
+\family typewriter
+ mesh_tri3.exo
+\family default
+) corresponding to the nodeset in CUBIT, and a label to the boundary condition
+ used in any error messages.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces.fault Specify a fault with a fault constitutive
+ model (static friction) and initial fault tractions.
+ 
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.domain Gives the base filenames for HDF5
+ output (
+\family typewriter
+for example, step04.h5
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+We run this example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith step04.cfg
+\end_layout
+
+\begin_layout Standard
+The problem will produce twelve pairs of HDF5/Xdmf files.
+ The HDF5 files contain the data and the Xdmf files contain the metadata
+ required by ParaView and Visit (and possibly other visualization tools
+ that use Xdmf files) to access the mesh and data sets in the HDF5 files.
+ The files include the solution over the domain and ground surface (two
+ pairs of files), physical properties, stress, and strain within each material
+ (eight pairs of files), and fault parameters, slip, and traction (two pairs
+ of files).
+ 
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:step04"
+
+\end_inset
+
+, which was created using ParaView, displays the magnitude of the displacement
+ field with the original configuration.
+ Slip occurs down-dip from the coseismic slip as well as three areas with
+ sharp gradients in slip, including the trench.
+ The location of the afterslip can be shifted by changing the spatial variation
+ of the coseismic slip and background stress field.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/step01_soln.png
+	lyxscale 50
+	width 4.5in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Solution for Step 4.
+ The colors indicate the magnitude of the displacement 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:step04"
 
 \end_inset
 
