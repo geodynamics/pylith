@@ -7153,7 +7153,7 @@ Rate- and State-Friction with Ageing Law
 \end_layout
 
 \begin_layout Standard
-The Dietrich-Ruina rate and state friction model produces shear tractions
+The Dieterich-Ruina rate and state friction model produces shear tractions
  equal to the cohesive stress plus a contribution proportional to the fault
  normal traction that depends on a state variable,
 \begin_inset Formula 
@@ -7329,7 +7329,7 @@ name "tab:rate:state:ageing:properties:statevars"
 
 \end_inset
 
-Values in spatial databases for slip-weakening friction.
+Values in spatial databases for Dieterich-Ruina rate-state friction.
 \end_layout
 
 \end_inset
