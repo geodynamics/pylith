@@ -30,7 +30,6 @@ dist_noinst_DATA = \
 	impulse_amplitude.spatialdb \
 	mat_elastic.spatialdb \
 	output_points.txt \
-	invert_slip.py \
 	penalty_params.txt \
 	plot_invresults.py
 
