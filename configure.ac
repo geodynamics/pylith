@@ -368,11 +368,6 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
-		examples/greensfns/Makefile
-		examples/greensfns/hex8/Makefile
-		examples/greensfns/hex8/gfimpulses/Makefile
-		examples/greensfns/hex8/gfresponses/Makefile
-		examples/greensfns/hex8/gfspatialdb/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
