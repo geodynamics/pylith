@@ -268,8 +268,8 @@ contrib::friction::ViscousFriction::_dimStateVars(double* const values,
 					       const int nvalues) const
 { // _dimStateVars
   // Check consistency of arguments.
-  assert(0 != _normalizer);
-  assert(0 != values);
+  assert(_normalizer);
+  assert(values);
   assert(nvalues == _ViscousFriction::numStateVars);
 
   // Get scales needed to dimensional parameters from the
@@ -296,10 +296,10 @@ contrib::friction::ViscousFriction::_calcFriction(const double slip,
 						const int numStateVars)
 { // _calcFriction
   // Check consistency of arguments.
-  assert(0 != properties);
-  assert(_numPropsVertex == numProperties);
-  assert(0 != numStateVars);
-  assert(_numVarsVertex == numStateVars);
+  assert(properties);
+  assert(_ViscousFriction::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_ViscousFriction::numStateVars == numStateVars);
 
   // Compute friction traction.
   double friction = 0.0;
@@ -325,8 +325,10 @@ contrib::friction::ViscousFriction::_updateStateVars(const double slip,
 						  const int numProperties)
 { // _updateStateVars
   // Check consistency of arguments.
-  assert(0 != numStateVars);
-  assert(0 != numProperties);
+  assert(properties);
+  assert(_ViscousFriction::numProperties == numProperties);
+  assert(numStateVars);
+  assert(_ViscousFriction::numStateVars == numStateVars);
 
   // Store state variables.
   stateVars[s_slipRate] = stateVars[s_slipRate]; 
