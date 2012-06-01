@@ -263,24 +263,6 @@ Additional Examples
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-examples
-\family default
- directory also contains an example of using PyLith to compute Green's functions
- associated with slip at points on a fault surface in the 
-\family typewriter
-greensfns
-\family default
- directory.
- The files associated with this example contain comments to explain how
- the simulation is setup.
- Once you understand the examples described in detail in the previous sections
- of this chapter, you should have little trouble understanding this additional
- one.
-\end_layout
-
-\begin_layout Standard
 The CIG subversion software repository 
 \begin_inset Flex URL
 status collapsed
