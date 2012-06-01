@@ -54,19 +54,7 @@ class TestViscousFriction(unittest.TestCase):
     """
     dt = 2.4
     self.model.timeStep(dt)
-    self.assertEqual(dt, self.model.timeStep())
-    return
-
-
-  def testHasProperty(self):
-    self.failUnless(self.model.hasProperty("static_coefficient"))
-    self.failUnless(self.model.hasProperty("reference_slip_rate"))
-    self.failUnless(self.model.hasProperty("cohesion"))
-    return
-
-
-  def testHasStateVar(self):
-    self.failUnless(self.model.hasStateVar("slip_rate"))
+    self.assertAlmostEqual(dt, self.model.timeStep(), 5)
     return
 
 

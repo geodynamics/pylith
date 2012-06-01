@@ -25,8 +25,8 @@
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
-#include "pylith/utils/constdefs.h" // USES MAXDOUBLE
+#include "pylith/utils/array.hh" // USES scaary_array
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -131,8 +131,8 @@ contrib::friction::ViscousFriction::~ViscousFriction(void)
 // Compute properties from values in spatial database.
 void
 contrib::friction::ViscousFriction::_dbToProperties(
-				   double* const propValues,
-				   const pylith::double_array& dbValues) const
+				   PylithScalar* const propValues,
+				   const pylith::scalar_array& dbValues) const
 { // _dbToProperties
   // Check consistency of arguments
   assert(0 != propValues);
@@ -140,9 +140,9 @@ contrib::friction::ViscousFriction::_dbToProperties(
   assert(_ViscousFriction::numDBProperties == numDBValues);
 
   // Extract values from array using our defined indices.
-  const double coefS = dbValues[db_coefS];
-  const double v0 = dbValues[db_v0];
-  const double cohesion = dbValues[db_cohesion];
+  const PylithScalar coefS = dbValues[db_coefS];
+  const PylithScalar v0 = dbValues[db_v0];
+  const PylithScalar cohesion = dbValues[db_cohesion];
 
   // Check for reasonable values. If user supplied unreasonable values
   // throw an exception.
@@ -171,7 +171,7 @@ contrib::friction::ViscousFriction::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-contrib::friction::ViscousFriction::_nondimProperties(double* const values,
+contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimProperties
   // Check consistency of arguments.
@@ -181,10 +181,10 @@ contrib::friction::ViscousFriction::_nondimProperties(double* const values,
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double velocityScale = lengthScale / timeScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::nondimensionalize() function to
   // nondimensionalize the quantities using the appropriate scale.
@@ -196,7 +196,7 @@ contrib::friction::ViscousFriction::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-contrib::friction::ViscousFriction::_dimProperties(double* const values,
+contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   // Check consistency of arguments.
@@ -206,10 +206,10 @@ contrib::friction::ViscousFriction::_dimProperties(double* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double pressureScale = _normalizer->pressureScale();
-  const double velocityScale = lengthScale / timeScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
+  const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to
   // dimensionalize the quantities using the appropriate scale.
@@ -222,8 +222,8 @@ contrib::friction::ViscousFriction::_dimProperties(double* const values,
 // Compute state variables from values in spatial database.
 void
 contrib::friction::ViscousFriction::_dbToStateVars(
-				  double* const stateValues,
-				  const pylith::double_array& dbValues) const
+				  PylithScalar* const stateValues,
+				  const pylith::scalar_array& dbValues) const
 { // _dbToStateVars
   // Check consistency of arguments.
   assert(0 != stateValues);
@@ -232,7 +232,7 @@ contrib::friction::ViscousFriction::_dbToStateVars(
 
   // Compute friction parameters that we store from the user-supplied
   // friction parameters.
-  const double slipRate = dbValues[db_slipRate];
+  const PylithScalar slipRate = dbValues[db_slipRate];
  
   // Store computed friction parameters in the properties array.
   stateValues[s_slipRate] = slipRate;
@@ -241,7 +241,7 @@ contrib::friction::ViscousFriction::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-contrib::friction::ViscousFriction::_nondimStateVars(double* const values,
+contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
 						  const int nvalues) const
 { // _nondimStateVars
   // Check consistency of arguments.
@@ -251,9 +251,9 @@ contrib::friction::ViscousFriction::_nondimStateVars(double* const values,
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double velocityScale = lengthScale / timeScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to
   // dimensionalize the quantities using the appropriate scale.
@@ -264,7 +264,7 @@ contrib::friction::ViscousFriction::_nondimStateVars(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-contrib::friction::ViscousFriction::_dimStateVars(double* const values,
+contrib::friction::ViscousFriction::_dimStateVars(PylithScalar* const values,
 					       const int nvalues) const
 { // _dimStateVars
   // Check consistency of arguments.
@@ -274,9 +274,9 @@ contrib::friction::ViscousFriction::_dimStateVars(double* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const double lengthScale = _normalizer->lengthScale();
-  const double timeScale = _normalizer->timeScale();
-  const double velocityScale = lengthScale / timeScale;
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  const PylithScalar timeScale = _normalizer->timeScale();
+  const PylithScalar velocityScale = lengthScale / timeScale;
 
   // Use the Nondimensional::dimensionalize() function to
   // dimensionalize the quantities using the appropriate scale.
@@ -286,14 +286,15 @@ contrib::friction::ViscousFriction::_dimStateVars(double* const values,
 
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
-double
-contrib::friction::ViscousFriction::_calcFriction(const double slip,
-						const double slipRate,
-						const double normalTraction,
-						const double* properties,
-						const int numProperties,
-						const double* stateVars,
-						const int numStateVars)
+PylithScalar
+contrib::friction::ViscousFriction::_calcFriction(const PylithScalar t,
+						  const PylithScalar slip,
+						  const PylithScalar slipRate,
+						  const PylithScalar normalTraction,
+						  const PylithScalar* properties,
+						  const int numProperties,
+						  const PylithScalar* stateVars,
+						  const int numStateVars)
 { // _calcFriction
   // Check consistency of arguments.
   assert(properties);
@@ -302,8 +303,8 @@ contrib::friction::ViscousFriction::_calcFriction(const double slip,
   assert(_ViscousFriction::numStateVars == numStateVars);
 
   // Compute friction traction.
-  double friction = 0.0;
-  double mu_f = 0.0;
+  PylithScalar friction = 0.0;
+  PylithScalar mu_f = 0.0;
   if (normalTraction <= 0.0) {
     // if fault is in compression
     mu_f = properties[p_coefS] * (1.0 + fabs(slipRate) / properties[p_v0]);
@@ -316,13 +317,14 @@ contrib::friction::ViscousFriction::_calcFriction(const double slip,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-contrib::friction::ViscousFriction::_updateStateVars(const double slip,
-						  const double slipRate,
-						  const double normalTraction,
-						  double* const stateVars,
-						  const int numStateVars,
-						  const double* properties,
-						  const int numProperties)
+contrib::friction::ViscousFriction::_updateStateVars(const PylithScalar t,
+						     const PylithScalar slip,
+						     const PylithScalar slipRate,
+						     const PylithScalar normalTraction,
+						     PylithScalar* const stateVars,
+						     const int numStateVars,
+						     const PylithScalar* properties,
+						     const int numProperties)
 { // _updateStateVars
   // Check consistency of arguments.
   assert(properties);
