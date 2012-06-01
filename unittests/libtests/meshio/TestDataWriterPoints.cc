@@ -112,7 +112,7 @@ pylith::meshio::TestDataWriterPoints::_createVertexFields(
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       fields->add(name, name);
       MeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+      field.newSection(vertices, fiberDim);
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 

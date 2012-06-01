@@ -21,9 +21,9 @@
 const char* pylith::meshio::OutputSolnPointsDataHex8::_meshFilename =
   "data/hex8.mesh";
 
-const int pylith::meshio::OutputSolnPointsDataHex8::_spaceDim = 2;
+const int pylith::meshio::OutputSolnPointsDataHex8::_spaceDim = 3;
 const int pylith::meshio::OutputSolnPointsDataHex8::_numPoints = 4;
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_points[] = {
+const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_points[12] = {
   0.1, 0.4, 0.2,// interior points
   0.3, 0.1, 0.8,
   0.001, 0.75, -0.0,// edge
