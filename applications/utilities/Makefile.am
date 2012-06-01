@@ -57,9 +57,12 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 
 EXTRA_DIST = \
 	pylithinfo.in \
-	pylith_genxdmf.in
+	pylith_genxdmf.in \
+	powerlaw_gendb.py
 
-CLEANFILES = $(bin_SCRIPTS)
+CLEANFILES = \
+	pylithinfo \
+	pylith_genxdmf
 
 
 # End of file 
