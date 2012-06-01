@@ -16,6 +16,11 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_DATA = \
+	README \
+	invert_slip.py
+
+
 SUBDIRS = \
 	strikeslip \
 	reverse
