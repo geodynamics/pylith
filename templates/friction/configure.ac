@@ -53,11 +53,8 @@ AC_LANG(C++)
 CIT_PATH_PETSC([3.2.0])
 CIT_HEADER_PETSC
 
-
-
 # PYLITH
 pylith_save_CPPFLAGS=$CPPFLAGS
-pylith_save_LIBS=$LIBS
 CPPFLAGS="$PETSC_CC_INCLUDES $CPPFLAGS"
 AC_LANG(C++)
 AC_CHECK_HEADER([pylith/friction/FrictionModel.hh], [], [
