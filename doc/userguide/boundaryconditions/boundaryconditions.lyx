@@ -4393,7 +4393,8 @@ name "tab:Brune-slip-db-params-2"
 
 \end_inset
 
-Values in spatial database used as parameters in the Brune slip time function.
+Values in spatial database used as parameters in the time history slip time
+ function.
 \end_layout
 
 \end_inset
