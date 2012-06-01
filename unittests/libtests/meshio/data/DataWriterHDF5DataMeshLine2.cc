@@ -50,18 +50,18 @@ pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexFields[] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField0[] = {
-  1.1, 2.2, 3.3, 4.4, 5.5
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField0[5] = {
+  1.1, 2.2, 3.3, 4.4, 5.5,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField1[5] = {
+  2.1, 3.2, 4.3, 5.4, 6.5,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField2[] = {
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_vertexField2[10] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
   7.8, 8.9,
-  9.0, 10.1
+  9.0, 10.1,
 };
 
 const int pylith::meshio::DataWriterHDF5DataMeshLine2::_numCellFields = 3;
@@ -73,14 +73,14 @@ pylith::meshio::DataWriterHDF5DataMeshLine2::_cellFields[] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
   { "other", topology::FieldBase::TENSOR, 1 },
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField0[] = {
-  1.1, 2.2, 3.3
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField0[3] = {
+  1.1, 2.2, 3.3,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField1[] = {
-  2.1, 2.2, 2.3
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField1[3] = {
+  2.1, 2.2, 2.3,
 };
-const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField2[] = {
-  1.2, 2.3, 3.4
+const PylithScalar pylith::meshio::DataWriterHDF5DataMeshLine2::_cellField2[3] = {
+  1.2, 2.3, 3.4,
 };
 
 pylith::meshio::DataWriterHDF5DataMeshLine2::DataWriterHDF5DataMeshLine2(void)
