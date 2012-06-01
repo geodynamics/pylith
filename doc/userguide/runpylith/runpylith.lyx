@@ -1804,8 +1804,8 @@ reference "sec:Troubleshooting"
 \end_layout
 
 \begin_layout Standard
-These more advanced settings allow each component of displacement, as well
- as Lagrange multipliers for fault tractions, to be preconditioned separately.
+These more advanced settings allow the displacement fields and Lagrange
+ multipliers for fault tractions to be preconditioned separately.
  This usually results in a much stronger preconditioner.
  In simulations with fault slip, the degrees of freedom associated with
  the Lagrange multipliers should be preconditioned with a custom preconditioner
@@ -2703,21 +2703,19 @@ name "tab:petsc:options:advanced"
 
 PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems.
- N is the dimension of the problem.
- For simulations with faults, the number of split fields is N+1.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="2in">
+<column alignment="left" valignment="top" width="2.25in">
 <column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2752,7 +2750,7 @@ Description
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2785,7 +2783,7 @@ Precondition fields separately.
 </cell>
 </row>
 <row>
-<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2796,11 +2794,13 @@ fs_pc_fieldsplit_real_diagonal
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
+\shape italic
+true
 \end_layout
 
 \end_inset
@@ -2816,7 +2816,7 @@ Use diagonal blocks from the true operator, rather than the preconditioner.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2850,13 +2850,13 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-fs_fieldsplit_X_pc_type
+fs_fieldsplit_0_pc_type
 \end_layout
 
 \end_inset
@@ -2877,7 +2877,106 @@ ml
 
 \begin_layout Plain Layout
 Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
- X=0,1,2, ..., N+1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_1_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+jacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jacobi preconditioning for Lagrange multiplier block (only use if there
+ is at least one fault)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_0_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_1_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
 \end_layout
 
 \end_inset
@@ -2893,6 +2992,82 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+PETSc Solvers and nVidia GPUs
+\end_layout
+
+\begin_layout Standard
+The development version of PETSc contains some support for using PETSc solvers
+ and nVidia GPUs via CUDA.
+ Building PETSc requires some additional dependencies as described in 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
+\end_layout
+
+\end_inset
+
+.
+ Additionally, PyLith must be configured with the 
+\family typewriter
+--enable-cuda
+\family default
+ option.
+ See the PyLith Installer documentation for how to enable support for CUDA
+ when building PETSc and PyLith with the installer (the installer does not
+ install CUDA or cusp).
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Development of PETSc solvers leveraging nVidia GPUs to accelerate the computatio
+ns is still a work in progress.
+ This feature requires building PETSc and PyLith from source after installing
+ CUDA and the development version of cusp.
+ If your GPU only supports single-precision floating point operations, then
+ PETSc must be built with single precision and without support for ML and
+ ParMetis/Metis.
+\end_layout
+
+\begin_layout Standard
+Solver and preconditioning options are relatively limited when using CUDA.
+ CUDA works with the Additive Schwarz preconditioner and GMRES linear solver.
+ Enabling use of CUDA with the PETSc solver involves just one setting:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.solver]
+\begin_inset Newline newline
+\end_inset
+
+use_cuda = True
+\end_layout
+
+\begin_layout Standard
+If the matrix type and vector types have not already been set, this will
+ set matrix type and vector types to 
+\family typewriter
+aijcusp
+\family default
+ and 
+\family typewriter
+cusp
+\family default
+, respectively, to indicate to PETSc that CUDA should be used by the solver.
+ If they have already been set to a value, then the values will not be changed
+ even if they are incompatible with using CUDA.
 \end_layout
 
 \begin_layout Section
