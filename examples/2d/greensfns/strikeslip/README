@@ -69,7 +69,28 @@ Step 2. Generate Green's functions
 
 Step 3. Invert for coseismic slip
 
-  ADD STUFF HERE
+  Now that we have the forward simulation (data) and Green's functions, we
+  can perform an inversion for the fault slip. We have written a very
+  simple Python script that performs a miminim moment solution using a
+  range of penalty parameters (contained in penalty_params.txt). The Python
+  code is in simple_invert.py, and a script to run it is contained in
+  run-inv.sh.  You can run the inversion by simply typing:
+    ./run-inv.sh
+
+  This will generate a set of predicted slip values, contained in
+  strikeslip_inversion.txt.
+
+
+Step 4.  Plot the true and predicted slip values.
+
+  To see how the predicted solution compares with the applied slip, we
+  use a simple Python script (plot_results.py) that makes use of
+  matplotlib.  You can run this script by simply typing:
+    ./make-plot.sh
+
+  This will bring up a matplotlib plot window with the true solution (shown
+  in black) and the predicted solution corresponding to different values
+  of the penalty parameter.
 
 
 Suggestions variations
@@ -86,3 +107,7 @@ Suggestions variations
   * Adjust the location and number of the observation points.
 
   * Increase/decrease the resolution of the mesh.
+
+  * Try a different penalty function for the inversion. One simple option
+    would be a 1D Laplacian approximation (sets of values of [-1, 2, -1])
+    centered along the diagonal.
