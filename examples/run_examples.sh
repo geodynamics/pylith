@@ -108,6 +108,16 @@ run_examples
 
 
 # ----------------------------------------------------------------------
+# greensfns
+dir="2d/greensfns/strikeslip"
+examples="eqsim.cfg --problem=pylith.problems.GreensFns"
+run_examples
+
+dir="2d/greensfns/reverse"
+examples="eqsim.cfg --problem=pylith.problems.GreensFns"
+run_examples
+
+# ----------------------------------------------------------------------
 # Return to examples dir
 cd ${examples_dir}
   
