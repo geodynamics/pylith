@@ -21,9 +21,7 @@ CURRENT ISSUES/PRIORITIES
 
   STILL TO DO
 
-  - Update field split settings (Section 5.1)
   - PETSc w/CUDA (Add to Section 5.1)
-      + Add link to PETSc CUDA http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
       + Add table with PETSc options (see solvertest/pc_fieldsplit_gpu.cfg).
   - Examples/Tutorials
     + examples/2d/greensfns
