@@ -27,7 +27,9 @@
 
 #include "ViscousFriction.hh"
 
-#include "pylith/utils/arrayfwd.hh"
+#include "pylith/utils/types.hh"
+#include "pylith/utils/array.hh"
+#include "pylith/utils/sievetypes.hh"
 %}
 
 // Convert standard C++ exceptions to Python exceptions.
@@ -41,7 +43,7 @@
 } // exception
 
 %include "typemaps.i"
-%include "include/doublearray.i"
+%include "include/scalartypemaps.i"
 
 // Numpy interface stuff
 %{

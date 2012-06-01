@@ -68,7 +68,7 @@ _frictioncontribmodule_la_LDFLAGS = -module -avoid-version \
 
 dist__frictioncontribmodule_la_SOURCES = $(swig_sources) $(swig_generated)
 
-_frictioncontribmodule_la_LIBADD = libfrictioncontrib.la
+_frictioncontribmodule_la_LIBADD = libfrictioncontrib.la -lpylith
 if NO_UNDEFINED
 _frictioncontribmodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
