@@ -90,6 +90,10 @@ HDF5 output
 \end_layout
 
 \begin_layout Itemize
+HDF5 point output
+\end_layout
+
+\begin_layout Itemize
 Reading HDF5 output using h5py
 \end_layout
 
@@ -155,16 +159,23 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This tutorial is the simplest 2D example of a quasi-static finite element
- problem (a simpler problem would consist of a 1D bar).
- It is a mesh composed of two linear triangles subject to displacement boundary
- conditions, assuming plane-strain linear elastic behavior.
- Due to the simple geometry of the problem, the mesh may be constructed
- by hand, using PyLith mesh ASCII format.
- In this tutorial, we will walk through the steps necessary to construct,
- run, and view three problems that use the same mesh.
- In addition to this manual, each of the files for the example problem includes
- extensive comments.
+This tutorial examines the steps necessary to generate Green's functions
+ using PyLith, and then provides two examples to demonstrate how these may
+ be used in a simple linear inversion.
+ To do this, we first provide two 2D forward problems: a strike-slip example
+ and a reverse fault example.
+ Each of these has a simple slip distribution.
+ We output the computed surface displacement at a set of points, and these
+ computed displacements provide the 'data' for our inversion.
+ We then compute a set of Green's functions using the same fault geometries,
+ and outputting the results at the same set of points.
+ We then perform a simple linear inversion using a Python script, and plot
+ the computed solution compared to the true solution.
+ An important aspect for both the forward problem and the Green's function
+ problem is that the computed solution is output at a set of user-specified
+ points (not necessarily coincident with mesh vertices), rather than over
+ a mesh or sub-mesh as for other types of output.
+ To do this, PyLith internally performs the necessary interpolation.
 \end_layout
 
 \begin_layout Subsection
@@ -172,33 +183,84 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-The mesh consists of two triangles forming a square with edge lengths of
- one unit (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:twotri3-mesh"
+We use linear triangular cells for both of the meshes used in this problem.
+ We construct the mesh in CUBIT by constructing the geometry, prescribing
+ the discretization, running the mesher, and then grouping cells and vertices
+ for boundary conditions and materials.
+ We use the APREPRO programming language within the journal files to enable
+ use of units and to set variables for values used many times.
+ An appendix in the CUBIT documentation discusses the features available
+ with APREPRO in CUBIT.
+ The CUBIT commands for each mesh are in four separate journal files.
+ Similar procedures are used for the strike-slip example and reverse fault
+ example, so we will look only at the strike-slip example in this discussion.
+\end_layout
 
-\end_inset
-
-).
- The mesh geometry and topology are described in the file 
+\begin_layout Standard
+The main driver is in the journal file 
 \family typewriter
-twotri3.mesh
+mesh_tri3.jou
 \family default
-, which is in PyLith mesh ASCII format.
- This file format is described in Appendix 
+.
+ It calls the journal file 
+\family typewriter
+geometry.jou
+\family default
+ to construct the geometry.
+ It then calls the journal file 
+\family typewriter
+gradient.jou
+\family default
+ to set the variable discretization sizes used in this mesh.
+ Finally, the 
+\family typewriter
+createbc.jou
+\family default
+ file is called to setup the groups associated with boundary conditions
+ and materials.
+ The mesh used for the strike-slip example is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "cha:File-Formats"
+reference "fig:greensfns2d-strikeslip-mesh"
 
 \end_inset
 
-.
- This file describes the dimensionality of the problem (1D, 2D, or 3D),
- the coordinates of the vertices (nodes), the vertices composing each cell
- (element), the material ID to be associated with each cell, and groups
- of vertices that may be used to define faults or surfaces to which boundary
- conditions may be applied.
+ The journal files are documented and describe the various steps outlined
+ below.
+\end_layout
+
+\begin_layout Enumerate
+Create the geometry defining the domain.
+\end_layout
+
+\begin_layout Enumerate
+Create fault surface by splitting domain across the given locations.
+\end_layout
+
+\begin_layout Enumerate
+Define meshing scheme and cell size variation.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Define cell size along curves near fault.
+\end_layout
+
+\begin_layout Enumerate
+Increase cell size away from fault at a geometric rate (bias).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Generate mesh.
+\end_layout
+
+\begin_layout Enumerate
+Create blocks for materials and nodesets for boundary conditions.
+\end_layout
+
+\begin_layout Enumerate
+Export mesh.
 \end_layout
 
 \begin_layout Standard
@@ -210,7 +272,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/strikeslip_ydispl2.jpg
 
 \end_inset
 
@@ -221,10 +283,13 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Mesh composed of two linear triangular cells used in the example problems.
+Mesh used for both forward and Green's function computations for strike-slip
+ problem.
+ Computed y-displacements for the forward problem are shown with the color
+ scale.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:twotri3-mesh"
+name "fig:greensfns2d-strikeslip-mesh"
 
 \end_inset
 
@@ -246,20 +311,13 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the three example problems share additional information.
- For problems of this type, it is generally useful to create a file named
- 
+As in the examples discussed in previous sections of these tutorials, we
+ place parameters common to the forward model and Green's function computation
+ in the 
 \family typewriter
 pylithapp.cfg
 \family default
- in the working directory, since this file is read automatically every time
- PyLith is run.
- Settings specific to a particular problem may be placed in other 
-\family typewriter
-.cfg
-\family default
- files, as described later, and then those files are placed on the command
- line.
+ file so that we do not have to duplicate them for the two procedures.
  The settings contained in 
 \family typewriter
 pylithapp.cfg
@@ -268,8 +326,8 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout Description
-pylithapp.journal.info Settings that control the verbosity of the output for
- the different components.
+pylithapp.journal.info Settings that control the verbosity of the output written
+ to stdout for the different components.
 \end_layout
 
 \begin_layout Description
@@ -291,45 +349,75 @@ pylithapp.timedependent.materials Settings that control the material type,
 \end_layout
 
 \begin_layout Description
+pylithapp.timedependent.bc Settings that control the applied boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces Settings that control the specification
+ of faults, including quadrature information.
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output Settings related output of the solution
+ over the domain and points (surface observation locations).
+\end_layout
+
+\begin_layout Description
 pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
  type.
 \end_layout
 
 \begin_layout Standard
-All of the problems in this directory use the same material database, as
- specified under 
+On aspect that has not been covered previously is the specification of output
+ at discrete points, rather than over a mesh or sub-mesh.
+ We do this using the OutputSolnPoints output type:
 \end_layout
 
 \begin_layout LyX-Code
+[pylithapp.problem.formulation]
+\end_layout
 
-\family typewriter
-pylithapp.timedependent.materials
-\family default
- 
+\begin_layout LyX-Code
+output = [domain,points]
+\end_layout
+
+\begin_layout LyX-Code
+output.points = pylith.meshio.OutputSolnPoints
+\end_layout
+
+\begin_layout LyX-Code
+...
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.output.points]
+\end_layout
+
+\begin_layout LyX-Code
+coordsys.space_dim = 2
+\end_layout
+
+\begin_layout LyX-Code
+coordsys.units = km
+\end_layout
+
+\begin_layout LyX-Code
+writer = pylith.meshio.DataWriterHDF5Mesh
+\end_layout
+
+\begin_layout LyX-Code
+reader.filename = output_points.txt
 \end_layout
 
 \begin_layout Standard
-in 
+We provide the number of spatial dimensions and the units of the point coordinat
+es, and then the coordinates are given in a simple ASCII file (
 \family typewriter
-pylithapp.cfg
+output_points.txt
 \family default
-.
- This information is contained in the file 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- Although the material model is specified in 
-\family typewriter
-pylithapp.cfg
-\family default
-, the values for the physical properties of the material are given in 
-\family typewriter
-matprops.spatialdb
-\family default
-.
- For this example, values describing elastic plane strain material properties
- are given at a single point, resulting in uniform material properties.
+).
+ These same points are used for both the forward model computation and the
+ generation of the Green's functions.
 \end_layout
 
 \begin_layout Subsection
