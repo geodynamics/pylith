@@ -148,7 +148,7 @@ UniformDB spatial database
 \end_layout
 
 \begin_layout Standard
-All of the files necessary to run the examples are contained in the directory
+All of the files necessary to run the examples are contained under the directory
  
 \family typewriter
 examples/2d/greensfns.
@@ -160,24 +160,29 @@ Overview
 
 \begin_layout Standard
 This tutorial examines the steps necessary to generate Green's functions
- using PyLith, and then provides two examples to demonstrate how these may
- be used in a simple linear inversion.
- To do this, we first provide two 2D forward problems: a strike-slip example
- and a reverse fault example.
- Each of these has a simple slip distribution.
- We output the computed surface displacement at a set of points, and these
- computed displacements provide the 'data' for our inversion.
- We then compute a set of Green's functions using the same fault geometries,
+ using PyLith and how they may be used in a linear inversion.
+ For simplicity we discuss strike-slip and reverse faulting examples in
+ the context of 2-D simulations.
+ In each example, we first compute surface displacement at a set of points,
+ and these computed displacements provide the 
+\begin_inset Quotes eld
+\end_inset
+
+data
+\begin_inset Quotes erd
+\end_inset
+
+ for our inversion.
+ Second, we compute a set of Green's functions using the same fault geometries,
  and output the results at the same set of points.
- We then perform a simple linear inversion using a Python script, and plot
- the computed solution compared to the true solution.
+ Third, we perform a simple linear inversion.
  An important aspect for both the forward problem and the Green's function
  problem is that the computed solution is output at a set of user-specified
  points (not necessarily coincident with mesh vertices), rather than over
  a mesh or sub-mesh as for other types of output.
  To do this, PyLith internally performs the necessary interpolation.
  There is a README file in the top-level directory that explains how to
- perform the solution steps for the two problems.
+ perform the each step in the two problems.
 \end_layout
 
 \begin_layout Subsection
@@ -185,21 +190,10 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-We use linear triangular cells for both of the meshes used in this problem.
- We construct the mesh in CUBIT by constructing the geometry, prescribing
- the discretization, running the mesher, and then grouping cells and vertices
- for boundary conditions and materials.
- We use the APREPRO programming language within the journal files to enable
- use of units and to set variables for values used many times.
- An appendix in the CUBIT documentation discusses the features available
- with APREPRO in CUBIT.
- The CUBIT commands for each mesh are in four separate journal files.
- Similar procedures are used for the strike-slip example and reverse fault
- example, so we will look only at the strike-slip example in this discussion.
-\end_layout
-
-\begin_layout Standard
-The main driver is in the journal file 
+We use linear triangular cells for the meshes in each of the two problems.
+ We construct the mesh in CUBIT following the same techniques used in the
+ 2-D subduction zone example.
+ The main driver is in the journal file 
 \family typewriter
 mesh_tri3.jou
 \family default
@@ -338,25 +332,25 @@ pylithapp.mesh_generator Settings that control mesh importing, such as the
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
+pylithapp.problem Settings that control the problem, such as the total time,
+ time step size, and spatial dimension.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.materials Settings that control the material type,
- specify which material IDs are to be associated with a particular material
- type, and give the name of the spatial database containing the physical
-  properties for the material.
+pylithapp.problem.materials Settings that control the material type, specify
+ which material IDs are to be associated with a particular material type,
+ and give the name of the spatial database containing the physical  properties
+ for the material.
  The quadrature information is also given.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc Settings that control the applied boundary conditions.
+pylithapp.problem.bc Settings that control the applied boundary conditions.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.interfaces Settings that control the specification
- of faults, including quadrature information.
+pylithapp.problem.interfaces Settings that control the specification of faults,
+ including quadrature information.
 \end_layout
 
 \begin_layout Description
@@ -392,7 +386,7 @@ output.points = pylith.meshio.OutputSolnPoints
 \end_layout
 
 \begin_layout LyX-Code
-...
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -432,7 +426,7 @@ Step 1: Solution of the Forward Problem
 
 \begin_layout Standard
 For both the strike-slip problem and the reverse fault problem, we first
- run a simple static problem to generate our synthetic data.
+ run a static simulation to generate our synthetic data.
  Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
@@ -446,8 +440,8 @@ eqsim.cfg
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.interfaces Give the type of fault interface condition
- and provide the slip distribution to use.
+pylithapp.problem.interfaces Give the type of fault interface condition and
+ provide the slip distribution to use.
  Linear interpolation is used for the slip distribution.
 \end_layout
 
@@ -491,7 +485,7 @@ reference "fig:greensfns2d-strikeslip-mesh"
 \family typewriter
 eqsim-fault.h5
 \family default
- file contains the applied fault slip and the resulting fault tractions,
+ file contains the applied fault slip and the change in fault tractions,
  while the 
 \family typewriter
 eqsim-fault_info.h5
