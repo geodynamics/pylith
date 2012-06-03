@@ -354,7 +354,7 @@ pylithapp.problem.interfaces Settings that control the specification of faults,
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output Settings related output of the solution
+pylithapp.problem.formulation.output Settings related to output of the solution
  over the domain and points (surface observation locations).
 \end_layout
 
@@ -601,7 +601,7 @@ greensfns.cfg
 pylithapp.cfg
 \family default
 .
- These addition parameter settings provide the information necessary to
+ These additional parameter settings provide the information necessary to
  generate the Green's functions:
 \end_layout
 
