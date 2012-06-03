@@ -606,18 +606,6 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
-# ----------------------------------------------------------------------
-\end_layout
-
-\begin_layout LyX-Code
-# problem
-\end_layout
-
-\begin_layout LyX-Code
-# ----------------------------------------------------------------------
-\end_layout
-
-\begin_layout LyX-Code
 [greensfns]
 \end_layout
 
@@ -627,18 +615,6 @@ fault_id = 100
 
 \begin_layout LyX-Code
 
-\end_layout
-
-\begin_layout LyX-Code
-# ----------------------------------------------------------------------
-\end_layout
-
-\begin_layout LyX-Code
-# faults
-\end_layout
-
-\begin_layout LyX-Code
-# ----------------------------------------------------------------------
 \end_layout
 
 \begin_layout LyX-Code
@@ -740,16 +716,14 @@ eqsim.cfg
 The generation of Green's functions is somewhat similar to the solution
  of a time-dependent problem with multiple time steps.
  In this case, each 'time step' corresponds to the solution computed for
- a particular fault vertex.
- Once the problem has completed, four HDF5 files will be produced.
- The difference between these and the forward problem files is that each
- of the Green's function files will contain results for each separate impulse
- (slip on a single fault vertex).
- The exception is the 
+ a slip impulse at a particular fault vertex.
+ The output files contain the solution for each separate impulse (slip on
+ a single fault vertex).
+ The 
 \family typewriter
-greensfns-fault_info.h5 file
+greensfns-fault_info.h5
 \family default
-, which simply contains the slip amplitude and fault normal.
+ file simply contains the slip amplitude and fault normal.
  In Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -820,9 +794,9 @@ Step 3: Simple Inversion Using PyLith-generated Green's Functions
 \end_layout
 
 \begin_layout Standard
-We have now generated a set of synthetic data as well as a set of Green's
- functions that may be used in an inversion.
- Both are contained in HDF5 files.
+In the previous two steps we generated a set of synthetic data as well as
+ a set of Green's functions.
+ Both are stored in HDF5 files.
  To make use of them, we provide a simple Python script that reads the HDF5
  results using the h5py Python package.
  Once we have read the necessary information, we will perform a simple least-squ
@@ -955,9 +929,9 @@ Step 4: Visualization of Estimated and True Solutions
 \begin_layout Standard
 Once we have computed the solution, we would then like to visualize the
  results.
- We do this using another Python script that uses the matplotlib plotting
- package.
- We also use the h5py package again to get the applied slip for the forward
+ We do this using another Python script that requires the matplotlib plotting
+ package (this package is not included in the PyLith binary).
+ We also use the h5py package again to read the applied slip for the forward
  problem.
  The Python code to plot the results is contained in the 
 \family typewriter
@@ -973,9 +947,8 @@ ed.txt
 \end_layout
 
 \begin_layout Standard
-Once the script is running, there will be an interactive matplotlib window
- that shows the estimated solution compared to the true solution (Figure
- 
+The script will produce an interactive matplotlib window that shows the
+ estimated solution compared to the true solution (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:greensfns-invresults"
@@ -984,7 +957,7 @@ reference "fig:greensfns-invresults"
 
 ).
  As the penalty parameter is increased, the solution is progressively damped.
- In a real inversion, we would also include the effects of data uncertainties,
+ In a real inversion we would also include the effects of data uncertainties,
  and the penalty parameter would represent a factor controlling the tradeoff
  between solution simplicity and fitting the noise in the data.
 \end_layout
@@ -1002,14 +975,14 @@ status open
 \begin_inset Graphics
 	filename figs/strikeslip_inversion.pdf
 	lyxscale 50
-	scale 33
+	width 3in
 
 \end_inset
 
 
 \begin_inset Graphics
 	filename figs/reverse_inversion.pdf
-	scale 33
+	width 3in
 
 \end_inset
 
