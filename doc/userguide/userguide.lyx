@@ -678,6 +678,23 @@ Journal of Geophysical Research
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "Menke, 1984"
+key "Menke:1984"
+
+\end_inset
+
+Menke, W.
+ (1984), 
+\shape italic
+Geophysical Data Analysis: Discrete Inverse Theory
+\shape default
+, Academic Press, Inc., Orlando, 260 pp.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "Okada, 1992"
 key "Okada:1992"
 

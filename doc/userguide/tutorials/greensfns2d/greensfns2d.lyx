@@ -168,7 +168,7 @@ This tutorial examines the steps necessary to generate Green's functions
  We output the computed surface displacement at a set of points, and these
  computed displacements provide the 'data' for our inversion.
  We then compute a set of Green's functions using the same fault geometries,
- and outputting the results at the same set of points.
+ and output the results at the same set of points.
  We then perform a simple linear inversion using a Python script, and plot
  the computed solution compared to the true solution.
  An important aspect for both the forward problem and the Green's function
@@ -176,6 +176,8 @@ This tutorial examines the steps necessary to generate Green's functions
  points (not necessarily coincident with mesh vertices), rather than over
  a mesh or sub-mesh as for other types of output.
  To do this, PyLith internally performs the necessary interpolation.
+ There is a README file in the top-level directory that explains how to
+ perform the solution steps for the two problems.
 \end_layout
 
 \begin_layout Subsection
@@ -368,9 +370,13 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \end_layout
 
 \begin_layout Standard
-On aspect that has not been covered previously is the specification of output
- at discrete points, rather than over a mesh or sub-mesh.
- We do this using the OutputSolnPoints output type:
+One aspect that has not been covered previously is the specification of
+ output at discrete points, rather than over a mesh or sub-mesh.
+ We do this using the 
+\family typewriter
+OutputSolnPoints
+\family default
+ output type:
 \end_layout
 
 \begin_layout LyX-Code
@@ -421,170 +427,105 @@ output_points.txt
 \end_layout
 
 \begin_layout Subsection
-Axial Displacement Example
+Step 1: Solution of the Forward Problem
 \end_layout
 
 \begin_layout Standard
-The first example problem is extension of the mesh along the diagonal extending
- from the lower left to the upper right of the square mesh.
+For both the strike-slip problem and the reverse fault problem, we first
+ run a simple static problem to generate our synthetic data.
  Parameter settings that augment those in 
 \family typewriter
 pylithapp.cfg
 \family default
  are contained in the file 
 \family typewriter
-axialdisp.cfg
+eqsim.cfg
 \family default
 .
  These settings are:
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent Specifies an implicit formulation for the problem
- and specifies the array of boundary conditions.
+pylithapp.timedependent.interfaces Give the type of fault interface condition
+ and provide the slip distribution to use.
+ Linear interpolation is used for the slip distribution.
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (x and y), gives the label (defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, assigns a label to the boundary condition
- set, and gives the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-axialdisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
- VTK output 
-\begin_inset Newline newline
-\end_inset
-
-(
-\family typewriter
-axialdisp.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
-\family typewriter
-axialdisp-statevars.vtk
-\family default
-).
+pylithapp.problem.formulation.output Gives the output file names for domain
+ output, fault output, point output, and material output.
+ All output uses HDF5 format.
 \end_layout
 
 \begin_layout Standard
-The values for the Dirichlet boundary condition are given in the file 
+The applied fault slip is given in the file 
 \family typewriter
-axialdisp.spatialdb
-\family default
-, as specified in 
-\family typewriter
-axialdisp.cfg
+eqslip.spatialdb
 \family default
 .
- The format of all spatial database files is similar.
- In this case, the desired displacement values are given at two points (lower
- left and upper right).
- Since data are being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-axialdisp.cfg
-\family default
-, 
-\family typewriter
-axialdisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing
+ For both the strike-slip and reverse problems, no fault opening is given,
+ so only the left-lateral component is nonzero.
+ We run the forward models by typing (in the appropriate directory)
 \end_layout
 
 \begin_layout LyX-Code
-pylith axialdisp.cfg
+pylith eqsim.cfg
 \end_layout
 
 \begin_layout Standard
-Once the problem has run, three files will be produced.
- The first file is named 
+Once the problem has run, four HDF5 files will be produced.
+ The file named 
 \family typewriter
-axialdisp_t0000000.vtk
+eqsim.h5
 \family default
+ (and the associated XDMF file) contains the solution for the entire domain.
+ This corresponds to the solution shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:greensfns2d-strikeslip-mesh"
+
+\end_inset
+
 .
  The 
 \family typewriter
-t0000000
+eqsim-fault.h5
 \family default
- indicates that the output is for the first (and only) time step, corresponding
- to an elastic solution.
- This file contains mesh information as well as displacement values at the
- mesh vertices.
- The second file is named 
+ file contains the applied fault slip and the resulting fault tractions,
+ while the 
 \family typewriter
-axialdisp-statevars_t0000000.vtk
+eqsim-fault_info.h5
 \family default
-.
- This file contains the state variables for each cell.
- The default fields are the total strain and stress fields.
- Since the cells are linear triangles, there is a single quadrature point
- for each cell and thus a single set of stress and strain values for each
- cell.
+ file contains the final slip, the fault normal, and the slip time.
  The final file (
 \family typewriter
-axialdisp-statevars_info.vtk
+eqsim-points.h5
 \family default
-) gives the material properties used for the problem.
- Since we have not specified which properties to write, the default properties
- (
+) contains the solution computed at the point locations provided in the
+ 
 \family typewriter
-mu
+output_points.txt
 \family default
-, 
-\family typewriter
-lambda
-\family default
-, 
-\family typewriter
-density
-\family default
-) are written.
- All of the 
-\family typewriter
-.vtk
-\family default
- files may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
+ file.
+ These are the results that will be used as synthetic data for our inversion.
+ One the problem has run, the results may be viewed with a visualization
+ package such as ParaView.
+ In Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
-reference "fig:twotri3-axial"
+LatexCommand ref
+reference "fig:greensfns2d-strikeslip-forward"
 
 \end_inset
 
-, which was generated using ParaView.
+ we show the applied fault slip (from 
+\family typewriter
+eqsim-fault.h5
+\family default
+) and the resulting x-displacements (from 
+\family typewriter
+eqsim-points.h5
+\family default
+) for our strike-slip forward problem.
 \end_layout
 
 \begin_layout Standard
@@ -598,7 +539,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/axialdisp.jpg
+	filename figs/strikeslip_forward_points.jpg
 	lyxscale 50
 	scale 33
 
@@ -611,11 +552,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours and vectors of displacement for the axial displacement example
- using a mesh composed of two linear triangular cells.
+Applied fault slip for the strike-slip forward problem as well as computed
+ x-displacements at a set of points.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:twotri3-axial"
+name "fig:greensfns2d-strikeslip-forward"
 
 \end_inset
 
@@ -633,306 +574,206 @@ name "fig:twotri3-axial"
 \end_layout
 
 \begin_layout Subsection
-Shear Displacement Example
+Step 2: Generation of Green's Functions
 \end_layout
 
 \begin_layout Standard
-The next example problem is shearing of the mesh in the y direction using
- displacements applied along the positive and negative x boundaries.
- Parameter settings that augment those in 
+The next step is to generate Green's functions that may be used in an inversion.
+ The procedure is similar to that for running the forward problem; however,
+ it is necessary to change the problem type from the default 
 \family typewriter
-pylithapp.cfg
+timedependent
 \family default
- are contained in the file 
-\family typewriter
-sheardisp.cfg
-\family default
-.
- These settings include:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_neg Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (x and y), giving the label (
-\family typewriter
-x_neg
-\family default
-, defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-sheardisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (y only), giving the label (
-\family typewriter
-x_
-\family default
-pos, defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, assigning a label to the boundary condition
- set, and giving the name of the spatial database with the values for the
- Dirichlet boundary condition (
-\family typewriter
-sheardisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-sheardisp.cfg
-\family default
-, 
-\family typewriter
-sheardisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing
-\end_layout
-
-\begin_layout LyX-Code
-pylith sheardisp.cfg
-\end_layout
-
-\begin_layout Standard
-Once the problem has run, three files will be produced as in the previous
- example.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
-\begin_inset CommandInset ref
-LatexCommand vref
-reference "fig:twotri-shear"
-
-\end_inset
-
-, which was generated using ParaView.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figs/sheardisp.jpg
-	lyxscale 50
-	scale 33
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Color contours and vectors of displacement for the shear displacement example
- using a mesh composed of two linear triangular cells.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:twotri-shear"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Kinematic Fault Slip Example
-\end_layout
-
-\begin_layout Standard
-The next example problem is left-lateral fault slip applied between the
- two triangular cells using kinematic cohesive cells.
- The lower left and upper right boundaries are held fixed in the x and y
- directions.
- Parameter settings that augment those in 
-\family typewriter
-pylithapp.cfg
-\family default
- are contained in the file 
-\family typewriter
-dislocation.cfg
-\family default
-.
- The solution corresponds to rigid body rotation of each triangular cell.
- As a result, the tractions on the fault are zero.
- These settings include:
-\end_layout
-
-\begin_layout Description
-pylithapp.journal.info Turns on journaling for 1D quadrature (used for 2D
- faults) and for cohesive kinematic faults.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.bc Defines which degrees of freedom are being constraine
-d (x and y), gives the label (defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points desired, and assigns a label to the boundary condition
- set.
- In this case, rather than specifying a spatial database file with the values
- for the Dirichlet boundary condition.
- The default database (ZeroDispDB) for Dirichlet boundary conditions is
- used, which sets the displacements to zero.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces Gives the label (defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points on the fault, provides quadrature information, and
- then gives database names for material properties (needed for conditioning),
- fault slip, peak fault slip rate, and fault slip time.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
-\family typewriter
-dislocation-fault.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-Rather than specifying the displacement boundary conditions in a spatial
- database file, we use the default behavior for Dirichlet boundary conditions,
- which is a uniform, constant displacement of zero.
-\end_layout
-
-\begin_layout Standard
-The fault example requires three additional database files that were not
- needed for the simple displacement examples.
- The first file (
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-) specifies 0.01 m of left-lateral fault slip for the entire fault.
- The data dimension is zero since the same data are applied to all points
- in the set.
- The default slip time function is a step-function, so we also must provide
- the time at which slip begins.
- The elastic solution is associated with advancing from 
-\begin_inset Formula $t=-dt$
-\end_inset
-
  to 
-\begin_inset Formula $t=0$
-\end_inset
-
-, so we set the slip initiation time for the step-function to 0 in 
 \family typewriter
-dislocation_sliptime.spatialdb
+greensfns
+\family default
+.
+ This is accomplished by simply typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith --problem=pylith.problems.GreensFns
+\end_layout
+
+\begin_layout Standard
+This changes the problem type and it also causes PyLith to read the file
+ 
+\family typewriter
+greensfns.cfg
+\family default
+ by default, in addition to 
+\family typewriter
+pylithapp.cfg
+\family default
+.
+ These addition parameter settings provide the information necessary to
+ generate the Green's functions:
+\end_layout
+
+\begin_layout LyX-Code
+# ----------------------------------------------------------------------
+\end_layout
+
+\begin_layout LyX-Code
+# problem
+\end_layout
+
+\begin_layout LyX-Code
+# ----------------------------------------------------------------------
+\end_layout
+
+\begin_layout LyX-Code
+[greensfns]
+\end_layout
+
+\begin_layout LyX-Code
+fault_id = 100
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# ----------------------------------------------------------------------
+\end_layout
+
+\begin_layout LyX-Code
+# faults
+\end_layout
+
+\begin_layout LyX-Code
+# ----------------------------------------------------------------------
+\end_layout
+
+\begin_layout LyX-Code
+# Set the type of fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[greensfns.interfaces]
+\end_layout
+
+\begin_layout LyX-Code
+fault = pylith.faults.FaultCohesiveImpulses
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Set the parameters for the fault interface condition.
+\end_layout
+
+\begin_layout LyX-Code
+[greensfns.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+# Generate impulses for lateral slip only, no fault opening.
+\end_layout
+
+\begin_layout LyX-Code
+# Fault DOF 0 corresponds to left-lateral slip.
+\end_layout
+
+\begin_layout LyX-Code
+impulse_dof = [0]
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+# Set the amplitude of the slip impulses (amplitude is nonzero on only
+\end_layout
+
+\begin_layout LyX-Code
+# a subset of the fault)
+\end_layout
+
+\begin_layout LyX-Code
+db_impulse_amplitude.label = Amplitude of slip impulses
+\end_layout
+
+\begin_layout LyX-Code
+db_impulse_amplitude.iohandler.filename = impulse_amplitude.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_impulse_amplitude.query_type = nearest
+\end_layout
+
+\begin_layout Standard
+Note that the top-level identifier is now 
+\family typewriter
+greensfns
+\family default
+ rather than 
+\family typewriter
+pylithapp
+\family default
+.
+ We first set the fault interface condition type to 
+\family typewriter
+FaultCohesiveImpulses
+\family default
+, and then specify the slip component to use.
+ The amplitude of the fault slip and the fault vertices to use are provided
+ in the 
+\family typewriter
+impulse_amplitude.spatialdb
+\family default
+ file.
+ Fault vertices for which zero slip is specified will not have associated
+ Green's functions generated.
+ The remainder of the 
+\family typewriter
+greensfns.cfg
+\family default
+ file provides output information, which is exactly analogous to the settings
+ in 
+\family typewriter
+eqsim.cfg
 \family default
 .
 \end_layout
 
 \begin_layout Standard
-The files containing common information (
+The generation of Green's functions is somewhat similar to the solution
+ of a time-dependent problem with multiple time steps.
+ In this case, each 'time step' corresponds to the solution computed for
+ a particular fault vertex.
+ Once the problem has completed, four HDF5 files will be produced.
+ The difference between these and the forward problem files is that each
+ of the Green's function files will contain results for each separate impulse
+ (slip on a single fault vertex).
+ The exception is the 
 \family typewriter
-twotri3.mesh
+greensfns-fault_info.h5 file
 \family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-\size small
-dislocation.cfg
-\family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-\size default
-) provide a complete description of the problem, and we can then run this
- example by typing
-\end_layout
-
-\begin_layout LyX-Code
-pylith dislocation.cfg
-\end_layout
-
-\begin_layout Standard
-Once the problem has run, five files are produced.
- In addition to the files produced in the previous two examples, this example
- produces two files associated with the fault interface.
- The file 
-\family typewriter
-dislocation-fault_t0000000.vtk
-\family default
- gives the fault slip for each vertex on the fault along with the computed
- traction change for the cohesive cell.
- The file 
-\family typewriter
-dislocation-fault_info.vtk
-\family default
- provides information such as the normal direction, final slip, and slip
- time for each vertex on the fault.
- If the problem ran correctly, you should be able to generate a figure such
- as Figure 
+, which simply contains the slip amplitude and fault normal.
+ In Figure 
 \begin_inset CommandInset ref
-LatexCommand vref
-reference "fig:twotri-disloc"
+LatexCommand ref
+reference "fig:greensfns2d-strikeslip-gf6"
 
 \end_inset
 
-, which was generated using ParaView.
+ we show the applied impulse (from file 
+\family typewriter
+greensfns-fault.h5
+\family default
+) and associated point responses (from file 
+\family typewriter
+greensfns-points.h5
+\family default
+) for the seventh generated Green's function in the strike-slip example.
+ In the next section we will show how to read these Green's functions and
+ use them to perform a simple linear inversion.
 \end_layout
 
 \begin_layout Standard
@@ -946,7 +787,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/dislocation.jpg
+	filename figs/strikeslip_gf6.jpg
 	lyxscale 50
 	scale 33
 
@@ -959,11 +800,236 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Color contours and vectors of displacement for the kinematic fault example
- using a mesh composed of two linear triangular cells.
+Applied fault slip and computed responses (at points) for the seventh Green's
+ function generated for the strike-slip fault example.
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:twotri-disloc"
+name "fig:greensfns2d-strikeslip-gf6"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 3: Simple Inversion Using PyLith-generated Green's Functions
+\end_layout
+
+\begin_layout Standard
+We have now generated a set of synthetic data as well as a set of Green's
+ functions that may be used in an inversion.
+ Both are contained in HDF5 files.
+ To make use of them, we provide a simple Python script that reads the HDF5
+ results using the h5py Python package.
+ Once we have read the necessary information, we will perform a simple least-squ
+ares inversion using the penalty method.
+ We will be solving the equation:
+\begin_inset Formula 
+\begin{equation}
+G_{a}m=d_{a}\:,
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $m$
+\end_inset
+
+ are the model parameters (slip), 
+\begin_inset Formula $G_{a}$
+\end_inset
+
+ is the augmented set of Green's functions, and 
+\begin_inset Formula $d_{a}$
+\end_inset
+
+ is the augmented data vector.
+ The Green's functions are augmented by the addition of a penalty function:
+ 
+\begin_inset Formula 
+\begin{equation}
+G_{a}=\left[\begin{array}{c}
+G\\
+\lambda D
+\end{array}\right]\:,
+\end{equation}
+
+\end_inset
+
+and the data vector is augmented by the addition of the 
+\shape italic
+a priori
+\shape default
+ model parameter values:
+\begin_inset Formula 
+\begin{equation}
+d_{a}=\left[\begin{array}{c}
+d\\
+m_{ap}
+\end{array}\right]\:.
+\end{equation}
+
+\end_inset
+
+The matrix 
+\begin_inset Formula $D$
+\end_inset
+
+ is the penalty function, and 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is the penalty parameter.
+ The solution is obtained using the generalized inverse (e.g., 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Menke:1984"
+
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{equation}
+G^{-g}=\left(G_{a}^{T}G_{a}\right)^{-1}G_{a}^{T}\:,
+\end{equation}
+
+\end_inset
+
+and the estimated solution is then:
+\begin_inset Formula 
+\begin{equation}
+m_{est}=G^{-g}d_{a}\:.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The code to read the synthetic data and Green's functions and to perform
+ the inversion is contained in the file 
+\family typewriter
+invert_slip.py
+\family default
+, which is contained in the top-level directory.
+ For this simple example, we have simply used a diagonal matrix as the penalty
+ funtion, and the 
+\shape italic
+a priori
+\shape default
+ parameter values are assumed to be zero.
+ The solution is performed for a range of values of the penalty parameter,
+ which are contained in the file 
+\family typewriter
+penalty_params.txt
+\family default
+ within each subdirectory.
+ The inversion is performed by running the script in the top-level directory
+ from each subdirectory.
+ To run an inversion, type:
+\end_layout
+
+\begin_layout LyX-Code
+../invert_slip.py --impulses=output/greensfns-fault.h5 --responses=output/greensfns-
+points.h5 --data=output/eqsim-points.h5 --penalty=penalty_params.txt --output=outpu
+t/slip_inverted.txt
+\end_layout
+
+\begin_layout Standard
+This will produce an ASCII file (
+\family typewriter
+slip_inverted.txt
+\family default
+), which will contain the estimated solution.
+\end_layout
+
+\begin_layout Subsection
+Step 4: Visualization of Estimated and True Solutions
+\end_layout
+
+\begin_layout Standard
+Once we have computed the solution, we would then like to visualize the
+ results.
+ We do this using another Python script that uses the matplotlib plotting
+ package.
+ We also use the h5py package again to get the applied slip for the forward
+ problem.
+ The Python code to plot the results is contained in the 
+\family typewriter
+plot_invresults.py
+\family default
+ file contained within each subdirectory.
+ To plot the results, type:
+\end_layout
+
+\begin_layout LyX-Code
+plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_invert
+ed.txt
+\end_layout
+
+\begin_layout Standard
+Once the script is running, there will be an interactive matplotlib window
+ that shows the estimated solution compared to the true solution (Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:greensfns-invresults"
+
+\end_inset
+
+).
+ As the penalty parameter is increased, the solution is progressively damped.
+ In a real inversion, we would also include the effects of data uncertainties,
+ and the penalty parameter would represent a factor controlling the tradeoff
+ between solution simplicity and fitting the noise in the data.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/strikeslip_inversion.pdf
+	lyxscale 50
+	scale 33
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figs/reverse_inversion.pdf
+	scale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Inversion results from running Python plotting script.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:greensfns-invresults"
 
 \end_inset
 
