@@ -112,6 +112,6 @@ Suggestions variations
   * Increase/decrease the resolution of the mesh.
 
   * Try a different penalty function for the inversion. One simple option
-     would be a 1D Laplacian approximation (sets of values of [-1, 2, -1])
+     would be a 1D Laplacian approximation (sets of values of [1, -2, 1])
      centered along the diagonal.
 
