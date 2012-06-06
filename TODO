@@ -2,6 +2,11 @@
 CURRENT BUGS
 ======================================================================
 
+* Prescribed fault with opening has zero tractions (step20)
+
+* ConstrainSolnSpace doesn't update dispIncr properly in parallel
+  (cases where v_lagrange, v_negative, and v_positive) are not on the same processors).
+
 * Deallocation with field split
 
   Not all PETSc memory is being freed when using field split.
