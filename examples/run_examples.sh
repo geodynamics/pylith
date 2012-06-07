@@ -77,7 +77,7 @@ run_examples 2
 # ----------------------------------------------------------------------
 # subduction
 dir="2d/subduction"
-examples="step01.cfg step02.cfg step03.cfg"
+examples="step01.cfg step02.cfg step03.cfg step04.cfg"
 run_examples
 run_examples 2
 run_examples 4
