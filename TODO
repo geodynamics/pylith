@@ -4,9 +4,6 @@ CURRENT BUGS
 
 * Prescribed fault with opening has zero tractions (step20)
 
-* ConstrainSolnSpace doesn't update dispIncr properly in parallel
-  (cases where v_lagrange, v_negative, and v_positive) are not on the same processors).
-
 * Deallocation with field split
 
   Not all PETSc memory is being freed when using field split.
@@ -19,51 +16,6 @@ CURRENT BUGS
 ======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
-
-* Add h5py to PyLith binary (cygwin)
-
-* Manual
-
-  STILL TO DO
-
-  - PETSc w/CUDA (Add to Section 5.1)
-      + Add table with PETSc options (see solvertest/pc_fieldsplit_gpu.cfg).
-  - Examples/Tutorials
-    + examples/2d/greensfns
-    + Table with concepts/features
-
-  - Update Components appendix [DONE?, need to check]
-
-  DONE
-
-  - Order of tensor components for Xdmf files
-  - Output soln points
-    + Interpolation
-    + PointsList
-  - Elastic prestep
-    + Turned on by default
-    + Static solution is linear prestep
-    + Inelastic solution requires increment in driving forces
-  - User specified start time (default is 0.)
-  - FaultCohesiveDyn
-    + Add switch for turning on/off zero tractions for fault opening
-    + Switched to time-dependent formulation for prescribed tractions 
-    + Slip-weakening healing parameter
-    + Changed regularization of rate and state friction
-  - Green's functions
-    + GreensFns problem
-    + FaultCohesiveImpulses
-  - Drucker-Prager Pyre properties
-    + fit to yield surface
-    + allow tensile yield
-    + Derivation of fit to yield surface (insert immediately before table)
-  - FIATSimplex, FIATLagrange
-     cell.shape -> cell.dimension
-  - Examples/Tutorials
-    + examples/3d/hex8/step20 (dike opening)
-    + examples/2d/subduction/step04.cfg [stress driven afterslip via friction]
-
-  Fixed bug in using friction in quasi-static simulation in parallel.
 
 * configure
   
