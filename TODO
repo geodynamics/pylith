@@ -2,7 +2,10 @@
 CURRENT BUGS
 ======================================================================
 
-* Prescribed fault with opening has zero tractions (step20)
+* MatGetSubMatrices in FaultCohesiveDyn::updateSensitivityJacobian()
+  generates a segfault when numCohesiveCells is 0 for aij matrix.
+  cd tests/cyclicfriction
+  pylith --nodes=5 --problem.formulation.matrix_type=aij
 
 * Deallocation with field split
 
@@ -12,6 +15,10 @@ CURRENT BUGS
     cd examples/3d/tet4
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
+
+* Prescribed fault with opening has zero tractions (step20) Appears to
+  be a feature/artifact associated with how we implement slip with
+  Lagrange multipliers.
 
 ======================================================================
 CURRENT ISSUES/PRIORITIES
