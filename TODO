@@ -2,11 +2,6 @@
 CURRENT BUGS
 ======================================================================
 
-* MatGetSubMatrices in FaultCohesiveDyn::updateSensitivityJacobian()
-  generates a segfault when numCohesiveCells is 0 for aij matrix.
-  cd tests/cyclicfriction
-  pylith --nodes=5 --problem.formulation.matrix_type=aij
-
 * Deallocation with field split
 
   Not all PETSc memory is being freed when using field split.
