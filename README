@@ -1,4 +1,4 @@
-We are pleased to announce release of PyLith version 1.6.3
+We are pleased to announce release of PyLith version 1.7.1
 
 Please submit bug reports via the World Wide Web at:
     http://geodynamics.org/roundup    
@@ -95,6 +95,21 @@ Two changes are required when migrating from version 1.6 to 1.7.
   db_initial = spatialdata.spatialdb.SimpleDB
   db_initial.iohandler.filename = tractions.spatialdb
   db_initial.label = Initial fault tractions
+
+
+----------------------------------------------------------------------
+Version 1.7.1
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed a couple of bugs in the spontaneous earthquake rupture for
+    quasi-static problems when running in parallel. These prevented
+    the nonlinear solve from converging and erroneously generated
+    fault-opening in a some cases.
+
+  - Minor updates to the documentation and manual. Added Green's
+    function examples to the manual.
 
 
 ----------------------------------------------------------------------
