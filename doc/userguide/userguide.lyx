@@ -15,10 +15,10 @@
 \language english
 \language_package default
 \inputencoding latin1
-\fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
+\fontencoding T1
+\font_roman times
+\font_sans helvet
+\font_typewriter courier
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
@@ -158,7 +158,7 @@ today
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 

@@ -269,6 +269,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figs/strikeslip_ydispl2.jpg
+	width 4in
 
 \end_inset
 
