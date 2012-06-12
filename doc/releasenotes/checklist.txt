@@ -18,6 +18,8 @@ MANUAL
 
   * Increment version number on cover.
 
+  * Increment version in preface.lyx.
+
   * Increment version in userguide.lyx.
 
   * Updated version numbers in install.lyx.
