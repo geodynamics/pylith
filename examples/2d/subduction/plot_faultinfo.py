@@ -12,7 +12,7 @@ import matplotlib.pyplot as pyplot
 import sys
 
 plot = sys.argv[1]
- slip if not plot in ['step01_slip', 
+if not plot in ['step01_slip', 
                 'step01_stress',
                 'step04_bg',
                 'step04_initial',
