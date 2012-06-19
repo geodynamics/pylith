@@ -256,6 +256,10 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
         _fields->get("impulse amplitude");
     return amplitude;
 
+  } else if (0 == strcasecmp("area", name)) {
+    topology::Field<topology::SubMesh>& area = _fields->get("area");
+    return area;
+
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");

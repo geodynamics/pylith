@@ -1535,8 +1535,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 void
 pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 { // _calcArea
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
+  assert(_faultMesh);
+  assert(_fields);
+  assert(_normalizer);
 
   // Containers for area information
   const int cellDim = _quadrature->cellDim();
@@ -1569,6 +1570,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   area.newSection(dispRel, 1);
   area.allocate();
   area.vectorFieldType(topology::FieldBase::SCALAR);
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  area.scale(pow(lengthScale, (spaceDim-1)));
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
