@@ -183,10 +183,17 @@ The
 \family typewriter
 step10.cfg
 \family default
- file defines a problem that is identical to example step01, except for
- the presence of a vertical fault with static friction.
+ file defines a problem that is identical to example 
+\family typewriter
+step01
+\family default
+, except for the presence of a vertical fault with static friction.
  In this case, the applied displacements are insufficient to cause the fault
- to slip, so the solution is identical to that in example step01.
+ to slip, so the solution is identical to that in example 
+\family typewriter
+step01
+\family default
+.
  As in previous examples involving faults, we must first provide an array
  defining the fault interfaces:
 \end_layout
@@ -277,7 +284,7 @@ StaticFriction
  (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Fault-Constitutive-Models"
+reference "sec:fault:constitutive:models"
 
 \end_inset
 
