@@ -916,7 +916,7 @@ name "fig:3dtet4-shear"
 \end_layout
 
 \begin_layout Subsubsection
-Alternative solver and discretization settings
+Alternative Solver and Discretization Settings
 \end_layout
 
 \begin_layout Standard
@@ -1379,7 +1379,7 @@ none (735 DOF)
 \end_layout
 
 \begin_layout Standard
-The field splitting and algebraic multigrid preconditioning are setup in
+The field splitting and algebraic multigrid preconditioning are set up in
  
 \family typewriter
 step02.cfg
@@ -1840,7 +1840,7 @@ name "fig:3dtet-disloc"
 \end_layout
 
 \begin_layout Subsubsection
-Alternative solver and discretization settings
+Alternative Solver and Discretization Settings
 \end_layout
 
 \begin_layout Standard
@@ -1848,7 +1848,7 @@ As we did for the Shear Dislocation examples, in
 \family typewriter
 step04.cfg
 \family default
- we switch to using the splits fields and algebraic multigrid preconditioner
+ we switch to using the split fields and algebraic multigrid preconditioner
  along with global uniform mesh refinement.
  Because PyLith implements fault slip using Lagrange multipliers, we make
  a few small adjusments to the solver settings.
