@@ -486,6 +486,8 @@ reference "fig:step19-stress-t200"
  in the file 
 \family typewriter
 output_points.txt.
+
+\family default
  See Section 
 \begin_inset CommandInset ref
 LatexCommand ref

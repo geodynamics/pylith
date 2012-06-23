@@ -878,7 +878,7 @@ The slip-weakening constitutive model requires a static coefficient of friction,
  (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Fault-Constitutive-Models"
+reference "sec:fault:constitutive:models"
 
 \end_inset
 
@@ -1035,7 +1035,7 @@ The rate-and-state constitutive model requires a reference coefficient of
  a b-value, and a cohesion (see 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Fault-Constitutive-Models"
+reference "sec:fault:constitutive:models"
 
 \end_inset
 
