@@ -1565,7 +1565,7 @@ pset) defining the points on the fault, provides quadrature information,
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.output.writer Gives the base filename for
+pylithapp.problem.formulation.output.domain.writer Gives the base filename for
  VTK output over the entire domain (
 \family typewriter
 step03.vtk
