@@ -162,17 +162,9 @@ Overview
 This tutorial examines the steps necessary to generate Green's functions
  using PyLith and how they may be used in a linear inversion.
  For simplicity we discuss strike-slip and reverse faulting examples in
- the context of 2-D simulations.
+ the context of 2D simulations.
  In each example, we first compute surface displacement at a set of points,
- and these computed displacements provide the 
-\begin_inset Quotes eld
-\end_inset
-
-data
-\begin_inset Quotes erd
-\end_inset
-
- for our inversion.
+ and these computed displacements provide the ``data'' for our inversion.
  Second, we compute a set of Green's functions using the same fault geometries,
  and output the results at the same set of points.
  Third, we perform a simple linear inversion.
@@ -182,7 +174,7 @@ data
  a mesh or sub-mesh as for other types of output.
  To do this, PyLith internally performs the necessary interpolation.
  There is a README file in the top-level directory that explains how to
- perform the each step in the two problems.
+ perform each step in the two problems.
 \end_layout
 
 \begin_layout Subsection
@@ -192,7 +184,7 @@ Mesh Description
 \begin_layout Standard
 We use linear triangular cells for the meshes in each of the two problems.
  We construct the mesh in CUBIT following the same techniques used in the
- 2-D subduction zone example.
+ 2D subduction zone example.
  The main driver is in the journal file 
 \family typewriter
 mesh_tri3.jou
@@ -212,7 +204,7 @@ gradient.jou
 \family typewriter
 createbc.jou
 \family default
- file is called to setup the groups associated with boundary conditions
+ file is called to set up the groups associated with boundary conditions
  and materials.
  The mesh used for the strike-slip example is shown in Figure 
 \begin_inset CommandInset ref
@@ -280,7 +272,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Mesh used for both forward and Green's function computations for strike-slip
+Mesh used for both forward and Green's function computations for the strike-slip
  problem.
  Computed y-displacements for the forward problem are shown with the color
  scale.
@@ -334,13 +326,13 @@ pylithapp.mesh_generator Settings that control mesh importing, such as the
 
 \begin_layout Description
 pylithapp.problem Settings that control the problem, such as the total time,
- time step size, and spatial dimension.
+ time-step size, and spatial dimension.
 \end_layout
 
 \begin_layout Description
 pylithapp.problem.materials Settings that control the material type, specify
  which material IDs are to be associated with a particular material type,
- and give the name of the spatial database containing the physical  properties
+ and give the name of the spatial database containing the physical properties
  for the material.
  The quadrature information is also given.
 \end_layout
@@ -447,7 +439,7 @@ pylithapp.problem.interfaces Give the type of fault interface condition and
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output Gives the output file names for domain
+pylithapp.problem.formulation.output Gives the output filenames for domain
  output, fault output, point output, and material output.
  All output uses HDF5 format.
 \end_layout
@@ -716,7 +708,7 @@ eqsim.cfg
 \begin_layout Standard
 The generation of Green's functions is somewhat similar to the solution
  of a time-dependent problem with multiple time steps.
- In this case, each 'time step' corresponds to the solution computed for
+ In this case, each `time step' corresponds to the solution computed for
  a slip impulse at a particular fault vertex.
  The output files contain the solution for each separate impulse (slip on
  a single fault vertex).
