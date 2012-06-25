@@ -208,7 +208,7 @@ reference "sec:Tutorial-Two-tet4"
  coordinates are significantly different.
  We use zone 11 UTM coordinates with the NAD27 datum for the mesh.
  Although we used the same coordinate system as the SCEC CVM-H, we could
- have also used any another geographic projection supported by spatialdata
+ have also used any other geographic projection supported by spatialdata
  and Proj.4.
  See Appendix 
 \begin_inset CommandInset ref

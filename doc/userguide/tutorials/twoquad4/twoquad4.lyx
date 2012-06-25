@@ -344,7 +344,7 @@ pylith axialdisp.cfg
 
 \begin_layout Standard
 As in the two triangle axial displacement example, three files will be produced.
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand vref
@@ -509,7 +509,7 @@ pylith sheardisp.cfg
 
 \begin_layout Standard
 As in the previous example, three files will be produced.
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand vref
@@ -692,8 +692,8 @@ pylith dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-The additional of a fault results in two additional output files (as in
- the two triangle fault example), 
+The addition of a fault results in two additional output files (as in the
+ two triangle fault example), 
 \family typewriter
 dislocation-fault_t0000000.vtk
 \family default
@@ -705,7 +705,7 @@ dislocation-fault_info.vtk
  These files provide output of fault slip, change in tractions, and diagnostic
  information such as the normal direction, final slip, and slip time for
  each vertex on the fault.
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -934,7 +934,7 @@ x
 y
 \family default
  components of traction applied at each integration point.
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand vref

@@ -74,7 +74,7 @@ name "sec:tutorial:shearwave:quad4"
 
 \end_inset
 
-3-D Bar Discretized with Quadrilaterals
+3D Bar Discretized with Quadrilaterals
 \end_layout
 
 \begin_layout Standard
@@ -137,7 +137,7 @@ Mesh Generation
 \end_layout
 
 \begin_layout Standard
-The mesh is a simple rectangular prism 8 km by 400 m by 400m (Figure 
+The mesh is a simple rectangular prism 8 km by 400 m by 400 m (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:shearwave:quad4:mesh"
@@ -217,7 +217,7 @@ The simulation parameters match those in the tri3, tet4, and hex8 examples.
 .cfg
 \family default
  files.
- The parameters common parameters are placed in 
+ The common parameters are placed in 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -601,7 +601,7 @@ reference "sec:fault:constitutive:models"
 \end_inset
 
 ).
- The evolution of the state variable uses the ageing law.
+ The evolution of the state variable uses the aging law.
  We set the fault constitutive model via
 \end_layout
 

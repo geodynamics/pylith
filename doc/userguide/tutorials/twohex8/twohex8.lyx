@@ -330,9 +330,9 @@ axialdisp.spatialdb
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default
@@ -471,7 +471,7 @@ density
 maxwell_time
 \family default
 ).
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -566,9 +566,9 @@ sheardisp.spatialdb
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default
@@ -716,9 +716,9 @@ twohex8.mesh
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default

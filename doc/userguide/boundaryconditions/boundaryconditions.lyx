@@ -6283,7 +6283,7 @@ name "sec:fault:constitutive:models"
 
 \begin_layout Standard
 PyLith provides four fault constitutive models.
- Future releases may contain additional models and a template is provided
+ Future releases may contain additional models, and a template is provided
  for you to construct your own (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
