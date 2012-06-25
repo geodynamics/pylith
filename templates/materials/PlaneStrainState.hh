@@ -79,7 +79,7 @@ public :
    * @param mesh Finite-element mesh.
    * @returns Time step
    */
-  double stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
+  PylithScalar stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -92,15 +92,15 @@ protected :
    * @param propValues Array of property values.
    * @param dbValues Array of database values.
    */
-  void _dbToProperties(double* const propValues,
-		       const pylith::double_array& dbValues);
+  void _dbToProperties(PylithScalar* const propValues,
+		       const pylith::scalar_array& dbValues);
 
   /** Nondimensionalize properties.
    *
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const;
 
   /** Dimensionalize properties.
@@ -108,7 +108,7 @@ protected :
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const;
 
   /** Compute density from properties.
@@ -117,10 +117,10 @@ protected :
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    */
-  void _calcDensity(double* const density,
-		    const double* properties,
+  void _calcDensity(PylithScalar* const density,
+		    const PylithScalar* properties,
 		    const int numProperties,
-		    const double* stateVars,
+		    const PylithScalar* stateVars,
 		    const int numStateVars);
 
   /** Compute stress tensor from properties and state variables. If
@@ -143,17 +143,17 @@ protected :
    * @param initialStrainSize Size of initial strain array.
    * @param computeStateVars Flag indicating to compute updated state variables.
    */
-  void _calcStress(double* const stress,
+  void _calcStress(PylithScalar* const stress,
 		   const int stressSize,
-		   const double* properties,
+		   const PylithScalar* properties,
 		   const int numProperties,
-		   const double* stateVars,
+		   const PylithScalar* stateVars,
 		   const int numStateVars,
-		   const double* totalStrain,
+		   const PylithScalar* totalStrain,
 		   const int strainSize,
-		   const double* initialStress,
+		   const PylithScalar* initialStress,
 		   const int initialStressSize,
-		   const double* initialStrain,
+		   const PylithScalar* initialStrain,
 		   const int initialStrainSize,
 		   const bool computeStateVars);
 
@@ -172,17 +172,17 @@ protected :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _calcElasticConsts(double* const elasticConsts,
+  void _calcElasticConsts(PylithScalar* const elasticConsts,
 			  const int numElasticConsts,
-			  const double* properties,
+			  const PylithScalar* properties,
 			  const int numProperties,
-			  const double* stateVars,
+			  const PylithScalar* stateVars,
 			  const int numStateVars,
-			  const double* totalStrain,
+			  const PylithScalar* totalStrain,
 			  const int strainSize,
-			  const double* initialStress,
+			  const PylithScalar* initialStress,
 			  const int initialStressSize,
-			  const double* initialStrain,
+			  const PylithScalar* initialStrain,
 			  const int initialStrainSize);
 
   /** Get stable time step for implicit time integration.
@@ -194,10 +194,10 @@ protected :
    *
    * @returns Time step
    */
-  double _stableTimeStepImplicit(const double* properties,
-				 const int numProperties,
-				 const double* stateVars,
-				 const int numStateVars) const;
+  PylithScalar _stableTimeStepImplicit(const PylithScalar* properties,
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars) const;
 
   // --------------------------------------------------------------------
   // Optional function in the PyLith interface for a bulk constitutive
@@ -222,15 +222,15 @@ protected :
    * @param initialStrain Initial strain tensor at location.
    * @param initialStrainSize Size of initial strain array.
    */
-  void _updateStateVars(double* const stateVars,
+  void _updateStateVars(PylithScalar* const stateVars,
 			const int numStateVars,
-			const double* properties,
+			const PylithScalar* properties,
 			const int numProperties,
-			const double* totalStrain,
+			const PylithScalar* totalStrain,
 			const int strainSize,
-			const double* initialStress,
+			const PylithScalar* initialStress,
 			const int initialStressSize,
-			const double* initialStrain,
+			const PylithScalar* initialStrain,
 			const int initialStrainSize);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////

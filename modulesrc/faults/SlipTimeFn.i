@@ -64,19 +64,6 @@ namespace pylith {
       void slip(pylith::topology::Field<pylith::topology::SubMesh>* const slipField,
 		const PylithScalar t) = 0;
   
-      /** Get slip increment on fault surface between time t0 and t1.
-       *
-       * @param slipField Slip field over fault surface.
-       * @param t0 Time t.
-       * @param t1 Time t+dt.
-       * 
-       * @returns Increment in slip vector as left-lateral/reverse/normal.
-       */
-      virtual
-      void slipIncr(pylith::topology::Field<pylith::topology::SubMesh>* slipField,
-		    const PylithScalar t0,
-		    const PylithScalar t1) = 0;
-      
       /** Get final slip.
        *
        * @returns Final slip.

@@ -28,11 +28,13 @@
 #include "pylith/faults/LiuCosSlipFn.hh"
 #include "pylith/faults/TimeHistorySlipFn.hh"
 #include "pylith/faults/EqKinSrc.hh"
+#include "pylith/faults/TractPerturbation.hh"
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveLagrange.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
 #include "pylith/faults/FaultCohesiveDyn.hh"
+#include "pylith/faults/FaultCohesiveImpulses.hh"
 #include "pylith/faults/FaultCohesiveTract.hh"
 
 #include "pylith/topology/SubMesh.hh"
@@ -69,6 +71,7 @@ import_array();
 %include "../topology/SubMesh.i" // ISA Integrator<Quadrature<SubMesh> >
 %include "../feassemble/Quadrature.i" // ISA Integrator<Quadrature<SubMesh> >
 %include "../feassemble/Integrator.i" // ISA Integrator<Quadrature<SubMesh> >
+%include "../bc/TimeDependent.i" // ISA TimeDependent
 
 // Template instatiation
 %template(SubMeshIntegrator) pylith::feassemble::Integrator<pylith::feassemble::Quadrature<pylith::topology::SubMesh > >;
@@ -80,11 +83,13 @@ import_array();
 %include "LiuCosSlipFn.i"
 %include "TimeHistorySlipFn.i"
 %include "EqKinSrc.i"
+%include "TractPerturbation.i"
 %include "Fault.i"
 %include "FaultCohesive.i"
 %include "FaultCohesiveLagrange.i"
 %include "FaultCohesiveKin.i"
 %include "FaultCohesiveDyn.i"
+%include "FaultCohesiveImpulses.i"
 %include "FaultCohesiveTract.i"
 
 // End of file

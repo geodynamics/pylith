@@ -23,7 +23,6 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -63,6 +62,7 @@ pylith::bc::Neumann::~Neumann(void)
 void
 pylith::bc::Neumann::deallocate(void)
 { // deallocate
+  TimeDependent::deallocate();
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -203,19 +203,19 @@ pylith::bc::Neumann::cellField(const char* name,
   assert(_parameters);
   assert(name);
 
-  if (0 == strcasecmp(name, "initial-value"))
+  if (0 == strcasecmp(name, "initial_value"))
     return _parameters->get("initial");
 
-  else if (0 == strcasecmp(name, "rate-of-change"))
+  else if (0 == strcasecmp(name, "rate_of_change"))
     return _parameters->get("rate");
 
-  else if (0 == strcasecmp(name, "change-in-value"))
+  else if (0 == strcasecmp(name, "change_in_value"))
     return _parameters->get("change");
 
-  else if (0 == strcasecmp(name, "rate-start-time"))
+  else if (0 == strcasecmp(name, "rate_start_time"))
     return _parameters->get("rate time");
 
-  else if (0 == strcasecmp(name, "change-start-time"))
+  else if (0 == strcasecmp(name, "change_start_time"))
     return _parameters->get("change time");
 
   else {
@@ -259,7 +259,7 @@ pylith::bc::Neumann::_queryDatabases(void)
     _parameters->add("rate", "traction_rate",
 		     numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
 		     rateScale);
-    _parameters->add("rate time", "traction_rate__time",
+    _parameters->add("rate time", "traction_rate_time",
 		     numQuadPts, topology::FieldBase::MULTI_SCALAR,
 		     timeScale);
   } // if

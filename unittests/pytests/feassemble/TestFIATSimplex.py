@@ -518,15 +518,15 @@ class TestFIATSimplex(unittest.TestCase):
 
     from FIAT.reference_element import default_simplex
 
-    cell.shape = "line"
+    cell.cellDim = 1
     shape = cell._getShape()
     self.assertEqual(default_simplex(1).get_shape(), shape.get_shape())
 
-    cell.shape = "triangle"
+    cell.cellDim = 2
     shape = cell._getShape()
     self.assertEqual(default_simplex(2).get_shape(), shape.get_shape())
 
-    cell.shape = "tetrahedron"
+    cell.cellDim = 3
     shape = cell._getShape()
     self.assertEqual(default_simplex(3).get_shape(), shape.get_shape())
     return
@@ -537,7 +537,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with line2 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 1
     cell.inventory.order  = 1
     cell._configure()
@@ -555,7 +555,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with line2 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 1
     cell.inventory.order  = 1
     cell.inventory.collocateQuad = True
@@ -574,7 +574,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with line3 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 2
     cell.inventory.order  = 2
     cell._configure()
@@ -592,7 +592,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tri3 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "triangle"
+    cell.inventory.dimension = 2
     cell.inventory.degree = 1
     cell._configure()
     cell.initialize(spaceDim=2)
@@ -609,7 +609,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tri3 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "triangle"
+    cell.inventory.dimension = 2
     cell.inventory.degree = 1
     cell.inventory.collocateQuad = True
     cell._configure()
@@ -627,7 +627,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tri6 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "triangle"
+    cell.inventory.dimension = 2
     cell.inventory.degree = 2
     cell._configure()
     cell.initialize(spaceDim=2)
@@ -644,7 +644,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tet4 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "tetrahedron"
+    cell.inventory.dimension = 3
     cell.inventory.degree = 1
     cell._configure()
     cell.initialize(spaceDim=3)
@@ -661,7 +661,7 @@ class TestFIATSimplex(unittest.TestCase):
     Test initialize() with tet4 cell.
     """
     cell = FIATSimplex()
-    cell.inventory.shape  = "tetrahedron"
+    cell.inventory.dimension = 3
     cell.inventory.degree = 1
     cell.inventory.collocateQuad = True
     cell._configure()

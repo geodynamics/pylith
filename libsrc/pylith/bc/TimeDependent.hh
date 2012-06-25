@@ -93,13 +93,6 @@ protected :
   virtual
   const char* _getLabel(void) const = 0;
 
-  /** Get manager of scales used to nondimensionalize problem.
-   *
-   * @returns Nondimensionalizer.
-   */
-  virtual
-  const spatialdata::units::Nondimensional& _getNormalizer(void) const = 0;
-
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 

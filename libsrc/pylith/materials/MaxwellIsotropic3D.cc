@@ -146,7 +146,7 @@ pylith::materials::MaxwellIsotropic3D::MaxwellIsotropic3D(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
   _viscousStrain.resize(_tensorSize);
 } // constructor
 

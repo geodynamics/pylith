@@ -22,8 +22,6 @@
 
 import numpy
 from TestLine3 import TestLine3
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
 
 
 # Local version of PyLithApp
@@ -58,10 +56,6 @@ class TestAxial(TestLine3):
     TestLine3.setUp(self)
     run_pylith()
     self.outputRoot = "axialextension"
-    if has_vtk():
-      self.reader = VTKDataReader()
-    else:
-      self.reader = None
     return
 
 
@@ -71,8 +65,8 @@ class TestAxial(TestLine3):
     """
     nvertices = self.mesh['nvertices']
     spaceDim = self.mesh['spaceDim']    
-    disp = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
-    disp[:,0] = -0.2 + 0.1 * vertices[:,0]
+    disp = numpy.zeros( (1, nvertices, spaceDim), dtype=numpy.float64)
+    disp[0,:,0] = -0.2 + 0.1 * vertices[:,0]
 
     return disp
 
@@ -87,12 +81,11 @@ class TestAxial(TestLine3):
     tensorSize = self.mesh['tensorSize']
 
     if name == "total_strain":
-      stateVar = exx*numpy.ones( (ncells, tensorSize), dtype=numpy.float64)
+      stateVar = exx*numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     
     elif name == "stress":
       lp2m = self.density*self.vp**2
-      stateVar = lp2m*exx * numpy.ones( (ncells, tensorSize), 
-                                       dtype=numpy.float64)
+      stateVar = lp2m*exx * numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
 

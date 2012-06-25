@@ -54,20 +54,22 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/PointForce.cc \
 	faults/Fault.cc \
-	faults/SlipTimeFn.cc \
-	faults/StepSlipFn.cc \
-	faults/ConstRateSlipFn.cc \
-	faults/BruneSlipFn.cc \
-	faults/TimeHistorySlipFn.cc \
-	faults/LiuCosSlipFn.cc \
-	faults/EqKinSrc.cc \
 	faults/TopologyOps.cc \
 	faults/CohesiveTopology.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveLagrange.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveImpulses.cc \
 	faults/FaultCohesiveTract.cc \
+	faults/EqKinSrc.cc \
+	faults/SlipTimeFn.cc \
+	faults/StepSlipFn.cc \
+	faults/ConstRateSlipFn.cc \
+	faults/BruneSlipFn.cc \
+	faults/TimeHistorySlipFn.cc \
+	faults/LiuCosSlipFn.cc \
+	faults/TractPerturbation.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/GeometryPoint1D.cc \
@@ -120,6 +122,7 @@ libpylith_la_SOURCES = \
 	materials/MaxwellIsotropic3D.cc \
 	materials/MaxwellPlaneStrain.cc \
 	materials/PowerLaw3D.cc \
+	materials/PowerLawPlaneStrain.cc \
 	materials/DruckerPrager3D.cc \
 	materials/DruckerPragerPlaneStrain.cc \
 	meshio/BinaryIO.cc \

@@ -44,13 +44,16 @@ class GreensFns(Problem):
     ## Python object for managing GreensFns facilities and properties.
     ##
     ## \b Properties
-    ## None
+    ## @li \b faultId Id of fault on which to impose impulses.
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
     ## @li \b checkpoint Checkpoint manager.
 
     import pyre.inventory
+
+    faultId = pyre.inventory.int("fault_id", default=100)
+    faultId.meta['tip'] = "Id of fault on which to impose impulses."
 
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
@@ -90,6 +93,17 @@ class GreensFns(Problem):
     self.mesh = mesh
     self.formulation.preinitialize(mesh, self.materials, self.bc,
                                    self.interfaces, self.gravityField)
+
+    # Find fault for impulses
+    found = False
+    for fault in self.interfaces.components():
+      if self.faultId == fault.id():
+        self.source = fault
+        found = True
+        break
+    if not found:
+      raise ValueError("Could not find fault interface with id '%d' for "
+                       "Green's function impulses." % self.faultId)
     return
 
 
@@ -99,6 +113,11 @@ class GreensFns(Problem):
     """
     Problem.verifyConfiguration(self)
     self.formulation.verifyConfiguration()
+
+    if not "numImpulses" in dir(self.source) or not "numComponents" in dir(self.source):
+      raise ValueError("Incompatible source for green's function impulses "
+                       "with id '%d' and label '%s'." % \
+                         (self.source.id(), self.source.label()))
     return
   
 
@@ -128,13 +147,22 @@ class GreensFns(Problem):
       self._info.log("Computing Green's functions.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
 
-    nimpulses = 0
+    # Limit material behavior to linear regime
+    for material in self.materials.components():
+      material.useElasticBehavior(True)
+
+    nimpulses = self.source.numImpulses()*self.source.numComponents()
     ipulse = 0;
+    dt = 1.0
     while ipulse < nimpulses:
       self._eventLogger.stagePush("Prestep")
       if 0 == comm.rank:
         self._info.log("Main loop, impulse %d of %d." % (ipulse+1, nimpulses))
       
+      # Implicit time stepping computes solution at t+dt, so set
+      # t=ipulse-dt, so that t+dt corresponds to the impulse
+      t = float(ipulse)-dt
+
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
 
@@ -158,8 +186,8 @@ class GreensFns(Problem):
       self.formulation.poststep(t, dt)
       self._eventLogger.stagePop()
 
-      # Update time
-      t += dt
+      # Update time/impulse
+      ipulse += 1
     return
 
 
@@ -192,6 +220,8 @@ class GreensFns(Problem):
     Set members based using inventory.
     """
     Problem._configure(self)
+
+    self.faultId = self.inventory.faultId
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return

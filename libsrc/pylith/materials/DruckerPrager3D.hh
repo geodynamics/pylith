@@ -465,30 +465,6 @@ private :
 				     const PylithScalar* initialStrain,
 				     const int initialStrainSize);
 
-  /** Compute scalar product, assuming vector form of a tensor.
-   *
-   * @param tensor1 First tensor.
-   * @param tensor2 Second tensor.
-   */
-  /*
-  PylithScalar _scalarProduct(const PylithScalar* tensor1,
-			const PylithScalar* tensor2) const;
-  */
-
-  /** Compute tensor mean, assuming vector form of a tensor.
-   *
-   * @param vec Tensor represented as a vector.
-   */
-  PylithScalar _calcMean(const PylithScalar* vec) const;
-
-  /** Compute deviatoric components, assuming vector form of a tensor.
-   *
-   * @param vec Tensor represented as a vector.
-   * @param vecMean Tensor mean.
-   */
-  PylithScalar _calcDeviatoric(const PylithScalar* vec,
-			 const PylithScalar vecMean) const;
-
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

@@ -43,9 +43,12 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
   
   \b Properties
   @li \b zero_tolerance Tolerance for detecting zero values.
+  @li \b open_free_surface If True, enforce traction free surface when
+    the fault opens, otherwise use initial tractions even when the
+    fault opens.
   
   \b Facilities
-  @li \b db_initial_tractions Spatial database for initial tractions.
+  @li \b tract_perturbation Prescribed perturbation in fault tractions.
   @li \b friction Fault constitutive model.
   @li \b output Output manager associated with fault data.
 
@@ -60,9 +63,14 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
                                        validator=pyre.inventory.greaterEqual(0.0))
   zeroTolerance.meta['tip'] = "Tolerance for detecting zero values."
 
-  db = pyre.inventory.facility("db_initial_tractions", family="spatial_database",
+  openFreeSurf = pyre.inventory.bool("open_free_surface", default=True)
+  openFreeSurf.meta['tip'] = "If True, enforce traction free surface when " \
+    "the fault opens, otherwise use initial tractions even when the " \
+    "fault opens."
+
+  tract = pyre.inventory.facility("traction_perturbation", family="traction_perturbation",
                                factory=NullComponent)
-  db.meta['tip'] = "Spatial database for initial tractions."
+  tract.meta['tip'] = "Prescribed perturbation in fault tractions."
 
   from pylith.friction.StaticFriction import StaticFriction
   friction = pyre.inventory.facility("friction", family="friction_model",
@@ -116,8 +124,9 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
       self.availableFields['vertex']['info'] += ["strike_dir",
                                                  "dip_dir"]
 
-    if not isinstance(self.inventory.db, NullComponent):
-      self.availableFields['vertex']['info'] += ["initial_traction"]
+    if not isinstance(self.tract, NullComponent):
+      self.tract.preinitialize(mesh)
+      self.availableFields['vertex']['info'] += self.tract.availableFields['vertex']['info']
 
     self.availableFields['vertex']['info'] += \
         self.friction.availableFields['vertex']['info']
@@ -201,10 +210,11 @@ class FaultCohesiveDyn(FaultCohesive, Integrator, ModuleFaultCohesiveDyn):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    if not isinstance(self.inventory.db, NullComponent):
-      ModuleFaultCohesiveDyn.dbInitialTract(self, self.inventory.db)
+    if not isinstance(self.inventory.tract, NullComponent):
+      ModuleFaultCohesiveDyn.tractPerturbation(self, self.inventory.tract)
     ModuleFaultCohesiveDyn.frictionModel(self, self.inventory.friction)
     ModuleFaultCohesiveDyn.zeroTolerance(self, self.inventory.zeroTolerance)
+    ModuleFaultCohesiveDyn.openFreeSurf(self, self.inventory.openFreeSurf)
     self.output = self.inventory.output
     return
 

@@ -702,9 +702,9 @@ twotri3.mesh
 ) defining the points desired, and assigns a label to the boundary condition
  set.
  In this case, rather than specifying a spatial database file with the values
- for the Dirichlet boundary condition.
- The default database (ZeroDispDB) for Dirichlet boundary conditions is
- used, which sets the displacements to zero.
+ for the Dirichlet boundary condition, the default database (ZeroDispDB)
+ for Dirichlet boundary conditions is used, which sets the displacements
+ to zero.
 \end_layout
 
 \begin_layout Description

@@ -127,21 +127,23 @@ y easy scripting using the Python programming language.
  The elements currently available include a linear bar in 1-D, linear triangles
  and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D.
  Materials presently available include isotropic elastic, linear Maxwell
- viscoelastic (2-D and 3-D), generalized Maxwell viscoelastic (2-D and 3-D),
- power-law viscoelastic (3-D only), and Drucker-Prager elastoplastic (3-D
- only).
+ viscoelastic, generalized Maxwell viscoelastic, power-law viscoelastic,
+ and Drucker-Prager elastoplastic.
  Boundary conditions include Dirichlet (prescribed displacements and velocities)
 , Neumann (traction), point forces, and absorbing boundaries.
  Cohesive elements are used to implement slip across interior surfaces (faults)
  with both kinematically-specified fault slip and slip governed by fault
  constitutive models.
+ PyLith also includes an interface for computing static Green's functions
+ for fault slip.
 \end_layout
 
 \begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
  Likely enhancements will include additional bulk and fault constitutive
- models and generation of Green's functions to be used in inversions.
+ models, coupled quasi-static and dynamic simulations for earthquake cycle
+ modeling, and coupling between elasticity, heat flow, and/or fluid flow.
 \end_layout
 
 \begin_layout Section

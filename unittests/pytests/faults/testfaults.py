@@ -80,11 +80,17 @@ class TestApp(Script):
     from TestEqKinSrc import TestEqKinSrc
     suite.addTest(unittest.makeSuite(TestEqKinSrc))
 
+    from TestTractPerturbation import TestTractPerturbation
+    suite.addTest(unittest.makeSuite(TestTractPerturbation))
+
     from TestFaultCohesiveKin import TestFaultCohesiveKin
     suite.addTest(unittest.makeSuite(TestFaultCohesiveKin))
 
     from TestFaultCohesiveDyn import TestFaultCohesiveDyn
     suite.addTest(unittest.makeSuite(TestFaultCohesiveDyn))
+
+    from TestFaultCohesiveImpulses import TestFaultCohesiveImpulses
+    suite.addTest(unittest.makeSuite(TestFaultCohesiveImpulses))
 
     from TestSingleRupture import TestSingleRupture
     suite.addTest(unittest.makeSuite(TestSingleRupture))

@@ -27,6 +27,8 @@
 // Include directives ---------------------------------------------------
 #include "SlipTimeFn.hh"
 
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+
 #include "pylith/utils/array.hh" // HASA scalar_array
 
 // StepSlipFn -----------------------------------------------------------
@@ -87,18 +89,6 @@ public :
   void slip(topology::Field<topology::SubMesh>* const slipField,
 	    const PylithScalar t);
   
-  /** Get slip increment on fault surface between time t0 and t1.
-   *
-   * @param slipField Slip field over fault surface.
-   * @param t0 Time t.
-   * @param t1 Time t+dt.
-   * 
-   * @returns Increment in slip vector as left-lateral/reverse/normal.
-   */
-  void slipIncr(topology::Field<topology::SubMesh>* slipField,
-		const PylithScalar t0,
-		const PylithScalar t1);
-
   /** Get final slip.
    *
    * @returns Final slip.

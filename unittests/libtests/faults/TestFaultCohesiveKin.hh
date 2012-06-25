@@ -132,7 +132,7 @@ private :
    *
    * @returns True if vertex is a constraint vertex, false otherwise.
    */
-  bool _isLagrangeVertex(const int vertex) const;
+  bool _isConstraintVertex(const int vertex) const;
   
 
 }; // class TestFaultCohesiveKin

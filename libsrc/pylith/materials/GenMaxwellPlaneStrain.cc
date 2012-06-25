@@ -194,7 +194,7 @@ pylith::materials::GenMaxwellPlaneStrain::GenMaxwellPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)  
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
   _viscousStrain.resize(_GenMaxwellPlaneStrain::numMaxwellModels * 4);
 } // constructor
 

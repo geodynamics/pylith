@@ -89,16 +89,6 @@ public :
   void slip(topology::Field<topology::SubMesh>* const slipField,
 	    const PylithScalar t);
 
-  /** Get increment of slip on fault surface between time t0 and t1.
-   *
-   * @param slipField Slip increment field over fault mesh.
-   * @param t0 Time for start of slip increment.
-   * @param t1 Time for end of slip increment.
-   */
-  void slipIncr(topology::Field<topology::SubMesh>* const slipField,
-		const PylithScalar t0,
-		const PylithScalar t1);
-
   /** Get final slip.
    *
    * @returns Final slip.

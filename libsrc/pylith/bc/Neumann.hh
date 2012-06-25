@@ -76,9 +76,7 @@ public :
 
   /** Get cell field with BC information.
    *
-   * @param fieldType Type of field.
    * @param name Name of field.
-   * @param mesh Finite-element mesh.
    * @param fields Solution fields.
    *
    * @returns Traction vector at integration points.

@@ -23,8 +23,6 @@
 
 import numpy
 from TestLine2 import TestLine2
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
 
 
 # Local version of PyLithApp
@@ -59,10 +57,6 @@ class TestExtensionForce(TestLine2):
     TestLine2.setUp(self)
     run_pylith()
     self.outputRoot = "extensionforce"
-    if has_vtk():
-      self.reader = VTKDataReader()
-    else:
-      self.reader = None
     return
 
 
@@ -72,8 +66,8 @@ class TestExtensionForce(TestLine2):
     """
     nvertices = self.mesh['nvertices']
     spaceDim = self.mesh['spaceDim']    
-    disp = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
-    disp[:,0] = 3.0/7.0 * (-2.0 + vertices[:,0])
+    disp = numpy.zeros( (1, nvertices, spaceDim), dtype=numpy.float64)
+    disp[0,:,0] = 3.0/7.0 * (-2.0 + vertices[:,0])
 
     return disp
 
@@ -88,12 +82,11 @@ class TestExtensionForce(TestLine2):
     tensorSize = self.mesh['tensorSize']
 
     if name == "total_strain":
-      stateVar = exx*numpy.ones( (ncells, tensorSize), dtype=numpy.float64)
+      stateVar = exx*numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     
     elif name == "stress":
       lp2m = self.density*self.vp**2
-      stateVar = lp2m*exx * numpy.ones( (ncells, tensorSize), 
-                                       dtype=numpy.float64)
+      stateVar = lp2m*exx * numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
 

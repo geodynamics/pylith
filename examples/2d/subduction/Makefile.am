@@ -22,6 +22,7 @@ dist_noinst_DATA = \
 	step01.cfg \
 	step02.cfg \
 	step03.cfg \
+	step04.cfg \
 	geometry.jou \
 	mesh_tri3.jou \
 	createbc.jou \
@@ -31,7 +32,9 @@ dist_noinst_DATA = \
 	mat_concrust.spatialdb \
 	mat_conmantle.spatialdb \
 	mat_oceancrust.spatialdb \
-	mat_oceanmantle.spatialdb 
+	mat_oceanmantle.spatialdb \
+	afterslip_tractions.spatialdb \
+	afterslip_tractions.py
 
 
 SUBDIRS = \

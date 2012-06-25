@@ -256,28 +256,17 @@ filename "shearwave/shearwave.lyx"
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "greensfns2d/greensfns2d.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Additional Examples
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-examples
-\family default
- directory also contains an example of using PyLith to compute Green's functions
- associated with slip at points on a fault surface in the 
-\family typewriter
-greensfns
-\family default
- directory.
- The files associated with this example contain comments to explain how
- the simulation is setup.
- Once you understand the examples described in detail in the previous sections
- of this chapter, you should have little trouble understanding this additional
- one.
 \end_layout
 
 \begin_layout Standard

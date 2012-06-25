@@ -32,11 +32,13 @@ swig_sources = \
 	LiuCosSlipFn.i \
 	TimeHistorySlipFn.i \
 	EqKinSrc.i \
+	TractPerturbation.i \
 	Fault.i \
 	FaultCohesive.i \
 	FaultCohesiveLagrange.i \
 	FaultCohesiveKin.i \
 	FaultCohesiveDyn.i \
+	FaultCohesiveImpulses.i \
 	FaultCohesiveTract.i \
 	../topology/SubMesh.i \
 	../feassemble/Quadrature.i \

@@ -1308,7 +1308,7 @@ Refiner
 \begin_layout Standard
 The refiner is used to decrease node spacing by a factor of two by subdividing
  each cell.
- In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
+ In a 2D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1317,11 +1317,11 @@ reference "fig:uniform:refinement:2x"
 \end_inset
 
 ).
- In a 2-D quadrilateral mesh a node is inserted at the midpoint of each
- edge and at the centroid of the cell, splitting each cell into four cells.
- In a 3-D tetrahedral mesh a node is inserted at the midpoint of each edge,
+ In a 2D quadrilateral mesh a node is inserted at the midpoint of each edge
+ and at the centroid of the cell, splitting each cell into four cells.
+ In a 3D tetrahedral mesh a node is inserted at the midpoint of each edge,
  splitting each cell into eight cells.
- In a 3-D hexahedral mesh a node is inserted at the midpoint of each edge,
+ In a 3D hexahedral mesh a node is inserted at the midpoint of each edge,
  the centroid of each face, and at the centroid of the cell, splitting each
  cell into eight cells.
 \end_layout
@@ -1351,7 +1351,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Global uniform mesh refinement of 2-D and 3-D linear cells.
+Global uniform mesh refinement of 2D and 3D linear cells.
  The blue lines and orange circles identify the edges and vertices in the
  original cells.
  The purple lines and green circles identify the new edges and vertices
@@ -1383,8 +1383,8 @@ Refinement occurs after distribution of the mesh among processors.
  the simulation setup phase, such as, adjusting the topology to insert cohesive
  cells and distribution of the mesh among processors uses this much smaller
  coarse mesh.
- For 2-D problems the global mesh refinement increases the maximum problem
- size by a factor of four, and for 3-D problems it increases the maximum
+ For 2D problems the global mesh refinement increases the maximum problem
+ size by a factor of four, and for 3D problems it increases the maximum
  problem size by a factor of eight.
 \end_layout
 
@@ -1400,13 +1400,15 @@ problem
 The problem component specifies the basic parameters of the simulation,
  including the physical properties, the boundary conditions, and interface
  conditions (faults).
- The current release of PyLith contains one type of problem, 
+ The current release of PyLith contains two types of problem, 
 \family typewriter
 TimeDependent
 \family default
- for use in static, quasi-static, and dynamic simulations.
- Future releases may contain multiple types of problems, for example, computing
- Green's functions, as additional applications are developed.
+ for use in static, quasi-static, and dynamic simulations and 
+\family typewriter
+GreensFns
+\family default
+ for computing static Green's functions.
  The general facilities include:
 \end_layout
 
@@ -1589,6 +1591,68 @@ wave_period = 1.0*s
 \end_layout
 
 \begin_layout Subsection
+Finite-Element Integration Settings
+\end_layout
+
+\begin_layout Standard
+PyLith uses numerical quadrature to evaluate the finite-element integrals
+ for the residual and system Jacobian (see Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Governing-Equations"
+
+\end_inset
+
+).
+ PyLith employs FIAT (finite element automatic tabulator) to compute the
+ basis functions and their derivatives at the quadrature points for various
+ quadrature schemes and cell shapes.
+ The parameters for Lagrange cells (lines, quadrilaterals, hexahedra) are
+ specified using the FIATLagrange object, whereas the parameters for Simplex
+ cells (lines, triangles, tetrahedra) are specified using the FIATSimplex
+ object.
+ Both objects use the same set of parameters and PyLith will setup the basis
+ functions and quadrature scheme appropriately for the two families of cells.
+ The quadrature scheme and basis functions must be set for each material
+ and boundary condition involving finite-element integrations (Dirichlet
+ boundary conditions are constraints and do not involve integrations).
+ Furthermore, the integration schemes can be set independently.
+ The current version of PyLith supports basis functions with linear variations
+ in the field (P1); support for higher order cells will be added in the
+ future.
+ The properties for the FIATLagrange and FIATSimplex objects are
+\end_layout
+
+\begin_layout Description
+dimension Dimension of the cell (0,1,2,3; default is 3).
+\end_layout
+
+\begin_layout Description
+degree Degree of the finite-element cell (default is 1).
+\end_layout
+
+\begin_layout Description
+order Order of quadrature rule (default is degree+1); hardwired to be equal
+ to degree for faults.
+\end_layout
+
+\begin_layout Description
+collocate_quad Collocate quadrature points with vertices (default is False);
+ hardwired to True for faults.
+\end_layout
+
+\begin_layout Standard
+See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for an example of setting these properties for a material.
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:petsc:options"
@@ -1740,8 +1804,8 @@ reference "sec:Troubleshooting"
 \end_layout
 
 \begin_layout Standard
-These more advanced settings allow each component of displacement, as well
- as Lagrange multipliers for fault tractions, to be preconditioned separately.
+These more advanced settings allow the displacement fields and Lagrange
+ multipliers for fault tractions to be preconditioned separately.
  This usually results in a much stronger preconditioner.
  In simulations with fault slip, the degrees of freedom associated with
  the Lagrange multipliers should be preconditioned with a custom preconditioner
@@ -2639,21 +2703,19 @@ name "tab:petsc:options:advanced"
 
 PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems.
- N is the dimension of the problem.
- For simulations with faults, the number of split fields is N+1.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="2in">
+<column alignment="left" valignment="top" width="2.25in">
 <column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2688,7 +2750,7 @@ Description
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2721,7 +2783,7 @@ Precondition fields separately.
 </cell>
 </row>
 <row>
-<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2732,11 +2794,13 @@ fs_pc_fieldsplit_real_diagonal
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
+\shape italic
+true
 \end_layout
 
 \end_inset
@@ -2752,7 +2816,7 @@ Use diagonal blocks from the true operator, rather than the preconditioner.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2786,13 +2850,13 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-fs_fieldsplit_X_pc_type
+fs_fieldsplit_0_pc_type
 \end_layout
 
 \end_inset
@@ -2813,7 +2877,106 @@ ml
 
 \begin_layout Plain Layout
 Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
- X=0,1,2, ..., N+1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_1_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+jacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jacobi preconditioning for Lagrange multiplier block (only use if there
+ is at least one fault)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_0_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+fs_fieldsplit_1_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
 \end_layout
 
 \end_inset
@@ -2831,13 +2994,89 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 
 \end_layout
 
+\begin_layout Subsubsection
+PETSc Solvers and nVidia GPUs
+\end_layout
+
+\begin_layout Standard
+The development version of PETSc contains some support for using PETSc solvers
+ and nVidia GPUs via CUDA.
+ Building PETSc requires some additional dependencies as described in 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
+\end_layout
+
+\end_inset
+
+.
+ Additionally, PyLith must be configured with the 
+\family typewriter
+--enable-cuda
+\family default
+ option.
+ See the PyLith Installer documentation for how to enable support for CUDA
+ when building PETSc and PyLith with the installer (the installer does not
+ install CUDA or cusp).
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Development of PETSc solvers leveraging nVidia GPUs to accelerate the computatio
+ns is still a work in progress.
+ This feature requires building PETSc and PyLith from source after installing
+ CUDA and the development version of cusp.
+ If your GPU only supports single-precision floating point operations, then
+ PETSc must be built with single precision and without support for ML and
+ ParMetis/Metis.
+\end_layout
+
+\begin_layout Standard
+Solver and preconditioning options are relatively limited when using CUDA.
+ CUDA works with the Additive Schwarz preconditioner and GMRES linear solver.
+ Enabling use of CUDA with the PETSc solver involves just one setting:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.solver]
+\begin_inset Newline newline
+\end_inset
+
+use_cuda = True
+\end_layout
+
+\begin_layout Standard
+If the matrix type and vector types have not already been set, this will
+ set matrix type and vector types to 
+\family typewriter
+aijcusp
+\family default
+ and 
+\family typewriter
+cusp
+\family default
+, respectively, to indicate to PETSc that CUDA should be used by the solver.
+ If they have already been set to a value, then the values will not be changed
+ even if they are incompatible with using CUDA.
+\end_layout
+
 \begin_layout Section
 Time-Dependent Problem
 \end_layout
 
 \begin_layout Standard
-PyLith currently only contains this one type of problem which is used for
- static, quasi-static, and dynamic simulations.
+This type of problem applies to transient static, quasi-static, and dynamic
+ simulations.
  The time-dependent problem adds the 
 \family typewriter
 formulation
@@ -2847,8 +3086,6 @@ formulation
  elasticity equation.
  PyLith provides several alternative formulations, each specific to a different
  type of problem.
- Future versions of PyLith will likely include support for additional formulatio
-ns, such as large deformations with a lumped Jacobian matrix.
 \end_layout
 
 \begin_layout Description
@@ -2909,8 +3146,64 @@ ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
 \end_layout
 
 \begin_layout Standard
-An example of setting the formulation facility to the implicit time stepping
- component is:
+In many quasi-static simulations it is convenient to compute a static problem
+ with elastic deformation prior to computing a transient response.
+ Up through PyLith version 1.6 this was hardwired into the Implicit Forumulation
+ as advancing from time step 
+\begin_inset Formula $t=-\Delta t$
+\end_inset
+
+ to 
+\begin_inset Formula $t=0$
+\end_inset
+
+, and it could not be turned off.
+ PyLith now includes a property, 
+\family typewriter
+elastic_prestep
+\family default
+ in the TimeDependent component to turn on/off this behavior (the default
+ is to retain the previous behavior of computing the elastic deformation).
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Turning off the elastic prestep calculation means the model only deforms
+ when an 
+\family typewriter
+\shape italic
+\color inherit
+increment
+\family default
+\shape default
+\color none
+ in loading or deformation is applied, because we the time-stepping formulation
+ is implemented using the increment in displacement.
+\end_layout
+
+\begin_layout Standard
+The TimeDependent properties and facilities include
+\end_layout
+
+\begin_layout Description
+elastic_preset If true, perform a static calculation with elastic behavior
+ before time stepping (default is True).
+\end_layout
+
+\begin_layout Description
+formulation Formulation for solving the partial differential equation.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties and components in a .cfg file is
 \end_layout
 
 \begin_layout LyX-Code
@@ -2918,11 +3211,17 @@ An example of setting the formulation facility to the implicit time stepping
 \end_layout
 
 \begin_layout LyX-Code
-formulation = pylith.problems.Implicit
+formulation = pylith.problems.Implicit ; default
+\end_layout
+
+\begin_layout LyX-Code
+elastic_preset = True ; default
 \end_layout
 
 \begin_layout Standard
-The formulation can be set to the other formulations in a similar fashion.
+The formulation value can be set to the other formulations in a similar
+ fashion.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -3167,7 +3466,11 @@ With a uniform, user-specified time step, the user selects the time step
 \end_layout
 
 \begin_layout Description
-total_time Time duration for simulation.
+total_time Time duration for simulation (default is 0.0 s).
+\end_layout
+
+\begin_layout Description
+start_time Start time for simulation (default is 0.0 s)
 \end_layout
 
 \begin_layout Description
@@ -3348,6 +3651,109 @@ adapt_skip = 10 ; Default value
 
 \begin_layout LyX-Code
 stability_factor = 2.0 ; Default value
+\end_layout
+
+\begin_layout Section
+Green's Functions Problem
+\end_layout
+
+\begin_layout Standard
+This type of problem applies to computing static Green's functions for elastic
+ deformation.
+ The 
+\family typewriter
+GreensFns
+\family default
+ problem specializes the time-dependent facility to the case of static simulatio
+ns with slip impulses on a fault.
+ The default formulation is the Implicit formulation and should not be changed
+ as the other formulations are not applicable to static Green's functions.
+ In the output files, the deformation at each 
+\begin_inset Quotes eld
+\end_inset
+
+time step
+\begin_inset Quotes erd
+\end_inset
+
+ is the deformation for a different slip impulse.
+ The properties provide the ability to select which fault to use for slip
+ impulses.
+ The only fault component available for use with the 
+\family typewriter
+GreensFns
+\family default
+ problem is the 
+\family typewriter
+FaultCohesiveImpulses
+\family default
+ component discussed in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:fault:cohesive:impulses"
+
+\end_inset
+
+.
+ The 
+\family typewriter
+GreensFns
+\family default
+ properties include:
+\end_layout
+
+\begin_layout Description
+fault_id Id of fault on which to impose slip impulses.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the GreensFns problem in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp]
+\end_layout
+
+\begin_layout LyX-Code
+problem = pylith.problems.GreensFns ; Change problem type from the default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.greensfns]
+\end_layout
+
+\begin_layout LyX-Code
+fault_id = 100 ; Default value
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
+ 
+\color inherit
+The 
+\family typewriter
+GreensFns
+\family default
+ problem generates slip impulses on a fault.
+ The current version of PyLith requires that impulses can only be applied
+ to a single fault and the fault facility must be set to 
+\family typewriter
+FaultCohesiveImpulses
+\family default
+.
 \end_layout
 
 \begin_layout Section
@@ -3881,7 +4287,7 @@ quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.shape = tetrahedron
+quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
@@ -4254,9 +4660,21 @@ Output of the solution over the entire domain for large problems generates
  the surface of the boundary.
  As with several of the boundary conditions, the boundary must be a simply-conne
 cted surface.
- The OutputSolnSubset is the specialized OutputManager that implements this
- feature and, by default, includes the displacement field in the output.
- In addition to the OutputManager parameters, the OutputSolnSubset includes:
+ The 
+\family typewriter
+OutputSolnSubset
+\family default
+ is the specialized OutputManager that implements this feature and, by default,
+ includes the displacement field in the output.
+ In addition to the 
+\family typewriter
+OutputManager
+\family default
+ parameters, the 
+\family typewriter
+OutputSolnSubset
+\family default
+ includes:
 \end_layout
 
 \begin_layout Description
@@ -4266,6 +4684,96 @@ label Label of group of vertices defining boundary surface.
 \begin_layout Description
 vertex_data_fields Names of vertex data fields to output (default is [``displace
 ments'']).
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:output:points"
+
+\end_inset
+
+Output at Arbitrary Points
+\end_layout
+
+\begin_layout Standard
+In many situations with recorded observations, one would like to extract
+ the solution at the same locations as the recorded observation.
+ Rather than forcing the finite-element discretization to be consistent
+ with the observation points, PyLith includes a specialized output manager,
+ 
+\family typewriter
+OutputSolnPoints
+\family default
+, to interpolate the solution to arbitrary points.
+ By default, the output manager will include the displaceent time histories
+ in the output.
+ The locations are specified in a text file.
+ In addition to the 
+\family typewriter
+OutputManager
+\family default
+ parameters, the 
+\family typewriter
+OutputSolnSubset
+\family default
+ includes:
+\end_layout
+
+\begin_layout Description
+vertex_data_fields Names of vertex data fields to output (default is [``displace
+ments'']).
+\end_layout
+
+\begin_layout Description
+reader Reader for points list (default is 
+\family typewriter
+PointsList
+\family default
+).
+\end_layout
+
+\begin_layout Description
+writer Writer for output (default is 
+\family typewriter
+DataWriterVTKPoints
+\family default
+).
+ In most cases users will want to use the 
+\family typewriter
+DataWriterHDF5Mesh
+\family default
+.
+\end_layout
+
+\begin_layout Subsubsection
+PointsList Reader
+\end_layout
+
+\begin_layout Standard
+This object corresponds to a simple text file containing a list of points
+ (one per line) where output is desired.
+ The points are specified in the coordinate system specified by OutputSolnPoints.
+ The coordinates will be transformed into the coordinate system of the mesh
+ prior to interpolation.
+ The properties available to customize the behavior of 
+\family typewriter
+PointsList
+\family default
+ are:
+\end_layout
+
+\begin_layout Description
+filename Names of file containing list of points.
+\end_layout
+
+\begin_layout Description
+comment_delimiter Delimiter at beginning of line to identify comments (default
+ is #).
+\end_layout
+
+\begin_layout Description
+value_delimiter Delimiter used to separate values (default is whitespace).
 \end_layout
 
 \begin_layout Subsection
@@ -4377,6 +4885,12 @@ time_constant Value used to normalize time stamp in VTK files (default is
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:HDF5/Xdmf-Output"
+
+\end_inset
+
 HDF5/Xdmf Output
 \end_layout
 
@@ -4448,9 +4962,11 @@ reference "sec:Tutorial-Subduction"
 \end_inset
 
  for an example).
- Accessing the datasets in the HDF5 files using tools such as PyTables with
- visualization through MayaVi circumvents this problem, but requires writing
- Python scripts and a deeper knowledge of the visualization interface.
+ Accessing the datasets in the HDF5 files using tools such as h5py (included
+ with the PyLith binary and installed by default with the PyLith Installer)
+ and PyTables with visualization through MayaVi circumvents this problem,
+ but requires writing Python scripts and a deeper knowledge of the visualization
+ interface.
 \end_layout
 
 \begin_layout Standard
@@ -4566,13 +5082,57 @@ The binary PyLith packages include this feature and it is a default setting
 \end_layout
 
 \begin_layout Standard
-Accessing the datasets for additional analysis or visualization is identical
- in the two methods because the use of external data files is completely
- transparent to the user except for the presence of the additional files.
+Accessing the datasets for additional analysis or visualization is nearly
+ identical in the two methods because the use of external data files is
+ completely transparent to the user except for the presence of the additional
+ files.
+ Note that in order for ParaView to find the HDF5 and external data files,
+ it must be run from the same relative location where the simulation was
+ run.
+ For example, if the simulation was run from a directory called 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ and the HDF5/Xdmf files were written to 
+\begin_inset Quotes eld
+\end_inset
+
+work/output
+\begin_inset Quotes erd
+\end_inset
+
+, then ParaView should be run from the 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ directory.
+ See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material:output:components"
+
+\end_inset
+
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+for a table of component values for tensor output.
 \end_layout
 
 \begin_layout Subsubsection
-HDF5 utilities
+HDF5 Utilities
 \end_layout
 
 \begin_layout Standard
@@ -4716,8 +5276,8 @@ Start with a uniform-resolution coarse mesh to debug the problem setup.
 
 \begin_layout Itemize
 Merge materials using the same material model.
- This will result in only one VTK file for each material model rather than
- several files.
+ This will result in only one VTK or HDF5 file for each material model rather
+ than several files.
 \end_layout
 
 \begin_layout Itemize
@@ -4787,6 +5347,22 @@ name "sec:Troubleshooting"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+Consult the PyLith FAQ webpage (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.geodynamics.org/cig/community/workinggroups/short/workarea/pylith-wiki
+\end_layout
+
+\end_inset
+
+) which contains a growing list of common problems and their corresponding
+ solutions.
 \end_layout
 
 \begin_layout Itemize

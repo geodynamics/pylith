@@ -23,8 +23,6 @@
 import numpy
 from TestTri3 import TestTri3
 from axialdisp_soln import AnalyticalSoln
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
 
 # Local version of PyLithApp
 from pylith.apps.PyLithApp import PyLithApp
@@ -64,11 +62,8 @@ class TestAxialDisp(TestTri3):
     TestTri3.setUp(self)
     run_pylith()
     self.outputRoot = "axialdisp"
-    if has_vtk():
-      self.reader = VTKDataReader()
-      self.soln = AnalyticalSoln()
-    else:
-      self.reader = None
+
+    self.soln = AnalyticalSoln()
     return
 
 

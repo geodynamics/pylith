@@ -23,8 +23,7 @@
 import numpy
 from TestQuad4 import TestQuad4
 from dislocation_soln import AnalyticalSoln
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
+
 from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
@@ -61,17 +60,13 @@ class TestDislocation(TestQuad4):
     self.mesh['nvertices'] = 81+9
     self.nverticesO = 81
     self.faultMesh = {'nvertices': 9,
-                      'spaceDim': 3,
+                      'spaceDim': 2,
                       'ncells': 8,
                       'ncorners': 2}
 
     run_pylith()
     self.outputRoot = "dislocation"
-    if has_vtk():
-      self.reader = VTKDataReader()
-      self.soln = AnalyticalSoln()
-    else:
-      self.reader = None
+    self.soln = AnalyticalSoln()
 
     return
 
@@ -80,10 +75,10 @@ class TestDislocation(TestQuad4):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_info.vtk" % self.outputRoot
+    filename = "%s-fault_info.h5" % self.outputRoot
     fields = ["normal_dir", "final_slip", "slip_time"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
@@ -94,10 +89,10 @@ class TestDislocation(TestQuad4):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_t0000000.vtk" % self.outputRoot
+    filename = "%s-fault.h5" % self.outputRoot
     fields = ["slip", "traction_change"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
@@ -139,24 +134,24 @@ class TestDislocation(TestQuad4):
     nvertices = self.faultMesh['nvertices']
 
     if name == "normal_dir":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = normalDir[0]
-      field[:,1] = normalDir[1]
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = normalDir[0]
+      field[0,:,1] = normalDir[1]
 
     elif name == "final_slip":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = finalSlip
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
       
     elif name == "slip_time":
-      field = slipTime*numpy.zeros( (nvertices, 1), dtype=numpy.float64)
+      field = slipTime*numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       
     elif name == "slip":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = finalSlip
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = finalSlip
 
     elif name == "traction_change":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = 0.0
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = 0.0
       
     else:
       raise ValueError("Unknown fault field '%s'." % name)

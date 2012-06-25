@@ -74,7 +74,7 @@ name "sec:tutorial:shearwave:tri3"
 
 \end_inset
 
-2-D Bar Discretized with Triangles
+2D Bar Discretized with Triangles
 \end_layout
 
 \begin_layout Standard
@@ -145,7 +145,7 @@ examples/bar_shearwave/tri3.
 
 \family default
  We first create the geometry, mesh the domain using triangular cells, and
- then create blocks and nodesets to associated the cells and vertices with
+ then create blocks and nodesets to associate the cells and vertices with
  materials and boundary conditions.
  See Section 
 \begin_inset CommandInset ref
@@ -207,7 +207,11 @@ Simulation Parameters
 \end_layout
 
 \begin_layout Standard
-All of the parameters are set in the pylithapp.cfg file.
+All of the parameters are set in the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file.
  The structure of the file follows the same pattern as in all of the other
  examples.
  We set the parameters for the journal information followed by the mesh

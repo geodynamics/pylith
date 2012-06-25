@@ -251,8 +251,9 @@ const PylithScalar pylith::faults::CohesiveDynDataTri3::_area[] = {
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
-  2.0, -1.0,
-  2.1, -1.1,
+  // Fault coordinate frame
+  1.0, -2.0,
+  1.1, -2.1,
 };
 
 

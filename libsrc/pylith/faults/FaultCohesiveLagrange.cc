@@ -1163,6 +1163,118 @@ pylith::faults::FaultCohesiveLagrange::_initializeLogger(void)
 } // initializeLogger
 
 // ----------------------------------------------------------------------
+// Transform field from local (fault) coordinate system to
+// global coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::SubMesh>* field,
+						     const topology::Field<topology::SubMesh>& faultOrientation)
+{ // faultToGlobal
+  assert(field);
+
+  // Fiber dimension of vector field matches spatial dimension.
+  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();
+  assert(cs);
+  const int spaceDim = cs->spaceDim();
+  scalar_array fieldVertexGlobal(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection = faultOrientation.section();
+  assert(!orientationSection.isNull());
+
+  const ALE::Obj<SieveSubMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
+    assert(spaceDim == fieldSection->getFiberDimension(*v_iter));
+    const PylithScalar* fieldVertexFault = fieldSection->restrictPoint(*v_iter);
+    assert(fieldVertexFault);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(*v_iter));
+    const PylithScalar* orientationVertex = orientationSection->restrictPoint(*v_iter);
+    assert(orientationVertex);
+
+    // Rotate from fault to global coordinate system (transpose orientation)
+    fieldVertexGlobal = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexGlobal[iDim] += 
+	  orientationVertex[jDim*spaceDim+iDim] * fieldVertexFault[jDim];
+
+    assert(fieldVertexGlobal.size() == fieldSection->getFiberDimension(*v_iter));
+    fieldSection->updatePoint(*v_iter, &fieldVertexGlobal[0]);
+  } // for
+
+  PetscLogFlops(vertices->size() * (2*spaceDim*spaceDim) );
+  
+#if 0 // DEBUGGING
+  field->view("FIELD (GLOBAL)");
+#endif
+} // faultToGlobal
+
+// ----------------------------------------------------------------------
+// Transform field from global coordinate system to local (fault)
+// coordinate system.
+void
+pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field<topology::SubMesh>* field,
+						     const topology::Field<topology::SubMesh>& faultOrientation)
+{ // globalToFault
+  assert(field);
+
+  // Fiber dimension of vector field matches spatial dimension.
+  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();
+  assert(cs);
+  const int spaceDim = cs->spaceDim();
+  scalar_array fieldVertexFault(spaceDim);
+
+  // Get sections.
+  const ALE::Obj<RealSection>& fieldSection = field->section();
+  assert(!fieldSection.isNull());
+
+  const ALE::Obj<RealSection>& orientationSection = faultOrientation.section();
+  assert(!orientationSection.isNull());
+
+  const ALE::Obj<SieveSubMesh>& sieveMesh = field->mesh().sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
+  assert(!vertices.isNull());
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
+    assert(spaceDim == fieldSection->getFiberDimension(*v_iter));
+    const PylithScalar* fieldVertexGlobal = fieldSection->restrictPoint(*v_iter);
+    assert(fieldVertexGlobal);
+
+    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(*v_iter));
+    const PylithScalar* orientationVertex = orientationSection->restrictPoint(*v_iter);
+    assert(orientationVertex);
+
+    // Rotate from global coordinate system to fault (orientation)
+    fieldVertexFault = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	fieldVertexFault[iDim] += 
+	  orientationVertex[iDim*spaceDim+jDim] * fieldVertexGlobal[jDim];
+
+    assert(fieldVertexFault.size() == fieldSection->getFiberDimension(*v_iter));
+    fieldSection->updatePoint(*v_iter, &fieldVertexFault[0]);
+  } // for
+  
+  PetscLogFlops(vertices->size() * (2*spaceDim*spaceDim) );
+  
+#if 0 // DEBUGGING
+  field->view("FIELD (FAULT)");
+#endif
+} // faultToGlobal
+
+// ----------------------------------------------------------------------
 // Calculate orientation at fault vertices.
 void
 pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir[3])
@@ -1178,10 +1290,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Get vertices in fault mesh.
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-      faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-      vertices->begin();
+  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
+  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
   const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
 
   // Containers for orientation information.
@@ -1425,8 +1535,9 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 void
 pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 { // _calcArea
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
+  assert(_faultMesh);
+  assert(_fields);
+  assert(_normalizer);
 
   // Containers for area information
   const int cellDim = _quadrature->cellDim();
@@ -1459,6 +1570,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   area.newSection(dispRel, 1);
   area.allocate();
   area.vectorFieldType(topology::FieldBase::SCALAR);
+  const PylithScalar lengthScale = _normalizer->lengthScale();
+  area.scale(pow(lengthScale, (spaceDim-1)));
   area.zero();
   const ALE::Obj<RealSection>& areaSection = area.section();
   assert(!areaSection.isNull());
@@ -1597,112 +1710,6 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   tractions->view("TRACTIONS");
 #endif
 } // _calcTractionsChange
-
-// ----------------------------------------------------------------------
-// Transform field from local (fault) coordinate system to
-// global coordinate system.
-void
-pylith::faults::FaultCohesiveLagrange::_faultToGlobal(topology::Field<topology::SubMesh>* field)
-{ // _faultToGlobal
-  assert(field);
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-
-  // Fiber dimension of vector field matches spatial dimension.
-  const int spaceDim = _quadrature->spaceDim();
-  scalar_array fieldVertexGlobal(spaceDim);
-
-  // Get sections.
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  assert(!fieldSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-    _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-
-    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
-    const PylithScalar* fieldVertexFault = fieldSection->restrictPoint(v_fault);
-    assert(fieldVertexFault);
-
-    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-    const PylithScalar* orientationVertex = orientationSection->restrictPoint(v_fault);
-    assert(orientationVertex);
-
-    // Rotate from fault to global coordinate system (transpose orientation)
-    fieldVertexGlobal = 0.0;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	fieldVertexGlobal[iDim] += 
-	  orientationVertex[jDim*spaceDim+iDim] * fieldVertexFault[jDim];
-
-    assert(fieldVertexGlobal.size() == 
-	   fieldSection->getFiberDimension(v_fault));
-    fieldSection->updatePoint(v_fault, &fieldVertexGlobal[0]);
-  } // for
-  
-  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
-
-#if 0 // DEBUGGING
-  field->view("FIELD (GLOBAL)");
-#endif
-} // _faultToGlobal
-
-// ----------------------------------------------------------------------
-// Transform field from global coordinate system to local (fault)
-// coordinate system.
-void
-pylith::faults::FaultCohesiveLagrange::_globalToFault(topology::Field<topology::SubMesh>* field)
-{ // _globalToFault
-  assert(field);
-  assert(0 != _faultMesh);
-  assert(0 != _fields);
-
-  // Fiber dimension of vector field matches spatial dimension.
-  const int spaceDim = _quadrature->spaceDim();
-  scalar_array fieldVertexFault(spaceDim);
-
-  // Get sections.
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  assert(!fieldSection.isNull());
-
-  const ALE::Obj<RealSection>& orientationSection =
-    _fields->get("orientation").section();
-  assert(!orientationSection.isNull());
-
-  const int numVertices = _cohesiveVertices.size();
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    const int v_fault = _cohesiveVertices[iVertex].fault;
-
-    assert(spaceDim == fieldSection->getFiberDimension(v_fault));
-    const PylithScalar* fieldVertexGlobal = fieldSection->restrictPoint(v_fault);
-    assert(fieldVertexGlobal);
-
-    assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-    const PylithScalar* orientationVertex = orientationSection->restrictPoint(v_fault);
-    assert(orientationVertex);
-
-    // Rotate from global coordinate system to fault (orientation)
-    fieldVertexFault = 0.0;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	fieldVertexFault[iDim] += 
-	  orientationVertex[iDim*spaceDim+jDim] * fieldVertexGlobal[jDim];
-
-    assert(fieldVertexFault.size() == 
-	   fieldSection->getFiberDimension(v_fault));
-    fieldSection->updatePoint(v_fault, &fieldVertexFault[0]);
-  } // for
-  
-  PetscLogFlops(numVertices * (2*spaceDim*spaceDim) );
-
-#if 0 // DEBUGGING
-  field->view("FIELD (FAULT)");
-#endif
-} // _faultToGlobal
 
 // ----------------------------------------------------------------------
 // Allocate buffer for vector field.

@@ -47,6 +47,7 @@ namespace pylith {
     class GenMaxwellPlaneStrain;
     class GenMaxwellQpQsIsotropic3D;
     class PowerLaw3D;
+    class PowerLawPlaneStrain;
     class DruckerPrager3D;
     class DruckerPragerPlaneStrain;
 

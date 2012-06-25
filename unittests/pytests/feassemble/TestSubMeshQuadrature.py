@@ -88,7 +88,7 @@ class TestSubMeshQuadrature(unittest.TestCase):
     Test initialize().
     """
     cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    cell.inventory.dimension = 1
     cell.inventory.degree = 2
     cell.inventory.order = 2
     cell._configure()
@@ -154,7 +154,7 @@ class TestSubMeshQuadrature(unittest.TestCase):
     spaceDim = 2
 
     cell = FIATSimplex()
-    cell.inventory.shape = "line"
+    cell.inventory.dimension = 1
     cell._configure()
     
     quadrature = SubMeshQuadrature()
@@ -175,7 +175,7 @@ class TestSubMeshQuadrature(unittest.TestCase):
     spaceDim = 3
 
     cell = FIATSimplex()
-    cell.inventory.shape = "triangle"
+    cell.inventory.dimension = 2
     cell._configure()
     
     quadrature = SubMeshQuadrature()

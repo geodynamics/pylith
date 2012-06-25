@@ -229,7 +229,7 @@ class TestElasticityImplicit(unittest.TestCase):
     # Setup material
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.inventory.shape = "triangle"
+    cell.inventory.dimension = 2
     cell.inventory.degree = 1
     cell.inventory.order = 1
     cell._configure()

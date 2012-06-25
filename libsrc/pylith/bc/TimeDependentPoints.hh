@@ -73,6 +73,13 @@ protected :
    */
   const char* _getLabel(void) const;
 
+  /** Get manager of scales used to nondimensionalize problem.
+   *
+   * @returns Nondimensionalizer.
+   */
+  virtual
+  const spatialdata::units::Nondimensional& _getNormalizer(void) const = 0;
+
   /** Query databases for time dependent parameters.
    *
    * @param mesh Finite-element mesh.

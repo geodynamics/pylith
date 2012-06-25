@@ -22,8 +22,7 @@
 
 import numpy
 from TestLine3 import TestLine3
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
+
 from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
@@ -60,16 +59,12 @@ class TestDislocation(TestLine3):
     self.nverticesO = 5
 
     self.faultMesh = {'nvertices': 1,
-                      'spaceDim': 3,
+                      'spaceDim': 1,
                       'ncells': 1,
                       'ncorners': 1}
 
     run_pylith()
     self.outputRoot = "dislocation"
-    if has_vtk():
-      self.reader = VTKDataReader()
-    else:
-      self.reader = None
     return
 
 
@@ -77,10 +72,10 @@ class TestDislocation(TestLine3):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_info.vtk" % self.outputRoot
+    filename = "%s-fault_info.h5" % self.outputRoot
     fields = ["normal_dir", "final_slip", "slip_time"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
@@ -91,10 +86,10 @@ class TestDislocation(TestLine3):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_t0000000.vtk" % self.outputRoot
+    filename = "%s-fault.h5" % self.outputRoot
     fields = ["slip", "traction_change"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
@@ -109,11 +104,11 @@ class TestDislocation(TestLine3):
     spaceDim = self.mesh['spaceDim']    
     nverticesO = self.nverticesO
 
-    disp = numpy.zeros( (nvertices, spaceDim), dtype=numpy.float64)
+    disp = numpy.zeros( (1, nvertices, spaceDim), dtype=numpy.float64)
     maskP = vertices[:,0] >= 2.0
     maskP[nverticesO:nvertices] = False
     maskN = numpy.bitwise_and(vertices[:,0] <= 2.0, ~maskP)
-    disp[:,0] = \
+    disp[0,:,0] = \
         maskN*(-0.20 - 0.025*vertices[:,0]) + \
         maskP*(+0.30 - 0.025*vertices[:,0])
 
@@ -130,12 +125,11 @@ class TestDislocation(TestLine3):
     tensorSize = self.mesh['tensorSize']
 
     if name == "total_strain":
-      stateVar = exx*numpy.ones( (ncells, tensorSize), dtype=numpy.float64)
+      stateVar = exx*numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     
     elif name == "stress":
       lp2m = self.density*self.vp**2
-      stateVar = lp2m*exx * numpy.ones( (ncells, tensorSize), 
-                                       dtype=numpy.float64)
+      stateVar = lp2m*exx * numpy.ones( (1, ncells, tensorSize), dtype=numpy.float64)
     else:
       raise ValueError("Unknown state variable '%s'." % name)
 
@@ -159,22 +153,22 @@ class TestDislocation(TestLine3):
     nvertices = self.faultMesh['nvertices']
 
     if name == "normal_dir":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       field[:,0] = normalDir
 
     elif name == "final_slip":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       field[:,0] = finalSlip
       
     elif name == "slip_time":
-      field = slipTime*numpy.ones( (nvertices, 1), dtype=numpy.float64)
+      field = slipTime*numpy.ones( (1, nvertices, 1), dtype=numpy.float64)
       
     elif name == "slip":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       field[:,0] = finalSlip
 
     elif name == "traction_change":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
       field[:,0] = traction
       
     else:

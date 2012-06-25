@@ -54,7 +54,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   assert(coordinates);
   MPI_Comm comm = mesh->comm();
   int dim = meshDim;
-  int rank = 0;
+  const int commRank = mesh->commRank();
   PetscErrorCode err;
 
   { // Check to make sure every vertex is in at least one cell.
@@ -88,13 +88,12 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     new SieveMesh::sieve_type(mesh->comm());
   sieveMesh->setSieve(sieve);
 
-  MPI_Comm_rank(comm, &rank);
   // Memory debugging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(1);
 
   logger.stagePush("MeshCreation");
-  if (0 == rank || isParallel) {
+  if (0 == commRank || isParallel) {
     assert(coordinates->size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
     if (!interpolate) {
@@ -239,7 +238,6 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
 					    const int meshDim)
 { // buildFaultMesh
   int dim  = meshDim;
-  int rank = 0;
 
   assert(!fault.isNull());
 
@@ -247,15 +245,15 @@ pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
     new SieveMesh::sieve_type(fault->comm());
   fault->setDebug(fault->debug());
   fault->setSieve(sieve);
-
-  MPI_Comm_rank(fault->comm(), &rank);
+  
+  const int commRank = fault->commRank();
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.setDebug(fault->debug()/2);
   logger.stagePush("Creation");
 
-  if (0 == rank) {
+  if (0 == commRank) {
     assert(coordinates.size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
     ALE::Obj<SieveFlexMesh::sieve_type> s = 

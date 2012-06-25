@@ -56,7 +56,7 @@ class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D
                      "viscous_deviatoric_strain", 
                      "viscous_mean_strain", 
                      ]}}
-    self._loggingPrefix = "MaMx3D "
+    self._loggingPrefix = "MaGQ3D "
     return
 
 

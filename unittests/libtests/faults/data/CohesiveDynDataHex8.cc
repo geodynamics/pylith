@@ -1340,10 +1340,11 @@ const PylithScalar pylith::faults::CohesiveDynDataHex8::_area[] = {
 };
 
 const PylithScalar pylith::faults::CohesiveDynDataHex8::_initialTractions[] = {
-  +3.0, -1.0, +2.0,
-  +3.1, -1.1, +2.1,
-  +3.2, -1.2, +2.2,
-  +3.3, -1.3, +2.3,
+  // Fault coordinate frame
+  +1.0, +2.0, -3.0,
+  +1.1, +2.1, -3.1,
+  +1.2, +2.2, -3.2,
+  +1.3, +2.3, -3.3,
 };
 
 
@@ -1355,7 +1356,7 @@ const int pylith::faults::CohesiveDynDataHex8::_constraintVertices[] = {
 // Stick case
 // ----------------------------------------------------------------------
 // Input
-const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrStick[20*3] = {
   0.1, 2.1, 1.1,
   0.2, 2.2, 1.2,
   0.3, 2.3, 1.3,
@@ -1390,7 +1391,7 @@ const PylithScalar pylith::faults::CohesiveDynDataHex8::_slipStickE[] = {
 // Slip case
 // ----------------------------------------------------------------------
 // Input
-const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[20*3] = {
   1.1, 2.1, 0.1,
   1.2, 2.2, 0.2,
   1.3, 2.3, 0.3,
@@ -1414,7 +1415,7 @@ const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlip[] = {
 };
 
 // Output
-const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[] = {
+const PylithScalar pylith::faults::CohesiveDynDataHex8::_fieldIncrSlipE[20*3] = {
    1.100000000000,   2.100000000000,   0.100000000000,
    1.200000000000,   2.200000000000,   0.200000000000,
    1.300000000000,   2.300000000000,   0.300000000000,

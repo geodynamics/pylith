@@ -41,11 +41,11 @@ namespace pylith {
       virtual
       void deallocate(void);
       
-      /** Sets the spatial database for the inital tractions.
+      /** Sets the traction perturbation for prescribed tractions.
        *
-       * @param db spatial database for initial tractions
+       * @param tract Spatial and temporal variation of tractions.
        */
-      void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
+      void tractPerturbation(TractPerturbation* tract);
   
       /** Set the friction (constitutive) model.
        *
@@ -58,6 +58,16 @@ namespace pylith {
        * @param value Nondimensional tolerance
        */
       void zeroTolerance(const PylithScalar value);
+
+      /** Set flag used to determine when fault is traction free when it
+       * opens or it still imposes any initial tractions.
+       *
+       * If true, acts as a frictional contact. If false, one can simulate
+       * a dike opening.
+       *
+       * @param value Nondimensional tolerance
+       */
+      void openFreeSurf(const bool value);
 
       /** Initialize fault. Determine orientation and setup boundary
        * condition parameters.
