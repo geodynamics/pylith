@@ -144,7 +144,7 @@ step20.cfg
 \end_layout
 
 \begin_layout Subsubsection
-Step20 - Static dike intrusion
+Step20 - Static Dike Intrusion
 \end_layout
 
 \begin_layout Standard
@@ -226,9 +226,9 @@ examples/3d/hex8/output
 \family default
  (all with a prefix of 
 \family typewriter
-step
+step20
 \family default
-20).
+).
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -261,7 +261,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement magnitude for example step20 visualized using ParaView.
+Displacement magnitude for example 
+\family typewriter
+step20
+\family default
+ visualized using ParaView.
  
 \begin_inset CommandInset label
 LatexCommand label

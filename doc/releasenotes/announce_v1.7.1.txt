@@ -17,7 +17,7 @@ simulations is optional.
 We strongly recommend all users of previous PyLith releases switch to
 this latest release. In addition to adding features this release also
 fixes a minor parallel processing bug related to fault friction in
-quasi-static simulations. 
+quasi-static simulations.
 
 See the README file for changes required to switch to the v1.7.x
 release series from previous versions.
@@ -27,8 +27,8 @@ You can download the source code and binaries from
     http://geodynamics.org/cig/software/packages/short/pylith
 
 Detailed installation instructions for the binary packages are in the
-User Manual with detailed building instructions for a few platforms
-in the INSTALL file bundled with the PyLith Installer utility.
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility.
 
 
 RELEASE NOTES - PyLith v1.7.1

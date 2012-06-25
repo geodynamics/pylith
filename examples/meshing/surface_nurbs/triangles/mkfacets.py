@@ -5,7 +5,7 @@
 # meshing package if you have installed it.
 
 # Import necessary packages.
-import subprocess
+import os
 import os
 # import pdb
 # pdb.set_trace()
@@ -16,10 +16,6 @@ connectFile = "ruapehu-nzmg-1km.connect"
 facetsOut = "ruapehu-nzmg-1km.fac"
 
 # Triangulate the points to get connectivities.
-# c = open(connectFile, 'w')
-# triCall = ["triangulate", vertexFile, "-V"]
-# retCode = subprocess.Popen(triCall, stdout=c)
-# c.close()
 os.system('triangulate '+vertexFile+' > '+connectFile)
 
 # Read connectivities and vertices.

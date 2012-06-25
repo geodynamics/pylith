@@ -153,7 +153,7 @@ stepXX.cfg
 \end_layout
 
 \begin_layout Subsubsection
-Step18 - Static surface load
+Step18 - Static Surface Load
 \end_layout
 
 \begin_layout Standard
@@ -389,7 +389,7 @@ name "fig:step18-displ"
 \end_layout
 
 \begin_layout Subsubsection
-Step19 - Time-dependent surface load
+Step19 - Time-Dependent Surface Load
 \end_layout
 
 \begin_layout Standard
@@ -486,6 +486,8 @@ reference "fig:step19-stress-t200"
  in the file 
 \family typewriter
 output_points.txt.
+
+\family default
  See Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -495,7 +497,14 @@ reference "sec:output:points"
 
  for a discussion of the output parameters.
  This type of output is designed for comparison against observations and
- inversions and output via HDF5 files (see Section ??).
+ inversions and output via HDF5 files (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:HDF5/Xdmf-Output"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -520,8 +529,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Stress field (zz-component) for example step19 at t = 200 years visualized
- using ParaView.
+Stress field (zz-component) for example 
+\family typewriter
+step19
+\family default
+ at t = 200 years visualized using ParaView.
  The stresses appear as 4 layers since we have used 
 \family typewriter
 CellFilterAvgMesh

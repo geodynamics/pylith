@@ -9,7 +9,7 @@ SimpleDB {
   num-values = 1
   value-names =  slip-time
 
-  // The fault slip time has units of meters.
+  // The fault slip time has units of seconds.
   value-units =  s
 
   // The value is specified at one spatial location.
