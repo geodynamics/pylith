@@ -609,7 +609,7 @@ name "fig:step11-fault-traction-slip"
 \end_layout
 
 \begin_layout Subsubsection
-Step12 - Static Friction with Quasi-static Dirichlet Boundary Conditions
+Step12 - Static Friction with Quasi-Static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
@@ -844,7 +844,7 @@ name "fig:step12-displ-t200"
 \end_layout
 
 \begin_layout Subsubsection
-Step13 - Slip-weakening Friction with Quasi-static Dirichlet Boundary Conditions
+Step13 - Slip-Weakening Friction with Quasi-Static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
@@ -1001,7 +1001,7 @@ name "fig:step13-displ-t200"
 \end_layout
 
 \begin_layout Subsubsection
-Step14 - Rate-and-state Friction with Quasi-static Dirichlet Boundary Conditions
+Step14 - Rate-and-State Friction with Quasi-Static Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
