@@ -1170,7 +1170,7 @@ reference "fig:tutorial:subduction:step04"
 
 , which was created using ParaView, displays the magnitude of the displacement
  field with the original configuration.
- Slip occurs down-dip from the coseismic slip as well as three areas with
+ Slip occurs down-dip from the coseismic slip as well as in three areas with
  sharp gradients in slip, including the trench.
  The location of the afterslip can be shifted by changing the spatial variation
  of the coseismic slip and background stress field.
