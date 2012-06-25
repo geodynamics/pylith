@@ -1308,7 +1308,7 @@ Refiner
 \begin_layout Standard
 The refiner is used to decrease node spacing by a factor of two by subdividing
  each cell.
- In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
+ In a 2D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1317,11 +1317,11 @@ reference "fig:uniform:refinement:2x"
 \end_inset
 
 ).
- In a 2-D quadrilateral mesh a node is inserted at the midpoint of each
- edge and at the centroid of the cell, splitting each cell into four cells.
- In a 3-D tetrahedral mesh a node is inserted at the midpoint of each edge,
+ In a 2D quadrilateral mesh a node is inserted at the midpoint of each edge
+ and at the centroid of the cell, splitting each cell into four cells.
+ In a 3D tetrahedral mesh a node is inserted at the midpoint of each edge,
  splitting each cell into eight cells.
- In a 3-D hexahedral mesh a node is inserted at the midpoint of each edge,
+ In a 3D hexahedral mesh a node is inserted at the midpoint of each edge,
  the centroid of each face, and at the centroid of the cell, splitting each
  cell into eight cells.
 \end_layout
@@ -1351,7 +1351,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Global uniform mesh refinement of 2-D and 3-D linear cells.
+Global uniform mesh refinement of 2D and 3D linear cells.
  The blue lines and orange circles identify the edges and vertices in the
  original cells.
  The purple lines and green circles identify the new edges and vertices
@@ -1383,8 +1383,8 @@ Refinement occurs after distribution of the mesh among processors.
  the simulation setup phase, such as, adjusting the topology to insert cohesive
  cells and distribution of the mesh among processors uses this much smaller
  coarse mesh.
- For 2-D problems the global mesh refinement increases the maximum problem
- size by a factor of four, and for 3-D problems it increases the maximum
+ For 2D problems the global mesh refinement increases the maximum problem
+ size by a factor of four, and for 3D problems it increases the maximum
  problem size by a factor of eight.
 \end_layout
 
@@ -4885,6 +4885,12 @@ time_constant Value used to normalize time stamp in VTK files (default is
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:HDF5/Xdmf-Output"
+
+\end_inset
+
 HDF5/Xdmf Output
 \end_layout
 

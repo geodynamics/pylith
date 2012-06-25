@@ -129,7 +129,7 @@ Mesh Generation
 \end_layout
 
 \begin_layout Standard
-The mesh is a simple rectangular prism 8 km by 400 m by 400m (Figure 
+The mesh is a simple rectangular prism 8 km by 400 m by 400 m (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:shearwave:hex8:mesh"
@@ -205,7 +205,11 @@ The simulation parameters match those in the tri3 and tet4 examples.
  Using eight-point quadrature permits use of a time step of 1/20 s, which
  is slightly larger than the time step of 1/30 s used in the tri3 and tet4
  simulations.
- All of the parameters are set in the pylithapp.cfg file.
+ All of the parameters are set in the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file.
  To run the problem, simply run PyLith without any command line arguments:
 \end_layout
 

@@ -74,7 +74,7 @@ name "sec:tutorial:shearwave:tet4"
 
 \end_inset
 
-3-D Bar Discretized with Tetrahedra
+3D Bar Discretized with Tetrahedra
 \end_layout
 
 \begin_layout Standard
@@ -144,7 +144,7 @@ reference "fig:shearwave:tet4:mesh"
 examples/bar_shearwave/tet4.
 
 \family default
- We first create the geometry, regions, mesh the domain using tetrahedral
+ We first create the geometry and regions, mesh the domain using tetrahedral
  cells, and then create point sets associated with boundary conditions.
 \end_layout
 
@@ -199,13 +199,17 @@ Simulation Parameters
 
 \begin_layout Standard
 The simulation parameters match those in the tri3 example with the exception
- of using the LaGriT mesh reader and switching the from a two-dimensional
- problem to a three-dimensional problem.
+ of using the LaGriT mesh reader and switching from a two-dimensional problem
+ to a three-dimensional problem.
  In addition to fixing the longitudinal degree of freedom, we also fix the
  out-of-plane transverse degree of freedom.
  Because the fault separates two material regions in LaGriT, we use two
  materials in PyLith.
- All of the parameters are set in the pylithapp.cfg file.
+ All of the parameters are set in the 
+\family typewriter
+pylithapp.cfg
+\family default
+ file.
  To run the problem, simply run PyLith without any command line arguments:
 \end_layout
 

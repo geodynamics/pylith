@@ -193,7 +193,7 @@ examples/3d/tet4.
 \family default
  Examination of this command file should provide some insight into how to
  use LaGriT with PyLith.
- For more detailed information refer to the LaGriT web site 
+ For more detailed information refer to the LaGriT website 
 \begin_inset Flex URL
 status collapsed
 
@@ -400,7 +400,7 @@ pylithapp.mesh_generator Settings that control mesh importing, such as the
 
 \begin_layout Description
 pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and number of entries in the material array.
+ time, time-step size, and number of entries in the material array.
 \end_layout
 
 \begin_layout Description
@@ -1519,10 +1519,10 @@ z
 \family default
 ), providing the label (defined in 
 \family typewriter
-tet4_1000m_binary.
+tet4_1000m_binary.pset
 \family default
-pset) defining the points desired, and assigning a label to the boundary
- condition set.
+) defining the points desired, and assigning a label to the boundary condition
+ set.
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (ZeroDispDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
@@ -1545,10 +1545,10 @@ z
 \family default
 ), providing the label (defined in 
 \family typewriter
-tet4_1000m_binary.
+tet4_1000m_binary.pset
 \family default
-pset) defining the points desired, and assigning a label to the boundary
- condition set.
+) defining the points desired, and assigning a label to the boundary condition
+ set.
  Rather than specifying a spatial database file to define the boundary condition
 s, we use the default spatial database (ZeroDispDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
@@ -1557,15 +1557,15 @@ s, we use the default spatial database (ZeroDispDB) for the Dirichlet boundary
 \begin_layout Description
 pylithapp.timedependent.interfaces Gives the label (defined in 
 \family typewriter
-tet4_1000m_binary.
+tet4_1000m_binary.pset
 \family default
-pset) defining the points on the fault, provides quadrature information,
- and then gives database names for material properties (needed for conditioning)
-, fault slip, peak fault slip rate, and fault slip time.
+) defining the points on the fault, provides quadrature information, and
+ then gives database names for material properties (needed for conditioning),
+ fault slip, peak fault slip rate, and fault slip time.
 \end_layout
 
 \begin_layout Description
-pylithapp.problem.formulation.output.domain.writer Gives the base filename for
+pylithapp.problem.formulation.output.output.writer Gives the base filename for
  VTK output over the entire domain (
 \family typewriter
 step03.vtk
