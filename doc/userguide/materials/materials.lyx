@@ -1241,7 +1241,7 @@ name "tab:material:output:components"
 
 \end_inset
 
-Order of components in tensor values in Xdmf files for 3-D material models.
+Order of components in tensor values in Xdmf files for 3D material models.
  All nine tensor components are available even though the tensor is symmetric
  with six independent components.
 \end_layout
@@ -4920,14 +4920,14 @@ middle version).
 \begin_inset Formula $\theta$
 \end_inset
 
- into equation (
+ into Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:drucker:prager:haigh:westergaard"
 
 \end_inset
 
-) and casting it into the same form as equation (
+) and casting it into the same form as Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:101"
@@ -5945,7 +5945,7 @@ In addition to the properties available for every material, the properties
 
 \begin_layout Description
 fit_mohr_coulomb Fit to the yield surface to the Mohr-Coulomb model (default
- is a inscribed).
+ is inscribed).
 \end_layout
 
 \begin_layout Description
