@@ -23,8 +23,7 @@
 import numpy
 from TestQuad4 import TestQuad4
 from slipweakening_shear_stick_soln import AnalyticalSoln
-from pylith.utils.VTKDataReader import has_vtk
-from pylith.utils.VTKDataReader import VTKDataReader
+
 from pylith.tests.Fault import check_vertex_fields
 
 # Local version of PyLithApp
@@ -61,17 +60,13 @@ class TestSlipWeakeningShearStick(TestQuad4):
     self.mesh['nvertices'] = 81+9
     self.nverticesO = 81
     self.faultMesh = {'nvertices': 9,
-                      'spaceDim': 3,
+                      'spaceDim': 2,
                       'ncells': 8,
                       'ncorners': 2}
 
     run_pylith()
     self.outputRoot = "slipweakening_shear_stick"
-    if has_vtk():
-      self.reader = VTKDataReader()
-      self.soln = AnalyticalSoln()
-    else:
-      self.reader = None
+    self.soln = AnalyticalSoln()
     return
 
 
@@ -79,11 +74,11 @@ class TestSlipWeakeningShearStick(TestQuad4):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_info.vtk" % self.outputRoot
-    fields = ["strike_dir", "normal_dir", "initial_traction","static_coefficient","dynamic_coefficient","slip_weakening_parameter","cohesion"]
+    filename = "%s-fault_info.h5" % self.outputRoot
+    fields = ["strike_dir", "normal_dir", "traction_initial","static_coefficient","dynamic_coefficient","slip_weakening_parameter","cohesion"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
     return
@@ -93,10 +88,10 @@ class TestSlipWeakeningShearStick(TestQuad4):
     """
     Check fault information.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-fault_t0000000.vtk" % self.outputRoot
+    filename = "%s-fault.h5" % self.outputRoot
     fields = ["slip", "traction","cumulative_slip","previous_slip"]
     check_vertex_fields(self, filename, self.faultMesh, fields)
 
@@ -141,48 +136,48 @@ class TestSlipWeakeningShearStick(TestQuad4):
     nvertices = self.faultMesh['nvertices']
 
     if name == "strike_dir":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = strikeDir[0]
-      field[:,1] = strikeDir[1]
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = strikeDir[0]
+      field[0,:,1] = strikeDir[1]
 
     elif name == "normal_dir":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = normalDir[0]
-      field[:,1] = normalDir[1]
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = normalDir[0]
+      field[0,:,1] = normalDir[1]
 
-    elif name == "initial_traction":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = initialTraction[0]
-      field[:,1] = initialTraction[1]
+    elif name == "traction_initial":
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = initialTraction[0]
+      field[0,:,1] = initialTraction[1]
 
     elif name == "static_coefficient":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
-      field[:] = staticCoefficient
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      field[0,:,0] = staticCoefficient
 
     elif name == "dynamic_coefficient":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
-      field[:] = dynamicCoefficient
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      field[0,:,0] = dynamicCoefficient
 
     elif name == "slip_weakening_parameter":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
-      field[:] = slipWeakeningParameter
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
+      field[0,:,0] = slipWeakeningParameter
 
     elif name == "cohesion":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
 
     elif name == "slip":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
 
     elif name == "traction":
-      field = numpy.zeros( (nvertices, 3), dtype=numpy.float64)
-      field[:,0] = 1.0e+6
-      field[:,1] = -1.0e+7
+      field = numpy.zeros( (1, nvertices, 2), dtype=numpy.float64)
+      field[0,:,0] = 1.0e+6
+      field[0,:,1] = -1.0e+7
       
     elif name == "cumulative_slip":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
 
     elif name == "previous_slip":
-      field = numpy.zeros( (nvertices, 1), dtype=numpy.float64)
+      field = numpy.zeros( (1, nvertices, 1), dtype=numpy.float64)
 
     else:
       raise ValueError("Unknown fault field '%s'." % name)

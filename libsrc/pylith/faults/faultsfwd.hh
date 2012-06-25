@@ -37,6 +37,7 @@ namespace pylith {
     class FaultCohesiveLagrange;
     class FaultCohesiveKin;
     class FaultCohesiveDyn;
+    class FaultCohesiveImpulses;
     class FaultCohesiveTract;
 
     class EqKinSrc;
@@ -46,6 +47,11 @@ namespace pylith {
     class LiuCosSlipFn;
     class StepSlipFn;
     class TimeHistorySlipFn;
+
+    class Nucleator;
+    class TractPerturbation;
+    class StaticPerturbation;
+    class SpaceTimePerturbation;
 
     class TopologyOps;
     template<typename Sieve, typename Renumbering> class ReplaceVisitor;

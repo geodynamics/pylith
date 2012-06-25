@@ -23,6 +23,8 @@
 import unittest
 import numpy
 
+from pylith.tests import has_h5py
+
 class TestLine2(unittest.TestCase):
   """
   Generic tests for problems using 1-D bar mesh.
@@ -35,11 +37,16 @@ class TestLine2(unittest.TestCase):
     self.mesh = {'ncells': 4,
                  'ncorners': 2,
                  'nvertices': 5,
-                 'spaceDim': 3,
+                 'spaceDim': 1,
                  'tensorSize': 1}
     self.vs = 3000.0
     self.vp = 5291.502622129181
     self.density = 2500.0
+
+    if has_h5py():
+      self.checkResults = True
+    else:
+      self.checkResults = False
     return
 
 
@@ -47,18 +54,18 @@ class TestLine2(unittest.TestCase):
     """
     Check elastic info.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
     ncells= self.mesh['ncells']
 
-    filename = "%s-elastic_info.vtk" % self.outputRoot
+    filename = "%s-elastic_info.h5" % self.outputRoot
     m = self.density*self.vs**2
     l = self.density*self.vp**2 - 2*m
 
-    propMu =  m*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propLambda = l*numpy.ones( (ncells, 1), dtype=numpy.float64)
-    propDensity = self.density*numpy.ones( (ncells, 2), dtype=numpy.float64)
+    propMu =  m*numpy.ones( (1,ncells, 1), dtype=numpy.float64)
+    propLambda = l*numpy.ones( (1,ncells, 1), dtype=numpy.float64)
+    propDensity = self.density*numpy.ones( (1,ncells, 1), dtype=numpy.float64)
 
     properties = {'mu': propMu,
                   'lambda': propLambda,
@@ -74,10 +81,10 @@ class TestLine2(unittest.TestCase):
     """
     Check solution (displacement) field.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s_t0000000.vtk" % self.outputRoot
+    filename = "%s.h5" % self.outputRoot
     from pylith.tests.Solution import check_displacements
     check_displacements(self, filename, self.mesh)
 
@@ -88,10 +95,10 @@ class TestLine2(unittest.TestCase):
     """
     Check elastic state variables.
     """
-    if self.reader is None:
+    if not self.checkResults:
       return
 
-    filename = "%s-elastic_t0000000.vtk" % self.outputRoot
+    filename = "%s-elastic.h5" % self.outputRoot
 
     from pylith.tests.StateVariables import check_state_variables
     stateVars = ["total_strain", "stress"]

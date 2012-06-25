@@ -1,0 +1,104 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.7.1, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release fixes a couple of bugs in PyLith v1.7.0. The PyLith v1.7
+release series adds several new features to PyLith, including (1)
+user-friendly interface for computing Green's functions, (2) output of
+solution field at user-specified locations, (3) plane strain version
+of the Drucker-Prager elastoplastic rheology, (4) prescribed spatial
+and temporal variation of fault tractions with spontaneous earthquake
+ruptures, (5) ability to use PETSc GPU solvers, (6) user-specified
+start time for simulations, and (7) elastic prestep in quasi-static
+simulations is optional.
+
+We strongly recommend all users of previous PyLith releases switch to
+this latest release. In addition to adding features this release also
+fixes a minor parallel processing bug related to fault friction in
+quasi-static simulations.
+
+See the README file for changes required to switch to the v1.7.x
+release series from previous versions.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility.
+
+
+RELEASE NOTES - PyLith v1.7.1
+
+* Bug fixes
+
+  - Fixed a couple of bugs in the spontaneous earthquake rupture for
+    quasi-static problems when running in parallel. These prevented
+    the nonlinear solve from converging and erroneously generated
+    fault-opening in a some cases.
+
+  - Minor updates to the documentation and manual. Added Green's
+    function examples to the manual.
+
+RELEASE NOTES - PyLith v1.7.0
+
+* New features
+
+  * User-friendly interface for Green's functions
+
+    A new problem type provides a user-friendly interface for
+    computing Green's functions associated with fault slip for complex
+    spatial variation in elastic properties. See examples/2d/greensfns
+    in the tutorials for examples.
+
+  * Output of solution field at user-specified locations
+ 
+    Added a new output manager for interpolation of the solution field
+    to user-specified point locations. This feature is useful for
+    comparison of the solution with observations and in computing
+    Green's functions. See examples/3d/hex8/step19 and
+    examples/2d/greensfns in the tutorials for examples.
+
+  * Plane strain version of Drucker-Prager elastoplastic model
+
+    Added a plane strain version of the Drucker-Prager elastoplastic
+    model. Additionally, the user can now select whether to use an
+    inscribed, intermediate, or circumscribed fit to the Mohr Coulomb
+    criterion.
+
+  * Spatial and temporal variation in tractions for spontaneous
+    earthquake rupture
+
+    Switched from a simple constant spatial variation in initial fault
+    tractions to the more flexible spatial and temporal variation
+    consistent with the Dirichlet, Neumann, and point force boundary
+    conditions. Also added a switch to turn on/off applying prescribed
+    fault tractions when the fault opens; the default behavior is to
+    stop applying prescribed fault tractions when the fault opens, but
+    turning this off allows simulation of dike intrusions via
+    prescribed fault tractions. See examples/3d/hex8/step20 in the
+    tutorials for an example of how to specify fault tractions with
+    the new implementation.
+  
+  * Ability to use PETSc GPU solvers
+
+    Added ability to build PyLith with either double (default) or
+    single precision floating point values to facilitate use of
+    GPUs. In order to use PETSc GPU solvers, CUDA and cusp must be
+    installed and PETSc must be configured to use CUDA. See the PyLith
+    manual and PETSc documentation for details.
+
+  * User-specified start time for simulations.
+
+    Users can set the simulation start time to any desired value. This
+    facilitates combining simulations to model the earthquake cycle.
+
+  * Elastic prestep in quasi-static simulations is optional.
+
+    The elastic prestep in quasi-static simulations can be skipped
+    (the default is to include the elastic prestep). This facilitates
+    combining simulations to model the earthquake cycle.
+

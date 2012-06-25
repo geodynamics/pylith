@@ -63,8 +63,7 @@ pylith::meshio::MeshIOLagrit::deallocate(void)
 void
 pylith::meshio::MeshIOLagrit::_read(void)
 { // _read
-  MPI_Comm comm = _mesh->comm();
-  int rank;
+  const int commRank = _mesh->commRank();
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -74,8 +73,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
   int_array cells;
   int_array materialIds;
 
-  MPI_Comm_rank(comm, &rank);
-  if (!rank) {
+  if (!commRank) {
     if (GMVFile::isAscii(_filenameGmv.c_str())) {
       GMVFileAscii filein(_filenameGmv.c_str());
       filein.read(&coordinates, &cells, &materialIds, 
@@ -93,7 +91,7 @@ pylith::meshio::MeshIOLagrit::_read(void)
 			 _interpolate);
   _setMaterials(materialIds);
 
-  if (0 == rank) {
+  if (0 == commRank) {
     std::vector<PsetFile::Pset> groups;
     if (PsetFile::isAscii(_filenamePset.c_str())) {
       PsetFileAscii filein(_filenamePset.c_str());

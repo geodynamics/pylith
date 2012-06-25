@@ -29,7 +29,8 @@ TESTS_ENVIRONMENT = $(PYTHON)
 noinst_PYTHON = \
 	TestEventLogger.py \
 	TestPetscManager.py \
-	TestConstants.py
+	TestConstants.py \
+	TestPylith.py
 
 
 # End of file 

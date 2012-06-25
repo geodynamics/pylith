@@ -55,11 +55,11 @@ public :
   virtual
   void deallocate(void);
   
-  /** Sets the spatial database for the inital tractions.
+  /** Sets the traction perturbation for prescribed tractions.
    *
-   * @param db spatial database for initial tractions
+   * @param tract Spatial and temporal variation of tractions.
    */
-  void dbInitialTract(spatialdata::spatialdb::SpatialDB* db);
+  void tractPerturbation(TractPerturbation* tract);
   
   /** Set the friction (constitutive) model.
    *
@@ -72,6 +72,16 @@ public :
    * @param value Nondimensional tolerance
    */
   void zeroTolerance(const PylithScalar value);
+
+  /** Set flag used to determine when fault is traction free when it
+   * opens or it still imposes any initial tractions.
+   *
+   * If true, acts as a frictional contact. If false, one can simulate
+   * a dike opening.
+   *
+   * @param value Nondimensional tolerance
+   */
+  void openFreeSurf(const bool value);
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -141,10 +151,6 @@ public :
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
-
-  /** Get initial tractions using a spatial database.
-   */
-  void _setupInitialTractions(void);
 
   /** Compute tractions on fault surface using solution.
    *
@@ -265,11 +271,16 @@ private :
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
+  /// Flag to control whether to continue to impose initial tractions
+  /// on the fault surface when it opens. If it is a frictional
+  /// contact, then it should be a free surface.
+  bool _openFreeSurf;
+
   /// Minimum resolvable value accounting for roundoff errors
   PylithScalar _zeroTolerance;
 
-  /// Database for initial tractions.
-  spatialdata::spatialdb::SpatialDB* _dbInitialTract;
+  /// Prescribed traction variation.
+  TractPerturbation* _tractPerturbation;
 
   /// To identify constitutive model
   friction::FrictionModel* _friction;

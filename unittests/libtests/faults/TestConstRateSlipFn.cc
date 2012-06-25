@@ -240,59 +240,6 @@ pylith::faults::TestConstRateSlipFn::testSlip(void)
 } // testSlip
 
 // ----------------------------------------------------------------------
-// Test slipIncr().
-void
-pylith::faults::TestConstRateSlipFn::testSlipIncr(void)
-{ // testSlipIncr
-  const PylithScalar slipRateE[] = { 0.1, 0.2, 
-			       0.3, 0.4 };
-  const PylithScalar slipTimeE[] = { 1.2, 1.3 };
-  const PylithScalar originTime = 1.064;
-
-  topology::Mesh mesh;
-  topology::SubMesh faultMesh;
-  ConstRateSlipFn slipfn;
-  _initialize(&mesh, &faultMesh, &slipfn, originTime);
-
-  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
-  CPPUNIT_ASSERT(0 != cs);
-
-  const int spaceDim = cs->spaceDim();
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  topology::Field<topology::SubMesh> slip(faultMesh);
-  slip.newSection(vertices, spaceDim);
-  slip.allocate();
-
-  const PylithScalar t0 = 1.234;
-  const PylithScalar t1 = 3.635;
-  slipfn.slipIncr(&slip, originTime+t0, originTime+t1);
-
-  const PylithScalar tolerance = 1.0e-06;
-  int iPoint = 0;
-  const ALE::Obj<RealSection>& slipSection = slip.section();
-  CPPUNIT_ASSERT(!slipSection.isNull());
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++iPoint) {
-    const int fiberDim = slipSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != vals);
-
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const PylithScalar tRef = (slipTimeE[iPoint] > t0) ? slipTimeE[iPoint] : t0;
-      const PylithScalar slipE = 
-	slipRateE[iPoint*spaceDim+iDim] * (t1 - tRef);
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
-    } // for
-  } // for
-} // testSlipIncr
-
-// ----------------------------------------------------------------------
 // Initialize ConstRateSlipFn.
 void
 pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,

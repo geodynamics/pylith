@@ -35,6 +35,7 @@ def suite():
   from TestDislocation import TestDislocation
   suite.addTest(unittest.makeSuite(TestDislocation))
 
+  # Not complete
   ##from TestDislocation2 import TestDislocation2
   ##suite.addTest(unittest.makeSuite(TestDislocation2))
 

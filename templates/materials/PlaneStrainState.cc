@@ -25,7 +25,7 @@
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -147,8 +147,8 @@ contrib::materials::PlaneStrainState::~PlaneStrainState(void)
 // Compute parameters from values in spatial database.
 void
 contrib::materials::PlaneStrainState::_dbToProperties(
-				double* const propValues,
-                                const pylith::double_array& dbValues)
+				PylithScalar* const propValues,
+                                const pylith::scalar_array& dbValues)
 { // _dbToProperties
   // Check consistency of arguments
   assert(0 != propValues);
@@ -156,9 +156,9 @@ contrib::materials::PlaneStrainState::_dbToProperties(
   assert(_PlaneStrainState::numDBProperties == numDBValues);
 
   // Extract values from array using our defined indices.
-  const double density = dbValues[db_density];
-  const double vs = dbValues[db_vs];
-  const double vp = dbValues[db_vp];
+  const PylithScalar density = dbValues[db_density];
+  const PylithScalar vs = dbValues[db_vs];
+  const PylithScalar vp = dbValues[db_vp];
  
   // Check for reasonable values. If user supplied unreasonable values
   // throw an exception.
@@ -174,8 +174,8 @@ contrib::materials::PlaneStrainState::_dbToProperties(
 
   // Compute physical properties that we store from the user-supplied
   // physical properties.
-  const double mu = density * vs*vs;
-  const double lambda = density * vp*vp - 2.0*mu;
+  const PylithScalar mu = density * vs*vs;
+  const PylithScalar lambda = density * vp*vp - 2.0*mu;
 
   // Check for reasonable values. If values are unreasonable throw an
   // exception.
@@ -197,7 +197,7 @@ contrib::materials::PlaneStrainState::_dbToProperties(
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-contrib::materials::PlaneStrainState::_nondimProperties(double* const values,
+contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const values,
 							 const int nvalues) const
 { // _nondimProperties
   // Check consistency of arguments.
@@ -207,8 +207,8 @@ contrib::materials::PlaneStrainState::_nondimProperties(double* const values,
 
   // Get scales needed to nondimensional parameters from the
   // Nondimensional object.
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   // Use the Nondimensional::nondimensionalize() function to
   // nondimensionalize the quantities using the appropriate scale.
@@ -223,7 +223,7 @@ contrib::materials::PlaneStrainState::_nondimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-contrib::materials::PlaneStrainState::_dimProperties(double* const values,
+contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   // Check consistency of arguments
@@ -233,8 +233,8 @@ contrib::materials::PlaneStrainState::_dimProperties(double* const values,
 
   // Get scales needed to dimensional parameters from the
   // Nondimensional object.
-  const double densityScale = _normalizer->densityScale();
-  const double pressureScale = _normalizer->pressureScale();
+  const PylithScalar densityScale = _normalizer->densityScale();
+  const PylithScalar pressureScale = _normalizer->pressureScale();
 
   // Use the Nondimensional::dimensionalize() function to
   // dimensionalize the quantities using the appropriate scale.
@@ -249,10 +249,10 @@ contrib::materials::PlaneStrainState::_dimProperties(double* const values,
 // ----------------------------------------------------------------------
 // Compute density at location from properties.
 void
-contrib::materials::PlaneStrainState::_calcDensity(double* const density,
-						    const double* properties,
+contrib::materials::PlaneStrainState::_calcDensity(PylithScalar* const density,
+						    const PylithScalar* properties,
 						    const int numProperties,
-						    const double* stateVars,
+						    const PylithScalar* stateVars,
 						    const int numStateVars)
 { // calcDensity
   // Check consistency of arguments.
@@ -270,17 +270,17 @@ contrib::materials::PlaneStrainState::_calcDensity(double* const density,
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties.
 void
-contrib::materials::PlaneStrainState::_calcStress(double* const stress,
+contrib::materials::PlaneStrainState::_calcStress(PylithScalar* const stress,
 						   const int stressSize,
-						   const double* properties,
+						   const PylithScalar* properties,
 						   const int numProperties,
-						   const double* stateVars,
+						   const PylithScalar* stateVars,
 						   const int numStateVars,
-						   const double* totalStrain,
+						   const PylithScalar* totalStrain,
 						   const int strainSize,
-						   const double* initialStress,
+						   const PylithScalar* initialStress,
 						   const int initialStressSize,
-						   const double* initialStrain,
+						   const PylithScalar* initialStrain,
 						   const int initialStrainSize,
 						   const bool computeStateVars)
 { // _calcStress
@@ -299,20 +299,20 @@ contrib::materials::PlaneStrainState::_calcStress(double* const stress,
   assert(_PlaneStrainState::tensorSize == initialStrainSize);
 
   // Extract the material properties from the properties array.
-  const double density = properties[p_density];
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
 
   // Compute a convenient constant.
-  const double mu2 = 2.0*mu;
+  const PylithScalar mu2 = 2.0*mu;
 
   // Compute the current strains accounting for the initial strain.
-  const double e11 = totalStrain[0] - initialStrain[0];
-  const double e22 = totalStrain[1] - initialStrain[1];
-  const double e12 = totalStrain[2] - initialStrain[2];
+  const PylithScalar e11 = totalStrain[0] - initialStrain[0];
+  const PylithScalar e22 = totalStrain[1] - initialStrain[1];
+  const PylithScalar e12 = totalStrain[2] - initialStrain[2];
 
   // Compute another convenient constant.
-  const double s12 = lambda * (e11 + e22);
+  const PylithScalar s12 = lambda * (e11 + e22);
 
   // Compute the stresses and store them in the stress array.
   stress[0] = s12 + mu2*e11 + initialStress[0];
@@ -324,17 +324,17 @@ contrib::materials::PlaneStrainState::_calcStress(double* const stress,
 // Compute elastic constants at location from properties.
 void
 contrib::materials::PlaneStrainState::_calcElasticConsts(
-					     double* const elasticConsts,
+					     PylithScalar* const elasticConsts,
 					     const int numElasticConsts,
-					     const double* properties,
+					     const PylithScalar* properties,
 					     const int numProperties,
-					     const double* stateVars,
+					     const PylithScalar* stateVars,
 					     const int numStateVars,
-					     const double* totalStrain,
+					     const PylithScalar* totalStrain,
 					     const int strainSize,
-					     const double* initialStress,
+					     const PylithScalar* initialStress,
 					     const int initialStressSize,
-					     const double* initialStrain,
+					     const PylithScalar* initialStrain,
 					     const int initialStrainSize)
 { // calcElasticConsts
   // Check consistency of arguments.
@@ -352,13 +352,13 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
   assert(_PlaneStrainState::tensorSize == initialStrainSize);
  
   // Extract the material properties from the properties array.
-  const double density = properties[p_density];
-  const double mu = properties[p_mu];
-  const double lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
 
   // Compute a couple convenient constants.
-  const double mu2 = 2.0 * mu;
-  const double lambda2mu = lambda + mu2;
+  const PylithScalar mu2 = 2.0 * mu;
+  const PylithScalar lambda2mu = lambda + mu2;
    
   // Compute the elastic constants and store them in the elastic
   // constants array.
@@ -372,7 +372,7 @@ contrib::materials::PlaneStrainState::_calcElasticConsts(
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 contrib::materials::PlaneStrainState::stableTimeStepImplicit(
 				    const pylith::topology::Mesh& mesh) {
   // Override the ElasticMaterial::stableTimeStepImplicit() function
@@ -380,39 +380,40 @@ contrib::materials::PlaneStrainState::stableTimeStepImplicit(
   // ) with an optimized calculation of the stable time step. This is
   // possible because the stable time step for an elastic material is
   // infinite, so we can simply return a very large number.
-  return pylith::PYLITH_MAXDOUBLE;
+  return pylith::PYLITH_MAXSCALAR;
 }
 
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
-double
+PylithScalar
 contrib::materials::PlaneStrainState::_stableTimeStepImplicit(
-				     const double* properties,
+				     const PylithScalar* properties,
 				     const int numProperties,
-				     const double* stateVars,
+				     const PylithScalar* stateVars,
 				     const int numStateVars) const
-{ // _stableTimeStepImplicit Return the stable time step for this
-  // material given its current state. This function will never be
-  // called because we provide the stableTimeStepImplicit() function,
-  // but we implement this function to satisfy the requirements of an
-  // interface for an elastic material (which is defined by the
-  // Material and ElasticMaterial objects).
-  return pylith::PYLITH_MAXDOUBLE;
+{ // _stableTimeStepImplicit
+  //  Return the stable time step for this material given its current
+  // state. This function will never be called because we provide the
+  // stableTimeStepImplicit() function, but we implement this function
+  // to satisfy the requirements of an interface for an elastic
+  // material (which is defined by the Material and ElasticMaterial
+  // objects).
+  return pylith::PYLITH_MAXSCALAR;
 } // _stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
 // Update state variables.
 void
 contrib::materials::PlaneStrainState::_updateStateVars(
-					    double* const stateVars,
+					    PylithScalar* const stateVars,
 					    const int numStateVars,
-					    const double* properties,
+					    const PylithScalar* properties,
 					    const int numProperties,
-					    const double* totalStrain,
+					    const PylithScalar* totalStrain,
 					    const int strainSize,
-					    const double* initialStress,
+					    const PylithScalar* initialStress,
 					    const int initialStressSize,
-					    const double* initialStrain,
+					    const PylithScalar* initialStrain,
 					    const int initialStrainSize)
 { // _updateStateVars
   // Check consistency of arguments.

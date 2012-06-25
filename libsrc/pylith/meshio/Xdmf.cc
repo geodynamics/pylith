@@ -89,7 +89,9 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
   int cellDim = 0;
   h5.readAttribute("/topology/cells", "cell_dim", (void*)&cellDim, 
 		  H5T_NATIVE_INT);
-  if (1 == cellDim && 2 == numCorners)
+  if (0 == cellDim && 1 == numCorners)
+    cellType = "Polyvertex";
+  else if (1 == cellDim && 2 == numCorners)
     cellType = "Polyline";
   else if (2 == cellDim && 3 == numCorners)
     cellType = "Triangle";

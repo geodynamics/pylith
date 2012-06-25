@@ -36,16 +36,18 @@ nobase_pkgpyexec_PYTHON = \
 	faults/BruneSlipFn.py \
 	faults/ConstRateSlipFn.py \
 	faults/EqKinSrc.py \
-	faults/Fault.py \
-	faults/FaultCohesive.py \
-	faults/FaultCohesiveKin.py \
-	faults/FaultCohesiveDyn.py \
-	faults/FaultCohesiveTract.py \
 	faults/LiuCosSlipFn.py \
 	faults/SingleRupture.py \
 	faults/SlipTimeFn.py \
 	faults/StepSlipFn.py \
 	faults/TimeHistorySlipFn.py \
+	faults/TractPerturbation.py \
+	faults/Fault.py \
+	faults/FaultCohesive.py \
+	faults/FaultCohesiveKin.py \
+	faults/FaultCohesiveDyn.py \
+	faults/FaultCohesiveImpulses.py \
+	faults/FaultCohesiveTract.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \
@@ -85,6 +87,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaxwellIsotropic3D.py \
 	materials/MaxwellPlaneStrain.py \
 	materials/PowerLaw3D.py \
+	materials/PowerLawPlaneStrain.py \
 	materials/DruckerPrager3D.py \
 	materials/DruckerPragerPlaneStrain.py \
 	meshio/__init__.py \
@@ -108,6 +111,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputFaultDyn.py \
+	meshio/OutputFaultImpulses.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \
 	meshio/OutputSolnSubset.py \
@@ -145,6 +149,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/SolverNonlinear.py \
 	problems/SolverLumped.py \
 	problems/TimeDependent.py \
+	problems/GreensFns.py \
 	problems/TimeStep.py \
 	problems/TimeStepAdapt.py \
 	problems/TimeStepUniform.py \

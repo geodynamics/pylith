@@ -15,10 +15,10 @@
 \language english
 \language_package default
 \inputencoding latin1
-\fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
+\fontencoding T1
+\font_roman times
+\font_sans helvet
+\font_typewriter courier
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
@@ -136,7 +136,7 @@ PyLith User Manual
 \begin_inset Newline newline
 \end_inset
 
-Version 1.6.1
+Version 1.7.1
 \end_layout
 
 \begin_layout Date
@@ -158,7 +158,7 @@ today
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -672,6 +672,23 @@ Journal of Geophysical Research
 93
 \shape default
 , 13,609-13,617.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Menke, 1984"
+key "Menke:1984"
+
+\end_inset
+
+Menke, W.
+ (1984), 
+\shape italic
+Geophysical Data Analysis: Discrete Inverse Theory
+\shape default
+, Academic Press, Inc., Orlando, 260 pp.
 \end_layout
 
 \begin_layout Bibliography

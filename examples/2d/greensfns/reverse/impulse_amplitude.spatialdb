@@ -1,0 +1,24 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of slip on the
+// fault surface for the forward problem.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  slip
+  value-units =  m
+  num-locs = 2
+  data-dim = 1 // Data is specified along a line.
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
+    space-dim = 2
+  } // cs-data
+} // SimpleDB
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) slip (m)
+0.0  +18.0   -1.0
+0.0  +18.1    0.0

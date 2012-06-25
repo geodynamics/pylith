@@ -1,3 +1,9 @@
+**********************************************************************
+This example is obsolete. Please see examples/2d/greensfns for an
+up-to-date example.
+**********************************************************************
+
+
 In this directory are files that allow a primitive method of generating
 Green's functions using PyLith.  The impulses are specified amounts of
 strike-slip applied on the vertices of a fault, and the responses are

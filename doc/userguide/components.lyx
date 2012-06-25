@@ -122,6 +122,18 @@ Time-dependent problem.
 \begin_layout Description
 
 \family typewriter
+GreensFns pylith.problems.GreensFns
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Static Green's function problem with slip impulses.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 Implicit pylith.problems.Implicit
 \family default
 
@@ -497,31 +509,6 @@ Linearly elastic 2-D bulk constitutive model with plane stress (
 \begin_layout Description
 
 \family typewriter
-MaxwellPlaneStrain pylith.materials.MaxwellPlaneStrain
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Linear Maxwell viscoelastic bulk constitutive model for plane strain problems.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-GenMaxwellPlaneStrain pylith.materials.GenMaxwellPlaneStrain
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Generalized Maxwell viscoelastic bulk constitutive model for plane strain
- problems.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
 ElasticIsotropic3D pylith.materials.ElasticIsotropic3D
 \family default
 
@@ -546,6 +533,18 @@ Linear Maxwell viscoelastic bulk constitutive model.
 \begin_layout Description
 
 \family typewriter
+MaxwellPlaneStrain pylith.materials.MaxwellPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Linear Maxwell viscoelastic bulk constitutive model for plane strain problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 GenMaxwellIsotropic3D pylith.materials.GenMaxwellIsotropic3D
 \family default
 
@@ -553,6 +552,19 @@ GenMaxwellIsotropic3D pylith.materials.GenMaxwellIsotropic3D
 \end_inset
 
 Generalized Maxwell viscoelastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+GenMaxwellPlaneStrain pylith.materials.GenMaxwellPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Generalized Maxwell viscoelastic bulk constitutive model for plane strain
+ problems.
 \end_layout
 
 \begin_layout Description
@@ -570,6 +582,18 @@ Power-law viscoelastic bulk constitutive model.
 \begin_layout Description
 
 \family typewriter
+PowerLawPlaneStrain pylith.materials.PowerLawPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Power-law viscoelastic bulk constitutive model for plane strain problems.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 DruckerPrage3D pylith.materials.DruckerPrager3D
 \family default
 
@@ -577,6 +601,18 @@ DruckerPrage3D pylith.materials.DruckerPrager3D
 \end_inset
 
 Drucker-Prager elastoplastic bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+DruckerPragePlaneStrain pylith.materials.DruckerPragerPlaneStrain
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Drucker-Prager elastoplastic bulk constitutive model for plane strain problems.
 \end_layout
 
 \begin_layout Description
@@ -701,6 +737,19 @@ Fault surface with dynamic (friction) slip implemented using cohesive elements.
 \begin_layout Description
 
 \family typewriter
+FaultCohesiveImpulses pylith.faults.FaultCohesive
+\family default
+Impulses
+\begin_inset Newline newline
+\end_inset
+
+Fault surface with Green's functions slip impulses implemented using cohesive
+ elements.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 EqKinSrc pylith.faults.EqKinSrc
 \family default
 
@@ -782,6 +831,20 @@ TimeHistorySlipFn pylith.faults.TimeHistorySlipFn
 \end_inset
 
 Slip-time function with a user-defined slip time function.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+TractPerturbation pylith.faults.TractPerturbation
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Prescribed traction perturbation applied to fault with constitituve model
+ in additional to tractions from deformation (generally used to nucleate
+ a rupture).
 \end_layout
 
 \begin_layout Subsection
@@ -959,6 +1022,18 @@ Output manager for solution data over a submesh.
 \begin_layout Description
 
 \family typewriter
+OutputSolnPoints pylith.meshio.OutputSoln
+\family default
+Points
+\begin_inset Newline newline
+\end_inset
+
+Output manager for solution data at arbitrary points in the domain.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 OutputDirichlet pylith.meshio.OutputDirichlet
 \family default
 
@@ -1007,6 +1082,18 @@ Output manager for fault with dynamic (friction) earthquake ruptures.
 \begin_layout Description
 
 \family typewriter
+OutputFaultImpulses pylith.meshio.OutputFaultImpulses
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Output manager for fault with static slip impulses.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
 OutputMatElastic pylith.meshio.OutputMatElastic
 \family default
 
@@ -1026,6 +1113,22 @@ SingleOutput pylith.meshio.SingleOutput
 \end_inset
 
 Container with single output manger.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+PointsList pylith.meshio.PointsList
+\family default
+
+\begin_inset Newline newline
+\end_inset
+
+Manager for text file container points for 
+\family typewriter
+OutputSolnPoints
+\family default
+.
 \end_layout
 
 \begin_layout Description

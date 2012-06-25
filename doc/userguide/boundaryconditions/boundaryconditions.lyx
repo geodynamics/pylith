@@ -200,6 +200,12 @@ bc.z_neg = pylith.bc.Neumann ; change BC type to Neumann (traction)
 \end_layout
 
 \begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Time:Dependent:BC"
+
+\end_inset
+
 Time-Dependent Boundary Conditions
 \end_layout
 
@@ -492,7 +498,7 @@ vertex_info_fields
 \begin_layout Plain Layout
 
 \family typewriter
-initial-value
+displacement_initial
 \end_layout
 
 \end_inset
@@ -523,7 +529,7 @@ Initial displacement field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-rate-of-change
+velocity
 \end_layout
 
 \end_inset
@@ -554,7 +560,7 @@ Rate of change of displacement field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-rate-start-time
+velocity_start_time
 \end_layout
 
 \end_inset
@@ -585,7 +591,7 @@ Onset time in seconds for rate of change in displacement field
 \begin_layout Plain Layout
 
 \family typewriter
-change-in-value
+displacement_change
 \end_layout
 
 \end_inset
@@ -616,7 +622,7 @@ Amplitude of change in displacement field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-change-start-time
+change_start_time
 \end_layout
 
 \end_inset
@@ -1049,7 +1055,7 @@ cell_info_fields
 \begin_layout Plain Layout
 
 \family typewriter
-initial-value
+tracton_initial
 \end_layout
 
 \end_inset
@@ -1080,7 +1086,7 @@ Initial traction field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-rate-of-change
+traction_rate
 \end_layout
 
 \end_inset
@@ -1111,7 +1117,7 @@ Rate of change of traction field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-rate-start-time
+rate_start_time
 \end_layout
 
 \end_inset
@@ -1142,7 +1148,7 @@ Onset time in seconds for rate of change in traction field
 \begin_layout Plain Layout
 
 \family typewriter
-change-in-value
+traction_change
 \end_layout
 
 \end_inset
@@ -1173,7 +1179,7 @@ Amplitude of change in traction field in global coordinate system
 \begin_layout Plain Layout
 
 \family typewriter
-change-start-time
+change_start_time
 \end_layout
 
 \end_inset
@@ -2348,8 +2354,15 @@ reference "tab:fault:kin:output"
 
 \end_inset
 
- and ?? list the fields available for output for a fault with kinematic
- (prescribed) earthquake rupture and a fault with dynamic rupture, respectively.
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fault:dyn:output"
+
+\end_inset
+
+ list the fields available for output for a fault with kinematic (prescribed)
+ earthquake rupture and a fault with dynamic rupture, respectively.
  The fault coordinate system is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3065,7 +3078,7 @@ Slip vector at time step (in fault coordinate system) in meters
 \begin_layout Plain Layout
 
 \family typewriter
-tractions_change
+traction_change
 \end_layout
 
 \end_inset
@@ -3311,7 +3324,7 @@ Values in spatial database used as parameters in the step function slip
 \begin_layout Plain Layout
 
 \series bold
-Database
+Spatial database
 \end_layout
 
 \end_inset
@@ -3457,7 +3470,7 @@ slip_time
 \begin_layout Plain Layout
 
 \family typewriter
-slip_time
+slip-time
 \end_layout
 
 \end_inset
@@ -3632,7 +3645,7 @@ Values in spatial database used as parameters in the constant slip rate
 \begin_layout Plain Layout
 
 \series bold
-Database
+Spatial database
 \end_layout
 
 \end_inset
@@ -3778,7 +3791,7 @@ slip_time
 \begin_layout Plain Layout
 
 \family typewriter
-slip_time
+slip-time
 \end_layout
 
 \end_inset
@@ -3973,7 +3986,7 @@ Values in spatial database used as parameters in the Brune slip time function.
 \begin_layout Plain Layout
 
 \series bold
-Database
+Spatial database
 \end_layout
 
 \end_inset
@@ -4119,7 +4132,7 @@ rise_time
 \begin_layout Plain Layout
 
 \family typewriter
-rise_time
+rise-time
 \end_layout
 
 \end_inset
@@ -4128,11 +4141,7 @@ rise_time
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family typewriter
-Rise time 
-\family default
-(
+Rise time (
 \begin_inset Formula $t_{r})$
 \end_inset
 
@@ -4160,7 +4169,7 @@ slip_time
 \begin_layout Plain Layout
 
 \family typewriter
-slip_time
+slip-time
 \end_layout
 
 \end_inset
@@ -4384,7 +4393,8 @@ name "tab:Brune-slip-db-params-2"
 
 \end_inset
 
-Values in spatial database used as parameters in the Brune slip time function.
+Values in spatial database used as parameters in the time history slip time
+ function.
 \end_layout
 
 \end_inset
@@ -4407,7 +4417,7 @@ Values in spatial database used as parameters in the Brune slip time function.
 \begin_layout Plain Layout
 
 \series bold
-Database
+Spatial database
 \end_layout
 
 \end_inset
@@ -4553,7 +4563,7 @@ rise_time
 \begin_layout Plain Layout
 
 \family typewriter
-rise_time
+rise-time
 \end_layout
 
 \end_inset
@@ -4562,11 +4572,7 @@ rise_time
 \begin_inset Text
 
 \begin_layout Plain Layout
-
-\family typewriter
-Rise time 
-\family default
-(
+Rise time (
 \begin_inset Formula $t_{r})$
 \end_inset
 
@@ -4594,7 +4600,7 @@ slip_time
 \begin_layout Plain Layout
 
 \family typewriter
-slip_time
+slip-time
 \end_layout
 
 \end_inset
@@ -4844,8 +4850,19 @@ The components of the FaultCohesiveDyn object include
 \end_layout
 
 \begin_layout Description
-db_initial_tractions Spatial database specifying the initial tractions on
- the fault surface.
+open_free_surface If true, enforce traction free surface when the fault
+ opens, otherwise apply prescribed tractions even when the fault opens (default
+ is true); to mimic a dike opening use false.
+\end_layout
+
+\begin_layout Description
+zero_tolerance Tolerance for detecting zero values (default is 1.0e-10);
+ should be larger than absolute tolerance in KSP solves.
+\end_layout
+
+\begin_layout Description
+traction_perturbation Prescribed tractions on fault surface (generally used
+ for nucleating earthquake ruptures, default is none).
 \end_layout
 
 \begin_layout Description
@@ -4866,11 +4883,19 @@ s in a
 \end_layout
 
 \begin_layout LyX-Code
-db_initial_tractions = spatialdata.spatialdb.SimpleDB
+open_free_surface = True ; default
 \end_layout
 
 \begin_layout LyX-Code
-db_initial_tractions.iohandler.filename = tractions.spatialdb
+traction_perturbation = pylith.faults.TractPerturbation ; not default
+\end_layout
+
+\begin_layout LyX-Code
+traction_perturbation.db_initial = spatialdata.spatialdb.SimpleDB
+\end_layout
+
+\begin_layout LyX-Code
+traction_perturbation.db_initial.iohandler.filename = tractions.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
@@ -4886,16 +4911,27 @@ friction.db_properties.iohandler.filename = friction.spatialdb
 \end_layout
 
 \begin_layout Standard
-The initial tractions are specified using the same fault coordinate system
- as the slip directions in the kinematic ruptures.
+The prescribed traction perturbation is specified using the same fault coordinat
+e system as the slip directions in the kinematic ruptures.
+ The perurbation has the same functional form as the time-dependent boundary
+ conditions (and same spatial databases).
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:fault:cohesive:dyn:initial:tractions"
+reference "tab:fault:cohesive:dyn:prescribed:tractions"
 
 \end_inset
 
- gives the values in the spatial database for initial tractions.
+ gives the values in the spatial database for the prescribed tractions.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:fault:dyn:output"
+
+\end_inset
+
+ shows the fields available for output.
+ Additional fields are available depending on the fault constitutive model.
 \end_layout
 
 \begin_layout Standard
@@ -4915,11 +4951,11 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:fault:cohesive:dyn:initial:tractions"
+name "tab:fault:cohesive:dyn:prescribed:tractions"
 
 \end_inset
 
-Values in spatial databases for initial tractions.
+Values in spatial databases for prescribed tractions.
 \end_layout
 
 \end_inset
@@ -4930,12 +4966,24 @@ Values in spatial databases for initial tractions.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
+<lyxtabular version="3" rows="22" columns="4">
 <features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
 <row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Spatial database
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -4975,6 +5023,17 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
+db_initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
 1-D
 \end_layout
 
@@ -5002,6 +5061,15 @@ Normal traction (tension is positive)
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -5042,6 +5110,15 @@ Left-lateral shear traction (reverse shear for dipping faults)
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -5064,6 +5141,15 @@ Normal traction (tension is positive)
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -5104,6 +5190,15 @@ Left-lateral shear traction
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -5135,6 +5230,340 @@ Reverse shear traction
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-shear
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of left-lateral shear traction (reverse shear for dipping
+ faults)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-leftlateral
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of eft-lateral shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-shear-updip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of reverse shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-rate-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change of normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+all
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+rate-start-time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time at which rate of change begins
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+db_change
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1-D
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -5150,7 +5579,680 @@ traction-normal
 \begin_inset Text
 
 \begin_layout Plain Layout
-Normal traction (tension is positive)
+Change in normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-shear
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in left-lateral shear traction (reverse shear for dipping faults)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3-D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-leftlateral
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in left-lateral shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-shear-updip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in reverse shear traction
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction-normal
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in normal traction (tension is positive)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+all
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+change-start-time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time at which change begins
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+th_change
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+all
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+None
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time history for change
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fault:dyn:output"
+
+\end_inset
+
+Fields available in output of fault information.
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="3.5in">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Field Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Field
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vertex_info_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+normal_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Direction of fault normal in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+strike_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Direction of fault strike in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+dip_dir
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Up-dip direction on hanging wall in global coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction_initial
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial tractions (if specified) in fault coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rate of change in tractions (if specified) in fault coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+rate_start_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time at which rate of change begins (if specified)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction_change
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change in tractions (if specified) in fault coordinate system
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+change_start_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time at which change occurs (if specified)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+vertex_data_fields
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Slip vector at time step (in fault coordinate system) in meters
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+traction
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fault tractions (in fault coordinate system) in Pa
 \end_layout
 
 \end_inset
@@ -5172,7 +6274,7 @@ Normal traction (tension is positive)
 Fault Constitutive Models
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:Fault-Constitutive-Models"
+name "sec:fault:constitutive:models"
 
 \end_inset
 
@@ -5181,7 +6283,7 @@ name "sub:Fault-Constitutive-Models"
 
 \begin_layout Standard
 PyLith provides four fault constitutive models.
- Future releases may contain additional models and a template is provided
+ Future releases may contain additional models, and a template is provided
  for you to construct your own (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5366,6 +6468,12 @@ Cohesive stress,
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:friction:slip:weakening"
+
+\end_inset
+
 Slip-Weakening Friction
 \end_layout
 
@@ -5397,6 +6505,50 @@ reference "tab:slip:weakening:properties:statevars"
 .
  As long as the fault is locked, the initial state variables are zero, so
  specifying the initial state variables for slip-weakening friction is rare.
+ The slip-weakening friction also includes a parameter, 
+\family typewriter
+force_healing
+\family default
+, to control healing.
+ In quasi-static simulations, one usually wants slip confined to a single
+ time step (
+\family typewriter
+force_healing
+\family default
+ = True), whereas in a dynamic simulation slip occurs over many time steps
+ (
+\family typewriter
+force_healing
+\family default
+ = False; default behavior) and fault healing is often neglected.
+ The properties include:
+\end_layout
+
+\begin_layout Description
+force_healing Flag indicating whether healing (cumalative slip state variable
+ reset to zero) is forced after every time step.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the rate and state friction component
+ in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+friction = pylith.friction.SlipWeakening ; Change friction model from the
+ default
+\end_layout
+
+\begin_layout LyX-Code
+friction.force_healing = False ; default value
 \end_layout
 
 \begin_layout Standard
@@ -5443,7 +6595,7 @@ Values in spatial databases for slip-weakening friction.
 \begin_layout Plain Layout
 
 \series bold
-Database
+Spatial database
 \end_layout
 
 \end_inset
@@ -5476,6 +6628,8 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_properties
 \end_layout
 
@@ -5616,6 +6770,8 @@ Cohesive stress,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_initial_state
 \end_layout
 
@@ -5988,11 +7144,17 @@ Elasped time of slip,
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:friction:rate:state:ageing"
+
+\end_inset
+
 Rate- and State-Friction with Ageing Law
 \end_layout
 
 \begin_layout Standard
-The Dietrich-Ruina rate and state friction model produces shear tractions
+The Dieterich-Ruina rate and state friction model produces shear tractions
  equal to the cohesive stress plus a contribution proportional to the fault
  normal traction that depends on a state variable,
 \begin_inset Formula 
@@ -6001,7 +7163,10 @@ T_{f}=\begin{cases}
 T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 0 & T_{n}>0
 \end{cases}\\
-\mu_{f}=a\sinh^{-1}\left(\frac{1}{2}\frac{V}{V_{0}}\exp\left(\frac{1}{a}\left(\mu_{0}+b\ln\left(\frac{V_{0}\theta}{L}\right)\right)\right)\right)\\
+\mu_{f}=\begin{cases}
+\mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{min}}\\
+\mu_{0}+a\ln\left(\frac{V_{min}}{V}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{min}}\right) & V<V_{min}
+\end{cases}\\
 \frac{d\theta}{dt}=1-\frac{V\theta}{L}
 \end{gather}
 
@@ -6012,6 +7177,10 @@ where
 \end_inset
 
  is slip rate, 
+\begin_inset Formula $V_{min}$
+\end_inset
+
+ is a minimum slip rate, 
 \begin_inset Formula $a$
 \end_inset
 
@@ -6028,15 +7197,31 @@ where
 \end_inset
 
  is a state variable.
- We have used the regularization of the coefficient of friction proposed
- by Ben-Zion and Rice 
+ With an interative solver in quasi-static simulations with a small, but
+ nonzero residual tolerance we never encounter zero slip rates in quasi-static
+ simulations.
+ Instead we want to avoid significant variations in the coefficient of friction
+ for slip rates on the same order as our residual tolerance.
+ We regularize the rate and state friction model by iposing a linearization
+ of the variation of the coefficient of friction with slip rate when the
+ slip rate drops below a minimum slip rate, 
+\begin_inset Formula $V_{min}$
+\end_inset
+
+ (
+\family typewriter
+min_slip_rate
+\family default
+ property with a default value of 1.0e-12).
+ Note that this is different than the popular inverse hypoerbolic sine regulariz
+ation proposed by Ben-Zion and Rice 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "BenZion:Rice:1997"
 
 \end_inset
 
- to permit zero slip rate.
+ to permit zero slip rates.
  Following Kaneko 
 \shape italic
 et al.
@@ -6076,6 +7261,42 @@ As the slip rate approaches zero, the first exponential term approaches
 \end_layout
 
 \begin_layout Standard
+The properties include:
+\end_layout
+
+\begin_layout Description
+min_slip_rate Slip rate at which linearization occurs, 
+\begin_inset Formula $V_{min}$
+\end_inset
+
+.
+ Should be about one order of magnitude larger than absolute tolerance in
+ solve.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties for the rate and state friction component
+ in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+friction = pylith.friction.RateStateAgeing ; Change friction model from the
+ default
+\end_layout
+
+\begin_layout LyX-Code
+friction.min_slip_rate = 1.0e-12 ; default value
+\end_layout
+
+\begin_layout Standard
 The spatial database files for the rate and state friction model properties
  and state variables specify the spatial variation of the fault constitutive
  model parameters given in Table 
@@ -6109,7 +7330,7 @@ name "tab:rate:state:ageing:properties:statevars"
 
 \end_inset
 
-Values in spatial databases for slip-weakening friction.
+Values in spatial databases for Dieterich-Ruina rate-state friction.
 \end_layout
 
 \end_inset
@@ -6427,6 +7648,83 @@ State variable,
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:fault:cohesive:impulses"
+
+\end_inset
+
+Slip Impulses for Green's Functions
+\end_layout
+
+\begin_layout Standard
+Computing static Green's functions using the GreensFns problem requires
+ a specialized fault implementation, FaultCohesiveImpulses, to setup the
+ slip impulses.
+ The parameters controlling the slip impulses include the components involved
+ (lateral, reverse, and/or fault opening) and the amplitude of the pulses
+ (e.g., selecting a subset of a fault or including a spatial variation).
+ The GreensFns properties and facilities include:
+\end_layout
+
+\begin_layout Description
+threshold Threshold for non-zero amplitude; impulses will only be generated
+ at locations on the fault where the amplitude excees this threshold.
+\end_layout
+
+\begin_layout Description
+impulse_dof Array of components associated with impulses, e.g., [0, 1] for
+ slip involving the lateral and up-dip components.
+\end_layout
+
+\begin_layout Description
+db_impulse_amplitude Spatial database for amplitude of slip impulse (scalar
+ field).
+ Default is SimpleDB.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties and facilities for FaultCohesiveImpulses
+ in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces]
+\end_layout
+
+\begin_layout LyX-Code
+fault = pylith.faults.FaultCohesiveImpulses ; Change from the default
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.interfaces.fault]
+\end_layout
+
+\begin_layout LyX-Code
+threshold = 1.0e-6*m ; default
+\end_layout
+
+\begin_layout LyX-Code
+impulse_dof = [0] ; lateral slip-only
+\end_layout
+
+\begin_layout LyX-Code
+db_impulse_amplitude.iohandler.filename = myimpulse.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db_impulse_amplitude.label = Impulse amplitude
 \end_layout
 
 \begin_layout Section

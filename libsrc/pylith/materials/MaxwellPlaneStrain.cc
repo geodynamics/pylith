@@ -149,7 +149,7 @@ pylith::materials::MaxwellPlaneStrain::MaxwellPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
   _viscousStrain.resize(4);
 } // constructor
 

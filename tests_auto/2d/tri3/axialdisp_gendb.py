@@ -64,10 +64,10 @@ class GenerateDB(object):
             'data_dim': 2,
             'values': [{'name': "displacement-x",
                         'units': "m",
-                        'data': numpy.ravel(disp[:,0])},
+                        'data': numpy.ravel(disp[0,:,0])},
                        {'name': "displacement-y",
                         'units': "m",
-                        'data': numpy.ravel(disp[:,1])}]}
+                        'data': numpy.ravel(disp[0,:,1])}]}
 
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     io = SimpleIOAscii()

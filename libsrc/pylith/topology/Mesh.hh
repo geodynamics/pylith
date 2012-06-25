@@ -179,6 +179,12 @@ public :
    */
   const MPI_Comm comm(void) const;
     
+  /** Get MPI rank.
+   *
+   * @returns MPI rank.
+   */
+  int commRank(void) const;
+    
   /** Initialize the finite-element mesh.
    *
    * @param normalizer Nondimensionalizer.

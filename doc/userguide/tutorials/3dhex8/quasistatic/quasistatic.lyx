@@ -74,7 +74,7 @@ name "sec:Tutorial-3d-hex8-quasistatic"
 
 \end_inset
 
-Quasi-static Examples
+Quasi-Static Examples
 \end_layout
 
 \begin_layout Standard
@@ -231,14 +231,14 @@ step04.cfg
  the y-directions on the same faces, yielding a left-lateral sense of movement.
  The bottom (negative z) boundary is held fixed in the z-direction.
  We also use a Maxwell viscoelastic material for the lower crust, and the
- simulation is run for 200 years using a constant time step size of 20 years.
+ simulation is run for 200 years using a constant time-step size of 20 years.
  The default time stepping behavior is 
 \family typewriter
 TimeStepUniform
 \family default
 .
  We retain that behavior for this problem and provide the total simulation
- time and the time step size:
+ time and the time-step size:
 \end_layout
 
 \begin_layout LyX-Code
@@ -652,7 +652,7 @@ name "fig:step04-displ-t200"
 \end_layout
 
 \begin_layout Subsubsection
-Step05 - Time-varying Dirichlet and Neumann Boundary Conditions
+Step05 - Time-Varying Dirichlet and Neumann Boundary Conditions
 \end_layout
 
 \begin_layout Standard
@@ -716,7 +716,7 @@ UniformDB
 \end_layout
 
 \begin_layout LyX-Code
-# Fist specify a UniformDB for the initial tractions, along with the values.
+# First specify a UniformDB for the initial tractions, along with the values.
 \end_layout
 
 \begin_layout LyX-Code
@@ -918,7 +918,7 @@ The
 step06.cfg
 \family default
  file defines a problem with Dirichlet (displacement) boundary conditions
- corresponding to zero x and y-displacements applied on the negative and
+ corresponding to zero x- and y-displacements applied on the negative and
  positive x-faces and a vertical fault that includes multiple earthquake
  ruptures as well as steady fault creep.
  The upper (locked) portion of the fault has 4 m of left-lateral slip every
@@ -948,24 +948,24 @@ TimeStepUniform
 TimeStepAdapt
 \family default
 .
- For adaptive time stepping, we provide the maximum permissible time step
+ For adaptive time stepping, we provide the maximum permissible time-step
  size, along with a stability factor.
- The stability factor controls the time step size relative to the stable
- time step size provided by the different materials in the model.
+ The stability factor controls the time-step size relative to the stable
+ time-step size provided by the different materials in the model.
  A 
 \family typewriter
 stability_factor
 \family default
- of 1.0 means we should use the stable time step size, while a 
+ of 1.0 means we should use the stable time-step size, while a 
 \family typewriter
 stability_factor
 \family default
- greater than 1.0 means we want to use a smaller time step size.
+ greater than 1.0 means we want to use a smaller time-step size.
  A 
 \family typewriter
 stability_factor
 \family default
- less than 1.0 allows time step sizes greater than the stable time step size,
+ less than 1.0 allows time-step sizes greater than the stable time-step size,
  which may provide inaccurate results.
  The adaptive time stepping information is provided as:
 \end_layout
@@ -1386,7 +1386,7 @@ origin_time
  (if any).
  Since there are multiple earthquake sources of different types, there are
  a number of additional fault information fields available for output.
- We add these additional fields be output to the fault information file:
+ We add these additional fields' output to the fault information file:
 \end_layout
 
 \begin_layout LyX-Code
@@ -1408,9 +1408,9 @@ slip_time_two,slip_time_three]
 \begin_layout Standard
 This additional information will be contained in file 
 \family typewriter
-step06-fault_info.
+step06-fault_info.h5
 \family default
-h5.
+.
  It will contain final slip information for each earthquake source along
  with slip time information.
  When we have run the simulation, the output HDF5 and Xdmf files will be
@@ -1483,9 +1483,13 @@ Step07 - Dirichlet Velocity Boundary Conditions with Time-Dependent Kinematic
 \end_layout
 
 \begin_layout Standard
-In step07 we add velocity boundary conditions in the positive and negative
- y-directions on the positive and negative x-faces, so that the external
- boundaries keep pace with the average fault slip.
+In 
+\family typewriter
+step07
+\family default
+ we add velocity boundary conditions in the positive and negative y-directions
+ on the positive and negative x-faces, so that the external boundaries keep
+ pace with the average fault slip.
  This problem is nearly identical to the strike-slip fault model of Savage
  and Prescott 
 \begin_inset CommandInset citation
@@ -1593,13 +1597,17 @@ db_rate.data = [0.0*cm/year,-1.0*cm/year,0.0*year]
 \end_layout
 
 \begin_layout Standard
-The fault definition information is identical to example step06.
+The fault definition information is identical to example 
+\family typewriter
+step06
+\family default
+.
  In previous examples, we have just used the default output for the domain
  and subdomain (ground surface), which includes the displacements.
  In many cases, it is also useful to include the velocities.
  PyLith provides this information, computing the velocities for the current
  time step as the difference between the current displacements and the displacem
-ents from the previous time step, divided by the time step size.
+ents from the previous time step, divided by the time-step size.
  This is more accurate than computing the velocities from the displacement
  field output that has been decimated in time.
  We can obtain this information by explicitly requesting it in 
@@ -1788,7 +1796,11 @@ status open
 
 \begin_layout Plain Layout
 Displacement field (color contours) and velocity field (vectors) for example
- step07 at t = 300 years visualized using ParaView.
+ 
+\family typewriter
+step07
+\family default
+ at t = 300 years visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed velocities.
 \begin_inset CommandInset label
@@ -1827,8 +1839,11 @@ The
 \family typewriter
 step08.cfg
 \family default
- file defines a problem that is identical to example step07, except the
- the lower crust is composed of a power-law viscoelastic material.
+ file defines a problem that is identical to example 
+\family typewriter
+step07
+\family default
+, except the the lower crust is composed of a power-law viscoelastic material.
  Since the material behavior is now nonlinear, we must use the nonlinear
  solver:
 \end_layout
@@ -1902,7 +1917,7 @@ reference "sub:Power-Law-Maxwell-Viscoelastic"
 \end_inset
 
 ) do not generally correspond to the values provided in laboratory results.
- PyLith include a utility code, 
+ PyLith includes a utility code, 
 \family typewriter
 powerlaw_gendb.py
 \family default
@@ -2187,7 +2202,11 @@ status open
 
 \begin_layout Plain Layout
 The XY-component of strain (color contours) and displacement field (vectors)
- for example step08 at t = 150 years visualized using ParaView.
+ for example 
+\family typewriter
+step08
+\family default
+ at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
 step08-lower_crust.xmf
@@ -2229,13 +2248,20 @@ Step09 - Dirichlet Velocity Boundary Conditions with Time-Dependent Kinematic
 \begin_layout Standard
 In this example we use a Drucker-Prager elastoplastic rheology in the lower
  crust.
- As in example step08, the material behavior is nonlinear so we again use
- the nonlinear solver.
+ As in example 
+\family typewriter
+step08
+\family default
+, the material behavior is nonlinear so we again use the nonlinear solver.
  The material is elastoplastic, there is no inherent time-dependent response
- and the stable time step size for the material depends on the loading condition
+ and the stable time-step size for the material depends on the loading condition
 s.
- To avoid this, we set the maximum time step size to 5 years rather than
- the value of 10 years used in example step08:
+ To avoid this, we set the maximum time-step size to 5 years rather than
+ the value of 10 years used in example 
+\family typewriter
+step08
+\family default
+:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2337,8 +2363,12 @@ db_properties.db_B = spatialdata.spatialdb.SimpleDB
 \end_layout
 
 \begin_layout Standard
-As for the step08 example, we first define the properties that come from
- each spatial database and then provide the database filename:
+As for the 
+\family typewriter
+step08
+\family default
+ example, we first define the properties that come from each spatial database
+ and then provide the database filename:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2454,7 +2484,11 @@ status open
 
 \begin_layout Plain Layout
 The XY-component of strain (color contours) and displacement field (vectors)
- for example step09 at t = 150 years visualized using ParaView.
+ for example 
+\family typewriter
+step09
+\family default
+ at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
 step09-lower_crust.xmf

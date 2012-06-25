@@ -165,7 +165,7 @@ pylith::materials::DruckerPragerPlaneStrain::DruckerPragerPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -1241,10 +1241,8 @@ pylith::materials::DruckerPragerPlaneStrain::_updateStateVarsElastoplastic(
 
     PylithScalar plasticMult =  0.0;
     if (_allowTensileYield) {
-      plasticMult = std::min(sqrt(2.0) * d,
-			     plasticFac *
-			     (meanStrainFac * meanStrainPPTpdt + dFac * d -
-			      beta));
+      plasticMult = std::min(PylithScalar(sqrt(2.0) * d),
+			     plasticFac * (meanStrainFac * meanStrainPPTpdt + dFac * d - beta));
     } else {
       plasticMult = plasticFac *
 	(meanStrainFac * meanStrainPPTpdt + dFac * d - beta);

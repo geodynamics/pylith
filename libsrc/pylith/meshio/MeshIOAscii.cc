@@ -69,8 +69,7 @@ pylith::meshio::MeshIOAscii::deallocate(void)
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
-  MPI_Comm comm = _mesh->comm();
-  int rank = 0;
+  const int commRank = _mesh->commRank();
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -80,8 +79,7 @@ pylith::meshio::MeshIOAscii::_read(void)
   int_array cells;
   int_array materialIds;
 
-  MPI_Comm_rank(comm, &rank);
-  if (0 == rank) {
+  if (0 == commRank) {
     std::ifstream filein(_filename.c_str());
     if (!filein.is_open() || !filein.good()) {
       std::ostringstream msg;

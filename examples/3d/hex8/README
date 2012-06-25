@@ -1,4 +1,4 @@
-The examples in this directory form a step-by-step sequence of 19 problems,
+The examples in this directory form a step-by-step sequence of 20 problems,
 each building on the one before (for the most part). All of the examples
 use the same mesh, which was created by Cubit.  The mesh is 6 km x 6 km x 4
 km with linear hexahedral cells that have edges 1.0 km long.
@@ -68,6 +68,7 @@ step17: Gravitational body forces + finite strain with generalized Maxwell
         rheology (quasi-static)
 step18: Axial traction surface load on top surface (static)
 step19: Time dependent axial traction surface load on top surface (quasi-static)
+step20: Dike opening via initial tractions and fault constitutive model
 
 ----------------------------------------
 mesh directory
@@ -159,4 +160,8 @@ powerlaw directory
   distribution, and a set of points for which properties are
   desired. The powerlaw_gendb.py utility code is used from this
   directory to create spatialdb/mat_powerlaw.spatialdb.
+
+tractions_opening.spatialdb
+
+  Spatial database defining initial tractions for example step20.
 

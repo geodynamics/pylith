@@ -1,5 +1,5 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 0
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -156,24 +174,23 @@ Due to the difficulties in representing solutions in an infinite domain,
  The simplest meshes have uniform resolution (all cells have equal dimensions);
  however, such meshes typically do not provide accurate solutions since
  the resolution is too coarse in the region of interest.
- For that reason, we also tested several meshes where the mesh resolution
- decreases away from the center.
- In the problem description that follows, we will focus on the graded3 mesh
- (in 
-\family typewriter
-meshes/spbm_hex8_graded4_20km.exo.gz
-\family default
-), which provides reasonable results.
- It will first be necessary to unzip this mesh so that it may be used by
+ For that reason, we also tested meshes where the mesh resolution decreases
+ away from the center.
+ In the problem description that follows, we will focus on the hexahedral
+ mesh with finer discretization neear the fault (meshes/hex8_6.7km.exo.gz),
+ which provides a good match with the analytical solution.
+ It will first be necessary to gunzip this mesh so that it may be used by
  PyLith.
 \end_layout
 
 \begin_layout Description
 Domain The domain for this mesh spans the region
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula 
+\begin{gather*}
 -1000\leq x\leq1000\ km,\\
 -500\leq y\leq500\ km,\\
--400\ km\leq z\leq0.\end{gather*}
+-400\ km\leq z\leq0.
+\end{gather*}
 
 \end_inset
 
@@ -204,20 +221,22 @@ properties The material is a Poisson solid with a shear modulus (
 \begin_inset Formula $\eta$
 \end_inset
 
-) of 4.73364e19 Pa-s, yielding a relaxation time (
+) of 2.36682e+19 Pa-s, yielding a relaxation time (
 \begin_inset Formula $2\eta/\mu$
 \end_inset
 
-) of 100 years.
+) of 50 years.
 \end_layout
 
 \begin_layout Description
 Fault The fault is a vertical, left-lateral strike-slip fault.
  The strike is parallel to the y-direction at the center of the model:
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula 
+\begin{gather*}
 x=0\ km,\\
 -500\leq y\leq500\ km,\\
--40\ km\leq z\leq0.\end{gather*}
+-40\ km\leq z\leq0.
+\end{gather*}
 
 \end_inset
 
@@ -244,11 +263,11 @@ reference "fig:benchmark:savageprescott:geometry"
 ), half of the coseismic displacement and half of the steady creep is applied
  (see 
 \family typewriter
-parameters/finalslip_rupture.spatialdb
+finalslip.spatialdb
 \family default
  and 
 \family typewriter
-parameters/sliprate_creep.spatialdb
+creeprate.spatialdb
 \family default
 ).
 \end_layout
@@ -266,13 +285,10 @@ conditions On the bottom boundary, vertical displacements are set to zero,
 \end_layout
 
 \begin_layout Description
-Discretization For the graded3 mesh (
-\family typewriter
-meshes/spbm_hex8_graded4_20km.exo
-\family default
-), the resolution at the outer boundaries is 20 km.
+Discretization For the nonuniform hexahedral mesh, the resolution at the
+ outer boundaries is 20 km.
  An inner region is then put through one level of refinement, so that near
- the center of the mesh the resolution is 10 km.
+ the center of the mesh the resolution is 6.7 km.
  All meshes were generated with CUBIT.
 \end_layout
 
@@ -363,16 +379,7 @@ gunzip *.gz
 \end_layout
 
 \begin_layout Standard
-Alternatively, simply unzip the mesh you want to use (e.g., 
-\family typewriter
-meshes/spbm_hex8_graded3_20km.exo
-\family default
-).
- Change to the 
-\family typewriter
-parameters
-\family default
- directory.
+Alternatively, simply gunzip the mesh you want to use.
  There are a number of 
 \family typewriter
 .cfg
@@ -381,12 +388,8 @@ parameters
 \family typewriter
 pylithapp.cfg
 \family default
- file defining parameters common to all problems, and a 
-\family typewriter
-timedep.cfg
-\family default
- file defining fault slip behavior and output frequency.
- Each problem uses three 
+ file defining parameters common to all problems.
+ Each problem uses four 
 \family typewriter
 .cfg
 \family default
@@ -394,29 +397,20 @@ timedep.cfg
 \family typewriter
 pylithapp.cfg
 \family default
-, a mesh-specific file (e.g., 
+, 
 \family typewriter
-spbm_hex8_graded3_20km.cfg
+fieldsplit.cfg
 \family default
-), and 
+ (algrebraic multigrid preconditioner), a cell-specific file (e.g., 
 \family typewriter
-timedep.cfg
+hex8.cfg
 \family default
-.
- There are also scripts for each mesh.
- You can then run the problem either as
+), and a resolution specific file (e.g., hex8_6.7km.cfg).
+ You can then run the problem by typing
 \end_layout
 
 \begin_layout LyX-Code
-pylith spbm_hex8_graded3_20km.cfg timedep.cfg
-\end_layout
-
-\begin_layout Standard
-or as
-\end_layout
-
-\begin_layout LyX-Code
-sh ./spbm_hex8_graded3_20km.sh
+pylith hex8.cfg hex8_6.7km.cfg fieldsplit.cfg
 \end_layout
 
 \begin_layout Standard
@@ -424,67 +418,35 @@ This will run the problem for 10 earthquake cycles of 200 years each, using
  a time-step size of 10 years, for a total simulation time of 2000 years.
  Ground surface output occurs every 10 years, while all other outputs occur
  every 50 years.
- The graded3 benchmark requires  approximately 5 GB of disk space.
 \end_layout
 
 \begin_layout Standard
 Once the problem has run, results will be placed in the 
 \family typewriter
-results
+output
 \family default
- directory in the mesh-specific subdirectory.
+ directory.
  These results may be viewed directly with a package such as ParaView; however,
  to compare results to the analytical solution, some postprocessing is required.
- First, generate the analytical results by going to the 
+ First, generate the analytical results by running the 
 \family typewriter
-utils
-\family default
- directory and running the 
-\family typewriter
-savpres_ss.py
+calc_analytic.py
 \family default
  script.
- This will produce comma-delimited files for displacements and velocities
- (
+ This will produce files with displacements and velocities (
 \family typewriter
-savpres_displ.csv
+analytic_disp.txt
 \family default
-, 
+ and 
 \family typewriter
-savpres_vel.csv
+analytic_vel.txt
 \family default
-) that are easy to use with a plotting package.
- There is an additional script in the 
+) in the 
 \family typewriter
-utils
+output
 \family default
- directory (
-\family typewriter
-vtkdiff.py
-\family default
-) that computes velocities from PyLith displacement results.
- To generate velocity results, you can type, for example,
-\end_layout
-
-\begin_layout LyX-Code
-./vtkdiff.py vtkdiff_hex8_graded3_20km.cfg
-\end_layout
-
-\begin_layout Standard
-Results will be placed in the 
-\family typewriter
-results
-\family default
- directory for the appropriate model.
- This will create a set of VTK files that you can use with ParaView.
- You can generate profile results using ParaView (e.g., the ``Plot Over Line''
- filter).
- By loading the entire time series for the ground surface velocity results,
- it is possible to generate profile results for all time steps.
- For comparison with the analytical results, it is easiest to use a profile
- coincident with the x-axis that extends from x=0 to the right-hand side
- of the mesh.
- The profiles can also be saved as CSV files from ParaView.
+ directory that are easy to use with a plotting package, such as matplotlib
+ or Matlab.
 \end_layout
 
 \begin_layout Subsection
@@ -506,8 +468,7 @@ reference "fig:benchmark:savageprescott:solution"
  following the last earthquake.
  We find very good agreement between the analytical and numerical solutions,
  even for meshes with uniform refinement.
- This is a relatively recent benchmark, and we have not yet explored quantitativ
-e fits as a function of mesh resolution.
+ We have not yet explored quantitative fits as a function of mesh resolution.
  For this benchmark, it is also important to consider the distance of the
  boundary from the region of interest.
  Also note that the agreement between analytical and numerical solutions

@@ -199,7 +199,7 @@ pylith::materials::GenMaxwellIsotropic3D::GenMaxwellIsotropic3D(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)  
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
   _viscousStrain.resize(_GenMaxwellIsotropic3D::numMaxwellModels*_tensorSize);
 } // constructor
 

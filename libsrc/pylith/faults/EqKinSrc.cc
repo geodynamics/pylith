@@ -98,18 +98,6 @@ pylith::faults::EqKinSrc::slip(
 } // slip
 
 // ----------------------------------------------------------------------
-// Get slip increment on fault surface from time t0 to 1.
-void
-pylith::faults::EqKinSrc::slipIncr(
-			   topology::Field<topology::SubMesh>* const slipField,
-			   const PylithScalar t0,
-			   const PylithScalar t1)
-{ // slip
-  assert(0 != _slipfn);
-  _slipfn->slipIncr(slipField, t0, t1);
-} // slip
-
-// ----------------------------------------------------------------------
 // Get final slip.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::EqKinSrc::finalSlip(void) const

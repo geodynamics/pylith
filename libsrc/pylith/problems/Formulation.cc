@@ -39,7 +39,9 @@ pylith::problems::Formulation::Formulation(void) :
   _jacobianLumped(0),
   _fields(0),
   _customConstraintPCMat(0),
-  _isJacobianSymmetric(false)
+  _isJacobianSymmetric(false),
+  _splitFields(false),
+  _splitFieldComponents(false)
 { // constructor
 } // constructor
 
@@ -85,6 +87,22 @@ pylith::problems::Formulation::splitFields(void) const
 { // splitFields
   return _splitFields;
 } // splitFields
+
+// ----------------------------------------------------------------------
+// Set flag for splitting field components.
+void
+pylith::problems::Formulation::splitFieldComponents(const bool flag)
+{ // splitFieldComponents
+  _splitFieldComponents = flag;
+} // splitFieldComponents
+
+// ----------------------------------------------------------------------
+// Get flag for splitting field components.
+bool
+pylith::problems::Formulation::splitFieldComponents(void) const
+{ // splitFieldComponents
+  return _splitFieldComponents;
+} // splitFieldComponents
 
 // ----------------------------------------------------------------------
 // Set flag for using custom preconditioner for Lagrange constraints.
@@ -369,12 +387,21 @@ pylith::problems::Formulation::reformJacobianLumped(void)
 void
 pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec)
 { // constrainSolnSpace
-  assert(0 != tmpSolutionVec);
-  assert(0 != _fields);
+  assert(tmpSolutionVec);
+  assert(_fields);
+
+  topology::Field<topology::Mesh>& solution = _fields->solution();
+
+  if (!_fields->hasField("dispIncr adjust")) {
+    _fields->add("dispIncr adjust", "dispIncr_adjust");
+    topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+    adjust.cloneSection(solution);
+  } // for
+  topology::Field<topology::Mesh>& adjust = _fields->get("dispIncr adjust");
+  adjust.zero();
 
   // Update section view of field.
-  if (0 != tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
+  if (tmpSolutionVec) {
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
 
@@ -390,9 +417,11 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
     _submeshIntegrators[i]->constrainSolnSpace(_fields, _t, *_jacobian);
   } // for
 
+  adjust.complete();
+  solution += adjust;  
+
   // Update PETScVec of solution for changes to Lagrange multipliers.
-  if (0 != tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
+  if (tmpSolutionVec) {
     solution.scatterSectionToVector(*tmpSolutionVec);
   } // if
 } // constrainSolnSpace
