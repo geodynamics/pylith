@@ -428,8 +428,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Magnitude of tractions on the fault for example step10 visualized using
- ParaView.
+Magnitude of tractions on the fault for example 
+\family typewriter
+step10
+\family default
+ visualized using ParaView.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -581,8 +584,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Magnitude of tractions on the fault for example step10 visualized using
- ParaView.
+Magnitude of tractions on the fault for example 
+\family typewriter
+step10
+\family default
+ visualized using ParaView.
  Vectors of fault slip are also plotted.
  Note that PyLith outputs slip in the fault coordinate system, so we transform
  them to the global coordinate system using the Calculator in ParaView.
@@ -820,8 +826,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step12 at t = 200 years visualized using
- ParaView.
+Displacement field for example 
+\family typewriter
+step12
+\family default
+ at t = 200 years visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
@@ -977,8 +986,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step13 at t = 200 years visualized using
- ParaView.
+Displacement field for example 
+\family typewriter
+step13
+\family default
+ at t = 200 years visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
@@ -1172,8 +1184,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example step14 at t = 200 years visualized using
- ParaView.
+Displacement field for example 
+\family typewriter
+step14
+\family default
+ at t = 200 years visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
