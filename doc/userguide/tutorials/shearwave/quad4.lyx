@@ -601,7 +601,7 @@ reference "sec:fault:constitutive:models"
 \end_inset
 
 ).
- The evolution of the state variable uses the aging law.
+ The evolution of the state variable uses the ageing law.
  We set the fault constitutive model via
 \end_layout
 
