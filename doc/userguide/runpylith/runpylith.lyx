@@ -5044,7 +5044,7 @@ HDF5 files do not contain self-correcting features that allow a file to
 \family typewriter
 .dat
 \family default
-).
+.
  The HDF5 files include relative paths to the external data files, so these
  files can also be moved, but they, too, must be kept together in the same
  directory.
@@ -5128,7 +5128,7 @@ reference "sec:material:parameters"
 
 \end_inset
 
-for a table of component values for tensor output.
+ for a table of component values for tensor output.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5305,7 +5305,7 @@ pylithinfo
 \family typewriter
 --help-properties
 \family default
- command line arguments when running PyLith to check the parameters to make
+ command-line arguments when running PyLith to check the parameters to make
  sure PyLith is using the parameters you intended.
 \end_layout
 
@@ -5324,13 +5324,17 @@ Use the
 \family default
 , 
 \family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
 --petsc.ksp_converged_reason
 \family default
 , and 
 \family typewriter
 --petsc.snes_converged_reason
 \family default
- command line arguments (or set them in a parameter file) to view PyLith
+ command-line arguments (or set them in a parameter file) to view PyLith
  performance and monitor the convergence.
 \end_layout
 
@@ -5451,12 +5455,21 @@ This error occurs when trying to use the 32-bit linux binary on some 64-bit
  The workaround is:
 \end_layout
 
+\begin_deeper
 \begin_layout Enumerate
-Go to the lib/python2.6/site-packages directory.
+Go to the 
+\family typewriter
+lib/python2.6/site-packages
+\family default
+ directory.
 \end_layout
 
 \begin_layout Enumerate
-Unzip merlin-1.7-py2.6.egg (if it is a file and not a directory).
+Unzip 
+\family typewriter
+merlin-1.7-py2.6.egg
+\family default
+ (if it is a file and not a directory).
 \end_layout
 
 \begin_layout Enumerate
@@ -5464,15 +5477,28 @@ Go to the merlin directory.
 \end_layout
 
 \begin_layout Enumerate
-Edit __init__.py.
+Edit 
+\family typewriter
+__init__.py
+\family default
+.
  Replace line 308 plat = get_platform() with plat = "linux-i686"
 \end_layout
 
 \begin_layout Enumerate
-If merlin-1.7-py2.6.egg is a file, rezip merlin.
- Go to the site-packages directory and enter "zip -r merlin-1.7-py2.6.egg merlin".
+If 
+\family typewriter
+merlin-1.7-py2.6.egg
+\family default
+ is a file, rezip merlin.
+ Go to the site-packages directory and enter "
+\family typewriter
+zip -r merlin-1.7-py2.6.egg merlin
+\family default
+".
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -5497,7 +5523,7 @@ This usually occurs when the null space of the system Jacobian is nonzero,
  such as the case of a problem without Dirichlet boundary conditions on
  any boundary.
  If this arises when using the split fields and algebraic multigrid precondition
-ing and no additional Dirichlet boundary conditions are desired, then the
+ing, and no additional Dirichlet boundary conditions are desired, then the
  workaround is to revert to using the Additive Schwarz preconditioning without
  split fields as discussed in Section 
 \begin_inset CommandInset ref
@@ -5517,8 +5543,8 @@ PyLith crashes with a bus error.
 \begin_layout Quote
 This often indicates that PyLith is using incompatible versions of libraries.
  This can result from changing your environment variables after configuring
- or installing PyLith (when building from source) or errors in setting the
- environment variables (PATH, LD_LIBRARY_PATH, and PYTHONPATH).
+ or installing PyLith (when building from source) or from errors in setting
+ the environment variables (PATH, LD_LIBRARY_PATH, and PYTHONPATH).
  If the former case, simply reconfigure and rebuild PyLith.
  In the latter case, check your environment variables (order matters!) to
  make sure PyLith finds the desired directories before system directories.
@@ -5554,7 +5580,7 @@ reference "sec:Getting-Help-and"
 \family typewriter
 --petsc.start_in_debugger
 \family default
- command line argument:
+ command-line argument:
 \end_layout
 
 \begin_layout LyX-Code
@@ -5592,7 +5618,7 @@ Instead of actually running the problem, this causes PyLith to dump the
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 mpirun -np 1 /path/to/valgrind --log-file=valgrind-log  /path/to/mpinemesis
  --pyre-start [..lots of junk..]
 \end_layout
