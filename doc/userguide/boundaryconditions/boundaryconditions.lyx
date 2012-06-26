@@ -2484,7 +2484,8 @@ reference "fig:fault:cohesive:quad4"
  Furthermore, the Lagrange multiplier constraints correspond to forces required
  to impose the relative motions, so they are related to the change in stress
  on the fault surface associated with fault slip.
- If we write the algebraic system of equations we are solving in the form
+ If we write the algebraic system of equations associated with elasticity
+ in the form
 \begin_inset Formula 
 \begin{equation}
 \underline{A}\overrightarrow{u}=\overrightarrow{b}\,,
@@ -2492,7 +2493,8 @@ reference "fig:fault:cohesive:quad4"
 
 \end_inset
 
-then including the Lagrange multiplier constraints results in
+then adding in the Lagrange multiplier constraints associated with fault
+ slip leads to a new system of equations of the form 
 \begin_inset Formula 
 \begin{equation}
 \left[\begin{array}{cc}
@@ -6429,8 +6431,6 @@ Values in the spatial database for constant friction parameters.
 \begin_inset Text
 
 \begin_layout Plain Layout
-\noindent
-\align center
 
 \series bold
 Value
@@ -6456,7 +6456,6 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \family typewriter
 friction-coefficient
@@ -6484,7 +6483,6 @@ Coefficient of friction,
 \begin_inset Text
 
 \begin_layout Plain Layout
-\align center
 
 \family typewriter
 cohesion
