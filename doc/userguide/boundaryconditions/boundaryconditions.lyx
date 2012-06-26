@@ -7165,7 +7165,7 @@ T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 \end{cases}\\
 \mu_{f}=\begin{cases}
 \mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{min}}\\
-\mu_{0}+a\ln\left(\frac{V_{min}}{V}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{min}}\right) & V<V_{min}
+\mu_{0}+a\ln\left(\frac{V_{min}}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{min}}\right) & V<V_{min}
 \end{cases}\\
 \frac{d\theta}{dt}=1-\frac{V\theta}{L}
 \end{gather}
