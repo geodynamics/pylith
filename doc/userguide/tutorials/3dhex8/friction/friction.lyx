@@ -1096,7 +1096,7 @@ friction.db_properties = spatialdata.spatialdb.UniformDB
 \end_layout
 
 \begin_layout LyX-Code
-friction.db_properties.label = Rate Stete Ageing
+friction.db_properties.label = Rate State Ageing
 \end_layout
 
 \begin_layout LyX-Code
