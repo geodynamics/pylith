@@ -563,7 +563,7 @@ where
 \end_inset
 
 .
- Substituting into Equation 
+ Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eqn:momentum:index"
@@ -719,7 +719,7 @@ where
 \end_inset
 
 .
- Substituting into Equation 
+ Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eqn:momentum:vec"
@@ -1249,7 +1249,7 @@ Solution Method for Quasi-Static Problems
 \begin_layout Standard
 For brevity we outline the solution method for quasi-static problems using
  only index notation.
- In quasi-static problems we neglect the inertial terms, so Equation 
+ In quasi-static problems we neglect the inertial terms, so equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:elasticity:integral:discretized"
@@ -1564,7 +1564,7 @@ u_{i}(t+\Delta t)=u_{i}(t)+du_{i}(t),\\
 
 \end_inset
 
-Substituting into Equation 
+Substituting into equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:elasticity:integral:dynamic:t"
@@ -1604,7 +1604,7 @@ where
 \begin_inset Formula $A_{ij}^{mn}$
 \end_inset
 
- is an 
+ is a 
 \begin_inset Formula $nd$
 \end_inset
 
@@ -1633,14 +1633,14 @@ where
 \end_inset
 
  are vector space components.
- We consider the contributions associated with the fault in Section 
+ We consider the contributions associated with the fault in section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:fault"
 
 \end_inset
 
- and with absorbing boundaries is Section 
+ and with absorbing boundaries is section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:absorbing:boundaries"
@@ -1726,7 +1726,7 @@ The elasticity integral in the finite-element formulation includes additional
 \begin_inset Formula $\int_{V}S_{ij}\delta\varepsilon_{ij}\: dV$
 \end_inset
 
- in Equation 
+ in equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:elasticity:integral"
@@ -1842,7 +1842,7 @@ A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{,k}^{m}+(\sum_{r}a_{p}^{r}N_{,l}^{r})
 \end_inset
 
 The small strain formulation produces additional terms associated with the
- elastic constants and new a new term associated with the stress tensor.
+ elastic constants and a new term associated with the stress tensor.
 \end_layout
 
 \begin_layout Subsection
