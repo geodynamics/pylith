@@ -124,8 +124,8 @@ y easy scripting using the Python programming language.
  At present, mesh information may be provided using a simple ASCII file
  (PyLith mesh ASCII format) or imported from CUBIT or LaGriT, two widely-used
  meshing packages.
- The elements currently available include a linear bar in 1-D, linear triangles
- and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D.
+ The elements currently available include a linear bar in 1D, linear triangles
+ and quadrilaterals in 2D, and linear tetrahedra and hexahedra in 3D.
  Materials presently available include isotropic elastic, linear Maxwell
  viscoelastic, generalized Maxwell viscoelastic, power-law viscoelastic,
  and Drucker-Prager elastoplastic.

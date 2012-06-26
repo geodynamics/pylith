@@ -79,7 +79,7 @@ There are essentially three major inputs needed to run a problem with PyLith:
 A set of parameters describing the problem.
  These parameters describe the type of problem to be run, solver information,
  time-stepping information, boundary conditions, materials, etc.
- This information can be provided from the command-line or by using a 
+ This information can be provided from the command line or by using a 
 \family typewriter
 .cfg
 \family default
@@ -704,7 +704,7 @@ pylithapp.cfg
 \begin_layout Standard
 All of the example problems are set up using configuration files in the
  example directory, and specific problems are defined by including the appropria
-te configuration file on the command-line.
+te configuration file on the command line.
  Referring to the directory 
 \family typewriter
 examples/twocells/twohex8
@@ -729,8 +729,12 @@ sheardisp.cfg
 \end_layout
 
 \begin_layout Standard
-The settings in pylithapp.cfg will be read automatically, and additional
- settings are included by specifying one of the other files on the command-line:
+The settings in 
+\family typewriter
+pylithapp.cfg
+\family default
+ will be read automatically, and additional settings are included by specifying
+ one of the other files on the command line:
 \end_layout
 
 \begin_layout LyX-Code
@@ -1184,7 +1188,7 @@ MeshIOCubit
 \begin_layout Standard
 The MeshIOCubit object reads the NetCDF Exodus II files output from CUBIT.
  Beginning with CUBIT 11.0, the names of the nodesets are included in the
- Exodus II files and PyLith can use these nodeset names or revert to using
+ Exodus II files, and PyLith can use these nodeset names or revert to using
  the nodeset ids.
  The properties and facilities associated with the MeshIOCubit object are:
 \end_layout
@@ -1222,7 +1226,7 @@ The MeshIOLagrit object is used to read ASCII and binary GMV and PSET files
 \end_layout
 
 \begin_layout Description
-filename_gmv Name of GMV file.
+filename_gmv Name of the GMV file.
 \end_layout
 
 \begin_layout Description
@@ -1241,7 +1245,7 @@ io_int32 Flag indicating that PSET files use 32-bit integers (default is
 
 \begin_layout Description
 record_header_32bt Flag indicating FORTRAN record header is 32-bit (default
- is True)
+ is True).
 \end_layout
 
 \begin_layout Description
@@ -1253,7 +1257,7 @@ Distributor
 \end_layout
 
 \begin_layout Standard
-The distributor users a partitioner to compute which cells should be placed
+The distributor uses a partitioner to compute which cells should be placed
  on each processor, computes the overlap among the processors, and then
  distributes the mesh among the processors.
  The properties and facilities of the Distributor include:
@@ -1276,7 +1280,7 @@ chaco
 \begin_inset Quotes erd
 \end_inset
 
-, default is 
+; default is 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1380,10 +1384,10 @@ Refinement occurs after distribution of the mesh among processors.
  This allows one to run much larger simulations by (1) permitting the mesh
  generator to construct a mesh with a node spacing twice as large as that
  needed in the simulation and (2) operations performed in serial during
- the simulation setup phase, such as, adjusting the topology to insert cohesive
- cells and distribution of the mesh among processors uses this much smaller
+ the simulation setup phase, such as adjusting the topology to insert cohesive
+ cells and distribution of the mesh among processors, uses this much smaller
  coarse mesh.
- For 2D problems the global mesh refinement increases the maximum problem
+ For 2D problems, the global mesh refinement increases the maximum problem
  size by a factor of four, and for 3D problems it increases the maximum
  problem size by a factor of eight.
 \end_layout
@@ -1404,7 +1408,7 @@ The problem component specifies the basic parameters of the simulation,
 \family typewriter
 TimeDependent
 \family default
- for use in static, quasi-static, and dynamic simulations and 
+ for use in static, quasi-static, and dynamic simulations, and 
 \family typewriter
 GreensFns
 \family default
@@ -1442,7 +1446,7 @@ The properties for each material group are:
 \end_layout
 
 \begin_layout Description
-dimension Spatial dimension of the problem (default is 3)
+dimension Spatial dimension of the problem (default is 3).
 \end_layout
 
 \begin_layout Standard
@@ -1611,8 +1615,9 @@ reference "cha:Governing-Equations"
  specified using the FIATLagrange object, whereas the parameters for Simplex
  cells (lines, triangles, tetrahedra) are specified using the FIATSimplex
  object.
- Both objects use the same set of parameters and PyLith will setup the basis
- functions and quadrature scheme appropriately for the two families of cells.
+ Both objects use the same set of parameters, and PyLith will set up the
+ basis functions and quadrature scheme appropriately for the two families
+ of cells.
  The quadrature scheme and basis functions must be set for each material
  and boundary condition involving finite-element integrations (Dirichlet
  boundary conditions are constraints and do not involve integrations).
@@ -1730,7 +1735,7 @@ reference "tab:petsc:options:recommended"
 
 ).
  A more advanced set of solver settings that may provide better performance
- in many elasticity problems are given in Table 
+ in many elasticity problems is given in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:petsc:options:advanced"
@@ -1768,7 +1773,7 @@ Warning:
  
 \series default
 \color none
-These settings are only available if you build PETSc with Fortran enabled
+These settings are only available if you build PETSc with FORTRAN enabled
  and the ML package.
  These features are included in the PyLith binary packages.
 \end_layout
@@ -2309,6 +2314,8 @@ Additive Schwarz method.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 ksp_type
 \end_layout
 
@@ -2342,6 +2349,7 @@ GMRES method from Saad and Schultz.
 \begin_layout Plain Layout
 
 \family typewriter
+\size small
 sub_pc_factor_shift_type
 \end_layout
 
@@ -2486,7 +2494,6 @@ ksp_atol
 \begin_layout Plain Layout
 
 \shape italic
-\emph on
 1.0e-12
 \end_layout
 
@@ -2789,6 +2796,7 @@ Precondition fields separately.
 \begin_layout Plain Layout
 
 \family typewriter
+\size small
 fs_pc_fieldsplit_real_diagonal
 \end_layout
 
@@ -3280,27 +3288,39 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.timedependent.formulation]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 time_step = pylith.problems.TimeStepUniform
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 solver = pylith.problems.SolverLinear ; Nonlinear solver is pylith.problems.SolverNo
 nlinear
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 matrix_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 view_jacobian = false
 \end_layout
 
@@ -3312,7 +3332,7 @@ Numerical Damping in Explicit Time Stepping
 In explicit time-stepping formulations for elasticity, boundary conditions
  and fault slip can excite short waveform elastic waves that are not accurately
  resolved by the discretization.
- We use numerical damping via an artificial viscosity
+ We use numerical damping via an artificial viscosity 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Knopoff:Ni:2001,Day:Ely:2002"
@@ -3470,7 +3490,7 @@ total_time Time duration for simulation (default is 0.0 s).
 \end_layout
 
 \begin_layout Description
-start_time Start time for simulation (default is 0.0 s)
+start_time Start time for simulation (default is 0.0 s).
 \end_layout
 
 \begin_layout Description
@@ -3514,7 +3534,7 @@ Nonuniform, User-Specified Time Step
 \end_layout
 
 \begin_layout Standard
-The nonuniform, user-specified, time-step implementation allows the user
+The nonuniform, user-specified time-step implementation allows the user
  to specify the time steps in an ASCII file (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3538,7 +3558,7 @@ filename Name of file with time-step sizes.
 \end_layout
 
 \begin_layout Description
-loop_steps If true, cycle through time steps, otherwise keep using last
+loop_steps If true, cycle through time steps; otherwise keep using last
  time-step size for any time remaining.
 \end_layout
 
@@ -3552,10 +3572,14 @@ An example of setting the properties for nonuniform, user-specified time
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.formulation]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 time_step = pylith.problems.TimeStepUser ; Change the time step algorithm
 \end_layout
 
@@ -3564,18 +3588,26 @@ time_step = pylith.problems.TimeStepUser ; Change the time step algorithm
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.formulation.time_step]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 total_time = 1000.0*year
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 filename = timesteps.txt
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 loop_steps = false ; Default value
 \end_layout
 
@@ -3622,10 +3654,14 @@ An example of setting the properties for the automatic time step in a
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.formulation]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 time_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
 \end_layout
 
@@ -3634,22 +3670,32 @@ time_step = pylith.problems.TimeStepAdapt ; Change the time step algorithm
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.formulation.time_step]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 total_time = 1000.0*year
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 max_dt = 10.0*year
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 adapt_skip = 10 ; Default value
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 stability_factor = 2.0 ; Default value
 \end_layout
 
@@ -3715,10 +3761,14 @@ An example of setting the properties for the GreensFns problem in a
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 problem = pylith.problems.GreensFns ; Change problem type from the default
 \end_layout
 
@@ -3727,10 +3777,14 @@ problem = pylith.problems.GreensFns ; Change problem type from the default
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.greensfns]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 fault_id = 100 ; Default value
 \end_layout
 
@@ -4069,26 +4123,26 @@ pylithapp.cfg
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.values = [vp,vs,density] ; Set the names of the values in the
  database
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values
  in the database
 \end_layout
@@ -4410,7 +4464,7 @@ reference "sec:Spatialdata:TimeHistoryIO"
 
 \begin_layout Standard
 As in the other Pyre objects, spatial database objects contain parameters
- that can be set from the command line or using 
+ that can be set from the command line or by using 
 \family typewriter
 .cfg or .pml
 \family default
@@ -4706,7 +4760,7 @@ In many situations with recorded observations, one would like to extract
 OutputSolnPoints
 \family default
 , to interpolate the solution to arbitrary points.
- By default, the output manager will include the displaceent time histories
+ By default, the output manager will include the displacement time histories
  in the output.
  The locations are specified in a text file.
  In addition to the 
