@@ -475,9 +475,14 @@ key "BenZion:Rice:1997"
 Ben-Zion, Y.
  and J.R.
  Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
- solid, J.
- Geophys.
- Res., 102, 17,771–17,784.
+ solid, 
+\emph on
+Journal of Geophysical Research
+\shape italic
+\emph default
+, 102
+\shape default
+, 17,771–17,784.
 \end_layout
 
 \begin_layout Bibliography
@@ -562,9 +567,9 @@ Liu, P., R.J.
 Bull.
  Seismol.
  Soc.
- Am.
+ Am., 96
 \shape default
-, 96, 2118-2130.
+, 2118-2130.
 \end_layout
 
 \begin_layout Bibliography
@@ -584,7 +589,11 @@ Kaneko, Y., N.
 \shape italic
 Journal of Geophysical Research
 \shape default
-, 113, B09317, doi:10.1029/2007JB005553.
+,
+\shape italic
+ 113
+\shape default
+, B09317, doi:10.1029/2007JB005553.
 \end_layout
 
 \begin_layout Bibliography
@@ -620,9 +629,13 @@ Knopoff, L.
  and X.X.
  Ni (2001), Numerical instability at the edge of a dynamic fracture, 
 \emph on
-Geophysical Journal International, 
+Geophysical Journal International,
+\shape italic
+ 
 \emph default
-147(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
+147
+\shape default
+(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
 \end_layout
 
 \begin_layout Bibliography

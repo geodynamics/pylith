@@ -902,9 +902,15 @@ penalty_params.txt
 \end_layout
 
 \begin_layout LyX-Code
-../invert_slip.py --impulses=output/greensfns-fault.h5 --responses=output/greensfns-
-points.h5 --data=output/eqsim-points.h5 --penalty=penalty_params.txt --output=outpu
-t/slip_inverted.txt
+../invert_slip.py --impulses=output/greensfns-fault.h5
+\begin_inset Newline newline
+\end_inset
+
+--responses=output/greensfns-points.h5 --data=output/eqsim-points.h5
+\begin_inset Newline newline
+\end_inset
+
+--penalty=penalty_params.txt --output=output/slip_inverted.txt
 \end_layout
 
 \begin_layout Standard
@@ -935,6 +941,8 @@ plot_invresults.py
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 plot_invresults.py --solution=output/eqsim-fault.h5 --predicted=output/slip_invert
 ed.txt
 \end_layout

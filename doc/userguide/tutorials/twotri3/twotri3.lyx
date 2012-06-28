@@ -360,7 +360,11 @@ axialdisp.vtk
 
 \begin_layout Description
 pylithapp.timedependent.materials.material.output Gives the base filename for
- state variable output files (
+ state variable output files 
+\begin_inset Newline linebreak
+\end_inset
+
+(
 \family typewriter
 axialdisp-statevars.vtk
 \family default
@@ -562,9 +566,9 @@ pylithapp.timedependent.bc.x_pos Specifies the boundary conditions for the
  left side of the mesh, defining which degrees of freedom are being constrained
  (y only), giving the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twotri3.mesh
 \family default
@@ -719,7 +723,11 @@ twotri3.mesh
 
 \begin_layout Description
 pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
+ for cohesive cell output files 
+\begin_inset Newline linebreak
+\end_inset
+
+(
 \family typewriter
 dislocation-fault.vtk
 \family default
@@ -783,6 +791,10 @@ dislocation_slip.spatialdb
 \family default
 , 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 dislocation_sliptime.spatialdb
 \family default
 \size default

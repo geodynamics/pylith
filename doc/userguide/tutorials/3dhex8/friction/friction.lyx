@@ -183,17 +183,10 @@ The
 \family typewriter
 step10.cfg
 \family default
- file defines a problem that is identical to example 
-\family typewriter
-step01
-\family default
-, except for the presence of a vertical fault with static friction.
+ file defines a problem that is identical to example step01, except for
+ the presence of a vertical fault with static friction.
  In this case, the applied displacements are insufficient to cause the fault
- to slip, so the solution is identical to that in example 
-\family typewriter
-step01
-\family default
-.
+ to slip, so the solution is identical to that in example step01.
  As in previous examples involving faults, we must first provide an array
  defining the fault interfaces:
 \end_layout
@@ -428,11 +421,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Magnitude of tractions on the fault for example 
-\family typewriter
-step10
-\family default
- visualized using ParaView.
+Magnitude of tractions on the fault for example step10 visualized using
+ ParaView.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -584,11 +574,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Magnitude of tractions on the fault for example 
-\family typewriter
-step10
-\family default
- visualized using ParaView.
+Magnitude of tractions on the fault for example step10 visualized using
+ ParaView.
  Vectors of fault slip are also plotted.
  Note that PyLith outputs slip in the fault coordinate system, so we transform
  them to the global coordinate system using the Calculator in ParaView.
@@ -826,11 +813,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example 
-\family typewriter
-step12
-\family default
- at t = 200 years visualized using ParaView.
+Displacement field for example step12 at t = 200 years visualized using
+ ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
@@ -986,11 +970,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example 
-\family typewriter
-step13
-\family default
- at t = 200 years visualized using ParaView.
+Displacement field for example step13 at t = 200 years visualized using
+ ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label
@@ -1055,51 +1036,75 @@ reference "sec:fault:constitutive:models"
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.interfaces.fault]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # Set rate-and-state parameters using a UniformDB.
  Set the parameters as
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # follows:
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # reference coefficient of friction: 0.6
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # reference slip rate: 1.0e-06 m/s
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # slip-weakening parameter: 0.037 m
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # a: 0.0125
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # b: 0.0172
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # cohesion: 0 Pa
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 friction.db_properties = spatialdata.spatialdb.UniformDB
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 friction.db_properties.label = Rate State Ageing
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 friction.db_properties.values = [reference-friction-coefficient,reference-slip-rat
 e,
 \begin_inset Newline newline
@@ -1110,6 +1115,8 @@ ohesion]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 friction.db_properties.data = [0.6,1.0e-6*m/s,0.0370*m,0.0125,0.0172,0.0*Pa]
 \end_layout
 
@@ -1149,9 +1156,9 @@ examples/3d/hex8/output
 \family default
  (all with a prefix of 
 \family typewriter
-step1
+step14
 \family default
-4).
+).
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1184,11 +1191,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement field for example 
-\family typewriter
-step14
-\family default
- at t = 200 years visualized using ParaView.
+Displacement field for example step14 at t = 200 years visualized using
+ ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed displacements.
 \begin_inset CommandInset label

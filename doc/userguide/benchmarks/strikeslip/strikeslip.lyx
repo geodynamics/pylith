@@ -1,31 +1,51 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
 
 \end_preamble
+\use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry true
 \use_amsmath 0
 \use_esint 0
+\use_mhchem 0
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -33,21 +53,23 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:benchmarks:strikeslip"
 
 \end_inset
@@ -63,7 +85,8 @@ This benchmark problem computes the viscoelastic (Maxwell) relaxation of
  Anti-plane strain boundary conditions are imposed at y = 0, so the solution
  is equivalent to that for a domain with a 48 km length in the y direction.
  We can use the analytical solution of 
-\begin_inset LatexCommand cite
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Okada:1992"
 
 \end_inset
@@ -82,7 +105,8 @@ Problem Description
 
 \begin_layout Standard
 Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:geometry"
 
 \end_inset
@@ -95,10 +119,12 @@ ic material (blue block).
 
 \begin_layout Description
 Domain The domain spans the region
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula 
+\begin{gather*}
 0\leq x\leq24\ km,\\
 0\leq y\leq24\ km,\\
--24\ km\leq z\leq0.\end{gather*}
+-24\ km\leq z\leq0.
+\end{gather*}
 
 \end_inset
 
@@ -114,9 +140,11 @@ The top (elastic) layer occupies the region
 \end_layout
 
 \begin_layout Description
-Material\InsetSpace ~
-properties The material is a Poisson solid with a shear modulus
- of 30 GPa.
+Material
+\begin_inset space ~
+\end_inset
+
+properties The material is a Poisson solid with a shear modulus of 30 GPa.
  The domain is modeled using an elastic isotropic material for the top layer
  and a Maxwell viscoelastic material for the bottom layer.
  The bottom layer has a viscosity of 1.0e+18 Pa-s.
@@ -125,10 +153,12 @@ properties The material is a Poisson solid with a shear modulus
 \begin_layout Description
 Fault The fault is a vertical, right-lateral strike-slip fault.
  The strike is parallel to the y-direction at the center of the model:
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula 
+\begin{gather*}
 x=12\ km,\\
 0\leq y\leq16\ km,\\
--16\ km\leq z\leq0.\end{gather*}
+-16\ km\leq z\leq0.
+\end{gather*}
 
 \end_inset
 
@@ -143,7 +173,8 @@ Uniform slip of 1 m is applied over the region
  with a linear taper to 0 at y = 16 km and z = -16 km.
  The tapered region is the light red portion of the fault surface in Figure
  
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:geometry"
 
 \end_inset
@@ -154,9 +185,12 @@ reference "fig:benchmark:strikeslip:geometry"
 \end_layout
 
 \begin_layout Description
-Boundary\InsetSpace ~
-conditions Bottom and side displacements are set to the elastic
- analytical solution, and the top of the model is a free surface.
+Boundary
+\begin_inset space ~
+\end_inset
+
+conditions Bottom and side displacements are set to the elastic analytical
+ solution, and the top of the model is a free surface.
  There are two exceptions to these applied boundary conditions.
  The first is on the y=0 plane, where y-displacements are left free to preserve
  symmetry, and the x- and z-displacements are set to zero.
@@ -171,9 +205,11 @@ Discretization The model is discretized with nominal spatial resolutions
 \end_layout
 
 \begin_layout Description
-Basis\InsetSpace ~
-functions We use trilinear hexahedral cells and linear tetrahedral
- cells.
+Basis
+\begin_inset space ~
+\end_inset
+
+functions We use trilinear hexahedral cells and linear tetrahedral cells.
 \end_layout
 
 \begin_layout Description
@@ -190,7 +226,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/geometry.png
@@ -201,12 +237,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Geometry of strike-slip benchmark problem.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:geometry"
 
 \end_inset
@@ -306,7 +343,8 @@ Benchmark Results
 
 \begin_layout Standard
 Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:solution"
 
 \end_inset
@@ -315,7 +353,9 @@ reference "fig:benchmark:strikeslip:solution"
  using trilinear basis functions at a resolution of 1000 m.
  For each resolution and set of basis functions, we measure the accuracy
  by comparing the numerical solution against the semi-analytical Okada solution
-\begin_inset LatexCommand cite
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
 key "Okada:1992"
 
 \end_inset
@@ -333,7 +373,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/soln.png
@@ -344,12 +384,13 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Displacement field for strike-slip benchmark problem.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:solution"
 
 \end_inset
@@ -376,8 +417,10 @@ We quantify the error in the finite-element solution by integrating the
  L2 norm of the difference between the finite-element solution  and the
  semi-analytical solution evaluated at the quadrature points.
  We define the local error (error for each finite-element cell) to be
-\begin_inset Formula \begin{equation}
-\epsilon_{local}=\frac{1}{V_{cell}}\sqrt{\intop_{cell}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\epsilon_{local}=\frac{1}{V_{cell}}\sqrt{\intop_{cell}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},
+\end{equation}
 
 \end_inset
 
@@ -397,17 +440,23 @@ where
   This roughly corresponds to the error in the magnitude of the displacement
  field in the finite element solution.
  We define the global error in a similar fashion,
-\begin_inset Formula \begin{equation}
-\epsilon_{global}=\frac{1}{V_{domain}}\sqrt{\intop_{domain}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},\end{equation}
+\begin_inset Formula 
+\begin{equation}
+\epsilon_{global}=\frac{1}{V_{domain}}\sqrt{\intop_{domain}\left(u_{i}^{t}-u_{i}^{fem}\right)^{2}\: dV},
+\end{equation}
 
 \end_inset
 
  where we sum the L2 norm computed for the local error over all of the 
  cells before taking the square root and dividing by the volume of the domain.
- CIG has developed a package called 
-\begin_inset LatexCommand htmlurl
-name "Cigma"
-target "geodynamics.org/cig/software/packages/cs/cigma"
+ CIG has developed a package called Cigma 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+geodynamics.org/cig/software/packages/cs/cigma
+\end_layout
 
 \end_inset
 
@@ -416,13 +465,15 @@ target "geodynamics.org/cig/software/packages/cs/cigma"
 
 \begin_layout Standard
 Figures 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:tet4:1000m"
 
 \end_inset
 
  through 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:hex8:250m"
 
 \end_inset
@@ -441,7 +492,8 @@ reference "fig:benchmark:strikeslip:hex8:250m"
  given resolution is smaller than that for the tetrahedral cells.
  Both sets of cell types and basis functions provide the same rate of convergenc
 e as shown in Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:benchmark:strikeslip:convergence"
 
 \end_inset
@@ -458,7 +510,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_tet4_1000m.png
@@ -469,13 +521,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with tetrahedral cells and
  linear basis functions with a uniform discretization size of 1000 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:tet4:1000m"
 
 \end_inset
@@ -502,7 +555,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_hex8_1000m.png
@@ -513,13 +566,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with hexahedral cells and
  trilinear basis functions with a uniform discretization size of 1000 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:hex8:1000m"
 
 \end_inset
@@ -546,7 +600,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_tet4_0500m.png
@@ -557,13 +611,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with tetrahedral cells and
  linear basis functions with a uniform discretization size of 500 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:tet4:500m"
 
 \end_inset
@@ -589,7 +644,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_hex8_0500m.png
@@ -600,13 +655,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with hexahedral cells and
  trilinear basis functions with a uniform discretization size of 500 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:hex8:500m"
 
 \end_inset
@@ -633,7 +689,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_tet4_0250m.png
@@ -644,13 +700,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with tetrahedral cells and
  linear basis functions with a uniform discretization size of 250 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:tet4:250m"
 
 \end_inset
@@ -677,7 +734,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/error_hex8_0250m.png
@@ -688,13 +745,14 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Local error for strike-slip benchmark problem with hexahedral cells and
  trilinear basis functions with a uniform discretization size of 250 m.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:hex8:250m"
 
 \end_inset
@@ -721,7 +779,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/convergence.png
@@ -732,14 +790,15 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Convergence rate for the strike-slip benchmark problem with tetrahedral
  cells and linear basis functions and with hexahedral cells with trilinear
  basis functions.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:convergence"
 
 \end_inset
@@ -763,15 +822,16 @@ Performance
 
 \begin_layout Standard
 Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:summary"
 
 \end_inset
 
  summarizes the overall performance of each of the six simulations.
  Although at a given resolution, the number of degrees of freedom in the
- hexahedral and tetrahedral meshes are the the same, the number of cells
- in the tetrahedral mesh is about six times greater.
+ hexahedral and tetrahedral meshes are the same, the number of cells in
+ the tetrahedral mesh is about six times greater.
  However, we use only one integration point per tetrahedral cell compared
  to eight for the hexahedral cell.
  This leads to approximately the same number of integration points for the
@@ -793,7 +853,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/summary.pdf
@@ -804,16 +864,17 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Summary of performance of PyLith for the six simulations of the strike-slip
  benchmark.
  For a given discretization size, hexahedral cells with trilinear basis
  functions provide greater accuracy with a shorter runtime compared with
  tetrahedral cells and linear basis functions.
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:summary"
 
 \end_inset
@@ -833,7 +894,8 @@ name "fig:benchmark:strikeslip:summary"
 
 \begin_layout Standard
 Figure 
-\begin_inset LatexCommand vref
+\begin_inset CommandInset ref
+LatexCommand vref
 reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
@@ -849,7 +911,8 @@ reference "fig:benchmark:strikeslip:scaling"
  only a fraction of the runtime, and the runtime will be dominated by the
  solution of the equations.
  Figure 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "fig:benchmark:strikeslip:scaling"
 
 \end_inset
@@ -872,7 +935,7 @@ wide false
 sideways false
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename figs/scaling.pdf
@@ -883,10 +946,10 @@ status open
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Caption
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Parallel performance of PyLith for the strike-slip benchmark problem with
  tetrahedral cells and linear basis functions with a uniform discretization
  size of 500 m.
@@ -896,7 +959,8 @@ Parallel performance of PyLith for the strike-slip benchmark problem with
  with a slope of 1 would indicate strong scaling,  which is rarely achieved
  in any real application.
  
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "fig:benchmark:strikeslip:scaling"
 
 \end_inset
