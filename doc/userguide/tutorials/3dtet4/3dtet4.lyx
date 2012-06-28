@@ -218,6 +218,10 @@ There are two ways to use the command file.
 \family default
 examples directory (
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 examples/3d/tet4
 \family default
 ), start LaGriT, and then type:
@@ -419,9 +423,9 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \begin_layout Standard
 Since these examples use a mesh from LaGriT, we set the importer to 
 \family typewriter
-MeshIO
+MeshIOLagrit
 \family default
-Lagrit:
+:
 \end_layout
 
 \begin_layout LyX-Code
@@ -691,7 +695,11 @@ shearxy.vtk
 \begin_layout Description
 pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
- the subdomain corresponding to the ground surface (
+ the subdomain corresponding to the ground surface 
+\begin_inset Newline linebreak
+\end_inset
+
+(
 \family typewriter
 step01-groundsurf.vtk
 \family default
@@ -745,36 +753,20 @@ step01.cfg
 \begin_layout Standard
 The files containing common information (
 \family typewriter
-\size small
-tet4_1000m_binary.gmv
-\family default
-, 
-\family typewriter
-tet4_1000m_binary.pset
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-mat_elastic.spatialdb
-\family default
-\size default
-, and 
-\family typewriter
-mat_viscoelastic.spatialdb
+tet4_1000m_binary.gmv, tet4_1000m_binary.pset, 
+\begin_inset Newline linebreak
+\end_inset
+
+pylithapp.cfg, mat_elastic.spatialdb, and mat_viscoelastic.spatialdb
 \family default
 ) along with the problem-specific files (
 \family typewriter
-\size small
-step01.cfg
+step01.cfg 
 \family default
- and 
+and
 \family typewriter
-fixeddisp_shear.spatialdb
+ fixeddisp_shear.spatialdb
 \family default
-\size default
 ) provide a complete description of the problem, and we can then run this
  example by typing
 \end_layout
@@ -800,6 +792,10 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 step01-statevars-elastic_t0000000.vtk
 \family default
 .
@@ -1576,7 +1572,11 @@ step03.vtk
 \begin_layout Description
 pylithapp.problem.formulation.output.subdomain Gives the label of the nodeset
  defining the subdomain and gives the base filename for VTK output over
- the subdomain corresponding to the ground surface (
+ the subdomain corresponding to the ground surface 
+\begin_inset Newline linebreak
+\end_inset
+
+(
 \family typewriter
 step03-groundsurf.vtk
 \family default
@@ -1585,7 +1585,11 @@ step03-groundsurf.vtk
 
 \begin_layout Description
 pylithapp.timedependent.interfaces.fault.output.writer Gives the base filename
- for cohesive cell output files (
+ for cohesive cell output files 
+\begin_inset Newline linebreak
+\end_inset
+
+(
 \family typewriter
 step03-fault.vtk
 \family default
@@ -1712,6 +1716,10 @@ t0000000
  mesh vertices.
  The second file is named 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 step03-statevars-elastic_t0000000.vtk
 \family default
 .

@@ -1058,7 +1058,11 @@ afterslip_tractions.py
  consistent with a coefficient of friction of 0.6.
  The 
 \family typewriter
-afterslip_tractions.spatialdb
+afterslip_tractions.
+\begin_inset Newline linebreak
+\end_inset
+
+spatialdb
 \family default
  file is provided, so you do not need to run the Python script 
 \family typewriter
@@ -1170,8 +1174,8 @@ reference "fig:tutorial:subduction:step04"
 
 , which was created using ParaView, displays the magnitude of the displacement
  field with the original configuration.
- Slip occurs down-dip from the coseismic slip as well as in three areas with
- sharp gradients in slip, including the trench.
+ Slip occurs down-dip from the coseismic slip as well as in three areas
+ with sharp gradients in slip, including the trench.
  The location of the afterslip can be shifted by changing the spatial variation
  of the coseismic slip and background stress field.
 \end_layout

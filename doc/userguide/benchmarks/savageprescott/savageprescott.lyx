@@ -177,8 +177,15 @@ Due to the difficulties in representing solutions in an infinite domain,
  For that reason, we also tested meshes where the mesh resolution decreases
  away from the center.
  In the problem description that follows, we will focus on the hexahedral
- mesh with finer discretization neear the fault (meshes/hex8_6.7km.exo.gz),
- which provides a good match with the analytical solution.
+ mesh with finer discretization near the fault 
+\begin_inset Newline linebreak
+\end_inset
+
+(
+\family typewriter
+meshes/hex8_6.7km.exo.gz
+\family default
+), which provides a good match with the analytical solution.
  It will first be necessary to gunzip this mesh so that it may be used by
  PyLith.
 \end_layout
@@ -302,7 +309,7 @@ functions We use trilinear hexahedral cells.
 
 \begin_layout Description
 Solution We compute the surface displacements and compare these to the analytica
-l solution 
+l solution in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:benchmark:savageprescott:solution"

@@ -2309,6 +2309,8 @@ Additive Schwarz method.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 ksp_type
 \end_layout
 
@@ -2756,6 +2758,7 @@ Description
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_type
 \end_layout
 
@@ -2789,6 +2792,7 @@ Precondition fields separately.
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_fieldsplit_real_diagonal
 \end_layout
 
@@ -2822,6 +2826,7 @@ Use diagonal blocks from the true operator, rather than the preconditioner.
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_fieldsplit_type
 \end_layout
 
@@ -2856,6 +2861,7 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_fieldsplit_0_pc_type
 \end_layout
 
@@ -2889,6 +2895,7 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_fieldsplit_1_pc_type
 \end_layout
 
@@ -2923,6 +2930,7 @@ Jacobi preconditioning for Lagrange multiplier block (only use if there
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_fieldsplit_0_ksp_type
 \end_layout
 
@@ -2956,6 +2964,7 @@ Apply only the preconditioner.
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_fieldsplit_1_ksp_type
 \end_layout
 
@@ -3280,27 +3289,39 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.timedependent.formulation]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 time_step = pylith.problems.TimeStepUniform
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 solver = pylith.problems.SolverLinear ; Nonlinear solver is pylith.problems.SolverNo
 nlinear
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 matrix_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 view_jacobian = false
 \end_layout
 
@@ -4069,26 +4090,26 @@ pylithapp.cfg
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.values = [vp,vs,density] ; Set the names of the values in the
  database
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values
  in the database
 \end_layout
@@ -4741,6 +4762,10 @@ DataWriterVTKPoints
 ).
  In most cases users will want to use the 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 DataWriterHDF5Mesh
 \family default
 .

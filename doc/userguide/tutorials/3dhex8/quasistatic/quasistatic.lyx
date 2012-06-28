@@ -756,12 +756,11 @@ db_rate.label = Neumann rate BC on +x
 \end_layout
 
 \begin_layout LyX-Code
-db_rate.values = [traction-rate-shear-horiz,traction-rate-shear-vert,traction-rat
-e-normal,
+db_rate.values = [traction-rate-shear-horiz,traction-rate-shear-vert,
 \begin_inset Newline newline
 \end_inset
 
-rate-start-time]
+traction-rate-normal,rate-start-time]
 \end_layout
 
 \begin_layout LyX-Code
@@ -1483,13 +1482,9 @@ Step07 - Dirichlet Velocity Boundary Conditions with Time-Dependent Kinematic
 \end_layout
 
 \begin_layout Standard
-In 
-\family typewriter
-step07
-\family default
- we add velocity boundary conditions in the positive and negative y-directions
- on the positive and negative x-faces, so that the external boundaries keep
- pace with the average fault slip.
+In step07 we add velocity boundary conditions in the positive and negative
+ y-directions on the positive and negative x-faces, so that the external
+ boundaries keep pace with the average fault slip.
  This problem is nearly identical to the strike-slip fault model of Savage
  and Prescott 
 \begin_inset CommandInset citation
@@ -1756,11 +1751,7 @@ examples/3d/hex8/output
 step07
 \family default
 ).
- As for example 
-\family typewriter
-step06
-\family default
-, make sure to open the 
+ As for example step06, make sure to open the 
 \family typewriter
 .xmf
 \family default
@@ -1796,11 +1787,7 @@ status open
 
 \begin_layout Plain Layout
 Displacement field (color contours) and velocity field (vectors) for example
- 
-\family typewriter
-step07
-\family default
- at t = 300 years visualized using ParaView.
+ step07 at t = 300 years visualized using ParaView.
  The mesh has been distorted by the computed displacements (magnified by
  500), and the vectors show the computed velocities.
 \begin_inset CommandInset label
@@ -1809,7 +1796,7 @@ name "fig:step07-displ-vel-t300"
 
 \end_inset
 
-.
+
 \end_layout
 
 \end_inset
@@ -1839,11 +1826,8 @@ The
 \family typewriter
 step08.cfg
 \family default
- file defines a problem that is identical to example 
-\family typewriter
-step07
-\family default
-, except the the lower crust is composed of a power-law viscoelastic material.
+ file defines a problem that is identical to example step07, except the
+ the lower crust is composed of a power-law viscoelastic material.
  Since the material behavior is now nonlinear, we must use the nonlinear
  solver:
 \end_layout
@@ -1931,7 +1915,11 @@ examples/3d/hex8/spatialdb/powerlaw
  The user must provide a spatial database defining the spatial distribution
  of laboratory-derived parameters (contained in 
 \family typewriter
-powerlaw_params.spatialdb
+powerlaw_params.
+\begin_inset Newline linebreak
+\end_inset
+
+spatialdb
 \family default
 ), another spatial database defining the temperature field in degrees K
  (contained in 
@@ -1992,8 +1980,11 @@ powerlaw_gendb.py
 \end_layout
 
 \begin_layout Standard
-This code will automatically read the parameters in powerlaw_gendb.cfg in
- creating the file
+This code will automatically read the parameters in 
+\family typewriter
+powerlaw_gendb.cfg
+\family default
+ in creating the file
 \begin_inset Newline newline
 \end_inset
 
@@ -2077,39 +2068,57 @@ We must define the properties that come from each spatial database and then
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # Provide the values to be obtained from each database and the database
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 # name.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.materials.lower_crust.db_properties]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 values_A = [density,vs,vp]   ; Elastic properties.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_A.label = Elastic properties
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_A.iohandler.filename = spatialdb/mat_elastic.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 values_B = [reference-stress,reference-strain-rate,power-law-exponent] 
   ; Power-law properties.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_B.label = Power-law properties
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db_B.iohandler.filename = spatialdb/mat_powerlaw.spatialdb
 \end_layout
 
@@ -2202,11 +2211,7 @@ status open
 
 \begin_layout Plain Layout
 The XY-component of strain (color contours) and displacement field (vectors)
- for example 
-\family typewriter
-step08
-\family default
- at t = 150 years visualized using ParaView.
+ for example step08 at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
 step08-lower_crust.xmf
@@ -2227,7 +2232,7 @@ name "fig:step08-strain-displ-t150"
 
 \end_inset
 
-.
+
 \end_layout
 
 \end_inset
@@ -2248,11 +2253,8 @@ Step09 - Dirichlet Velocity Boundary Conditions with Time-Dependent Kinematic
 \begin_layout Standard
 In this example we use a Drucker-Prager elastoplastic rheology in the lower
  crust.
- As in example 
-\family typewriter
-step08
-\family default
-, the material behavior is nonlinear so we again use the nonlinear solver.
+ As in example step08, the material behavior is nonlinear so we again use
+ the nonlinear solver.
  The material is elastoplastic, there is no inherent time-dependent response
  and the stable time-step size for the material depends on the loading condition
 s.
@@ -2363,12 +2365,8 @@ db_properties.db_B = spatialdata.spatialdb.SimpleDB
 \end_layout
 
 \begin_layout Standard
-As for the 
-\family typewriter
-step08
-\family default
- example, we first define the properties that come from each spatial database
- and then provide the database filename:
+As for the step08 example, we first define the properties that come from
+ each spatial database and then provide the database filename:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2484,11 +2482,7 @@ status open
 
 \begin_layout Plain Layout
 The XY-component of strain (color contours) and displacement field (vectors)
- for example 
-\family typewriter
-step09
-\family default
- at t = 150 years visualized using ParaView.
+ for example step09 at t = 150 years visualized using ParaView.
  For this visualization, we loaded both the 
 \family typewriter
 step09-lower_crust.xmf
@@ -2509,7 +2503,7 @@ name "fig:step09-strain-displ-t150"
 
 \end_inset
 
-.
+
 \end_layout
 
 \end_inset
