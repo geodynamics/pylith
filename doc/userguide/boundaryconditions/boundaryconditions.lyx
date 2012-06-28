@@ -2467,7 +2467,7 @@ The insertion of cohesive cells into the finite-element mesh has the effect
 
 \begin_layout Standard
 In conventional implementations the additional degrees of freedom associated
- with the Lagrange multipliers results in a complex implementation.
+ with the Lagrange multipliers result in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
  provides for a simple formulation; we simply add the additional degrees
  of freedom associated with the Lagrange multipliers to the cohesive cells
@@ -3131,10 +3131,14 @@ The kinematic rupture parameters include the origin time and slip time function.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.interfaces.fault]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 eq_srcs = [earthquake,creep]
 \begin_inset Newline newline
 \end_inset
@@ -3147,10 +3151,14 @@ eq_srcs = [earthquake,creep]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 origin_time = 0.0*s ; default origin time
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 slip_function = pylith.faults.StepSlipFn ; default slip time function
 \begin_inset Newline newline
 \end_inset
@@ -3163,10 +3171,14 @@ slip_function = pylith.faults.StepSlipFn ; default slip time function
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 origin_time = 10.0*year ; start creep at 10.0 years
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 slip_function = pylith.faults.ConstRateSlipFn ; switch to constant slip rate
  slip function
 \end_layout
@@ -6342,7 +6354,7 @@ reference "sec:Extending:FaultConstitutiveModels"
  The fault constitutive model implementations are independent of dimension
  and work in both 2D and 3D.
  In solving the governing equations, PyLith will use a scalar representation
- of the shear traction in 2-D and a vector representation of the shear traction
+ of the shear traction in 2D and a vector representation of the shear traction
  in 3D, with the shear traction resolved in the direction of current slip.
  The fault constitutive models contain a common set of properties and components
 :
@@ -7726,7 +7738,7 @@ Slip Impulses for Green's Functions
 
 \begin_layout Standard
 Computing static Green's functions using the GreensFns problem requires
- a specialized fault implementation, FaultCohesiveImpulses, to setup the
+ a specialized fault implementation, FaultCohesiveImpulses, to set up the
  slip impulses.
  The parameters controlling the slip impulses include the components involved
  (lateral, reverse, and/or fault opening) and the amplitude of the pulses
