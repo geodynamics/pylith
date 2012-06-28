@@ -270,12 +270,12 @@ filename "materials/materials.lyx"
 
 \begin_layout Standard
 \begin_inset CommandInset include
-LatexCommand input
+LatexCommand include
 filename "boundaryconditions/boundaryconditions.lyx"
 
 \end_inset
 
- 
+
 \begin_inset CommandInset include
 LatexCommand input
 filename "tutorials/tutorials.lyx"
