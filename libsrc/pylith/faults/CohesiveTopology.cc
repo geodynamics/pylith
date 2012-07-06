@@ -28,6 +28,10 @@
 
 #include <cassert> // USES assert()
 
+#include <utils/petscerror.h> // USES CHECK_PETSC_ERROR
+
+extern PetscErrorCode DMComplexGetOrientedFace(DM dm, PetscInt cell, PetscInt faceSize, const PetscInt face[], PetscInt numCorners, PetscInt indices[], PetscInt origVertices[], PetscInt faceVertices[], PetscBool *posOriented);
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
@@ -140,6 +144,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   typedef ALE::SieveAlg<SieveFlexMesh> sieveAlg;
   typedef ALE::Selection<SieveFlexMesh> selection;
+  PetscErrorCode err;
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -147,27 +152,38 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  /* DMComplex */
+  DM complexMesh = mesh->dmMesh();
+  assert(complexMesh);
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   assert(!faultSieveMesh.isNull());  
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = 
-    faultSieveMesh->getSieve();
+  const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = faultSieveMesh->getSieve();
   assert(!ifaultSieve.isNull());
 
   const int  depth = sieveMesh->depth();
   assert(!sieveMesh->heightStratum(0).isNull());
   const int numCells = sieveMesh->heightStratum(0)->size();
+  PetscInt cStart, cEnd;
+#define USE_DMCOMPLEX_ON
+#ifdef USE_DMCOMPLEX_ON
+  err = DMComplexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  assert(numCells == cEnd - cStart);
+#endif
   int numCorners = 0; // The number of vertices in a mesh cell
   int faceSize = 0; // The number of vertices in a mesh face
   int numFaultCorners = 0; // The number of vertices in a fault cell
   int* indices = 0; // The indices of a face vertex set in a cell
+  PetscInt *indicesDM = PETSC_NULL; // The indices of a face vertex set in a cell
   const int debug = mesh->debug();
   int oppositeVertex = 0;    // For simplices, the vertex opposite a given face
   TopologyOps::PointArray origVertices;
   TopologyOps::PointArray faceVertices;
   TopologyOps::PointArray neighborVertices;
+  PetscInt *origVerticesDM;
+  PetscInt *faceVerticesDM;
 
   if (!faultSieveMesh->commRank()) {
     assert(!faultSieveMesh->heightStratum(1).isNull());
@@ -177,59 +193,124 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     faceSize = selection::numFaceVertices(sieveMesh);
     indices = new int[faceSize];
     numFaultCorners = faultSieveMesh->getNumCellCorners(p, faultSieveMesh->depth(p));
+
+#ifdef USE_DMCOMPLEX_ON
+    PetscInt numCornersDM;
+    err = DMComplexGetConeSize(complexMesh, cStart, &numCornersDM);CHECK_PETSC_ERROR(err);
+    assert(numCorners == numCornersDM);
+    err = PetscMalloc(faceSize * sizeof(PetscInt), &indicesDM);CHECK_PETSC_ERROR(err);
+#endif
+    /* TODO: Do we need faceSize at all? Blaise was using a nice criterion */
   }
   //faultSieveMesh->view("Serial fault mesh");
 
   // Add new shadow vertices and possibly Lagrange multipler vertices
-  const ALE::Obj<SieveSubMesh::label_sequence>& fVertices       = faultSieveMesh->depthStratum(0);
+  const ALE::Obj<SieveSubMesh::label_sequence>& fVertices           = faultSieveMesh->depthStratum(0);
   assert(!fVertices.isNull());
-  const SieveSubMesh::label_sequence::const_iterator fVerticesBegin = 
-    fVertices->begin();
-  const SieveSubMesh::label_sequence::const_iterator fVerticesEnd = 
-    fVertices->end();
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
+  const SieveSubMesh::label_sequence::const_iterator fVerticesBegin = fVertices->begin();
+  const SieveSubMesh::label_sequence::const_iterator fVerticesEnd   = fVertices->end();
+  const ALE::Obj<SieveMesh::label_sequence>&         vertices       = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const ALE::Obj<std::set<std::string> >& groupNames = 
-    sieveMesh->getIntSections();
+#ifdef USE_DMCOMPLEX_ON
+  PetscInt vStart, vEnd;
+  err = DMComplexGetDepthStratum(complexMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  assert(vertices->size() == vEnd - vStart);
+#endif
+  const ALE::Obj<std::set<std::string> >& groupNames = sieveMesh->getIntSections();
   assert(!groupNames.isNull());
   const int numFaultVertices = fVertices->size();
   std::map<point_type,point_type> vertexRenumber;
   std::map<point_type,point_type> vertexLagrangeRenumber;
   std::map<point_type,point_type> cellRenumber;
+  std::map<point_type,point_type> vertexRenumberDM;
+  std::map<point_type,point_type> vertexLagrangeRenumberDM;
+  std::map<point_type,point_type> cellRenumberDM;
+  PetscInt numFaultFaces = faultSieveMesh->heightStratum(1)->size();
+  PetscInt firstFaultVertexDM, firstLagrangeVertexDM, firstFaultCellDM, extraVertices, extraCells;
+#ifdef USE_DMCOMPLEX_ON
+  /* TODO This will have to change for multiple faults */
+  extraVertices         = firstFaultCell; /* Total number of fault vertices (shadow + Lagrange) */
+  extraCells            = numFaultFaces;  /* Total number of fault cells */
+  firstFaultVertexDM    = vEnd + extraCells;
+  firstLagrangeVertexDM = firstFaultVertexDM + firstLagrangeVertex;
+  firstFaultCellDM      = cEnd;
+#endif
   if (firstFaultVertex == 0) {
     firstFaultVertex    += sieve->getBaseSize() + sieve->getCapSize();
     firstLagrangeVertex += firstFaultVertex;
     firstFaultCell      += firstFaultVertex;
+
+#ifdef USE_DMCOMPLEX_ON
+    PetscInt pStart, pEnd;
+    err = DMComplexGetChart(complexMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    assert(firstFaultVertex == pEnd - pStart);
+#endif
   }
 
-  for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin;
-      v_iter != fVerticesEnd;
-      ++v_iter, ++firstFaultVertex) {
-    vertexRenumber[*v_iter] = firstFaultVertex;
-    if (debug) 
-      std::cout << "Duplicating " << *v_iter << " to "
-		<< vertexRenumber[*v_iter] << std::endl;
+#ifdef USE_DMCOMPLEX_ON
+  /* DMComplex */
+  DM        newMesh;
+  PetscInt *newCone;
+  PetscInt  maxConeSize = 0;
+
+  err = DMCreate(sieveMesh->comm(), &newMesh);CHECK_PETSC_ERROR(err);
+  err = DMSetType(newMesh, DMCOMPLEX);CHECK_PETSC_ERROR(err);
+  err = DMComplexSetDimension(newMesh, sieveMesh->getDimension());CHECK_PETSC_ERROR(err);
+  err = DMComplexSetChart(newMesh, 0, firstFaultVertexDM + extraVertices);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt coneSize;
+    err = DMComplexGetConeSize(complexMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMComplexSetConeSize(newMesh, c, coneSize);CHECK_PETSC_ERROR(err);
+    maxConeSize = PetscMax(maxConeSize, coneSize);
+  }
+  for(PetscInt c = cEnd; c < cEnd+numFaultFaces; ++c) {
+    err = DMComplexSetConeSize(newMesh, c, constraintCell ? faceSize*3 : faceSize*2);CHECK_PETSC_ERROR(err);
+  }
+  err = DMSetUp(newMesh);CHECK_PETSC_ERROR(err);
+  err = PetscMalloc(maxConeSize * sizeof(PetscInt), &newCone);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    const PetscInt *cone;
+    PetscInt        coneSize, cp;
+
+    err = DMComplexGetCone(complexMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetConeSize(complexMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    for(cp = 0; cp < coneSize; ++cp) {
+      newCone[cp] = cone[cp] + extraCells;
+    }
+    err = DMComplexSetCone(newMesh, c, newCone);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscFree(newCone);CHECK_PETSC_ERROR(err);
+#endif
+
+  // Add fault vertices to groups and construct renumberings
+  for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin; v_iter != fVerticesEnd; ++v_iter, ++firstFaultVertex, ++firstFaultVertexDM) {
+    vertexRenumber[*v_iter]   = firstFaultVertex;
+    vertexRenumberDM[*v_iter] = firstFaultVertexDM;
+    if (debug) std::cout << "Duplicating " << *v_iter << " to "	<< vertexRenumber[*v_iter] << std::endl;
 
     logger.stagePop();
     logger.stagePush("SerialFaultStratification");
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(firstFaultVertex, 1);
+    err = DMComplexSetLabelValue(complexMesh, groupField->getName().c_str(), firstFaultVertexDM, 1);CHECK_PETSC_ERROR(err);
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
     sieveMesh->setHeight(firstFaultVertex, 1);
     sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
-      vertexLagrangeRenumber[*v_iter] = firstLagrangeVertex;
+      vertexLagrangeRenumber[*v_iter]   = firstLagrangeVertex;
+      vertexLagrangeRenumberDM[*v_iter] = firstLagrangeVertexDM;
       groupField->addPoint(firstLagrangeVertex, 1);
+      err = DMComplexSetLabelValue(complexMesh, groupField->getName().c_str(), firstLagrangeVertexDM, 1);CHECK_PETSC_ERROR(err);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
       sieveMesh->setHeight(firstLagrangeVertex, 1);
       sieveMesh->setDepth(firstLagrangeVertex, 0);
 #endif
       ++firstLagrangeVertex;
+      ++firstLagrangeVertexDM;
     } // if
     logger.stagePop();
     logger.stagePush("SerialFaultCreation");
@@ -238,34 +319,34 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // vertices (if they exist) because we don't want BC, etc to act
     // on constraint vertices
     const std::set<std::string>::const_iterator namesEnd = groupNames->end();
-    for(std::set<std::string>::const_iterator name = groupNames->begin();
-       name != namesEnd;
-	++name) {
+    for(std::set<std::string>::const_iterator name = groupNames->begin(); name != namesEnd;	++name) {
       const ALE::Obj<IntSection>& group = sieveMesh->getIntSection(*name);
       assert(!group.isNull());
       if (group->getFiberDimension(*v_iter))
         group->addPoint(firstFaultVertex, 1);
+
+      PetscInt value;
+      err = DMComplexGetLabelValue(complexMesh, (*name).c_str(), *v_iter, &value);CHECK_PETSC_ERROR(err);
+      if (value) {
+        err = DMComplexSetLabelValue(complexMesh, (*name).c_str(), firstFaultVertexDM, value);CHECK_PETSC_ERROR(err);
+      }
     } // for
   } // for
   logger.stagePop();
   logger.stagePush("SerialFaultCreation");
   const std::set<std::string>::const_iterator namesEnd = groupNames->end();
-  for(std::set<std::string>::const_iterator name = groupNames->begin();
-      name != namesEnd;
-      ++name) {
+  for(std::set<std::string>::const_iterator name = groupNames->begin(); name != namesEnd; ++name) {
     sieveMesh->reallocate(sieveMesh->getIntSection(*name));
   } // for
   logger.stagePop();
   logger.stagePush("SerialFault");
 
   // Split the mesh along the fault sieve and create cohesive elements
-  const ALE::Obj<SieveSubMesh::label_sequence>& faces =
-    faultSieveMesh->heightStratum(1);
+  const ALE::Obj<SieveSubMesh::label_sequence>& faces = faultSieveMesh->heightStratum(1);
   assert(!faces.isNull());
   const SieveSubMesh::label_sequence::const_iterator facesBegin = faces->begin();
   const SieveSubMesh::label_sequence::const_iterator facesEnd = faces->end();
-  const ALE::Obj<SieveFlexMesh::label_type>& material = 
-    sieveMesh->getLabel("material-id");
+  const ALE::Obj<SieveFlexMesh::label_type>& material = sieveMesh->getLabel("material-id");
   assert(!material.isNull());
   const int firstCohesiveCell = firstFaultCell;
   TopologyOps::PointSet replaceCells;
@@ -274,22 +355,19 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV2(std::max(1, ifaultSieve->getMaxSupportSize()));
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type> cV2(*ifaultSieve, (size_t) pow(std::max(1, ifaultSieve->getMaxConeSize()), faultSieveMesh->depth()));
   std::set<SieveFlexMesh::point_type> faceSet;
+  PetscInt *cohesiveCone;
 
-  for(SieveSubMesh::label_sequence::iterator f_iter = facesBegin;
-      f_iter != facesEnd;
-      ++f_iter, ++firstFaultCell) {
+  err = PetscMalloc3(faceSize,PetscInt,&origVerticesDM,faceSize,PetscInt,&faceVerticesDM,faceSize*3,PetscInt,&cohesiveCone);CHECK_PETSC_ERROR(err);
+  for(SieveSubMesh::label_sequence::iterator f_iter = facesBegin; f_iter != facesEnd; ++f_iter, ++firstFaultCell, ++firstFaultCellDM) {
     const point_type face = *f_iter;
-    if (debug)
-      std::cout << "Considering fault face " << face << std::endl;
+    if (debug) std::cout << "Considering fault face " << face << std::endl;
     ifaultSieve->support(face, sV2);
     const point_type *cells = sV2.getPoints();
     point_type cell = cells[0];
     point_type otherCell = cells[1];
 
-    if (debug)
-      std::cout << "  Checking orientation against cell " << cell << std::endl;
-    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*ifaultSieve,
-								 face, cV2);
+    if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
+    ALE::ISieveTraversal<SieveMesh::sieve_type>::orientedClosure(*ifaultSieve, face, cV2);
     const int coneSize = cV2.getSize();
     const point_type *faceCone = cV2.getPoints();
     //ifaultSieve->cone(face, cV2);
@@ -297,19 +375,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     //const point_type *faceCone = cV2.getSize() ? cV2.getPoints() : &face;
     bool found = true;
 
-    for(int i = 0; i < coneSize; ++i)
-      faceSet.insert(faceCone[i]);
-    selection::getOrientedFace(sieveMesh, cell, &faceSet, numCorners, indices,
-			       &origVertices, &faceVertices);
+    for(int i = 0; i < coneSize; ++i) faceSet.insert(faceCone[i]);
+    selection::getOrientedFace(sieveMesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
     if (faceVertices.size() != coneSize) {
-      std::cout << "Invalid size for faceVertices " << faceVertices.size()
-		<< " of face " << face << "should be " << coneSize << std::endl;
-      std::cout << "  firstCohesiveCell " << firstCohesiveCell << " firstFaultCell " 
-		<< firstFaultCell << " numFaces " << faces->size() << std::endl;
+      std::cout << "Invalid size for faceVertices " << faceVertices.size() << " of face " << face << "should be " << coneSize << std::endl;
+      std::cout << "  firstCohesiveCell " << firstCohesiveCell << " firstFaultCell " << firstFaultCell << " numFaces " << faces->size() << std::endl;
       std::cout << "  faceSet:" << std::endl;
-      for(std::set<SieveFlexMesh::point_type>::const_iterator p_iter = faceSet.begin();
-	  p_iter != faceSet.end();
-	  ++p_iter) {
+      for(std::set<SieveFlexMesh::point_type>::const_iterator p_iter = faceSet.begin(); p_iter != faceSet.end(); ++p_iter) {
         std::cout << "    " << *p_iter << std::endl;
       } // if
       std::cout << "  cell cone:" << std::endl;
@@ -318,34 +390,35 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       const int coneSize2 = cV.getSize();
       const point_type *cellCone  = cV.getPoints();
 
-      for(int c = 0; c < coneSize2; ++c)
-        std::cout << "    " << cellCone[c] << std::endl;
+      for(int c = 0; c < coneSize2; ++c) std::cout << "    " << cellCone[c] << std::endl;
       std::cout << "  fault cell support:" << std::endl;
       ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, ifaultSieve->getMaxSupportSize()));
       ifaultSieve->support(face, sV);
       const int supportSize2 = sV.getSize();
       const point_type *cellSupport  = sV.getPoints();
-      for(int s = 0; s < supportSize2; ++s)
-        std::cout << "    " << cellSupport[s] << std::endl;
+      for(int s = 0; s < supportSize2; ++s) std::cout << "    " << cellSupport[s] << std::endl;
     } // if
     assert(faceVertices.size() == coneSize);
     faceSet.clear();
-    //selection::getOrientedFace(sieveMesh, cell, &vertexRenumber, numCorners,
-    //			       indices, &origVertices, &faceVertices);
+#ifdef USE_DMCOMPLEX_ON
+    err = DMComplexGetOrientedFace(complexMesh, cell, coneSize, faceCone, numCorners, indicesDM, origVerticesDM, faceVerticesDM, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    for(PetscInt c = 0; c < coneSize; ++c) {
+      assert(faceVertices[c] == faceVerticesDM[c]);
+    }
+#endif
 
     if (numFaultCorners == 0) {
       found = false;
     } else if (numFaultCorners == 2) {
       if (faceVertices[0] != faceCone[0])
-	found = false;
+        found = false;
     } else {
       int v = 0;
       // Locate first vertex
       while((v < numFaultCorners) && (faceVertices[v] != faceCone[0]))
-	++v;
+        ++v;
       for(int c = 0; c < coneSize; ++c, ++v) {
-        if (debug) std::cout << "    Checking " << faceCone[c] << " against "
-			     << faceVertices[v%numFaultCorners] << std::endl;
+        if (debug) std::cout << "    Checking " << faceCone[c] << " against " << faceVertices[v%numFaultCorners] << std::endl;
         if (faceVertices[v%numFaultCorners] != faceCone[c]) {
           found = false;
           break;
@@ -354,24 +427,20 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if/else
 
     if (found) {
-      if (debug)
-	std::cout << "  Choosing other cell" << std::endl;
+      if (debug) std::cout << "  Choosing other cell" << std::endl;
       point_type tmpCell = otherCell;
       otherCell = cell;
       cell = tmpCell;
     } else {
-      if (debug)
-	std::cout << "  Verifing reverse orientation" << std::endl;
+      if (debug) std::cout << "  Verifing reverse orientation" << std::endl;
       found = true;
       int v = 0;
       if (numFaultCorners > 0) {
         // Locate first vertex
         while((v < numFaultCorners) && (faceVertices[v] != faceCone[coneSize-1]))
-	  ++v;
+          ++v;
         for(int c = coneSize-1; c >= 0; --c, ++v) {
-          if (debug)
-	    std::cout << "    Checking " << faceCone[c] << " against "
-		      << faceVertices[v%numFaultCorners] << std::endl;
+          if (debug) std::cout << "    Checking " << faceCone[c] << " against " << faceVertices[v%numFaultCorners] << std::endl;
           if (faceVertices[v%numFaultCorners] != faceCone[c]) {
             found = false;
             break;
@@ -390,29 +459,34 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     noReplaceCells.insert(otherCell);
     replaceCells.insert(cell);
     replaceVertices.insert(faceCone, &faceCone[coneSize]);
-    cellRenumber[cell] = firstFaultCell;
+    cellRenumber[cell]   = firstFaultCell;
+    cellRenumberDM[cell] = firstFaultCellDM;
     // Adding cohesive cell (not interpolated)
-    if (debug)
-      std::cout << "  Creating cohesive cell " << firstFaultCell << std::endl;
+    PetscInt newv = 0;
+    if (debug) std::cout << "  Creating cohesive cell " << firstFaultCell << std::endl;
     for (int c = 0; c < coneSize; ++c) {
-      if (debug)
-	std::cout << "    vertex " << faceCone[c] << std::endl;
+      if (debug) std::cout << "    vertex " << faceCone[c] << std::endl;
       sieve->addArrow(faceCone[c], firstFaultCell);
+      cohesiveCone[newv++] = faceCone[c];
     } // for
     for (int c = 0; c < coneSize; ++c) {
-      if (debug)
-	std::cout << "    shadow vertex " << vertexRenumber[faceCone[c]] << std::endl;
+      if (debug) std::cout << "    shadow vertex " << vertexRenumber[faceCone[c]] << std::endl;
       sieve->addArrow(vertexRenumber[faceCone[c]], firstFaultCell, true);
+      cohesiveCone[newv++] = vertexRenumberDM[faceCone[c]];
     } // for
     if (constraintCell) {
       for (int c = 0; c < coneSize; ++c) {
-        if (debug)
-	  std::cout << "    Lagrange vertex " << vertexLagrangeRenumber[faceCone[c]] << std::endl;
+        if (debug) std::cout << "    Lagrange vertex " << vertexLagrangeRenumber[faceCone[c]] << std::endl;
         sieve->addArrow(vertexLagrangeRenumber[faceCone[c]], firstFaultCell, true);
+        cohesiveCone[newv++] = vertexLagrangeRenumberDM[faceCone[c]];
       } // for
     } // if
+#ifdef USE_DMCOMPLEX_ON
+    err = DMComplexSetCone(newMesh, firstFaultCellDM, cohesiveCone);CHECK_PETSC_ERROR(err);
+#endif
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, firstFaultCell, materialId);
+    err = DMComplexSetLabelValue(complexMesh, "material-id", firstFaultCellDM, materialId);CHECK_PETSC_ERROR(err);
     logger.stagePop();
     logger.stagePush("SerialFaultStratification");
 #if defined(FAST_STRATIFY)
@@ -424,74 +498,88 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     logger.stagePush("SerialFaultCreation");
     sV2.clear();
     cV2.clear();
-  } // for
+  } // for over fault faces
   // This completes the set of cells scheduled to be replaced
+  // TODO: Convert to DMComplex
   TopologyOps::PointSet replaceCellsBase(replaceCells);
 
-  const ALE::Obj<SieveFlexMesh::label_sequence>& faultBdVerts =
-    faultBoundary->depthStratum(0);
+  const ALE::Obj<SieveFlexMesh::label_sequence>& faultBdVerts = faultBoundary->depthStratum(0);
   assert(!faultBdVerts.isNull());
   TopologyOps::PointSet faultBdVertices;
 
   faultBdVertices.insert(faultBdVerts->begin(), faultBdVerts->end());
   TopologyOps::PointSet::const_iterator rVerticesEnd = replaceVertices.end();
-  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin();
-      v_iter != rVerticesEnd; ++v_iter) {
+  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != rVerticesEnd; ++v_iter) {
     if (faultBdVertices.find(*v_iter) != faultBdVertices.end())
       continue;
-    TopologyOps::classifyCells(sieve, *v_iter, depth, faceSize,
-			       firstCohesiveCell, replaceCells, noReplaceCells,
-			       debug);
+    TopologyOps::classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, replaceCells, noReplaceCells, debug);
   } // for
-  const TopologyOps::PointSet::const_iterator fbdVerticesEnd = 
-    faultBdVertices.end();
-  for (TopologyOps::PointSet::const_iterator v_iter=faultBdVertices.begin();
-      v_iter != fbdVerticesEnd;
-      ++v_iter) {
-    TopologyOps::classifyCells(sieve, *v_iter, depth, faceSize,
-			       firstCohesiveCell, replaceCells, noReplaceCells,
-			       debug);
+  const TopologyOps::PointSet::const_iterator fbdVerticesEnd = faultBdVertices.end();
+  for (TopologyOps::PointSet::const_iterator v_iter = faultBdVertices.begin(); v_iter != fbdVerticesEnd; ++v_iter) {
+    TopologyOps::classifyCells(sieve, *v_iter, depth, faceSize, firstCohesiveCell, replaceCells, noReplaceCells, debug);
   } // for
   // Add new arrows for support of replaced vertices
   ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> sV(std::max(1, sieve->getMaxSupportSize()));
 
   rVerticesEnd = replaceVertices.end();
-  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin();
-      v_iter != rVerticesEnd;
-      ++v_iter) {
+  for(TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != rVerticesEnd; ++v_iter) {
     sieve->support(*v_iter, sV);
     const point_type *support = sV.getPoints();
 
-    if (debug)
-      std::cout << "  Checking support of " << *v_iter << std::endl;
+    if (debug) std::cout << "  Checking support of " << *v_iter << std::endl;
     const int sVSize = sV.getSize();
     for (int s = 0; s < sVSize; ++s) {
       if (replaceCells.find(support[s]) != replaceCells.end()) {
-        if (debug)
-	  std::cout << "    Adding new support " << vertexRenumber[*v_iter]
-		    << " --> " << support[s] << std::endl;
+        if (debug) std::cout << "    Adding new support " << vertexRenumber[*v_iter] << " --> " << support[s] << std::endl;
         sieve->addArrow(vertexRenumber[*v_iter], support[s], true);
       } else {
-        if (debug)
-	  std::cout << "    Keeping same support " << *v_iter<<","
-		    << vertexRenumber[*v_iter] << " --> " << support[s]
-		    << std::endl;
+        if (debug) std::cout << "    Keeping same support " << *v_iter<<"," << vertexRenumber[*v_iter] << " --> " << support[s] << std::endl;
       } // if/else
     } // for
     sV.clear();
+#ifdef USE_DMCOMPLEX_ON
+    /* DMComplex */
+    const PetscInt *supportDM;
+    PetscInt        supportSize;
+    err = DMComplexGetSupport(complexMesh, *v_iter, &supportDM);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetSupportSize(complexMesh, *v_iter, &supportSize);CHECK_PETSC_ERROR(err);
+
+    for(PetscInt s = 0; s < supportSize; ++s) {
+      if (replaceCells.find(supportDM[s]) != replaceCells.end()) {
+        const PetscInt *cone;
+        PetscInt        coneSize;
+
+        err = DMComplexGetCone(complexMesh, support[s], &cone);CHECK_PETSC_ERROR(err);
+        err = DMComplexGetConeSize(complexMesh, support[s], &coneSize);CHECK_PETSC_ERROR(err);
+        for(PetscInt c = 0; c < coneSize; ++c) {
+          if (cone[c] == *v_iter) {
+            cohesiveCone[c] = vertexRenumberDM[cone[c]];
+          } else {
+            /* TODO This will have to change for multiple faults */
+            cohesiveCone[c] = cone[c] + extraCells;
+          }
+        }
+        err = DMComplexSetCone(newMesh, support[s], cohesiveCone);CHECK_PETSC_ERROR(err);
+      }
+    }
+#endif
   }
+  err = PetscFree3(origVerticesDM, faceVerticesDM, cohesiveCone);CHECK_PETSC_ERROR(err);
   sieve->reallocate();
+#ifdef USE_DMCOMPLEX_ON
+  /* DMComplex */
+  err = DMComplexSymmetrize(newMesh);CHECK_PETSC_ERROR(err);
+  err = DMComplexStratify(newMesh);CHECK_PETSC_ERROR(err);
+#endif
 
   // More checking
   const bool firstFault = !sieveMesh->hasRealSection("replaced_cells");
-  const ALE::Obj<topology::Mesh::RealSection>& replacedCells = 
-    sieveMesh->getRealSection("replaced_cells");
+  const ALE::Obj<topology::Mesh::RealSection>& replacedCells = sieveMesh->getRealSection("replaced_cells");
   assert(!replacedCells.isNull());
   TopologyOps::PointSet cellNeighbors;
 	 
   if (firstFault) {
-    const ALE::Obj<SieveMesh::label_sequence>& cells = 
-      sieveMesh->heightStratum(0);
+    const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
     assert(!cells.isNull());
 
     replacedCells->setChart(topology::Mesh::RealSection::chart_type(*std::min_element(cells->begin(), cells->end()), *std::max_element(cells->begin(), cells->end())+1));
@@ -500,9 +588,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // if
 	 
   const TopologyOps::PointSet::const_iterator noRCellsEnd = noReplaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = noReplaceCells.begin();
-      c_iter != noRCellsEnd;
-      ++c_iter) {
+  for (TopologyOps::PointSet::const_iterator c_iter = noReplaceCells.begin(); c_iter != noRCellsEnd; ++c_iter) {
     const PylithScalar minusOne = -1.0;
     if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
       replacedCells->updatePoint(*c_iter, &minusOne);
@@ -513,9 +599,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   } // for
 
   TopologyOps::PointSet::const_iterator rCellsEnd = replaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin();
-      c_iter != rCellsEnd;
-      ++c_iter) {
+  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != rCellsEnd; ++c_iter) {
     if (replaceCellsBase.find(*c_iter) != replaceCellsBase.end()) {
       const PylithScalar one = 1.0;
       if (replacedCells->restrictPoint(*c_iter)[0] == 0.0) {
@@ -536,40 +620,30 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // There should be a way to check for boundary elements
     if (mesh->dimension() == 1) {
       if (cellNeighbors.size() > 2) {
-        std::cout << "Cell " << *c_iter
-		  << " has an invalid number of neighbors "
-		  << cellNeighbors.size() << std::endl;
+        std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
         throw ALE::Exception("Invalid number of neighbors");
       } // if
     } else if (mesh->dimension() == 2) {
       if (numCorners == 3) {
         if (cellNeighbors.size() > 3) {
-          std::cout << "Cell " << *c_iter
-		    << " has an invalid number of neighbors "
-		    << cellNeighbors.size() << std::endl;
+          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
           throw ALE::Exception("Invalid number of neighbors");
 	} // if
       } else if (numCorners == 4 || numCorners == 9) {
         if (cellNeighbors.size() > 4) {
-          std::cout << "Cell " << *c_iter
-		    << " has an invalid number of neighbors "
-		    << cellNeighbors.size() << std::endl;
+          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
           throw ALE::Exception("Invalid number of neighbors");
         } // if
       } // if/else
     } else if (mesh->dimension() == 3) {
       if (numCorners == 4) {
         if (cellNeighbors.size() > 4) {
-          std::cout << "Cell " << *c_iter
-		    << " has an invalid number of neighbors "
-		    << cellNeighbors.size() << std::endl;
+          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
           throw ALE::Exception("Invalid number of neighbors");
         } // if
       } else if (numCorners == 8) {
         if (cellNeighbors.size() > 6) {
-          std::cout << "Cell " << *c_iter
-		    << " has an invalid number of neighbors "
-		    << cellNeighbors.size() << std::endl;
+          std::cout << "Cell " << *c_iter << " has an invalid number of neighbors " << cellNeighbors.size() << std::endl;
           throw ALE::Exception("Invalid number of neighbors");
         } // if
       } // if/else
@@ -578,13 +652,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   ReplaceVisitor<SieveMesh::sieve_type,std::map<SieveMesh::point_type,SieveMesh::point_type> > rVc(vertexRenumber, std::max(1, sieve->getMaxConeSize()), debug);
   
   rCellsEnd = replaceCells.end();
-  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin();
-       c_iter != rCellsEnd;
-       ++c_iter) {
+  for (TopologyOps::PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != rCellsEnd; ++c_iter) {
     sieve->cone(*c_iter, rVc);
     if (rVc.mappedPoint()) {
-      if (debug)
-	std::cout << "  Replacing cell " << *c_iter << std::endl;
+      if (debug) std::cout << "  Replacing cell " << *c_iter << std::endl;
       sieve->setCone(rVc.getPoints(), *c_iter);
     } // if
     rVc.clear();
@@ -592,22 +663,20 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   ReplaceVisitor<SieveMesh::sieve_type,std::map<SieveMesh::point_type,SieveMesh::point_type> > rVs(cellRenumber, std::max(1, sieve->getMaxSupportSize()), debug);
 
   rVerticesEnd = replaceVertices.end();
-  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin();
-       v_iter != rVerticesEnd;
-       ++v_iter) {
+  for (TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != rVerticesEnd; ++v_iter) {
     sieve->support(*v_iter, rVs);
     if (rVs.mappedPoint()) {
-      if (debug)
-	std::cout << "  Replacing support for " << *v_iter << std::endl;
+      if (debug) std::cout << "  Replacing support for " << *v_iter << std::endl;
       sieve->setSupport(*v_iter, rVs.getPoints());
     } else {
-      if (debug)
-	std::cout << "  Not replacing support for " << *v_iter << std::endl;
+      if (debug) std::cout << "  Not replacing support for " << *v_iter << std::endl;
     } // if/else
     rVs.clear();
   } // for
-  if (!faultSieveMesh->commRank())
+  if (!faultSieveMesh->commRank()) {
     delete [] indices;
+    err = PetscFree(indicesDM);CHECK_PETSC_ERROR(err);
+  }
 #if !defined(FAST_STRATIFY)
   logger.stagePop();
   logger.stagePush("SerialFaultStratification");
@@ -628,56 +697,95 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     assert(!label.isNull());
 
     const std::map<int,int>::const_iterator vRenumberEnd = vertexRenumber.end();
-    for (std::map<int,int>::const_iterator v_iter = vertexRenumber.begin();
-	 v_iter != vRenumberEnd;
-	 ++v_iter)
+    for (std::map<int,int>::const_iterator v_iter = vertexRenumber.begin(); v_iter != vRenumberEnd; ++v_iter)
       sieveMesh->setValue(label, v_iter->second, 0);
   } // if/else
-  if (debug)
-    mesh->view("Mesh with Cohesive Elements");
+  if (debug) mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
-  const ALE::Obj<topology::Mesh::RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
+  const ALE::Obj<topology::Mesh::RealSection>& coordinates = sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& fVertices2 =
-    faultSieveMesh->depthStratum(0);
+  const ALE::Obj<SieveSubMesh::label_sequence>& fVertices2 = faultSieveMesh->depthStratum(0);
   assert(!fVertices2.isNull());
-  SieveSubMesh::label_sequence::const_iterator fVertices2Begin = 
-    fVertices2->begin();
-  SieveSubMesh::label_sequence::const_iterator fVertices2End = 
-    fVertices2->end();
+  SieveSubMesh::label_sequence::const_iterator fVertices2Begin = fVertices2->begin();
+  SieveSubMesh::label_sequence::const_iterator fVertices2End   = fVertices2->end();
 
-  if (debug)
-    coordinates->view("Coordinates without shadow vertices");
-  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
-      v_iter != fVertices2End;
-      ++v_iter) {
-    coordinates->addPoint(vertexRenumber[*v_iter],
-			  coordinates->getFiberDimension(*v_iter));
-    if (constraintCell)
-      coordinates->addPoint(vertexLagrangeRenumber[*v_iter],
-			    coordinates->getFiberDimension(*v_iter));
+  PetscSection coordSection, newCoordSection;
+  Vec          coordinatesDM, newCoordinatesDM;
+  PetscScalar *coords, *newCoords;
+  PetscInt     coordSize;
+ 
+#ifdef USE_DMCOMPLEX_ON
+  err = DMComplexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(newMesh,     &newCoordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(complexMesh, &coordinatesDM);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(newMesh,     &newCoordinatesDM);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(newCoordSection, vStart+extraCells, vEnd+extraCells+extraVertices);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(newCoordSection, v+extraCells, dof);CHECK_PETSC_ERROR(err);
+  }
+#endif
+
+  if (debug) coordinates->view("Coordinates without shadow vertices");
+  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin; v_iter != fVertices2End; ++v_iter) {
+    coordinates->addPoint(vertexRenumber[*v_iter], coordinates->getFiberDimension(*v_iter));
+    if (constraintCell) coordinates->addPoint(vertexLagrangeRenumber[*v_iter], coordinates->getFiberDimension(*v_iter));
+#ifdef USE_DMCOMPLEX_ON
+    PetscInt dof, v = *v_iter;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(newCoordSection, vertexRenumberDM[v], dof);CHECK_PETSC_ERROR(err);
+    if (constraintCell) {err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[v], dof);CHECK_PETSC_ERROR(err);}
+#endif
   } // for
   sieveMesh->reallocate(coordinates);
-  SieveSubMesh::label_sequence::const_iterator fVertices2EndNew = 
-    fVertices2->end();
-  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin;
-       v_iter != fVertices2EndNew;
-       ++v_iter) {
-    assert(coordinates->getFiberDimension(*v_iter) ==
-	   coordinates->getFiberDimension(vertexRenumber[*v_iter]));
-    coordinates->updatePoint(vertexRenumber[*v_iter], 
-			     coordinates->restrictPoint(*v_iter));
+#ifdef USE_DMCOMPLEX_ON
+  err = PetscSectionSetUp(newCoordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(newCoordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(newCoordinatesDM, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(newCoordinatesDM);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordinatesDM, &coords);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(newCoordinatesDM, &newCoords);CHECK_PETSC_ERROR(err);
+
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off, newoff, d;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(newCoordSection, v+extraCells, &newoff);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      newCoords[newoff+d] = coords[off+d];
+    }
+  }
+#endif
+  SieveSubMesh::label_sequence::const_iterator fVertices2EndNew = fVertices2->end();
+  for (SieveSubMesh::label_sequence::iterator v_iter = fVertices2Begin; v_iter != fVertices2EndNew; ++v_iter) {
+    assert(coordinates->getFiberDimension(*v_iter) == coordinates->getFiberDimension(vertexRenumber[*v_iter]));
+    coordinates->updatePoint(vertexRenumber[*v_iter], coordinates->restrictPoint(*v_iter));
     if (constraintCell) {
-      assert(coordinates->getFiberDimension(*v_iter) ==
-	     coordinates->getFiberDimension(vertexLagrangeRenumber[*v_iter]));
-      coordinates->updatePoint(vertexLagrangeRenumber[*v_iter],
-			       coordinates->restrictPoint(*v_iter));
+      assert(coordinates->getFiberDimension(*v_iter) == coordinates->getFiberDimension(vertexLagrangeRenumber[*v_iter]));
+      coordinates->updatePoint(vertexLagrangeRenumber[*v_iter], coordinates->restrictPoint(*v_iter));
     } // if
+
+#ifdef USE_DMCOMPLEX_ON
+    PetscInt v = *v_iter, dof, off, newoff, d;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(newCoordSection, vertexRenumberDM[v], &newoff);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      newCoords[newoff+d] = coords[off+d];
+    }
+    if (constraintCell) {
+      err = PetscSectionGetOffset(newCoordSection, vertexLagrangeRenumberDM[v], &newoff);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {
+        newCoords[newoff+d] = coords[off+d];
+      }
+    } // if
+#endif
   } // for
-  if (debug)
-    coordinates->view("Coordinates with shadow vertices");
+  //err = VecRestoreArray(coordinatesDM, &coords);CHECK_PETSC_ERROR(err);
+  //err = VecRestoreArray(newCoordinatesDM, &newCoords);CHECK_PETSC_ERROR(err);
+  if (debug) coordinates->view("Coordinates with shadow vertices");
 
   logger.stagePop();
 } // create

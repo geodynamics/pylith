@@ -96,6 +96,12 @@ public :
    * @returns Sieve section.
    */
   const ALE::Obj<section_type>& section(void) const;
+  
+  /** Get DMComplex section.
+   *
+   * @returns DMComplex section.
+   */
+  void dmSection(PetscSection *s, Vec *v) const;
 
   /** Get mesh associated with field.
    *

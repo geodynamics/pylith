@@ -37,8 +37,15 @@ pylith::topology::Mesh::sieveMesh(void) {
 // Get DMComplex mesh.
 inline
 DM
-pylith::topology::Mesh::dmMesh(void) {
+pylith::topology::Mesh::dmMesh(void) const {
   return _newMesh;
+}
+
+// Set DMComplex mesh.
+inline
+void
+pylith::topology::Mesh::setDMMesh(DM dm) {
+  _newMesh = dm;
 }
 
 // Get coordinate system.

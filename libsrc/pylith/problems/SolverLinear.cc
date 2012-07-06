@@ -150,7 +150,6 @@ pylith::problems::SolverLinear::solve(
   } // if
 #endif
 
-
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
 

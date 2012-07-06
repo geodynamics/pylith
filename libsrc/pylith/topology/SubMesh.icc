@@ -34,6 +34,13 @@ pylith::topology::SubMesh::sieveMesh(void) {
   return _mesh;
 }
 
+// Get DMComplex mesh.
+inline
+DM
+pylith::topology::SubMesh::dmMesh(void) const {
+  return _newMesh;
+}
+
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*

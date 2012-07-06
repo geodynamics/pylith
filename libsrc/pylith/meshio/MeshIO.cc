@@ -29,6 +29,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <utils/petscerror.h> // USES CHECK_PETSC_ERROR
+
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
@@ -208,6 +210,9 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  DM complexMesh = _mesh->dmMesh();
+  assert(complexMesh);
+  PetscErrorCode err;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   ///logger.setDebug(2);
@@ -237,6 +242,13 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 	e_iter != cellsEnd;
 	++e_iter) {
       sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    }
+
+    PetscInt cStart, cEnd;
+    err = DMComplexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    assert(numCells == cEnd - cStart);
+    for(PetscInt c = cStart; c < cEnd; ++c) {
+      err = DMComplexSetLabelValue(complexMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
     }
   } // if
   logger.stagePop();
@@ -287,6 +299,9 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  DM complexMesh = _mesh->dmMesh();
+  assert(complexMesh);
+  PetscErrorCode err;
 
   if (sieveMesh->hasIntSection(name)) {
     std::ostringstream msg;
@@ -314,6 +329,10 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
       groupField->setFiberDimension(numCells+points[i], 1);
   } // if/else
   sieveMesh->allocate(groupField);
+
+  for(PetscInt p = 0; p < numPoints; ++p) {
+    err = DMComplexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
+  }
   logger.stagePop();
 } // _setGroup
 
@@ -326,6 +345,9 @@ pylith::meshio::MeshIO::_distributeGroups()
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
+  DM complexMesh = _mesh->dmMesh();
+  assert(complexMesh);
+  PetscErrorCode err;
 
   if (!sieveMesh->commRank()) {
     const ALE::Obj<std::set<std::string> >& sectionNames = 
@@ -358,6 +380,7 @@ pylith::meshio::MeshIO::_distributeGroups()
       const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
       assert(!groupField.isNull());
       sieveMesh->allocate(groupField);
+      /* complexMesh does not need to broadcast the label names. They come from proc 0 */
       delete [] name;
     } // for
   } // if/else

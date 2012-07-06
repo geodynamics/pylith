@@ -24,6 +24,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+extern PetscErrorCode DMComplexVTKWriteAll(PetscObject odm, PetscViewer viewer);
+
 // ----------------------------------------------------------------------
 // Constructor
 template<typename mesh_type, typename field_type>
@@ -115,7 +117,16 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     PetscErrorCode err = 0;
     
     const std::string& filename = _vtkFilename(t);
+    DM complexMesh = mesh.dmMesh();
 
+    if (complexMesh && 0) {
+      /* DMComplex */
+      err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
+      err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
+      err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
+      err = PetscViewerFileSetName(_viewer, filename.c_str());CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) complexMesh);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the DM */
+    } else {
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
     err = PetscViewerSetType(_viewer, PETSCVIEWERASCII);
@@ -147,6 +158,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
 
     _wroteVertexHeader = false;
     _wroteCellHeader = false;
+    }
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while preparing for writing data to VTK file "
@@ -184,6 +196,32 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
+    DM complexMesh = mesh.dmMesh();
+
+    if (complexMesh && 0) {
+      /* DMComplex */
+      PetscContainer c;
+      PetscSection s;
+      Vec v;
+
+      field.dmSection(&s, &v);
+
+      /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
+      PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMComplexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+      err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
+      err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
+      err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
+      err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
+      //err = PetscSectionDestroy(&s);CHECK_PETSC_ERROR(err);
+      err = VecDestroy(&v);CHECK_PETSC_ERROR(err);
+
+      _wroteVertexHeader = true;
+    } else {
+    int rank = 0;
+    MPI_Comm_rank(field.mesh().comm(), &rank);
+
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
     assert(!sieveMesh.isNull());
 
@@ -218,6 +256,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     err = VTKViewer::writeField(section, field.label(), fiberDim, numbering,
 				_viewer, enforceDim, _precision);
     CHECK_PETSC_ERROR(err);
+    }
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -245,6 +284,29 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
+    DM complexMesh = field.mesh().dmMesh();
+
+    if (complexMesh && 0) {
+      /* DMComplex */
+      PetscContainer c;
+      PetscSection s;
+      Vec v;
+
+      field.dmSection(&s, &v);
+
+      /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
+      PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
+      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMComplexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+      err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
+      err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
+      err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
+      err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
+      //err = PetscSectionDestroy(&s);CHECK_PETSC_ERROR(err);
+      err = VecDestroy(&v);CHECK_PETSC_ERROR(err);
+
+      _wroteCellHeader = true;
+    } else {
     PetscErrorCode err = 0;
 
     // Correctly handle boundary and fault meshes
@@ -287,6 +349,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 
     VTKViewer::writeField(section, field.label(), fiberDim, numbering,
 			  _viewer, enforceDim, _precision);
+    }
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
