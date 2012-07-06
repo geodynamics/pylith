@@ -98,6 +98,9 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
     _mesh->setRealSection("coordinates_dimensioned", 
 			  meshSieveMesh->getRealSection("coordinates_dimensioned"));
 
+  /* TODO: Implement subMesh() for DMComplex */
+  _newMesh = PETSC_NULL;
+
   // Create the parallel overlap
   const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
   assert(!sieve.isNull());

@@ -117,7 +117,13 @@ public :
    *
    * @returns DMComplex mesh.
    */
-  DM dmMesh(void);
+  DM dmMesh(void) const;
+
+  /** Set DMComplex mesh.
+   *
+   * @param DMComplex mesh.
+   */
+  void setDMMesh(DM dm);
 
   /** Set coordinate system.
    *

@@ -140,6 +140,62 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   } // if/else
 } // initialize
 
+
+static inline PetscInt epsilon(PetscInt i, PetscInt j, PetscInt k)
+{
+  switch(i) {
+  case 0:
+    switch(j) {
+    case 0: return 0;
+    case 1:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 0;
+      case 2: return 1;
+      }
+    case 2:
+      switch(k) {
+      case 0: return 0;
+      case 1: return -1;
+      case 2: return 0;
+      }
+    }
+  case 1:
+    switch(j) {
+    case 0:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 0;
+      case 2: return -1;
+      }
+    case 1: return 0;
+    case 2:
+      switch(k) {
+      case 0: return 1;
+      case 1: return 0;
+      case 2: return 0;
+      }
+    }
+  case 2:
+    switch(j) {
+    case 0:
+      switch(k) {
+      case 0: return 0;
+      case 1: return 1;
+      case 2: return 0;
+      }
+    case 1:
+      switch(k) {
+      case 0: return -1;
+      case 1: return 0;
+      case 2: return 0;
+      }
+    case 2: return 0;
+    }
+  }
+  return 0;
+}
+
 // ----------------------------------------------------------------------
 // Setup preconditioner for preconditioning with split fields.
 void

@@ -96,6 +96,12 @@ public :
    */
   ALE::Obj<SieveMesh>& sieveMesh(void);
 
+  /** Get DMComplex mesh.
+   *
+   * @returns DMComplex mesh.
+   */
+  DM dmMesh(void) const;
+
   /** Set coordinate system using mesh.
    *
    * @param mesh Finite-element mesh over domain.
@@ -163,6 +169,7 @@ public :
 private :
 
   ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
+  DM _newMesh;
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   bool _debug; ///< Debugging flag for mesh.
   

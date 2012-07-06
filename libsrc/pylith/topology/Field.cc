@@ -400,6 +400,20 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 } // cloneSection
 
 // ----------------------------------------------------------------------
+// Get DMComplex section.
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec *v) const {
+  PetscInt       size;
+  PetscErrorCode err;
+
+  err = DMMeshConvertSection(_mesh.sieveMesh(), _section, s);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(*s, &size);CHECK_PETSC_ERROR(err);
+  err = VecCreateMPIWithArray(_section->comm(), 1, size, PETSC_DETERMINE, _section->restrictSpace(), v);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) *v, _section->getName().c_str());CHECK_PETSC_ERROR(err);
+}
+
+// ----------------------------------------------------------------------
 // Clear variables associated with section.
 template<typename mesh_type, typename section_type>
 void

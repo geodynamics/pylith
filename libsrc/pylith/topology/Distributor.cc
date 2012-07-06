@@ -63,7 +63,10 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
   journal::info_t info("distributor");
     
   newMesh->coordsys(origMesh.coordsys());
-  
+
+  DM newDM;
+  PetscErrorCode err = DMComplexDistribute(origMesh.dmMesh(), partitioner, &newDM);CHECK_PETSC_ERROR(err);
+  newMesh->setDMMesh(newDM);
   if (0 == strcasecmp(partitioner, "")) {
     if (0 == commRank) {
       info << journal::at(__HERE__)
