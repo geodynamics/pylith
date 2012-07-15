@@ -33,6 +33,7 @@
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::SubMesh::SubMesh(void) :
+  _newMesh(PETSC_NULL),
   _coordsys(0),
   _debug(false)
 { // constructor
@@ -42,6 +43,7 @@ pylith::topology::SubMesh::SubMesh(void) :
 // Constructor with mesh and label for vertices marking boundary.
 pylith::topology::SubMesh::SubMesh(const Mesh& mesh,
 				   const char* label) :
+  _newMesh(PETSC_NULL),
   _coordsys(0),
   _debug(false)
 { // constructor

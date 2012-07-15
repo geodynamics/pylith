@@ -48,6 +48,28 @@ pylith::topology::Mesh::setDMMesh(DM dm) {
   _newMesh = dm;
 }
 
+// Get point type sizes.
+inline
+void
+pylith::topology::Mesh::getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const {
+  *numNormalCells      = _numNormalCells;
+  *numCohesiveCells    = _numCohesiveCells;
+  *numNormalVertices   = _numNormalVertices;
+  *numShadowVertices   = _numShadowVertices;
+  *numLagrangeVertices = _numLagrangeVertices;
+}
+
+// Set point type sizes.
+inline
+void
+pylith::topology::Mesh::setPointTypeSizes(PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices) {
+  _numNormalCells      = numNormalCells;
+  _numCohesiveCells    = numCohesiveCells;
+  _numNormalVertices   = numNormalVertices;
+  _numShadowVertices   = numShadowVertices;
+  _numLagrangeVertices = numLagrangeVertices;
+}
+
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*
