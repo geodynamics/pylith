@@ -404,10 +404,125 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec *v) const {
+  PetscSection   section;
   PetscInt       size;
+  PetscInt       numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
   PetscErrorCode err;
 
-  err = DMMeshConvertSection(_mesh.sieveMesh(), _section, s);CHECK_PETSC_ERROR(err);
+  err = DMMeshConvertSection(_mesh.sieveMesh(), _section, &section);CHECK_PETSC_ERROR(err);
+  _mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+  if (numNormalCells+numCohesiveCells+numNormalVertices+numShadowVertices+numLagrangeVertices > 0) {
+    PetscInt numFields, numComp, pMax, pStart, pEnd, qStart, qEnd;
+
+    err = DMComplexGetChart(_mesh.dmMesh(), PETSC_NULL, &pMax);CHECK_PETSC_ERROR(err);
+    err = PetscSectionCreate(_mesh.sieveMesh()->comm(), s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+    if (numFields) {
+      err = PetscSectionSetNumFields(*s, numFields);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldComponents(section, f, &numComp);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldComponents(*s, f, numComp);CHECK_PETSC_ERROR(err);
+      }
+    }
+    err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    if (pStart > 0) {
+      qStart = pStart + numCohesiveCells;
+    } else {
+      qStart = pStart;
+    }
+    qEnd = PetscMin(pEnd + numCohesiveCells, pMax);
+    err = PetscSectionSetChart(*s, qStart, qEnd);CHECK_PETSC_ERROR(err);
+#if 0
+    if (pEnd - pStart != (numNormalCells + numCohesiveCells + numNormalVertices + numShadowVertices + numLagrangeVertices)) {
+      PetscPrintf(PETSC_COMM_SELF, "numCells %d != totCells %d\n", pEnd - pStart, numNormalCells + numCohesiveCells + numNormalVertices + numShadowVertices + numLagrangeVertices);
+      CHECK_PETSC_ERROR(PETSC_ERR_ARG_SIZ);
+    }
+#endif
+    /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]
+       The new-style point numbering: [normalCells, cohesiveCells, normalVertices, shadowVertices, lagrangeVertices] */
+    for(PetscInt p = pStart; p < numNormalCells; ++p) {
+      PetscInt dof, fdof, cdof, cfdof, q = p;
+
+      err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetDof(*s, q, dof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldDof(section, p, f, &fdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldDof(*s, q, f, fdof);CHECK_PETSC_ERROR(err);
+      }
+      err = PetscSectionGetConstraintDof(section, p, &cdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintDof(*s, q, cdof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintDof(section, p, f, &cfdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintDof(*s, q, f, cfdof);CHECK_PETSC_ERROR(err);
+      }
+    }
+    for(PetscInt p = PetscMax(pStart, numNormalCells); p < PetscMin(pEnd, numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices); ++p) {
+      PetscInt dof, fdof, cdof, cfdof, q = p + numCohesiveCells;
+
+      err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetDof(*s, q, dof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldDof(section, p, f, &fdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldDof(*s, q, f, fdof);CHECK_PETSC_ERROR(err);
+      }
+      err = PetscSectionGetConstraintDof(section, p, &cdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintDof(*s, q, cdof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintDof(section, p, f, &cfdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintDof(*s, q, f, cfdof);CHECK_PETSC_ERROR(err);
+      }
+    }
+    for(PetscInt p = PetscMax(pStart, numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices); p < pEnd; ++p) {
+      PetscInt dof, fdof, cdof, cfdof, q = p - (numNormalVertices+numShadowVertices+numLagrangeVertices);
+
+      err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetDof(*s, q, dof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldDof(section, p, f, &fdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldDof(*s, q, f, fdof);CHECK_PETSC_ERROR(err);
+      }
+      err = PetscSectionGetConstraintDof(section, p, &cdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintDof(*s, q, cdof);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintDof(section, p, f, &cfdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintDof(*s, q, f, cfdof);CHECK_PETSC_ERROR(err);
+      }
+    }
+    err = PetscSectionSetUp(*s);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = pStart; p < pStart+numNormalCells; ++p) {
+      PetscInt *cind, *cfind, q = p;
+
+      err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintIndices(section, p, f, &cfind);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintIndices(*s, q, f, cfind);CHECK_PETSC_ERROR(err);
+      }
+    }
+    for(PetscInt p = pStart+numNormalCells; p < pStart+numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices; ++p) {
+      PetscInt *cind, *cfind, q = p + numCohesiveCells;
+
+      err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintIndices(section, p, f, &cfind);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintIndices(*s, q, f, cfind);CHECK_PETSC_ERROR(err);
+      }
+    }
+    for(PetscInt p = pStart+numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices; p < pEnd; ++p) {
+      PetscInt *cind, *cfind, q = p - (numNormalVertices+numShadowVertices+numLagrangeVertices);
+
+      err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
+      for(PetscInt f = 0; f < numFields; ++f) {
+        err = PetscSectionGetFieldConstraintIndices(section, p, f, &cfind);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetFieldConstraintIndices(*s, q, f, cfind);CHECK_PETSC_ERROR(err);
+      }
+    }
+    err = PetscSectionDestroy(&section);CHECK_PETSC_ERROR(err);
+  } else {
+    *s = section;
+  }
   err = PetscSectionGetStorageSize(*s, &size);CHECK_PETSC_ERROR(err);
   err = VecCreateMPIWithArray(_section->comm(), 1, size, PETSC_DETERMINE, _section->restrictSpace(), v);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) *v, _section->getName().c_str());CHECK_PETSC_ERROR(err);

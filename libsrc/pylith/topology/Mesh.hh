@@ -125,6 +125,26 @@ public :
    */
   void setDMMesh(DM dm);
 
+  /** Get sizes for all point types.
+   *
+   * @param numNormalCells
+   * @param numCohesiveCells
+   * @param numNormalVertices
+   * @param numShadowVertices
+   * @param numLagrangeVertices.
+   */
+  void getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const;
+
+  /** Set sizes for all point types.
+   *
+   * @param numNormalCells
+   * @param numCohesiveCells
+   * @param numNormalVertices
+   * @param numShadowVertices
+   * @param numLagrangeVertices.
+   */
+  void setPointTypeSizes(PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices);
+
   /** Set coordinate system.
    *
    * @param cs Coordinate system.
@@ -222,6 +242,10 @@ private :
 
   ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
   DM _newMesh;
+  /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]
+     The new-style point numbering: [normalCells, cohesiveCells, normalVertices, shadowVertices, lagrangeVertices]
+  */
+  PetscInt _numNormalCells, _numCohesiveCells, _numNormalVertices, _numShadowVertices, _numLagrangeVertices;
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   MPI_Comm _comm; ///< MPI communicator for mesh.
   bool _debug; ///< Debugging flag for mesh.

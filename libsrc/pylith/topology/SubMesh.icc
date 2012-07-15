@@ -41,6 +41,17 @@ pylith::topology::SubMesh::dmMesh(void) const {
   return _newMesh;
 }
 
+// Get point type sizes.
+inline
+void
+pylith::topology::SubMesh::getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const {
+  *numNormalCells      = 0;
+  *numCohesiveCells    = 0;
+  *numNormalVertices   = 0;
+  *numShadowVertices   = 0;
+  *numLagrangeVertices = 0;
+}
+
 // Get coordinate system.
 inline
 const spatialdata::geocoords::CoordSys*

@@ -102,6 +102,16 @@ public :
    */
   DM dmMesh(void) const;
 
+  /** Get sizes for all point types.
+   *
+   * @param numNormalCells
+   * @param numCohesiveCells
+   * @param numNormalVertices
+   * @param numShadowVertices
+   * @param numLagrangeVertices.
+   */
+  void getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const;
+
   /** Set coordinate system using mesh.
    *
    * @param mesh Finite-element mesh over domain.

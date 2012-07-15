@@ -34,6 +34,7 @@
 // Default constructor
 pylith::topology::Mesh::Mesh(void) :
   _newMesh(PETSC_NULL),
+  _numNormalCells(0), _numCohesiveCells(0), _numNormalVertices(0), _numShadowVertices(0), _numLagrangeVertices(0),
   _coordsys(0),
   _comm(PETSC_COMM_WORLD),
   _debug(false)
@@ -46,6 +47,7 @@ pylith::topology::Mesh::Mesh(const int dim,
 			     const MPI_Comm& comm) :
   _mesh(new SieveMesh(comm, dim)),
   _newMesh(PETSC_NULL),
+  _numNormalCells(0), _numCohesiveCells(0), _numNormalVertices(0), _numShadowVertices(0), _numLagrangeVertices(0),
   _coordsys(0),
   _comm(comm),
   _debug(false)

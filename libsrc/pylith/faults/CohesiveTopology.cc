@@ -229,11 +229,19 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   PetscInt firstFaultVertexDM, firstLagrangeVertexDM, firstFaultCellDM, extraVertices, extraCells;
 #ifdef USE_DMCOMPLEX_ON
   /* TODO This will have to change for multiple faults */
+  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
+
   extraVertices         = firstFaultCell; /* Total number of fault vertices (shadow + Lagrange) */
   extraCells            = numFaultFaces;  /* Total number of fault cells */
   firstFaultVertexDM    = vEnd + extraCells;
   firstLagrangeVertexDM = firstFaultVertexDM + firstLagrangeVertex;
   firstFaultCellDM      = cEnd;
+  mesh->getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+  if (!numNormalCells) {
+    mesh->setPointTypeSizes(cEnd-cStart, extraCells, vEnd-vStart, firstLagrangeVertex, firstLagrangeVertex);
+  } else {
+    mesh->setPointTypeSizes(numNormalCells, numCohesiveCells+extraCells, numNormalVertices, numShadowVertices+firstLagrangeVertex, numLagrangeVertices+firstLagrangeVertex);
+  }
 #endif
   if (firstFaultVertex == 0) {
     firstFaultVertex    += sieve->getBaseSize() + sieve->getCapSize();
@@ -280,6 +288,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = DMComplexSetCone(newMesh, c, newCone);CHECK_PETSC_ERROR(err);
   }
   err = PetscFree(newCone);CHECK_PETSC_ERROR(err);
+  PetscInt cMax, vMax;
+
+  err = DMComplexGetVTKBounds(newMesh, &cMax, &vMax);CHECK_PETSC_ERROR(err);
+  if (cMax < 0) {
+    err = DMComplexSetVTKBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  }
+  err = DMComplexSetVTKBounds(newMesh, PETSC_DETERMINE, firstLagrangeVertexDM);CHECK_PETSC_ERROR(err);
 #endif
 
   // Add fault vertices to groups and construct renumberings
@@ -537,33 +552,37 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       } // if/else
     } // for
     sV.clear();
+  }
 #ifdef USE_DMCOMPLEX_ON
-    /* DMComplex */
-    const PetscInt *supportDM;
-    PetscInt        supportSize;
-    err = DMComplexGetSupport(complexMesh, *v_iter, &supportDM);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetSupportSize(complexMesh, *v_iter, &supportSize);CHECK_PETSC_ERROR(err);
+  for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+    const PetscInt *cone;
+    PetscInt        coneSize;
 
-    for(PetscInt s = 0; s < supportSize; ++s) {
-      if (replaceCells.find(supportDM[s]) != replaceCells.end()) {
-        const PetscInt *cone;
-        PetscInt        coneSize;
+    err = DMComplexGetCone(complexMesh, cell, &cone);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetConeSize(complexMesh, cell, &coneSize);CHECK_PETSC_ERROR(err);
+    if (replaceCells.find(cell) != replaceCells.end()) {
+      for(PetscInt c = 0; c < coneSize; ++c) {
+        PetscBool replaced = PETSC_FALSE;
 
-        err = DMComplexGetCone(complexMesh, support[s], &cone);CHECK_PETSC_ERROR(err);
-        err = DMComplexGetConeSize(complexMesh, support[s], &coneSize);CHECK_PETSC_ERROR(err);
-        for(PetscInt c = 0; c < coneSize; ++c) {
+        for(TopologyOps::PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != rVerticesEnd; ++v_iter) {
           if (cone[c] == *v_iter) {
             cohesiveCone[c] = vertexRenumberDM[cone[c]];
-          } else {
-            /* TODO This will have to change for multiple faults */
-            cohesiveCone[c] = cone[c] + extraCells;
+            replaced        = PETSC_TRUE;
+            break;
           }
         }
-        err = DMComplexSetCone(newMesh, support[s], cohesiveCone);CHECK_PETSC_ERROR(err);
+        if (!replaced) {
+          cohesiveCone[c] = cone[c] + extraCells;
+        }
+      }
+    } else {
+      for(PetscInt c = 0; c < coneSize; ++c) {
+        cohesiveCone[c] = cone[c] + extraCells;
       }
     }
-#endif
+    err = DMComplexSetCone(newMesh, cell, cohesiveCone);CHECK_PETSC_ERROR(err);
   }
+#endif
   err = PetscFree3(origVerticesDM, faceVerticesDM, cohesiveCone);CHECK_PETSC_ERROR(err);
   sieve->reallocate();
 #ifdef USE_DMCOMPLEX_ON
@@ -788,6 +807,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   if (debug) coordinates->view("Coordinates with shadow vertices");
 
   logger.stagePop();
+
+  err = DMDestroy(&complexMesh);CHECK_PETSC_ERROR(err);
+  mesh->setDMMesh(newMesh);
 } // create
 
 // ----------------------------------------------------------------------
