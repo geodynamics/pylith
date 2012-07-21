@@ -226,21 +226,22 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   std::map<point_type,point_type> vertexLagrangeRenumberDM;
   std::map<point_type,point_type> cellRenumberDM;
   PetscInt numFaultFaces = faultSieveMesh->heightStratum(1)->size();
-  PetscInt firstFaultVertexDM, firstLagrangeVertexDM, firstFaultCellDM, extraVertices, extraCells;
+  PetscInt faultVertexOffsetDM, firstFaultVertexDM, firstLagrangeVertexDM, firstFaultCellDM, extraVertices, extraCells;
 #ifdef USE_DMCOMPLEX_ON
   /* TODO This will have to change for multiple faults */
   PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
 
-  extraVertices         = firstFaultCell; /* Total number of fault vertices (shadow + Lagrange) */
-  extraCells            = numFaultFaces;  /* Total number of fault cells */
+  extraVertices         = numFaultVertices * (constraintCell ? 2 : 1); /* Total number of fault vertices on this fault (shadow + Lagrange) */
+  extraCells            = numFaultFaces;                               /* Total number of fault cells */
   firstFaultVertexDM    = vEnd + extraCells;
   firstLagrangeVertexDM = firstFaultVertexDM + firstLagrangeVertex;
   firstFaultCellDM      = cEnd;
   mesh->getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+  faultVertexOffsetDM   = numCohesiveCells;
   if (!numNormalCells) {
-    mesh->setPointTypeSizes(cEnd-cStart, extraCells, vEnd-vStart, firstLagrangeVertex, firstLagrangeVertex);
+    mesh->setPointTypeSizes(cEnd-cStart, extraCells, vEnd-vStart, firstLagrangeVertex, constraintCell ? firstLagrangeVertex : 0);
   } else {
-    mesh->setPointTypeSizes(numNormalCells, numCohesiveCells+extraCells, numNormalVertices, numShadowVertices+firstLagrangeVertex, numLagrangeVertices+firstLagrangeVertex);
+    mesh->setPointTypeSizes(numNormalCells, numCohesiveCells+extraCells, numNormalVertices, numShadowVertices+firstLagrangeVertex, constraintCell ? numLagrangeVertices+firstLagrangeVertex : 0);
   }
 #endif
   if (firstFaultVertex == 0) {
@@ -295,12 +296,45 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     err = DMComplexSetVTKBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   }
   err = DMComplexSetVTKBounds(newMesh, PETSC_DETERMINE, firstLagrangeVertexDM);CHECK_PETSC_ERROR(err);
+
+  // Renumber labels
+  for(std::set<std::string>::const_iterator name = groupNames->begin(); name != groupNames->end(); ++name) {
+    const char     *lname = (*name).c_str();
+    IS              idIS;
+    PetscInt        n;
+    const PetscInt *ids;
+
+    err = DMComplexGetLabelSize(complexMesh, lname, &n);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetLabelIdIS(complexMesh, lname, &idIS);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(idIS, &ids);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < n; ++i) {
+      const PetscInt  id = ids[i];
+      const PetscInt *points;
+      IS              sIS;
+      PetscInt        size;
+
+      err = DMComplexGetStratumSize(complexMesh, lname, id, &size);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetStratumIS(complexMesh, lname, id, &sIS);CHECK_PETSC_ERROR(err);
+      err = ISGetIndices(sIS, &points);CHECK_PETSC_ERROR(err);
+      for(PetscInt s = 0; s < size; ++s) {
+        if ((points[s] >= vStart) && (points[s] < vEnd)) {
+          err = DMComplexSetLabelValue(newMesh, lname, points[s]+extraCells, id);CHECK_PETSC_ERROR(err);
+        } else {
+          err = DMComplexSetLabelValue(newMesh, lname, points[s], id);CHECK_PETSC_ERROR(err);
+        }
+      }
+      err = ISRestoreIndices(sIS, &points);CHECK_PETSC_ERROR(err);
+      err = ISDestroy(&sIS);CHECK_PETSC_ERROR(err);
+    }
+    err = ISRestoreIndices(idIS, &ids);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&idIS);CHECK_PETSC_ERROR(err);
+  } // for
 #endif
 
   // Add fault vertices to groups and construct renumberings
   for(SieveSubMesh::label_sequence::iterator v_iter = fVerticesBegin; v_iter != fVerticesEnd; ++v_iter, ++firstFaultVertex, ++firstFaultVertexDM) {
-    vertexRenumber[*v_iter]   = firstFaultVertex;
-    vertexRenumberDM[*v_iter] = firstFaultVertexDM;
+    vertexRenumber[*v_iter] = firstFaultVertex;
+    vertexRenumberDM[*v_iter+faultVertexOffsetDM] = firstFaultVertexDM;
     if (debug) std::cout << "Duplicating " << *v_iter << " to "	<< vertexRenumber[*v_iter] << std::endl;
 
     logger.stagePop();
@@ -308,17 +342,17 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     // Add shadow and constraint vertices (if they exist) to group
     // associated with fault
     groupField->addPoint(firstFaultVertex, 1);
-    err = DMComplexSetLabelValue(complexMesh, groupField->getName().c_str(), firstFaultVertexDM, 1);CHECK_PETSC_ERROR(err);
+    err = DMComplexSetLabelValue(newMesh, groupField->getName().c_str(), firstFaultVertexDM, 1);CHECK_PETSC_ERROR(err);
 #if defined(FAST_STRATIFY)
     // OPTIMIZATION
     sieveMesh->setHeight(firstFaultVertex, 1);
     sieveMesh->setDepth(firstFaultVertex, 0);
 #endif
     if (constraintCell) {
-      vertexLagrangeRenumber[*v_iter]   = firstLagrangeVertex;
-      vertexLagrangeRenumberDM[*v_iter] = firstLagrangeVertexDM;
+      vertexLagrangeRenumber[*v_iter] = firstLagrangeVertex;
+      vertexLagrangeRenumberDM[*v_iter+faultVertexOffsetDM] = firstLagrangeVertexDM;
       groupField->addPoint(firstLagrangeVertex, 1);
-      err = DMComplexSetLabelValue(complexMesh, groupField->getName().c_str(), firstLagrangeVertexDM, 1);CHECK_PETSC_ERROR(err);
+      err = DMComplexSetLabelValue(newMesh, groupField->getName().c_str(), firstLagrangeVertexDM, 1);CHECK_PETSC_ERROR(err);
 #if defined(FAST_STRATIFY)
       // OPTIMIZATION
       sieveMesh->setHeight(firstLagrangeVertex, 1);
@@ -341,9 +375,9 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
         group->addPoint(firstFaultVertex, 1);
 
       PetscInt value;
-      err = DMComplexGetLabelValue(complexMesh, (*name).c_str(), *v_iter, &value);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetLabelValue(complexMesh, (*name).c_str(), *v_iter+extraCells, &value);CHECK_PETSC_ERROR(err);
       if (value) {
-        err = DMComplexSetLabelValue(complexMesh, (*name).c_str(), firstFaultVertexDM, value);CHECK_PETSC_ERROR(err);
+        err = DMComplexSetLabelValue(newMesh, (*name).c_str(), firstFaultVertexDM, value);CHECK_PETSC_ERROR(err);
       }
     } // for
   } // for
@@ -375,6 +409,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = PetscMalloc3(faceSize,PetscInt,&origVerticesDM,faceSize,PetscInt,&faceVerticesDM,faceSize*3,PetscInt,&cohesiveCone);CHECK_PETSC_ERROR(err);
   for(SieveSubMesh::label_sequence::iterator f_iter = facesBegin; f_iter != facesEnd; ++f_iter, ++firstFaultCell, ++firstFaultCellDM) {
     const point_type face = *f_iter;
+    const PetscInt faceConeSizeDM = 10;
+    PetscInt faceConeDM[10];
     if (debug) std::cout << "Considering fault face " << face << std::endl;
     ifaultSieve->support(face, sV2);
     const point_type *cells = sV2.getPoints();
@@ -390,7 +426,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     //const point_type *faceCone = cV2.getSize() ? cV2.getPoints() : &face;
     bool found = true;
 
-    for(int i = 0; i < coneSize; ++i) faceSet.insert(faceCone[i]);
+    for(int i = 0; i < coneSize; ++i) {
+      faceSet.insert(faceCone[i]);
+      faceConeDM[i] = faceCone[i]+faultVertexOffsetDM;
+    }
     selection::getOrientedFace(sieveMesh, cell, &faceSet, numCorners, indices, &origVertices, &faceVertices);
     if (faceVertices.size() != coneSize) {
       std::cout << "Invalid size for faceVertices " << faceVertices.size() << " of face " << face << "should be " << coneSize << std::endl;
@@ -413,12 +452,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       const point_type *cellSupport  = sV.getPoints();
       for(int s = 0; s < supportSize2; ++s) std::cout << "    " << cellSupport[s] << std::endl;
     } // if
+    assert(faceConeSizeDM >= coneSize);
     assert(faceVertices.size() == coneSize);
     faceSet.clear();
 #ifdef USE_DMCOMPLEX_ON
-    err = DMComplexGetOrientedFace(complexMesh, cell, coneSize, faceCone, numCorners, indicesDM, origVerticesDM, faceVerticesDM, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetOrientedFace(complexMesh, cell, coneSize, faceConeDM, numCorners, indicesDM, origVerticesDM, faceVerticesDM, PETSC_NULL);CHECK_PETSC_ERROR(err);
     for(PetscInt c = 0; c < coneSize; ++c) {
-      assert(faceVertices[c] == faceVerticesDM[c]);
+      assert(faceVertices[c]+faultVertexOffsetDM == faceVerticesDM[c]);
     }
 #endif
 
@@ -482,18 +522,18 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     for (int c = 0; c < coneSize; ++c) {
       if (debug) std::cout << "    vertex " << faceCone[c] << std::endl;
       sieve->addArrow(faceCone[c], firstFaultCell);
-      cohesiveCone[newv++] = faceCone[c];
+      cohesiveCone[newv++] = faceConeDM[c] + extraCells;
     } // for
     for (int c = 0; c < coneSize; ++c) {
       if (debug) std::cout << "    shadow vertex " << vertexRenumber[faceCone[c]] << std::endl;
       sieve->addArrow(vertexRenumber[faceCone[c]], firstFaultCell, true);
-      cohesiveCone[newv++] = vertexRenumberDM[faceCone[c]];
+      cohesiveCone[newv++] = vertexRenumberDM[faceConeDM[c]];
     } // for
     if (constraintCell) {
       for (int c = 0; c < coneSize; ++c) {
         if (debug) std::cout << "    Lagrange vertex " << vertexLagrangeRenumber[faceCone[c]] << std::endl;
         sieve->addArrow(vertexLagrangeRenumber[faceCone[c]], firstFaultCell, true);
-        cohesiveCone[newv++] = vertexLagrangeRenumberDM[faceCone[c]];
+        cohesiveCone[newv++] = vertexLagrangeRenumberDM[faceConeDM[c]];
       } // for
     } // if
 #ifdef USE_DMCOMPLEX_ON
@@ -754,8 +794,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #ifdef USE_DMCOMPLEX_ON
     PetscInt dof, v = *v_iter;
     err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionSetDof(newCoordSection, vertexRenumberDM[v], dof);CHECK_PETSC_ERROR(err);
-    if (constraintCell) {err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[v], dof);CHECK_PETSC_ERROR(err);}
+    err = PetscSectionSetDof(newCoordSection, vertexRenumberDM[v+faultVertexOffsetDM], dof);CHECK_PETSC_ERROR(err);
+    if (constraintCell) {err = PetscSectionSetDof(newCoordSection, vertexLagrangeRenumberDM[v+faultVertexOffsetDM], dof);CHECK_PETSC_ERROR(err);}
 #endif
   } // for
   sieveMesh->reallocate(coordinates);
@@ -790,12 +830,12 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     PetscInt v = *v_iter, dof, off, newoff, d;
     err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(newCoordSection, vertexRenumberDM[v], &newoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(newCoordSection, vertexRenumberDM[v+faultVertexOffsetDM], &newoff);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < dof; ++d) {
       newCoords[newoff+d] = coords[off+d];
     }
     if (constraintCell) {
-      err = PetscSectionGetOffset(newCoordSection, vertexLagrangeRenumberDM[v], &newoff);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(newCoordSection, vertexLagrangeRenumberDM[v+faultVertexOffsetDM], &newoff);CHECK_PETSC_ERROR(err);
       for(PetscInt d = 0; d < dof; ++d) {
         newCoords[newoff+d] = coords[off+d];
       }
