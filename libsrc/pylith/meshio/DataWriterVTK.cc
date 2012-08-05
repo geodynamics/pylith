@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include <petscdmmesh_viewers.hh> // USES VTKViewer
+#include <petscdmcomplex.h>
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -126,6 +127,18 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
       err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
       err = PetscViewerFileSetName(_viewer, filename.c_str());CHECK_PETSC_ERROR(err);
       err = PetscObjectReference((PetscObject) complexMesh);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the DM */
+
+      /* Create VTK label in DM: Cleared in closeTimestep() */
+      if (label) {
+        const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
+        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells = sieveMesh->getLabelStratum(label, labelId);
+        const typename mesh_type::SieveMesh::label_sequence::const_iterator  cBegin = cells->begin();
+        const typename mesh_type::SieveMesh::label_sequence::const_iterator  cEnd   = cells->end();
+
+        for(typename mesh_type::SieveMesh::label_sequence::const_iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
+          err = DMComplexSetLabelValue(complexMesh, "vtk", *c_iter, 1);CHECK_PETSC_ERROR(err);
+        }
+      }
     } else {
     err = PetscViewerCreate(mesh.comm(), &_viewer);
     CHECK_PETSC_ERROR(err);
@@ -178,6 +191,15 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 { // closeTimeStep
+#if 0
+  DM complexMesh = mesh.dmMesh();
+  PetscErrorCode err;
+
+  if (complexMesh) {
+    err = DMComplexClearLabelStratum(complexMesh, "vtk", 1);CHECK_PETSC_ERROR(err);
+    err = DMComplexClearLabelStratum(complexMesh, "vtk", 2);CHECK_PETSC_ERROR(err);
+  }
+#endif
   PetscViewerDestroy(&_viewer); _viewer = 0;
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
