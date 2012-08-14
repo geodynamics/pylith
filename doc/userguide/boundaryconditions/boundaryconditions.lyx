@@ -7230,8 +7230,8 @@ T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 0 & T_{n}>0
 \end{cases}\\
 \mu_{f}=\begin{cases}
-\mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{min}}\\
-\mu_{0}+a\ln\left(\frac{V_{min}}{V}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{min}}\right) & V<V_{min}
+\mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{linear}}\\
+\mu_{0}+a\ln\left(\frac{V_{linear}}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{linear}}\right) & V<V_{linear}
 \end{cases}\\
 \frac{d\theta}{dt}=1-\frac{V\theta}{L}
 \end{gather}
@@ -7243,10 +7243,10 @@ where
 \end_inset
 
  is slip rate, 
-\begin_inset Formula $V_{min}$
+\begin_inset Formula $V_{linear}$
 \end_inset
 
- is a minimum slip rate, 
+ is a cutoff for a linear slip rate dependence, 
 \begin_inset Formula $a$
 \end_inset
 
@@ -7270,13 +7270,13 @@ where
  for slip rates on the same order as our residual tolerance.
  We regularize the rate and state friction model by imposing a linearization
  of the variation of the coefficient of friction with slip rate when the
- slip rate drops below a minimum slip rate, 
-\begin_inset Formula $V_{min}$
+ slip rate drops below a cutoff slip rate, 
+\begin_inset Formula $V_{linear}$
 \end_inset
 
  (
 \family typewriter
-min_slip_rate
+linear_slip_rate
 \family default
  property with a default value of 1.0e-12).
  Note that this is different than the popular inverse hyperbolic sine regulariza
@@ -7331,13 +7331,14 @@ The properties include:
 \end_layout
 
 \begin_layout Description
-min_slip_rate Slip rate at which linearization occurs, 
-\begin_inset Formula $V_{min}$
+linear_slip_rate Nondimensional slip rate at which linearization occurs,
+ 
+\begin_inset Formula $V_{linear}$
 \end_inset
 
 .
- Should be about one order of magnitude larger than absolute tolerance in
- solve.
+ In quasi-static simulations it should be about one order of magnitude larger
+ than absolute tolerance in solve.
 \end_layout
 
 \begin_layout Standard
@@ -7365,7 +7366,7 @@ friction = pylith.friction.RateStateAgeing ; Change friction model from the
 \begin_layout LyX-Code
 
 \size footnotesize
-friction.min_slip_rate = 1.0e-12 ; default value
+friction.linear_slip_rate = 1.0e-12 ; default value
 \end_layout
 
 \begin_layout Standard
