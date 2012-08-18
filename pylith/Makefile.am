@@ -21,6 +21,7 @@ nobase_pkgpyexec_PYTHON = \
 	apps/__init__.py \
 	apps/PyLithApp.py \
 	apps/PetscApplication.py \
+	apps/EqInfoApp.py \
 	apps/PrepMeshApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \

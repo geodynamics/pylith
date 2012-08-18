@@ -1,0 +1,46 @@
+# -*- Makefile -*-
+#
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2012 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+
+TESTS = testeqinfo.py
+
+dist_check_SCRIPTS = testeqinfo.py
+
+dist_noinst_PYTHON = \
+	TestLine.py 
+
+noinst_DATA = line_one.h5
+
+noinst_TMP = stats_line.py
+
+TESTS_ENVIRONMENT = $(PYTHON)
+
+
+# 'export' the input files by performing a mock install
+export_datadir = $(top_builddir)/tests_auto/petsc
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
+
+BUILT_SOURCES = export-data
+clean-local: clean-data
+CLEANFILES = *.pyc
+
+# End of file 
