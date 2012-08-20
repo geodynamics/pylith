@@ -186,7 +186,9 @@ class TimeStep(PetscComponent):
       dt = integrator.stableTimeStep(mesh)
       if dt < dtStable:
         dtStable = dt
-
+    import pylith.mpi.mpi as mpi
+    comm = mesh.getComm()
+    dtStableAll = mpi.allreduce_scalar_double(dtStable, mpi.mpi_min(), comm.handle)
     return dtStable
 
 
