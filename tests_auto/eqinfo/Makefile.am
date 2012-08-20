@@ -16,22 +16,41 @@
 # ----------------------------------------------------------------------
 #
 
+if ENABLE_HDF5
 TESTS = testeqinfo.py
+endif
 
 dist_check_SCRIPTS = testeqinfo.py
 
 dist_noinst_PYTHON = \
-	TestLine.py 
+	TestEqInfo.py \
+	TestEqInfoLine.py \
+	TestEqInfoTri3.py \
+	TestEqInfoQuad4.py
 
-noinst_DATA = line_one.h5
+dist_noinst_DATA = \
+	mat_elastic.spatialdb \
+	line.cfg \
+	line_one.h5 \
+	line_two.h5 \
+	tri3.cfg \
+	tri3_one.h5 \
+	tri3_two.h5 \
+	quad4.cfg \
+	quad4_one.h5 \
+	quad4_two.h5
 
-noinst_TMP = stats_line.py
+noinst_TMP = \
+	stats_line.py \
+	stats_tri3.py \
+	stats_quad4.py
+
 
 TESTS_ENVIRONMENT = $(PYTHON)
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/tests_auto/petsc
+export_datadir = $(top_builddir)/tests_auto/eqinfo
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

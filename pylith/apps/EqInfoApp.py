@@ -24,6 +24,7 @@ from pyre.applications.Script import Script as Application
 
 import h5py
 import numpy
+import math
 import os
 
 # ======================================================================
@@ -50,7 +51,7 @@ class RuptureStats(object):
 
 
   def recalculate(self):
-    self.avgslip = self.potency / self.ruparea
+    self.avgslip = self.potency / (self.ruparea + 1.0e-30)
     self.mommag = 2.0/3.0*numpy.log10(self.moment) - 10.7
     return
 
@@ -75,8 +76,14 @@ class RuptureStats(object):
 
 
   def _writeArray(self, name, fout):
-
-    g = ("%14.6e" % v for v in self.__getattribute__(name))
+    vals = self.__getattribute__(name)
+    for i in xrange(len(vals)):
+      if math.isnan(vals[i]) or math.isinf(vals[i]):
+        if vals[i] > 0:
+          vals[i] = 1.0e+30
+        else:
+          vals[i] = -1.0e+30
+    g = ("%14.6e" % v for v in vals)
     astr = ", ".join(g)
     fout.write("%s.%s = [%s]\n" % (self.fault, name, astr))
     return
@@ -162,7 +169,7 @@ class EqInfoApp(Application):
       raise ValueError("No faults specified")
 
     nsnapshots = len(self.snapshots)
-    statsFaults = [RuptureStats(nsnapshots)]*nfaults
+    statsFaults = [None]*nfaults
     
     ifault = 0
     for fault in self.faults:
@@ -177,7 +184,9 @@ class EqInfoApp(Application):
       cellsArea = self._calcCellArea(cells, vertices)
       cellsShearMod = self._getShearModulus(cells, vertices)
 
-      stats = statsFaults[ifault]
+
+      stats = RuptureStats(nsnapshots)
+      statsFaults[ifault] = stats
       stats.fault = fault
       
       isnapshot = 0
@@ -186,15 +195,15 @@ class EqInfoApp(Application):
         istep = self._findTimeStep(snapshot, timestamps)
         slip = h5['vertex_fields/slip'][istep,:,:]
         
-        slipMag = self._vectorMag(slip)
-        cellsSlipMag = self._ptsToCells(slipMag, cells)
+        cellsSlip = self._ptsToCells(slip, cells)
+        cellsSlipMag = self._vectorMag(cellsSlip)
         mask = cellsSlipMag > 0.0
 
         ruparea = numpy.sum(cellsArea[mask])
         potency = numpy.sum(cellsSlipMag*cellsArea)
         moment = numpy.sum(cellsSlipMag*cellsArea*cellsShearMod)
 
-        stats.update(isnapshot, timestamp=snapshot, ruparea=ruparea, potency=potency, moment=moment)
+        stats.update(isnapshot, timestamp=timestamps[istep], ruparea=ruparea, potency=potency, moment=moment)
         
         isnapshot += 1
       h5.close()
@@ -202,6 +211,12 @@ class EqInfoApp(Application):
       
     statsTotal = RuptureStats(nsnapshots)
     statsTotal.fault = "all"
+    isnapshot = 0
+    for snapshot in self.snapshots:
+      istep = self._findTimeStep(snapshot, timestamps)
+      statsTotal.timestamp[isnapshot] = timestamps[istep]
+      isnapshot += 1
+
     ruparea = statsTotal.ruparea
     potency = statsTotal.potency
     moment = statsTotal.moment
@@ -253,7 +268,9 @@ class EqInfoApp(Application):
     elif ncorners == 4:
       v01 = vertices[cells[:,1]] - vertices[cells[:,0]]
       v02 = vertices[cells[:,2]] - vertices[cells[:,0]]
-      area = self._vectorMag(numpy.cross(v01, v02))
+      v03 = vertices[cells[:,3]] - vertices[cells[:,0]]
+      area = 0.5*self._vectorMag(numpy.cross(v01, v02)) + \
+          0.5*self._vectorMag(numpy.cross(v02, v03))
     else:
       raise ValueError("Unknown case for number of cell corners (%d)." % ncorners)
     return area
