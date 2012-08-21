@@ -28,7 +28,7 @@
 
 #include <cassert> // USES assert()
 
-#include <utils/petscerror.h> // USES CHECK_PETSC_ERROR
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 extern PetscErrorCode DMComplexGetOrientedFace(DM dm, PetscInt cell, PetscInt faceSize, const PetscInt face[], PetscInt numCorners, PetscInt indices[], PetscInt origVertices[], PetscInt faceVertices[], PetscBool *posOriented);
 
