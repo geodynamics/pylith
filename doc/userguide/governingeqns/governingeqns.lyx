@@ -1842,7 +1842,7 @@ A_{ij}^{nm}=\int_{V}\frac{1}{4}C_{ijkl}(N_{,k}^{m}+(\sum_{r}a_{p}^{r}N_{,l}^{r})
 \end_inset
 
 The small strain formulation produces additional terms associated with the
- elastic constants and new a new term associated with the stress tensor.
+ elastic constants and a new term associated with the stress tensor.
 \end_layout
 
 \begin_layout Subsection

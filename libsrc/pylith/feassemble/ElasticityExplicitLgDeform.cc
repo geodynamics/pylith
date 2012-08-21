@@ -185,17 +185,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
-#if 0 // Numerical damping not yet implemented
   scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  scalar_array dispAdjCell(numBasis*spaceDim);
-#endif
-
   scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
@@ -217,7 +214,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 				    _normalizer->densityScale());
 
   const PylithScalar dt = _dt;
-  assert(_normViscosity > 0.0);
+  assert(_normViscosity >= 0.0);
   assert(dt > 0);
   const PylithScalar viscosity = dt*_normViscosity;
 
@@ -311,21 +308,17 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     } // for
     PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(2*spaceDim))));
 
-#if 0 // Numerical damping not yet implemented. Is small strain
-      // formulation compatible with numerical damping?
-
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
     dispAdjCell = dispCell + viscosity * velCell;
-#endif
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispAdjCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispAdjCell);
 
     // Assemble cell contribution into field
     residualVisitor.clear();
@@ -426,17 +419,14 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   assert(!accSection.isNull());
   RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
 
-#if 0 // Numerical damping not yet implemented
   scalar_array velCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& velSection = 
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
 
-  scalar_array dispAdjCell(numBasis*spaceDim);
-#endif
-
   scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispAdjCell(numBasis*spaceDim);
   const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
   assert(!dispSection.isNull());
   RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
@@ -456,6 +446,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   const PylithScalar gravityScale = 
     _normalizer->pressureScale() / (_normalizer->lengthScale() *
 				    _normalizer->densityScale());
+
+  const PylithScalar dt = _dt;
+  assert(_normViscosity >= 0.0);
+  assert(dt > 0);
+  const PylithScalar viscosity = dt*_normViscosity;
 
   // Get parameters used in integration.
   scalar_array valuesIJ(numBasis);
@@ -552,20 +547,17 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 	  accCell[iBasis*spaceDim+iDim];
     PetscLogFlops(numQuadPts*(4+numBasis*3));
 
-#if 0 // Numerical damping not yet implemented. Is small strain
-      // formulation compatible with numerical damping?
-
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
     dispAdjCell = dispCell + viscosity * velCell;
-#endif
+
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispAdjCell,
 		     numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispAdjCell);
     
     // Assemble cell contribution into field
     residualVisitor.clear();

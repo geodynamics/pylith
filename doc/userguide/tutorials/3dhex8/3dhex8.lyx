@@ -564,7 +564,11 @@ pylithapp.cfg
 \family default
 , the physical properties for the material models are given in 
 \family typewriter
-spatialdb/mat_elastic.spatialdb
+spatialdb/
+\begin_inset Newline linebreak
+\end_inset
+
+mat_elastic.spatialdb
 \family default
 .
  This spatial database provides values at a single point, resulting in uniform

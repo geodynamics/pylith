@@ -223,7 +223,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 				    _normalizer->densityScale());
 
   const PylithScalar dt = _dt;
-  assert(_normViscosity > 0.0);
+  assert(_normViscosity >= 0.0);
   assert(dt > 0);
   const PylithScalar viscosity = dt*_normViscosity;
 
@@ -495,7 +495,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
             _normalizer->densityScale());
 
   const PylithScalar dt = _dt;
-  assert(_normViscosity > 0.0);
+  assert(_normViscosity >= 0.0);
   assert(dt > 0);
   const PylithScalar viscosity = dt*_normViscosity;
 
