@@ -127,7 +127,7 @@ reference "sec:MeshIOAscii"
 ).
  In CUBIT the groups of vertices are created using nodesets.
  Similarly, in LaGriT, psets are used.
- Note that we chose to associated boundary conditions with groups of vertices
+ Note that we chose to associate boundary conditions with groups of vertices
  because nearly every mesh generation package supports associating a string
  or integer with groups of vertices.
  Note also that we currently associate boundary conditions with string identifie
@@ -349,13 +349,13 @@ vertex_info_fields
 
 \begin_layout LyX-Code
 bc = [mybc]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.problem.bc.mybc]
 \end_layout
 
@@ -954,9 +954,9 @@ pylith.bc.Neumann
 \family default
 , since the default value is 
 \family typewriter
-Dirichlet
+DirichletBC
 \family default
-BC.
+.
  Constant tractions are used for this particular problem, so a quadrature
  order of one would have been sufficient; however, for problems involving
  more complex variations (e.g., a linear variation), a quadrature order of
@@ -1773,7 +1773,7 @@ where
 
  is the shape of the propagating wave.
  For an absorbing boundary we want the traction on the boundary to be equal
- to the traction associated with wave propagating out of the domain.
+ to the traction associated with the wave propagating out of the domain.
  Starting with the expression for the traction on a boundary, 
 \begin_inset Formula $T_{i}=\sigma_{ij}n_{j},$
 \end_inset
@@ -1985,7 +1985,7 @@ r_{i}^{n}=\sum_{\text{tract cells}}\sum_{\text{quad pts}}-\rho(x_{q})c_{i}(x_{q}
 \begin_layout Standard
 The appearance of velocity in the expression for the residual means that
  the absorbing dampers also contribute to the system Jacobian matrix.
- Use the central difference method, the velocity is written in terms of
+ Using the central difference method, the velocity is written in terms of
  the displacements,
 \end_layout
 
@@ -2029,7 +2029,11 @@ Expressing the displacement at time
 \end_inset
 
 The terms contributing to the system Jacobian are associated with the increment
- in the displacement at time time.
+ in the displacement at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
  Substituting into the governing equations and isolating the term associated
  with the increment in the displacement at time t yields
 \end_layout
@@ -2046,7 +2050,7 @@ where
 \begin_inset Formula $A_{ij}^{mn}$
 \end_inset
 
- is a 
+ is an 
 \begin_inset Formula $nd$
 \end_inset
 
@@ -2386,25 +2390,25 @@ reference "fig:fault:slip:motions"
 
 \begin_layout LyX-Code
 interfaces = [fault]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.problem.interfaces]
 \end_layout
 
 \begin_layout LyX-Code
 fault = pylith.faults.FaultCohesiveKin ; default
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 label = fault A ; Group of vertices defining the fault surface
 \end_layout
 
@@ -2463,7 +2467,7 @@ The insertion of cohesive cells into the finite-element mesh has the effect
 
 \begin_layout Standard
 In conventional implementations the additional degrees of freedom associated
- with the Lagrange multipliers results in a complex implementation.
+ with the Lagrange multipliers result in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
  provides for a simple formulation; we simply add the additional degrees
  of freedom associated with the Lagrange multipliers to the cohesive cells
@@ -2480,7 +2484,8 @@ reference "fig:fault:cohesive:quad4"
  Furthermore, the Lagrange multiplier constraints correspond to forces required
  to impose the relative motions, so they are related to the change in stress
  on the fault surface associated with fault slip.
- If we write the algebraic system of equations we are solving in the form
+ If we write the algebraic system of equations associated with elasticity
+ in the form
 \begin_inset Formula 
 \begin{equation}
 \underline{A}\overrightarrow{u}=\overrightarrow{b}\,,
@@ -2488,7 +2493,8 @@ reference "fig:fault:cohesive:quad4"
 
 \end_inset
 
-then including the Lagrange multiplier constraints results in
+then adding in the Lagrange multiplier constraints associated with fault
+ slip leads to a new system of equations of the form 
 \begin_inset Formula 
 \begin{equation}
 \left[\begin{array}{cc}
@@ -3125,34 +3131,54 @@ The kinematic rupture parameters include the origin time and slip time function.
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.interfaces.fault]
 \end_layout
 
 \begin_layout LyX-Code
-eq_srcs = [earthquake,creep]
-\end_layout
 
-\begin_layout LyX-Code
+\size footnotesize
+eq_srcs = [earthquake,creep]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.earthquake]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 origin_time = 0.0*s ; default origin time
 \end_layout
 
 \begin_layout LyX-Code
-slip_function = pylith.faults.StepSlipFn ; default slip time function
-\end_layout
 
-\begin_layout LyX-Code
+\size footnotesize
+slip_function = pylith.faults.StepSlipFn ; default slip time function
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.creep]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 origin_time = 10.0*year ; start creep at 10.0 years
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 slip_function = pylith.faults.ConstRateSlipFn ; switch to constant slip rate
  slip function
 \end_layout
@@ -3252,9 +3278,13 @@ An example of setting these parameters in a
 
 \begin_layout LyX-Code
 slip_function = pylith.faults.StepSlipFn
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
 \end_layout
 
@@ -3573,9 +3603,13 @@ An example of setting these parameters in a
 
 \begin_layout LyX-Code
 slip_function = pylith.faults.ConstRateSlipFn
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.ruptures.slip_function]
 \end_layout
 
@@ -3911,9 +3945,13 @@ An example of setting these parameters in a
 
 \begin_layout LyX-Code
 slip_function = pylith.faults.BruneSlipFn
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
 \end_layout
 
@@ -4341,9 +4379,13 @@ An example of setting these parameters in a
 
 \begin_layout LyX-Code
 slip_function = pylith.faults.TimeHistorySlipFn
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+
+\begin_inset Newline newline
+\end_inset
+
 [pylithapp.problem.interfaces.fault.eq_srcs.rupture.slip_function]
 \end_layout
 
@@ -4705,7 +4747,7 @@ Computing the increment in the slip requires computing the increment in
 \end_layout
 
 \begin_layout Paragraph
-Non-diagonal A
+Non-Diagonal A
 \end_layout
 
 \begin_layout Standard
@@ -4779,10 +4821,17 @@ n and the nonlinear solve requires a large number of iterations.
 We use the PETSc Krylov subspace solver (KSP) to solve these two linear
  systems.
  The PETSc settings for the KSP object are set in the same manner as the
- main solver, except we use the prefix friction_ in all of the settings
- related to the KSP solver for these two linear systems.
+ main solver, except we use the prefix 
+\family typewriter
+friction_
+\family default
+ in all of the settings related to the KSP solver for these two linear systems.
  For example, to use the recommended additive Schwarz preconditioner in
- the friction sensitivity solves, the settings in a .cfg file are:
+ the friction sensitivity solves, the settings in a 
+\family typewriter
+.cfg
+\family default
+ file are:
 \end_layout
 
 \begin_layout LyX-Code
@@ -4852,7 +4901,7 @@ The components of the FaultCohesiveDyn object include
 \begin_layout Description
 open_free_surface If true, enforce traction free surface when the fault
  opens, otherwise apply prescribed tractions even when the fault opens (default
- is true); to mimic a dike opening use false.
+ is true); to mimic a dike opening, use false.
 \end_layout
 
 \begin_layout Description
@@ -4862,7 +4911,7 @@ zero_tolerance Tolerance for detecting zero values (default is 1.0e-10);
 
 \begin_layout Description
 traction_perturbation Prescribed tractions on fault surface (generally used
- for nucleating earthquake ruptures, default is none).
+ for nucleating earthquake ruptures; default is none).
 \end_layout
 
 \begin_layout Description
@@ -5034,7 +5083,7 @@ db_initial
 \begin_inset Text
 
 \begin_layout Plain Layout
-1-D
+1D
 \end_layout
 
 \end_inset
@@ -5074,7 +5123,7 @@ Normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-2-D
+2D
 \end_layout
 
 \end_inset
@@ -5154,7 +5203,7 @@ Normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-3-D
+3D
 \end_layout
 
 \end_inset
@@ -5276,7 +5325,7 @@ db_rate
 \begin_inset Text
 
 \begin_layout Plain Layout
-1-D
+1D
 \end_layout
 
 \end_inset
@@ -5316,7 +5365,7 @@ Rate of change of normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-2-D
+2D
 \end_layout
 
 \end_inset
@@ -5397,7 +5446,7 @@ Rate of change of normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-3-D
+3D
 \end_layout
 
 \end_inset
@@ -5417,7 +5466,7 @@ traction-rate-leftlateral
 \begin_inset Text
 
 \begin_layout Plain Layout
-Rate of change of eft-lateral shear traction
+Rate of change of left-lateral shear traction
 \end_layout
 
 \end_inset
@@ -5559,7 +5608,7 @@ db_change
 \begin_inset Text
 
 \begin_layout Plain Layout
-1-D
+1D
 \end_layout
 
 \end_inset
@@ -5599,7 +5648,7 @@ Change in normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-2-D
+2D
 \end_layout
 
 \end_inset
@@ -5679,7 +5728,7 @@ Change in normal traction (tension is positive)
 \begin_inset Text
 
 \begin_layout Plain Layout
-3-D
+3D
 \end_layout
 
 \end_inset
@@ -5971,6 +6020,7 @@ normal_dir
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Direction of fault normal in global coordinate system
 \end_layout
 
@@ -6002,6 +6052,7 @@ strike_dir
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Direction of fault strike in global coordinate system
 \end_layout
 
@@ -6033,6 +6084,7 @@ dip_dir
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Up-dip direction on hanging wall in global coordinate system
 \end_layout
 
@@ -6064,6 +6116,7 @@ traction_initial
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Initial tractions (if specified) in fault coordinate system
 \end_layout
 
@@ -6095,6 +6148,7 @@ traction_rate
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Rate of change in tractions (if specified) in fault coordinate system
 \end_layout
 
@@ -6126,6 +6180,7 @@ rate_start_time
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Time at which rate of change begins (if specified)
 \end_layout
 
@@ -6157,6 +6212,7 @@ traction_change
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Change in tractions (if specified) in fault coordinate system
 \end_layout
 
@@ -6188,6 +6244,7 @@ change_start_time
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Time at which change occurs (if specified)
 \end_layout
 
@@ -6221,6 +6278,7 @@ slip
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Slip vector at time step (in fault coordinate system) in meters
 \end_layout
 
@@ -6252,6 +6310,7 @@ traction
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align left
 Fault tractions (in fault coordinate system) in Pa
 \end_layout
 
@@ -6293,10 +6352,10 @@ reference "sec:Extending:FaultConstitutiveModels"
 
 ).
  The fault constitutive model implementations are independent of dimension
- and work in both 2-D and 3-D.
+ and work in both 2D and 3D.
  In solving the governing equations, PyLith will use a scalar representation
- of the shear traction in 2-D and a vector representation of the shear traction
- in 3-D, with the shear traction resolved in the direction of current slip.
+ of the shear traction in 2D and a vector representation of the shear traction
+ in 3D, with the shear traction resolved in the direction of current slip.
  The fault constitutive models contain a common set of properties and components
 :
 \end_layout
@@ -6377,7 +6436,7 @@ Values in the spatial database for constant friction parameters.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="2">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
 <column alignment="left" valignment="top" width="2.5in">
 <row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
@@ -6395,6 +6454,7 @@ Value
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align center
 
 \series bold
 Description
@@ -6419,6 +6479,7 @@ friction-coefficient
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align center
 Coefficient of friction, 
 \begin_inset Formula $\mu_{f}$
 \end_inset
@@ -6445,6 +6506,7 @@ cohesion
 \begin_inset Text
 
 \begin_layout Plain Layout
+\align center
 Cohesive stress, 
 \begin_inset Formula $T_{c}$
 \end_inset
@@ -6961,6 +7023,8 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_properties
 \end_layout
 
@@ -7101,6 +7165,8 @@ Cohesive stress,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_initial_state
 \end_layout
 
@@ -7164,8 +7230,8 @@ T_{c}-\mu_{f}T_{n} & T_{n}\leq0\\
 0 & T_{n}>0
 \end{cases}\\
 \mu_{f}=\begin{cases}
-\mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{min}}\\
-\mu_{0}+a\ln\left(\frac{V_{min}}{V}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{min}}\right) & V<V_{min}
+\mu_{0}+a\ln\left(\frac{V}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right) & V\ge V_{\mathit{linear}}\\
+\mu_{0}+a\ln\left(\frac{V_{linear}}{V_{0}}\right)+b\ln\left(\frac{V_{0}\theta}{L}\right)-a\left(1-\frac{V}{V_{linear}}\right) & V<V_{linear}
 \end{cases}\\
 \frac{d\theta}{dt}=1-\frac{V\theta}{L}
 \end{gather}
@@ -7177,10 +7243,10 @@ where
 \end_inset
 
  is slip rate, 
-\begin_inset Formula $V_{min}$
+\begin_inset Formula $V_{linear}$
 \end_inset
 
- is a minimum slip rate, 
+ is a cutoff for a linear slip rate dependence, 
 \begin_inset Formula $a$
 \end_inset
 
@@ -7197,24 +7263,24 @@ where
 \end_inset
 
  is a state variable.
- With an interative solver in quasi-static simulations with a small, but
+ With an interative solver in quasi-static simulations with its small, but
  nonzero residual tolerance we never encounter zero slip rates in quasi-static
  simulations.
  Instead we want to avoid significant variations in the coefficient of friction
  for slip rates on the same order as our residual tolerance.
- We regularize the rate and state friction model by iposing a linearization
+ We regularize the rate and state friction model by imposing a linearization
  of the variation of the coefficient of friction with slip rate when the
- slip rate drops below a minimum slip rate, 
-\begin_inset Formula $V_{min}$
+ slip rate drops below a cutoff slip rate, 
+\begin_inset Formula $V_{linear}$
 \end_inset
 
  (
 \family typewriter
-min_slip_rate
+linear_slip_rate
 \family default
  property with a default value of 1.0e-12).
- Note that this is different than the popular inverse hypoerbolic sine regulariz
-ation proposed by Ben-Zion and Rice 
+ Note that this is different than the popular inverse hyperbolic sine regulariza
+tion proposed by Ben-Zion and Rice 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "BenZion:Rice:1997"
@@ -7234,8 +7300,8 @@ key "Kaneko:etal:2008"
 
 \end_inset
 
-, we integrate the evolution equation for the state variable keeping slip
- rate constant to get
+, we integrate the evolution equation for the state variable, keeping slip
+ rate constant, to get
 \begin_inset Formula 
 \begin{equation}
 \theta(t+\Delta t)=\theta(t)\exp\left(\frac{-V(t)\Delta t}{L}\right)+\frac{L}{V(t)}\left(1-\exp\left(-\frac{V(t)\Delta t}{L}\right)\right).
@@ -7265,17 +7331,18 @@ The properties include:
 \end_layout
 
 \begin_layout Description
-min_slip_rate Slip rate at which linearization occurs, 
-\begin_inset Formula $V_{min}$
+linear_slip_rate Nondimensional slip rate at which linearization occurs,
+ 
+\begin_inset Formula $V_{linear}$
 \end_inset
 
 .
- Should be about one order of magnitude larger than absolute tolerance in
- solve.
+ In quasi-static simulations it should be about one order of magnitude larger
+ than absolute tolerance in solve.
 \end_layout
 
 \begin_layout Standard
-An example of setting the properties for the rate and state friction component
+An example of setting the properties for the rate- and state-friction component
  in a 
 \family typewriter
 .cfg
@@ -7284,20 +7351,26 @@ An example of setting the properties for the rate and state friction component
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.problem.interfaces.fault]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 friction = pylith.friction.RateStateAgeing ; Change friction model from the
  default
 \end_layout
 
 \begin_layout LyX-Code
-friction.min_slip_rate = 1.0e-12 ; default value
+
+\size footnotesize
+friction.linear_slip_rate = 1.0e-12 ; default value
 \end_layout
 
 \begin_layout Standard
-The spatial database files for the rate and state friction model properties
+The spatial database files for the rate- and state-friction model properties
  and state variables specify the spatial variation of the fault constitutive
  model parameters given in Table 
 \begin_inset CommandInset ref
@@ -7386,6 +7459,8 @@ Description
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_properties
 \end_layout
 
@@ -7608,6 +7683,8 @@ Cohesive stress,
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 db_initial_state
 \end_layout
 
@@ -7662,7 +7739,7 @@ Slip Impulses for Green's Functions
 
 \begin_layout Standard
 Computing static Green's functions using the GreensFns problem requires
- a specialized fault implementation, FaultCohesiveImpulses, to setup the
+ a specialized fault implementation, FaultCohesiveImpulses, to set up the
  slip impulses.
  The parameters controlling the slip impulses include the components involved
  (lateral, reverse, and/or fault opening) and the amplitude of the pulses
@@ -7672,7 +7749,7 @@ Computing static Green's functions using the GreensFns problem requires
 
 \begin_layout Description
 threshold Threshold for non-zero amplitude; impulses will only be generated
- at locations on the fault where the amplitude excees this threshold.
+ at locations on the fault where the amplitude exceeds this threshold.
 \end_layout
 
 \begin_layout Description
@@ -7701,13 +7778,13 @@ An example of setting the properties and facilities for FaultCohesiveImpulses
 
 \begin_layout LyX-Code
 fault = pylith.faults.FaultCohesiveImpulses ; Change from the default
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
 [pylithapp.problem.interfaces.fault]
 \end_layout
 
@@ -7754,7 +7831,7 @@ r_{i}^{n}=\int_{V}f_{i}N^{n}\: dV.
 
 \end_inset
 
-For gravitational body forces the body force per unit volume, 
+For gravitational body forces, the body force per unit volume, 
 \begin_inset Formula $f_{i}$
 \end_inset
 

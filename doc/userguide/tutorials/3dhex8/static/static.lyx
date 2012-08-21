@@ -761,10 +761,13 @@ SimpleDB
 
 \begin_layout LyX-Code
 # The slip time and final slip are defined in spatial databases.
- [pylithapp.timedependent.interfaces.fault.eq_srcs.rupture.slip_function]
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout LyX-Code
+[pylithapp.timedependent.interfaces.fault.eq_srcs.rupture.slip_function]
+\begin_inset Newline newline
+\end_inset
+
 slip.iohandler.filename = spatialdb/finalslip.spatialdb
 \end_layout
 

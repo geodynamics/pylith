@@ -104,7 +104,7 @@ PyLith application.
 \end_layout
 
 \begin_layout Subsection
-Problem components
+Problem Components
 \end_layout
 
 \begin_layout Description
@@ -295,7 +295,7 @@ User defined time stepping (variable time step set by user).
 \end_layout
 
 \begin_layout Subsection
-Utility components
+Utility Components
 \end_layout
 
 \begin_layout Description
@@ -337,20 +337,24 @@ Memory model logger for reporting memory use by Sieve.
 \begin_layout Description
 
 \family typewriter
-VTKDataReader pylith.utils.
+VTKDataReader pylith.utils.VTKDataReader
 \family default
-VTKDataReader
+
 \begin_inset Newline newline
 \end_inset
 
 Data reader for VTK files, requires TVTK Enthought package available from
  
 \family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
 https://github.com/enthought/mayavi.
 \end_layout
 
 \begin_layout Subsection
-Topology components
+Topology Components
 \end_layout
 
 \begin_layout Description
@@ -404,9 +408,9 @@ Mesh importer/reader.
 \begin_layout Description
 
 \family typewriter
-MeshRefiner pylith.topology.Mesh
+MeshRefiner pylith.topology.MeshRefiner
 \family default
-Refiner
+
 \begin_inset Newline newline
 \end_inset
 
@@ -416,9 +420,9 @@ Default (null) mesh refinement object that does not refine the mesh.
 \begin_layout Description
 
 \family typewriter
-RefineUniform pylith.topology.
+RefineUniform pylith.topology.RefineUniform
 \family default
-RefineUniform
+
 \begin_inset Newline newline
 \end_inset
 
@@ -428,9 +432,9 @@ Uniform global mesh refinement.
 \begin_layout Description
 
 \family typewriter
-ReverseCuthillMcKee pylith.topology.
+ReverseCuthillMcKee pylith.topology.ReverseCuthillMcKee
 \family default
-ReverseCuthillMcKee
+
 \begin_inset Newline newline
 \end_inset
 
@@ -439,7 +443,7 @@ Kee algorithm.
 \end_layout
 
 \begin_layout Subsection
-Material components
+Material Components
 \end_layout
 
 \begin_layout Description
@@ -451,7 +455,7 @@ ElasticStrain1D pylith.materials.ElasticStrain1D
 \begin_inset Newline newline
 \end_inset
 
-Linearly elastic 1-D bulk constitutive model with 1-D strain (
+Linearly elastic 1D bulk constitutive model with 1D strain (
 \begin_inset Formula $\epsilon_{yy}=\epsilon_{zz}=0$
 \end_inset
 
@@ -467,7 +471,7 @@ ElasticStress1D pylith.materials.ElasticStress1D
 \begin_inset Newline newline
 \end_inset
 
-Linearly elastic 1-D bulk constitutive model with 1-D stress (
+Linearly elastic 1D bulk constitutive model with 1D stress (
 \begin_inset Formula $\sigma_{yy}=\sigma_{zz}=0$
 \end_inset
 
@@ -483,7 +487,7 @@ ElasticPlaneStrain pylith.materials.ElasticPlaneStrain
 \begin_inset Newline newline
 \end_inset
 
-Linearly elastic 2-D bulk constitutive model with plane strain (
+Linearly elastic 2D bulk constitutive model with plane strain (
 \begin_inset Formula $\epsilon_{zz}=0$
 \end_inset
 
@@ -499,7 +503,7 @@ ElasticPlaneStress pylith.materials.ElasticPlaneStress
 \begin_inset Newline newline
 \end_inset
 
-Linearly elastic 2-D bulk constitutive model with plane stress (
+Linearly elastic 2D bulk constitutive model with plane stress (
 \begin_inset Formula $\sigma_{zz}=0$
 \end_inset
 
@@ -515,7 +519,7 @@ ElasticIsotropic3D pylith.materials.ElasticIsotropic3D
 \begin_inset Newline newline
 \end_inset
 
-Linearly elastic 3-D bulk constitutive model.
+Linearly elastic 3D bulk constitutive model.
 \end_layout
 
 \begin_layout Description
@@ -628,7 +632,7 @@ Container with a single bulk material.
 \end_layout
 
 \begin_layout Subsection
-Boundary condition components
+Boundary Condition Components
 \end_layout
 
 \begin_layout Description
@@ -706,7 +710,7 @@ Specialized UniformDB with uniform zero displacements at all degrees of
 \end_layout
 
 \begin_layout Subsection
-Fault components
+Fault Components
 \end_layout
 
 \begin_layout Description
@@ -725,9 +729,9 @@ Fault surface with kinematic (prescribed) slip implemented using cohesive
 \begin_layout Description
 
 \family typewriter
-FaultCohesiveDyn pylith.faults.FaultCohesive
+FaultCohesiveDyn pylith.faults.FaultCohesiveDyn
 \family default
-Dyn
+
 \begin_inset Newline newline
 \end_inset
 
@@ -737,9 +741,9 @@ Fault surface with dynamic (friction) slip implemented using cohesive elements.
 \begin_layout Description
 
 \family typewriter
-FaultCohesiveImpulses pylith.faults.FaultCohesive
+FaultCohesiveImpulses pylith.faults.FaultCohesiveImpulses
 \family default
-Impulses
+
 \begin_inset Newline newline
 \end_inset
 
@@ -848,7 +852,7 @@ Prescribed traction perturbation applied to fault with constitituve model
 \end_layout
 
 \begin_layout Subsection
-Friction components
+Friction Components
 \end_layout
 
 \begin_layout Description
@@ -900,7 +904,7 @@ Linear time-weakening friction fault constitutive model.
 \end_layout
 
 \begin_layout Subsection
-Discretization components
+Discretization Components
 \end_layout
 
 \begin_layout Description
@@ -914,7 +918,7 @@ FIATLagrange pylith.feassemble.FIATLagrange
 
 Finite-element basis functions and quadrature rules for a Lagrange reference
  finite-element cell (point, line, quadrilateral, or hexahedron) using FIAT.
- The basis functions are constructed from the tensor produce of 1-D Lagrange
+ The basis functions are constructed from the tensor produce of 1D Lagrange
  reference cells.
 \end_layout
 
@@ -932,7 +936,7 @@ Finite-element basis functions and quadrature rules for a simplex finite-element
 \end_layout
 
 \begin_layout Subsection
-Output components
+Output Components
 \end_layout
 
 \begin_layout Description
@@ -1022,9 +1026,9 @@ Output manager for solution data over a submesh.
 \begin_layout Description
 
 \family typewriter
-OutputSolnPoints pylith.meshio.OutputSoln
+OutputSolnPoints pylith.meshio.OutputSolnPoints
 \family default
-Points
+
 \begin_inset Newline newline
 \end_inset
 
@@ -1291,11 +1295,11 @@ Filter that computes magnitude of vectors for vertex field over submesh.
 \end_layout
 
 \begin_layout Section
-Spatialdata components
+Spatialdata Components
 \end_layout
 
 \begin_layout Subsection
-Coordinate system components
+Coordinate System Components
 \end_layout
 
 \begin_layout Description
@@ -1307,7 +1311,7 @@ CSCart spatialdata.geocoords.CSCart
 \begin_inset Newline newline
 \end_inset
 
-Cartesian coordinate system (0-D, 1-D, 2-D, or 3-D).
+Cartesian coordinate system (0D, 1D, 2D, or 3D).
 \end_layout
 
 \begin_layout Description
@@ -1372,7 +1376,7 @@ Converter for transforming coordinates of points from one coordinate system
 \end_layout
 
 \begin_layout Subsection
-Spatial database components
+Spatial database Components
 \end_layout
 
 \begin_layout Description
@@ -1398,7 +1402,7 @@ SimpleDB spatialdata.spatialdb.SimpleDB
 
 Simple spatial database that defines fields using a point cloud.
  Values are determined using a nearest neighbor search or linear interpolation
- in 0-D, 1-D, 2-D, or 3-D.
+ in 0D, 1D, 2D, or 3D.
 \end_layout
 
 \begin_layout Description
