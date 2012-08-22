@@ -29,6 +29,7 @@
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declarations
 
+#include "CellGeometry.hh" // USES CellGeometry
 #include "pylith/utils/array.hh" // HASA scalar_array
 
 // Quadrature -----------------------------------------------------------
@@ -185,6 +186,13 @@ public :
    * @returns Number of dimensions in coordinates of cell vertices
    */
   int spaceDim(void) const;
+
+  /** Compute minimum width across cell.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @returns Minimum width across cell.
+   */
+  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
