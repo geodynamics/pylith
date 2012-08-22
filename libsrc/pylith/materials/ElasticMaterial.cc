@@ -274,6 +274,70 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 } // stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh& mesh,
+			 feassemble::Quadrature<topology::Mesh>* quadrature)
+{ // stableTimeStepImplicit
+  assert(quadrature);
+
+  const int numQuadPts = _numQuadPts;
+  const int numPropsQuadPt = _numPropsQuadPt;
+  const int tensorSize = _tensorSize;
+  const int numVarsQuadPt = _numVarsQuadPt;
+  assert(_propertiesCell.size() == numQuadPts*numPropsQuadPt);
+  assert(_stateVarsCell.size() == numQuadPts*numVarsQuadPt);
+  assert(_elasticConstsCell.size() == numQuadPts*_numElasticConsts);
+  assert(_initialStressCell.size() == numQuadPts*_tensorSize);
+  assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
+
+  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
+
+  // Get cells associated with material
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", id());
+  assert(!cells.isNull());
+  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+
+  const int spaceDim = quadrature->spaceDim();
+  const int numBasis = quadrature->numBasis();
+  scalar_array coordinatesCell(numBasis*spaceDim);
+  const ALE::Obj<RealSection>& coordinates = 
+    sieveMesh->getRealSection("coordinates");
+  RestrictVisitor coordsVisitor(*coordinates, 
+				coordinatesCell.size(), &coordinatesCell[0]);
+
+
+  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    retrievePropsAndVars(*c_iter);
+
+    coordsVisitor.clear();
+    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    const double minCellWidth = quadrature->minCellWidth(coordinatesCell);
+
+#if 0
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const PylithScalar dt = 
+	_stableTimeStepExplicit(&_propertiesCell[iQuad*numPropsQuadPt],
+				numPropsQuadPt,
+				&_stateVarsCell[iQuad*numVarsQuadPt],
+				numVarsQuadPt,
+				minCellWidth);
+      if (dt < dtStable)
+	dtStable = dt;
+    } // for
+#endif
+  } // for
+  
+  return dtStable;
+} // stableTimeStepExplicit
+
+// ----------------------------------------------------------------------
 // Allocate cell arrays.
 void
 pylith::materials::ElasticMaterial::_allocateCellArrays(void)

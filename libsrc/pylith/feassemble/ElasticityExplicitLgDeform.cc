@@ -81,6 +81,15 @@ pylith::feassemble::ElasticityExplicitLgDeform::timeStep(const PylithScalar dt)
 } // timeStep
 
 // ----------------------------------------------------------------------
+// Get stable time step for advancing from time t to time t+dt.
+PylithScalar
+pylith::feassemble::ElasticityExplicitLgDeform::stableTimeStep(const topology::Mesh& mesh) const
+{ // stableTimeStep
+  assert(_material);
+  return _material->stableTimeStepExplicit(mesh, _quadrature);
+} // stableTimeStep
+
+// ----------------------------------------------------------------------
 // Set normalized viscosity for numerical damping.
 void
 pylith::feassemble::ElasticityExplicitLgDeform::normViscosity(const PylithScalar viscosity)
@@ -106,10 +115,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   typedef void (pylith::feassemble::ElasticityExplicitLgDeform::*elasticityResidual_fn_type)
     (const scalar_array&, const scalar_array&);
 
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != _logger);
-  assert(0 != fields);
+  assert(_quadrature);
+  assert(_material);
+  assert(_logger);
+  assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
   const int geometryEvent = _logger->eventId("ElIR geometry");

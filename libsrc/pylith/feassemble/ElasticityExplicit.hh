@@ -90,6 +90,15 @@ public :
    */
   void timeStep(const PylithScalar dt);
 
+  /** Get stable time step for advancing from time t to time t+dt.
+   *
+   * Default is current time step.
+   *
+   * @param mesh Finite-element mesh.
+   * @returns Time step
+   */
+  PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
+
   /** Set normalized viscosity for numerical damping.
    *
    * @param viscosity Normalized viscosity (viscosity / elastic modulus).

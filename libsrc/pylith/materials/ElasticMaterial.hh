@@ -183,6 +183,21 @@ public :
   virtual
   PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh);
 
+  /** Get stable time step for explicit time integration.
+   *
+   * @pre Must call retrievePropsAndVars for cell before calling
+   * stableTimeStep().
+   *
+   * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+   *
+   * @param mesh Finite-element mesh.
+   * @param quadrature Quadrature for finite-element integration
+   * @returns Time step
+   */
+  virtual
+  PylithScalar stableTimeStepExplicit(const topology::Mesh& mesh,
+				      feassemble::Quadrature<topology::Mesh>* quadrature);
+
   /** Get initial stress/strain fields.
    *
    * @returns Initial stress field.
@@ -308,10 +323,29 @@ protected :
    */
   virtual
   PylithScalar _stableTimeStepImplicit(const PylithScalar* properties,
-				 const int numProperties,
-				 const PylithScalar* stateVars,
-				 const int numStateVars) const = 0;
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars) const = 0;
 
+  /** Get stable time step for explicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param minCellWidth Minimum width across cell.
+   *
+   * @returns Time step
+   */
+#if 0
+  virtual
+  PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars,
+				       const double minCellWidth) const = 0;
+#endif
+  
   /** Compute 2D deviatoric stress/strain from vector and mean value.
    *
    * @param deviatoric Array for deviatoric tensor.
