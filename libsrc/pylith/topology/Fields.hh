@@ -85,6 +85,16 @@ public :
 	   const pylith::topology::FieldBase::DomainEnum domain,
 	   const int fiberDim);
 
+  /** Add field.
+   *
+   * @param name Name of field.
+   * @param numFields The number of fields to select
+   * @param fields Set of field numbers for this vector
+   */
+  void add(const char* name,
+           const int numFields,
+           const int fields[]);
+
   /** Delete field.
    *
    * @param name Name of field.
@@ -108,6 +118,12 @@ public :
    * @param name Name of field.
    */
   field_type& get(const char* name);
+	   
+  /** Get DM field.
+   *
+   * @param name Name of field.
+   */
+  DM getDM(const char* name);
 	   
   /** Copy layout to other fields.
    *
@@ -133,11 +149,13 @@ public :
 protected :
 
   typedef std::map< std::string, field_type* > map_type;
+  typedef std::map< std::string, DM> dm_map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   map_type _fields;
+  dm_map_type _dmFields; /* These DMs will share the underlying mesh with _mesh */
   const typename field_type::Mesh& _mesh;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
