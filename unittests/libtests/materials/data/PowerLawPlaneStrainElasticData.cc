@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_densitySc
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_dtStableImplicit =   4.09893495e+06;
 
+const PylithScalar pylith::materials::PowerLawPlaneStrainElasticData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::PowerLawPlaneStrainElasticData::_numPropertyValues[] = {
 1,
 1,
@@ -289,6 +291,7 @@ pylith::materials::PowerLawPlaneStrainElasticData::PowerLawPlaneStrainElasticDat
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

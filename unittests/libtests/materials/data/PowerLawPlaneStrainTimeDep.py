@@ -223,6 +223,8 @@ class PowerLawPlaneStrainTimeDep(ElasticMaterialApp):
                                         self.stateVarsUpdated[1,5:])
 
     self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableExplicit = 1000.0 / vpA
+
     return
 
 

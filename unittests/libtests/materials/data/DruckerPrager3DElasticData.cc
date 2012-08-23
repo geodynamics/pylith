@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::DruckerPrager3DElasticData::_densityScale 
 
 const PylithScalar pylith::materials::DruckerPrager3DElasticData::_dtStableImplicit =   1.00000000e+10;
 
+const PylithScalar pylith::materials::DruckerPrager3DElasticData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::DruckerPrager3DElasticData::_numPropertyValues[] = {
 1,
 1,
@@ -338,6 +340,7 @@ pylith::materials::DruckerPrager3DElasticData::DruckerPrager3DElasticData(void)
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

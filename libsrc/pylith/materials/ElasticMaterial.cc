@@ -320,7 +320,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     const double minCellWidth = quadrature->minCellWidth(coordinatesCell);
 
-#if 0
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
 	_stableTimeStepExplicit(&_propertiesCell[iQuad*numPropsQuadPt],
@@ -331,7 +330,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
       if (dt < dtStable)
 	dtStable = dt;
     } // for
-#endif
   } // for
   
   return dtStable;

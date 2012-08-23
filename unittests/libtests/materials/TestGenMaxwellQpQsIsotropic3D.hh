@@ -55,6 +55,7 @@ class pylith::materials::TestGenMaxwellQpQsIsotropic3D : public TestElasticMater
   CPPUNIT_TEST( testDimStateVars );
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
+  CPPUNIT_TEST( test_stableTimeStepExplicit );
 
   // Need to test Maxwell viscoelastic specific behavior.
   CPPUNIT_TEST( testTimeStep );

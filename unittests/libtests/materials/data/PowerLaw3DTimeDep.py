@@ -211,6 +211,8 @@ class PowerLaw3DTimeDep(ElasticMaterialApp):
                                         powerLawExponentB, stressB)
 
     self.dtStableImplicit = 0.1*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableExplicit = 1000.0 / vpA
+
     return
 
 
