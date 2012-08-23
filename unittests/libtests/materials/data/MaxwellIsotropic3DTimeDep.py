@@ -185,6 +185,8 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                                initialStressB, initialStrainB)
 
     self.dtStableImplicit = 0.2*min(maxwellTimeA, maxwellTimeB)
+    self.dtStableExplicit = 1000.0 / vpA
+
     return
 
 

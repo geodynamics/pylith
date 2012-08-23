@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::PowerLaw3DElasticData::_densityScale =   1
 
 const PylithScalar pylith::materials::PowerLaw3DElasticData::_dtStableImplicit =   4.44444444e+06;
 
+const PylithScalar pylith::materials::PowerLaw3DElasticData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::PowerLaw3DElasticData::_numPropertyValues[] = {
 1,
 1,
@@ -393,6 +395,7 @@ pylith::materials::PowerLaw3DElasticData::PowerLaw3DElasticData(void)
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

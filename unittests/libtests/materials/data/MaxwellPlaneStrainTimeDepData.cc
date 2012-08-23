@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_densitySca
 
 const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_dtStableImplicit =   8.88888889e+06;
 
+const PylithScalar pylith::materials::MaxwellPlaneStrainTimeDepData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::MaxwellPlaneStrainTimeDepData::_numPropertyValues[] = {
 1,
 1,
@@ -264,6 +266,7 @@ pylith::materials::MaxwellPlaneStrainTimeDepData::MaxwellPlaneStrainTimeDepData(
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

@@ -337,14 +337,12 @@ protected :
    *
    * @returns Time step
    */
-#if 0
   virtual
   PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
 				       const int numProperties,
 				       const PylithScalar* stateVars,
 				       const int numStateVars,
 				       const double minCellWidth) const = 0;
-#endif
   
   /** Compute 2D deviatoric stress/strain from vector and mean value.
    *

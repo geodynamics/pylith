@@ -69,6 +69,8 @@ private:
 
   static const PylithScalar _dtStableImplicit;
 
+  static const PylithScalar _dtStableExplicit;
+
   static const int _numPropertyValues[];
 
   static const int _numStateVarValues[];

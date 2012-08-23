@@ -55,6 +55,7 @@ class pylith::materials::TestDruckerPrager3D : public TestElasticMaterial
   CPPUNIT_TEST( testDimStateVars );
   CPPUNIT_TEST( test_calcDensity );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
+  CPPUNIT_TEST( test_stableTimeStepExplicit );
 
   // Need to test Drucker-Prager elastoplastic specific behavior.
   CPPUNIT_TEST( testTimeStep );

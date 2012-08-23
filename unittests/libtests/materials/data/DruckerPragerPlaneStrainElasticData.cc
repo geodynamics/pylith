@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_dens
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_dtStableImplicit =   1.00000000e+10;
 
+const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::DruckerPragerPlaneStrainElasticData::_numPropertyValues[] = {
 1,
 1,
@@ -252,6 +254,7 @@ pylith::materials::DruckerPragerPlaneStrainElasticData::DruckerPragerPlaneStrain
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

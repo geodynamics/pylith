@@ -212,6 +212,7 @@ class GenMaxwellQpQsIsotropic3DElastic(ElasticMaterialApp):
         self._calcStress(strainB, muB, lambdaB, \
                            initialStressB, initialStrainB)
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB))
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

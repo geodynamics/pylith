@@ -843,7 +843,31 @@ pylith::materials::GenMaxwellPlaneStrain::_stableTimeStepImplicit(
   return dtStable;
 } // _stableTimeStepImplicit
 
-#include <iostream>
+
+// ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::GenMaxwellPlaneStrain::_stableTimeStepExplicit(const PylithScalar* properties,
+								  const int numProperties,
+								  const PylithScalar* stateVars,
+								  const int numStateVars,
+								  const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar lambda = properties[p_lambdaEff];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
+
+
 // ----------------------------------------------------------------------
 // Compute viscous strain for current time step.
 void

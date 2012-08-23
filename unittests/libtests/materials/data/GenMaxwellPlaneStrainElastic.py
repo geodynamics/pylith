@@ -194,6 +194,7 @@ class GenMaxwellPlaneStrainElastic(ElasticMaterialApp):
                                                initialStressB, initialStrainB,
                                                self.stateVars[1,:])
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB))
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

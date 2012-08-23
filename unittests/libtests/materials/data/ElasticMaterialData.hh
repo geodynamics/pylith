@@ -43,6 +43,7 @@ public:
 public:
 
   PylithScalar dtStableImplicit; ///< Stable time step for implicit time stepping.
+  PylithScalar dtStableExplicit; ///< Stable time step for explicit time stepping.
   PylithScalar* density; ///< Density at location.
   PylithScalar* strain; ///< Strain at location.
   PylithScalar* stress; ///< Stress at location.
