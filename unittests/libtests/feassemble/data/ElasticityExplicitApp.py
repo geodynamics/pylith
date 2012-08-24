@@ -56,12 +56,23 @@ class ElasticityExplicitApp(ElasticityApp):
     self._calculateJacobian()
     self._calculateResidualLumped()
     self._calculateJacobianLumped()
+    self._calcDtStable()
     self._initData()
     self.data.write(self.name)
     return
   
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _calcDtStable(self):
+    """
+    Calculate stable time step for explicit time stepping.
+    """
+    vp = ((self.lameLambda + 2.0*self.lameMu) / self.density)**0.5
+    minCellWidth = self.mesh.minCellWidth
+    self.dtStableExplicit = minCellWidth / vp
+    return
+
 
   def _calculateResidualLumped(self):
     """
@@ -84,7 +95,11 @@ class ElasticityExplicitApp(ElasticityApp):
   def _initData(self):
 
     ElasticityApp._initData(self)
+    
     # Calculated values
+    self.data.addScalar(vtype="PylithScalar", name="_dtStableExplicit",
+                       value=self.dtStableExplicit,
+                       format="%16.8e");
     self.data.addArray(vtype="PylithScalar", name="_valsResidualLumped",
                        values=self.valsResidualLumped,
                        format="%16.8e", ncols=self.spaceDim)

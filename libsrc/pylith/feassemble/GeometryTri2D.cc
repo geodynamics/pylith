@@ -229,7 +229,7 @@ pylith::feassemble::GeometryTri2D::minCellWidth(const scalar_array& coordinatesC
   const PylithScalar a  = sqrt(pow(xC-xB,2) + pow(yC-yB, 2));
   const PylithScalar b  = sqrt(pow(xA-xC,2) + pow(yA-yC, 2));
   
-  const PylithScalar k = (a + b + c) / 3.0;
+  const PylithScalar k = 0.5 * (a + b + c);
   const PylithScalar r = sqrt(k*(k-a)*(k-b)*(k-c)) / k;
   minWidth = r;
 

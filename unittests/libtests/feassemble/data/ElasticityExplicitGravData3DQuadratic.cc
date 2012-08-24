@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_matLabel
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_dtStableExplicit =   1.11111111e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_gravityVec[] = {
   0.00000000e+00,  0.00000000e+00, -1.00000000e+08,
 };
@@ -518,7 +520,7 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_v
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData3DQuadratic::_valsJacobianLumped[] = {
   2.57903646e+06,  2.57903646e+06,  2.57903646e+06,
   2.40117187e+06,  2.40117187e+06,  2.40117187e+06,
-  2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
+  2.40117187e+06,  2.40117187e+06,  2.40117187e+06,
   2.40117188e+06,  2.40117188e+06,  2.40117188e+06,
   1.20947917e+07,  1.20947917e+07,  1.20947917e+07,
   8.35963542e+06,  8.35963542e+06,  8.35963542e+06,
@@ -541,6 +543,7 @@ pylith::feassemble::ElasticityExplicitGravData3DQuadratic::ElasticityExplicitGra
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);

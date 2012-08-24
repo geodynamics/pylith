@@ -65,6 +65,8 @@ private:
 
   static const PylithScalar _dt;
 
+  static const PylithScalar _dtStableExplicit;
+
   static const PylithScalar _gravityVec[];
 
   static const PylithScalar _vertices[];
