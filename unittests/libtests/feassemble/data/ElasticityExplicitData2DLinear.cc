@@ -43,7 +43,7 @@ const char* pylith::feassemble::ElasticityExplicitData2DLinear::_matLabel = "ela
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData2DLinear::_dt =   1.00000000e-02;
 
-const PylithScalar pylith::feassemble::ElasticityExplicitData2DLinear::_dtStableExplicit =   4.45596817e-05;
+const PylithScalar pylith::feassemble::ElasticityExplicitData2DLinear::_dtStableExplicit =   5.09461158e-05;
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData2DLinear::_gravityVec[] = {
   0.00000000e+00, -1.00000000e+08,

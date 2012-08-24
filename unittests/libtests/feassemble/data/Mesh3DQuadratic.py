@@ -78,9 +78,26 @@ class Mesh3DQuadratic(Component):
     v1 = self.vertices[1,:]
     v2 = self.vertices[2,:]
     v3 = self.vertices[3,:]
-    vol = 1.0
-    area = 0.5
-    r = vol / (3*area)
+
+    vol = 1.0/6.0*numpy.linalg.det(numpy.array([[1.0, v0[0], v0[1], v0[2]],
+                                                [1.0, v1[0], v1[1], v1[2]],
+                                                [1.0, v2[0], v2[1], v2[2]],
+                                                [1.0, v3[0], v3[1], v3[2]]],
+                                               dtype=numpy.float64))
+    cross012 = numpy.cross(v1-v0, v2-v0)
+    area012 = 0.5*(numpy.dot(cross012, cross012))**0.5
+
+    cross013 = numpy.cross(v1-v0, v3-v0)
+    area013 = 0.5*(numpy.dot(cross013, cross013))**0.5
+
+    cross123 = numpy.cross(v2-v1, v3-v1)
+    area123 = 0.5*(numpy.dot(cross123, cross123))**0.5
+
+    cross203 = numpy.cross(v0-v2, v3-v2)
+    area203 = 0.5*(numpy.dot(cross203, cross203))**0.5
+
+    area = area012 + area013 + area123 + area203;
+    r = vol / (3.0*area)
     self.minCellWidth = r
     return
   

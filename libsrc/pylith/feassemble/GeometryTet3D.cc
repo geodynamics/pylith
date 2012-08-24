@@ -277,11 +277,133 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
 
   PetscLogFlops(numEdges*9);
 
-  // TODO: Add radius of inscribed sphere
-  // r = V / (3*A)
+  // Radius of inscribed sphere
+  const PylithScalar v = volume(coordinatesCell);
+  const PylithScalar a = faceArea(coordinatesCell, 0) +
+    faceArea(coordinatesCell, 1) +
+    faceArea(coordinatesCell, 2) +
+    faceArea(coordinatesCell, 3);
+    
+  const PylithScalar r = v / (3.0*a);
+  if (r < minWidth) {
+    minWidth = r;
+  } // if
+
+  PetscLogFlops(5);
 
   return minWidth;
 } // minCellWidth
+
+// ----------------------------------------------------------------------
+// Compute cell volume.
+PylithScalar
+pylith::feassemble::GeometryTet3D::volume(const scalar_array& coordinatesCell) const
+{ // volume
+  assert(12 == coordinatesCell.size() ||
+	 30 == coordinatesCell.size()); // :KLUDGE: allow quadratic
+  
+  const PylithScalar x0 = coordinatesCell[0];
+  const PylithScalar y0 = coordinatesCell[1];
+  const PylithScalar z0 = coordinatesCell[2];
+  
+  const PylithScalar x1 = coordinatesCell[3];
+  const PylithScalar y1 = coordinatesCell[4];
+  const PylithScalar z1 = coordinatesCell[5];
+  
+  const PylithScalar x2 = coordinatesCell[6];
+  const PylithScalar y2 = coordinatesCell[7];
+  const PylithScalar z2 = coordinatesCell[8];
+  
+  const PylithScalar x3 = coordinatesCell[9];
+  const PylithScalar y3 = coordinatesCell[10];
+  const PylithScalar z3 = coordinatesCell[11];
+
+  const PylithScalar det = 
+    x1*(y2*z3-y3*z2)-y1*(x2*z3-x3*z2)+(x2*y3-x3*y2)*z1 - 
+    x0*((y2*z3-y3*z2)-y1*(z3-z2)+(y3-y2)*z1) +
+    y0*((x2*z3-x3*z2)-x1*(z3-z2)+(x3-x2)*z1) -
+    z0*((x2*y3-x3*y2)-x1*(y3-y2)+(x3-x2)*y1);
+  
+  const PylithScalar v = det / 6.0;
+  PetscLogFlops(48);
+  
+  return v;  
+} // volume
+
+// ----------------------------------------------------------------------
+// Compute area of face.
+PylithScalar
+pylith::feassemble::GeometryTet3D::faceArea(const scalar_array& coordinatesCell,
+	 const int face) const
+{ // faceArea
+  assert(12 == coordinatesCell.size() ||
+	 30 == coordinatesCell.size()); // :KLUDGE: allow quadratic
+
+  const PylithScalar x0 = coordinatesCell[0];
+  const PylithScalar y0 = coordinatesCell[1];
+  const PylithScalar z0 = coordinatesCell[2];
+  
+  const PylithScalar x1 = coordinatesCell[3];
+  const PylithScalar y1 = coordinatesCell[4];
+  const PylithScalar z1 = coordinatesCell[5];
+  
+  const PylithScalar x2 = coordinatesCell[6];
+  const PylithScalar y2 = coordinatesCell[7];
+  const PylithScalar z2 = coordinatesCell[8];
+  
+  const PylithScalar x3 = coordinatesCell[9];
+  const PylithScalar y3 = coordinatesCell[10];
+  const PylithScalar z3 = coordinatesCell[11];
+
+  PylithScalar a[3];
+  PylithScalar b[3];
+  switch (face) {
+  case 0:
+    a[0] = x3-x1;
+    a[1] = y3-y1;
+    a[2] = z3-z1;
+    b[0] = x2-x1;
+    b[1] = y2-y1;
+    b[2] = z2-z1;
+    break;
+  case 1:
+    a[0] = x3-x2;
+    a[1] = y3-y2;
+    a[2] = z3-z2;
+    b[0] = x0-x2;
+    b[1] = y0-y2;
+    b[2] = z0-z2;
+    break;
+  case 2:
+    a[0] = x3-x0;
+    a[1] = y3-y0;
+    a[2] = z3-z0;
+    b[0] = x1-x0;
+    b[1] = y1-y0;
+    b[2] = z1-z0;
+    break;
+  case 3:
+    a[0] = x1-x0;
+    a[1] = y1-y0;
+    a[2] = z1-z0;
+    b[0] = x2-x0;
+    b[1] = y2-y0;
+    b[2] = z2-z0;
+    break;
+  default:
+    assert(0);
+    throw std::logic_error("Unknown face.");
+  } // switch
+
+  const PylithScalar areaX = a[1]*b[2] - a[2]*b[1];
+  const PylithScalar areaY = a[2]*b[0] - a[0]*b[2];
+  const PylithScalar areaZ = a[0]*b[1] - a[1]*b[0];
+
+  const PylithScalar area = 0.5*sqrt(areaX*areaX + areaY*areaY + areaZ*areaZ);
+  PetscLogFlops(22);
+  
+  return area;
+} // faceArea
 
 
 // End of file
