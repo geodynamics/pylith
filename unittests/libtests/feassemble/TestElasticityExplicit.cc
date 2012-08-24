@@ -348,7 +348,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
 void 
 pylith::feassemble::TestElasticityExplicit::testUpdateStateVars(void)
 { // testUpdateStateVars
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicit integrator;
@@ -364,13 +364,15 @@ pylith::feassemble::TestElasticityExplicit::testUpdateStateVars(void)
 void
 pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
 { // testStableTimeStep
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   ElasticityExplicit integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const PylithScalar stableTimeStep = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
+  const PylithScalar dtStable = integrator.stableTimeStep(mesh);
+  CPPUNIT_ASSERT_EQUAL(1.0, dtStable/_data->dtStableExplicit);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

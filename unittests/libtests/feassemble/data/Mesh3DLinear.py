@@ -59,6 +59,15 @@ class Mesh3DLinear(Component):
                                      [-1.0, +1.0, -1.0],
                                      [-1.0, -1.0, +1.0]],
                                     dtype=numpy.float64)
+
+    v0 = self.vertices[0,:]
+    v1 = self.vertices[1,:]
+    v2 = self.vertices[2,:]
+    v3 = self.vertices[3,:]
+    vol = 1.0
+    area = 0.5
+    r = vol / (3*area)
+    self.minCellWidth = r
     return
   
 

@@ -278,7 +278,7 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
   PetscLogFlops(numEdges*9);
 
   // TODO: Add radius of inscribed sphere
-  // r = V / 3*A
+  // r = V / (3*A)
 
   return minWidth;
 } // minCellWidth
