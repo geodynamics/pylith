@@ -1020,8 +1020,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 // ----------------------------------------------------------------------
 // Compute volume of tetrahedral cell.
 PylithScalar
-pylith::feassemble::ElasticityExplicitTet4::_volume(
-			     const scalar_array& coordinatesCell) const
+pylith::feassemble::ElasticityExplicitTet4::_volume(const scalar_array& coordinatesCell) const
 { // __volume
   assert(12 == coordinatesCell.size());
 

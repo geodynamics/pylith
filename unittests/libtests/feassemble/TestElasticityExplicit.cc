@@ -180,7 +180,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 0
+#if 0 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
@@ -220,7 +220,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
   const int size = residualSection->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 0
+#if 0 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
@@ -372,7 +372,8 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
   _initialize(&mesh, &integrator, &fields);
 
   const PylithScalar dtStable = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(1.0, dtStable/_data->dtStableExplicit);
+  const PylithScalar tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dtStable/_data->dtStableExplicit, tolerance);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

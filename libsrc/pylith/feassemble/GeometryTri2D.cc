@@ -215,7 +215,6 @@ pylith::feassemble::GeometryTri2D::minCellWidth(const scalar_array& coordinatesC
 
   PetscLogFlops(numEdges*6);
 
-#if 1
   // Ad-hoc to account for distorted cells.
   // Radius of inscribed circle.
   const PylithScalar xA = coordinatesCell[0];
@@ -234,7 +233,6 @@ pylith::feassemble::GeometryTri2D::minCellWidth(const scalar_array& coordinatesC
   minWidth = r;
 
   PetscLogFlops(3*6 + 3 + 8);
-#endif
 
   return minWidth;
 } // minCellWidth
