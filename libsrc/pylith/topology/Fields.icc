@@ -51,11 +51,6 @@ pylith::topology::Fields<field_type>::deallocate(void)
   for (typename map_type::iterator iter=begin; iter != end; ++iter) {
     delete iter->second; iter->second = 0;
   } // for
-  const typename dm_map_type::iterator dmBegin = _dmFields.begin();
-  const typename dm_map_type::iterator dmEnd = _dmFields.end();
-  for (typename dm_map_type::iterator iter=dmBegin; iter != dmEnd; ++iter) {
-    PetscErrorCode err = DMDestroy(&iter->second);CHECK_PETSC_ERROR(err);
-  } // for
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -64,9 +59,7 @@ template<typename field_type>
 bool
 pylith::topology::Fields<field_type>::hasField(const char* name) const
 { // hasField
-  typename dm_map_type::const_iterator dmIter = _dmFields.find(name);
   typename map_type::const_iterator iter = _fields.find(name);
-  assert((dmIter != _dmFields.end()) == (iter != _fields.end()));
   return iter != _fields.end();
 } // hasField
 
@@ -86,10 +79,6 @@ pylith::topology::Fields<field_type>::add(const char* name,
   
   _fields[name] = new field_type(_mesh);
   _fields[name]->label(label);
-  if (_mesh.dmMesh()) {
-    PetscErrorCode err = PetscObjectReference((PetscObject) _mesh.dmMesh());CHECK_PETSC_ERROR(err);
-    _dmFields[name] = _mesh.dmMesh();
-  }
 } // add
 
 // ----------------------------------------------------------------------
@@ -112,36 +101,6 @@ pylith::topology::Fields<field_type>::add(
   _fields[name] = new field_type(_mesh);
   _fields[name]->label(label);
   _fields[name]->newSection(domain, fiberDim);
-  if (_mesh.dmMesh()) {
-    DM             dm = _mesh.dmMesh(), dmNew;
-    PetscSection   sectionNew;
-    PetscInt       pStart, pEnd, p;
-    PetscErrorCode err;
-
-    err = DMComplexClone(dm, &dmNew);CHECK_PETSC_ERROR(err);
-    err = PetscSectionCreate(_mesh.comm(), &sectionNew);CHECK_PETSC_ERROR(err);
-    switch(domain) {
-    case pylith::topology::FieldBase::VERTICES_FIELD:
-      err = DMComplexGetDepthStratum(dmNew, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-      break;
-    case pylith::topology::FieldBase::CELLS_FIELD:
-      err = DMComplexGetHeightStratum(dmNew, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-      break;
-    default:
-      throw std::runtime_error("Invalid domain type");
-    }
-    for(PetscInt p = pStart; p < pEnd; ++p) {
-      PetscInt value;
-
-      err = DMComplexGetLabelValue(dmNew, label, p, &value);CHECK_PETSC_ERROR(err);
-      if (value) {
-        err = PetscSectionSetDof(sectionNew, p, fiberDim);CHECK_PETSC_ERROR(err);
-      }
-    }
-    err = PetscSectionSetUp(sectionNew);CHECK_PETSC_ERROR(err);
-    err = DMSetDefaultSection(dmNew, sectionNew);CHECK_PETSC_ERROR(err);
-    _dmFields[name] = dmNew;
-  }
 } // add
 
 // ----------------------------------------------------------------------
@@ -150,6 +109,7 @@ template<typename field_type>
 void 
 pylith::topology::Fields<field_type>::add(
 			const char* name,
+			const char* oldName,
 			const int numFields,
 			const int fields[])
 { // add
@@ -160,15 +120,7 @@ pylith::topology::Fields<field_type>::add(
     throw std::runtime_error(msg.str());
   } // if
   
-  if (_mesh.dmMesh()) {
-    DM             dm = _mesh.dmMesh(), dmNew;
-    PetscSection   sectionNew;
-    PetscInt       pStart, pEnd, p;
-    PetscErrorCode err;
-
-    err = DMCreateSubDM(dm, numFields, fields, PETSC_NULL, &dmNew);CHECK_PETSC_ERROR(err);
-    _dmFields[name] = dmNew;
-  }
+  _fields[name] = new field_type(_fields[oldName], numFields, fields);
 } // add
 
 // ----------------------------------------------------------------------
@@ -186,7 +138,6 @@ pylith::topology::Fields<field_type>::del(const char* name)
   } // if
   delete iter->second; iter->second = 0;
   _fields.erase(name);
-  _dmFields.erase(name);
 } // del
 
 // ----------------------------------------------------------------------
@@ -223,22 +174,6 @@ pylith::topology::Fields<field_type>::get(const char* name)
 { // get
   typename map_type::iterator iter = _fields.find(name);
   if (iter == _fields.end()) {
-    std::ostringstream msg;
-    msg << "Could not find field '" << name
-	<< "' in fields manager for retrieval.";
-    throw std::runtime_error(msg.str());
-  } // if
-  return *iter->second;
-} // get
-	   
-// ----------------------------------------------------------------------
-// Get field.
-template<typename field_type>
-DM
-pylith::topology::Fields<field_type>::getDM(const char* name)
-{ // get
-  typename dm_map_type::iterator iter = _dmFields.find(name);
-  if (iter == _dmFields.end()) {
     std::ostringstream msg;
     msg << "Could not find field '" << name
 	<< "' in fields manager for retrieval.";
