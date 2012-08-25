@@ -92,6 +92,7 @@ public :
    * @param fields Set of field numbers for this vector
    */
   void add(const char* name,
+           const char* oldName,
            const int numFields,
            const int fields[]);
 
@@ -119,12 +120,6 @@ public :
    */
   field_type& get(const char* name);
 	   
-  /** Get DM field.
-   *
-   * @param name Name of field.
-   */
-  DM getDM(const char* name);
-	   
   /** Copy layout to other fields.
    *
    * @param name Name of field to use as template for layout.
@@ -149,13 +144,11 @@ public :
 protected :
 
   typedef std::map< std::string, field_type* > map_type;
-  typedef std::map< std::string, DM> dm_map_type;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
   map_type _fields;
-  dm_map_type _dmFields; /* These DMs will share the underlying mesh with _mesh */
   const typename field_type::Mesh& _mesh;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

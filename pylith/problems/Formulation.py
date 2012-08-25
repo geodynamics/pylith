@@ -532,21 +532,40 @@ class Formulation(PetscComponent, ModuleFormulation):
     self.fields.solutionName("dispIncr(t->t+dt)")
 
     lengthScale = normalizer.lengthScale()
-    solution = self.fields.get("dispIncr(t->t+dt)")
-    solution.newSection(solution.VERTICES_FIELD, dimension)
-    solution.vectorFieldType(solution.VECTOR)
-    solution.scale(lengthScale.value)
-    if self.splitFields():
-      solution.splitDefault()
+    if 1:
+      solution = self.fields.get("dispIncr(t->t+dt)")
+      solution.newSection(solution.VERTICES_FIELD, dimension)
+      solution.vectorFieldType(solution.VECTOR)
+      solution.scale(lengthScale.value)
+      if self.splitFields():
+        solution.splitDefault()
+        for integrator in self.integratorsMesh + self.integratorsSubMesh:
+          integrator.splitField(solution)
+      for constraint in self.constraints:
+        constraint.setConstraintSizes(solution)
+      solution.allocate()
+      for constraint in self.constraints:
+        constraint.setConstraints(solution)
       for integrator in self.integratorsMesh + self.integratorsSubMesh:
-        integrator.splitField(solution)
-    for constraint in self.constraints:
-      constraint.setConstraintSizes(solution)
-    solution.allocate()
-    for constraint in self.constraints:
-      constraint.setConstraints(solution)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.checkConstraints(solution)
+        integrator.checkConstraints(solution)
+    else:
+      solution.addField("displacement", dimension)
+      solution.addField("pressure", 1)
+      solution.addField("temperature", 1)
+      solution.setupFields()
+        solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
+        solution.updateDof("pressure",     solution.CELLS_FIELD,    1)
+        solution.updateDof("temperature",  solution.VERTICES_FIELD, 1)
+      solution.vectorFieldType("displacement", solution.VECTOR)
+      solution.scale("displacement", lengthScale.value)
+      for constraint in self.constraints:
+        constraint.setConstraintSizes(solution)
+      solution.allocate()
+      for constraint in self.constraints:
+        constraint.setConstraints(solution)
+      for integrator in self.integratorsMesh + self.integratorsSubMesh:
+        integrator.checkConstraints(solution)
+
 
     memoryLogger.stagePop()
 

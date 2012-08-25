@@ -85,6 +85,9 @@ public :
 	const ALE::Obj<section_type>& section,
 	const Metadata& metadata);
 
+
+  Field(const Field& src, int numFields, const int fields[]);
+
   /// Destructor.
   ~Field(void);
 
@@ -127,6 +130,13 @@ public :
    */
   void vectorFieldType(const VectorFieldEnum value);
 
+  /** Set vector field type
+   *
+   * @param name Field name
+   * @param value Type of vector field.
+   */
+  void vectorFieldType(const std::string& name, const VectorFieldEnum value);
+
   /** Get vector field type
    *
    * @returns Type of vector field.
@@ -138,6 +148,13 @@ public :
    * @param value Scale associated with field.
    */
   void scale(const PylithScalar value);
+
+  /** Set scale for dimensionalizing field.
+   *
+   * @param name Field name
+   * @param value Scale associated with field.
+   */
+  void scale(const std::string& name, const PylithScalar value);
 
   /** Get scale for dimensionalizing field.
    *
@@ -235,6 +252,12 @@ public :
    * @note Don't forget to call label(), especially if reusing a field.
    */
   void cloneSection(const Field& src);
+
+  void addField(const std::string& name, int numComponents);
+
+  void setupFields();
+
+  void updateDof(const std::string& name, const DomainEnum domain, const int fiberDim);
 
   /// Clear variables associated with section.
   void clear(void);
@@ -422,16 +445,23 @@ private :
    */
   const ScatterInfo& _getScatter(const char* context) const;
 
+// PROTECTED TYPEDEFS ///////////////////////////////////////////////////
+protected :
+
+  typedef std::map< std::string, Metadata > map_type;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  Metadata _metadata;
+  map_type _metadata;
+  /* Old construction */
   const mesh_type& _mesh; ///< Mesh associated with section.
   ALE::Obj<section_type> _section; ///< Real section with data.
-  PetscSection _newSection;
-  Vec          _newLocalVec;
   scatter_map_type _scatters; ///< Collection of scatters.
-
+  /* New construction */
+  DM  _dm; /* Holds the PetscSection */
+  Vec _globalVec;
+  std::map<std::string, int> _tmpFields;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
