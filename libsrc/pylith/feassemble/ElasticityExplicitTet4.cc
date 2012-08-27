@@ -88,6 +88,15 @@ pylith::feassemble::ElasticityExplicitTet4::timeStep(const PylithScalar dt)
 } // timeStep
 
 // ----------------------------------------------------------------------
+// Get stable time step for advancing from time t to time t+dt.
+PylithScalar
+pylith::feassemble::ElasticityExplicitTet4::stableTimeStep(const topology::Mesh& mesh) const
+{ // stableTimeStep
+  assert(_material);
+  return _material->stableTimeStepExplicit(mesh, _quadrature);
+} // stableTimeStep
+
+// ----------------------------------------------------------------------
 // Set normalized viscosity for numerical damping.
 void
 pylith::feassemble::ElasticityExplicitTet4::normViscosity(const PylithScalar viscosity)

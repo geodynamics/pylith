@@ -366,13 +366,16 @@ pylith::feassemble::TestElasticityExplicitTri3::testUpdateStateVars(void)
 void
 pylith::feassemble::TestElasticityExplicitTri3::testStableTimeStep(void)
 { // testStableTimeStep
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   ElasticityExplicitTri3 integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const PylithScalar stableTimeStep = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
+  const PylithScalar dtStable = integrator.stableTimeStep(mesh);
+  const PylithScalar tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dtStable/_data->dtStableExplicit, tolerance);
 } // testStableTimeStep
 
 // ----------------------------------------------------------------------

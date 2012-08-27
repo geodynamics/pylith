@@ -70,7 +70,7 @@ class Mesh2DQuadratic(Component):
     c = (0.5**2 + 1.5**2)**0.5
     k = 0.5 * (a + b + c)
     r = (k*(k-a)*(k-b)*(k-c))**0.5 / k
-    self.minCellWidth = r
+    self.minCellWidth = min(a, b, c, 3.0*r)
     return
   
 
