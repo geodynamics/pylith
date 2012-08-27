@@ -289,6 +289,7 @@ class TestElasticityExplicitLgDeform(unittest.TestCase):
     fields.add("disp(t+dt)", "displacement")
     fields.add("disp(t)", "displacement")
     fields.add("disp(t-dt)", "displacement")
+    fields.add("velocity(t)", "velocity")
     fields.add("acceleration(t)", "acceleration")
     fields.solutionName("disp(t+dt)")
 
