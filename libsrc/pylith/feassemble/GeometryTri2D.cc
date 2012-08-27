@@ -230,7 +230,10 @@ pylith::feassemble::GeometryTri2D::minCellWidth(const scalar_array& coordinatesC
   
   const PylithScalar k = 0.5 * (a + b + c);
   const PylithScalar r = sqrt(k*(k-a)*(k-b)*(k-c)) / k;
-  minWidth = r;
+  const PylithScalar rwidth = 3.0*r; // based on empirical tests
+  if (rwidth < minWidth) {
+    minWidth = rwidth;
+  } // if
 
   PetscLogFlops(3*6 + 3 + 8);
 
