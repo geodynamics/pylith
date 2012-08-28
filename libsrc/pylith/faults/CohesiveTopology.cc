@@ -298,12 +298,17 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = DMComplexSetVTKBounds(newMesh, PETSC_DETERMINE, firstLagrangeVertexDM);CHECK_PETSC_ERROR(err);
 
   // Renumber labels
-  for(std::set<std::string>::const_iterator name = groupNames->begin(); name != groupNames->end(); ++name) {
+  std::set<std::string> names(groupNames->begin(), groupNames->end());
+  names.insert(names.begin(), "material-id");
+  for(std::set<std::string>::const_iterator name = names.begin(); name != names.end(); ++name) {
     const char     *lname = (*name).c_str();
     IS              idIS;
     PetscInt        n;
+    PetscBool       hasLabel;
     const PetscInt *ids;
 
+    err = DMComplexHasLabel(complexMesh, lname, &hasLabel);CHECK_PETSC_ERROR(err);
+    if (!hasLabel) continue;
     err = DMComplexGetLabelSize(complexMesh, lname, &n);CHECK_PETSC_ERROR(err);
     err = DMComplexGetLabelIdIS(complexMesh, lname, &idIS);CHECK_PETSC_ERROR(err);
     err = ISGetIndices(idIS, &ids);CHECK_PETSC_ERROR(err);

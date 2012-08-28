@@ -535,6 +535,11 @@ class Formulation(PetscComponent, ModuleFormulation):
     if 1:
       solution = self.fields.get("dispIncr(t->t+dt)")
       solution.newSection(solution.VERTICES_FIELD, dimension)
+
+      solution.addField("displacement", dimension)
+      solution.setupFields()
+      solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
+
       solution.vectorFieldType(solution.VECTOR)
       solution.scale(lengthScale.value)
       if self.splitFields():
@@ -553,9 +558,9 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution.addField("pressure", 1)
       solution.addField("temperature", 1)
       solution.setupFields()
-        solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
-        solution.updateDof("pressure",     solution.CELLS_FIELD,    1)
-        solution.updateDof("temperature",  solution.VERTICES_FIELD, 1)
+      solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
+      solution.updateDof("pressure",     solution.CELLS_FIELD,    1)
+      solution.updateDof("temperature",  solution.VERTICES_FIELD, 1)
       solution.vectorFieldType("displacement", solution.VECTOR)
       solution.scale("displacement", lengthScale.value)
       for constraint in self.constraints:

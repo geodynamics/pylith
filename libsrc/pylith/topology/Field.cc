@@ -79,8 +79,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
 // Constructor with field and subfields
 template<typename mesh_type, typename section_type>
 pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
-					  int numFields,
-					  const int fields[]) :
+                                                        const int fields[], int numFields) :
   _mesh(src._mesh),
   _section(PETSC_NULL)
 { // constructor
@@ -1432,7 +1431,7 @@ pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* contex
 // Experimental
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::addField(const std::string& name, int numComponents)
+pylith::topology::Field<mesh_type, section_type>::addField(const char *name, int numComponents)
 {
   // Keep track of name/components until setup
   _tmpFields[name] = numComponents;
@@ -1458,7 +1457,7 @@ pylith::topology::Field<mesh_type, section_type>::setupFields()
 
 template<typename mesh_type, typename section_type>
 void
-pylith::topology::Field<mesh_type, section_type>::updateDof(const std::string& name, const DomainEnum domain, int fiberDim)
+pylith::topology::Field<mesh_type, section_type>::updateDof(const char *name, const DomainEnum domain, int fiberDim)
 {
   PetscSection   section;
   PetscInt       pStart, pEnd, f = 0;
