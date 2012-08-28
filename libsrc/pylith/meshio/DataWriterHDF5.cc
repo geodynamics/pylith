@@ -92,6 +92,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const std::string& filename = _hdf5Filename();
 
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+    DM                         dmMesh    = mesh.dmMesh();
     assert(!sieveMesh.isNull());
 
     _timesteps.clear();
@@ -107,7 +108,54 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5Open(mesh.comm(), filename.c_str(), FILE_MODE_WRITE,
 			      &_viewer);
     CHECK_PETSC_ERROR(err);
+    ALE::Obj<numbering_type> vNumbering = 
+      sieveMesh->hasLabel("censored depth") ?
+      sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
+      sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
+    assert(!vNumbering.isNull());
+    //vNumbering->view("VERTEX NUMBERING");
 
+    if (dmMesh) {
+      PetscSection coordSection;
+      Vec          coordinates;
+      PetscInt     vStart, vEnd, vMax, verticesSize, dim, dimLocal = 0;
+
+      const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+      assert(cs);
+      err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetCoordinateVec(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
+      if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}
+      for(PetscInt vertex = vStart; vertex < vEnd; ++vertex) {
+        err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
+        if (dimLocal) break;
+      }
+      err = MPI_Allreduce(&dimLocal, &dim, 1, MPIU_INT, MPI_MAX, sieveMesh->comm());CHECK_PETSC_ERROR(err);
+      verticesSize = vEnd - vStart;
+
+      PetscVec     coordVec;
+      PetscScalar *coords, *c;
+
+      err = VecCreate(sieveMesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+      err = VecSetSizes(coordVec, verticesSize*dim, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+      err = VecSetBlockSize(coordVec, dim);CHECK_PETSC_ERROR(err);
+      err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+      err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+      err = VecGetArray(coordinates, &c);CHECK_PETSC_ERROR(err);
+      for(PetscInt v = 0; v < vEnd - vStart; ++v) {
+        for(PetscInt d = 0; d < dim; ++d) {
+          coords[v*dim+d] = c[v*dim+d];
+        }
+      }
+      err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+      err = VecRestoreArray(coordinates, &c);CHECK_PETSC_ERROR(err);
+      err = PetscObjectSetName((PetscObject) coordVec, "vertices");CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
+      err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+      err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
+    } else {
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
       sieveMesh->hasRealSection("coordinates_dimensioned") ?
       sieveMesh->getRealSection("coordinates_dimensioned") :
@@ -123,12 +171,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
     coordinates.label("vertices");
-    ALE::Obj<numbering_type> vNumbering = 
-      sieveMesh->hasLabel("censored depth") ?
-      sieveMesh->getFactory()->getNumbering(sieveMesh, "censored depth", 0) :
-      sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
-    assert(!vNumbering.isNull());
-    //vNumbering->view("VERTEX NUMBERING");
 
     coordinates.createScatterWithBC(mesh, vNumbering, context);
     coordinates.scatterSectionToVector(context);
@@ -137,7 +179,62 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
+    }
 
+    if (dmMesh) {
+      PetscInt    *cones;
+      PetscSection coneSection;
+      PetscInt     vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+
+      err = DMComplexGetConeSection(dmMesh, &coneSection);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetCones(dmMesh, &cones);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
+      for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+        err = DMComplexGetConeSize(dmMesh, cell, &numCornersLocal);CHECK_PETSC_ERROR(err);
+        if (numCornersLocal) break;
+      }
+      err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, sieveMesh->comm());CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(coneSection, cEnd, &conesSize);CHECK_PETSC_ERROR(err);
+      if (label) {
+        conesSize = 0;
+        for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+          PetscInt value;
+
+          err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+          if (value == labelId) ++conesSize;
+        }
+        conesSize *= numCorners;
+      }
+
+      PetscVec     cellVec;
+      PetscScalar *vertices;
+
+      err = VecCreate(sieveMesh->comm(), &cellVec);CHECK_PETSC_ERROR(err);
+      err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+      err = VecSetBlockSize(cellVec, numCorners);CHECK_PETSC_ERROR(err);
+      err = VecSetFromOptions(cellVec);CHECK_PETSC_ERROR(err);
+      err = PetscObjectSetName((PetscObject) cellVec, "cells");CHECK_PETSC_ERROR(err);
+      err = VecGetArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
+      for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
+        if (label) {
+          PetscInt value;
+
+          err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+          if (value != labelId) continue;
+        }
+        for(PetscInt corner = 0; corner < numCorners; ++corner, ++v) {
+          vertices[v] = cones[cell*numCorners+corner] - vStart;
+        }
+      }
+      err = VecRestoreArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5PushGroup(_viewer, "/topology");CHECK_PETSC_ERROR(err);
+      err = VecView(cellVec, _viewer);CHECK_PETSC_ERROR(err);
+      err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
+      err = VecDestroy(&cellVec);CHECK_PETSC_ERROR(err);
+    } else {
     // Account for censored cells
     int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
     int cellDepth = 0;
@@ -206,6 +303,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&elemVec);CHECK_PETSC_ERROR(err);
     delete[] tmpVertices; tmpVertices = 0;
+    }
 
     hid_t h5 = -1;
     err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);

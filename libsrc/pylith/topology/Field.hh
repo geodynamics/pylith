@@ -86,7 +86,7 @@ public :
 	const Metadata& metadata);
 
 
-  Field(const Field& src, int numFields, const int fields[]);
+  Field(const Field& src, const int fields[], int numFields);
 
   /// Destructor.
   ~Field(void);
@@ -253,11 +253,11 @@ public :
    */
   void cloneSection(const Field& src);
 
-  void addField(const std::string& name, int numComponents);
+  void addField(const char *name, int numComponents);
 
   void setupFields();
 
-  void updateDof(const std::string& name, const DomainEnum domain, const int fiberDim);
+  void updateDof(const char *name, const DomainEnum domain, const int fiberDim);
 
   /// Clear variables associated with section.
   void clear(void);
