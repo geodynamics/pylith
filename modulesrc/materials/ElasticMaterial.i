@@ -71,9 +71,6 @@ namespace pylith {
 
       /** Get stable time step for implicit time integration.
        *
-       * @pre Must call retrievePropsAndVars for cell before calling
-       * stableTimeStep().
-       *
        * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
        *
        * @returns Time step
@@ -82,9 +79,6 @@ namespace pylith {
       PylithScalar stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
       /** Get stable time step for explicit time integration.
-       *
-       * @pre Must call retrievePropsAndVars for cell before calling
-       * stableTimeStep().
        *
        * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
        *

@@ -314,9 +314,9 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-pylith::materials::ElasticPlaneStress::stableTimeStepImplicit(
-					const topology::Mesh& mesh) {
-  return pylith::PYLITH_MAXSCALAR;
+pylith::materials::ElasticPlaneStress::stableTimeStepImplicit(const topology::Mesh& mesh,
+							      topology::Field<topology::Mesh>* field) {
+  return ElasticMaterial::stableTimeStepImplicitMax(mesh, field);
 }
 
 // ----------------------------------------------------------------------
