@@ -195,7 +195,8 @@ public :
    * @param field Field over material cells.
    * @param name Name of field to retrieve.
    */
-  void getField(topology::Field<topology::Mesh> *field, const char* name) const;
+  void getField(topology::Field<topology::Mesh> *field,
+		const char* name) const;
 
   /** Get the field with all properties.
    *

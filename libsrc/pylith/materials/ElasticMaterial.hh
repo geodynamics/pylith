@@ -172,31 +172,42 @@ public :
 
   /** Get stable time step for implicit time integration.
    *
-   * @pre Must call retrievePropsAndVars for cell before calling
-   * stableTimeStep().
-   *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
    * @param mesh Finite-element mesh.
+   * @param field Field for storing min stable time step for each cell.
+   *
    * @returns Time step
    */
   virtual
-  PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh);
+  PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh,
+				      topology::Field<topology::Mesh>* field =0);
+
+  /** Get stable time step for implicit time integration for a
+   * material where the stable time step is infinite.
+   *
+   * @param mesh Finite-element mesh.
+   * @param field Field for storing min stable time step for each cell.
+   *
+   * @returns PYLITH::MAX_SCALAR;
+   */
+  PylithScalar stableTimeStepImplicitMax(const topology::Mesh& mesh,
+					 topology::Field<topology::Mesh>* field =0);
 
   /** Get stable time step for explicit time integration.
-   *
-   * @pre Must call retrievePropsAndVars for cell before calling
-   * stableTimeStep().
    *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
    * @param mesh Finite-element mesh.
    * @param quadrature Quadrature for finite-element integration
+   * @param field Field for storing min stable time step for each cell.
+   *
    * @returns Time step
    */
   virtual
   PylithScalar stableTimeStepExplicit(const topology::Mesh& mesh,
-				      feassemble::Quadrature<topology::Mesh>* quadrature);
+				      feassemble::Quadrature<topology::Mesh>* quadrature,
+				      topology::Field<topology::Mesh>* field =0);
 
   /** Get initial stress/strain fields.
    *
