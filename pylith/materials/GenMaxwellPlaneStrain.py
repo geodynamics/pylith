@@ -47,7 +47,7 @@ class GenMaxwellPlaneStrain(ElasticMaterial, ModuleGenMaxwellPlaneStrain):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density",
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "shear_ratio", "maxwell_time"],
             'data': ["stress_zz_initial",
                      "total_strain", "stress",

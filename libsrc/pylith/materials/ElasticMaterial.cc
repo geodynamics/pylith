@@ -244,8 +244,6 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   assert(_initialStressCell.size() == numQuadPts*_tensorSize);
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
-  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
-
   // Get cells associated with material
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -255,6 +253,39 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
   const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
+  // Setup field if necessary.
+  ALE::Obj<RealSection> fieldSection;
+  if (field) {
+    const int fiberDim = 1*numQuadPts;
+    fieldSection = field->section();
+    bool useCurrentField = false;
+    if (!fieldSection.isNull()) {
+      // check fiber dimension
+      const int fiberDimCurrentLocal = (cells->size() > 0) ? fieldSection->getFiberDimension(*cells->begin()) : 0;
+      int fiberDimCurrent = 0;
+      MPI_Allreduce((void *) &fiberDimCurrentLocal, 
+		    (void *) &fiberDimCurrent, 1, 
+		    MPI_INT, MPI_MAX, field->mesh().comm());
+      assert(fiberDimCurrent > 0);
+      useCurrentField = fiberDim == fiberDimCurrent;
+    } // if
+    if (!useCurrentField) {
+      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+      logger.stagePush("OutputFields");
+      field->newSection(cells, fiberDim);
+      field->allocate();
+      fieldSection = field->section();
+      logger.stagePop();
+    } // if
+    assert(!fieldSection.isNull());
+    field->label("stable_dt_implicit");
+    assert(_normalizer);
+    field->scale(_normalizer->timeScale());
+    field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
+  } // if
+
+  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
+  scalar_array dtStableCell(numQuadPts);
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
@@ -266,9 +297,16 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
 				numPropsQuadPt,
 				&_stateVarsCell[iQuad*numVarsQuadPt],
 				numVarsQuadPt);
-      if (dt < dtStable)
+      dtStableCell[iQuad] = dt;
+      if (dt < dtStable) {
 	dtStable = dt;
+      } // if
     } // for
+    if (field) {
+      assert(!fieldSection.isNull());
+      assert(numQuadPts == fieldSection->getFiberDimension(*c_iter));
+      fieldSection->updatePoint(*c_iter, &dtStableCell[0]);
+    } // if
   } // for
   
   return dtStable;
@@ -305,7 +343,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   // Setup field if necessary.
   ALE::Obj<RealSection> fieldSection;
   if (field) {
-    const int fiberDim = 1;
+    const int fiberDim = 1*numQuadPts;
     fieldSection = field->section();
     bool useCurrentField = false;
     if (!fieldSection.isNull()) {
@@ -323,15 +361,15 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
       logger.stagePush("OutputFields");
       field->newSection(cells, fiberDim);
       field->allocate();
+      fieldSection = field->section();
       logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
     field->label("stable_dt_explicit");
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
+    field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
   } // if
-
-  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
 
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
@@ -341,6 +379,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   RestrictVisitor coordsVisitor(*coordinates, 
 				coordinatesCell.size(), &coordinatesCell[0]);
 
+  PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
+  scalar_array dtStableCell(numQuadPts);
   for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
@@ -350,7 +390,6 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
     sieveMesh->restrictClosure(*c_iter, coordsVisitor);
     const double minCellWidth = quadrature->minCellWidth(coordinatesCell);
 
-    PylithScalar dtStableCell = pylith::PYLITH_MAXSCALAR;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
 	_stableTimeStepExplicit(&_propertiesCell[iQuad*numPropsQuadPt],
@@ -358,17 +397,16 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 				&_stateVarsCell[iQuad*numVarsQuadPt],
 				numVarsQuadPt,
 				minCellWidth);
-      if (dt < dtStableCell)
-	dtStableCell = dt;
+      dtStableCell[iQuad] = dt;
+      if (dt < dtStable) {
+	dtStable = dt;
+      } // if
     } // for
     if (field) {
       assert(!fieldSection.isNull());
-      assert(1 == fieldSection->getFiberDimension(*c_iter));
-      fieldSection->updatePoint(*c_iter, &dtStableCell);
+      assert(numQuadPts == fieldSection->getFiberDimension(*c_iter));
+      fieldSection->updatePoint(*c_iter, &dtStableCell[0]);
     } // if
-
-    if (dtStableCell < dtStable)
-      dtStable = dtStableCell;
   } // for
   
   return dtStable;
@@ -377,11 +415,14 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration (return large value).
 PylithScalar
-pylith::materials::ElasticMaterial::stableTimeStepImplicitMax(const topology::Mesh& mesh,
-							      topology::Field<topology::Mesh>* field) {
+pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::Mesh& mesh,
+							       topology::Field<topology::Mesh>* field)
+{ // _stableTimeStepImplicitMax
   const PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
   
   if (field) {
+    const int numQuadPts = _numQuadPts;
+
     const ALE::Obj<RealSection>& fieldSection = field->section();
     // Get cells associated with material
     const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -391,7 +432,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicitMax(const topology::Me
     const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
     const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
     
-    const int fiberDim = 1;
+    const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
     if (!fieldSection.isNull()) {
       // check fiber dimension
@@ -411,20 +452,23 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicitMax(const topology::Me
       logger.stagePop();
     } // if
     assert(!fieldSection.isNull());
-    field->label("stable_dt_explicit");
+    field->label("stable_dt_implicit");
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
+    field->vectorFieldType(topology::FieldBase::MULTI_SCALAR);
 
+    scalar_array dtStableCell(numQuadPts);
+    dtStableCell = PYLITH_MAXSCALAR;
     for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
 	 c_iter != cellsEnd;
 	 ++c_iter) {
-      assert(1 == fieldSection->getFiberDimension(*c_iter));
-      fieldSection->updatePoint(*c_iter, &dtStable);
+      assert(numQuadPts == fieldSection->getFiberDimension(*c_iter));
+      fieldSection->updatePoint(*c_iter, &dtStableCell[0]);
     } // for
   } // if
   
   return dtStable;
-} // stableTimeStepImplicitMax
+} // _stableTimeStepImplicitMax
 
 // ----------------------------------------------------------------------
 // Allocate cell arrays.

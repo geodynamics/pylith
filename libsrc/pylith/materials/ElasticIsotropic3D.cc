@@ -327,7 +327,7 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
 PylithScalar
 pylith::materials::ElasticIsotropic3D::stableTimeStepImplicit(const topology::Mesh& mesh,
 							      topology::Field<topology::Mesh>* field) {
-  return ElasticMaterial::stableTimeStepImplicitMax(mesh, field);
+  return ElasticMaterial::_stableTimeStepImplicitMax(mesh, field);
 } // stableTimeStepImplicitMax
 
 // ----------------------------------------------------------------------
