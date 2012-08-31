@@ -375,6 +375,23 @@ pylith::feassemble::IntegratorElasticity::cellField(
       } // else
 
     } // else
+
+  } else if (0 == strcasecmp(name, "stable_dt_implicit")) {
+    if (!_outputFields->hasField("buffer (other)"))
+      _outputFields->add("buffer (other)", "buffer");
+    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    _material->stableTimeStepImplicit(mesh, &buffer);
+    buffer.addDimensionOkay(true);
+    return buffer;
+    
+  } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
+    if (!_outputFields->hasField("buffer (other)"))
+      _outputFields->add("buffer (other)", "buffer");
+    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
+    buffer.addDimensionOkay(true);
+    return buffer;
+    
   } else {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");

@@ -183,17 +183,6 @@ public :
   PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh,
 				      topology::Field<topology::Mesh>* field =0);
 
-  /** Get stable time step for implicit time integration for a
-   * material where the stable time step is infinite.
-   *
-   * @param mesh Finite-element mesh.
-   * @param field Field for storing min stable time step for each cell.
-   *
-   * @returns PYLITH::MAX_SCALAR;
-   */
-  PylithScalar stableTimeStepImplicitMax(const topology::Mesh& mesh,
-					 topology::Field<topology::Mesh>* field =0);
-
   /** Get stable time step for explicit time integration.
    *
    * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
@@ -355,6 +344,20 @@ protected :
 				       const int numStateVars,
 				       const double minCellWidth) const = 0;
   
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Get stable time step for implicit time integration for a
+   * material where the stable time step is infinite.
+   *
+   * @param mesh Finite-element mesh.
+   * @param field Field for storing min stable time step for each cell.
+   *
+   * @returns PYLITH::MAX_SCALAR;
+   */
+  PylithScalar _stableTimeStepImplicitMax(const topology::Mesh& mesh,
+					  topology::Field<topology::Mesh>* field =0);
+
   /** Compute 2D deviatoric stress/strain from vector and mean value.
    *
    * @param deviatoric Array for deviatoric tensor.

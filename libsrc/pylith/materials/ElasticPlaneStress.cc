@@ -316,7 +316,7 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
 PylithScalar
 pylith::materials::ElasticPlaneStress::stableTimeStepImplicit(const topology::Mesh& mesh,
 							      topology::Field<topology::Mesh>* field) {
-  return ElasticMaterial::stableTimeStepImplicitMax(mesh, field);
+  return ElasticMaterial::_stableTimeStepImplicitMax(mesh, field);
 }
 
 // ----------------------------------------------------------------------

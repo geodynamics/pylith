@@ -47,7 +47,7 @@ class MaxwellPlaneStrain(ElasticMaterial, ModuleMaxwellPlaneStrain):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density", "maxwell_time"],
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit", "maxwell_time"],
             'data': ["total_strain", "stress",
                      "stress_zz_initial", "viscous_strain"]}}
     self._loggingPrefix = "MaMx2D "

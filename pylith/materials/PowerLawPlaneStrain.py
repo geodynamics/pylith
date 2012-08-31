@@ -46,7 +46,7 @@ class PowerLawPlaneStrain(ElasticMaterial, ModulePowerLawPlaneStrain):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density", 
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "reference_strain_rate", "reference_stress",
                      "power_law_exponent"],
             'data': ["total_strain", "stress",
