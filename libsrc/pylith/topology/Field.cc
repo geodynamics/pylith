@@ -49,6 +49,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
     _dm = PETSC_NULL;
   }
   _globalVec = PETSC_NULL;
+  _localVec  = PETSC_NULL;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -73,6 +74,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
     _dm = PETSC_NULL;
   }
   _globalVec = PETSC_NULL;
+  _localVec  = PETSC_NULL;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -95,6 +97,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
   }
   err = DMCreateSubDM(_mesh.dmMesh(), numFields, fields, PETSC_NULL, &_dm);CHECK_PETSC_ERROR(err);
   _globalVec = PETSC_NULL;
+  _localVec  = PETSC_NULL;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -103,6 +106,7 @@ template<typename mesh_type, typename section_type>
 pylith::topology::Field<mesh_type, section_type>::~Field(void)
 { // destructor
   deallocate();
+  PetscErrorCode err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -124,7 +128,7 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
   } // for
   _scatters.clear();
   err = VecDestroy(&_globalVec);CHECK_PETSC_ERROR(err);
-  err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&_localVec);CHECK_PETSC_ERROR(err);
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -207,6 +211,7 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
 				       const int fiberDim)
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
+  PetscErrorCode err;
 
   // Clear memory
   clear();
@@ -232,8 +237,24 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
       *std::max_element(points->begin(), points->end());
     _section->setChart(chart_type(pointMin, pointMax+1));
     _section->setFiberDimension(points, fiberDim);  
-  } else // Create empty chart
+
+    if (_dm) {
+      PetscSection s;
+      err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
+
+      for(typename label_sequence::const_iterator p_iter = points->begin(); p_iter != points->end(); ++p_iter) {
+        err = PetscSectionSetDof(s, *p_iter, fiberDim);CHECK_PETSC_ERROR(err);
+      }
+    }
+  } else {// Create empty chart
     _section->setChart(chart_type(0, 0));
+    if (_dm) {
+      PetscSection s;
+      err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
+    }
+  }
 
   logger.stagePop();
 } // newSection
@@ -247,6 +268,7 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
 					       const int fiberDim)
 { // newSection
   typedef typename mesh_type::SieveMesh::point_type point_type;
+  PetscErrorCode err;
 
   // Clear memory
   clear();
@@ -271,8 +293,24 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
     _section->setChart(chart_type(pointMin, pointMax+1));
     for (int i=0; i < npts; ++i)
       _section->setFiberDimension(points[i], fiberDim);
-  } else  // create empty chart
+
+    if (_dm) {
+      PetscSection s;
+      err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
+
+      for (int i=0; i < npts; ++i) {
+        err = PetscSectionSetDof(s, points[i], fiberDim);CHECK_PETSC_ERROR(err);
+      }
+    }
+  } else { // create empty chart
     _section->setChart(chart_type(0, 0));
+    if (_dm) {
+      PetscSection s;
+      err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
+    }
+  }
 
   logger.stagePop();
 } // newSection
@@ -611,6 +649,7 @@ pylith::topology::Field<mesh_type, section_type>::allocate(void)
     PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetUp(s);CHECK_PETSC_ERROR(err);
     err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
+    err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
   }
 
   logger.stagePop();

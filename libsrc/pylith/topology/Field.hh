@@ -105,6 +105,24 @@ public :
    * @returns DMComplex section.
    */
   void dmSection(PetscSection *s, Vec *v) const;
+  
+  /** Get PetscSection.
+   *
+   * @returns PetscSection.
+   */
+  PetscSection petscSection() const;
+
+  /** Get local Vec.
+   *
+   * @returns local Vec.
+   */
+  Vec localVector() const;
+
+  /** Get global Vec.
+   *
+   * @returns global Vec.
+   */
+  Vec globalVector() const;
 
   /** Get mesh associated with field.
    *
@@ -461,6 +479,7 @@ private :
   /* New construction */
   DM  _dm; /* Holds the PetscSection */
   Vec _globalVec;
+  Vec _localVec;
   std::map<std::string, int> _tmpFields;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////

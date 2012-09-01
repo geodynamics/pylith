@@ -30,6 +30,34 @@ pylith::topology::Field<mesh_type, section_type>::section(void) const {
   return _section;
 }
 
+// Get PetscSection.
+template<typename mesh_type, typename section_type>
+inline
+PetscSection
+pylith::topology::Field<mesh_type, section_type>::petscSection(void) const {
+  PetscSection s = PETSC_NULL;
+  if (_dm) {
+    PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+  }
+  return s;
+}
+
+// Get local vector.
+template<typename mesh_type, typename section_type>
+inline
+Vec
+pylith::topology::Field<mesh_type, section_type>::localVector(void) const {
+  return _localVec;
+}
+
+// Get global vector.
+template<typename mesh_type, typename section_type>
+inline
+Vec
+pylith::topology::Field<mesh_type, section_type>::globalVector(void) const {
+  return _globalVec;
+}
+
 // Get mesh associated with field.
 template<typename mesh_type, typename section_type>
 inline

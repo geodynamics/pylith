@@ -170,6 +170,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   topology::Field<topology::Mesh> field(mesh);
   field.newSection(vertices, fiberDim);
   field.splitDefault();
+
   const ALE::Obj<RealSection>& fieldSection = field.section();
   CPPUNIT_ASSERT(!fieldSection.isNull());
 
