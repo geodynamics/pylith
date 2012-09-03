@@ -418,9 +418,9 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
       for (typename chart_type::const_iterator c_iter = chartBegin;
 	   c_iter != chartEnd;
 	   ++c_iter) {
-	const int fiberDim = srcSection->getFiberDimension(*c_iter);
-	if (fiberDim > 0)
-	  _section->setFiberDimension(*c_iter, fiberDim);
+        const int fiberDim = srcSection->getFiberDimension(*c_iter);
+        if (fiberDim > 0)
+          _section->setFiberDimension(*c_iter, fiberDim);
       } // for
       const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
       assert(!sieveMesh.isNull());
@@ -428,9 +428,19 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
       _section->setBC(srcSection->getBC());
       _section->copySpaces(srcSection); // :BUG: NEED TO REBUILD SPACES 
     } // if/else
+    PetscSection   section = src.petscSection();
+    PetscSection   newSection;
+    PetscErrorCode err;
+
+    if (_dm) {
+      err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultSection(_dm, newSection);CHECK_PETSC_ERROR(err);
+      err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
+      err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
+      err = PetscPrintf(PETSC_COMM_SELF, "Created new section %p, glboal vector %p, and local vector %p\n", newSection, _globalVec, _localVec);CHECK_PETSC_ERROR(err);
+    }
     
     // Reuse scatters in clone
-    PetscErrorCode err = 0;
     if (src._scatters.size() > 0) {
       const typename scatter_map_type::const_iterator scattersEnd = src._scatters.end();
       for (typename scatter_map_type::const_iterator s_iter=src._scatters.begin();
@@ -663,6 +673,29 @@ pylith::topology::Field<mesh_type, section_type>::zero(void)
 { // zero
   if (!_section.isNull())
     _section->zero(); // Does not zero BC.
+  if (_localVec) {
+    PetscSection   section;
+    PetscInt       pStart, pEnd, dof = 0;
+    PetscErrorCode err;
+
+    err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);    
+    err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);    
+
+    // Assume fiber dimension is uniform
+    if (pEnd > pStart) {err = PetscSectionGetDof(section, pStart, &dof);CHECK_PETSC_ERROR(err);}
+    scalar_array values(dof);
+    values *= 0.0;
+
+    for(PetscInt p = pStart; p < pEnd; ++p) {
+      PetscInt pdof;
+
+      err = PetscSectionGetDof(section, p, &pdof);CHECK_PETSC_ERROR(err);
+      if (pdof > 0) {
+        assert(dof == pdof);
+        err = DMComplexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+      } // if
+    } // for
+  }
 } // zero
 
 // ----------------------------------------------------------------------
@@ -691,6 +724,9 @@ pylith::topology::Field<mesh_type, section_type>::zeroAll(void)
       } // if
     } // for
   } // if
+  if (_localVec) {
+    PetscErrorCode err = VecSet(_localVec, 0.0);CHECK_PETSC_ERROR(err);
+  }
 } // zeroAll
 
 // ----------------------------------------------------------------------
@@ -710,6 +746,15 @@ pylith::topology::Field<mesh_type, section_type>::complete(void)
 					sieveMesh->getRecvOverlap(), 
 					_section, _section);
 
+  if (_dm) {
+    // Not sure if DMLocalToLocal() would work
+    PetscErrorCode err;
+
+    err = DMLocalToGlobalBegin(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
+    err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalBegin(_dm, _globalVec, ADD_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalEnd(_dm, _globalVec, ADD_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+  }
   logger.stagePop();
 } // complete
 
@@ -1318,6 +1363,11 @@ pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const P
 			INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
   err = VecScatterEnd(sinfo.scatter, sinfo.scatterVec, vector,
 		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
+
+  if (_dm) {
+    err = DMLocalToGlobalBegin(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
+    err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
+  }
 } // scatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -1351,6 +1401,11 @@ pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const P
 			INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
   err = VecScatterEnd(sinfo.scatter, vector, sinfo.scatterVec,
 		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
+
+  if (_dm) {
+    err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalEnd(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+  }
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
