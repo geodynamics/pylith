@@ -112,6 +112,9 @@ public :
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
+  void integrateResidualOld(const topology::Field<topology::Mesh>& residual,
+			 const PylithScalar t,
+			 topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
