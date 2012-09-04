@@ -728,7 +728,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
-  
+
   //mesh->debug(true); // DEBUGGING
   
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,

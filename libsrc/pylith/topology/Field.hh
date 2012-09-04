@@ -130,6 +130,12 @@ public :
    */
   const mesh_type& mesh(void) const;
 
+  /** Get DM associated with field.
+   *
+   * @returns DM
+   */
+  DM dmMesh(void) const;
+
   /** Set label for field.
    *
    * @param value Label for field.
