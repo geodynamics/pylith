@@ -437,7 +437,6 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
       err = DMSetDefaultSection(_dm, newSection);CHECK_PETSC_ERROR(err);
       err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
       err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
-      err = PetscPrintf(PETSC_COMM_SELF, "Created new section %p, glboal vector %p, and local vector %p\n", newSection, _globalVec, _localVec);CHECK_PETSC_ERROR(err);
     }
     
     // Reuse scatters in clone
