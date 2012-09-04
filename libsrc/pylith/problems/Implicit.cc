@@ -56,36 +56,40 @@ pylith::problems::Implicit::calcRateFields(void)
   const int spaceDim = cs->spaceDim();
   
   // Get sections.
-  scalar_array dispIncrVertex(spaceDim);
-  const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
-  assert(!dispIncrSection.isNull());
+  PetscSection dispIncrSection = dispIncr.petscSection();
+  Vec          dispIncrVec     = dispIncr.localVector();
+  PetscScalar *dispIncrArray;
+  assert(dispIncrSection);assert(dispIncrVec);
 	 
-  scalar_array velVertex(spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    _fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
+  PetscSection velSection = _fields->get("velocity(t)").petscSection();
+  Vec          velVec     = _fields->get("velocity(t)").localVector();
+  PetscScalar *velArray;
+  assert(velSection);assert(velVec);
 
   // Get mesh vertices.
-  const ALE::Obj<SieveMesh>& sieveMesh = dispIncr.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
-       v_iter != verticesEnd;
-       ++v_iter) {
-    dispIncrSection->restrictPoint(*v_iter, &dispIncrVertex[0],
-				   dispIncrVertex.size());
-    velVertex = dispIncrVertex / dt;
-    
-    assert(velSection->getFiberDimension(*v_iter) == spaceDim);
-    velSection->updatePointAll(*v_iter, &velVertex[0]);
-  } // for
-  PetscLogFlops(vertices->size() * spaceDim);
+  DM             dmMesh = dispIncr.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
+  assert(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off, vdof, voff;
+
+    err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(velSection, v, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(velSection, v, &voff);CHECK_PETSC_ERROR(err);
+    assert(dof == spaceDim);assert(vdof == spaceDim);
+    for(PetscInt d = 0; d < dof; ++d) {
+      velArray[voff+d] = dispIncrArray[off+d] / dt;
+    }
+  } // for
+  err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+  PetscLogFlops((vEnd - vStart) * spaceDim);
 } // calcRateFields
 
 

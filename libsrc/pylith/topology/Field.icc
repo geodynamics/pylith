@@ -67,6 +67,13 @@ pylith::topology::Field<mesh_type, section_type>::mesh(void) const {
   return _mesh;
 }
 
+template<typename mesh_type, typename section_type>
+inline
+DM
+pylith::topology::Field<mesh_type, section_type>::dmMesh(void) const {
+  return _dm;
+}
+
 // Get label for field.
 template<typename mesh_type, typename section_type>
 inline

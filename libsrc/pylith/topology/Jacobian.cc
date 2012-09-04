@@ -60,8 +60,7 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
-  const ALE::Obj<SubMesh::SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-  const ALE::Obj<SubMesh::RealSection>& fieldSection = field.section();
+  DM dmMesh = field.dmMesh();
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Jacobian");
 
@@ -69,8 +68,7 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = DMMeshCreateMatrix(sieveMesh, fieldSection,
-					  matrixType, &_matrix, blockFlag);
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
       "associated with subsystem Jacobian.");
   logger.stagePop();
@@ -209,15 +207,16 @@ void
 pylith::topology::Jacobian::verifySymmetry(void) const
 { // verifySymmetry
   const PetscMat matSparse = _matrix;
+  PetscErrorCode err;
 
   int nrows = 0;
   int ncols = 0;
-  MatGetSize(matSparse, &nrows, &ncols);
+  err = MatGetSize(matSparse, &nrows, &ncols);CHECK_PETSC_ERROR(err);
 
   PetscMat matDense;
   PetscMat matSparseAIJ;
-  MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);
-  MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);
+  err = MatConvert(matSparse, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseAIJ);CHECK_PETSC_ERROR(err);
+  err = MatConvert(matSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);CHECK_PETSC_ERROR(err);
 
   scalar_array vals(nrows*ncols);
   int_array rows(nrows);
@@ -226,7 +225,7 @@ pylith::topology::Jacobian::verifySymmetry(void) const
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+  err = MatGetValues(matDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);CHECK_PETSC_ERROR(err);
   const PylithScalar tolerance = 1.0e-06;
   bool isSymmetric = true;
   for (int iRow=0; iRow < nrows; ++iRow)
@@ -236,24 +235,24 @@ pylith::topology::Jacobian::verifySymmetry(void) const
       const PylithScalar valIJ = vals[indexIJ];
       const PylithScalar valJI = vals[indexJI];
       if (fabs(valIJ) > 1.0)
-	if (fabs(1.0 - valJI/valIJ) > tolerance) {
-	  std::cerr << "Mismatch: " 
-		    << "(" << iRow << ", " << iCol << ") = " << valIJ
-		    << ", (" << iCol << ", " << iRow << ") = " << valJI
-		    << std::endl;
-	  isSymmetric = false;
-	} // if
+        if (fabs(1.0 - valJI/valIJ) > tolerance) {
+          std::cerr << "Mismatch: " 
+                    << "(" << iRow << ", " << iCol << ") = " << valIJ
+                    << ", (" << iCol << ", " << iRow << ") = " << valJI
+                    << std::endl;
+          isSymmetric = false;
+        } // if
       else
-	if (fabs(valJI - valIJ) > tolerance) {
-	  std::cerr << "Mismatch: " 
-		    << "(" << iRow << ", " << iCol << ") = " << valIJ
-		    << ", (" << iCol << ", " << iRow << ") = " << valJI
-		    << std::endl;
-	  isSymmetric = false;
-	} // if
+        if (fabs(valJI - valIJ) > tolerance) {
+          std::cerr << "Mismatch: " 
+                    << "(" << iRow << ", " << iCol << ") = " << valIJ
+                    << ", (" << iCol << ", " << iRow << ") = " << valJI
+                    << std::endl;
+          isSymmetric = false;
+        } // if
     } // for
-  MatDestroy(&matDense);
-  MatDestroy(&matSparseAIJ);
+  err = MatDestroy(&matDense);CHECK_PETSC_ERROR(err);
+  err = MatDestroy(&matSparseAIJ);CHECK_PETSC_ERROR(err);
   if (!isSymmetric)
     throw std::runtime_error("Jacobian matrix is not symmetric.");
 } // verifySymmetry

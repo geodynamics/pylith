@@ -751,8 +751,8 @@ pylith::topology::Field<mesh_type, section_type>::complete(void)
 
     err = DMLocalToGlobalBegin(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
-    err = DMGlobalToLocalBegin(_dm, _globalVec, ADD_VALUES, _localVec);CHECK_PETSC_ERROR(err);
-    err = DMGlobalToLocalEnd(_dm, _globalVec, ADD_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalEnd(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
   }
   logger.stagePop();
 } // complete

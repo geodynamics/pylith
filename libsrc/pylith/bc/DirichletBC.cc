@@ -264,6 +264,7 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
   PetscErrorCode err;
   assert(fieldSectionP);
   
+  err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type p_bc = _points[iPoint];
 
@@ -282,11 +283,10 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
     fieldSection->updatePointAll(p_bc, &fieldVertex[0]);
     PetscScalar *array;
 
-    err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      array[_bcDOF[iDOF]] = parametersVertex[valueIndex+iDOF];
-    err = VecRestoreArray(localVec, &array);CHECK_PETSC_ERROR(err);
+      array[_bcDOF[iDOF]+off] = parametersVertex[valueIndex+iDOF];
   } // for
+  err = VecRestoreArray(localVec, &array);CHECK_PETSC_ERROR(err);
 } // setField
 
 // ----------------------------------------------------------------------
