@@ -3004,6 +3004,92 @@ Apply only the preconditioner.
 \end_layout
 
 \begin_layout Subsubsection
+Model Verification with PETSc Direct Solvers
+\end_layout
+
+\begin_layout Standard
+It is often useful to apply a direct solver so that solver convergence is
+ decoupled from model verification for the purposes of testing.
+ Unfortunately, the traditional LU factorization solvers cannot be directly
+ applied in PyLith due to the saddle-point formulation used to accomodate
+ the fault slip constraints.
+ However, we can combine an LU factorization of the displacement sub-block
+ with a full Schur complement factorization using the PETSc FieldSplit precondit
+ioner.
+ If the solver for the Schur complement S is given a very low tolerance,
+ this is effectively a direct solver.
+ The options given below will construct this solver in PyLith.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout LyX-Code
+use_custom_constraint_pc = True
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_type = fieldsplit
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_type = schur
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_schur_precondition = user
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_schur_factorization_type = full
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_real_diagonal = true
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_pc_type = lu
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_type = gmres
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_rtol = 1.0e-10
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_pc_type = jacobi
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_type = gmres
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_rtol = 1.0e-10 
+\end_layout
+
+\begin_layout Subsubsection
 PETSc Solvers and nVidia GPUs
 \end_layout
 
