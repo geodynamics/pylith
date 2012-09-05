@@ -319,8 +319,8 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
     const PylithScalar L = properties[p_L];
     const PylithScalar slipRate0 = properties[p_slipRate0];
 
-    // Prevent zero value for theta
-    const PylithScalar theta = std::max(stateVars[s_state], 1.0e-12);
+    // Prevent zero value for theta, reasonable value is L / slipRate0
+    const PylithScalar theta = (stateVars[s_state] > 0.0) ? stateVars[s_state] : L / slipRate0;
 
     if (slipRate >= slipRateLinear) {
       mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
