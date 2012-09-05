@@ -1,0 +1,83 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2012 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for example showing how to specify
+# the discretization size using a field variable in an Exodus-II file.
+#
+# We also use the CUBIT support for APREPRO (the expressions in
+# braces), which includes units and mathematical functions. See the
+# APREPRO section in the appendix of the CUBIT documentation for more
+# information.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 100 km x 100 km x 50 km
+#{blockLength=100.0*km}
+#{blockWidth=100.0*km}
+#{blockHeight=50.0*km}
+
+brick x {blockLength} y {blockWidth} z {blockHeight}
+#{idVol=Id("volume")}
+
+# Translate block so the top is at z=0
+volume {idVol} move x {domain_x} y {domain_y} z {-0.5*blockHeight}
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+#{idFault=Id("surface")}
+surface {idFault} name "fault_surface"
+create planar surface with plane zplane offset {-20.0*km}
+#{idMoho=Id("surface")}
+surface {idMoho} name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface material_interface
+webcut volume 1 with plane surface fault_surface
+volume 1 name "elastic_xpos"
+volume 5 name "elastic_xneg"
+volume 4 name "viscoelastic"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+delete body 2 3
+imprint all with volume all
+merge all
+compress ids all
+
+# End of file
+
+
+
+
