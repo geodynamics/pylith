@@ -16,15 +16,10 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	contours \
-	dem \
-	triangles \
-	merge_surfs
-
-
 dist_noinst_DATA = \
-	README
+	README \
+	geometry.jou \
+	mesh.jou
 
 
 # End of file 
