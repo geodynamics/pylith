@@ -108,206 +108,6 @@ pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
   _material->useElasticBehavior(!_useSolnIncr);
 } // useSolnIncr
 
-// ----------------------------------------------------------------------
-// Integrate constributions to residual term (r) for operator.
-void
-pylith::feassemble::ElasticityImplicit::integrateResidualOld(
-			  const topology::Field<topology::Mesh>& residual,
-			  const PylithScalar t,
-			  topology::SolutionFields* const fields)
-{ // integrateResidualOld
-  /// Member prototype for _elasticityResidualXD()
-  typedef void (pylith::feassemble::ElasticityImplicit::*elasticityResidual_fn_type)
-    (const scalar_array&);
-  
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != _logger);
-  assert(0 != fields);
-
-  const int setupEvent = _logger->eventId("ElIR setup");
-  const int geometryEvent = _logger->eventId("ElIR geometry");
-  const int computeEvent = _logger->eventId("ElIR compute");
-  const int restrictEvent = _logger->eventId("ElIR restrict");
-  const int stateVarsEvent = _logger->eventId("ElIR stateVars");
-  const int stressEvent = _logger->eventId("ElIR stress");
-  const int updateEvent = _logger->eventId("ElIR update");
-
-  _logger->eventBegin(setupEvent);
-
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const scalar_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-  const int tensorSize = _material->tensorSize();
-  if (cellDim != spaceDim)
-    throw std::logic_error("Integration for cells with spatial dimensions "
-			   "different than the spatial dimension of the "
-			   "domain not implemented yet.");
-
-  // Set variables dependent on dimension of cell
-  totalStrain_fn_type calcTotalStrainFn;
-  elasticityResidual_fn_type elasticityResidualFn;
-  if (1 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
-  } else if (2 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
-  } else if (3 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual3D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
-
-  // Allocate vectors for cell values.
-  scalar_array dispTpdtCell(numBasis*spaceDim);
-  scalar_array strainCell(numQuadPts*tensorSize);
-  strainCell = 0.0;
-  scalar_array gravVec(spaceDim);
-  scalar_array quadPtsGlobal(numQuadPts*spaceDim);
-
-  // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-
-  // Get sections
-  scalar_array dispTCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTSection = 
-    fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
-  RestrictVisitor dispTVisitor(*dispTSection, dispTCell.size(), &dispTCell[0]);
-
-  scalar_array dispTIncrCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispTIncrSection = 
-    fields->get("dispIncr(t->t+dt)").section();
-  assert(!dispTIncrSection.isNull());
-  RestrictVisitor dispTIncrVisitor(*dispTIncrSection,
-				   dispTIncrCell.size(), &dispTIncrCell[0]);
-
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
-
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
-
-  assert(0 != _normalizer);
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar gravityScale = 
-    _normalizer->pressureScale() / (_normalizer->lengthScale() *
-				    _normalizer->densityScale());
-
-  _logger->eventEnd(setupEvent);
-  _logger->eventBegin(computeEvent);
-
-  // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
-#endif
-
-    // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
-
-    // Reset element vector to zero
-    _resetCellVector();
-
-    // Restrict input fields to cell
-    dispTVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTVisitor);
-    dispTIncrVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispTIncrVisitor);
-
-    // Get cell geometry information that depends on cell
-    const scalar_array& basis = _quadrature->basis();
-    const scalar_array& basisDeriv = _quadrature->basisDeriv();
-    const scalar_array& jacobianDet = _quadrature->jacobianDet();
-    const scalar_array& quadPtsNondim = _quadrature->quadPts();
-
-    // Compute current estimate of displacement at time t+dt using
-    // solution increment.
-    dispTpdtCell = dispTCell + dispTIncrCell;
-
-    // Compute body force vector if gravity is being used.
-    if (0 != _gravityField) {
-      const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
-      assert(0 != cs);
-
-      // Get density at quadrature points for this cell
-      const scalar_array& density = _material->calcDensity();
-
-      quadPtsGlobal = quadPtsNondim;
-      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-          lengthScale);
-
-      // Compute action for element body forces
-      spatialdata::spatialdb::SpatialDB* db = _gravityField;
-      for (int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-        const int err = db->query(&gravVec[0], gravVec.size(),
-            &quadPtsGlobal[0], spaceDim, cs);
-        if (err)
-          throw std::runtime_error("Unable to get gravity vector for point.");
-        _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
-            gravityScale);
-        const PylithScalar wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-        for (int iBasis = 0, iQ = iQuad * numBasis; iBasis < numBasis; ++iBasis) {
-          const PylithScalar valI = wt * basis[iQ + iBasis];
-          for (int iDim = 0; iDim < spaceDim; ++iDim) {
-            _cellVector[iBasis * spaceDim + iDim] += valI * gravVec[iDim];
-          } // for
-        } // for
-      } // for
-      PetscLogFlops(numQuadPts * (2 + numBasis * (1 + 2 * spaceDim)));
-    } // if
-
-    // residualSection->view("After gravity contribution");
-    // Compute B(transpose) * sigma, first computing strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTpdtCell, 
-		      numBasis, numQuadPts);
-    const scalar_array& stressCell = _material->calcStress(strainCell, true);
-
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell);
-
-#if 0 // DEBUGGING
-    std::cout << "Updating residual for cell " << *c_iter << std::endl;
-    for(int i = 0; i < _quadrature->spaceDim() * _quadrature->numBasis(); ++i) {
-      std::cout << "  v["<<i<<"]: " << _cellVector[i] << std::endl;
-    }
-#endif
-    // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, residualVisitor);
-  } // for
-
-    _logger->eventEnd(computeEvent);
-} // integrateResidualOld
-
 void
 pylith::feassemble::ElasticityImplicit::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,
@@ -381,8 +181,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const PetscInt *cells;
   PetscInt        numCells;
   assert(dmMesh);
-  const int materialId = _material->id();
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -400,12 +199,14 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   PetscSection residualSection = residual.petscSection();
   Vec          residualVec     = residual.localVector();
 
+#if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
+#endif
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -499,8 +300,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     err = DMComplexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   }
-
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   _logger->eventEnd(computeEvent);
 } // integrateResidual
 
@@ -693,6 +494,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     err = DMComplexMatSetClosure(dmMesh, dispTSection, PETSC_NULL, jacobianMat, cell, &_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
 
