@@ -196,10 +196,15 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
   const PylithScalar* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
-  const PylithScalar* vals = residualSection->restrictSpace();
-  const int size = residualSection->sizeWithBC();
+  PetscSection   residualSection = residual.petscSection();
+  Vec            residualVec     = residual.localVector();
+  PetscScalar   *vals;
+  PetscInt       size;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(residualSection);
+  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
 #if 0
@@ -215,6 +220,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -236,10 +242,15 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
   const PylithScalar* valsE = _data->valsResidualLumped;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
-  const PylithScalar* vals = residualSection->restrictSpace();
-  const int size = residualSection->sizeWithBC();
+  PetscSection   residualSection = residual.petscSection();
+  Vec            residualVec     = residual.localVector();
+  PetscScalar   *vals;
+  PetscInt       size;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(residualSection);
+  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
 #if 0
@@ -255,6 +266,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidualLumped
 
 // ----------------------------------------------------------------------
@@ -337,6 +349,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   jacobian.complete();
 
   const PylithScalar* valsE = _data->valsJacobianLumped;
+  const int sizeE = _data->numVertices * _data->spaceDim;
 
 #if 0 // DEBUGGING
   // TEMPORARY
@@ -350,11 +363,15 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   } // for
 #endif // DEBUGGING
 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
-  CPPUNIT_ASSERT(!jacobianSection.isNull());
-  const PylithScalar* vals = jacobianSection->restrictSpace();
-  const int size = jacobianSection->sizeWithBC();
-  const int sizeE = _data->numVertices * _data->spaceDim;
+  PetscSection jacobianSection = jacobian.petscSection();
+  Vec          jacobianVec     = jacobian.localVector();
+  PetscScalar       *vals;
+  PetscInt           size;
+  PetscErrorCode     err;
+
+  CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
+  err = VecGetArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(jacobianSection, &size);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   const PylithScalar tolerance = 1.0e-06;
@@ -363,6 +380,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobianLumped
 
 // ----------------------------------------------------------------------
@@ -395,6 +413,9 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
   CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
 } // testStableTimeStep
 
+extern PetscErrorCode DMComplexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
+extern PetscErrorCode DMComplexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
+
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
@@ -420,6 +441,10 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
     new SieveMesh::sieve_type(mesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
 
+  mesh->createDMMesh(_data->cellDim);
+  DM dmMesh = mesh->dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+
   // Cells and vertices
   const bool interpolate = false;
   ALE::Obj<SieveFlexMesh::sieve_type> s = 
@@ -436,6 +461,10 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   sieveMesh->stratify();
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 _data->vertices);
+  PetscErrorCode err;
+
+  err = DMComplexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
+  err = DMComplexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
 
   // Material ids
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -449,6 +478,12 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
       e_iter != cells->end();
       ++e_iter)
     sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
+  PetscInt cStart, cEnd, c;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    err = DMComplexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
+  }
 
   // Setup quadrature
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
@@ -499,46 +534,42 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = spaceDim * _data->numVertices;
-  const ALE::Obj<RealSection>& dispIncrSection = 
-    fields->get("dispIncr(t->t+dt)").section();
-  const ALE::Obj<RealSection>& dispTSection = 
-    fields->get("disp(t)").section();
-  const ALE::Obj<RealSection>& dispTmdtSection = 
-    fields->get("disp(t-dt)").section();
-  const ALE::Obj<RealSection>& velSection = 
-    fields->get("velocity(t)").section();
-  const ALE::Obj<RealSection>& accSection = 
-    fields->get("acceleration(t)").section();
-  CPPUNIT_ASSERT(!dispIncrSection.isNull());
-  CPPUNIT_ASSERT(!dispTSection.isNull());
-  CPPUNIT_ASSERT(!dispTmdtSection.isNull());
-  CPPUNIT_ASSERT(!velSection.isNull());
-  CPPUNIT_ASSERT(!accSection.isNull());
 
   scalar_array velVertex(spaceDim);
   scalar_array accVertex(spaceDim);
 
-
-  const int offset = _data->numCells;
-  for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispIncrSection->updatePoint(iVertex+offset, 
-				 &_data->fieldTIncr[iVertex*spaceDim]);
-    dispTSection->updatePoint(iVertex+offset, 
-			      &_data->fieldT[iVertex*spaceDim]);
-    dispTmdtSection->updatePoint(iVertex+offset, 
-				 &_data->fieldTmdt[iVertex*spaceDim]);
-
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
+  PetscSection dispTSectionP     = fields->get("disp(t)").petscSection();
+  Vec          dispTVec          = fields->get("disp(t)").localVector();
+  CPPUNIT_ASSERT(dispTSectionP);CPPUNIT_ASSERT(dispTVec);
+  PetscSection dispTIncrSectionP = fields->get("dispIncr(t->t+dt)").petscSection();
+  Vec          dispTIncrVec      = fields->get("dispIncr(t->t+dt)").localVector();
+  CPPUNIT_ASSERT(dispTIncrSectionP);CPPUNIT_ASSERT(dispTIncrVec);
+  PetscSection dispTmdtSectionP  = fields->get("disp(t-dt)").petscSection();
+  Vec          dispTmdtVec       = fields->get("disp(t-dt)").localVector();
+  CPPUNIT_ASSERT(dispTmdtSectionP);CPPUNIT_ASSERT(dispTmdtVec);
+  PetscSection velSectionP       = fields->get("velocity(t)").petscSection();
+  Vec          velVec            = fields->get("velocity(t)").localVector();
+  CPPUNIT_ASSERT(velSectionP);CPPUNIT_ASSERT(velVec);
+  PetscSection accSectionP       = fields->get("acceleration(t)").petscSection();
+  Vec          accVec            = fields->get("acceleration(t)").localVector();
+  CPPUNIT_ASSERT(accSectionP);CPPUNIT_ASSERT(accVec);
+  PetscInt offset = _data->numCells;
+  for(int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
+    for(int iDim=0; iDim < spaceDim; ++iDim) {
       velVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
-			 _data->fieldT[iVertex*spaceDim+iDim] -
-			 _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2.0*dt);
+                         _data->fieldT[iVertex*spaceDim+iDim] -
+                         _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2.0*dt);
       accVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] -
-			 _data->fieldT[iVertex*spaceDim+iDim] +
-			 _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt);
+                         _data->fieldT[iVertex*spaceDim+iDim] +
+                         _data->fieldTmdt[iVertex*spaceDim+iDim]) / (dt*dt);
     } // for
-    velSection->updatePoint(iVertex+offset, &velVertex[0]);
-    accSection->updatePoint(iVertex+offset, &accVertex[0]);
+    err = DMComplexVecSetClosure(dmMesh, dispTSectionP,     dispTVec,     iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim],     INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, dispTIncrSectionP, dispTIncrVec, iVertex+offset, &_data->fieldTIncr[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, dispTmdtSectionP,  dispTmdtVec,  iVertex+offset, &_data->fieldTmdt[iVertex*_data->spaceDim],  INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, velSectionP,       velVec,       iVertex+offset, &velVertex[0],                               INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, accSectionP,       accVec,       iVertex+offset, &accVertex[0],                               INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+
 } // _initialize
 
 

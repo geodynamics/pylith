@@ -115,10 +115,15 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
     std::cout << "  " << valsE[i] << "\n";
 #endif
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
-  const PylithScalar* vals = residualSection->restrictSpace();
-  const int size = residualSection->sizeWithBC();
+  PetscSection   residualSection = residual.petscSection();
+  Vec            residualVec     = residual.localVector();
+  PetscScalar   *vals;
+  PetscInt       size;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(residualSection);
+  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
@@ -127,6 +132,7 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testIntegrateResidual(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -203,6 +209,9 @@ pylith::feassemble::TestElasticityImplicitLgDeform::testUpdateStateVars(void)
   integrator.updateStateVars(t, &fields);
 } // testUpdateStateVars
 
+extern PetscErrorCode DMComplexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
+extern PetscErrorCode DMComplexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
+
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
@@ -229,6 +238,10 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
     new SieveMesh::sieve_type(mesh->comm());
   CPPUNIT_ASSERT(!sieve.isNull());
 
+  mesh->createDMMesh(_data->cellDim);
+  DM dmMesh = mesh->dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+
   // Cells and vertices
   const bool interpolate = false;
   ALE::Obj<SieveFlexMesh::sieve_type> s = 
@@ -245,6 +258,10 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
   sieveMesh->stratify();
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, _data->spaceDim, 
 						 _data->vertices);
+  PetscErrorCode err;
+
+  err = DMComplexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
+  err = DMComplexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
 
   // Material ids
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -258,6 +275,12 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
       e_iter != cells->end();
       ++e_iter)
     sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
+  PetscInt cStart, cEnd;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    err = DMComplexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
+  }
 
   // Setup quadrature
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
@@ -299,19 +322,16 @@ pylith::feassemble::TestElasticityImplicitLgDeform::_initialize(
   residual.zero();
   fields->copyLayout("residual");
 
-  const int fieldSize = _data->spaceDim * _data->numVertices;
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispTSection = dispT.section();
-  CPPUNIT_ASSERT(!dispTSection.isNull());
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
-  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
-  CPPUNIT_ASSERT(!dispTIncrSection.isNull());
   const int offset = _data->numCells;
-  for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTSection->updatePoint(iVertex+offset, 
-			      &_data->fieldT[iVertex*_data->spaceDim]);
-    dispTIncrSection->updatePoint(iVertex+offset, 
-				  &_data->fieldTIncr[iVertex*_data->spaceDim]);
+  PetscSection dispTSectionP     = fields->get("disp(t)").petscSection();
+  Vec          dispTVec          = fields->get("disp(t)").localVector();
+  CPPUNIT_ASSERT(dispTSectionP);CPPUNIT_ASSERT(dispTVec);
+  PetscSection dispTIncrSectionP = fields->get("dispIncr(t->t+dt)").petscSection();
+  Vec          dispTIncrVec      = fields->get("dispIncr(t->t+dt)").localVector();
+  CPPUNIT_ASSERT(dispTIncrSectionP);CPPUNIT_ASSERT(dispTIncrVec);
+  for(int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
+    err = DMComplexVecSetClosure(dmMesh, dispTSectionP, dispTVec, iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, dispTIncrSectionP, dispTIncrVec, iVertex+offset, &_data->fieldTIncr[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 } // _initialize
 

@@ -125,13 +125,16 @@ pylith::materials::Material::initialize(
   const int spaceDim = quadrature->spaceDim();
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(0 != cs);
 
@@ -140,18 +143,21 @@ pylith::materials::Material::initialize(
   _properties->label("properties");
   assert(0 != _properties);
   int fiberDim = numQuadPts * _numPropsQuadPt;
-  _properties->newSection(cells, fiberDim);
+  int_array cellsTmp(cells, numCells);
+
+  _properties->newSection(cellsTmp, fiberDim);
   _properties->allocate();
   _properties->zero();
-  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-  assert(!propertiesSection.isNull());
+  PetscSection propertiesSection = _properties->petscSection();
+  Vec          propertiesVec     = _properties->localVector();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates,
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 #endif
 
   // Create arrays for querying.
@@ -169,6 +175,8 @@ pylith::materials::Material::initialize(
   // Create field to hold state variables. We create the field even
   // if there is no initial state, because this we will use this field
   // to hold the state variables.
+  PetscSection stateVarsSection = PETSC_NULL;
+  Vec          stateVarsVec     = PETSC_NULL;
   delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);
   _stateVars->label("state variables");
   fiberDim = numQuadPts * _numVarsQuadPt;
@@ -178,16 +186,17 @@ pylith::materials::Material::initialize(
     _stateVars->newSection(*_properties, fiberDim);
     _stateVars->allocate();
     _stateVars->zero();
+    stateVarsSection = _stateVars->petscSection();
+    stateVarsVec     = _stateVars->localVector();
+    assert(stateVarsSection);assert(stateVarsVec);
   } // if
-  const ALE::Obj<RealSection>& stateVarsSection = 
-    (fiberDim > 0) ? _stateVars->section() : 0;
 
   // Create arrays for querying
   const int numDBStateVars = _metadata.numDBStateVars();
   scalar_array stateVarsQuery;
   scalar_array stateVarsCell;
   if (0 != _dbInitialState) {
-    assert(!stateVarsSection.isNull());
+    assert(stateVarsSection);
     assert(numDBStateVars > 0);
     assert(_numVarsQuadPt > 0);
     stateVarsQuery.resize(numDBStateVars);
@@ -201,17 +210,22 @@ pylith::materials::Material::initialize(
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
-    
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  PetscScalar *propertiesArray, *stateVarsArray;
+
+  err = VecGetArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+  if (stateVarsVec) {err = VecGetArray(stateVarsVec,  &stateVarsArray);CHECK_PETSC_ERROR(err);}
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    quadrature->retrieveGeometry(*c_iter);
+    quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
@@ -261,10 +275,27 @@ pylith::materials::Material::initialize(
 
     } // for
     // Insert cell contribution into fields
-    propertiesSection->updatePoint(*c_iter, &propertiesCell[0]);
-    if (0 != _dbInitialState)
-      stateVarsSection->updatePoint(*c_iter, &stateVarsCell[0]);
+    PetscInt dof, off, d;
+
+    err = PetscSectionGetDof(propertiesSection, cell, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(propertiesSection, cell, &off);CHECK_PETSC_ERROR(err);
+    assert(dof == numQuadPts*_numPropsQuadPt);
+    for(PetscInt d = 0; d < dof; ++d) {
+      propertiesArray[off+d] = propertiesCell[d];
+    }
+    if (0 != _dbInitialState) {
+      err = PetscSectionGetDof(stateVarsSection, cell, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(stateVarsSection, cell, &off);CHECK_PETSC_ERROR(err);
+      assert(dof == numQuadPts*numDBStateVars);
+      for(PetscInt d = 0; d < dof; ++d) {
+        stateVarsArray[off+d] = stateVarsCell[d];
+      }
+    }
   } // for
+  err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+  if (stateVarsVec) {err = VecRestoreArray(stateVarsVec,  &stateVarsArray);CHECK_PETSC_ERROR(err);}
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   // Close databases
   _dbProperties->close();
@@ -336,13 +367,16 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
   } // else
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", _id);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = field->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   topology::FieldBase::VectorFieldEnum fieldType = topology::FieldBase::OTHER;
       
@@ -354,14 +388,15 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     const int fiberDim = _metadata.getProperty(propertyIndex).fiberDim;
 
     // Get properties section
-    const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-    assert(!propertiesSection.isNull());
-    const int totalPropsFiberDimLocal = (cells->size() > 0) ? 
-      propertiesSection->getFiberDimension(*cells->begin()) : 0;
-    int totalPropsFiberDim = 0;
+    PetscSection propertiesSection = _properties->petscSection();
+    Vec          propertiesVec     = _properties->localVector();
+    assert(propertiesSection);
+    PetscInt totalPropsFiberDimLocal = 0;
+    PetscInt totalPropsFiberDim = 0;
+    if (numCells > 0) {err = PetscSectionGetDof(propertiesSection, cells[0], &totalPropsFiberDimLocal);CHECK_PETSC_ERROR(err);}
     MPI_Allreduce((void *) &totalPropsFiberDimLocal, 
-		  (void *) &totalPropsFiberDim, 1, 
-		  MPI_INT, MPI_MAX, field->mesh().comm());
+                  (void *) &totalPropsFiberDim, 1, 
+                  MPIU_INT, MPI_MAX, field->mesh().comm());
     assert(totalPropsFiberDim > 0);
     const int numPropsQuadPt = _numPropsQuadPt;
     const int numQuadPts = totalPropsFiberDim / numPropsQuadPt;
@@ -369,27 +404,30 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     const int totalFiberDim = numQuadPts * fiberDim;
 
     // Allocate buffer for property field if necessary.
-    const ALE::Obj<RealSection>& fieldSection = field->section();
-    bool useCurrentField = !fieldSection.isNull();
-    if (!fieldSection.isNull()) {
+    PetscSection fieldSection    = field->petscSection();
+    Vec          fieldVec        = field->localVector();
+    bool         useCurrentField = fieldSection != PETSC_NULL;
+    if (fieldSection) {
       // check fiber dimension
-      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
-	fieldSection->getFiberDimension(*cells->begin()) : 0;
-      int totalFiberDimCurrent = 0;
+      PetscInt totalFiberDimCurrentLocal = 0;
+      PetscInt totalFiberDimCurrent = 0;
+      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);CHECK_PETSC_ERROR(err);}
       MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
-		    (void *) &totalFiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+                    (void *) &totalFiberDimCurrent, 1, 
+                    MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("OutputFields");
-      field->newSection(cells, totalFiberDim);
+      int_array cellsTmp(cells, numCells);
+
+      field->newSection(cellsTmp, totalFiberDim);
       field->allocate();
       logger.stagePop();
     } // if
-    assert(!fieldSection.isNull());
+    assert(fieldSection);
     field->label(name);
     field->scale(1.0);
     fieldType = _metadata.getProperty(propertyIndex).fieldType;
@@ -399,21 +437,24 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     scalar_array propertiesCell(numQuadPts*numPropsQuadPt);
 
     // Loop over cells
-    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      propertiesSection->restrictPoint(*c_iter, 
-				       &propertiesCell[0], propertiesCell.size());
+    PetscScalar *fieldArray, *propertiesArray;
+
+    err = VecGetArray(fieldVec,      &fieldArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt c = 0; c < numCells; ++c) {
+      const PetscInt cell = cells[c];
+      PetscInt       off, poff;
    
+      err = PetscSectionGetOffset(fieldSection,      cell, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(propertiesSection, cell, &poff);CHECK_PETSC_ERROR(err);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	_dimProperties(&propertiesCell[iQuad*numPropsQuadPt],
-		       numPropsQuadPt);
-	for (int i=0; i < fiberDim; ++i)
-	  fieldCell[iQuad*fiberDim+i] = 
-	    propertiesCell[iQuad*numPropsQuadPt+propOffset+i];
+        _dimProperties(&propertiesCell[iQuad*numPropsQuadPt], numPropsQuadPt);
+        for (int i=0; i < fiberDim; ++i)
+          fieldArray[iQuad*fiberDim + off+i] = propertiesArray[iQuad*numPropsQuadPt+propOffset + poff+i];
       } // for
-      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
+    err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
   } else { // field is a state variable
     assert(stateVarIndex >= 0);
     
@@ -424,14 +465,15 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     const int fiberDim = _metadata.getStateVar(stateVarIndex).fiberDim;
 
     // Get state variables section
-    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-    assert(!stateVarsSection.isNull());
-    const int totalVarsFiberDimLocal = (cells->size() > 0) ?
-      stateVarsSection->getFiberDimension(*cells->begin()) : 0;
-    int totalVarsFiberDim = 0;
+    PetscSection stateVarsSection = _stateVars->petscSection();
+    Vec          stateVarsVec     = _stateVars->localVector();
+    assert(stateVarsSection);assert(stateVarsVec);
+    PetscInt totalVarsFiberDimLocal = 0;
+    PetscInt totalVarsFiberDim = 0;
+    if (numCells > 0) {err = PetscSectionGetDof(stateVarsSection, cells[0], &totalVarsFiberDimLocal);CHECK_PETSC_ERROR(err);}
     MPI_Allreduce((void *) &totalVarsFiberDimLocal, 
-		  (void *) &totalVarsFiberDim, 1, 
-		  MPI_INT, MPI_MAX, field->mesh().comm());
+                  (void *) &totalVarsFiberDim, 1, 
+                  MPIU_INT, MPI_MAX, field->mesh().comm());
     assert(totalVarsFiberDim > 0);
     const int numVarsQuadPt = _numVarsQuadPt;
     const int numQuadPts = totalVarsFiberDim / numVarsQuadPt;
@@ -439,27 +481,30 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     const int totalFiberDim = numQuadPts * fiberDim;
 
     // Allocate buffer for state variable field if necessary.
-    const ALE::Obj<RealSection>& fieldSection = field->section();
-    bool useCurrentField = !fieldSection.isNull();
-    if (!fieldSection.isNull()) {
+    PetscSection fieldSection    = field->petscSection();
+    Vec          fieldVec        = field->localVector();
+    bool useCurrentField = fieldSection != PETSC_NULL;
+    if (fieldSection) {
       // check fiber dimension
-      const int totalFiberDimCurrentLocal = (cells->size() > 0) ?
-	fieldSection->getFiberDimension(*cells->begin()) : 0;
-      int totalFiberDimCurrent = 0;
+      PetscInt totalFiberDimCurrentLocal = 0;
+      PetscInt totalFiberDimCurrent = 0;
+      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &totalFiberDimCurrentLocal);CHECK_PETSC_ERROR(err);}
       MPI_Allreduce((void *) &totalFiberDimCurrentLocal, 
-		    (void *) &totalFiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+                    (void *) &totalFiberDimCurrent, 1, 
+                    MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(totalFiberDimCurrent > 0);
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("OutputFields");
-      field->newSection(cells, totalFiberDim);
+      int_array cellsTmp(cells, numCells);
+
+      field->newSection(cellsTmp, totalFiberDim);
       field->allocate();
       logger.stagePop();
     } // if
-    assert(!fieldSection.isNull());
+    assert(fieldSection);
     fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
     field->label(name);
     field->scale(1.0);
@@ -469,22 +514,27 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     scalar_array stateVarsCell(numQuadPts*numVarsQuadPt);
     
     // Loop over cells
-    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      stateVarsSection->restrictPoint(*c_iter, 
-				      &stateVarsCell[0], stateVarsCell.size());
+    PetscScalar  *fieldArray, *stateVarsArray;
+
+    err = VecGetArray(fieldVec,     &fieldArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt c = 0; c < numCells; ++c) {
+      const PetscInt cell = cells[c];
+      PetscInt       off, soff;
       
+      err = PetscSectionGetOffset(fieldSection,     cell, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(stateVarsSection, cell, &soff);CHECK_PETSC_ERROR(err);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	_dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt],
-		      numVarsQuadPt);
-	for (int i=0; i < fiberDim; ++i)
-	  fieldCell[iQuad*fiberDim+i] = 
-	    stateVarsCell[iQuad*numVarsQuadPt+varOffset+i];
+        _dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt);
+        for (int i=0; i < fiberDim; ++i)
+          fieldArray[iQuad*fiberDim + off+i] = stateVarsCell[iQuad*numVarsQuadPt+varOffset + soff+i];
       } // for
-      fieldSection->updatePoint(*c_iter, &fieldCell[0]);
     } // for
+    err = VecRestoreArray(fieldVec,     &fieldArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
   } // if/else
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   topology::FieldBase::VectorFieldEnum multiType = 
     topology::FieldBase::MULTI_OTHER;

@@ -392,29 +392,14 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   residual.allocate();
   residual.zero();
-  std::cout << residual.label() << " section " << residual.petscSection() << std::endl;
   fields->copyLayout("residual");
 
-  const int fieldSize = _data->spaceDim * _data->numVertices;
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispTSection = dispT.section();
-  CPPUNIT_ASSERT(!dispTSection.isNull());
-  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
-  const ALE::Obj<RealSection>& dispTIncrSection = dispTIncr.section();
-  CPPUNIT_ASSERT(!dispTIncrSection.isNull());
   const int offset = _data->numCells;
-  for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTSection->updatePoint(iVertex+offset, 
-			      &_data->fieldT[iVertex*_data->spaceDim]);
-    dispTIncrSection->updatePoint(iVertex+offset, 
-				  &_data->fieldTIncr[iVertex*_data->spaceDim]);
-  } // for
-
-  PetscSection dispTSectionP     = dispT.petscSection();
-  Vec          dispTVec          = dispT.localVector();
+  PetscSection dispTSectionP     = fields->get("disp(t)").petscSection();
+  Vec          dispTVec          = fields->get("disp(t)").localVector();
   CPPUNIT_ASSERT(dispTSectionP);CPPUNIT_ASSERT(dispTVec);
-  PetscSection dispTIncrSectionP = dispTIncr.petscSection();
-  Vec          dispTIncrVec      = dispTIncr.localVector();
+  PetscSection dispTIncrSectionP = fields->get("dispIncr(t->t+dt)").petscSection();
+  Vec          dispTIncrVec      = fields->get("dispIncr(t->t+dt)").localVector();
   CPPUNIT_ASSERT(dispTIncrSectionP);CPPUNIT_ASSERT(dispTIncrVec);
   for(int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
     err = DMComplexVecSetClosure(dmMesh, dispTSectionP, dispTVec, iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);

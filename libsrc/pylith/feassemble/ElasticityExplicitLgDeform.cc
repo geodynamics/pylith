@@ -181,21 +181,22 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  scalar_array accCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& accSection = 
-    fields->get("acceleration(t)").section();
-  assert(!accSection.isNull());
-  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
+  topology::Field<topology::Mesh>& acc = fields->get("acceleration(t)");
+  PetscSection accSection = acc.petscSection();
+  Vec          accVec     = acc.localVector();
+  assert(accSection);assert(accVec);
 
 #if 0 // Numerical damping not yet implemented
   scalar_array velCell(numBasis*spaceDim);
@@ -203,24 +204,25 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     fields->get("velocity(t)").section();
   assert(!velSection.isNull());
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
-
   scalar_array dispAdjCell(numBasis*spaceDim);
+#else
+  scalar_array dispTCell(numBasis*spaceDim);
 #endif
 
-  scalar_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  PetscSection dispTSection = dispT.petscSection();
+  Vec          dispTVec     = dispT.localVector();
+  assert(dispTSection);assert(dispTVec);
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -237,35 +239,36 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    accVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, accVisitor);
-
+    const PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt           accSize,   velSize,   dispTSize;
+    err = DMComplexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
 #if 0 // Numerical damping not yet implemented.
-    velVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, velVisitor);
+    err = DMComplexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    assert(velSize   == accSize);
 #endif
-
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    assert(dispTSize == accSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -317,7 +320,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
           const PylithScalar valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] -= 
-	      valIJ * accCell[jBasis*spaceDim+iDim];
+	      valIJ * accArray[jBasis*spaceDim+iDim];
         } // for
       } // for
     } // for
@@ -328,21 +331,26 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    dispAdjCell = dispCell + viscosity * velCell;
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispAdjCell[i] = dispTArray[i] + viscosity * velArray[i];}
+    err = DMComplexVecRestoreClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+#else
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
 #endif
+    err = DMComplexVecRestoreClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
 
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-		     numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTCell, numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTCell);
 
     // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, residualVisitor);
+    err = DMComplexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   _logger->eventEnd(computeEvent);
 } // integrateResidual
@@ -422,46 +430,47 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  scalar_array accCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& accSection = 
-    fields->get("acceleration(t)").section();
-  assert(!accSection.isNull());
-  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
+  topology::Field<topology::Mesh>& acc = fields->get("acceleration(t)");
+  PetscSection accSection = acc.petscSection();
+  Vec          accVec     = acc.localVector();
+  assert(accSection);assert(accVec);
 
 #if 0 // Numerical damping not yet implemented
-  scalar_array velCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
-  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
-
   scalar_array dispAdjCell(numBasis*spaceDim);
+  topology::Field<topology::Mesh>& vel = fields->get("velocity(t)");
+  PetscSection velSection = vel.petscSection();
+  Vec          velVec     = vel.localVector();
+  assert(velSection);assert(velVec);
+#else
+  scalar_array dispTCell(numBasis*spaceDim);
 #endif
+  
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  PetscSection dispTSection = dispT.petscSection();
+  Vec          dispTVec     = dispT.localVector();
+  assert(dispTSection);assert(dispTVec);
 
-  scalar_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
-
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -476,35 +485,36 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
-    accVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, accVisitor);
-
+    const PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt           accSize,   velSize,   dispTSize;
+    err = DMComplexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
 #if 0 // Numerical damping not yet implemented.
-    velVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, velVisitor);
+    err = DMComplexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    assert(velSize   == accSize);
 #endif
-
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    assert(dispTSize == accSize);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -561,7 +571,7 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
     for (int iBasis = 0; iBasis < numBasis; ++iBasis)
       for (int iDim = 0; iDim < spaceDim; ++iDim)
 	_cellVector[iBasis*spaceDim+iDim] -= valuesIJ[iBasis] *
-	  accCell[iBasis*spaceDim+iDim];
+	  accArray[iBasis*spaceDim+iDim];
     PetscLogFlops(numQuadPts*(4+numBasis*3));
 
 #if 0 // Numerical damping not yet implemented. Is small strain
@@ -569,20 +579,26 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidualLumped(
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    dispAdjCell = dispCell + viscosity * velCell;
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispAdjCell[i] = dispTArray[i] + viscosity * velArray[i];}
+    err = DMComplexVecRestoreClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+#else
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
 #endif
+    err = DMComplexVecRestoreClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+
     // Compute B(transpose) * sigma, first computing strains
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-		     numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispTCell, numBasis, numQuadPts, spaceDim);
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
     const scalar_array& stressCell = _material->calcStress(strainCell, true);
 
-    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispCell);
+    CALL_MEMBER_FN(*this, elasticityResidualFn)(stressCell, dispTCell);
     
     // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, residualVisitor);
+    err = DMComplexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   _logger->eventEnd(computeEvent);
 } // integrateResidualLumped
@@ -623,18 +639,27 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 			   "different dimensions than the spatial dimension.");
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  const ALE::Obj<RealSection>& solnSection = fields->solution().section();
-  assert(!solnSection.isNull());
+  PetscSection solnSection = fields->solution().petscSection();
+  Vec          solnVec     = fields->solution().localVector();
+
+  scalar_array coordinatesCell(numBasis*spaceDim);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -645,43 +670,26 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
-  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solnSection);
-  assert(!globalOrder.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  assert(!sieve.isNull());
-  const int closureSize = 
-    int(pow(sieve->getMaxConeSize(), sieveMesh->depth()));
-  assert(closureSize >= 0);
-  IndicesVisitor jacobianVisitor(*solnSection, *globalOrder,
-				 closureSize*spaceDim);
-
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
-
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     // Reset element matrix to zero
     _resetCellMatrix();
@@ -712,12 +720,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
     
     // Assemble cell contribution into PETSc matrix.
-    jacobianVisitor.clear();
-    PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
-					jacobianVisitor, *c_iter,
-					&_cellMatrix[0], ADD_VALUES);
+    err = DMComplexMatSetClosure(dmMesh, solnSection, PETSC_NULL, jacobianMat, cell, &_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
@@ -761,14 +768,16 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 			   "different dimensions than the spatial dimension.");
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;
@@ -776,35 +785,36 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
   assert(dt > 0);
 
   // Get sections
-  const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
-  assert(!jacobianSection.isNull());
-  UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
+  PetscSection jacSection = jacobian->petscSection();
+  Vec          jacVec     = jacobian->localVector();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(computeEvent);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     // Reset element matrix to zero
     _resetCellMatrix();
@@ -836,9 +846,10 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
     _lumpCellMatrix();
     
     // Assemble cell contribution into lumped matrix.
-    jacobianVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, jacobianVisitor);
+    err = DMComplexVecSetClosure(dmMesh, jacSection, jacVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
