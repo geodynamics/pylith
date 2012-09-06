@@ -17,10 +17,10 @@
 #
 
 if ENABLE_HDF5
-TESTS = testeqinfo.py
+TESTS = test_eqinfo.py
 endif
 
-dist_check_SCRIPTS = testeqinfo.py
+dist_check_SCRIPTS = test_eqinfo.py
 
 dist_noinst_PYTHON = \
 	TestEqInfo.py \
