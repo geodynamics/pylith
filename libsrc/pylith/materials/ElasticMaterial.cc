@@ -107,34 +107,68 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   assert(0 != _properties);
   assert(0 != _stateVars);
 
-  const ALE::Obj<RealSection>& propertiesSection = _properties->section();
-  assert(!propertiesSection.isNull());
-  propertiesSection->restrictPoint(cell, &_propertiesCell[0],
-				   _propertiesCell.size());
+  PetscSection   propertiesSection = _properties->petscSection();
+  Vec            propertiesVec     = _properties->localVector();
+  PetscScalar   *propertiesArray;
+  PetscInt       dof, off;
+  PetscErrorCode err;
+
+  assert(propertiesSection);assert(propertiesVec);
+  err = PetscSectionGetDof(propertiesSection, cell, &dof);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetOffset(propertiesSection, cell, &off);CHECK_PETSC_ERROR(err);
+  assert(_propertiesCell.size() == dof);
+  err = VecGetArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt d = 0; d < dof; ++d) {_propertiesCell[d] = propertiesArray[off+d];}
+  err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
 
   if (hasStateVars()) {
-    const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-    assert(!stateVarsSection.isNull());
-    stateVarsSection->restrictPoint(cell, &_stateVarsCell[0],
-				    _stateVarsCell.size());
+    PetscSection   stateVarsSection = _stateVars->petscSection();
+    Vec            stateVarsVec     = _stateVars->localVector();
+    PetscScalar   *stateVarsArray;
+    PetscInt       dof, off;
+    PetscErrorCode err;
+
+    assert(stateVarsSection);assert(stateVarsVec);
+    err = PetscSectionGetDof(stateVarsSection, cell, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(stateVarsSection, cell, &off);CHECK_PETSC_ERROR(err);
+    assert(_stateVarsCell.size() == dof);
+    err = VecGetArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {_stateVarsCell[d] = stateVarsArray[off+d];}
+    err = VecRestoreArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
   } // if
 
   _initialStressCell = 0.0;
   _initialStrainCell = 0.0;
   if (0 != _initialFields) {
     if (_initialFields->hasField("initial stress")) {
-      const ALE::Obj<RealSection>& stressSection = 
-	_initialFields->get("initial stress").section();
-      assert(!stressSection.isNull());
-      stressSection->restrictPoint(cell, &_initialStressCell[0],
-				   _initialStressCell.size());
+      PetscSection   stressSection = _initialFields->get("initial stress").petscSection();
+      Vec            stressVec     = _initialFields->get("initial stress").localVector();
+      PetscScalar   *stressArray;
+      PetscInt       dof, off;
+      PetscErrorCode err;
+
+      assert(stressSection);assert(stressVec);
+      err = PetscSectionGetDof(stressSection, cell, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(stressSection, cell, &off);CHECK_PETSC_ERROR(err);
+      assert(_initialStressCell.size() == dof);
+      err = VecGetArray(stressVec, &stressArray);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {_initialStressCell[d] = stressArray[off+d];}
+      err = VecRestoreArray(stressVec, &stressArray);CHECK_PETSC_ERROR(err);
     } // if
     if (_initialFields->hasField("initial strain")) {
-      const ALE::Obj<RealSection>& strainSection =
-	_initialFields->get("initial strain").section();
-      assert(!strainSection.isNull());
-      strainSection->restrictPoint(cell, &_initialStrainCell[0],
-				   _initialStrainCell.size());
+      PetscSection   strainSection = _initialFields->get("initial strain").petscSection();
+      Vec            strainVec     = _initialFields->get("initial strain").localVector();
+      PetscScalar   *strainArray;
+      PetscInt       dof, off;
+      PetscErrorCode err;
+
+      assert(strainSection);assert(strainVec);
+      err = PetscSectionGetDof(strainSection, cell, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(strainSection, cell, &off);CHECK_PETSC_ERROR(err);
+      assert(_initialStrainCell.size() == dof);
+      err = VecGetArray(strainVec, &strainArray);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {_initialStrainCell[d] = strainArray[off+d];}
+      err = VecRestoreArray(strainVec, &strainArray);CHECK_PETSC_ERROR(err);
     } // if
   } // if
 } // retrievePropsAndVars
@@ -246,29 +280,33 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
 
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    retrievePropsAndVars(*c_iter);
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
+
+    retrievePropsAndVars(cell);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const PylithScalar dt = 
-	_stableTimeStepImplicit(&_propertiesCell[iQuad*numPropsQuadPt],
-				numPropsQuadPt,
-				&_stateVarsCell[iQuad*numVarsQuadPt],
-				numVarsQuadPt);
+        _stableTimeStepImplicit(&_propertiesCell[iQuad*numPropsQuadPt],
+                                numPropsQuadPt,
+                                &_stateVarsCell[iQuad*numVarsQuadPt],
+                                numVarsQuadPt);
       if (dt < dtStable)
-	dtStable = dt;
+        dtStable = dt;
     } // for
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   
   return dtStable;
 } // stableTimeStepImplicit
@@ -319,15 +357,26 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
+  // Get cells associated with material
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  DM              dmMesh = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 #endif
 
   // Create arrays for querying
@@ -335,21 +384,15 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
   scalar_array stressCell(numQuadPts*tensorSize);
 
-  // Get cells associated with material
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-
   // Create field to hold initial stress state.
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);
-  initialStress.newSection(cells, fiberDim);
+  int_array cellsTmp(cells, numCells);
+  initialStress.newSection(cellsTmp, fiberDim);
   initialStress.allocate();
   initialStress.zero();
-  const ALE::Obj<RealSection>& initialStressSection = initialStress.section();
+  PetscSection initialStressSection = initialStress.petscSection();
+  Vec          initialStressVec     = initialStress.localVector();
 
   // Setup databases for querying
   _dbInitialStress->open();
@@ -391,16 +434,18 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar pressureScale = _normalizer->pressureScale();
 
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -430,7 +475,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     _normalizer->nondimensionalize(&stressCell[0], stressCell.size(), 
 				   pressureScale);
 
-    initialStressSection->updatePoint(*c_iter, &stressCell[0]);
+    err = DMComplexVecSetClosure(dmMesh, initialStressSection, initialStressVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 
   // Close databases
@@ -465,15 +510,26 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
+  // Get cells associated with material
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+  DM              dmMesh = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 #endif
 
   // Create arrays for querying
@@ -481,21 +537,15 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
 
-  // Get cells associated with material
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-
   // Create field to hold initial strain state.
   const int fiberDim = numQuadPts * tensorSize;
   assert(fiberDim > 0);
-  initialStrain.newSection(cells, fiberDim);
+  int_array cellsTmp(cells, numCells);
+  initialStrain.newSection(cellsTmp, fiberDim);
   initialStrain.allocate();
   initialStrain.zero();
-  const ALE::Obj<RealSection>& initialStrainSection = initialStrain.section();
+  PetscSection initialStrainSection = initialStrain.petscSection();
+  Vec          initialStrainVec     = initialStrain.localVector();
 
   // Setup databases for querying
   _dbInitialStrain->open();
@@ -537,16 +587,18 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar pressureScale = _normalizer->pressureScale();
     
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    quadrature->computeGeometry(coordinatesCell, cell);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -572,7 +624,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
       } // if
     } // for
 
-    initialStrainSection->updatePoint(*c_iter, &strainCell[0]);
+    err = DMComplexVecSetClosure(dmMesh, initialStrainSection, initialStrainVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 
   // Close databases

@@ -34,8 +34,7 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-  const ALE::Obj<Mesh::RealSection>& fieldSection = field.section();
+  DM dmMesh = field.dmMesh();
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Jacobian");
 
@@ -43,8 +42,7 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = DMMeshCreateMatrix(sieveMesh, fieldSection,
-					matrixType, &_matrix, blockFlag);
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);
   CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
 			"associated with system Jacobian.");
   logger.stagePop();

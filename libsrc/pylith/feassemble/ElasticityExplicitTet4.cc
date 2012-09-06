@@ -169,44 +169,43 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  scalar_array accCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& accSection = 
-    fields->get("acceleration(t)").section();
-  assert(!accSection.isNull());
-  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
+  topology::Field<topology::Mesh>& acc = fields->get("acceleration(t)");
+  PetscSection accSection = acc.petscSection();
+  Vec          accVec     = acc.localVector();
+  assert(accSection);assert(accVec);
 
-  scalar_array velCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
-  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+  topology::Field<topology::Mesh>& vel = fields->get("velocity(t)");
+  PetscSection velSection = vel.petscSection();
+  Vec          velVec     = vel.localVector();
+  assert(velSection);assert(velVec);
 
-  scalar_array dispCell(numBasis*spaceDim);
   scalar_array dispAdjCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  PetscSection dispTSection = dispT.petscSection();
+  Vec          dispTVec     = dispT.localVector();
+  assert(dispTSection);assert(dispTVec);
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
   
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -225,18 +224,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
 
     // Compute geometry information for current cell
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);
     assert(volume > 0.0);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -244,7 +245,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
@@ -255,14 +256,13 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    accVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, accVisitor);
-    
-    velVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, velVisitor);
-    
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    const PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt           accSize,   velSize,   dispTSize;
+    err = DMComplexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    assert(velSize   == accSize);
+    assert(dispTSize == accSize);
     
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -306,7 +306,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
       for (int jBasis = 0; jBasis < numBasis; ++jBasis)
         for (int iDim = 0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] -= 
-	      wtVertex * accCell[jBasis*spaceDim+iDim];
+	      wtVertex * accArray[jBasis*spaceDim+iDim];
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(3 + numBasis*numBasis*spaceDim*2);
@@ -316,7 +316,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    dispAdjCell = dispCell + viscosity * velCell;
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispAdjCell[i] = dispTArray[i] + viscosity * velArray[i];}
+    err = DMComplexVecRestoreClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
 
     // Compute B(transpose) * sigma, first computing strains
     const PylithScalar x0 = coordinatesCell[0];
@@ -408,15 +411,14 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, residualVisitor);
+    err = DMComplexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(3 + numBasis*numBasis*spaceDim*2 + 196+84));
+  PetscLogFlops(numCells*(3 + numBasis*numBasis*spaceDim*2 + 196+84));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidual
@@ -478,47 +480,43 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells =
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
 
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  assert(!sieve.isNull());
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  scalar_array accCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& accSection = 
-    fields->get("acceleration(t)").section();
-  assert(!accSection.isNull());
-  RestrictVisitor accVisitor(*accSection, accCell.size(), &accCell[0]);
+  topology::Field<topology::Mesh>& acc = fields->get("acceleration(t)");
+  PetscSection accSection = acc.petscSection();
+  Vec          accVec     = acc.localVector();
+  assert(accSection);assert(accVec);
 
-  scalar_array velCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
-  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
-
-  scalar_array dispCell(numBasis*spaceDim);
+  topology::Field<topology::Mesh>& vel = fields->get("velocity(t)");
+  PetscSection velSection = vel.petscSection();
+  Vec          velVec     = vel.localVector();
+  assert(velSection);assert(velVec);
+  
   scalar_array dispAdjCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
-
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  PetscSection dispTSection = dispT.petscSection();
+  Vec          dispTVec     = dispT.localVector();
+  assert(dispTSection);assert(dispTVec);
+  
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -540,39 +538,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
 
     // Restrict input fields to cell
-#if 1
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-
-    accVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, accVisitor);
-
-    velVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, velVisitor);
-
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
-#else
-    coordsVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, coordsVisitor, numBasis, spaceDim);
-
-    accVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, accVisitor, numBasis, spaceDim);
-
-    velVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, velVisitor, numBasis, spaceDim);
-
-    dispVisitor.clear();
-    sieve->orientedConeOpt(*c_iter, dispVisitor, numBasis, spaceDim);
-#endif
+    const PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt           accSize,   velSize,   dispTSize;
+    err = DMComplexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    assert(velSize   == accSize);
+    assert(dispTSize == accSize);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -580,7 +559,13 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Compute geometry information for current cell
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);
+    assert(volume > 0.0);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -588,7 +573,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
     // Get density at quadrature points for this cell
     const scalar_array& density = _material->calcDensity();
@@ -631,7 +616,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 
     // Compute action for inertial terms
     const PylithScalar wtVertex = density[0] * volume / 4.0;
-    _cellVector -= wtVertex * accCell;
+    for(PetscInt i = 0; i < dispTSize; ++i) {_cellVector[i] -= wtVertex * accArray[i];}
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(2 + numBasis*spaceDim*2);
@@ -641,7 +626,10 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    dispAdjCell = dispCell + viscosity * velCell;    
+    for(PetscInt i = 0; i < dispTSize; ++i) {dispAdjCell[i] = dispTArray[i] + viscosity * velArray[i];}
+    err = DMComplexVecRestoreClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
 
     // Compute B(transpose) * sigma, first computing strains
     const PylithScalar x0 = coordinatesCell[0];
@@ -745,16 +733,17 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidualLumped(
 #endif
 
     // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, residualVisitor);
+    err = DMComplexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(2 + numBasis*spaceDim*2 + 196+84));
+  PetscLogFlops(numCells*(2 + numBasis*spaceDim*2 + 196+84));
   _logger->eventEnd(computeEvent);
 #endif
 } // integrateResidualLumped
@@ -795,20 +784,22 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 			   "different dimensions than the spatial dimension.");
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  scalar_array dispCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& dispSection = 
-    fields->get("disp(t)").section();
-  assert(!dispSection.isNull());
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  PetscSection dispTSection = dispT.petscSection();
+  Vec          dispTVec     = dispT.localVector();
+  assert(dispTSection);assert(dispTVec);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -819,20 +810,12 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
-  const ALE::Obj<SieveMesh::order_type>& globalOrder = 
-    sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", dispSection);
-  assert(!globalOrder.isNull());
-  // We would need to request unique points here if we had an interpolated mesh
-  IndicesVisitor jacobianVisitor(*dispSection, *globalOrder,
-				 (int) pow(sieveMesh->getSieve()->getMaxConeSize(),
-					   sieveMesh->depth())*spaceDim);
-
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -840,18 +823,20 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
 
     // Compute geometry information for current cell
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);
     assert(volume > 0.0);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -859,7 +844,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
@@ -890,19 +875,18 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
     
     // Assemble cell contribution into PETSc matrix.
-    jacobianVisitor.clear();
-    PetscErrorCode err = updateOperator(jacobianMat, *sieveMesh->getSieve(),
-					jacobianVisitor, *c_iter,
-					&_cellMatrix[0], ADD_VALUES);
+    err = DMComplexMatSetClosure(dmMesh, dispTSection, PETSC_NULL, jacobianMat, cell, &_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*(3+numBasis*numBasis*spaceDim*1));
+  PetscLogFlops(numCells*(3+numBasis*numBasis*spaceDim*1));
   _logger->eventEnd(computeEvent);
 #endif
 
@@ -946,14 +930,16 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 			   "different dimensions than the spatial dimension.");
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = fields->mesh().dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;
@@ -961,32 +947,34 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
   assert(dt > 0);
 
   // Get sections
-  const ALE::Obj<RealSection>& jacobianSection = jacobian->section();
-  assert(!jacobianSection.isNull());
-  UpdateAddVisitor jacobianVisitor(*jacobianSection, &_cellVector[0]);
+  PetscSection jacSection = jacobian->petscSection();
+  Vec          jacVec     = jacobian->localVector();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
 #endif
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);
+    assert(volume > 0.0);
+    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -994,7 +982,7 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
 
     // Get state variables for cell.
-    _material->retrievePropsAndVars(*c_iter);
+    _material->retrievePropsAndVars(cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(stateVarsEvent);
@@ -1013,16 +1001,17 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(
 #endif
     
     // Assemble cell contribution into lumped matrix.
-    jacobianVisitor.clear();
-    sieveMesh->updateClosure(*c_iter, jacobianVisitor);
+    err = DMComplexVecSetClosure(dmMesh, jacSection, jacVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
-  PetscLogFlops(cells->size()*3);
+  PetscLogFlops(numCells*3);
   _logger->eventEnd(computeEvent);
 #endif
 

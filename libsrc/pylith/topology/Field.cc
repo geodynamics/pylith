@@ -365,7 +365,7 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<section_type>& srcSection = src.section();
+  const ALE::Obj<section_type>& srcSection = src._section;
   if (!srcSection.isNull()) {
     _section->setChart(srcSection->getChart());
     const chart_type& chart = _section->getChart();
@@ -393,7 +393,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
   // Clear memory
   clear();
 
-  const ALE::Obj<section_type>& srcSection = src.section();
+  const ALE::Obj<section_type>& srcSection = src._section;
   if (!srcSection.isNull() && _section.isNull()) {
     newSection();
   } // if
