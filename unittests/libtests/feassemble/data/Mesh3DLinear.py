@@ -82,7 +82,7 @@ class Mesh3DLinear(Component):
     area203 = 0.5*(numpy.dot(cross203, cross203))**0.5
 
     area = area012 + area013 + area123 + area203;
-    r = vol / (3.0*area)
+    r = 3.0 * vol / area
     self.minCellWidth = r
     return
   

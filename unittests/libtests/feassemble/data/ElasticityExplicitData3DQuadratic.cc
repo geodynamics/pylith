@@ -43,7 +43,7 @@ const char* pylith::feassemble::ElasticityExplicitData3DQuadratic::_matLabel = "
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_dt =   1.00000000e-02;
 
-const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_dtStableExplicit =   9.81816592e-06;
+const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_dtStableExplicit =   8.83634933e-05;
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData3DQuadratic::_gravityVec[] = {
   0.00000000e+00,  0.00000000e+00, -1.00000000e+08,
