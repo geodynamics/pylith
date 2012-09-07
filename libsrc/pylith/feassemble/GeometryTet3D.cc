@@ -284,7 +284,7 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
     faceArea(coordinatesCell, 2) +
     faceArea(coordinatesCell, 3);
     
-  const PylithScalar r = v / (3.0*a);
+  const PylithScalar r = 3.0* v / a;
   if (r < minWidth) {
     minWidth = r;
   } // if
