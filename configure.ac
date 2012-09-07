@@ -382,6 +382,8 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile
 		examples/meshing/surface_nurbs/triangles/Makefile
+		examples/meshing/surface_nurbs/merge_surfs/Makefile
+		examples/meshing/cubit_cellsize/Makefile
 		templates/Makefile
 		share/Makefile
 		])

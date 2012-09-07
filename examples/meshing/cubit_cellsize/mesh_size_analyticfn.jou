@@ -1,0 +1,75 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2012 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file to create a mesh where the resolution is given as
+# a field variable in an ExodusII file. The field variable
+# 'cell_size_fn' is computed in a Python script using an analytic
+# function.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+#{numvol=3}
+#{ivol=1}
+#{loop(numvol)}
+  import sizing Function "mesh_cellsize.exo" Block {ivol} Variable "cell_size_fn" Time 0.0
+  volume {ivol} sizing function type exodus
+  #{ivol++}
+#{endloop}
+surface all sizing function type exodus
+curve all scheme stride
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+# Generate the volume mesh to insure cell sizes match desired
+# distribution, then delete volume cells, smooth the surface mesh, and
+# then generate the volume mesh again.
+mesh volume viscoelastic
+mesh volume elastic_xpos elastic_xneg
+delete mesh volume all
+surface all smooth scheme condition number beta 1.2 cpu 10
+smooth surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+#{condnum=2.0}
+#{loop(4)}
+cleanup volume all
+volume all smooth scheme condition number beta {condnum} cpu 10
+smooth volume all
+#{condnum=condnum-0.1}
+#{endloop}
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_size_analyticfn.exo" dimension 3 overwrite
+
+
+# End of file
+
+
+
+
