@@ -17,7 +17,8 @@
 #
 
 SUBDIRS = \
-	surface_nurbs
+	surface_nurbs \
+	cubit_cellsize
 
 
 # End of file 

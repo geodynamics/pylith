@@ -16,15 +16,13 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	contours \
-	dem \
-	triangles \
-	merge_surfs
-
-
 dist_noinst_DATA = \
-	README
+	README \
+	exodus_add_properties.py \
+	geometry.jou \
+	mesh_cellsize.jou \
+	mesh_size_analyticfn.jou \
+	mesh_size_spatialdb.jou
 
 
 # End of file 

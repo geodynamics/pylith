@@ -1,0 +1,103 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2012 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for example showing how to merge
+# planar surfaces.
+#
+# We also use the CUBIT support for APREPRO (the expressions in
+# braces), which includes units and mathematical functions. See the
+# APREPRO section in the appendix of the CUBIT documentation for more
+# information.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 100 km x 100 km x 50 km
+#{blockLength=100.0*km}
+#{blockWidth=100.0*km}
+#{blockHeight=50.0*km}
+
+brick x {blockLength} y {blockWidth} z {blockHeight}
+#{idVol=Id("volume")}
+
+# Translate block so the top is at z=0
+volume {idVol} move x {domain_x} y {domain_y} z {-0.5*blockHeight}
+
+# ----------------------------------------------------------------------
+# Create fault comprised of multiple planar segments 
+# ----------------------------------------------------------------------
+#{offset=10.0*km}
+
+create vertex x {-blockLength/2} y {-offset} z 0.0
+#{idL1=Id("vertex")}
+create vertex x {-blockLength/2} y {-offset} z {-blockHeight}
+#{idL2=Id("vertex")}
+
+create vertex x 0.0 y {-offset} z 0.0
+#{idMb1=Id("vertex")}
+create vertex x 0.0 y {-0.5*offset} z {-blockHeight}
+#{idMb2=Id("vertex")}
+
+create vertex x 0.0 y {+offset} z 0.0
+#{idMa1=Id("vertex")}
+create vertex x 0.0 y {+0.5*offset} z {-blockHeight}
+#{idMa2=Id("vertex")}
+
+create vertex x {+blockLength/2} y {+offset} z 0.0
+#{idR1=Id("vertex")}
+create vertex x {+blockLength/2} y {+offset} z {-blockHeight}
+#{idR2=Id("vertex")}
+
+# Create planar surfaces
+create surface vertex {idL1} {idMb1} {idMb2} {idL2}
+create surface vertex {idMb1} {idMa1} {idMa2} {idMb2}
+create surface vertex {idMa1} {idR1} {idR2} {idMa2}
+
+# Merge surfaces
+unite volume 2 3 4
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 tool volume 2
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+delete body 2
+imprint all with volume all
+merge all
+
+# End of file
+
+
+
+
+
+
