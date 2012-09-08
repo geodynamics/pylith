@@ -647,15 +647,18 @@ pylith::topology::Field<mesh_type, section_type>::allocate(void)
 { // allocate
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Field");
+  PetscSection   s = PETSC_NULL;
+  PetscErrorCode err;
 
-  assert(!_section.isNull());
+  if (_dm) {err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);}
+  assert(!_section.isNull() || s);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  sieveMesh->allocate(_section);
-  if (_dm) {
-    PetscSection s;
-    PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+  if (!_section.isNull()) {
+    const ALE::Obj<SieveMesh>& sieveMesh = _mesh.sieveMesh();
+    assert(!sieveMesh.isNull());
+    sieveMesh->allocate(_section);
+  }
+  if (s) {
     err = PetscSectionSetUp(s);CHECK_PETSC_ERROR(err);
     err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
     err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
@@ -674,23 +677,21 @@ pylith::topology::Field<mesh_type, section_type>::zero(void)
     _section->zero(); // Does not zero BC.
   if (_localVec) {
     PetscSection   section;
-    PetscInt       pStart, pEnd, dof = 0;
+    PetscInt       pStart, pEnd, maxDof = 0;
     PetscErrorCode err;
 
     err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);    
     err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);    
-
-    // Assume fiber dimension is uniform
-    if (pEnd > pStart) {err = PetscSectionGetDof(section, pStart, &dof);CHECK_PETSC_ERROR(err);}
-    scalar_array values(dof);
+    if (pEnd > pStart) {err = PetscSectionGetMaxDof(section, &maxDof);CHECK_PETSC_ERROR(err);}
+    scalar_array values(maxDof);
     values *= 0.0;
 
     for(PetscInt p = pStart; p < pEnd; ++p) {
-      PetscInt pdof;
+      PetscInt dof;
 
-      err = PetscSectionGetDof(section, p, &pdof);CHECK_PETSC_ERROR(err);
-      if (pdof > 0) {
-        assert(dof == pdof);
+      err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+      if (dof > 0) {
+        assert(dof <= maxDof);
         err = DMComplexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
       } // if
     } // for
@@ -1528,6 +1529,7 @@ pylith::topology::Field<mesh_type, section_type>::addField(const char *name, int
 {
   // Keep track of name/components until setup
   _tmpFields[name] = numComponents;
+  _metadata[name]  = _metadata["default"];
 }
 
 template<typename mesh_type, typename section_type>
@@ -1546,6 +1548,11 @@ pylith::topology::Field<mesh_type, section_type>::setupFields()
     err = PetscSectionSetFieldComponents(section, f, f_iter->second);CHECK_PETSC_ERROR(err);
   }
   _tmpFields.clear();
+  // Right now, we assume that the section covers the entire chart
+  PetscInt pStart, pEnd;
+
+  err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(section, pStart, pEnd);CHECK_PETSC_ERROR(err);
 }
 
 template<typename mesh_type, typename section_type>

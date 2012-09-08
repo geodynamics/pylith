@@ -93,11 +93,17 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
 
   const PylithScalar tolerance = 1.0e-06;
   const int tensorSize = material._tensorSize;
@@ -105,33 +111,38 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
 
   // Test initialStress field
   CPPUNIT_ASSERT(0 != material._initialFields);
-  const ALE::Obj<RealSection>& stressSection = 
-    material._initialFields->get("initial stress").section();
-  CPPUNIT_ASSERT(!stressSection.isNull());
-  int fiberDim = numQuadPts * tensorSize;
-  CPPUNIT_ASSERT_EQUAL(fiberDim, stressSection->getFiberDimension(cell));
-  const PylithScalar* initialStress = stressSection->restrictPoint(cell);
-  CPPUNIT_ASSERT(0 != initialStress);
-  const PylithScalar* initialStressE = data.initialStress;
+  PetscSection stressSection = material._initialFields->get("initial stress").petscSection();
+  Vec          stressVec     = material._initialFields->get("initial stress").localVector();
+  CPPUNIT_ASSERT(stressSection);CPPUNIT_ASSERT(stressVec);
+  PetscInt dof, off, fiberDim = numQuadPts * tensorSize;
+  err = PetscSectionGetDof(stressSection, cell, &dof);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetOffset(stressSection, cell, &off);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+  const PylithScalar *initialStressE = data.initialStress;
+  PetscScalar        *initialStress;
   CPPUNIT_ASSERT(0 != initialStressE);
-  for (int i=0; i < fiberDim; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
-				 tolerance);
+  err = VecGetArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
+  for(int i = 0; i < fiberDim; ++i) {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[off+i]/initialStressE[i], tolerance);
+  }
+  err = VecRestoreArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
 
   // Test initialStrain field
   CPPUNIT_ASSERT(0 != material._initialFields);
-  const ALE::Obj<RealSection>& strainSection = 
-    material._initialFields->get("initial strain").section();
-  CPPUNIT_ASSERT(!strainSection.isNull());
+  PetscSection strainSection = material._initialFields->get("initial strain").petscSection();
+  Vec          strainVec     = material._initialFields->get("initial strain").localVector();
   fiberDim = numQuadPts * tensorSize;
-  CPPUNIT_ASSERT_EQUAL(fiberDim, strainSection->getFiberDimension(cell));
-  const PylithScalar* initialStrain = strainSection->restrictPoint(cell);
-  CPPUNIT_ASSERT(0 != initialStrain);
-  const PylithScalar* initialStrainE = data.initialStrain;
+  err = PetscSectionGetDof(strainSection, cell, &dof);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetOffset(strainSection, cell, &off);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+  const PylithScalar *initialStrainE = data.initialStrain;
+  PetscScalar        *initialStrain;
   CPPUNIT_ASSERT(0 != initialStrainE);
-  for (int i=0; i < fiberDim; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
-				 tolerance);
+  err = VecGetArray(strainVec, &initialStrain);CHECK_PETSC_ERROR(err);
+  for(int i = 0; i < fiberDim; ++i) {
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[off+i]/initialStrainE[i], tolerance);
+  }
+  err = VecRestoreArray(strainVec, &initialStrain);CHECK_PETSC_ERROR(err);
 
   // Test cell arrays
   size_t size = data.numLocs*data.numPropsQuadPt;
@@ -169,6 +180,8 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
     } // switch
   size = data.numLocs*numElasticConsts;
   CPPUNIT_ASSERT_EQUAL(size, material._elasticConstsCell.size());
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -183,11 +196,19 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   material.retrievePropsAndVars(cell);
 
@@ -247,11 +268,19 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   material.retrievePropsAndVars(cell);
   const scalar_array& density = material.calcDensity();
@@ -280,11 +309,19 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   const int tensorSize = material._tensorSize;
   const int numQuadPts = data.numLocs;
@@ -316,11 +353,19 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   const int tensorSize = material._tensorSize;
   const int numQuadPts = data.numLocs;
@@ -378,11 +423,19 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  SieveMesh::point_type cell = *cells->begin();
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscInt cell = cells[0];
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   material.retrievePropsAndVars(cell);
   const PylithScalar dt = material.stableTimeStepImplicit(mesh);
@@ -716,16 +769,25 @@ pylith::materials::TestElasticMaterial::_initialize(
 
   // Get cells associated with material
   const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
+  DM              dmMesh = mesh->dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
 #if defined(PRECOMPUTE_GEOMETRY)
-  quadrature.computeGeometry(*mesh, cells);
+  int_array cellsTmp(cells, numCells);
+  quadrature.computeGeometry(*mesh, cellsTmp);
 #endif
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
