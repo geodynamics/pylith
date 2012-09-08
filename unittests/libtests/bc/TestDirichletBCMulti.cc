@@ -65,32 +65,38 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-		 sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
+  DM dmMesh = mesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
-  field.newSection(vertices, fiberDim);
-  const ALE::Obj<RealSection>& fieldSection = field.section();
-  CPPUNIT_ASSERT(!fieldSection.isNull());
-
+  field.addField("bc", fiberDim);
+  field.setupFields();
+  field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bcA.setConstraintSizes(field);
   bcB.setConstraintSizes(field);
   bcC.setConstraintSizes(field);
+  field.allocate();
 
-  const int numCells = sieveMesh->heightStratum(0)->size();
-  const int offset = numCells;
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(_data->numDOF,
-			 fieldSection->getFiberDimension(*v_iter));
-    
-    CPPUNIT_ASSERT_EQUAL(_data->constraintSizes[*v_iter-offset],
-			 fieldSection->getConstraintDimension(*v_iter));
+  PetscSection fieldSection = field.petscSection();
+  Vec          fieldVec     = field.localVector();
+  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+
+  const PetscInt numCells = cEnd - cStart;
+  const PetscInt offset   = numCells;
+  int iConstraint = 0;
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, cdof;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
+    CPPUNIT_ASSERT_EQUAL(_data->constraintSizes[v-offset], cdof);
   } // for
 } // testSetConstraintSizes
 
@@ -106,18 +112,19 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-		 sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
+  DM dmMesh = mesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
-  field.newSection(vertices, fiberDim);
-  const ALE::Obj<RealSection>& fieldSection = field.section();
-  CPPUNIT_ASSERT(!fieldSection.isNull());
-
+  field.addField("bc", fiberDim);
+  field.setupFields();
+  field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bcA.setConstraintSizes(field);
   bcB.setConstraintSizes(field);
   bcC.setConstraintSizes(field);
@@ -126,17 +133,26 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  const int numCells = sieveMesh->heightStratum(0)->size();
-  const int offset = numCells;
+  PetscSection fieldSection = field.petscSection();
+  Vec          fieldVec     = field.localVector();
+  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+
+  const PetscInt numCells = cEnd - cStart;
+  const PetscInt offset   = numCells;
   int index = 0;
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    const int numConstrainedDOF = _data->constraintSizes[*v_iter-offset];
+  int iConstraint = 0;
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    const int numConstrainedDOF = _data->constraintSizes[v-offset];
+    PetscInt *cInd;
+    PetscInt  dof, cdof;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintIndices(fieldSection, v, &cInd);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(numConstrainedDOF, cdof);
     if (numConstrainedDOF > 0) {
-      const int* fixedDOF = fieldSection->getConstraintDof(*v_iter);
       for (int iDOF=0; iDOF < numConstrainedDOF; ++iDOF)
-	CPPUNIT_ASSERT_EQUAL(_data->constrainedDOF[index++], fixedDOF[iDOF]);
+        CPPUNIT_ASSERT_EQUAL(_data->constrainedDOF[index++], cInd[iDOF]);
     } // if
   } // for
 } // testSetConstraints
@@ -153,18 +169,19 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-		 sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
+  DM dmMesh = mesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
-  field.newSection(vertices, fiberDim);
-  const ALE::Obj<RealSection>& fieldSection = field.section();
-  CPPUNIT_ASSERT(!fieldSection.isNull());
-
+  field.addField("bc", fiberDim);
+  field.setupFields();
+  field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bcA.setConstraintSizes(field);
   bcB.setConstraintSizes(field);
   bcC.setConstraintSizes(field);
@@ -173,18 +190,24 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
+  PetscSection fieldSection = field.petscSection();
+  Vec          fieldVec     = field.localVector();
+  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
   const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
+  PetscScalar *values;
   field.zero();
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const RealSection::value_type* values = fieldSection->restrictPoint(*v_iter);
-    for (int i=0; i < fiberDim; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
+  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(int d = 0; d < dof; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[off+d], tolerance);
   } // for
+  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
@@ -194,14 +217,16 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcC.setField(t, field);
 
   int i = 0;
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const RealSection::value_type* values = fieldSection->restrictPoint(*v_iter);
-    for (int iDOF=0; iDOF < fiberDim; ++iDOF)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[iDOF], tolerance);
+  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, cdof, off;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(int iDOF = 0; iDOF < dof; ++iDOF)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[off+iDOF], tolerance);
   } // for
+  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 } // testSetField
 
 // ----------------------------------------------------------------------
@@ -219,18 +244,19 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcB.useSolnIncr(true);
   bcC.useSolnIncr(true);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-		 sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
+  DM dmMesh = mesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err;
+
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
-  field.newSection(vertices, fiberDim);
-  const ALE::Obj<RealSection>& fieldSection = field.section();
-  CPPUNIT_ASSERT(!fieldSection.isNull());
-
+  field.addField("bc", fiberDim);
+  field.setupFields();
+  field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bcA.setConstraintSizes(field);
   bcB.setConstraintSizes(field);
   bcC.setConstraintSizes(field);
@@ -239,18 +265,24 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
+  PetscSection fieldSection = field.petscSection();
+  Vec          fieldVec     = field.localVector();
+  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
   const PylithScalar tolerance = 1.0e-06;
 
   // All values should be zero.
+  PetscScalar *values;
   field.zero();
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const RealSection::value_type* values = fieldSection->restrictPoint(*v_iter);
-    for (int i=0; i < fiberDim; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
+  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(int d = 0; d < dof; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[off+d], tolerance);
   } // for
+  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
@@ -261,14 +293,16 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcC.setFieldIncr(t0, t1, field);
 
   int i = 0;
-  for (SieveMesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    const int fiberDim = fieldSection->getFiberDimension(*v_iter);
-    const RealSection::value_type* values = fieldSection->restrictPoint(*v_iter);
-    for (int iDOF=0; iDOF < fiberDim; ++iDOF)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], values[iDOF], tolerance);
+  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, cdof, off;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(int iDOF = 0; iDOF < dof; ++iDOF)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], values[off+iDOF], tolerance);
   } // for
+  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 } // testSetFieldIncr
 
 // ----------------------------------------------------------------------

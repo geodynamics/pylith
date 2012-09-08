@@ -208,16 +208,23 @@ pylith::materials::TestMaterial::testInitialize(void)
 
 
   // Get cells associated with material
-  const int materialId = 24;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
+  const PetscInt  materialId = 24;
+  DM              dmMesh     = mesh.dmMesh();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  assert(dmMesh);
+  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
 #if defined(PRECOMPUTE_GEOMETRY)
-  quadrature.computeGeometry(mesh, cells);
+  int_array cellsTmp(cells, numCells);
+  quadrature.computeGeometry(mesh, cellsTmp);
 #endif
 
   spatialdata::spatialdb::SimpleDB db;
@@ -249,38 +256,44 @@ pylith::materials::TestMaterial::testInitialize(void)
   const PylithScalar muE[] = { muA, muB };
   const PylithScalar lambdaE[] = { lambdaA, lambdaB };
 
-  SieveMesh::point_type cell = *cells->begin();
+  SieveMesh::point_type cell = cells[0];
   const PylithScalar tolerance = 1.0e-06;
 
   CPPUNIT_ASSERT(0 != material._properties);
-  const Obj<RealSection>& propertiesSection = material._properties->section();
-  CPPUNIT_ASSERT(!propertiesSection.isNull());
-  const PylithScalar* propertiesCell = propertiesSection->restrictPoint(cell);
-  CPPUNIT_ASSERT(0 != propertiesCell);
+  PetscSection propertiesSection = material._properties->petscSection();
+  Vec          propertiesVec     = material._properties->localVector();
+  CPPUNIT_ASSERT(propertiesSection);CPPUNIT_ASSERT(propertiesVec);
 
   const int p_density = 0;
   const int p_mu = 1;
   const int p_lambda = 2;
+  PetscScalar *propertiesArray;
+  PetscInt     off;
 
+  err = VecGetArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetOffset(propertiesSection, cell, &off);CHECK_PETSC_ERROR(err);
   // density
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_density;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/densityE[i],
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/densityE[i],
 				 tolerance);
   } // for
   
   // mu
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_mu;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/muE[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/muE[i], tolerance);
   } // for
   
   // lambda
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_lambda;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesCell[index]/lambdaE[i], 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/lambdaE[i], 
 				 tolerance);
   } // for
+  err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
