@@ -408,6 +408,13 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     Vec          fieldVec        = field->localVector();
     bool         useCurrentField = fieldSection != PETSC_NULL;
     if (fieldSection) {
+      PetscInt pStart, pEnd;
+
+      err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      if (pEnd < 0) {
+        err = DMComplexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+        err = PetscSectionSetChart(fieldSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
+      }
       // check fiber dimension
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;

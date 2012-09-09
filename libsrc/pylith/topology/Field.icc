@@ -72,14 +72,6 @@ inline
 const
 mesh_type&
 pylith::topology::Field<mesh_type, section_type>::mesh(void) const {
-  std::ostringstream msg;
-
-  msg << "Sieve Section Meshes are no longer supported: " << const_cast<Field*>(this)->_metadata["default"].label << "\n"
-	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << const_cast<Field*>(this)->_metadata["default"].vectorFieldType << "\n"
-    << "    scale: " << const_cast<Field*>(this)->_metadata["default"].scale;
-    throw std::runtime_error(msg.str());
   return _mesh;
 }
 
