@@ -296,9 +296,9 @@ pylith::topology::TestFieldSubMesh::testClear(void)
   
   field.clear();
 
-  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata.scale);
-  CPPUNIT_ASSERT_EQUAL(Field<SubMesh>::OTHER, field._metadata.vectorFieldType);
-  CPPUNIT_ASSERT_EQUAL(false, field._metadata.dimsOkay);
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata["default"].scale);
+  CPPUNIT_ASSERT_EQUAL(Field<SubMesh>::OTHER, field._metadata["default"].vectorFieldType);
+  CPPUNIT_ASSERT_EQUAL(false, field._metadata["default"].dimsOkay);
 } // testClear
 
 // ----------------------------------------------------------------------
