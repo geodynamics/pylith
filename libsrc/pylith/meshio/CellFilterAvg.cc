@@ -97,28 +97,33 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   const int numQuadPts = quadrature->numQuadPts();
   const scalar_array& wts = quadrature->quadWts();
   
-  const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-  const int depth = (0 == label) ? cellDepth : labelId;
-  const std::string labelName = (0 == label) ?
-    ((sieveMesh->hasLabel("censored depth")) ?
-     "censored depth" : "depth") : label;
+  DM             dmMesh = fieldIn.mesh().dmMesh();
+  IS             cellIS = PETSC_NULL;
+  PetscInt       cStart, cEnd, numCells;
+  PetscErrorCode err;
 
-  const ALE::Obj<label_sequence>& cells = 
-    sieveMesh->getLabelStratum(labelName, depth);
-  assert(!cells.isNull());
-  const typename label_sequence::iterator cellsBegin = cells->begin();
-  const typename label_sequence::iterator cellsEnd = cells->end();
+  assert(dmMesh);
+  if (!label) {
+    PetscInt cMax;
+
+    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
+    numCells = cEnd - cStart;
+  } else {
+    err = DMComplexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
+    err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  }
 
   // Only processors with cells for output get the correct fiber dimension.
-  const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
-  assert(!sectionIn.isNull());
-  const int totalFiberDim = (cellsBegin != cellsEnd) ?
-    sectionIn->getFiberDimension(*cellsBegin) : 0;
+  PetscSection sectionIn     = fieldIn.petscSection();
+  Vec          vecIn         = fieldIn.localVector();
+  PetscInt     totalFiberDim = 0;
+
+  assert(sectionIn);
+  if (numCells) {err = PetscSectionGetDof(sectionIn, cStart, &totalFiberDim);CHECK_PETSC_ERROR(err);}
   const int fiberDim = totalFiberDim / numQuadPts;
   assert(fiberDim * numQuadPts == totalFiberDim);
-
   // Allocate field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("OutputFields");
@@ -127,7 +132,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     assert(0 != _fieldAvg);
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
-  } else if (_fieldAvg->sectionSize() != cells->size()*fiberDim) {
+  } else if (_fieldAvg->sectionSize() != numCells*fiberDim) {
     _fieldAvg->newSection(fieldIn, fiberDim);
     _fieldAvg->allocate();
   } // else
@@ -158,31 +163,62 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
       assert(0);
       throw std::logic_error("Bad vector field type for CellFilterAvg.");
     } // switch
-  const ALE::Obj<RealSection>& sectionAvg = _fieldAvg->section();
+  PetscSection sectionAvg = _fieldAvg->petscSection();
+  Vec          vecAvg     = _fieldAvg->localVector();
   _fieldAvg->label(fieldIn.label());
   _fieldAvg->scale(fieldIn.scale());
   _fieldAvg->addDimensionOkay(true);
 
-  scalar_array fieldAvgCell(fiberDim);
-  PylithScalar scalar = 0.0;
+  PylithScalar volume = 0.0;
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    scalar += wts[iQuad];
+    volume += wts[iQuad];
 
   // Loop over cells
-  for (typename label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const PylithScalar* values = sectionIn->restrictPoint(*c_iter);
-    assert(totalFiberDim == sectionIn->getFiberDimension(*c_iter));
-    
-    fieldAvgCell = 0.0;
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-      for (int i=0; i < fiberDim; ++i)
-	fieldAvgCell[i] += wts[iQuad] / scalar * values[iQuad*fiberDim+i];
+  PetscScalar *arrayIn, *arrayAvg;
 
-    sectionAvg->updatePoint(*c_iter, &fieldAvgCell[0]);
-  } // for
-  PetscLogFlops( cells->size() * numQuadPts*fiberDim*3 );
+  err = VecGetArray(vecIn,  &arrayIn);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(vecAvg, &arrayAvg);CHECK_PETSC_ERROR(err);
+  if (cellIS) {
+    const PetscInt *cells;
+
+    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    for(PetscInt c = 0; c < numCells; ++c) {
+      PetscInt dof, off, adof, aoff;
+    
+      err = PetscSectionGetDof(sectionIn, cells[c], &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(sectionIn, cells[c], &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(sectionAvg, cells[c], &adof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(sectionAvg, cells[c], &aoff);CHECK_PETSC_ERROR(err);
+      assert(totalFiberDim == dof);
+      assert(fiberDim == adof);
+      for(int i = 0; i < adof; ++i) {
+        arrayAvg[aoff+i] = 0.0;
+        for(int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+          arrayAvg[aoff+i] += wts[iQuad] / volume * arrayIn[off+iQuad*fiberDim+i];
+      }
+    }
+    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+  } else {
+    for(PetscInt c = cStart; c < cEnd; ++c) {
+      PetscInt dof, off, adof, aoff;
+    
+      err = PetscSectionGetDof(sectionIn, c, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(sectionIn, c, &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(sectionAvg, c, &adof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(sectionAvg, c, &aoff);CHECK_PETSC_ERROR(err);
+      assert(totalFiberDim == dof);
+      assert(fiberDim == adof);
+      for(int i = 0; i < adof; ++i) {
+        arrayAvg[aoff+i] = 0.0;
+        for(int iQuad = 0; iQuad < numQuadPts; ++iQuad)
+          arrayAvg[aoff+i] += wts[iQuad] / volume * arrayIn[off+iQuad*fiberDim+i];
+      }
+    } // for
+  }
+  err = VecRestoreArray(vecIn, &arrayIn);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(vecAvg, &arrayAvg);CHECK_PETSC_ERROR(err);
+  PetscLogFlops(numCells * numQuadPts*fiberDim*3);
 
   return *_fieldAvg;
 } // filter

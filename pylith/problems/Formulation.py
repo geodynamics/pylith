@@ -534,10 +534,10 @@ class Formulation(PetscComponent, ModuleFormulation):
     lengthScale = normalizer.lengthScale()
     if 1:
       solution = self.fields.get("dispIncr(t->t+dt)")
-      solution.newSection(solution.VERTICES_FIELD, dimension)
-
       solution.addField("displacement", dimension)
       solution.setupFields()
+
+      solution.newSection(solution.VERTICES_FIELD, dimension)
       solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
 
       solution.vectorFieldType(solution.VECTOR)

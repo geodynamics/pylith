@@ -405,16 +405,14 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
 
     // Allocate buffer for property field if necessary.
     PetscSection fieldSection    = field->petscSection();
-    Vec          fieldVec        = field->localVector();
-    bool         useCurrentField = fieldSection != PETSC_NULL;
-    if (fieldSection) {
-      PetscInt pStart, pEnd;
+    bool         useCurrentField = PETSC_FALSE;
+    PetscInt     pStart, pEnd;
 
-      err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-      if (pEnd < 0) {
-        err = DMComplexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-        err = PetscSectionSetChart(fieldSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
-      }
+    err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    if (pEnd < 0) {
+      err = DMComplexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(fieldSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
+    } else {
       // check fiber dimension
       PetscInt totalFiberDimCurrentLocal = 0;
       PetscInt totalFiberDimCurrent = 0;
@@ -444,6 +442,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     scalar_array propertiesCell(numQuadPts*numPropsQuadPt);
 
     // Loop over cells
+    Vec          fieldVec = field->localVector();
     PetscScalar *fieldArray, *propertiesArray;
 
     err = VecGetArray(fieldVec,      &fieldArray);CHECK_PETSC_ERROR(err);
