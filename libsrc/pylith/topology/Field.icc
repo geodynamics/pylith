@@ -29,6 +29,8 @@ const ALE::Obj<section_type>&
 pylith::topology::Field<mesh_type, section_type>::section(void) const {
   std::ostringstream msg;
 
+  char name[1024];
+  PetscGetProgramName(name, 1024);
   msg << "Sieve Sections are no longer supported: " << const_cast<Field*>(this)->_metadata["default"].label << "\n"
 	<< "  Destination section:\n"
 	<< "    space dim: " << spaceDim() << "\n"

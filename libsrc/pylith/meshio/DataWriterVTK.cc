@@ -253,13 +253,15 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
       sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, 0);
     assert(!numbering.isNull());
 
-    const ALE::Obj<RealSection>& section = field.section();
-    assert(!section.isNull());
+    PetscSection sectionP = field.petscSection();
+    PetscInt     dof      = 0;
+
+    assert(sectionP);
     assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    
-    int fiberDimLocal = 
-      (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
+    if (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) {
+      PetscErrorCode err = PetscSectionGetDof(sectionP, *sieveMesh->getLabelStratum(labelName, 0)->begin(), &dof);CHECK_PETSC_ERROR(err);
+    }
+    int fiberDimLocal = dof;
     int fiberDim = 0;
     MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
 		  field.mesh().comm());
@@ -275,7 +277,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
       _wroteVertexHeader = true;
     } // if
 
-    err = VTKViewer::writeField(section, field.label(), fiberDim, numbering,
+    err = VTKViewer::writeField(field.section(), field.label(), fiberDim, numbering,
 				_viewer, enforceDim, _precision);
     CHECK_PETSC_ERROR(err);
     }

@@ -377,6 +377,18 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 	 ++c_iter) 
       if (srcSection->getFiberDimension(*c_iter) > 0)
 	_section->setFiberDimension(*c_iter, fiberDim);
+
+    if (_dm) {
+      PetscSection   s;
+      PetscInt       pStart = srcSection->getChart().min(), pEnd = srcSection->getChart().max();
+      PetscErrorCode err;
+
+      err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
+      for(PetscInt p = pStart; p < pEnd; ++p) {
+        err = PetscSectionSetDof(s, p, fiberDim);CHECK_PETSC_ERROR(err);
+      }
+    }
   } // if
 
   logger.stagePop();
@@ -1577,8 +1589,10 @@ pylith::topology::Field<mesh_type, section_type>::updateDof(const char *name, co
   }
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
   assert(section);
-  for(map_type::const_iterator f_iter = _metadata.begin(); f_iter != _metadata.end(); ++f_iter, ++f) {
+  for(map_type::const_iterator f_iter = _metadata.begin(); f_iter != _metadata.end(); ++f_iter) {
     if (f_iter->first == name) break;
+    if (f_iter->first == "default") continue;
+    ++f;
   }
   assert(f < _metadata.size());
   for(PetscInt p = pStart; p < pEnd; ++p) {

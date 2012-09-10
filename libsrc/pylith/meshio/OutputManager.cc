@@ -196,7 +196,11 @@ pylith::meshio::OutputManager<mesh_type, field_type>::appendCellField(
     (0 == _cellFilter) ? field : _cellFilter->filter(field, label, labelId);
   field_type& fieldDimensioned = _dimension(fieldFiltered);
 
-  _writer->writeCellField(t, fieldDimensioned, label, labelId);
+  try {
+    _writer->writeCellField(t, fieldDimensioned, label, labelId);
+  } catch(std::runtime_error e) {
+    std::cout << "ERROR: " << e.what() << std::endl<<std::endl<<std::endl;
+  }
 } // appendCellField
 
 // ----------------------------------------------------------------------
