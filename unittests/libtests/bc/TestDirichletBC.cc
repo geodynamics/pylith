@@ -172,6 +172,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", spaceDim);
   field.setupFields();
+  field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bc.setConstraintSizes(field); // Does not handle fields right now
   field.allocate();
@@ -228,6 +229,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", spaceDim);
   field.setupFields();
+  field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bc.setConstraintSizes(field);
   field.allocate();
@@ -288,6 +290,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
   field.setupFields();
+  field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bc.setConstraintSizes(field);
   field.allocate();
@@ -390,6 +393,7 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
   field.setupFields();
+  field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.updateDof("bc", pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
   bc.setConstraintSizes(field);
   field.allocate();
