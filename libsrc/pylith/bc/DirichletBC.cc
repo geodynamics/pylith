@@ -82,13 +82,15 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   if (0 == numFixedDOF)
     return;
 
-  PetscSection sectionP = field.petscSection();
+  PetscSection   sectionP = field.petscSection();
+  PetscInt       numFields;
   PetscErrorCode err;
   assert(sectionP);
 
   // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
+  err = PetscSectionGetNumFields(sectionP, &numFields);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt point = _points[iPoint];
     PetscInt       dof, cdof;
@@ -107,7 +109,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     _offsetLocal[iPoint] = cdof;
     err = PetscSectionAddConstraintDof(sectionP, point, numFixedDOF);CHECK_PETSC_ERROR(err);
     // We should be specifying what field the BC is for
-    //err = PetscSectionAddConstraintFieldDof(sectionP, point, field, numFixedDOF);CHECK_PETSC_ERROR(err);
+    if (numFields) {err = PetscSectionAddFieldConstraintDof(sectionP, point, 0, numFixedDOF);CHECK_PETSC_ERROR(err);}
   } // for
 } // setConstraintSizes
 
@@ -120,11 +122,13 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
   if (0 == numFixedDOF)
     return;
 
-  PetscSection sectionP = field.petscSection();
+  PetscSection   sectionP = field.petscSection();
+  PetscInt       numFields;
   PetscErrorCode err;
   assert(sectionP);
 
   const int numPoints = _points.size();
+  err = PetscSectionGetNumFields(sectionP, &numFields);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type point = _points[iPoint];
 
@@ -168,7 +172,7 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
 
     // Update list of constrained DOF
     err = PetscSectionSetConstraintIndices(sectionP, point, &allCInd[0]);CHECK_PETSC_ERROR(err);
-    //err = PetscSectionSetConstraintFieldIndices(sectionP, point, field, &fieldCInd[0]);CHECK_PETSC_ERROR(err);
+    if (numFields) {err = PetscSectionSetFieldConstraintIndices(sectionP, point, 0, &allCInd[0]);CHECK_PETSC_ERROR(err);}
   } // for
 } // setConstraints
 
