@@ -119,13 +119,13 @@ pylith::problems::SolverLinear::solve(
   } // else
   jacobian->resetValuesChanged();
 
+#if 0 // OBSOLETE? Replaced by stuff in Solver?
   // Update KSP operators with custom preconditioner if necessary.
   const ALE::Obj<RealSection>& solutionSection = solution->section();
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
 
-#if 0 // OBSOLETE? Replaced by stuff in Solver?
   if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
       _jacobianPCFault) {
     
@@ -150,8 +150,8 @@ pylith::problems::SolverLinear::solve(
   } // if
 #endif
 
-  const PetscVec residualVec = residual.vector();
-  const PetscVec solutionVec = solution->vector();
+  const PetscVec residualVec = residual.globalVector();
+  const PetscVec solutionVec = solution->globalVector();
 
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(solveEvent);
