@@ -568,7 +568,8 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
 #endif
 
   PetscSection fieldSection = field->petscSection();
-  assert(fieldSection);
+  Vec          fieldVec     = field->localVector();
+  assert(fieldSection);assert(fieldVec);
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
@@ -599,11 +600,11 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, numBasis, numQuadPts);
     
     if (!calcStress) {
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
     } // else
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
