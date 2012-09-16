@@ -536,7 +536,6 @@ class Formulation(PetscComponent, ModuleFormulation):
       solution = self.fields.get("dispIncr(t->t+dt)")
       solution.addField("displacement", dimension)
       solution.setupFields()
-
       solution.newSection(solution.VERTICES_FIELD, dimension)
       solution.updateDof("displacement", solution.VERTICES_FIELD, dimension)
 

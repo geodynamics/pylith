@@ -1560,11 +1560,13 @@ pylith::topology::Field<mesh_type, section_type>::setupFields()
     err = PetscSectionSetFieldComponents(section, f, f_iter->second);CHECK_PETSC_ERROR(err);
   }
   _tmpFields.clear();
+#if 0
   // Right now, we assume that the section covers the entire chart
   PetscInt pStart, pEnd;
 
   err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(section, pStart, pEnd);CHECK_PETSC_ERROR(err);
+#endif
 }
 
 template<typename mesh_type, typename section_type>
@@ -1596,7 +1598,7 @@ pylith::topology::Field<mesh_type, section_type>::updateDof(const char *name, co
   }
   assert(f < _metadata.size());
   for(PetscInt p = pStart; p < pEnd; ++p) {
-    err = PetscSectionAddDof(section, p, fiberDim);CHECK_PETSC_ERROR(err);
+    //err = PetscSectionAddDof(section, p, fiberDim);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetFieldDof(section, p, f, fiberDim);CHECK_PETSC_ERROR(err);
   }
 }

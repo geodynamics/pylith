@@ -112,14 +112,15 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
   // Make global preconditioner matrix
   PetscMat jacobianMat = jacobian.matrix();
 
-  const ALE::Obj<RealSection>& solutionSection = fields.solution().section();
-  assert(!solutionSection.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = fields.solution().mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+  PetscSection   solutionSection = fields.solution().petscSection();
+  DM             dmMesh          = fields.solution().mesh().dmMesh();
+  PetscInt       numFields;
+  PetscErrorCode err;
 
-  if (formulation->splitFields() && 
-      formulation->useCustomConstraintPC() &&
-      solutionSection->getNumSpaces() > sieveMesh->getDimension()) {
+  assert(solutionSection);assert(dmMesh);
+  err = DMGetNumFields(dmMesh, &numFields);CHECK_PETSC_ERROR(err);
+  if (formulation->splitFields() && formulation->useCustomConstraintPC() &&
+      numFields > 1) {
     // We have split fields with a custom constraint preconditioner
     // and constraints exist.
 
@@ -131,7 +132,7 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     err = MatCreateShell(fields.mesh().comm(), m, n, M, N, &_ctx, &_jacobianPC);
     CHECK_PETSC_ERROR(err);
     err = MatShellSetOperation(_jacobianPC, MATOP_GET_SUBMATRIX, 
-			       (void (*)(void)) MyMatGetSubMatrix);
+                               (void (*)(void)) MyMatGetSubMatrix);
     CHECK_PETSC_ERROR(err);
   } else {
     _jacobianPC = jacobianMat;
@@ -207,48 +208,53 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   assert(pc);
   assert(formulation);
 
-  PetscErrorCode err = 0;
+  DM dmMesh = fields.mesh().dmMesh();
+  assert(dmMesh);
+  PetscSection   solutionSection   = fields.solution().petscSection();
+  Vec            solutionVec       = fields.solution().localVector();
+  Vec            solutionGlobalVec = fields.solution().globalVector();
+  PetscInt       spaceDim, numFields;
+  PetscErrorCode err;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = fields.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const topology::Field<topology::Mesh>& solution = fields.solution();
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  assert(!solutionSection.isNull());
-  const int spaceDim = sieveMesh->getDimension();
-  const int numSpaces = solutionSection->getNumSpaces();
+
   const bool separateComponents = formulation->splitFieldComponents();
 
-  err = PCSetType(*pc, PCFIELDSPLIT); CHECK_PETSC_ERROR(err);
-  err = PCSetOptionsPrefix(*pc, "fs_"); CHECK_PETSC_ERROR(err);
-  err = PCSetFromOptions(*pc); CHECK_PETSC_ERROR(err);
+  assert(solutionSection);
+  err = DMComplexGetDimension(dmMesh, &spaceDim);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(solutionSection, &numFields);CHECK_PETSC_ERROR(err);
 
-  if (formulation->splitFields() && 
-      formulation->useCustomConstraintPC() &&
-      numSpaces > spaceDim) {
+  err = PCSetDM(*pc, dmMesh);CHECK_PETSC_ERROR(err);
+  err = PCSetType(*pc, PCFIELDSPLIT);CHECK_PETSC_ERROR(err);
+  err = PCSetOptionsPrefix(*pc, "fs_");CHECK_PETSC_ERROR(err);
+  err = PCSetFromOptions(*pc);CHECK_PETSC_ERROR(err);
+
+  if (formulation->splitFields() && formulation->useCustomConstraintPC() &&
+      numFields > 1) {
     // We have split fields with a custom constraint preconditioner
     // and constraints exist.
 
     // Get total number of DOF associated with constraints field split
-    const ALE::Obj<SieveMesh::order_type>& lagrangeGlobalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "faultDefault",
-                                              solutionSection, spaceDim);
-    assert(!lagrangeGlobalOrder.isNull());
+    DM           lagrangeDM;
+    PetscSection lagrangeSection;
+    PetscInt     lagrangeFields[1] = {1}, nrows, ncols;
 
-    err = MatDestroy(&_jacobianPCFault); CHECK_PETSC_ERROR(err);
-    PylithInt nrows = lagrangeGlobalOrder->getLocalSize();
-    PylithInt ncols = nrows;
+    err = MatDestroy(&_jacobianPCFault);CHECK_PETSC_ERROR(err);
+    err = DMCreateSubDM(dmMesh, 1, lagrangeFields, PETSC_NULL, &lagrangeDM);CHECK_PETSC_ERROR(err);
+    err = DMGetDefaultGlobalSection(lagrangeDM, &lagrangeSection);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetStorageSize(lagrangeSection, &nrows);CHECK_PETSC_ERROR(err);
+    ncols = nrows;
 
-    err = MatCreate(sieveMesh->comm(), &_jacobianPCFault); CHECK_PETSC_ERROR(err);
+    err = MatCreate(((PetscObject) dmMesh)->comm, &_jacobianPCFault);CHECK_PETSC_ERROR(err);
     err = MatSetSizes(_jacobianPCFault, nrows, ncols, 
-		      PETSC_DECIDE, PETSC_DECIDE); CHECK_PETSC_ERROR(err);
-    err = MatSetType(_jacobianPCFault, MATAIJ);
-    err = MatSetFromOptions(_jacobianPCFault); CHECK_PETSC_ERROR(err);
+                      PETSC_DECIDE, PETSC_DECIDE);CHECK_PETSC_ERROR(err);
+    err = MatSetType(_jacobianPCFault, MATAIJ);CHECK_PETSC_ERROR(err);
+    err = MatSetFromOptions(_jacobianPCFault);CHECK_PETSC_ERROR(err);
     
     // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
-				    PETSC_NULL); CHECK_PETSC_ERROR(err);
+                                    PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, PETSC_NULL, 
-				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+                                    0, PETSC_NULL);CHECK_PETSC_ERROR(err);
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 
@@ -275,94 +281,80 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   } // if
 
   if (separateComponents) {
-    PetscMat* precon = new PetscMat[numSpaces];
-    for (int i=0; i < numSpaces; ++i) {
-      precon[i] = PETSC_NULL;
-    } // for
-    precon[numSpaces-1] = _jacobianPCFault;
-    constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
-			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, PETSC_NULL, solution.vector(), *pc);
-    delete[] precon; precon = 0;
+    throw std::runtime_error("Separate components is no longer supported");
+    // constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
+	//		sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, PETSC_NULL, solution.vector(), *pc);
   } else {
-    int numFields[2] = {spaceDim, (numSpaces > spaceDim) ? 1 : 0};
-    MatNullSpace nullsp[2] = {PETSC_NULL, PETSC_NULL};
-    PetscMat precon[2] = {PETSC_NULL, _jacobianPCFault};
-    int* fields = new int[numSpaces];
-    
     // Create rigid body null space.
-    const ALE::Obj<RealSection>& coordinatesSection = sieveMesh->getRealSection("coordinates");
-    assert(!coordinatesSection.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-    assert(!vertices.isNull());
-    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-    PetscInt dim = spaceDim;
-    PetscVec mode[6];
+    MatNullSpace nullsp;    
+    PetscObject  field;
+    PetscSection coordinateSection;
+    Vec          coordinateVec;
+    PetscInt     dim = spaceDim, vStart, vEnd;
+    PetscVec     mode[6];
 
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetCoordinateSection(dmMesh, &coordinateSection);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetCoordinateVec(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
+    assert(coordinateSection);assert(coordinateVec);
     if (dim > 1) {
-      PetscInt n;
-      err = VecGetLocalSize(solution.vector(), &n);CHECK_PETSC_ERROR(err);
       const int m = (dim * (dim + 1)) / 2;
-      err = VecCreate(sieveMesh->comm(), &mode[0]);CHECK_PETSC_ERROR(err);
-      err = VecSetSizes(mode[0], n, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-      err = VecSetUp(mode[0]);CHECK_PETSC_ERROR(err);
-      for (int i = 1; i < m; ++i) {
-	err = VecDuplicate(mode[0], &mode[i]);CHECK_PETSC_ERROR(err);
+      for(int i = 0; i < m; ++i) {
+        err = VecDuplicate(solutionGlobalVec, &mode[i]);CHECK_PETSC_ERROR(err);
       } // for
       // :KLUDGE: Assume P1
-      for (int d=0; d < dim; ++d) {
+      for(int d = 0; d < dim; ++d) {
         PetscScalar values[3] = {0.0, 0.0, 0.0};
 	
         values[d] = 1.0;
-        solutionSection->zero();
-        for(SieveMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
-          solutionSection->updatePoint(*v_iter, values);
+        err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
+        for(PetscInt v = vStart; v < vEnd; ++v) {
+          err = DMComplexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
         } // for
-        solution.scatterSectionToVector();
-        err = VecCopy(solution.vector(), mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
       } // for
-      for (int d = dim; d < m; ++d) {
+      for(int d = dim; d < m; ++d) {
         PetscInt k = (dim > 2) ? d - dim : d;
 	
-        solutionSection->zero();
-        for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; v_iter != verticesEnd; ++v_iter) {
+        err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
+        for(PetscInt v = vStart; v < vEnd; ++v) {
           PetscScalar values[3] = {0.0, 0.0, 0.0};
-          const PylithScalar* coords  = coordinatesSection->restrictPoint(*v_iter);
+          const PetscScalar *coords;
 
-          for (int i=0; i < dim; ++i) {
-            for (int j=0; j < dim; ++j) {
+          err = DMComplexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
+          for(int i = 0; i < dim; ++i) {
+            for(int j = 0; j < dim; ++j) {
               values[j] += _epsilon(i, j, k)*coords[i];
             } // for
           } // for
-          solutionSection->updatePoint(*v_iter, values);
+          err = DMComplexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
+          err = DMComplexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
         }
-        solution.scatterSectionToVector();
-        err = VecCopy(solution.vector(), mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
+        err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
       } // for
-      for (int i=0; i < dim; ++i) {
-	err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
+      for(int i = 0; i < dim; ++i) {
+        err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
       } // for
       /* Orthonormalize system */
-      for (int i = dim; i < m; ++i) {
+      for(int i = dim; i < m; ++i) {
         PetscScalar dots[6];
 
         err = VecMDot(mode[i], i, mode, dots);CHECK_PETSC_ERROR(err);
-        for(int j=0; j < i; ++j) dots[j] *= -1.0;
+        for(int j = 0; j < i; ++j) dots[j] *= -1.0;
         err = VecMAXPY(mode[i], i, dots, mode);CHECK_PETSC_ERROR(err);
         err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
       } // for
-      err = MatNullSpaceCreate(sieveMesh->comm(), PETSC_FALSE, m, mode, &nullsp[0]);CHECK_PETSC_ERROR(err);
-      for(int i=0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
+      err = MatNullSpaceCreate(((PetscObject) dmMesh)->comm, PETSC_FALSE, m, mode, &nullsp);CHECK_PETSC_ERROR(err);
+      for(int i = 0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
     } // if
 
-    for (int f=0; f < numSpaces; ++f) {
-      fields[f] = f;
-    } // for
-    constructFieldSplit(solutionSection, 2, numFields, fields,
-                        sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, nullsp,
-                        solution.vector(), *pc);
-    err = MatNullSpaceDestroy(&nullsp[0]);CHECK_PETSC_ERROR(err);
-    delete[] fields;
+    err = DMSetNumFields(dmMesh, 2);CHECK_PETSC_ERROR(err);
+    err = DMGetField(dmMesh, 0, &field);CHECK_PETSC_ERROR(err);
+    err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullsp);CHECK_PETSC_ERROR(err);
+    err = MatNullSpaceDestroy(&nullsp);CHECK_PETSC_ERROR(err);
+    err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);CHECK_PETSC_ERROR(err);
   } // if/else
 } // _setupFieldSplit
 
