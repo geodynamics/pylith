@@ -33,21 +33,21 @@
 	</Geometry>
 	<Attribute
 	   Name="other"
-	   Type="Tensor6"
+	   Type="Matrix"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 6"
+		    Dimensions="1 2 4"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 6
+              1 2 4
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 2 6"
+	       Dimensions="1 2 4"
 	       Format="HDF">
 	      &HeavyData;:/cell_fields/other
 	    </DataItem>
@@ -72,6 +72,28 @@
 	       Dimensions="1 2 1"
 	       Format="HDF">
 	      &HeavyData;:/cell_fields/pressure
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress"
+	   Type="Tensor6"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 6"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 0
+              1 1 1
+              1 2 6
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
 	    </DataItem>
 	  </DataItem>
 	</Attribute>

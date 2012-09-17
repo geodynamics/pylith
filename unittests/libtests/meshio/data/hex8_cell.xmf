@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" [
-<!ENTITY HeavyData "tet4_vertex.h5">
+<!ENTITY HeavyData "hex8_cell.h5">
 ]>
 
 <Xdmf>
@@ -9,18 +9,18 @@
 	      ItemType="Uniform"
 	      Format="HDF"
 	      NumberType="Float" Precision="8"
-	      Dimensions="2 4">
+	      Dimensions="2 8">
       &HeavyData;:/topology/cells
     </DataItem>
     <DataItem Name="vertices"
 	      Format="HDF"
-	      Dimensions="8 3">
+	      Dimensions="16 3">
       &HeavyData;:/geometry/vertices
     </DataItem>
     <!-- ============================================================ -->
     <Grid Name="domain" GridType="Uniform">
 	<Topology
-	   TopologyType="Tetrahedron"
+	   TopologyType="Hexahedron"
 	   NumberOfElements="2">
 	  <DataItem Reference="XML">
 	    /Xdmf/Domain/DataItem[@Name="cells"]
@@ -32,90 +32,90 @@
 	  </DataItem>
 	</Geometry>
 	<Attribute
-	   Name="displacement"
-	   Type="Vector"
-	   Center="Node">
-          <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 3"
-		    Type="HyperSlab">
-            <DataItem
-	       Dimensions="3 3"
-	       Format="XML">
-              0 0 0
-              1 1 1
-              1 8 3
-	    </DataItem>
-	    <DataItem
-	       DataType="Float" Precision="8"
-	       Dimensions="1 8 3"
-	       Format="HDF">
-	      &HeavyData;:/vertex_fields/displacement
-	    </DataItem>
-	  </DataItem>
-	</Attribute>
-	<Attribute
 	   Name="other"
 	   Type="Matrix"
-	   Center="Node">
+	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 2"
+		    Dimensions="1 2 2"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 2
+              1 2 2
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 2"
+	       Dimensions="1 2 2"
 	       Format="HDF">
-	      &HeavyData;:/vertex_fields/other
+	      &HeavyData;:/cell_fields/other
 	    </DataItem>
 	  </DataItem>
 	</Attribute>
 	<Attribute
 	   Name="pressure"
 	   Type="Scalar"
-	   Center="Node">
+	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 1"
+		    Dimensions="1 2 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 1
+              1 2 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 1"
+	       Dimensions="1 2 1"
 	       Format="HDF">
-	      &HeavyData;:/vertex_fields/pressure
+	      &HeavyData;:/cell_fields/pressure
 	    </DataItem>
 	  </DataItem>
 	</Attribute>
 	<Attribute
 	   Name="stress"
 	   Type="Tensor6"
-	   Center="Node">
+	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 6"
+		    Dimensions="1 2 6"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 6
+              1 2 6
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 6"
+	       Dimensions="1 2 6"
 	       Format="HDF">
-	      &HeavyData;:/vertex_fields/stress
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="traction"
+	   Type="Vector"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 3"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 0
+              1 1 1
+              1 2 3
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 3"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/traction
 	    </DataItem>
 	  </DataItem>
 	</Attribute>

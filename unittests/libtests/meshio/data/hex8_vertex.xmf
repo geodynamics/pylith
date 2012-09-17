@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" [
-<!ENTITY HeavyData "tet4_vertex.h5">
+<!ENTITY HeavyData "hex8_vertex.h5">
 ]>
 
 <Xdmf>
@@ -9,18 +9,18 @@
 	      ItemType="Uniform"
 	      Format="HDF"
 	      NumberType="Float" Precision="8"
-	      Dimensions="2 4">
+	      Dimensions="2 8">
       &HeavyData;:/topology/cells
     </DataItem>
     <DataItem Name="vertices"
 	      Format="HDF"
-	      Dimensions="8 3">
+	      Dimensions="16 3">
       &HeavyData;:/geometry/vertices
     </DataItem>
     <!-- ============================================================ -->
     <Grid Name="domain" GridType="Uniform">
 	<Topology
-	   TopologyType="Tetrahedron"
+	   TopologyType="Hexahedron"
 	   NumberOfElements="2">
 	  <DataItem Reference="XML">
 	    /Xdmf/Domain/DataItem[@Name="cells"]
@@ -36,18 +36,18 @@
 	   Type="Vector"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 3"
+		    Dimensions="1 16 3"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 3
+              1 16 3
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 3"
+	       Dimensions="1 16 3"
 	       Format="HDF">
 	      &HeavyData;:/vertex_fields/displacement
 	    </DataItem>
@@ -58,18 +58,18 @@
 	   Type="Matrix"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 2"
+		    Dimensions="1 16 2"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 2
+              1 16 2
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 2"
+	       Dimensions="1 16 2"
 	       Format="HDF">
 	      &HeavyData;:/vertex_fields/other
 	    </DataItem>
@@ -80,18 +80,18 @@
 	   Type="Scalar"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 1"
+		    Dimensions="1 16 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 1
+              1 16 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 1"
+	       Dimensions="1 16 1"
 	       Format="HDF">
 	      &HeavyData;:/vertex_fields/pressure
 	    </DataItem>
@@ -102,18 +102,18 @@
 	   Type="Tensor6"
 	   Center="Node">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 8 6"
+		    Dimensions="1 16 6"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 8 6
+              1 16 6
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
-	       Dimensions="1 8 6"
+	       Dimensions="1 16 6"
 	       Format="HDF">
 	      &HeavyData;:/vertex_fields/stress
 	    </DataItem>
