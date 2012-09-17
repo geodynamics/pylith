@@ -1228,6 +1228,15 @@ name "tab:material:output:components"
 Order of components in tensor values in Xdmf files for 3D material models.
  All nine tensor components are available even though the tensor is symmetric
  with six independent components.
+ The order does not match the conventional ordering of a tensor because
+ we use the ordering given in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-statevars"
+
+\end_inset
+
+in the HDF5 file.
 \end_layout
 
 \end_inset
@@ -1303,11 +1312,11 @@ Component
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{xy}$
+\begin_inset Formula $\epsilon_{yy}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{xy}$
+\begin_inset Formula $\sigma_{yy}$
 \end_inset
 
 
@@ -1330,11 +1339,11 @@ Component
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{xz}$
+\begin_inset Formula $\epsilon_{zz}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{xz}$
+\begin_inset Formula $\sigma_{zz}$
 \end_inset
 
 
@@ -1357,11 +1366,11 @@ Component
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{yy}$
+\begin_inset Formula $\epsilon_{xy}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{yy}$
+\begin_inset Formula $\sigma_{xy}$
 \end_inset
 
 
@@ -1411,11 +1420,11 @@ Component
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{zz}$
+\begin_inset Formula $\epsilon_{xz}$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{zz}$
+\begin_inset Formula $\sigma_{xz}$
 \end_inset
 
 

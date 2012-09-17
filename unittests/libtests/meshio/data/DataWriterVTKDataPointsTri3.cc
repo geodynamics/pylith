@@ -38,26 +38,16 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_time = 1.0;
 const char* pylith::meshio::DataWriterVTKDataPointsTri3::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataPointsTri3::_numVertexFields = 3;
 const int pylith::meshio::DataWriterVTKDataPointsTri3::_numVertices = 8;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFields[] = {
-  { "displacements", topology::FieldBase::VECTOR, 2 },
+pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "displacement", topology::FieldBase::VECTOR, 2 },
+  { "stress", topology::FieldBase::TENSOR, 3 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexField0[] = {
-  1.1, 2.2, // 0
-  3.3, 4.4, // 1
-  5.5, 6.6, // 2
-  7.7, 8.8, // 3
-  9.9, 10.0, // 4
-  11.1, 12.2, // 5
-  13.3, 14.4,
-  15.5, 16.6,
-};
-const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexField1[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFieldScalar[8*1] = {
   2.1, // 0
   3.2, // 1
   4.3, // 2
@@ -67,7 +57,27 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexField1[] 
   8.7,
   9.8
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexField2[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFieldVector[8*2] = {
+  1.1, 2.2, // 0
+  3.3, 4.4, // 1
+  5.5, 6.6, // 2
+  7.7, 8.8, // 3
+  9.9, 10.0, // 4
+  11.1, 12.2, // 5
+  13.3, 14.4,
+  15.5, 16.6,
+};
+const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFieldTensor[8*3] = {
+  1.1, 1.2, 1.3,
+  2.1, 2.2, 2.3,
+  3.1, 3.2, 3.3,
+  4.1, 4.2, 4.3,
+  5.1, 5.2, 5.3,
+  6.1, 6.2, 6.3,
+  7.1, 7.2, 7.3,
+  8.1, 8.2, 8.3,
+};
+const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexFieldOther[8*2] = {
   1.2, 2.3, // 0
   3.4, 4.5, // 1
   5.6, 6.7, // 2
@@ -80,7 +90,7 @@ const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_vertexField2[] 
 
 const int pylith::meshio::DataWriterVTKDataPointsTri3::_numPoints = 3;
 const int pylith::meshio::DataWriterVTKDataPointsTri3::_spaceDim = 2;
-const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_points[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataPointsTri3::_points[3*2] = {
  -0.3333333, 0.0,
   0.0000001, 0.0,
   0.9999999, 0.0,
@@ -99,13 +109,13 @@ pylith::meshio::DataWriterVTKDataPointsTri3::DataWriterVTKDataPointsTri3(void)
   time = _time;
   timeFormat = const_cast<char*>(_timeFormat);
   
-  numVertexFields = _numVertexFields;
   numVertices = _numVertices;
-  assert(3 == numVertexFields);
+  assert(DataWriterData::numVertexFields == numVertexFields);
   vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
-  vertexFields[0] = const_cast<PylithScalar*>(_vertexField0);
-  vertexFields[1] = const_cast<PylithScalar*>(_vertexField1);
-  vertexFields[2] = const_cast<PylithScalar*>(_vertexField2);
+  vertexFields[0] = const_cast<PylithScalar*>(_vertexFieldScalar);
+  vertexFields[1] = const_cast<PylithScalar*>(_vertexFieldVector);
+  vertexFields[2] = const_cast<PylithScalar*>(_vertexFieldTensor);
+  vertexFields[3] = const_cast<PylithScalar*>(_vertexFieldOther);
 
   numPoints = _numPoints;
   spaceDim = _spaceDim;

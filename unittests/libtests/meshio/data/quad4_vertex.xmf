@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" [
-<!ENTITY HeavyData "tri3_vertex.h5">
+<!ENTITY HeavyData "quad4_vertex.h5">
 ]>
 
 <Xdmf>
@@ -9,7 +9,7 @@
 	      ItemType="Uniform"
 	      Format="HDF"
 	      NumberType="Float" Precision="8"
-	      Dimensions="2 3">
+	      Dimensions="2 4">
       &HeavyData;:/topology/cells
     </DataItem>
     <DataItem Name="vertices"
@@ -20,7 +20,7 @@
     <!-- ============================================================ -->
     <Grid Name="domain" GridType="Uniform">
 	<Topology
-	   TopologyType="Triangle"
+	   TopologyType="Quadrilateral"
 	   NumberOfElements="2">
 	  <DataItem Reference="XML">
 	    /Xdmf/Domain/DataItem[@Name="cells"]

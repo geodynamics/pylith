@@ -18,6 +18,9 @@
 
 #include "DataWriterData.hh"
 
+const int pylith::meshio::DataWriterData::DataWriterData::numVertexFields = 4;
+const int pylith::meshio::DataWriterData::DataWriterData::numCellFields = 4;
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterData::DataWriterData(void) :
@@ -32,13 +35,18 @@ pylith::meshio::DataWriterData::DataWriterData(void) :
   timeFormat(0),
   cellsLabel(0),
   labelId(0),
-  numVertexFields(0),
   numVertices(0),
   vertexFieldsInfo(0),
-  numCellFields(0),
   numCells(0),
   cellFieldsInfo(0)
 { // constructor
+  for (int i=0; i < numVertexFields; ++i) {
+    vertexFields[i] = 0;
+  } // for
+
+  for (int i=0; i < numCellFields; ++i) {
+    cellFields[i] = 0;
+  } // for
 } // constructor
 
 // ----------------------------------------------------------------------
