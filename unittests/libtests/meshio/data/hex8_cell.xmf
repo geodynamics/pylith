@@ -32,18 +32,40 @@
 	  </DataItem>
 	</Geometry>
 	<Attribute
-	   Name="other"
-	   Type="Matrix"
+	   Name="other_0"
+	   Type="Scalar"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 2"
+		    Dimensions="1 2 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 2
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 2"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/other
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="other_1"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 1
+              1 1 1
+              1 2 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"
@@ -76,18 +98,128 @@
 	  </DataItem>
 	</Attribute>
 	<Attribute
-	   Name="stress"
-	   Type="Tensor6"
+	   Name="stress_xx"
+	   Type="Scalar"
 	   Center="Cell">
           <DataItem ItemType="HyperSlab"
-		    Dimensions="1 2 6"
+		    Dimensions="1 2 1"
 		    Type="HyperSlab">
             <DataItem
 	       Dimensions="3 3"
 	       Format="XML">
               0 0 0
               1 1 1
-              1 2 6
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress_yy"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 1
+              1 1 1
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress_zz"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 2
+              1 1 1
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress_xy"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 3
+              1 1 1
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress_yz"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 4
+              1 1 1
+              1 2 1
+	    </DataItem>
+	    <DataItem
+	       DataType="Float" Precision="8"
+	       Dimensions="1 2 6"
+	       Format="HDF">
+	      &HeavyData;:/cell_fields/stress
+	    </DataItem>
+	  </DataItem>
+	</Attribute>
+	<Attribute
+	   Name="stress_xz"
+	   Type="Scalar"
+	   Center="Cell">
+          <DataItem ItemType="HyperSlab"
+		    Dimensions="1 2 1"
+		    Type="HyperSlab">
+            <DataItem
+	       Dimensions="3 3"
+	       Format="XML">
+              0 0 5
+              1 1 1
+              1 2 1
 	    </DataItem>
 	    <DataItem
 	       DataType="Float" Precision="8"

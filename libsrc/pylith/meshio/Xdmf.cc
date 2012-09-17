@@ -165,8 +165,13 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
 	     std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
 	  const int fiberDim = fieldsMetadata[iField].fiberDim;
 	  for (int component=0; component < fiberDim; ++component)
-	    _writeGridAttributeComponent(fieldsMetadata[iField],
-					 iTimeStep, component);
+	    _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
+	} else if (3 == spaceDim && 
+		   (std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
+		    std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
+	  const int fiberDim = fieldsMetadata[iField].fiberDim;
+	  for (int component=0; component < fiberDim; ++component)
+	    _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
 	} else {
 	  _writeGridAttribute(fieldsMetadata[iField],
 			      iTimeStep);
@@ -183,13 +188,18 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     const int iTimeStep = 0;
     for (int iField=0; iField < numFields; ++iField) {
       if (2 == spaceDim && 
-	    (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
-	     std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
-	     std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
+	  (std::string("Vector") == fieldsMetadata[iField].vectorFieldType ||
+	   std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
+	   std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
 	const int fiberDim = fieldsMetadata[iField].fiberDim;
 	for (int component=0; component < fiberDim; ++component)
-	  _writeGridAttributeComponent(fieldsMetadata[iField],
-				       iTimeStep, component);
+	  _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
+      } else if (3 == spaceDim && 
+		 (std::string("Tensor6") == fieldsMetadata[iField].vectorFieldType  ||
+		  std::string("Matrix") == fieldsMetadata[iField].vectorFieldType) ) {
+	const int fiberDim = fieldsMetadata[iField].fiberDim;
+	for (int component=0; component < fiberDim; ++component)
+	  _writeGridAttributeComponent(fieldsMetadata[iField], iTimeStep, component, spaceDim);
       } else {
 	_writeGridAttribute(fieldsMetadata[iField],
 			    iTimeStep);
@@ -504,7 +514,8 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 void
 pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata,
 						   const int iTime,
-						   const int component)
+						   const int component,
+						   const int spaceDim)
 { // _writeGridAttribute
   assert(_file.is_open() && _file.good());
 
@@ -529,6 +540,9 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
     case 1:
       componentName = std::string(metadata.name) + std::string("_y");
       break;
+    case 2:
+      componentName = std::string(metadata.name) + std::string("_z");
+      break;
     default:
       { // default
 	std::ostringstream msg;
@@ -539,24 +553,65 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
       } // default
     } // switch
   } else if (std::string("Tensor6") == metadata.vectorFieldType) {
-    switch (component) {
-    case 0:
-      componentName = std::string(metadata.name) + std::string("_xx");
+    switch (spaceDim) {
+    case 2 :
+      switch (component) {
+      case 0:
+	componentName = std::string(metadata.name) + std::string("_xx");
+	break;
+      case 1:
+	componentName = std::string(metadata.name) + std::string("_yy");
+	break;
+      case 2:
+	componentName = std::string(metadata.name) + std::string("_xy");
+	break;
+      default:
+	{ // default
+	  std::ostringstream msg;
+	  msg << "Unknown component " << component << " while writing Xdmf file.";
+	  std::cerr << msg.str() << std::endl;
+	  assert(0);
+	  throw std::logic_error(msg.str());
+	} // default
+      } // switch
       break;
-    case 1:
-      componentName = std::string(metadata.name) + std::string("_yy");
-      break;
-    case 2:
-      componentName = std::string(metadata.name) + std::string("_xy");
-      break;
-    default:
-      { // default
+    case 3 :
+      switch (component) {
+      case 0:
+	componentName = std::string(metadata.name) + std::string("_xx");
+	break;
+      case 1:
+	componentName = std::string(metadata.name) + std::string("_yy");
+	break;
+      case 2:
+	componentName = std::string(metadata.name) + std::string("_zz");
+	break;
+      case 3:
+	componentName = std::string(metadata.name) + std::string("_xy");
+	break;
+      case 4:
+	componentName = std::string(metadata.name) + std::string("_yz");
+	break;
+      case 5:
+	componentName = std::string(metadata.name) + std::string("_xz");
+	break;
+      default: {
 	std::ostringstream msg;
 	msg << "Unknown component " << component << " while writing Xdmf file.";
 	std::cerr << msg.str() << std::endl;
 	assert(0);
 	throw std::logic_error(msg.str());
       } // default
+      } // switch
+      break;
+      
+    default: {
+	std::ostringstream msg;
+	msg << "Unknown spatial dimension " << spaceDim << " while writing Xdmf file.";
+	std::cerr << msg.str() << std::endl;
+	assert(0);
+	throw std::logic_error(msg.str());
+    } // default
     } // switch
   } else if (std::string("Matrix") == metadata.vectorFieldType) {
     std::ostringstream sname;
