@@ -108,6 +108,7 @@ pylith::problems::SolverLinear::solve(
   _logger->eventEnd(scatterEvent);
   _logger->eventBegin(setupEvent);
 
+
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = jacobian->matrix();
   if (!jacobian->valuesChanged()) {
@@ -124,32 +125,6 @@ pylith::problems::SolverLinear::solve(
   assert(!solutionSection.isNull());
   const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
-
-#if 0 // OBSOLETE? Replaced by stuff in Solver?
-  if (solutionSection->getNumSpaces() > sieveMesh->getDimension() &&
-      _jacobianPCFault) {
-    
-    PetscPC pc = 0;
-    PCCompositeType ctype;
-    
-    err = KSPSetUp(_ksp); CHECK_PETSC_ERROR(err);
-    err = KSPGetPC(_ksp, &pc); CHECK_PETSC_ERROR(err);
-    err = PCFieldSplitGetType(pc, &ctype); CHECK_PETSC_ERROR(err);
-    if (ctype != PC_COMPOSITE_SCHUR) {
-      PetscKSP    *ksps = 0;
-      PylithInt    num  = 0;
-      PetscMat     A    = 0;
-      MatStructure flag;
-
-      err = PCFieldSplitGetSubKSP(pc, &num, &ksps); CHECK_PETSC_ERROR(err);
-      err = KSPGetOperators(ksps[num-1], &A, PETSC_NULL, &flag);CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) A);CHECK_PETSC_ERROR(err);
-      err = KSPSetOperators(ksps[num-1], A, _jacobianPCFault, flag);CHECK_PETSC_ERROR(err);
-      err = PetscFree(ksps);CHECK_PETSC_ERROR(err);
-    }
-  } // if
-#endif
-
 
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
