@@ -101,7 +101,7 @@ pylith::problems::SolverNonlinear::initialize(
   err = SNESCreate(fields.mesh().comm(), &_snes); CHECK_PETSC_ERROR(err);
 
   const topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const PetscVec residualVec = residual.vector();
+  const PetscVec residualVec = residual.globalVector();
   err = SNESSetFunction(_snes, residualVec, reformResidual,
 			(void*) formulation);
   CHECK_PETSC_ERROR(err);
@@ -141,7 +141,7 @@ pylith::problems::SolverNonlinear::solve(
   _logger->eventBegin(solveEvent);
 
   PetscErrorCode err = 0;
-  const PetscVec solutionVec = solution->vector();
+  const PetscVec solutionVec = solution->globalVector();
 
   err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
   
