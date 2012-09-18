@@ -2167,8 +2167,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   err = KSPSetOperators(_ksp, jacobianMat, jacobianMat,
     DIFFERENT_NONZERO_PATTERN); CHECK_PETSC_ERROR(err);
 
-  const PetscVec residualVec = residual.vector();
-  const PetscVec solutionVec = solution.vector();
+  const PetscVec residualVec = residual.globalVector();
+  const PetscVec solutionVec = solution.globalVector();
   err = KSPSolve(_ksp, residualVec, solutionVec); CHECK_PETSC_ERROR(err);
 
   // Update section view of field.

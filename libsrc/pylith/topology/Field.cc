@@ -122,7 +122,9 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
        s_iter != scattersEnd;
        ++s_iter) {
 
+    err = DMDestroy(&s_iter->second.dm);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
+
     err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
   } // for
@@ -461,6 +463,11 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	sinfo.vector = 0;
 	sinfo.scatterVec = 0;
 
+	// Copy DM
+	sinfo.dm = s_iter->second.dm;
+	err = PetscObjectReference((PetscObject) sinfo.dm);
+	CHECK_PETSC_ERROR(err);
+
 	// Copy scatter
 	sinfo.scatter = s_iter->second.scatter;
 	err = PetscObjectReference((PetscObject) sinfo.scatter);
@@ -485,15 +492,22 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 
 	// Create vector using sizes from source section
 	int vecLocalSize = 0;
-	int vecGlobalSize = 0;
+	int vecGlobalSize = 0, vecGlobalSize2 = 0;
 	err = VecGetLocalSize(s_iter->second.vector, &vecLocalSize);CHECK_PETSC_ERROR(err);
 	err = VecGetSize(s_iter->second.vector, &vecGlobalSize);CHECK_PETSC_ERROR(err);
+	err = VecGetSize(_globalVec, &vecGlobalSize2);CHECK_PETSC_ERROR(err);
 
-	err = VecCreate(_mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
-	err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
-	err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize);CHECK_PETSC_ERROR(err);
-	err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
-	err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+    if (vecGlobalSize != vecGlobalSize2) {
+      err = VecCreate(_mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
+      err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize);CHECK_PETSC_ERROR(err);
+      err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
+      err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+    } else {
+      sinfo.vector = _globalVec;
+      err = PetscObjectReference((PetscObject) sinfo.dm);
+      CHECK_PETSC_ERROR(err);
+    }
+    err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
 	
 	_scatters[s_iter->first] = sinfo;
       } // for
@@ -1065,6 +1079,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_me
   } // else
 
   // Create vector
+#if 0
   err = VecCreate(_mesh.comm(), &sinfo.vector);
   CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
@@ -1072,7 +1087,19 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_me
   err = VecSetSizes(sinfo.vector,
 		    order->getLocalSize(), order->getGlobalSize());CHECK_PETSC_ERROR(err);
   err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(sinfo.vector);CHECK_PETSC_ERROR(err);  
+  err = VecSetFromOptions(sinfo.vector);CHECK_PETSC_ERROR(err);
+#endif
+  PetscInt localSize, globalSize;
+
+  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) _globalVec);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  err = VecGetSize(_localVec,  &localSize);CHECK_PETSC_ERROR(err);
+  err = VecGetSize(_globalVec, &globalSize);CHECK_PETSC_ERROR(err);
+  assert(order->getLocalSize()  == localSize);
+  assert(order->getGlobalSize() == globalSize);
+  sinfo.vector = _globalVec;
+  sinfo.dm     = _dm;
   
   logger.stagePop();
 } // createScatter
@@ -1144,6 +1171,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(
   } // else
 
   // Create vector
+#if 0
   err = VecCreate(mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector,
 			   _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
@@ -1151,6 +1179,18 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(
 		    order->getLocalSize(), order->getGlobalSize());CHECK_PETSC_ERROR(err);
   err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+#endif
+  PetscInt localSize, globalSize;
+
+  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) _globalVec);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  err = VecGetSize(_localVec,  &localSize);CHECK_PETSC_ERROR(err);
+  err = VecGetSize(_globalVec, &globalSize);CHECK_PETSC_ERROR(err);
+  assert(order->getLocalSize()  == localSize);
+  assert(order->getGlobalSize() == globalSize);
+  sinfo.vector = _globalVec;
+  sinfo.dm     = _dm;
 
 #if 0
   std::cout << "CONTEXT: " << context 
@@ -1224,12 +1264,32 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   } // else
   
   // Create vector
+#if 0
   err = VecCreate(mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = VecSetSizes(sinfo.vector, order->getLocalSize(), order->getGlobalSize());CHECK_PETSC_ERROR(err);
   err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
-  
+  err = VecSetFromOptions(sinfo.vector);CHECK_PETSC_ERROR(err);
+#endif
+
+  PetscSection section, gsection;
+  PetscSF      sf;
+
+  err = DMComplexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+  err = DMSetDefaultSection(sinfo.dm, section);CHECK_PETSC_ERROR(err);
+  err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);CHECK_PETSC_ERROR(err);
+  err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
+  err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  PetscInt localSize, globalSize;
+
+  err = PetscSectionGetStorageSize(section, &localSize);CHECK_PETSC_ERROR(err);
+  err = VecGetSize(sinfo.vector, &globalSize);CHECK_PETSC_ERROR(err);
+  assert(order->getLocalSize()  == localSize);
+  assert(order->getGlobalSize() == globalSize);
+
   logger.stagePop();
 } // createScatterWithBC
 
@@ -1300,11 +1360,31 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   } // else
 
   // Create vector
+#if 0
   err = VecCreate(mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = VecSetSizes(sinfo.vector,order->getLocalSize(), order->getGlobalSize());CHECK_PETSC_ERROR(err);
   err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
+#endif
+
+  PetscSection section, gsection;
+  PetscSF      sf;
+
+  err = DMComplexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+  err = DMSetDefaultSection(sinfo.dm, section);CHECK_PETSC_ERROR(err);
+  err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);CHECK_PETSC_ERROR(err);
+  err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
+  err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  PetscInt localSize, globalSize;
+
+  err = PetscSectionGetStorageSize(section, &localSize);CHECK_PETSC_ERROR(err);
+  err = VecGetSize(sinfo.vector, &globalSize);CHECK_PETSC_ERROR(err);
+  assert(order->getLocalSize()  == localSize);
+  assert(order->getGlobalSize() == globalSize);
 
 #if 0
   std::cout << "["<<sieveMesh->commRank()<<"] CONTEXT: " << context 
@@ -1330,6 +1410,8 @@ template<typename mesh_type, typename section_type>
 PetscVec
 pylith::topology::Field<mesh_type, section_type>::vector(const char* context)
 { // vector
+  std::ostringstream msg;
+
   ScatterInfo& sinfo = _getScatter(context);
   return sinfo.vector;
 } // vector
@@ -1340,6 +1422,8 @@ template<typename mesh_type, typename section_type>
 const PetscVec
 pylith::topology::Field<mesh_type, section_type>::vector(const char* context) const
 { // vector
+  std::ostringstream msg;
+
   const ScatterInfo& sinfo = _getScatter(context);
   return sinfo.vector;
 } // vector
@@ -1376,9 +1460,9 @@ pylith::topology::Field<mesh_type, section_type>::scatterSectionToVector(const P
   err = VecScatterEnd(sinfo.scatter, sinfo.scatterVec, vector,
 		      INSERT_VALUES, SCATTER_FORWARD); CHECK_PETSC_ERROR(err);
 
-  if (_dm) {
-    err = DMLocalToGlobalBegin(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
-    err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
+  if (sinfo.dm) {
+    err = DMLocalToGlobalBegin(sinfo.dm, _localVec, INSERT_VALUES, vector);CHECK_PETSC_ERROR(err);
+    err = DMLocalToGlobalEnd(sinfo.dm, _localVec, INSERT_VALUES, vector);CHECK_PETSC_ERROR(err);
   }
 } // scatterSectionToVector
 
@@ -1414,9 +1498,9 @@ pylith::topology::Field<mesh_type, section_type>::scatterVectorToSection(const P
   err = VecScatterEnd(sinfo.scatter, vector, sinfo.scatterVec,
 		      INSERT_VALUES, SCATTER_REVERSE); CHECK_PETSC_ERROR(err);
 
-  if (_dm) {
-    err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
-    err = DMGlobalToLocalEnd(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+  if (sinfo.dm) {
+    err = DMGlobalToLocalBegin(sinfo.dm, vector, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+    err = DMGlobalToLocalEnd(sinfo.dm, vector, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
   }
 } // scatterVectorToSection
 
@@ -1506,6 +1590,7 @@ pylith::topology::Field<mesh_type, section_type>::_getScatter(const char* contex
   
   ScatterInfo& sinfo = _scatters[context];
   if (isNewScatter) {
+    sinfo.dm = 0;
     sinfo.vector = 0;
     sinfo.scatter = 0;
     sinfo.scatterVec = 0;
