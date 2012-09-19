@@ -76,10 +76,20 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 
   const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
   assert(!meshSieveMesh.isNull());
+  DM dmMesh = mesh.dmMesh();
+  assert(dmMesh);
 
   if (!meshSieveMesh->hasIntSection(label)) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in mesh.";
+    throw std::runtime_error(msg.str());
+  } // if
+  PetscBool      hasLabel;
+  PetscErrorCode err;
+  err = DMComplexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
+    std::ostringstream msg;
+    msg << "Could not find group of points '" << label << "' in DM mesh.";
     throw std::runtime_error(msg.str());
   } // if
 

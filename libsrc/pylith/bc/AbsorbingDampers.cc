@@ -296,14 +296,15 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   assert(!parametersSection.isNull());
 
   // Use _cellVector for cell residual.
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  assert(!residualSection.isNull());
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  assert(residualSection);assert(residualVec);
   UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
   
   scalar_array velCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
+  PetscSection velSection = fields->get("velocity(t)").petscSection();
+  PetscSection velVec     = fields->get("velocity(t)").localVector();
+  assert(velSection);assert(velVec);
   RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
   
 #if !defined(PRECOMPUTE_GEOMETRY)
