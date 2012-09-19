@@ -299,13 +299,13 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   PetscSection residualSection = residual.petscSection();
   Vec          residualVec     = residual.localVector();
   assert(residualSection);assert(residualVec);
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  ///UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
   
   scalar_array velCell(numBasis*spaceDim);
   PetscSection velSection = fields->get("velocity(t)").petscSection();
-  PetscSection velVec     = fields->get("velocity(t)").localVector();
+  Vec          velVec     = fields->get("velocity(t)").localVector();
   assert(velSection);assert(velVec);
-  RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
+  ///RestrictVisitor velVisitor(*velSection, velCell.size(), &velCell[0]);
   
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
@@ -344,8 +344,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    velVisitor.clear();
-    sieveSubMesh->restrictClosure(*c_iter, velVisitor);
+    ///velVisitor.clear();
+    ///sieveSubMesh->restrictClosure(*c_iter, velVisitor);
     assert(numQuadPts*spaceDim == 
 	   parametersSection->getFiberDimension(*c_iter));
     const PylithScalar* dampersCell = parametersSection->restrictPoint(*c_iter);
@@ -382,8 +382,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 #endif
 
     // Assemble cell contribution into field
-    residualVisitor.clear();
-    sieveSubMesh->updateClosure(*c_iter, residualVisitor);
+    ///residualVisitor.clear();
+    ///sieveSubMesh->updateClosure(*c_iter, residualVisitor);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);

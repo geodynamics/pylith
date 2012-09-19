@@ -111,6 +111,8 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     numCells = cEnd - cStart;
   } else {
+    const PetscInt *cells;
+
     err = DMComplexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
     err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
     err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);

@@ -158,8 +158,8 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 
   int maxConeSizeLocal = sieve->getMaxConeSize();
   int maxConeSize = 0;
-  int err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-			  sieve->comm()); CHECK_PETSC_ERROR(err);
+  err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                      sieve->comm()); CHECK_PETSC_ERROR(err);
 
   if (maxConeSize <= 0) {
     std::ostringstream msg;
