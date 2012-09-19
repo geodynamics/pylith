@@ -147,6 +147,12 @@ public :
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
+  /** Verify configuration is acceptable.
+   *
+   * @param mesh Finite-element mesh
+   */
+  void verifyConfiguration(const topology::Mesh& mesh) const;
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 

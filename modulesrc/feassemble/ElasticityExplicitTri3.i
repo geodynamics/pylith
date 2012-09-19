@@ -103,6 +103,12 @@ namespace pylith {
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
+      /** Verify configuration is acceptable.
+       *
+       * @param mesh Finite-element mesh
+       */
+      void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
+      
     }; // ElasticityExplicitTri3
 
   } // feassemble

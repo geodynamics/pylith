@@ -938,6 +938,26 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::feassemble::ElasticityExplicitTri3::verifyConfiguration(const topology::Mesh& mesh) const
+{ // verifyConfiguration
+  IntegratorElasticity::verifyConfiguration(mesh);
+
+  assert(_quadrature);
+  assert(_material);
+  if (_spaceDim != _quadrature->spaceDim() || _cellDim != _quadrature->cellDim() || _numBasis != _quadrature->numBasis() ||  _numQuadPts != _quadrature->numQuadPts()) {
+    std::ostringstream msg;
+    msg << "User specified quadrature settings material '" << _material->label() << "' do not match ElasticityExplicitTri3 hardwired quadrature settings.\n"
+	<< "  Space dim: " << _spaceDim << " (code), " << _quadrature->spaceDim() << " (user)\n"
+	<< "  Cell dim: " << _cellDim << " (code), " << _quadrature->cellDim() << " (user)\n"
+	<< "  # basis fns: " << _numBasis << " (code), " << _quadrature->numBasis() << " (user)\n"
+	<< "  # quad points: " << _numQuadPts << " (code), " << _quadrature->numQuadPts() << " (user)";
+    throw std::runtime_error(msg.str());
+  } // if
+} // verifyConfiguration
+
+// ----------------------------------------------------------------------
 // Compute area of triangular cell.
 PylithScalar
 pylith::feassemble::ElasticityExplicitTri3::_area(
