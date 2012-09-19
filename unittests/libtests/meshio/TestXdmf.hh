@@ -44,10 +44,14 @@ class pylith::meshio::TestXdmf : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestXdmf );
 
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testWrite2DVertex );
-  CPPUNIT_TEST( testWrite2DCell );
-  CPPUNIT_TEST( testWrite3DVertex );
-  CPPUNIT_TEST( testWrite3DCell );
+  CPPUNIT_TEST( testWriteTri3Vertex );
+  CPPUNIT_TEST( testWriteTri3Cell );
+  CPPUNIT_TEST( testWriteQuad4Vertex );
+  CPPUNIT_TEST( testWriteQuad4Cell );
+  CPPUNIT_TEST( testWriteTet4Vertex );
+  CPPUNIT_TEST( testWriteTet4Cell );
+  CPPUNIT_TEST( testWriteHex8Vertex );
+  CPPUNIT_TEST( testWriteHex8Cell );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -57,17 +61,29 @@ public :
   /// Test constructor.
   void testConstructor(void);
 
-  /// Test write() with 2D mesh and vertex data.
-  void testWrite2DVertex(void);
+  /// Test write() with tri3 mesh and vertex data.
+  void testWriteTri3Vertex(void);
 
-  /// Test write() with 2D mesh and cell data.
-  void testWrite2DCell(void);
+  /// Test write() with tri3 mesh and cell data.
+  void testWriteTri3Cell(void);
 
-  /// Test write() with 3D mesh and vertex data.
-  void testWrite3DVertex(void);
+  /// Test write() with quad4 mesh and vertex data.
+  void testWriteQuad4Vertex(void);
 
-  /// Test write() with 3D mesh and cell data.
-  void testWrite3DCell(void);
+  /// Test write() with quad4 mesh and cell data.
+  void testWriteQuad4Cell(void);
+
+  /// Test write() with tet4 mesh and vertex data.
+  void testWriteTet4Vertex(void);
+
+  /// Test write() with tet4 mesh and cell data.
+  void testWriteTet4Cell(void);
+
+  /// Test write() with hex8 mesh and vertex data.
+  void testWriteHex8Vertex(void);
+
+  /// Test write() with hex8 mesh and cell data.
+  void testWriteHex8Cell(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

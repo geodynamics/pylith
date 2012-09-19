@@ -36,10 +36,10 @@ pylith::meshio::TestXdmf::testConstructor(void)
 } // testConstructor
 
 // ----------------------------------------------------------------------
-// Test write() with 2D mesh and vertex data.
+// Test write() with tri3 mesh and vertex data.
 void
-pylith::meshio::TestXdmf::testWrite2DVertex(void)
-{ // testWrite2DVertex
+pylith::meshio::TestXdmf::testWriteTri3Vertex(void)
+{ // testWriteTri3Vertex
 
   const char* filenameHDF5 = "data/tri3_vertex.h5";
   const char* filenameXdmf = "tri3_vertex.xmf";
@@ -48,13 +48,13 @@ pylith::meshio::TestXdmf::testWrite2DVertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
-} // testWrite2DVertex
+} // testWriteTri3Vertex
 
 // ----------------------------------------------------------------------
-// Test write() with 2D mesh and cell data.
+// Test write() with Tri3 mesh and cell data.
 void
-pylith::meshio::TestXdmf::testWrite2DCell(void)
-{ // testWrite2DCell
+pylith::meshio::TestXdmf::testWriteTri3Cell(void)
+{ // testWriteTri3Cell
   const char* filenameHDF5 = "data/tri3_cell.h5";
   const char* filenameXdmf = "tri3_cell.xmf";
 
@@ -62,13 +62,42 @@ pylith::meshio::TestXdmf::testWrite2DCell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
-} // testWrite2DCell
+} // testWriteTri3Cell
 
 // ----------------------------------------------------------------------
-// Test write() with 3D mesh and vertex data.
+// Test write() with quad4 mesh and vertex data.
 void
-pylith::meshio::TestXdmf::testWrite3DVertex(void)
-{ // testWrite3DVertex
+pylith::meshio::TestXdmf::testWriteQuad4Vertex(void)
+{ // testWriteQuad4Vertex
+
+  const char* filenameHDF5 = "data/quad4_vertex.h5";
+  const char* filenameXdmf = "quad4_vertex.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
+} // testWriteQuad4Vertex
+
+// ----------------------------------------------------------------------
+// Test write() with Quad4 mesh and cell data.
+void
+pylith::meshio::TestXdmf::testWriteQuad4Cell(void)
+{ // testWriteQuad4Cell
+  const char* filenameHDF5 = "data/quad4_cell.h5";
+  const char* filenameXdmf = "quad4_cell.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
+} // testWriteQuad4Cell
+
+// ----------------------------------------------------------------------
+// Test write() with tet4 mesh and vertex data.
+void
+pylith::meshio::TestXdmf::testWriteTet4Vertex(void)
+{ // testWriteTet4Vertex
   const char* filenameHDF5 = "data/tet4_vertex.h5";
   const char* filenameXdmf = "tet4_vertex.xmf";
 
@@ -76,13 +105,13 @@ pylith::meshio::TestXdmf::testWrite3DVertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
-} // testWrite3DVertex
+} // testWriteTet4Vertex
 
 // ----------------------------------------------------------------------
-// Test write() with 3D mesh and cell data.
+// Test write() with tet4 mesh and cell data.
 void
-pylith::meshio::TestXdmf::testWrite3DCell(void)
-{ // testWrite3DCell
+pylith::meshio::TestXdmf::testWriteTet4Cell(void)
+{ // testWriteTet4Cell
   const char* filenameHDF5 = "data/tet4_cell.h5";
   const char* filenameXdmf = "tet4_cell.xmf";
 
@@ -90,10 +119,38 @@ pylith::meshio::TestXdmf::testWrite3DCell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
-} // testWrite3DCell
+} // testWriteTet4Cell
 
 // ----------------------------------------------------------------------
-// Check VTK file against archived file.
+// Test write() with hex8 mesh and vertex data.
+void
+pylith::meshio::TestXdmf::testWriteHex8Vertex(void)
+{ // testWriteHex8Vertex
+  const char* filenameHDF5 = "data/hex8_vertex.h5";
+  const char* filenameXdmf = "hex8_vertex.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
+} // testWriteHex8Vertex
+
+// ----------------------------------------------------------------------
+// Test write() with hex8 mesh and cell data.
+void
+pylith::meshio::TestXdmf::testWriteHex8Cell(void)
+{ // testWriteHex8Cell
+  const char* filenameHDF5 = "data/hex8_cell.h5";
+  const char* filenameXdmf = "hex8_cell.xmf";
+
+  Xdmf metafile;
+  metafile.write(filenameXdmf, filenameHDF5);
+
+  _checkFile(filenameXdmf);
+} // testWriteHex8Cell
+
+// ----------------------------------------------------------------------
+// Check Xdmf file against archived file.
 void
 pylith::meshio::TestXdmf::_checkFile(const char* filename)
 { // _checkFile

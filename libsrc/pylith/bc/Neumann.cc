@@ -62,6 +62,7 @@ pylith::bc::Neumann::~Neumann(void)
 void
 pylith::bc::Neumann::deallocate(void)
 { // deallocate
+  BCIntegratorSubMesh::deallocate();
   TimeDependent::deallocate();
 } // deallocate
   

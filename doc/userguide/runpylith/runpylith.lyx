@@ -5138,6 +5138,26 @@ name "fig:hdf5:layout"
 \end_layout
 
 \begin_layout Standard
+See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-statevars"
+
+\end_inset
+
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for a table of component values for tensor output in HDF5 files.
+ To avoid confusion about the ordering of components for tensor data, we
+ separate the components in the Xdmf file.
+\end_layout
+
+\begin_layout Standard
 HDF5 files do not contain self-correcting features that allow a file to
  be read if part of a dataset is corrupted.
  This type of error can occur if a job terminates abnormally in the middle
