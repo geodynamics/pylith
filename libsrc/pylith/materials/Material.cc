@@ -438,8 +438,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     fieldType = _metadata.getProperty(propertyIndex).fieldType;
 
     // Buffer for property at cell's quadrature points
-    scalar_array fieldCell(numQuadPts*fiberDim);
-    scalar_array propertiesCell(numQuadPts*numPropsQuadPt);
+    scalar_array propertiesCell(numPropsQuadPt);
 
     // Loop over cells
     Vec          fieldVec = field->localVector();
@@ -454,9 +453,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       err = PetscSectionGetOffset(fieldSection,      cell, &off);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(propertiesSection, cell, &poff);CHECK_PETSC_ERROR(err);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-        _dimProperties(&propertiesCell[iQuad*numPropsQuadPt], numPropsQuadPt);
+        for (int i=0; i < numPropsQuadPt; ++i)
+          propertiesCell[i] = propertiesArray[iQuad*numPropsQuadPt + poff+i];
+        _dimProperties(&propertiesCell[0], numPropsQuadPt);
         for (int i=0; i < fiberDim; ++i)
-          fieldArray[iQuad*fiberDim + off+i] = propertiesArray[iQuad*numPropsQuadPt+propOffset + poff+i];
+          fieldArray[iQuad*fiberDim + off+i] = propertiesCell[propOffset+i];
       } // for
     } // for
     err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
@@ -516,8 +517,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
     field->scale(1.0);
 
     // Buffer for state variable at cell's quadrature points
-    scalar_array fieldCell(numQuadPts*fiberDim);
-    scalar_array stateVarsCell(numQuadPts*numVarsQuadPt);
+    scalar_array stateVarsCell(numVarsQuadPt);
     
     // Loop over cells
     PetscScalar  *fieldArray, *stateVarsArray;
@@ -531,9 +531,11 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       err = PetscSectionGetOffset(fieldSection,     cell, &off);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(stateVarsSection, cell, &soff);CHECK_PETSC_ERROR(err);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-        _dimStateVars(&stateVarsCell[iQuad*numVarsQuadPt], numVarsQuadPt);
+        for (int i=0; i < numVarsQuadPt; ++i)
+          stateVarsCell[i] = stateVarsArray[iQuad*numVarsQuadPt + soff+i];
+        _dimStateVars(&stateVarsCell[0], numVarsQuadPt);
         for (int i=0; i < fiberDim; ++i)
-          fieldArray[iQuad*fiberDim + off+i] = stateVarsCell[iQuad*numVarsQuadPt+varOffset + soff+i];
+          fieldArray[iQuad*fiberDim + off+i] = stateVarsCell[varOffset+i];
       } // for
     } // for
     err = VecRestoreArray(fieldVec,     &fieldArray);CHECK_PETSC_ERROR(err);
