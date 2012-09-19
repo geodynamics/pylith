@@ -79,6 +79,13 @@ class Mesh3DQuadratic(Component):
     v2 = self.vertices[2,:]
     v3 = self.vertices[3,:]
 
+    e01 = ((v0[0]-v1[0])**2 + (v0[1]-v1[1])**2 + (v0[2]-v1[2])**2)**0.5
+    e12 = ((v1[0]-v2[0])**2 + (v1[1]-v2[1])**2 + (v1[2]-v2[2])**2)**0.5
+    e20 = ((v2[0]-v0[0])**2 + (v2[1]-v0[1])**2 + (v2[2]-v0[2])**2)**0.5
+    e03 = ((v0[0]-v3[0])**2 + (v0[1]-v3[1])**2 + (v0[2]-v3[2])**2)**0.5
+    e13 = ((v1[0]-v3[0])**2 + (v1[1]-v3[1])**2 + (v1[2]-v3[2])**2)**0.5
+    e23 = ((v2[0]-v3[0])**2 + (v2[1]-v3[1])**2 + (v2[2]-v3[2])**2)**0.5
+
     vol = 1.0/6.0*numpy.linalg.det(numpy.array([[1.0, v0[0], v0[1], v0[2]],
                                                 [1.0, v1[0], v1[1], v1[2]],
                                                 [1.0, v2[0], v2[1], v2[2]],
@@ -98,7 +105,7 @@ class Mesh3DQuadratic(Component):
 
     area = area012 + area013 + area123 + area203;
     r = 3.0 * vol / area
-    self.minCellWidth = r
+    self.minCellWidth = min(e01, e12, e20, e03, e13, e23, 6.38*r)
     return
   
 
