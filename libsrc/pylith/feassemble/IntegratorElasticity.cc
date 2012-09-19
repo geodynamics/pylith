@@ -245,8 +245,8 @@ void
 pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 					   const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  assert(_quadrature);
+  assert(_material);
 
   const int dimension = mesh.dimension();
 

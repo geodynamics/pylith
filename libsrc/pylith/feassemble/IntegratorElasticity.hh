@@ -101,6 +101,7 @@ public :
    *
    * @param mesh Finite-element mesh
    */
+  virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get output fields.
