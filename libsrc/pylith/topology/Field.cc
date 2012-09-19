@@ -1022,6 +1022,15 @@ pylith::topology::Field<mesh_type, section_type>::view(const char* label) const
 	    << "  dimensionalize flag: " << const_cast<Field*>(this)->_metadata["default"].dimsOkay << std::endl;
   if (!_section.isNull())
     _section->view(label);
+  if (_dm) {
+    PetscSection   section;
+    PetscErrorCode err;
+
+    err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+    err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+    err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+    err = VecView(_localVec, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+  }
 } // view
 
 // ----------------------------------------------------------------------
