@@ -67,6 +67,7 @@ pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 void 
 pylith::bc::AbsorbingDampers::deallocate(void)
 { // deallocate
+  BCIntegratorSubMesh::deallocate();
   _db = 0; // :TODO: Use shared pointer
 } // deallocate
   
