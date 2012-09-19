@@ -180,29 +180,35 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
-
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
   const PylithScalar* valsE = _data->valsResidual;
-  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  const int totalNumVertices = vEnd - vStart;
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  PetscScalar *vals;
+  PetscInt     size;
 
-  const PylithScalar* vals = residualSection->restrictSpace();
-  const int size = residualSection->sizeWithBC();
+  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
+  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual->view("RESIDUAL");
 
   const PylithScalar tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
+  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+  for(int i = 0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -217,16 +223,10 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
   const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
 
   topology::Field<topology::Mesh>& solution = fields.solution();
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  CPPUNIT_ASSERT(!solutionSection.isNull());
-
   topology::Jacobian jacobian(solution);
 
   const PylithScalar t = 1.0;
@@ -234,22 +234,26 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.assemble("final_assembly");
 
-  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const PylithScalar* valsE = _data->valsJacobian;
-  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  const int totalNumVertices = vEnd - vStart;
   const int nrowsE = totalNumVertices * _data->spaceDim;
   const int ncolsE = totalNumVertices * _data->spaceDim;
 
   const PetscMat jacobianMat = jacobian.matrix();
   int nrows = 0;
   int ncols = 0;
-  MatGetSize(jacobianMat, &nrows, &ncols);
+  err = MatGetSize(jacobianMat, &nrows, &ncols);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
   PetscMat jDense;
-  MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
+  err = MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);CHECK_PETSC_ERROR(err);
 
   scalar_array vals(nrows*ncols);
   int_array rows(nrows);
@@ -258,7 +262,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+  err = MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);CHECK_PETSC_ERROR(err);
 
 #if 0
   std::cout << "JACOBIAN\n";
@@ -276,7 +280,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
     } // for
-  MatDestroy(&jDense);
+  err = MatDestroy(&jDense);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
@@ -297,24 +301,23 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   jacobian.allocate();
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
   const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
   CPPUNIT_ASSERT(!submesh.isNull());
-
-  topology::Field<topology::Mesh>& solution = fields.solution();
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  CPPUNIT_ASSERT(!solutionSection.isNull());
 
   const PylithScalar t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.complete();
 
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const PylithScalar* valsMatrixE = _data->valsJacobian;
-  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  const int totalNumVertices = vEnd - vStart;
   const int sizeE = totalNumVertices * _data->spaceDim;
   scalar_array valsE(sizeE);
   const int spaceDim = _data->spaceDim;
@@ -338,19 +341,22 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   } // for
 #endif // DEBUGGING
 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
-  CPPUNIT_ASSERT(!jacobianSection.isNull());
-  const PylithScalar* vals = jacobianSection->restrictSpace();
-  const int size = jacobianSection->sizeWithBC();
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+  PetscSection jacobianSection = jacobian.petscSection();
+  Vec          jacobianVec     = jacobian.localVector();
+  PetscScalar *vals;
+  PetscInt     size;
 
+  CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
+  err = PetscSectionGetStorageSize(jacobianSection, &size);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
   const PylithScalar tolerance = 1.0e-06;
-  for (int i=0; i < size; ++i)
+  err = VecGetArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
+  for(int i = 0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-
+  err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobianLumped
 
 // ----------------------------------------------------------------------
@@ -413,52 +419,73 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     fields->add("disp(t-dt)", "displacement");
     fields->add("velocity(t)", "velocity");
     fields->solutionName("dispIncr(t->t+dt)");
+
+    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   
     topology::Field<topology::Mesh>& residual = fields->get("residual");
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-      sieveMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    residual.newSection(vertices, _data->spaceDim);
+    DM             dmMesh = mesh->dmMesh();
+    PetscInt       vStart, vEnd;
+    PetscErrorCode err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    residual.newSection(pylith::topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
     residual.allocate();
     residual.zero();
     fields->copyLayout("residual");
 
-    const int totalNumVertices = sieveMesh->depthStratum(0)->size();
-    const int numMeshCells = sieveMesh->heightStratum(0)->size();
- int fieldSize = _data->spaceDim * totalNumVertices;
-    const ALE::Obj<RealSection>& dispTIncrSection = 
-      fields->get("dispIncr(t->t+dt)").section();
-    const ALE::Obj<RealSection>& dispTSection = 
-      fields->get("disp(t)").section();
-    const ALE::Obj<RealSection>& dispTmdtSection = 
-      fields->get("disp(t-dt)").section();
-    const ALE::Obj<RealSection>& velSection = 
-      fields->get("velocity(t)").section();
-    CPPUNIT_ASSERT(!dispTIncrSection.isNull());
-    CPPUNIT_ASSERT(!dispTSection.isNull());
-    CPPUNIT_ASSERT(!dispTmdtSection.isNull());
-    CPPUNIT_ASSERT(!velSection.isNull());
-    const int offset = numMeshCells;
+    const int totalNumVertices = vEnd - vStart;
+    const int fieldSize = _data->spaceDim * totalNumVertices;
+    PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();
+    Vec          dispTIncrVec     = fields->get("dispIncr(t->t+dt)").localVector();
+    PetscSection dispTSection     = fields->get("disp(t)").petscSection();
+    Vec          dispTVec         = fields->get("disp(t)").localVector();
+    PetscSection dispTmdtSection  = fields->get("disp(t-dt)").petscSection();
+    Vec          dispTmdtVec      = fields->get("disp(t-dt)").localVector();
+    PetscSection velSection       = fields->get("velocity(t)").petscSection();
+    Vec          velVec           = fields->get("velocity(t)").localVector();
+    PetscScalar *dispTIncrArray, *dispTArray, *dispTmdtArray, *velArray;
     const int spaceDim = _data->spaceDim;
     const PylithScalar dt = _data->dt;
-    scalar_array velVertex(spaceDim);
-    for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
-      dispTIncrSection->updatePoint(iVertex+offset, 
-				    &_data->fieldTIncr[iVertex*spaceDim]);
-      dispTSection->updatePoint(iVertex+offset, 
-				&_data->fieldT[iVertex*spaceDim]);
-      dispTmdtSection->updatePoint(iVertex+offset, 
-				   &_data->fieldTmdt[iVertex*spaceDim]);
-      
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	velVertex[iDim] = (_data->fieldTIncr[iVertex*spaceDim+iDim] +
-			   _data->fieldT[iVertex*spaceDim+iDim] -
-			   _data->fieldTmdt[iVertex*spaceDim+iDim]) / (2*dt);
 
-      velSection->updatePoint(iVertex+offset, &velVertex[0]);
+    CPPUNIT_ASSERT(dispTIncrSection);CPPUNIT_ASSERT(dispTIncrVec);
+    CPPUNIT_ASSERT(dispTSection);CPPUNIT_ASSERT(dispTVec);
+    CPPUNIT_ASSERT(dispTmdtSection);CPPUNIT_ASSERT(dispTmdtVec);
+    CPPUNIT_ASSERT(velSection);CPPUNIT_ASSERT(velVec);
+    err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(dispTIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispTIncrSection, v, &off);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispTIncrArray[off+d] = _data->fieldTIncr[(v - vStart)*spaceDim+d];
+      }
+      err = PetscSectionGetDof(dispTSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispTSection, v, &off);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispTIncrArray[off+d] = _data->fieldT[(v - vStart)*spaceDim+d];
+      }
+      err = PetscSectionGetDof(dispTmdtSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispTmdtSection, v, &off);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispTIncrArray[off+d] = _data->fieldTmdt[(v - vStart)*spaceDim+d];
+      }
+      err = PetscSectionGetDof(velSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(velSection, v, &off);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d) {
+        velArray[off+d] = (_data->fieldTIncr[(v - vStart)*spaceDim+d] +
+                           _data->fieldT[(v - vStart)*spaceDim+d] -
+                           _data->fieldTmdt[(v - vStart)*spaceDim+d]) / (2*dt);
+      }
     } // for
+    err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } // catch

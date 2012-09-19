@@ -113,6 +113,9 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   } else {
     err = DMComplexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
     err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    cStart = cells[0];
+    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   }
 
   // Only processors with cells for output get the correct fiber dimension.
