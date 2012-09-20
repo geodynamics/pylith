@@ -56,6 +56,9 @@ public :
   /// Destructor
   ~ExodusII(void);
 
+  /// Deallocate data structures.
+  void deallocate(void);
+
   /** Set filename.
    *
    * @param filename Name of file

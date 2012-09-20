@@ -38,8 +38,7 @@
 /** @brief C++ object for managing output of finite-element data over
  * a subdomain.
  */
-class pylith::meshio::OutputSolnPoints : 
-  public OutputManager<topology::Mesh, topology::Field<topology::Mesh> >
+class pylith::meshio::OutputSolnPoints : public OutputManager<topology::Mesh, topology::Field<topology::Mesh> >
 { // OutputSolnPoints
   friend class TestOutputSolnPoints; // unit testing
 

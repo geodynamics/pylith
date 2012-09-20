@@ -69,8 +69,7 @@
  * See governing equations section of user manual for more
  * information.
 */
-class pylith::feassemble::ElasticityExplicitLgDeform :
-  public IntegratorElasticityLgDeform
+class pylith::feassemble::ElasticityExplicitLgDeform : public IntegratorElasticityLgDeform
 { // ElasticityExplicitLgDeform
   friend class TestElasticityExplicitLgDeform; // unit testing
 
