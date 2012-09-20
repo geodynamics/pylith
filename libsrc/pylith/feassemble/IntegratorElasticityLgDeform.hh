@@ -35,8 +35,7 @@
  * time integration of the elasticity equation for large rigid body
  * rotations and small strains.
  */
-class pylith::feassemble::IntegratorElasticityLgDeform : 
-  public IntegratorElasticity
+class pylith::feassemble::IntegratorElasticityLgDeform : public IntegratorElasticity
 { // IntegratorElasticityLgDeform
   friend class TestIntegratorElasticityLgDeform; // unit testing
 

@@ -21,9 +21,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicitData::ElasticityExplicitData(void) :
-  dtStableExplicit(1.0e+99),
-  valsResidualLumped(0),
-  valsJacobianLumped(0)
+  dtStableExplicit(1.0e+99)
 { // constructor
 } // constructor
 

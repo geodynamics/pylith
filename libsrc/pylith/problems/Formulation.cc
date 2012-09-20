@@ -262,54 +262,6 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 } // reformResidual
 
 // ----------------------------------------------------------------------
-// Reform system residual.
-void
-pylith::problems::Formulation::reformResidualLumped(const PetscVec* tmpResidualVec,
-                const PetscVec* tmpSolutionVec)
-{ // reformResidualLumped
-  assert(0 != _fields);
-
-  // Update section view of field.
-  if (0 != tmpSolutionVec) {
-    topology::Field<topology::Mesh>& solution = _fields->solution();
-    solution.scatterVectorToSection(*tmpSolutionVec);
-  } // if
-
-  // Update rate fields (must be consistent with current solution).
-  calcRateFields();  
-
-  // Set residual to zero.
-  topology::Field<topology::Mesh>& residual = _fields->get("residual");
-  residual.zero();
-
-  // Add in contributions that require assembly.
-  int numIntegrators = _meshIntegrators.size();
-  assert(numIntegrators > 0); // must have at least 1 bulk integrator
-  for (int i=0; i < numIntegrators; ++i) {
-    _meshIntegrators[i]->timeStep(_dt);
-    _meshIntegrators[i]->integrateResidualLumped(residual, _t, _fields);
-  } // for
-  numIntegrators = _submeshIntegrators.size();
-  for (int i=0; i < numIntegrators; ++i) {
-    _submeshIntegrators[i]->timeStep(_dt);
-    _submeshIntegrators[i]->integrateResidualLumped(residual, _t, _fields);
-  } // for
-
-  // Assemble residual.
-  residual.complete();
-
-  // Update PETSc view of residual
-  if (0 != tmpResidualVec)
-    residual.scatterSectionToVector(*tmpResidualVec);
-  else
-    residual.scatterSectionToVector();
-
-  // TODO: Move this to SolverLinear
-  if (0 != tmpResidualVec)
-    VecScale(*tmpResidualVec, -1.0);
-} // reformResidualLumped
-
-// ----------------------------------------------------------------------
 // Reform system Jacobian.
 void
 pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
@@ -362,7 +314,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 // Reform system Jacobian.
 void
 pylith::problems::Formulation::reformJacobianLumped(void)
-{ // reformJacobian
+{ // reformJacobianLumped
   assert(0 != _jacobianLumped);
   assert(0 != _fields);
 
@@ -380,7 +332,7 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   // Assemble jacbian.
   _jacobianLumped->complete();
 
-} // reformJacobian
+} // reformJacobianLumped
 
 // ----------------------------------------------------------------------
 // Constrain solution space.

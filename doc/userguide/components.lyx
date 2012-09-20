@@ -166,7 +166,8 @@ Explicit pylith.problems.Explicit
 \begin_inset Newline newline
 \end_inset
 
-Explicit time stepping for dynamic simulations with infinitesimal strains.
+Explicit time stepping for dynamic simulations with a lumped system Jacobian
+ matrix.
 \end_layout
 
 \begin_layout Description
@@ -179,26 +180,13 @@ ExplicitLgDeform pylith.problems.ExplicitLgDeform
 \end_inset
 
 Explicit time stepping for dynamic simulations including the effects of
- rigid body motion and small strains.
+ rigid body motion and small strains with a lumped system Jacobian matrix.
 \end_layout
 
 \begin_layout Description
 
 \family typewriter
-ExplicitLumped pylith.problems.ExplicitLumped
-\family default
-
-\begin_inset Newline newline
-\end_inset
-
-Explicit time stepping for dynamic simulations with a lumped system Jacobian
- matrix.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-ExplicitLumpedTri3 pylith.problems.ExplicitLumpedTri3
+ExplicitTri3 pylith.problems.ExplicitTri3
 \family default
 
 \begin_inset Newline newline
@@ -211,7 +199,7 @@ Optimized elasticity formulation for linear triangular cells and one quadrature
 \begin_layout Description
 
 \family typewriter
-ExplicitLumpedTet4 pylith.problems.ExplicitLumpedTet4
+ExplicitTet4 pylith.problems.ExplicitTet4
 \family default
 
 \begin_inset Newline newline

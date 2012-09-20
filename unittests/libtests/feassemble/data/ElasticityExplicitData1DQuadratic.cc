@@ -111,30 +111,12 @@ const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_field
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidual[] = {
-  6.00504167e+10,
-  1.45260729e+11,
- -2.05377708e+11,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobian[] = {
-  6.25000000e+06,
- -3.12500000e+06,
-  6.25000000e+06,
- -3.12500000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  2.50000000e+07,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidualLumped[] = {
   6.00563542e+10,
   1.45266667e+11,
  -2.05389583e+11,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobian[] = {
   9.37500000e+06,
   9.37500000e+06,
   3.75000000e+07,
@@ -167,8 +149,6 @@ pylith::feassemble::ElasticityExplicitData1DQuadratic::ElasticityExplicitData1DQ
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitData1DQuadratic::~ElasticityExplicitData1DQuadratic(void)

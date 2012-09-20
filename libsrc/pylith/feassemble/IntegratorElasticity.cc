@@ -271,8 +271,8 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 	<< ".";
     throw std::runtime_error(msg.str());
   } // if
-  const int numCorners = _quadrature->refGeometry().numCorners();
 
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cells = 

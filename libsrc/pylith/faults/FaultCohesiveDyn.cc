@@ -91,10 +91,7 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
   _friction = 0; // :TODO: Use shared pointer
 
   delete _jacobian; _jacobian = 0;
-  if (_ksp) {
-    PetscErrorCode err = KSPDestroy(&_ksp); _ksp = 0;
-    CHECK_PETSC_ERROR(err);
-  } // if
+  PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
 } // deallocate
 
 // ----------------------------------------------------------------------

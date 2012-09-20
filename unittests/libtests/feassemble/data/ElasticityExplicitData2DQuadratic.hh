@@ -93,10 +93,6 @@ private:
 
   static const PylithScalar _valsJacobian[];
 
-  static const PylithScalar _valsResidualLumped[];
-
-  static const PylithScalar _valsJacobianLumped[];
-
 };
 
 #endif // pylith_feassemble_elasticityexplicitdata2dquadratic_hh

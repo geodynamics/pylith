@@ -56,6 +56,7 @@ void
 pylith::faults::FaultCohesive::deallocate(void)
 { // deallocate
   Fault::deallocate();
+  feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
 
   delete _fields; _fields = 0;
 } // deallocate
