@@ -51,8 +51,16 @@ pylith::meshio::ExodusII::ExodusII(const char* filename) :
 // Destructor
 pylith::meshio::ExodusII::~ExodusII(void)
 { // destructor
-  close();
+  deallocate();
 } // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate data structures.
+void
+pylith::meshio::ExodusII::deallocate(void)
+{ // deallocate
+  close();
+} // deallocate
 
 // ----------------------------------------------------------------------
 // Set filename.

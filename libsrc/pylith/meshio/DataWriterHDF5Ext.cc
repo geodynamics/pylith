@@ -50,12 +50,14 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::deallocate(void)
 { // deallocate
+  DataWriter<mesh_type, field_type>::deallocate();
+
+  PetscErrorCode err = 0;
   const typename dataset_type::const_iterator& dEnd = _datasets.end();
   for (typename dataset_type::iterator d_iter=_datasets.begin();
        d_iter != dEnd;
        ++d_iter) {
-    PetscErrorCode err = PetscViewerDestroy(&d_iter->second.viewer);
-    CHECK_PETSC_ERROR(err);
+    err = PetscViewerDestroy(&d_iter->second.viewer);CHECK_PETSC_ERROR(err);
   } // for
 } // deallocate
   

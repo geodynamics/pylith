@@ -236,15 +236,6 @@ protected :
 			  const int numBasis,
 			  const int numQuadPts);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
-
-  /// Elastic material associated with integrator
-  materials::ElasticMaterial* _material;
-
-  /// Buffers for output.
-  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
-
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
@@ -254,6 +245,15 @@ protected :
   typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
   typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  /// Elastic material associated with integrator
+  materials::ElasticMaterial* _material;
+
+  /// Buffers for output.
+  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -43,6 +43,9 @@ public :
   /// Destructor
   ~RefineUniform(void);
 
+  /// Deallocate data structures.
+  void deallocate(void);
+
   /** Refine mesh.
    *
    * @param newMesh Refined mesh (result).
