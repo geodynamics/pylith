@@ -91,10 +91,10 @@ run_examples
 
 # bar_shearwave/quad4
 dir="bar_shearwave/quad4"
-examples="kinematic.cfg"
+examples="prescribedrup.cfg"
 run_examples
-examples="dynamic_staticfriction.cfg dynamic_slipweakening.cfg dynamic_ratestateageing.cfg"
-run_examples2 "dynamic.cfg"
+examples="spontaneousrup_staticfriction.cfg spontaneousrup_slipweakening.cfg spontaneousrup_ratestateageing.cfg"
+run_examples2 "spontaneousrup.cfg"
 
 # bar_shearwave/tet4
 dir="bar_shearwave/tet4"
