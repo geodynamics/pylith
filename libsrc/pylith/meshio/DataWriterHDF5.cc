@@ -50,8 +50,9 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
 { // deallocate
-  PetscErrorCode err = 0;
+  DataWriter<mesh_type, field_type>::deallocate();
 
+  PetscErrorCode err = 0;
   err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
   err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
 } // deallocate

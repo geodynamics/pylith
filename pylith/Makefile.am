@@ -137,9 +137,8 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Jacobian.py \
 	problems/__init__.py \
 	problems/Explicit.py \
-	problems/ExplicitLumped.py \
-	problems/ExplicitLumpedTri3.py \
-	problems/ExplicitLumpedTet4.py \
+	problems/ExplicitTri3.py \
+	problems/ExplicitTet4.py \
 	problems/ExplicitLgDeform.py \
 	problems/Formulation.py \
 	problems/Implicit.py \

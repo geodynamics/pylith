@@ -36,7 +36,6 @@ pylith::problems::Explicit::Explicit(void)
 // Destructor
 pylith::problems::Explicit::~Explicit(void)
 { // destructor
-  deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------

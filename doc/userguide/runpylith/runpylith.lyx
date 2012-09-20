@@ -3206,20 +3206,6 @@ ImplicitLgDeform Implicit time stepping for static and quasi-static problems
 
 \begin_layout Description
 Explicit Explicit time stepping for dynamic problems with infinitesimal
- strains.
- This formulation uses consistent mass and damping matrices for the system
- Jacobian matrix.
-\end_layout
-
-\begin_layout Description
-ExplicitLgDeform Explicit time stepping for dynamic problems including the
- effects of rigid body motion and small strains.
- This formulation requires the use of the nonlinear solver, which is selected
- automatically.
-\end_layout
-
-\begin_layout Description
-ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
  strains and lumped system Jacobian.
  The cell matrices are lumped before assembly, permitting use of a vector
  for the diagonal system Jacobian matrix.
@@ -3227,17 +3213,24 @@ ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
 \end_layout
 
 \begin_layout Description
-ExplicitLumpedTri3 Optimized elasticity formulation for linear triangular
- cells with one point quadrature for dynamic problems with infinitesimal
- strains and lumped system Jacobian.
+ExplicitLgDeform Explicit time stepping for dynamic problems including the
+ effects of rigid body motion and small strains.
+ The cell matrices are lumped before assembly, permitting use of a vector
+ for the diagonal system Jacobian matrix.
  The built-in lumped solver is selected automatically.
 \end_layout
 
 \begin_layout Description
-ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
- cells with one point quadrature for dynamic problems with infinitesimal
- strains and lumped system Jacobian.The built-in lumped solver is selected
- automatically.
+ExplicitTri3 Optimized elasticity formulation for linear triangular cells
+ with one point quadrature for dynamic problems with infinitesimal strains
+ and lumped system Jacobian.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitTet4 Optimized elasticity formulation for linear tetrahedral cells
+ with one point quadrature for dynamic problems with infinitesimal strains
+ and lumped system Jacobian.The built-in lumped solver is selected automatically.
 \end_layout
 
 \begin_layout Standard

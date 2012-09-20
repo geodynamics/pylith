@@ -63,19 +63,7 @@ class ElasticityExplicit(Component):
     return residual.flatten()
 
 
-  def calculateJacobian(self, integrator):
-    """
-    Calculate contribution to Jacobian matrix of operator for integrator.
-
-    [A] = (1/dt**2)[M]
-    """
-    M = integrator._calculateMassMat()
-
-    jacobian = 1.0/integrator.dt**2 * M
-    return jacobian
-
-
-  def calculateResidualLumped(self, integrator):
+  def calculateResidual(self, integrator):
     """
     Calculate contribution to residual of operator for integrator.
 
@@ -94,7 +82,7 @@ class ElasticityExplicit(Component):
     return residual.flatten()
 
 
-  def calculateJacobianLumped(self, integrator):
+  def calculateJacobian(self, integrator):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
 

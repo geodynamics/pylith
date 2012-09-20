@@ -97,23 +97,11 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_fiel
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsResidual[] = {
- -2.64086562e+11,
- -2.98486562e+11,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobian[] = {
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsResidualLumped[] = {
  -2.64080938e+11,
  -2.98492188e+11,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DLinear::_valsJacobian[] = {
   2.81250000e+07,
   2.81250000e+07,
 };
@@ -145,8 +133,6 @@ pylith::feassemble::ElasticityExplicitGravData1DLinear::ElasticityExplicitGravDa
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitGravData1DLinear::~ElasticityExplicitGravData1DLinear(void)

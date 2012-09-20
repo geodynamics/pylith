@@ -70,6 +70,7 @@ pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 void
 pylith::materials::ElasticMaterial::deallocate(void)
 { // deallocate
+  Material::deallocate();
   delete _initialFields; _initialFields = 0;
 
   _dbInitialStress = 0; // :TODO: Use shared pointer.

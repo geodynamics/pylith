@@ -70,27 +70,6 @@ namespace pylith {
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
       
-      /** Integrate contributions to residual term (r) for operator.
-       *
-       * @param residual Field containing values for residual
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateResidualLumped(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				   const PylithScalar t,
-				   pylith::topology::SolutionFields* const fields);
-
-      /** Integrate contributions to Jacobian matrix (A) associated with
-       * operator.
-       *
-       * @param jacobian Sparse matrix for Jacobian of system.
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateJacobian(pylith::topology::Jacobian* jacobian,
-			     const PylithScalar t,
-			     pylith::topology::SolutionFields* const fields);
-
       /** Integrate contributions to Jacobian matrix (A) associated
        * with operator that require assembly across cells, vertices,
        * or processors.
@@ -109,6 +88,15 @@ namespace pylith {
        */
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
       
+      // NOT IMPLEMENTED //////////////////////////////////////////////////
+    private :
+
+      /// Not implemented.
+      void integrateJacobian(topology::Jacobian*,
+			     const PylithScalar,
+			     topology::SolutionFields* const);
+
+
     }; // ElasticityExplicitTri3
 
   } // feassemble

@@ -54,8 +54,6 @@ class ElasticityExplicitApp(ElasticityApp):
     self._collectData()
     self._calculateResidual()
     self._calculateJacobian()
-    self._calculateResidualLumped()
-    self._calculateJacobianLumped()
     self._calcDtStable()
     self._initData()
     self.data.write(self.name)
@@ -74,21 +72,21 @@ class ElasticityExplicitApp(ElasticityApp):
     return
 
 
-  def _calculateResidualLumped(self):
+  def _calculateResidual(self):
     """
     Calculate contribution to residual of operator for integrator.
     """
-    self.valsResidualLumped = self.formulation.calculateResidualLumped(self)
+    self.valsResidual = self.formulation.calculateResidual(self)
     if self.useGravity:
-      self.valsResidualLumped += self._calculateGravityVec()
+      self.valsResidual += self._calculateGravityVec()
     return
 
 
-  def _calculateJacobianLumped(self):
+  def _calculateJacobian(self):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
     """
-    self.valsJacobianLumped = self.formulation.calculateJacobianLumped(self)
+    self.valsJacobian = self.formulation.calculateJacobian(self)
     return
 
 
@@ -100,12 +98,6 @@ class ElasticityExplicitApp(ElasticityApp):
     self.data.addScalar(vtype="PylithScalar", name="_dtStableExplicit",
                        value=self.dtStableExplicit,
                        format="%16.8e");
-    self.data.addArray(vtype="PylithScalar", name="_valsResidualLumped",
-                       values=self.valsResidualLumped,
-                       format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="PylithScalar", name="_valsJacobianLumped",
-                       values=self.valsJacobianLumped,
-                       format="%16.8e", ncols=self.spaceDim)
     return
 
 

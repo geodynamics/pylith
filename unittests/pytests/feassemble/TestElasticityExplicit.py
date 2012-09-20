@@ -121,8 +121,14 @@ class TestElasticityExplicit(unittest.TestCase):
     (mesh, integrator) = self._preinitialize()
     fields = self._initialize(mesh, integrator)
 
-    from pylith.utils.utils import maxscalar
-    self.assertAlmostEqual(1.0, integrator.stableTimeStep(mesh)/maxscalar(), 7)
+    b = 2**0.5
+    a = 2**0.5
+    c = 2.0
+    k = 0.5 * (a + b + c)
+    r = (k*(k-a)*(k-b)*(k-c))**0.5 / k
+    dtStable = 3*r/6000.0
+
+    self.assertAlmostEqual(1.0, integrator.stableTimeStep(mesh)/dtStable, 7)
     return
 
 
@@ -165,9 +171,12 @@ class TestElasticityExplicit(unittest.TestCase):
     (mesh, integrator) = self._preinitialize()
     fields = self._initialize(mesh, integrator)
 
-    from pylith.topology.Jacobian import Jacobian
-    jacobian = Jacobian(fields.solution())
+    from pylith.topology.Field import MeshField
+    jacobian = MeshField(mesh)
+    jacobian.newSection(jacobian.VERTICES_FIELD, mesh.coordsys().spaceDim())
+    jacobian.allocate()
     jacobian.zero()
+
     t = 7.3
     self.assertEqual(True, integrator.needNewJacobian())
     integrator.integrateJacobian(jacobian, t, fields)

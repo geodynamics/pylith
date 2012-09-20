@@ -141,14 +141,6 @@ namespace pylith {
       void reformResidual(const PetscVec* tmpResidualVec =0,
 			  const PetscVec* tmpSolveSolnVec =0);
       
-      /** Reform system residual for case with lumped Jacobian.
-       *
-       * @param tmpResidualVec Temporary PETSc vector for residual.
-       * @param tmpSolveSolnVec Temporary PETSc vector for solution.
-       */
-      void reformResidualLumped(const PetscVec* tmpResidualVec =0,
-			  const PetscVec* tmpSolveSolnVec =0);
-      
       /* Reform system Jacobian.
        *
        * @param tmpSolveSolnVec Temporary PETSc vector for solution.
