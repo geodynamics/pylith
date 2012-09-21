@@ -11,10 +11,6 @@ CURRENT BUGS
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
 
-* Prescribed fault with opening has zero tractions (step20) Appears to
-  be a feature/artifact associated with how we implement slip with
-  Lagrange multipliers.
-
 ======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
@@ -33,6 +29,10 @@ CURRENT ISSUES/PRIORITIES
 
 * Cleanup
 
+
+* Prescribed fault with opening has zero tractions (step20) Appears to
+  be a feature/artifact associated with how we implement slip with
+  Lagrange multipliers.
 
 ======================================================================
 1.8.0
