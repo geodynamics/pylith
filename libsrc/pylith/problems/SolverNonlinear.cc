@@ -103,13 +103,15 @@ pylith::problems::SolverNonlinear::initialize(
   err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);
   CHECK_PETSC_ERROR(err);
 
-  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
-  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation); CHECK_PETSC_ERROR(err);
+  // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
+  err = SNESGetSNESLineSearch(_snes, &ls);CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSetType(ls, SNESSHELL);CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);CHECK_PETSC_ERROR(err);
 
-  err = SNESGetSNESLineSearch(_snes, &ls); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSetType(ls, SNESSHELL); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
+  // Get SNES options and allow the user to override the line search type
+  err = SNESSetFromOptions(_snes);CHECK_PETSC_ERROR(err);
+  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation);CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
