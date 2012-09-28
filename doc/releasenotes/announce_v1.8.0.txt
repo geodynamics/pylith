@@ -1,0 +1,79 @@
+Greetings,
+
+I am pleased to announce the release of PyLith 1.8.0, a finite-element
+code designed to solve dynamic elastic problems and quasi-static
+viscoelastic problems in tectonic deformation.
+
+This release adds estimating the stable time step for explicit time
+stepping, adds a post-processing utility for computing the moment
+magnitude and average slip for any fault output snapshot, includes a
+couple of additional examples of CUBIT meshing techniques, fixes
+several bugs in PyLith v1.7.1 and corrects some typos in the
+manual. We strongly recommend all users of previous PyLith releases
+switch to this latest release.
+
+See the README file for changes required to switch to the v1.8.0
+release series from previous versions.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Detailed installation instructions for the binary packages are in the
+User Manual with detailed building instructions for a few platforms in
+the INSTALL file bundled with the PyLith Installer utility.
+
+
+RELEASE NOTES - PyLith v1.8.0
+
+* New features
+
+  * Additional flexibility in PETSc nonlinear solver parameters
+
+    The default line search type for the PETSc nonlinear (SNES) solver
+    is a customized backtrace method included in PyLith. The user may
+    now select alternative line search types (basic, bt, l2, cp)
+    available in PETSc.
+
+  * Post-processing utility pylith_eqinfo to compute slip information.
+
+    This post-processing utility computes the moment magnitude,
+    seismic moment, seismic potency, and average slip at
+    user-specified snapshots in time from PyLith HDF5 output.
+    Information is given for each fault and across all faults.
+
+  * Computation of the stable time step for explicit time-stepping.
+
+    The stable time step for explicit time-stepping if computed based
+    on the CFL condition and minimum edge lengths. For triangular and
+    tetrahedral cells we also account for a reduction in the stable
+    time step due to distorted cells (e.g., slivers and needles).
+
+  * Output the stable time step for each cell in a material.
+ 
+    Output cell_info_fields "stable_dt_implicit" and
+    "stable_dt_explicit" can be included in material output.
+
+* Bug fixes
+
+  - Fixed omission of synchronization of stable time step computation
+    among processors. Minimum time step among all processors rather
+    than local value should be used.
+
+  - Fixed density scale not being set in NondimElasticQuasistatic.
+    Density scale should be set based on shear modulus, length scale,
+    and relaxation time.
+
+  - Added warning when initial state for a fault constitutive model is
+    not set. If an initial state value is not given, for rate-state
+    friction using a default value of L / reference slip rate. Other
+    fault constitutive models use a default value of 0.0 for initial
+    state variables.
+
+  - Separated tensor components in Xdmf files to avoid confusion. The
+    corresponding HDF5 files remain unchanged.
+
+  - Removed explicit time-stepping formulation with non-lumped
+    Jacobian. This formulation was not setup properly for spontaneous
+    rupture models and is too computationally expensive for practical
+    problems. The ExplicitLumped* formulations are now simply Explicit*.
