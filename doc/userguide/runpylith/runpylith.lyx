@@ -5241,7 +5241,7 @@ work
  See Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "tab:material:output:components"
+reference "tab:material-model-statevars"
 
 \end_inset
 
@@ -5745,6 +5745,94 @@ Instead of actually running the problem, this causes PyLith to dump the
 \size footnotesize
 mpirun -np 1 /path/to/valgrind --log-file=valgrind-log  /path/to/mpinemesis
  --pyre-start [..lots of junk..]
+\end_layout
+
+\begin_layout Section
+Post-Processing Utilities
+\end_layout
+
+\begin_layout Standard
+The PyLith distribution includes a few post-processing utilities.
+ These are Python scripts that are installed into the same bin directory
+ as the 
+\family typewriter
+pylith
+\family default
+ executable.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+pylith_eqinfo
+\end_layout
+
+\begin_layout Standard
+This utility computes the moment magnitude, seismic moment, seismic potency,
+ and average slip at user-specified time snapshots from PyLith fault HDF5
+ output.
+ The utility works with output from simulations with either prescribed slip
+ and/or spontaneous rupture.
+ The Python script is a Pyre application, so its parameters can be specified
+ using 
+\family typewriter
+.cfg
+\family default
+ and command line arguments just like PyLith.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+pylith_genxdmf
+\end_layout
+
+\begin_layout Standard
+This utility generates Xdmf files from HDF5 files conforming to the layout
+ used by PyLith.
+ It is a simple Python script with a single command line argument, the HDF5
+ file for input.
+ Typically, it is sued to regenerate Xdmf files that get corrupted or lost
+ due to renaming and moving.
+ It is also useful in updating Xdmf files when users add fields to HDF5
+ files during post-processing.
+\end_layout
+
+\begin_layout LyX-Code
+pylith_genxdmf --file=
+\shape italic
+PYLITH_HDF5_FILE
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+If the HDF5 files contain external datasets, then this utility should be
+ run from the relative path as when the HDF5 files were created.
+ For example, if a PyLith simulation was run from directory 
+\family typewriter
+work
+\family default
+ and HDF5 files were generated in 
+\family typewriter
+output/work
+\family default
+, then the utility should be run from the directory 
+\family typewriter
+work
+\family default
+.
+ Furthermore, a visualization tool, such as ParaView, should also be started
+ from the working directory 
+\family typewriter
+work
+\family default
+.
 \end_layout
 
 \end_body
