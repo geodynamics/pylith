@@ -1210,6 +1210,103 @@ stress4
 
 \end_layout
 
+\begin_layout Subsection
+Stable time step
+\end_layout
+
+\begin_layout Standard
+PyLith computes the stable time step for both quasi-static and dynamic simulatio
+ns.
+ In quasi-static simulations the stability of the implicit time stepping
+ scheme does not depend on the time step, instead the stable time step is
+ associated with the accuracy of the solution.
+ In purely elastic materials, the accuracy is independent of the time step,
+ so the stable time step is infinite.
+ For viscoelastic materials we ser the stable time step to be 1/5 of the
+ relaxation time.
+\end_layout
+
+\begin_layout Standard
+In dynamic simulations the stability of the explicit time stepping scheme
+ integration does depend on the time step via the Courant-Friderichs-Lewy
+ condition 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Courant:etal:1967"
+
+\end_inset
+
+.
+ This condition states that the critical time step is the time it takes
+ for the P wave to travel across the shortest dimension of a cell.
+ In most cases this is the shortest edge length.
+ However, distorted cells which have relatively small areas in 2-D or relatively
+ small volumes in 3-D for the given edge lengths also require small time
+ steps due to the artificially high stiffness associated with the distorted
+ shape.
+ As a result, we set the stable time step to be the smaller of the shortest
+ edge length and a scaling factor times the radius of an inscribed circle
+ (in 2-D), 
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},3.0r_{inscribed})\\
+r_{inscribed}=\sqrt{\frac{k(k-e_{0})(k-e_{1})(k-e_{2})}{k}}\\
+k=\frac{1}{2}(e_{0}+e_{1}+e_{2})
+\end{gather}
+
+\end_inset
+
+and sphere (in 3-D),
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},6.38r_{inscribed})\\
+r_{inscribed}=3V/(A_{0}+A_{1}+A_{2}+A_{3}),
+\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ denotes the length of edge 
+\begin_inset Formula $i$
+\end_inset
+
+, 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ denotes the area of face 
+\begin_inset Formula $i$
+\end_inset
+
+, and 
+\begin_inset Formula $V$
+\end_inset
+
+ is the volume of the cell.
+ We determined the scaling factoring empirically using several benchmarks.
+\end_layout
+
+\begin_layout Standard
+The stable time steps for each cell can be included in the output with the
+ other 
+\family typewriter
+cell_info_fields
+\family default
+.
+ For implicit time stepping the field is 
+\family typewriter
+stable_dt_implicit
+\family default
+ and for explicit time stepping the field is 
+\family typewriter
+stable_dt_explicit
+\family default
+.
+\end_layout
+
 \begin_layout Section
 Elastic Material Models
 \end_layout

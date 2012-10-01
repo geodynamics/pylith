@@ -5773,12 +5773,52 @@ This utility computes the moment magnitude, seismic moment, seismic potency,
  output.
  The utility works with output from simulations with either prescribed slip
  and/or spontaneous rupture.
+ Currently, we compute the shear modulus from a user-specified spatial database
+ at the centroid of the fault cells.
+ In the future we plan to account for lateral variations in shear modulus
+ across the fault when calculating the seismic moment.
  The Python script is a Pyre application, so its parameters can be specified
  using 
 \family typewriter
 .cfg
 \family default
  and command line arguments just like PyLith.
+ The Pyre properties and facilities include:
+\end_layout
+
+\begin_layout Description
+output_filename Filename for output of slip information.
+\end_layout
+
+\begin_layout Description
+faults Array of fault names.
+\end_layout
+
+\begin_layout Description
+filename_pattern Filename pattern in C/Python format for creating filename
+ for each fault.
+ Default is 
+\family typewriter
+output/fault_%s.h5
+\family default
+.
+\end_layout
+
+\begin_layout Description
+snapshots Array of timestamps for slip snapshosts (-1 means use last time
+ step in file, which is the default).
+\end_layout
+
+\begin_layout Description
+snapshot_units Units for timestamps in array of snapshots.
+\end_layout
+
+\begin_layout Description
+db_properties Spatial database for elastic properties.
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with mesh in simulation.
 \end_layout
 
 \begin_layout Subsection
