@@ -40,14 +40,18 @@ RELEASE NOTES - PyLith v1.8.0
     This post-processing utility computes the moment magnitude,
     seismic moment, seismic potency, and average slip at
     user-specified snapshots in time from PyLith HDF5 output.
-    Information is given for each fault and across all faults.
+    Information is given for each fault and across all faults. See
+    the Post-processing section of the manual in the Running PyLith
+    chapter for more information.
 
   * Computation of the stable time step for explicit time-stepping.
 
-    The stable time step for explicit time-stepping if computed based
+    The stable time step for explicit time-stepping is computed based
     on the CFL condition and minimum edge lengths. For triangular and
     tetrahedral cells we also account for a reduction in the stable
-    time step due to distorted cells (e.g., slivers and needles).
+    time step due to distorted cells (e.g., slivers and needles). See
+    the Stable time step section in the Materials chapter of the
+    manual for more information.
 
   * Output the stable time step for each cell in a material.
  
