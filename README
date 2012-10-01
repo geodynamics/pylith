@@ -34,31 +34,92 @@ Green's functions to be used in inversions.
 TIPS
 ======================================================================
 
-  * For most crustal deformation problems, we recommend using the
-    Additive Schwartz preconditioner via the following PETSc
-    settings:
+  * If the linear solve takes more than a few hundred iterations for a
+    large problem (use the --petsc.ksp_monitor=1 and
+    --petsc.ksp_view=1 to see diagnostic information for the solver),
+    this is usually an indication that something is wrong. Either the
+    preconditioner is inappropriate for the type of problem you are
+    solving or there is an error in the problem setup.
 
-      - Command line arguments
 
-        --petsc.pc_type=asm
-        --petsc.ksp_max_it=400
-        --petsc.ksp_gmres_restart=100
-        --petsc.ksp_rtol=1.0e-08
+======================================================================
+MIGRATING FROM VERSION 1.7 TO 1.8
+======================================================================
 
-      - pylithapp.cfg (or your other favorite .cfg file)
+Explicit time stepping with a non-lumped Jacobian has been eliminated
+and ExplicitLumped is now Explicit.
 
-        [pylithapp.petsc]
-        pc_type = asm
-        ksp_max_it = 400
-        ksp_gmres_restart = 100
-        ksp_rtol = 1.0e-08
+  Old setting
+  ------------------------------------------------
+  formulation = pylith.problems.ExplicitLumped
+  formulation = pylith.problems.ExplicitLumpedTri3
+  formulation = pylith.problems.ExplicitLumpedTet4
 
-  * If the solve takes more than a few hundred iterations for a large
-    problem (use the --petsc.ksp_monitor=1 and --petsc.ksp_view=1 to
-    see diagnostic information for the solver), this is usually an
-    indication that something is wrong. Either the preconditioner is
-    inappropriate for the type of problem you are solving or there is
-    an error in the problem setup.
+  New setting
+  ------------------------------------------------
+  formulation = pylith.problems.Explicit
+  formulation = pylith.problems.ExplicitTri3
+  formulation = pylith.problems.ExplicitTet4
+
+----------------------------------------------------------------------
+Version 1.8.0
+----------------------------------------------------------------------
+
+* New features
+
+  * Additional flexibility in PETSc nonlinear solver parameters
+
+    The default line search type for the PETSc nonlinear (SNES) solver
+    is a customized backtrace method included in PyLith. The user may
+    now select alternative line search types (basic, bt, l2, cp)
+    available in PETSc.
+
+  * Post-processing utility pylith_eqinfo to compute slip information.
+
+    This post-processing utility computes the moment magnitude,
+    seismic moment, seismic potency, and average slip at
+    user-specified snapshots in time from PyLith HDF5 output.
+    Information is given for each fault and across all faults. See
+    the Post-processing section in the Running PyLith
+    chapter of the manual for more information.
+
+  * Computation of the stable time step for explicit time-stepping.
+
+    The stable time step for explicit time-stepping is computed based
+    on the CFL condition and minimum edge lengths. For triangular and
+    tetrahedral cells we also account for a reduction in the stable
+    time step due to distorted cells (e.g., slivers and needles). See
+    the Stable time step section in the Materials chapter of the
+    manual for more information.
+
+  * Output the stable time step for each cell in a material.
+ 
+    Output cell_info_fields "stable_dt_implicit" and
+    "stable_dt_explicit" can be included in material output.
+
+* Bug fixes
+
+  - Fixed omission of synchronization of stable time step computation
+    among processors. Minimum time step among all processors rather
+    than local value should be used.
+
+  - Fixed density scale not being set in NondimElasticQuasistatic.
+    Density scale should be set based on shear modulus, length scale,
+    and relaxation time.
+
+  - Added warning when initial state for a fault constitutive model is
+    not set. If an initial state value is not given, for rate-state
+    friction using a default value of L / reference slip rate. Other
+    fault constitutive models use a default value of 0.0 for initial
+    state variables.
+
+  - Separated tensor components in Xdmf files to avoid confusion. The
+    corresponding HDF5 files remain unchanged.
+
+  - Removed explicit time-stepping formulation with non-lumped
+    Jacobian. This formulation was not setup properly for spontaneous
+    rupture models and is too computationally expensive for practical
+    problems. The ExplicitLumped* formulations are now simply Explicit*.
 
 
 ======================================================================
@@ -79,7 +140,9 @@ Two changes are required when migrating from version 1.6 to 1.7.
 (2) Prescribed fault tractions for spontaneous earthquake rupture use
     a new, more flexible implementation that follows the same
     functional form for spatial and temporal variation as that used in
-    the Dirichlet and Neumann boundary conditions.
+    the Dirichlet and Neumann boundary conditions. Consequently, the
+    output info fields are also different and follow the naming scheme
+    used in the other time-dependent boundary conditions.
 
   Old settings
   --------------------------------------------------------------------
