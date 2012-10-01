@@ -507,6 +507,26 @@ Journal of Geophysical Research, 75
 \labelwidthstring Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
+label "Courant et al., 1967"
+key "Courant:etal:1967"
+
+\end_inset
+
+Courant, R.
+ and K.
+ Friedrichs and H.
+ Lewy (1967), On the Partial Differential Equations of Mathematical Physics,
+ 
+\shape italic
+IBM Jounral of Research and Development
+\shape default
+, 11(2), 215--234.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
 label "Day and Ely, 2002"
 key "Day:Ely:2002"
 

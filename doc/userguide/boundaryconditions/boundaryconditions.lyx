@@ -6370,8 +6370,12 @@ db_properties Spatial database of the friction model parameters (default
 \end_layout
 
 \begin_layout Description
-db_initial_state Spatial database for initial state variables (default is
- none).
+db_initial_state Spatial database for initial state variables.
+ A warning will be given when a spatial database for the initial state is
+ not specified.
+ The default is none which results in initial state values of 0.0.
+ For some friction models, we provide more meaningful values for default
+ values.
 \end_layout
 
 \begin_layout Paragraph
@@ -7324,6 +7328,17 @@ As the slip rate approaches zero, the first exponential term approaches
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+A zero value for the initial state results in infinite values for the coefficien
+t of friction.
+ To avoid such behavior when the user fails to provide nonzero values for
+ the initial state, we set the state variable to 
+\begin_inset Formula $L/V_{0}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
