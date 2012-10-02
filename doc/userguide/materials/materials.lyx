@@ -1215,11 +1215,11 @@ Stable time step
 \end_layout
 
 \begin_layout Standard
-PyLith computes the stable time step for both quasi-static and dynamic simulatio
-ns.
+PyLith computes the stable time step in both quasi-static and dynamic simulation
+s.
  In quasi-static simulations the stability of the implicit time stepping
- scheme does not depend on the time step, instead the stable time step is
- associated with the accuracy of the solution.
+ scheme does not depend on the time step; instead, the stable time step
+ is associated with the accuracy of the solution.
  In purely elastic materials, the accuracy is independent of the time step,
  so the stable time step is infinite.
  For viscoelastic materials we ser the stable time step to be 1/5 of the
