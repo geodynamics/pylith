@@ -5797,7 +5797,11 @@ faults Array of fault names.
 \begin_layout Description
 filename_pattern Filename pattern in C/Python format for creating filename
  for each fault.
- Default is 
+ Default is
+\begin_inset Newline newline
+\end_inset
+
+
 \family typewriter
 output/fault_%s.h5
 \family default
@@ -5805,7 +5809,7 @@ output/fault_%s.h5
 \end_layout
 
 \begin_layout Description
-snapshots Array of timestamps for slip snapshosts (-1 means use last time
+snapshots Array of timestamps for slip snapshosts ([-1] means use last time
  step in file, which is the default).
 \end_layout
 
@@ -5828,7 +5832,7 @@ pylith_genxdmf
 \end_layout
 
 \begin_layout Standard
-This utility generates Xdmf files from HDF5 files conforming to the layout
+This utility generates Xdmf files from HDF5 files that conform to the layout
  used by PyLith.
  It is a simple Python script with a single command line argument, the HDF5
  file for input.
@@ -5853,7 +5857,7 @@ Warning:
  
 \series default
 If the HDF5 files contain external datasets, then this utility should be
- run from the relative path as when the HDF5 files were created.
+ run from the same relative path to the HDF5 files as when they were created.
  For example, if a PyLith simulation was run from directory 
 \family typewriter
 work
