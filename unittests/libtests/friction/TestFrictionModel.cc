@@ -155,6 +155,7 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   const int fieldsFiberDim = numProperties;
   int index = 0;
   CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
+#if 1
   const ALE::Obj<SubRealUniformSection>& fieldsSection =
     friction._fieldsPropsStateVars->section();
   CPPUNIT_ASSERT(!fieldsSection.isNull());
@@ -173,6 +174,32 @@ pylith::friction::TestFrictionModel::testInitialize(void)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsVertex[i],
 				     tolerance);
   } // for
+#else
+  PetscSection fieldsSection = friction._fieldsPropsStateVars->petscSection();
+  Vec          fieldsVec     = friction._fieldsPropsStateVars->localVector();
+  PetscScalar *fieldsArray;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
+  err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+  for(SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
+      v_iter != verticesEnd;
+      ++v_iter) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(fieldsSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldsSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fieldsFiberDim, dof);
+    for (int i = 0; i < numProperties; ++i, ++index)
+      if (0 != propertiesE[index])
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsArray[off+i]/propertiesE[index],
+				     tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsArray[off+i],
+				     tolerance);
+  } // for
+  err = VecRestoreArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+#endif
 
   // Test vertex array sizes.
   size_t size = data.numPropsVertex + data.numVarsVertex;
@@ -196,32 +223,34 @@ pylith::friction::TestFrictionModel::testGetField(void)
   const topology::Field<topology::SubMesh>& field = 
     friction.getField("friction_coefficient");
 
-  const ALE::Obj<SieveSubMesh>& sieveMesh = field.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             dmMesh = field.mesh().dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
+  assert(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+
+  PetscSection fieldSection = field.petscSection();
+  Vec          fieldVec     = field.localVector();
+  PetscScalar *fieldArray;
   const PylithScalar tolerance = 1.0e-06;
-
   int index = 0;
-  scalar_array fieldVertex(fiberDim);
-  const ALE::Obj<RealSection>& fieldSection = field.section();
-  CPPUNIT_ASSERT(!fieldSection.isNull());
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldSection->getFiberDimension(*v_iter));
-    fieldSection->restrictPoint(*v_iter, &fieldVertex[0], fieldVertex.size());
-    for (int i=0; i < fiberDim; ++i, ++index)
+
+  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+    for(int i = 0; i < fiberDim; ++i, ++index)
       if (0 != fieldE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldVertex[i]/fieldE[index], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldArray[off+i]/fieldE[index], tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(fieldE[index], fieldVertex[i], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(fieldE[index], fieldArray[off+i], tolerance);
   } // for
+  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 } // testGetField
 
 // ----------------------------------------------------------------------

@@ -20,6 +20,8 @@
 #error "SubMesh.icc must be included only from SubMesh.hh"
 #else
 
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
 // Get Sieve mesh.
 inline
 const ALE::Obj<pylith::topology::Mesh::SieveSubMesh>&
@@ -39,6 +41,16 @@ inline
 DM
 pylith::topology::SubMesh::dmMesh(void) const {
   return _newMesh;
+}
+
+// Set DMComplex mesh.
+inline
+void
+pylith::topology::SubMesh::setDMMesh(DM dm) {
+  PetscErrorCode err;
+  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+  _newMesh = dm;
+  err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
 }
 
 // Get point type sizes.

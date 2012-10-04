@@ -98,13 +98,12 @@ pylith::meshio::TestDataWriterMesh::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<topology::Mesh::SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const topology::Mesh::SieveMesh::label_sequence::iterator verticesEnd =
-      vertices->end();
+    DM dmMesh = _mesh->dmMesh();
+    PetscInt       vStart, vEnd;
+    PetscErrorCode err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
@@ -116,16 +115,22 @@ pylith::meshio::TestDataWriterMesh::_createVertexFields(
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 
-      const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int ipt = 0;
-      for (topology::Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	   v_iter != verticesEnd;
-	   ++v_iter, ++ipt) {
-	const PylithScalar* values = &_data->vertexFields[i][ipt*fiberDim];
-	section->updatePoint(*v_iter, values);
+      PetscSection section = field.petscSection();
+      Vec          vec     = field.localVector();
+      PetscScalar *a;
+      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt v = vStart; v < vEnd; ++v) {
+        PetscInt dof, off;
+
+        err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d) {
+          a[off+d] = _data->vertexFields[i][(v-vStart)*dof+d];
+        }
       } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
+      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
@@ -147,14 +152,20 @@ pylith::meshio::TestDataWriterMesh::_createCellFields(
   try {
     const int nfields = _data->numCellFields;
 
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<topology::Mesh::SieveMesh::label_sequence>& cells = 
-      (0 == _data->cellsLabel) ? 
-      sieveMesh->depthStratum(1) :
-      sieveMesh->getLabelStratum(_data->cellsLabel, _data->labelId);
-    const topology::Mesh::SieveMesh::label_sequence::iterator cellsEnd = 
-      cells->end();
+    DM              dmMesh = _mesh->dmMesh();
+    IS              cellIS = PETSC_NULL;
+    const PetscInt *cells  = PETSC_NULL;
+    PetscInt        cStart, cEnd, numCells;
+    PetscErrorCode  err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    numCells = cEnd - cStart;
+    if (_data->cellsLabel) {
+      err = DMComplexGetStratumIS(dmMesh, _data->cellsLabel, _data->labelId, &cellIS);CHECK_PETSC_ERROR(err);
+      err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+      err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    }
 
     // Set cell fields
     for (int i=0; i < nfields; ++i) {
@@ -166,17 +177,27 @@ pylith::meshio::TestDataWriterMesh::_createCellFields(
       field.allocate();
       field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 
-      const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int icell = 0;
-      for (topology::Mesh::SieveMesh::label_sequence::iterator c_iter=cells->begin();
-	   c_iter != cellsEnd;
-	   ++c_iter, ++icell) {
-	const PylithScalar* values = &_data->cellFields[i][icell*fiberDim];
-	section->updatePoint(*c_iter, values);
+      PetscSection section = field.petscSection();
+      Vec          vec     = field.localVector();
+      PetscScalar *a;
+      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt c = 0; c < numCells; ++c) {
+        const PetscInt cell = cells ? cells[c] : c+cStart;
+        PetscInt       dof, off;
+
+        err = PetscSectionGetDof(section, cell, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, cell, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d) {
+          a[off+d] = _data->cellFields[i][c*dof+d];
+        }
       } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
+      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
     } // for
+    if (_data->cellsLabel) {
+      err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    }
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } catch (...) {

@@ -223,10 +223,9 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     if (complexMesh) {
       /* DMComplex */
       PetscContainer c;
-      PetscSection   s;
-      Vec            v;
-
-      field.dmSection(&s, &v);
+      PetscSection   s = field.petscSection();
+      Vec            v = field.localVector();
+      assert(s);assert(v);
 
       /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
       PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
@@ -236,8 +235,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
       err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
       err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
       err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
-      //err = PetscSectionDestroy(&s);CHECK_PETSC_ERROR(err);
-      err = VecDestroy(&v);CHECK_PETSC_ERROR(err);
 
       _wroteVertexHeader = true;
     } else {
@@ -313,10 +310,9 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     if (complexMesh) {
       /* DMComplex */
       PetscContainer c;
-      PetscSection s;
-      Vec v;
-
-      field.dmSection(&s, &v);
+      PetscSection   s = field.petscSection();
+      Vec            v = field.localVector();
+      assert(s);assert(v);
 
       /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
       PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
@@ -326,8 +322,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
       err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
       err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
       err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
-      //err = PetscSectionDestroy(&s);CHECK_PETSC_ERROR(err);
-      err = VecDestroy(&v);CHECK_PETSC_ERROR(err);
 
       _wroteCellHeader = true;
     } else {

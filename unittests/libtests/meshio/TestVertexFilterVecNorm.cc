@@ -82,45 +82,52 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
-  int ipt = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt) {
-    const PylithScalar* values = &fieldValues[ipt*fiberDim];
-    section->updatePoint(*v_iter, values);
+  DM dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+
+  PetscSection section = field.petscSection();
+  Vec          vec     = field.localVector();
+  PetscScalar *a;
+  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+  CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
+  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      a[off+d] = fieldValues[(v-vStart)*dof+d];
+    }
   } // for
+  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
 
   VertexFilterVecNorm<MeshField> filter;
   const MeshField& fieldF = filter.filter(field);
-  const ALE::Obj<RealSection>& sectionF = fieldF.section();
-  CPPUNIT_ASSERT(!sectionF.isNull());
+  PetscSection sectionF = fieldF.petscSection();
+  Vec          vecF     = fieldF.localVector();
+  CPPUNIT_ASSERT(sectionF);CPPUNIT_ASSERT(vecF);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
 
-  ipt = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt) {
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, sectionF->getFiberDimension(*v_iter));
-    const PylithScalar* values = sectionF->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != values);
-    const PylithScalar tolerance = 1.0e-06;
-    for (int i=0; i < fiberDimE; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				   values[i]/fieldValuesE[ipt*fiberDimE+i],
-				   tolerance);
+  const PylithScalar tolerance = 1.0e-06;
+  err = VecGetArray(vecF, &a);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(sectionF, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(sectionF, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+    for(PetscInt d = 0; d < dof; ++d) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, a[off+d]/fieldValuesE[(v-vStart)*dof+d], tolerance);
+    }
   } // for
+  err = VecRestoreArray(vecF, &a);CHECK_PETSC_ERROR(err);
 } // testFilter
 
 

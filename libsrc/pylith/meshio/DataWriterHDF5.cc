@@ -123,7 +123,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
       assert(cs);
       err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-      err = DMComplexGetCoordinateVec(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+      err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
       err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
       err = DMComplexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
       if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}

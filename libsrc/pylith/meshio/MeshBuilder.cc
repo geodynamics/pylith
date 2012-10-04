@@ -198,13 +198,13 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   PetscInt     coordSize;
 
   err = DMComplexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(complexMesh, &coordVec);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, numCells, numCells+numVertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = numCells; v < numCells+numVertices; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
   }
   err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(comm, &coordVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
@@ -217,6 +217,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     }
   }
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(complexMesh, coordVec);CHECK_PETSC_ERROR(err);
   logger.stagePop(); // Coordinates
 
   sieveMesh->getFactory()->clear();

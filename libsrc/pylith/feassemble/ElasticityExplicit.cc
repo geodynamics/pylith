@@ -226,7 +226,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
@@ -499,7 +499,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidualLumped(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
   assert(0 != _normalizer);
@@ -724,7 +724,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
   // Get sparse matrix
@@ -884,7 +884,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
   _logger->eventEnd(setupEvent);

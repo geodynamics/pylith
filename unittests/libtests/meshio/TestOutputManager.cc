@@ -193,32 +193,35 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   iohandler.read(&mesh);
 
   // Set vertex field
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   MeshField field(mesh);
-  field.newSection(vertices, fiberDim);
+  field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.label(label);
   field.vectorFieldType(fieldType);
   field.scale(scale);
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
+  PetscSection section = field.petscSection();
+  Vec          vec     = field.localVector();
+  PetscScalar *a;
+  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
 
-  CPPUNIT_ASSERT_EQUAL(nvertices, int(vertices->size()));
-  scalar_array values(nvertices*fiberDim);
-  for (int i=0; i < nvertices*fiberDim; ++i)
-    values[i] = fieldValues[i];
-  values /= scale;
-  int ipt = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt) 
-    section->updatePoint(*v_iter, &values[ipt*fiberDim]);
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      a[off+d] = fieldValues[(v-vStart)*dof+d]/scale;
+    }
+  } // for
+  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;
@@ -279,32 +282,37 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   iohandler.read(&mesh);
 
   // Set cell field
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        cStart, cEnd, numCells;
+  PetscErrorCode  err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  numCells = cEnd - cStart;
 
   MeshField field(mesh);
-  field.newSection(cells, fiberDim);
+  field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
   field.allocate();
   field.label(label);
   field.vectorFieldType(fieldType);
   field.scale(scale);
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
+  PetscSection section = field.petscSection();
+  Vec          vec     = field.localVector();
+  PetscScalar *a;
+  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = c+cStart;
+    PetscInt       dof, off;
 
-  CPPUNIT_ASSERT_EQUAL(ncells, int(cells->size()));
-  scalar_array values(ncells*fiberDim);
-  for (int i=0; i < ncells*fiberDim; ++i)
-    values[i] = fieldValues[i];
-  values /= scale;
-  int ipt = 0;
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter, ++ipt)
-    section->updatePoint(*c_iter, &values[ipt*fiberDim]);
+    err = PetscSectionGetDof(section, cell, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, cell, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      a[off+d] = fieldValues[c*dof+d]/scale;
+    }
+  } // for
+  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
 
   spatialdata::geocoords::CSCart cs;
   const int numTimeSteps = 1;

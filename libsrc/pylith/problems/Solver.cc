@@ -295,7 +295,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 
     err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     err = DMComplexGetCoordinateSection(dmMesh, &coordinateSection);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCoordinateVec(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
     assert(coordinateSection);assert(coordinateVec);
     if (dim > 1) {
       const int m = (dim * (dim + 1)) / 2;

@@ -105,14 +105,12 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveFaultMesh = 
-      _faultMesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveFaultMesh.isNull());
-    const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& vertices =
-      sieveFaultMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const topology::SubMesh::SieveMesh::label_sequence::iterator verticesEnd =
-      vertices->end();
+    DM dmMesh = _faultMesh->dmMesh();
+    PetscInt       vStart, vEnd;
+    PetscErrorCode err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
@@ -124,16 +122,22 @@ pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 
-      const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int ipt = 0;
-      for (topology::SubMesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	   v_iter != verticesEnd;
-	   ++v_iter, ++ipt) {
-	const PylithScalar* values = &_data->vertexFields[i][ipt*fiberDim];
-	section->updatePoint(*v_iter, values);
+      PetscSection section = field.petscSection();
+      Vec          vec     = field.localVector();
+      PetscScalar *a;
+      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt v = vStart; v < vEnd; ++v) {
+        PetscInt dof, off;
+
+        err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d) {
+          a[off+d] = _data->vertexFields[i][(v-vStart)*dof+d];
+        }
       } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
+      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
@@ -153,16 +157,13 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(
   try {
     const int nfields = _data->numCellFields;
 
-    const ALE::Obj<topology::SubMesh::SieveMesh>& sieveFaultMesh =
-      _faultMesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveFaultMesh.isNull());
-    const ALE::Obj<topology::SubMesh::SieveMesh::label_sequence>& cells = 
-      sieveFaultMesh->heightStratum(0);
-    assert(!cells.isNull());
-    const topology::SubMesh::SieveMesh::label_sequence::iterator cellsBegin = 
-      cells->begin();
-    const topology::SubMesh::SieveMesh::label_sequence::iterator cellsEnd = 
-      cells->end();
+    DM dmMesh = _faultMesh->dmMesh();
+    PetscInt       cStart, cEnd;
+    const PetscInt height = 0;
+    PetscErrorCode err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetHeightStratum(dmMesh, height, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
     // Set cell fields
     for (int i=0; i < nfields; ++i) {
@@ -174,16 +175,22 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(
       field.allocate();
       field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 
-      const ALE::Obj<topology::SubMesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int icell = 0;
-      for (topology::SubMesh::SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-	   c_iter != cellsEnd;
-	   ++c_iter, ++icell) {
-	const PylithScalar* values = &_data->cellFields[i][icell*fiberDim];
-	section->updatePoint(*c_iter, values);
+      PetscSection section = field.petscSection();
+      Vec          vec     = field.localVector();
+      PetscScalar *a;
+      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt c = cStart; c < cEnd; ++c) {
+        PetscInt dof, off;
+
+        err = PetscSectionGetDof(section, c, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, c, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d) {
+          a[off+d] = _data->cellFields[i][(c-cStart)*dof+d];
+        }
       } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numCells, icell);
+      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->numCells, cEnd-cStart);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());

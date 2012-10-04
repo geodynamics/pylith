@@ -55,6 +55,7 @@ public :
   enum DomainEnum {
     VERTICES_FIELD=0, ///< FieldBase over vertices.
     CELLS_FIELD=1, ///< FieldBase over cells.
+    POINTS_FIELD=2, ///< FieldBase over all points.
   }; // DomainEnum
 
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////

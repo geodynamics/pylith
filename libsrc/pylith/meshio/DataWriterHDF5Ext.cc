@@ -92,7 +92,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
+#if 0
     const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
+#endif
     DM dmMesh = mesh.dmMesh();
     assert(dmMesh);
     PetscMPIInt    commRank;
@@ -113,13 +115,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       H5T_IEEE_F64BE : H5T_IEEE_F32BE;
 
     // Write vertex coordinates
+    const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
+    assert(cs);
+#if 0
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
       sieveMesh->hasRealSection("coordinates_dimensioned") ?
       sieveMesh->getRealSection("coordinates_dimensioned") :
       sieveMesh->getRealSection("coordinates");
     assert(!coordinatesSection.isNull());
-    const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-    assert(cs);
     topology::FieldBase::Metadata metadata;
     // :KLUDGE: We would like to use field_type for the coordinates
     // field. However, the mesh coordinates are Field<mesh_type> and
@@ -136,6 +139,19 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     coordinates.scatterSectionToVector(context);
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
+#else
+    DM       coordDM;
+    Vec      coordVec, coordinatesVector;
+    PetscInt globalSize;
+
+    /* Should use the coordinate DM here (once I put it in) */
+    err = DMGetCoordinateDM(dmMesh, &coordDM);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+    err = DMGetGlobalVector(coordDM, &coordinatesVector);CHECK_PETSC_ERROR(err);
+    err = VecGetSize(coordinatesVector, &globalSize);CHECK_PETSC_ERROR(err);
+    err = DMLocalToGlobalBegin(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
+    err = DMLocalToGlobalEnd(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
+#endif
 
     const std::string& filenameVertices = _datasetFilename("vertices");
     err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, filenameVertices.c_str(),
@@ -146,12 +162,14 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     CHECK_PETSC_ERROR(err);
     err = VecView(coordinatesVector, binaryViewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
+
+    err = DMRestoreGlobalVector(coordDM, &coordinatesVector);CHECK_PETSC_ERROR(err);
     
     // Create external dataset for coordinates    
     if (!commRank) {
       const hsize_t ndims = 2;
       hsize_t dims[ndims];
-      dims[0] = vNumbering->getGlobalSize();
+      dims[0] = globalSize;
       dims[1] = cs->spaceDim();
       _h5->createDatasetRawExternal("/geometry", "vertices", 
 				    filenameVertices.c_str(),
@@ -161,6 +179,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     // Write cells
 
     // Account for censored cells
+#if 0
     int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
     int cellDepth = 0;
     err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, 
@@ -199,56 +218,103 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     int k = 0;
     const typename label_sequence::const_iterator cellsEnd = cells->end();
     for (typename label_sequence::iterator c_iter=cells->begin();
-	 c_iter != cellsEnd;
-	 ++c_iter)
+         c_iter != cellsEnd;
+         ++c_iter) {
       if (cNumbering->isLocal(*c_iter)) {
-	ncV.clear();
-	ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-	const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
-	  ncV.getOrientedPoints();
-	const int coneSize = ncV.getOrientedSize();
-	if (coneSize != numCorners) {
-	  std::ostringstream msg;
-	  msg << "Inconsistency in topology found for mesh '"
-	      << sieveMesh->getName() << "' during output.\n"
-	      << "Number of vertices (" << coneSize << ") in cell '"
-	      << *c_iter << "' does not expected number of vertices ("
-	      << numCorners << ").";
-	  throw std::runtime_error(msg.str());
-	} // if
-	for (int c=0; c < coneSize; ++c)
-	  tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
+        ncV.clear();
+        ALE::ISieveTraversal<sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
+        const typename ALE::ISieveVisitor::NConeRetriever<sieve_type>::oriented_point_type* cone =
+          ncV.getOrientedPoints();
+        const int coneSize = ncV.getOrientedSize();
+        if (coneSize != numCorners) {
+          const char *name;
+          std::ostringstream msg;
+          err = PetscObjectGetName((PetscObject) dmMesh, &name);CHECK_PETSC_ERROR(err);
+          msg << "Inconsistency in topology found for mesh '" << name << "' during output.\n"
+              << "Number of vertices (" << coneSize << ") in cell '" << c
+              << "' does not expected number of vertices (" << numCorners << ").";
+          throw std::runtime_error(msg.str());
+        } // if
+        for(PetscInt c=0; c < coneSize; ++c)
+          tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
+    }
+#else
+    const PetscInt *cells, *vertices;
+    IS              globalCellNumbers, globalVertexNumbers;
+    PetscInt        numCornersLocal = 0;
+    PetscInt        numCorners      = 0;
+    PetscInt        numCellsLocal   = 0, numCells;
+    PetscInt        cStart, cEnd, cMax, vStart, numIndices;
+
+    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetHeightStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
+
+    err = DMComplexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+    if (cEnd-cStart) {err = DMComplexGetConeSize(dmMesh, cStart, &numCornersLocal);CHECK_PETSC_ERROR(err);}
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&numCellsLocal,   &numCells,   1, MPIU_INT, MPI_SUM, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
+    err = ISGetSize(globalCellNumbers, &numIndices);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(globalCellNumbers, &cells);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(globalVertexNumbers, &vertices);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < numIndices; ++i) {
+      if (cells[i] >= 0) ++numCellsLocal;
+    }
+
+    PetscScalar *tmpVertices = 0;
+    PetscInt     conesSize   = numCellsLocal*numCorners;
+
+    err = PetscMalloc(conesSize * sizeof(PetscScalar), &tmpVertices);CHECK_PETSC_ERROR(err);
+    for(PetscInt c = cStart, k = 0; c < cEnd; ++c) {
+      const PetscInt *cone;
+      PetscInt        coneSize;
+
+      if (cells[c-cStart] < 0) continue;
+      err = DMComplexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+      err = DMComplexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+      if (coneSize != numCorners) {
+        const char *name;
+        std::ostringstream msg;
+        err = PetscObjectGetName((PetscObject) dmMesh, &name);CHECK_PETSC_ERROR(err);
+        msg << "Inconsistency in topology found for mesh '" << name << "' during output.\n"
+            << "Number of vertices (" << coneSize << ") in cell '" << c
+            << "' does not expected number of vertices (" << numCorners << ").";
+        throw std::runtime_error(msg.str());
+      } // if
+      for(PetscInt corner = 0; corner < numCorners; ++corner) {
+        tmpVertices[k++] = vertices[cone[corner]-vStart];
+      }
+    }
+    err = ISRestoreIndices(globalCellNumbers, &cells);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(globalVertexNumbers, &vertices);CHECK_PETSC_ERROR(err);
+#endif
 
     PetscVec elemVec;
     err = VecCreateMPIWithArray(((PetscObject) dmMesh)->comm, numCorners, conesSize, PETSC_DETERMINE,
-				tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) elemVec,
-			     "cells");CHECK_PETSC_ERROR(err);
+                                tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
 
     const std::string& filenameCells = _datasetFilename("cells");
     err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, filenameCells.c_str(),
-				FILE_MODE_WRITE,
-				&binaryViewer);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);
-    CHECK_PETSC_ERROR(err);
-    err = VecView(elemVec, binaryViewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(&elemVec); CHECK_PETSC_ERROR(err);
-    err = PetscFree(tmpVertices); CHECK_PETSC_ERROR(err);
-    err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
+                                FILE_MODE_WRITE, &binaryViewer);CHECK_PETSC_ERROR(err);
+    err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);CHECK_PETSC_ERROR(err);
+    err = VecView(elemVec, binaryViewer);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&elemVec);CHECK_PETSC_ERROR(err);
+    err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
+    err = PetscViewerDestroy(&binaryViewer);CHECK_PETSC_ERROR(err);
 
     // Create external dataset for cells
     if (!commRank) {
       const hsize_t ndims = 2;
       hsize_t dims[ndims];
-      dims[0] = cNumbering->getGlobalSize();
+      dims[0] = numCells;
       dims[1] = numCorners;
-      _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(),
-				    dims, ndims, scalartype);
+      _h5->createDatasetRawExternal("/topology", "cells", filenameCells.c_str(), dims, ndims, scalartype);
       const int cellDim = mesh.dimension();
-      _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim,
-			  H5T_NATIVE_INT);
+      _h5->writeAttribute("/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
     } // if
     
   } catch (const std::exception& err) {
