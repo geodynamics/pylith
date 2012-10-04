@@ -330,8 +330,14 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if/else
   sieveMesh->allocate(groupField);
 
-  for(PetscInt p = 0; p < numPoints; ++p) {
-    err = DMComplexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
+  if (CELL == type) {
+    for(PetscInt p = 0; p < numPoints; ++p) {
+      err = DMComplexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
+    }
+  } else if (VERTEX == type) {
+    for(PetscInt p = 0; p < numPoints; ++p) {
+      err = DMComplexSetLabelValue(complexMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
+    }
   }
   logger.stagePop();
 } // _setGroup

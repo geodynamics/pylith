@@ -775,15 +775,14 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   SieveSubMesh::label_sequence::const_iterator fVertices2End   = fVertices2->end();
 
   PetscSection coordSection, newCoordSection;
-  Vec          coordinatesDM, newCoordinatesDM;
+  Vec          coordinatesVec, newCoordinatesVec;
   PetscScalar *coords, *newCoords;
   PetscInt     coordSize;
  
 #ifdef USE_DMCOMPLEX_ON
   err = DMComplexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMComplexGetCoordinateSection(newMesh,     &newCoordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(complexMesh, &coordinatesDM);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(newMesh,     &newCoordinatesDM);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(complexMesh, &coordinatesVec);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(newCoordSection, vStart+extraCells, vEnd+extraCells+extraVertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof;
@@ -807,10 +806,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #ifdef USE_DMCOMPLEX_ON
   err = PetscSectionSetUp(newCoordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetStorageSize(newCoordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(newCoordinatesDM, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(newCoordinatesDM);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordinatesDM, &coords);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(newCoordinatesDM, &newCoords);CHECK_PETSC_ERROR(err);
+  err = VecCreate(((PetscObject) newMesh)->comm, &newCoordinatesVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(newCoordinatesVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(newCoordinatesVec);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordinatesVec, &coords);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(newCoordinatesVec, &newCoords);CHECK_PETSC_ERROR(err);
 
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, off, newoff, d;
@@ -847,13 +847,13 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     } // if
 #endif
   } // for
-  //err = VecRestoreArray(coordinatesDM, &coords);CHECK_PETSC_ERROR(err);
-  //err = VecRestoreArray(newCoordinatesDM, &newCoords);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordinatesVec, &coords);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(newCoordinatesVec, &newCoords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(newMesh, newCoordinatesVec);CHECK_PETSC_ERROR(err);
   if (debug) coordinates->view("Coordinates with shadow vertices");
 
   logger.stagePop();
 
-  err = DMDestroy(&complexMesh);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(newMesh);
 } // create
 
@@ -876,6 +876,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
+  DM dmMesh = mesh.dmMesh();
+  assert(dmMesh);
   ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
@@ -967,6 +969,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 					     fRenumbering,
 					     fault->getArrowSection("orientation").ptr());
   }
+  SieveMesh::renumbering_type convertRenumbering;
+  DM dmFaultMesh;
+
+  ALE::ISieveConverter::convertMesh(*fault, &dmFaultMesh, convertRenumbering);
+  faultMesh->setDMMesh(dmFaultMesh);
   fault      = NULL;
   faultSieve = NULL;
 
@@ -1016,6 +1023,46 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 			      coordinates->restrictPoint(*v_iter));
   }
   //faultSieveMesh->view("Parallel fault mesh");
+  const SieveMesh::renumbering_type::const_iterator convertRenumberingEnd = convertRenumbering.end();
+  PetscSection   coordSection, faultCoordSection;
+  Vec            coordinateVec, faultCoordinateVec;
+  PetscScalar   *a, *fa;
+  PetscInt       pvStart, pvEnd, fvStart, fvEnd, n;
+  PetscErrorCode err;
+
+  err = DMComplexGetDepthStratum(dmMesh, 0, &pvStart, &pvEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmFaultMesh, &faultCoordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(faultCoordSection, fvStart, fvEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = pvStart; v < pvEnd; ++v) {
+    PetscInt dof;
+
+    if (convertRenumbering.find(v) == convertRenumberingEnd) continue;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(faultCoordSection, convertRenumbering[v], dof);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(faultCoordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(faultCoordSection, &n);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmFaultMesh, &faultCoordinateVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(faultCoordinateVec, n, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(faultCoordinateVec);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = pvStart; v < pvEnd; ++v) {
+    PetscInt dof, off, foff;
+
+    if (convertRenumbering.find(v) == convertRenumberingEnd) continue;
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(faultCoordSection, convertRenumbering[v], &foff);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      fa[foff+d] = a[off+d];
+    }
+  }
+  err = VecRestoreArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
 
   // Update dimensioned coordinates if they exist.
   if (sieveMesh->hasRealSection("coordinates_dimensioned")) {

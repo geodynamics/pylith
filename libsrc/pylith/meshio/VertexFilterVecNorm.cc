@@ -76,18 +76,19 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
   typedef typename field_type::Mesh::SieveMesh SieveMesh;
   typedef typename SieveMesh::label_sequence label_sequence;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = fieldIn.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+  DM dmMesh = fieldIn.mesh().dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
-  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const typename label_sequence::iterator verticesEnd = vertices->end();
+  assert(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  const ALE::Obj<RealSection>& sectionIn = fieldIn.section();
-  assert(!sectionIn.isNull());
-  const int fiberDimIn = (vertices->size() > 0) ? 
-    sectionIn->getFiberDimension(*vertices->begin()) : 0;
-  const int fiberDimNorm = 1;
+  PetscSection sectionIn = fieldIn.petscSection();
+  Vec          vecIn     = fieldIn.localVector();
+  PetscScalar *a, *an;
+  PetscInt     fiberDimIn, fiberDimNorm = 1;
+  assert(sectionIn);assert(vecIn);
+  err = PetscSectionGetDof(sectionIn, vStart, &fiberDimIn);CHECK_PETSC_ERROR(err);
 
   // Allocation field if necessary
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -121,25 +122,28 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
   } // if
   logger.stagePop();
 
-  const ALE::Obj<RealSection>& sectionNorm = 
-    _fieldVecNorm->section();
-  assert(!sectionNorm.isNull());
+  PetscSection sectionNorm = _fieldVecNorm->petscSection();
+  Vec          vecNorm     = _fieldVecNorm->localVector();
+  assert(sectionNorm);assert(vecNorm);
 
-  PylithScalar norm = 0.0;
   // Loop over vertices
-  for (typename label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter) {
-    const PylithScalar* values = sectionIn->restrictPoint(*v_iter);
-    
-    norm = 0.0;
-    for (int i=0; i < fiberDimIn; ++i)
-      norm += values[i]*values[i];
-    norm = sqrt(norm);
+  err = VecGetArray(vecIn, &a);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(vecNorm, &an);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off, offn;
+    PylithScalar norm = 0.0;
 
-    sectionNorm->updatePoint(*v_iter, &norm);
+    err = PetscSectionGetDof(sectionIn, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(sectionIn, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(sectionNorm, v, &offn);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d)
+      norm += a[off+d]*a[off+d];
+    norm = sqrt(norm);
+    an[offn] = norm;
   } // for
-  PetscLogFlops(vertices->size() * (1 + 2*fiberDimIn) );
+  err = VecRestoreArray(vecIn, &a);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(vecNorm, &an);CHECK_PETSC_ERROR(err);
+  PetscLogFlops((vEnd-vStart) * (1 + 2*fiberDimIn));
 
   return *_fieldVecNorm;
 } // filter

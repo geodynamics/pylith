@@ -204,7 +204,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
 
@@ -406,7 +406,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateVec(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
   _logger->eventEnd(setupEvent);

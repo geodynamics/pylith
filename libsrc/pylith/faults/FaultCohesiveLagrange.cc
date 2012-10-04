@@ -1316,16 +1316,17 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
   const topology::Field<topology::SubMesh>& dispRel = 
     _fields->get("relative disp");
+  orientation.addField("orientation", cohesiveDim+1);
+  orientation.setupFields();
   orientation.newSection(dispRel, orientationSize);
-  const ALE::Obj<RealSection>& orientationSection = orientation.section();
-  assert(!orientationSection.isNull());
-  // Create subspaces for along-strike, up-dip, and normal directions
-  for (int iDim = 0; iDim <= cohesiveDim; ++iDim)
-    orientationSection->addSpace();
-  for (int iDim = 0; iDim <= cohesiveDim; ++iDim)
-    orientationSection->setFiberDimension(vertices, spaceDim, iDim);
+  // Create components for along-strike, up-dip, and normal directions
+  orientation.updateDof("orientation", pylith::topology::FieldBase::POINTS_FIELD, spaceDim);
   orientation.allocate();
   orientation.zero();
+  PetscSection orientationSection = orientation.petscSection();
+  Vec          orientationVec     = orientation.localVector();
+  PetscScalar *orientationArray;
+  PetscErrorCode err;
 
   logger.stagePop();
 
@@ -1362,6 +1363,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
     ncV(*sieve, closureSize);
 
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
       != cellsEnd; ++c_iter) {
     // Get orientations at fault cell's vertices.
@@ -1386,9 +1388,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
         up);
 
       // Update orientation
-      orientationSection->updateAddPoint(cone[v], &orientationVertex[0]);
+      PetscInt off;
+
+      err = PetscSectionGetOffset(orientationSection, cone[v], &off);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < orientationSize; ++d) {
+        orientationArray[off+d] += orientationVertex[d];
+      }
     } // for
   } // for
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
   //orientation.view("ORIENTATION BEFORE COMPLETE");
 
@@ -1398,11 +1406,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Loop over vertices, make orientation information unit magnitude
   scalar_array vertexDir(orientationSize);
   int count = 0;
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
       != verticesEnd; ++v_iter, ++count) {
-    orientationVertex = 0.0;
-    orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-      orientationVertex.size());
+    PetscInt off;
+
+    err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < orientationSize; ++d) {
+      orientationVertex[d] = orientationArray[off+d];
+    }
     for (int iDim = 0; iDim < spaceDim; ++iDim) {
       PylithScalar mag = 0;
       for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
@@ -1412,11 +1424,14 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       for (int jDim = 0, index = iDim * spaceDim; jDim < spaceDim; ++jDim)
         orientationVertex[index + jDim] /= mag;
     } // for
-
-    orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+    for(PetscInt d = 0; d < orientationSize; ++d) {
+      orientationArray[off+d] = orientationVertex[d];
+    }
   } // for
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   PetscLogFlops(count * orientationSize * 4);
 
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   if (1 == cohesiveDim && vertices->size() > 0) {
     // Default sense of positive slip is left-lateral and
     // fault-opening.
@@ -1438,8 +1453,12 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // normal direction because it is tied to how the cohesive cells
     // are created.
     assert(vertices->size() > 0);
-    orientationSection->restrictPoint(*vertices->begin(),
-      &orientationVertex[0], orientationVertex.size());
+    PetscInt off;
+
+    err = PetscSectionGetOffset(orientationSection, *vertices->begin(), &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < orientationSize; ++d) {
+      orientationVertex[d] = orientationArray[off+d];
+    }
 
     assert(2 == spaceDim);
     const PylithScalar* shearDirVertex = &orientationVertex[0];
@@ -1456,14 +1475,21 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
 	   v_iter != verticesEnd;
 	   ++v_iter) {
-        orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-					  orientationVertex.size());
-        assert(4 == orientationSection->getFiberDimension(*v_iter));
+        PetscInt dof;
+
+        err = PetscSectionGetDof(orientationSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationVertex[d] = orientationArray[off+d];
+        }
+        assert(4 == dof);
         for (int iDim = 0; iDim < 2; ++iDim) // flip shear
           orientationVertex[ishear + iDim] *= -1.0;
 	
         // Update orientation
-        orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationArray[off+d] = orientationVertex[d];
+        }
       } // for
       PetscLogFlops(3 + count * 2);
     } // if
@@ -1486,10 +1512,13 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // are used are the opposite of what we would want, but we cannot
     // flip the fault normal direction because it is tied to how the
     // cohesive cells are created.
-
     assert(vertices->size() > 0);
-    orientationSection->restrictPoint(*vertices->begin(),
-      &orientationVertex[0], orientationVertex.size());
+    PetscInt off;
+
+    err = PetscSectionGetOffset(orientationSection, *vertices->begin(), &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < orientationSize; ++d) {
+      orientationVertex[d] = orientationArray[off+d];
+    }
 
     assert(3 == spaceDim);
     const PylithScalar* dipDirVertex = &orientationVertex[3];
@@ -1515,18 +1544,26 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       // Flip dip direction
       for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
 	     != verticesEnd; ++v_iter) {
-        orientationSection->restrictPoint(*v_iter, &orientationVertex[0],
-					  orientationVertex.size());
-        assert(9 == orientationSection->getFiberDimension(*v_iter));
+        PetscInt dof;
+
+        err = PetscSectionGetDof(orientationSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationVertex[d] = orientationArray[off+d];
+        }
+        assert(9 == dof);
         for (int iDim = 0; iDim < 3; ++iDim) // flip dip
           orientationVertex[idip + iDim] *= -1.0;
 	
         // Update direction
-        orientationSection->updatePoint(*v_iter, &orientationVertex[0]);
+        for(PetscInt d = 0; d < orientationSize; ++d) {
+          orientationArray[off+d] = orientationVertex[d];
+        }
       } // for
       PetscLogFlops(5 + count * 3);
     } // if
   } // if
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
   //orientation.view("ORIENTATION");
 } // _calcOrientation

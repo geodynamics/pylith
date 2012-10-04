@@ -86,6 +86,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   } // if
   PetscBool      hasLabel;
   PetscErrorCode err;
+
   err = DMComplexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
@@ -110,8 +111,8 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
     _mesh->setRealSection("coordinates_dimensioned", 
 			  meshSieveMesh->getRealSection("coordinates_dimensioned"));
 
-  /* TODO: Implement subMesh() for DMComplex */
-  _newMesh = PETSC_NULL;
+  /* TODO: Add creation of pointSF for submesh */
+  err = DMComplexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
 
   // Create the parallel overlap
   const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
@@ -155,6 +156,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   // Set name
   std::string meshLabel = "subdomain_" + std::string(label);
   _mesh->setName(meshLabel);
+  err = PetscObjectSetName((PetscObject) _newMesh, meshLabel.c_str());CHECK_PETSC_ERROR(err);
 
   int maxConeSizeLocal = sieve->getMaxConeSize();
   int maxConeSize = 0;

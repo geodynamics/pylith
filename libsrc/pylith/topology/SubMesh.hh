@@ -102,6 +102,12 @@ public :
    */
   DM dmMesh(void) const;
 
+  /** Set DMComplex mesh.
+   *
+   * @param DMComplex mesh.
+   */
+  void setDMMesh(DM dm);
+
   /** Get sizes for all point types.
    *
    * @param numNormalCells

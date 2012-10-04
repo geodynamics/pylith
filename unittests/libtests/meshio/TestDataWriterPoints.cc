@@ -98,13 +98,12 @@ pylith::meshio::TestDataWriterPoints::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<topology::Mesh::SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const topology::Mesh::SieveMesh::label_sequence::iterator verticesEnd =
-      vertices->end();
+    DM dmMesh = _mesh->dmMesh();
+    PetscInt       vStart, vEnd;
+    PetscErrorCode err;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
@@ -112,20 +111,26 @@ pylith::meshio::TestDataWriterPoints::_createVertexFields(
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       fields->add(name, name);
       MeshField& field = fields->get(name);
-      field.newSection(vertices, fiberDim);
+      field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 
-      const ALE::Obj<topology::Mesh::RealSection>& section = field.section();
-      CPPUNIT_ASSERT(!section.isNull());
-      int ipt = 0;
-      for (topology::Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	   v_iter != verticesEnd;
-	   ++v_iter, ++ipt) {
-	const PylithScalar* values = &_data->vertexFields[i][ipt*fiberDim];
-	section->updatePoint(*v_iter, values);
+      PetscSection section = field.petscSection();
+      Vec          vec     = field.localVector();
+      PetscScalar *a;
+      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt v = vStart; v < vEnd; ++v) {
+        PetscInt dof, off;
+
+        err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d) {
+          a[off+d] = _data->vertexFields[i][(v-vStart)*dof+d];
+        }
       } // for
-      CPPUNIT_ASSERT_EQUAL(_data->numVertices, ipt);
+      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
     } // for
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
