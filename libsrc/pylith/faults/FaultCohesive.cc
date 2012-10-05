@@ -121,53 +121,62 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   assert(0 != mesh);
   assert(std::string("") != label());
   
-  topology::SubMesh faultMesh;
-  ALE::Obj<SieveFlexMesh> faultBoundary;
+  try {
+    topology::SubMesh faultMesh;
+    ALE::Obj<SieveFlexMesh> faultBoundary;
   
-  // Get group of vertices associated with fault
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  if (!_useFaultMesh) {
-    if (!sieveMesh->hasIntSection(label())) {
-      std::ostringstream msg;
-      msg << "Mesh missing group of vertices '" << label()
-          << "' for fault interface condition.";
-      throw std::runtime_error(msg.str());
-    } // if  
-    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-      sieveMesh->getIntSection(label());
-    assert(!groupField.isNull());
-    CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
-				  flipFault);
-
-    CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
-                             *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-
-  } else {
-    //std::cout << "BEFORE ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
-
-    const int faultDim = 2;
-    assert(3 == mesh->dimension());
-
-    meshio::UCDFaultFile::read(_faultMeshFilename.c_str(),
-			       &faultMesh, faultBoundary, *mesh);
-
-    // Set coordinates in fault mesh
-    const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 
-      faultMesh.sieveMesh();
-    assert(!faultSieveMesh.isNull());
-    faultSieveMesh->setRealSection("coordinates", 
-				   sieveMesh->getRealSection("coordinates"));
-
-    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-      sieveMesh->getIntSection(label());
-    assert(!groupField.isNull());
-    CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
-                             *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-
-    //std::cout << "AFTER ADJUSTING TOPOLOGY FOR FAULT '" << label() << "' firstFaultVertex: " << *firstFaultVertex << ", firstFaultCell: " << *firstFaultCell << std::endl;
-  } // if/else
+    // Get group of vertices associated with fault
+    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
+    assert(!sieveMesh.isNull());
+    
+    if (!_useFaultMesh) {
+      if (!sieveMesh->hasIntSection(label())) {
+	std::ostringstream msg;
+	msg << "Mesh missing group of vertices '" << label()
+	    << "' for fault interface condition.";
+	throw std::runtime_error(msg.str());
+      } // if  
+      const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+	sieveMesh->getIntSection(label());
+      assert(!groupField.isNull());
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
+				    flipFault);
+      
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
+			       *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      
+    } else {
+      const int faultDim = 2;
+      assert(3 == mesh->dimension());
+      
+      meshio::UCDFaultFile::read(_faultMeshFilename.c_str(),
+				 &faultMesh, faultBoundary, *mesh);
+      
+      // Set coordinates in fault mesh
+      const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 
+	faultMesh.sieveMesh();
+      assert(!faultSieveMesh.isNull());
+      faultSieveMesh->setRealSection("coordinates", 
+				     sieveMesh->getRealSection("coordinates"));
+      
+      const ALE::Obj<topology::Mesh::IntSection>& groupField = 
+	sieveMesh->getIntSection(label());
+      assert(!groupField.isNull());
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
+			       *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      
+    } // if/else
+  } catch (const ALE::Exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
+	<< err.message();
+    throw std::runtime_error(msg.str());
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << label() << "'.\n"
+	<< err.what();
+    throw std::runtime_error(msg.str());
+  }
 } // adjustTopology
 
 
