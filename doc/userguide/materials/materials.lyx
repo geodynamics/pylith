@@ -1222,8 +1222,10 @@ s.
  is associated with the accuracy of the solution.
  In purely elastic materials, the accuracy is independent of the time step,
  so the stable time step is infinite.
- For viscoelastic materials we ser the stable time step to be 1/5 of the
+ For viscoelastic materials we set the stable time step to be 1/5 of the
  relaxation time.
+ In quasi-static simulations we check the stable time step at every time
+ step.
 \end_layout
 
 \begin_layout Standard
@@ -1287,6 +1289,10 @@ where
 
  is the volume of the cell.
  We determined the scaling factoring empirically using several benchmarks.
+ In dynamic simulations we check the stable time step only at the beginning
+ of the simulation.
+ That is, we assume the elastic properties and mesh do not change, so that
+ the stable time step is constant throughout the simulation.
 \end_layout
 
 \begin_layout Standard
