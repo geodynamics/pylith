@@ -85,6 +85,7 @@ class Explicit(Formulation, ModuleExplicit):
     Formulation.__init__(self, name)
     ModuleExplicit.__init__(self)
     self._loggingPrefix = "TSEx "
+    self.dtStable = None
     return
 
 
@@ -276,6 +277,23 @@ class Explicit(Formulation, ModuleExplicit):
 
     return
 
+
+  def getTimeStep(self):
+    """
+    Get stable time step for advancing forward in time. Use cached
+    value if available.
+
+    Assume stable time step depends only on initial elastic properties
+    and original mesh geometry.
+    """
+    logEvent = "%stimestep" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    if self.dtStable is None:
+      self.dtStable = self.timeStep.timeStep(self.mesh, self.integratorsMesh + self.integratorsSubMesh)
+    self._eventLogger.eventEnd(logEvent)
+    return self.dtStable
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
