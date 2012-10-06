@@ -379,10 +379,12 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       if (group->getFiberDimension(*v_iter))
         group->addPoint(firstFaultVertex, 1);
 
+      PetscInt vertexDM = *v_iter+faultVertexOffsetDM;
       PetscInt value;
-      err = DMComplexGetLabelValue(complexMesh, (*name).c_str(), *v_iter+extraCells, &value);CHECK_PETSC_ERROR(err);
+      //assert(extraCells == faultVertexOffsetDM);
+      err = DMComplexGetLabelValue(complexMesh, (*name).c_str(), vertexDM, &value);CHECK_PETSC_ERROR(err);
       if (value) {
-        err = DMComplexSetLabelValue(newMesh, (*name).c_str(), firstFaultVertexDM, value);CHECK_PETSC_ERROR(err);
+        err = DMComplexSetLabelValue(newMesh, (*name).c_str(), vertexRenumberDM[vertexDM], value);CHECK_PETSC_ERROR(err);
       }
     } // for
   } // for
