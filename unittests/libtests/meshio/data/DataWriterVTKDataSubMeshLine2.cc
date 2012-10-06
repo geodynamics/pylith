@@ -45,7 +45,7 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshLine2::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertices = 5;
+const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numVertices = 1;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFields[] = {
@@ -55,20 +55,12 @@ pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexFields[] = {
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField0[] = {
   1.1, 2.2,
-  3.3, 4.4,
-  5.5, 6.6,
-  7.7, 8.8,
-  9.9, 10.0,
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5,
+  2.1
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshLine2::_vertexField2[] = {
   1.2, 2.3,
-  3.4, 4.5,
-  5.6, 6.7,
-  7.8, 8.9,
-  9.0, 10.1,
 };
 
 const int pylith::meshio::DataWriterVTKDataSubMeshLine2::_numCellFields = 3;

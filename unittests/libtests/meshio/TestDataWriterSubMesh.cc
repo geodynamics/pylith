@@ -103,7 +103,7 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void)
 // Create vertex fields.
 void
 pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
-	    topology::Fields<MeshField>* fields) const
+	    topology::Fields<SubMeshField>* fields) const
 { // _createVertexFields
   CPPUNIT_ASSERT(0 != fields);
   CPPUNIT_ASSERT(0 != _mesh);
@@ -112,7 +112,7 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    DM dmMesh = _mesh->dmMesh();
+    DM dmMesh = _submesh->dmMesh();
     PetscInt       vStart, vEnd;
     PetscErrorCode err;
 
@@ -124,7 +124,7 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
       const char* name = _data->vertexFieldsInfo[i].name;
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       fields->add(name, name);
-      MeshField& field = fields->get(name);
+      SubMeshField& field = fields->get(name);
       field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);

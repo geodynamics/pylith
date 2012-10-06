@@ -44,7 +44,7 @@ const char* pylith::meshio::DataWriterVTKDataSubMeshHex8::_timeFormat =
   "%3.1f";
 
 const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertexFields = 3;
-const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertices = 12;
+const int pylith::meshio::DataWriterVTKDataSubMeshHex8::_numVertices = 6;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFields[] = {
@@ -53,12 +53,6 @@ pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexFields[] = {
   { "other", topology::FieldBase::OTHER, 2 },
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[] = {
-  1.1, 2.2, 3.3,
-  4.4, 5.5, 6.6,
-  7.7, 8.8, 9.9,
-  10.1, 11.2, 12.3,
-  1.2, 2.3, 3.4,
-  4.5, 5.6, 6.7,
   7.8, 8.9, 9.0,
   10.2, 11.3, 12.4,
   1.3, 2.4, 3.5,
@@ -67,15 +61,9 @@ const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField0[]
   10.3, 11.4, 12.5,
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField1[] = {
-  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8, 10.9, 11.8, 12.7, 13.6
+  8.7, 9.8, 10.9, 11.8, 12.7, 13.6
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshHex8::_vertexField2[] = {
-  1.2, 2.3,
-  3.4, 4.5,
-  5.6, 6.7,
-  7.8, 8.9,
-  1.3, 2.4,
-  3.5, 4.6,
   5.7, 6.8,
   7.9, 8.0,
   8.1, 8.2,
