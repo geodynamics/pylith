@@ -48,7 +48,7 @@ class ExplicitTri3(Explicit):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitlumpedtri3"):
+  def __init__(self, name="explicittri3"):
     """
     Constructor.
     """

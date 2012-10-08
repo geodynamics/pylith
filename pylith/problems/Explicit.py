@@ -78,7 +78,7 @@ class Explicit(Formulation, ModuleExplicit):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitlumped"):
+  def __init__(self, name="explicit"):
     """
     Constructor.
     """

@@ -48,7 +48,7 @@ class ExplicitTet4(Explicit):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitlumpedtet4"):
+  def __init__(self, name="explicittet4"):
     """
     Constructor.
     """
