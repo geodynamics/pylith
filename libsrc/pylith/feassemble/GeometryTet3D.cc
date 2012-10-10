@@ -290,7 +290,7 @@ pylith::feassemble::GeometryTet3D::minCellWidth(const scalar_array& coordinatesC
     minWidth = rwidth;
   } // if
 
-  PetscLogFlops(5);
+  PetscLogFlops(3);
 
   return minWidth;
 } // minCellWidth
