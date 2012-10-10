@@ -83,6 +83,12 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
 
   CPPUNIT_ASSERT(0 != _mesh);
   FieldsMesh fields(*_mesh);
+  DM dmMesh = _mesh->dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const char* label = "field";
   fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -90,18 +96,14 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
 
   Field<Mesh>& field = fields.get(label);
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
   field.allocate();
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter)
-    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+  PetscSection section = field.petscSection();
+  CPPUNIT_ASSERT(section);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+  }
 } // testAddDomain
 
 // ----------------------------------------------------------------------
@@ -187,7 +189,13 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
 
   CPPUNIT_ASSERT(0 != _mesh);
   FieldsMesh fields(*_mesh);
-  
+  DM dmMesh = _mesh->dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+
   const char* labelA = "field A";
   fields.add(labelA, "displacement", Field<Mesh>::VERTICES_FIELD, fiberDim);
 
@@ -201,17 +209,13 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
   const Field<Mesh>& field = fields.get(labelB);
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices
-    = sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter)
-    CPPUNIT_ASSERT_EQUAL(fiberDim, section->getFiberDimension(*v_iter));
+  PetscSection section = field.petscSection();
+  CPPUNIT_ASSERT(section);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+  }
 } // testCopyLayout
 
 

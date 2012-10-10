@@ -60,6 +60,12 @@ pylith::topology::TestSolutionFields::testSolution(void)
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
+  DM dmMesh = mesh.dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const char* labels[] = { "field A", "field B", "field C" };
   const int size = 3;
@@ -70,22 +76,21 @@ pylith::topology::TestSolutionFields::testSolution(void)
   for (int i=0; i < size; ++i)
     manager.add(labels[i], "displacement");
 
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
   Field<Mesh>& fieldA = manager.get(labels[0]);
   Field<Mesh>& fieldB = manager.get(labels[1]);
   Field<Mesh>& fieldC = manager.get(labels[2]);
-  fieldA.newSection(vertices, fiberDimA);
+  fieldA.newSection(FieldBase::VERTICES_FIELD, fiberDimA);
 
   fieldB.newSection(fieldA, fiberDimB);
   fieldC.newSection(fieldB, fiberDimC);
 
   manager.solutionName(labels[1]);
   const Field<Mesh>& solution = manager.solution();
-  const ALE::Obj<Mesh::RealSection>& sectionSoln = solution.section();
-  CPPUNIT_ASSERT_EQUAL(fiberDimB,
-		       sectionSoln->getFiberDimension(*(vertices->begin())));
+  PetscSection section = solution.petscSection();
+  CPPUNIT_ASSERT(section);
+  PetscInt dof;
+  err = PetscSectionGetDof(section, vStart, &dof);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(fiberDimB, dof);
 } // testSolution
 
 // ----------------------------------------------------------------------

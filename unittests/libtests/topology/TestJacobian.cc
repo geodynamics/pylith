@@ -38,8 +38,9 @@ void
 pylith::topology::TestJacobian::testConstructor(void)
 { // testConstructor
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   Jacobian jacobianB(field, "baij");
@@ -54,8 +55,9 @@ void
 pylith::topology::TestJacobian::testConstructorSubDomain(void)
 { // testConstructorSubDomain
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
 
   SubMesh submesh(mesh, "bc");
   Field<SubMesh> subfield(submesh);
@@ -72,8 +74,9 @@ void
 pylith::topology::TestJacobian::testMatrix(void)
 { // testMatrix
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   const PetscMat matrix = jacobian.matrix();
@@ -86,8 +89,9 @@ void
 pylith::topology::TestJacobian::testAssemble(void)
 { // testAssemble
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   jacobian.assemble("flush_assembly");
@@ -100,8 +104,9 @@ void
 pylith::topology::TestJacobian::testZero(void)
 { // testZero
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   jacobian.zero();
@@ -113,8 +118,9 @@ void
 pylith::topology::TestJacobian::testView(void)
 { // testView
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   jacobian.assemble("final_assembly");
@@ -128,8 +134,9 @@ void
 pylith::topology::TestJacobian::testWrite(void)
 { // testWrite
   Mesh mesh;
+  _initializeMesh(&mesh);
   Field<Mesh> field(mesh);
-  _initialize(&mesh, &field);
+  _initializeField(&mesh, &field);
   Jacobian jacobian(field);
 
   jacobian.assemble("final_assembly");
@@ -139,20 +146,25 @@ pylith::topology::TestJacobian::testWrite(void)
 
 // ----------------------------------------------------------------------
 void
-pylith::topology::TestJacobian::_initialize(Mesh* mesh,
-                                            Field<Mesh>* field) const
+pylith::topology::TestJacobian::_initializeMesh(Mesh* mesh) const
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != field);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
+} // _initializeMesh
+
+void
+pylith::topology::TestJacobian::_initializeField(Mesh* mesh,
+                                                 Field<Mesh>* field) const
+{ // _initialize
+  CPPUNIT_ASSERT(0 != mesh);
+  CPPUNIT_ASSERT(0 != field);
 
   field->newSection(FieldBase::VERTICES_FIELD, mesh->dimension());
   field->allocate();
   field->zero();
-} // _initialize
-
+} // _initializeField
 
 // End of file 
