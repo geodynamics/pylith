@@ -1212,10 +1212,10 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 void
 pylith::topology::TestFieldMesh::testSplitDefault(void)
 { // testSplitDefault
-  const int spaceDim = _TestFieldMesh::cellDim;
-  const int numFibrations = spaceDim;
-  const int nconstraints[4] = { 1, 2, 0, 1 };
-  const int constraints[4] = {
+  const PetscInt spaceDim = _TestFieldMesh::cellDim;
+  const PetscInt numFields = spaceDim;
+  const PetscInt nconstraints[4] = { 1, 2, 0, 1 };
+  const PetscInt constraints[4] = {
     1,     // 0
     0, 1,  // 1
            // 2
@@ -1231,59 +1231,69 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
   PetscInt       vStart, vEnd;
   err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  // Create field with atlas to use to create new field
+  // Create field with section to use to create new field
   Field<Mesh> fieldSrc(mesh);
-  CPPUNIT_ASSERT(0);
   { // Setup source field
+    for(PetscInt f = 0; f < numFields; ++f) {
+      std::ostringstream msg;
+      msg << "Field "<<f;
+      fieldSrc.addField(msg.str().c_str(), 1);
+    }
+    fieldSrc.setupFields();
     fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
-    fieldSrc.splitDefault();
-    const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
-    CPPUNIT_ASSERT(!section.isNull());
-    int iV=0;
-    int iC=0;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
+    for(PetscInt f = 0; f < spaceDim; ++f) {
+      std::ostringstream msg;
+      msg << "Field "<<f;
+      fieldSrc.updateDof(msg.str().c_str(), Field<Mesh>::VERTICES_FIELD, 1);
+    }
+    PetscSection section = fieldSrc.petscSection();
+    CPPUNIT_ASSERT(section);
+    PetscInt iV = 0, iC = 0;
+    for(PetscInt v = vStart; v < vEnd; ++v) {
       const int nconstraintsVertex = nconstraints[iV];
-      section->addConstraintDimension(v, nconstraintsVertex);
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
-        const int fibration = constraints[iC++];
-        section->addConstraintDimension(v, 1, fibration);
+      err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);CHECK_PETSC_ERROR(err);
+      for(PetscInt iConstraint = 0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int field = constraints[iC++];
+        err = PetscSectionAddFieldConstraintDof(section, v, field, 1);CHECK_PETSC_ERROR(err);
       } // for
     } // for
     fieldSrc.allocate();
 
-    iC = 0;
-    iV = 0;
-    int zero = 0;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
-      const int nconstraintsVertex = nconstraints[iV];
-      if (nconstraintsVertex > 0)
-        section->setConstraintDof(v, &constraints[iC]);
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
-        const int fibration = constraints[iC++];
-        section->setConstraintDof(v, &zero, fibration);
+    iV = 0; iC = 0;
+    PetscInt zero = 0;
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+      const int nconstraintsVertex = nconstraints[iV++];
+      if (nconstraintsVertex > 0) {
+        err = PetscSectionSetConstraintIndices(section, v, (PetscInt *) &constraints[iC]);CHECK_PETSC_ERROR(err);
+      }
+      for(PetscInt iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const PetscInt field = constraints[iC++];
+        err = PetscSectionSetFieldConstraintIndices(section, v, field, &zero);CHECK_PETSC_ERROR(err);
       } // for
     } // for
   } // Setup source field
 
-  const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
+  PetscSection section = fieldSrc.petscSection();
+  CPPUNIT_ASSERT(section);
+  PetscInt     numSectionFields;
+  err = PetscSectionGetNumFields(section, &numSectionFields);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(numFields, numSectionFields);
 
-  for (int fibration=0; fibration < spaceDim; ++fibration) {
-    const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(fibration);
-    CPPUNIT_ASSERT(!sectionSplit.isNull());
-    int iV = 0;
-    int iC = 0;
+  for(PetscInt f = 0; f < numFields; ++f) {
+    PetscInt iV = 0, iC = 0;
+
     for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
-      CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(v, fibration));
-      bool isConstrained = false;
-      const int nconstraintsVertex = nconstraints[iV];
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint)
-        if (constraints[iC++] == fibration)
-          isConstrained = true;
-      const int constraintDimE = (!isConstrained) ? 0 : 1;
-      CPPUNIT_ASSERT_EQUAL(constraintDimE,
-                           section->getConstraintDimension(v, fibration));
+      PetscInt fdof, fcdof;
+      PetscBool      isConstrained      = PETSC_FALSE;
+      const PetscInt nconstraintsVertex = nconstraints[iV];
+
+      err = PetscSectionGetFieldDof(section, v, f, &fdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetFieldConstraintDof(section, v, f, &fcdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(1, fdof);
+      for(PetscInt iConstraint = 0; iConstraint < nconstraintsVertex; ++iConstraint)
+        if (constraints[iC++] == f) isConstrained = PETSC_TRUE;
+      const PetscInt constraintDimE = (!isConstrained) ? 0 : 1;
+      CPPUNIT_ASSERT_EQUAL(constraintDimE, fcdof);
     } // for
   } // for
 } // testSplitDefault
@@ -1293,10 +1303,10 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 void
 pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 { // testCloneSectionSplit
-  const int spaceDim = _TestFieldMesh::cellDim;
-  const int numFibrations = spaceDim;
-  const int nconstraints[4] = { 1, 2, 0, 1 };
-  const int constraints[4] = {
+  const PetscInt spaceDim = _TestFieldMesh::cellDim;
+  const PetscInt numFields = spaceDim;
+  const PetscInt nconstraints[4] = { 1, 2, 0, 1 };
+  const PetscInt constraints[4] = {
     1,     // 0
     0, 1,  // 1
            // 2
@@ -1314,34 +1324,42 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 
   // Create field with atlas to use to create new field
   Field<Mesh> fieldSrc(mesh);
-  CPPUNIT_ASSERT(0);
   { // Setup source field
+    for(PetscInt f = 0; f < numFields; ++f) {
+      std::ostringstream msg;
+      msg << "Field "<<f;
+      fieldSrc.addField(msg.str().c_str(), 1);
+    }
+    fieldSrc.setupFields();
     fieldSrc.newSection(Field<Mesh>::VERTICES_FIELD, spaceDim);
-    fieldSrc.splitDefault();
-    const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
-    CPPUNIT_ASSERT(!section.isNull());
-    int iV=0;
-    int iC=0;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
+    for(PetscInt f = 0; f < spaceDim; ++f) {
+      std::ostringstream msg;
+      msg << "Field "<<f;
+      fieldSrc.updateDof(msg.str().c_str(), Field<Mesh>::VERTICES_FIELD, 1);
+    }
+    PetscSection section = fieldSrc.petscSection();
+    CPPUNIT_ASSERT(section);
+    PetscInt iV = 0, iC = 0;
+    for(PetscInt v = vStart; v < vEnd; ++v) {
       const int nconstraintsVertex = nconstraints[iV];
-      section->addConstraintDimension(v, nconstraintsVertex);
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
-        const int fibration = constraints[iC++];
-        section->addConstraintDimension(v, 1, fibration);
+      err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);CHECK_PETSC_ERROR(err);
+      for(PetscInt iConstraint = 0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const int field = constraints[iC++];
+        err = PetscSectionAddFieldConstraintDof(section, v, field, 1);CHECK_PETSC_ERROR(err);
       } // for
     } // for
     fieldSrc.allocate();
 
-    iC = 0;
-    iV = 0;
-    int zero = 0;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
-      const int nconstraintsVertex = nconstraints[iV];
-      if (nconstraintsVertex > 0)
-        section->setConstraintDof(v, &constraints[iC]);
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
-        const int fibration = constraints[iC++];
-        section->setConstraintDof(v, &zero, fibration);
+    iV = 0; iC = 0;
+    PetscInt zero = 0;
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+      const int nconstraintsVertex = nconstraints[iV++];
+      if (nconstraintsVertex > 0) {
+        err = PetscSectionSetConstraintIndices(section, v, (PetscInt *) &constraints[iC]);CHECK_PETSC_ERROR(err);
+      }
+      for(PetscInt iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint) {
+        const PetscInt field = constraints[iC++];
+        err = PetscSectionSetFieldConstraintIndices(section, v, field, &zero);CHECK_PETSC_ERROR(err);
       } // for
     } // for
   } // Setup source field
@@ -1349,25 +1367,27 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   Field<Mesh> field(mesh);
   field.cloneSection(fieldSrc);
 
-  const ALE::Obj<Mesh::RealSection>& section = fieldSrc.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  CPPUNIT_ASSERT_EQUAL(numFibrations, section->getNumSpaces());
+  PetscSection section = field.petscSection();
+  CPPUNIT_ASSERT(section);
+  PetscInt     numSectionFields;
+  err = PetscSectionGetNumFields(section, &numSectionFields);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(numFields, numSectionFields);
 
-  for (int fibration=0; fibration < spaceDim; ++fibration) {
-    const ALE::Obj<Mesh::RealSection>& sectionSplit = section->getFibration(fibration);
-    CPPUNIT_ASSERT(!sectionSplit.isNull());
-    int iV = 0;
-    int iC = 0;
+  for(PetscInt f = 0; f < numFields; ++f) {
+    PetscInt iV = 0, iC = 0;
+
     for(PetscInt v = vStart; v < vEnd; ++v, ++iV) {
-      CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(v, fibration));
-      bool isConstrained = false;
-      const int nconstraintsVertex = nconstraints[iV];
-      for (int iConstraint=0; iConstraint < nconstraintsVertex; ++iConstraint)
-        if (constraints[iC++] == fibration)
-          isConstrained = true;
-      const int constraintDimE = (!isConstrained) ? 0 : 1;
-      CPPUNIT_ASSERT_EQUAL(constraintDimE,
-                           section->getConstraintDimension(v, fibration));
+      PetscInt fdof, fcdof;
+      PetscBool      isConstrained      = PETSC_FALSE;
+      const PetscInt nconstraintsVertex = nconstraints[iV];
+
+      err = PetscSectionGetFieldDof(section, v, f, &fdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetFieldConstraintDof(section, v, f, &fcdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(1, fdof);
+      for(PetscInt iConstraint = 0; iConstraint < nconstraintsVertex; ++iConstraint)
+        if (constraints[iC++] == f) isConstrained = PETSC_TRUE;
+      const PetscInt constraintDimE = (!isConstrained) ? 0 : 1;
+      CPPUNIT_ASSERT_EQUAL(constraintDimE, fcdof);
     } // for
   } // for
 } // testCloneSectionSplit

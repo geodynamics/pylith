@@ -133,7 +133,8 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     const SieveMesh::point_type point = _points[iPoint];
 
     // Get list of currently constrained DOF
-    PetscInt cdof, *cInd;
+    PetscInt cdof;
+    const PetscInt *cInd;
 
     err = PetscSectionGetConstraintDof(sectionP, point, &cdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintIndices(sectionP, point, &cInd);CHECK_PETSC_ERROR(err);
