@@ -208,20 +208,16 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
 { // testGet
   CPPUNIT_ASSERT(0 != _mesh);
   FieldsNewMesh fields(*_mesh);
+  DM dmMesh = _mesh->dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
-
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
-    vertices->end();
 
   // Check field A
   Field<Mesh>& fieldA = fields.get("field A");
@@ -231,17 +227,13 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
-  const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
-  CPPUNIT_ASSERT(!sectionA.isNull());
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const int fiberDim = sectionA->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(3, fiberDim);
-    const PylithScalar* values = sectionA->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(values);
-  } // for
-
+  PetscSection sectionA = fieldA.petscSection();
+  CPPUNIT_ASSERT(sectionA);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(sectionA, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(3, dof);
+  }
 
   // Check field B
   Field<Mesh>& fieldB = fields.get("field B");
@@ -252,16 +244,13 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   CPPUNIT_ASSERT_EQUAL(PylithScalar(2.0), fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
 
-  const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();
-  CPPUNIT_ASSERT(!sectionB.isNull());
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const int fiberDim = sectionB->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(4, fiberDim);
-    const PylithScalar* values = sectionB->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(values);
-  } // for
+  PetscSection sectionB = fieldB.petscSection();
+  CPPUNIT_ASSERT(sectionB);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(sectionB, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(4, dof);
+  }
 
   // Make sure we can clone field B
   Field<Mesh> fieldC(*_mesh);
@@ -276,20 +265,16 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
 { // testGetConst
   CPPUNIT_ASSERT(0 != _mesh);
   FieldsNewMesh fields(*_mesh);
+  DM dmMesh = _mesh->dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
   fields.allocate(FieldBase::VERTICES_FIELD);
-
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
-    vertices->end();
 
   // Check field A
   const Field<Mesh>& fieldA = fields.get("field A");
@@ -299,15 +284,13 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), fieldA.scale());
   CPPUNIT_ASSERT_EQUAL(false, fieldA.addDimensionOkay());
 
-  const ALE::Obj<Mesh::RealSection>& sectionA = fieldA.section();
-  CPPUNIT_ASSERT(!sectionA.isNull());
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const int fiberDim = sectionA->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(3, fiberDim);
-  } // for
-
+  PetscSection sectionA = fieldA.petscSection();
+  CPPUNIT_ASSERT(sectionA);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(sectionA, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(3, dof);
+  }
 
   // Check field B
   const Field<Mesh>& fieldB = fields.get("field B");
@@ -318,14 +301,13 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   CPPUNIT_ASSERT_EQUAL(PylithScalar(2.0), fieldB.scale());
   CPPUNIT_ASSERT_EQUAL(true, fieldB.addDimensionOkay());
 
-  const ALE::Obj<Mesh::RealSection>& sectionB = fieldB.section();
-  CPPUNIT_ASSERT(!sectionB.isNull());
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const int fiberDim = sectionB->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(4, fiberDim);
-  } // for
+  PetscSection sectionB = fieldB.petscSection();
+  CPPUNIT_ASSERT(sectionB);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof;
+    err = PetscSectionGetDof(sectionB, v, &dof);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(4, dof);
+  }
 } // testGetConst
 
 // ----------------------------------------------------------------------

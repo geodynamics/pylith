@@ -87,8 +87,15 @@ private :
    * @param mesh Finite-element mesh.
    * @param field Solution field.
    */
-  void _initialize(Mesh* mesh,
-                   Field<Mesh>* field) const;
+  void _initializeMesh(Mesh* mesh) const;
+
+  /** Initialize field for Jacobian.
+   *
+   * @param mesh Finite-element mesh.
+   * @param field Solution field.
+   */
+  void _initializeField(Mesh* mesh,
+                        Field<Mesh>* field) const;
 
 }; // class TestJacobian
 
