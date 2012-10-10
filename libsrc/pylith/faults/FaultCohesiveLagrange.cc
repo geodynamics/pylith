@@ -1288,11 +1288,13 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     up[i] = upDir[i];
 
   // Get vertices in fault mesh.
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             faultDMMesh = _faultMesh->dmMesh();
+  PetscInt       vStart, vEnd, cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   // Containers for orientation information.
   const int cohesiveDim = _faultMesh->dimension();
@@ -1320,33 +1322,22 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   orientation.setupFields();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions
-  orientation.updateDof("orientation", pylith::topology::FieldBase::POINTS_FIELD, spaceDim);
+  orientation.updateDof("orientation", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
   orientation.allocate();
   orientation.zero();
   PetscSection orientationSection = orientation.petscSection();
   Vec          orientationVec     = orientation.localVector();
   PetscScalar *orientationArray;
-  PetscErrorCode err;
 
   logger.stagePop();
-
-  // Get fault cells.
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
-      faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Compute orientation of fault at constraint vertices
 
   // Get section containing coordinates of vertices
-  scalar_array coordinatesCell(numBasis * spaceDim);
-  const ALE::Obj<RealSection>& coordinatesSection =
-      faultSieveMesh->getRealSection("coordinates");
-  assert(!coordinatesSection.isNull());
-  RestrictVisitor coordinatesVisitor(*coordinatesSection,
-				     coordinatesCell.size(),
-				     &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Set orientation function
   assert(cohesiveDim == _quadrature->cellDim());
@@ -1355,46 +1346,46 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Loop over cohesive cells, computing orientation weighted by
   // jacobian at constraint vertices
 
-  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = faultSieveMesh->getSieve();
-  assert(!sieve.isNull());
-  const int closureSize = 
-    int(pow(sieve->getMaxConeSize(), faultSieveMesh->depth()));
-  assert(closureSize >= 0);
-  ALE::ISieveVisitor::NConeRetriever<SieveMesh::sieve_type>
-    ncV(*sieve, closureSize);
-
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
-      != cellsEnd; ++c_iter) {
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt          *closure = PETSC_NULL;
+    PetscInt           closureSize, q = 0;
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+    scalar_array       coordinatesCell(numBasis * spaceDim);
+
     // Get orientations at fault cell's vertices.
-    coordinatesVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordinatesVisitor);
+    err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
 
-    ncV.clear();
-    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve,
-      *c_iter, ncV);
-    const int coneSize = ncV.getSize();
-    const SieveSubMesh::point_type* cone = ncV.getPoints();
-
-    for (int v=0; v < coneSize; ++v) {
+    // Filter out non-vertices
+    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+      if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+        closure[q*2]   = closure[p];
+        closure[q*2+1] = closure[p+1];
+        ++q;
+      }
+    }
+    closureSize = q;
+    for(PetscInt v = 0; v < closureSize; ++v) {
       // Compute Jacobian and determinant of Jacobian at vertex
-      memcpy(&refCoordsVertex[0], &verticesRef[v * cohesiveDim], cohesiveDim
-          * sizeof(PylithScalar));
-      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell,
-        refCoordsVertex);
+      memcpy(&refCoordsVertex[0], &verticesRef[v * cohesiveDim], cohesiveDim * sizeof(PylithScalar));
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell, refCoordsVertex);
 
       // Compute orientation
-      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet,
-        up);
+      cellGeometry.orientation(&orientationVertex, jacobian, jacobianDet, up);
 
       // Update orientation
       PetscInt off;
 
-      err = PetscSectionGetOffset(orientationSection, cone[v], &off);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(orientationSection, closure[v*2], &off);CHECK_PETSC_ERROR(err);
       for(PetscInt d = 0; d < orientationSize; ++d) {
         orientationArray[off+d] += orientationVertex[d];
       }
     } // for
+    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMComplexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
   err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
@@ -1407,11 +1398,10 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   scalar_array vertexDir(orientationSize);
   int count = 0;
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-      != verticesEnd; ++v_iter, ++count) {
+  for(PetscInt v = vStart; v < vEnd; ++v, ++count) {
     PetscInt off;
 
-    err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[off+d];
     }
@@ -1432,7 +1422,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscLogFlops(count * orientationSize * 4);
 
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  if (1 == cohesiveDim && vertices->size() > 0) {
+  if (1 == cohesiveDim && vEnd > vStart) {
     // Default sense of positive slip is left-lateral and
     // fault-opening.
     // 
@@ -1452,10 +1442,10 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // opposite of what we would want, but we cannot flip the fault
     // normal direction because it is tied to how the cohesive cells
     // are created.
-    assert(vertices->size() > 0);
+    assert(vEnd > vStart);
     PetscInt off;
 
-    err = PetscSectionGetOffset(orientationSection, *vertices->begin(), &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, vStart, &off);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[off+d];
     }
@@ -1472,13 +1462,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     const int inormal = 2;
     if (normalDirDot * shearDirDot < 0.0) {
       // Flip shear direction
-      for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin; 
-	   v_iter != verticesEnd;
-	   ++v_iter) {
+      for(PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof;
 
-        err = PetscSectionGetDof(orientationSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
-        err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetDof(orientationSection, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
         for(PetscInt d = 0; d < orientationSize; ++d) {
           orientationVertex[d] = orientationArray[off+d];
         }
@@ -1494,7 +1482,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       PetscLogFlops(3 + count * 2);
     } // if
 
-  } else if (2 == cohesiveDim && vertices->size() > 0) {
+  } else if (2 == cohesiveDim && vEnd > vStart) {
     // Check orientation of first vertex, if dot product of fault
     // normal with preferred normal is negative, flip up/down dip
     // direction.
@@ -1512,10 +1500,10 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // are used are the opposite of what we would want, but we cannot
     // flip the fault normal direction because it is tied to how the
     // cohesive cells are created.
-    assert(vertices->size() > 0);
+    assert(vEnd > vStart);
     PetscInt off;
 
-    err = PetscSectionGetOffset(orientationSection, *vertices->begin(), &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, vStart, &off);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[off+d];
     }
@@ -1542,12 +1530,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       // if we have (0,0,-1).
 
       // Flip dip direction
-      for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin; v_iter
-	     != verticesEnd; ++v_iter) {
+      for(PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof;
 
-        err = PetscSectionGetDof(orientationSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
-        err = PetscSectionGetOffset(orientationSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetDof(orientationSection, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
         for(PetscInt d = 0; d < orientationSize; ++d) {
           orientationVertex[d] = orientationArray[off+d];
         }
@@ -1588,13 +1575,13 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   scalar_array areaCell(numBasis);
 
   // Get vertices in fault mesh.
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-      faultSieveMesh->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-      vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             faultDMMesh = _faultMesh->dmMesh();
+  PetscInt       vStart, vEnd, cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("FaultFields");
@@ -1610,37 +1597,28 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   const PylithScalar lengthScale = _normalizer->lengthScale();
   area.scale(pow(lengthScale, (spaceDim-1)));
   area.zero();
-  const ALE::Obj<RealSection>& areaSection = area.section();
-  assert(!areaSection.isNull());
-  UpdateAddVisitor areaVisitor(*areaSection, &areaCell[0]);
+  PetscSection areaSection = area.petscSection();
+  Vec          areaVec     = area.localVector();
+  PetscScalar *areaArray;
 
   logger.stagePop();
 
-  scalar_array coordinatesCell(numBasis * spaceDim);
-  const ALE::Obj<RealSection>& coordinates = faultSieveMesh->getRealSection(
-    "coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates,
-				coordinatesCell.size(), &coordinatesCell[0]);
-
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
-      faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Loop over cells in fault mesh, compute area
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin; c_iter
-      != cellsEnd; ++c_iter) {
+  for(PetscInt c = cStart; c < cEnd; ++c) {
     areaCell = 0.0;
 
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(c);
 #else
-    coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get cell geometry information that depends on cell
@@ -1655,9 +1633,11 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
         areaCell[iBasis] += dArea;
       } // for
     } // for
-    areaVisitor.clear();
-    faultSieveMesh->updateClosure(*c_iter, areaVisitor);
+    err = DMComplexVecSetClosure(faultDMMesh, areaSection, areaVec, c, &areaCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
 
+#if not defined(PRECOMPUTE_GEOMETRY)
+    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+#endif
     PetscLogFlops( numQuadPts*(1+numBasis*2) );
   } // for
 
