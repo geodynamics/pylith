@@ -41,8 +41,25 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
   _metadata["default"].scale = 1.0;
   _metadata["default"].dimsOkay = false;
   if (mesh.dmMesh()) {
-    PetscSection s;
-    PetscErrorCode err = DMComplexClone(mesh.dmMesh(), &_dm);CHECK_PETSC_ERROR(err);
+    DM             dm = mesh.dmMesh();
+    Vec            coordVec;
+    PetscSection   s;
+    PetscErrorCode err;
+
+    err = DMComplexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
+    if (coordVec) {
+      DM           coordDM, newCoordDM;
+      PetscSection coordSection, newCoordSection;
+
+      err = DMGetCoordinateDM(dm, &coordDM);CHECK_PETSC_ERROR(err);
+      err = DMGetCoordinateDM(_dm, &newCoordDM);CHECK_PETSC_ERROR(err);
+      err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
+      err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
+      err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
+    }
     err = PetscSectionCreate(mesh.comm(), &s);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultSection(_dm, s);CHECK_PETSC_ERROR(err);
   } else {
@@ -64,8 +81,23 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
   assert(!section.isNull());
   _metadata["default"] = metadata;
   if (mesh.dmMesh()) {
-    PetscSection s;
-    PetscErrorCode err = DMComplexClone(mesh.dmMesh(), &_dm);CHECK_PETSC_ERROR(err);
+    DM             dm = mesh.dmMesh(), coordDM, newCoordDM;
+    PetscSection   coordSection, newCoordSection;
+    Vec            coordVec;
+    PetscSection   s;
+    PetscErrorCode err;
+
+    err = DMComplexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
+    if (coordVec) {
+      err = DMGetCoordinateDM(dm, &coordDM);CHECK_PETSC_ERROR(err);
+      err = DMGetCoordinateDM(_dm, &newCoordDM);CHECK_PETSC_ERROR(err);
+      err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
+      err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
+      err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
+      err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
+    }
     this->dmSection(&s, &_localVec);
     err = DMSetDefaultSection(_dm, s);CHECK_PETSC_ERROR(err);
     err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
@@ -84,6 +116,9 @@ pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
   _mesh(src._mesh),
   _section(PETSC_NULL)
 { // constructor
+  DM             dm = mesh.dmMesh(), coordDM, newCoordDM;
+  PetscSection   coordSection, newCoordSection;
+  Vec            coordVec;
   PetscSection   s;
   PetscErrorCode err;
 
@@ -94,7 +129,17 @@ pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
     err = PetscSectionGetFieldName(s, fields[f], &name);CHECK_PETSC_ERROR(err);
     _metadata[name] = src._metadata[name];
   }
-  err = DMCreateSubDM(_mesh.dmMesh(), numFields, fields, PETSC_NULL, &_dm);CHECK_PETSC_ERROR(err);
+  err = DMCreateSubDM(dm, numFields, fields, PETSC_NULL, &_dm);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
+  if (coordVec) {
+    err = DMGetCoordinateDM(dm, &coordDM);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinateDM(_dm, &newCoordDM);CHECK_PETSC_ERROR(err);
+    err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
+    err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
+    err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
+    err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
+  }
   _globalVec = PETSC_NULL;
   _localVec  = PETSC_NULL;
 } // constructor
@@ -124,7 +169,7 @@ pylith::topology::Field<mesh_type, section_type>::deallocate(void)
     err = DMDestroy(&s_iter->second.dm);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&s_iter->second.vector);CHECK_PETSC_ERROR(err);
 
-    err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);
+    if (s_iter->second.scatter) {err = VecScatterDestroy(&s_iter->second.scatter);CHECK_PETSC_ERROR(err);}
     err = VecDestroy(&s_iter->second.scatterVec);CHECK_PETSC_ERROR(err);
   } // for
   _scatters.clear();
@@ -509,6 +554,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	   ++s_iter) {
 	ScatterInfo sinfo;
 	sinfo.vector = 0;
+	sinfo.scatter = 0;
 	sinfo.scatterVec = 0;
 
 	// Copy DM
@@ -517,26 +563,29 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	CHECK_PETSC_ERROR(err);
 
 	// Copy scatter
-	sinfo.scatter = s_iter->second.scatter;
-	err = PetscObjectReference((PetscObject) sinfo.scatter);
-	CHECK_PETSC_ERROR(err);
+    if (s_iter->second.scatter) {
+      sinfo.scatter = s_iter->second.scatter;
+      err = PetscObjectReference((PetscObject) sinfo.scatter);
+      CHECK_PETSC_ERROR(err);
+    }
       
 	// Create scatter Vec
-	assert(s_iter->second.scatterVec);
-	int blockSize = 1;
-	VecGetBlockSize(s_iter->second.scatterVec, &blockSize);
-	if (_section->sizeWithBC() > 0) {
-	  err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-				      blockSize, _section->getStorageSize(),
-				      _section->restrictSpace(),
-				      &sinfo.scatterVec);
-	  CHECK_PETSC_ERROR(err);
-	} else {
-	  err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				      blockSize, 0, PETSC_NULL,
-				      &sinfo.scatterVec);
-	  CHECK_PETSC_ERROR(err);
-	} // else
+	if (s_iter->second.scatterVec) {
+      int blockSize = 1;
+      err = VecGetBlockSize(s_iter->second.scatterVec, &blockSize);CHECK_PETSC_ERROR(err);
+      if (_section->sizeWithBC() > 0) {
+        err = VecCreateSeqWithArray(PETSC_COMM_SELF,
+                                    blockSize, _section->getStorageSize(),
+                                    _section->restrictSpace(),
+                                    &sinfo.scatterVec);
+        CHECK_PETSC_ERROR(err);
+      } else {
+        err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
+                                    blockSize, 0, PETSC_NULL,
+                                    &sinfo.scatterVec);
+        CHECK_PETSC_ERROR(err);
+      } // else
+    }
 
 	// Create vector using sizes from source section
 	int vecLocalSize = 0;
@@ -546,6 +595,8 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	err = VecGetSize(_globalVec, &vecGlobalSize2);CHECK_PETSC_ERROR(err);
 
     if (vecGlobalSize != vecGlobalSize2) {
+      int blockSize = 1;
+      err = VecGetBlockSize(s_iter->second.vector, &blockSize);CHECK_PETSC_ERROR(err);
       err = VecCreate(_mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
       err = VecSetSizes(sinfo.vector, vecLocalSize, vecGlobalSize);CHECK_PETSC_ERROR(err);
       err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
@@ -882,6 +933,10 @@ pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
     } // for
   } // if
 
+  if (_localVec && field._localVec) {
+    PetscErrorCode err = VecCopy(field._localVec, _localVec);CHECK_PETSC_ERROR(err);
+  }
+
   label(const_cast<Field&>(field)._metadata["default"].label.c_str()); // Update label
   _metadata["default"].scale = const_cast<Field&>(field)._metadata["default"].scale;
 } // copy
@@ -984,6 +1039,10 @@ pylith::topology::Field<mesh_type, section_type>::operator+=(const Field& field)
     } // for
   } // if
 
+  if (_localVec && field._localVec) {
+    PetscErrorCode err = VecAXPY(_localVec, 1.0, field._localVec);CHECK_PETSC_ERROR(err);
+  }
+
   return *this;
 } // operator+=
 
@@ -1001,6 +1060,8 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
     throw std::runtime_error(msg.str());
   } // if
 
+  spatialdata::units::Nondimensional normalizer;
+
   if (!_section.isNull()) {
     const chart_type& chart = _section->getChart();
     const typename chart_type::const_iterator chartEnd = chart.end();
@@ -1009,8 +1070,6 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
     const int fiberDim = (chart.size() > 0) ? 
       _section->getFiberDimension(*chart.begin()) : 0;
     scalar_array values(fiberDim);
-
-    spatialdata::units::Nondimensional normalizer;
 
     for (typename chart_type::const_iterator c_iter = chart.begin();
 	 c_iter != chartEnd;
@@ -1023,6 +1082,27 @@ pylith::topology::Field<mesh_type, section_type>::dimensionalize(void) const
 	_section->updatePointAll(*c_iter, &values[0]);
       } // if
   } // if
+
+  if (_localVec) {
+    PetscSection   section;
+    PetscScalar   *array;
+    PetscInt       pStart, pEnd;
+    PetscErrorCode err;
+
+    err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(_localVec, &array);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = pStart; p < pEnd; ++p) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(section, p, &off);CHECK_PETSC_ERROR(err);
+      if (dof) {
+        normalizer.dimensionalize(&array[off], dof, const_cast<Field*>(this)->_metadata["default"].scale);
+      }
+    }
+    err = VecRestoreArray(_localVec, &array);CHECK_PETSC_ERROR(err);
+  }
 } // dimensionalize
 
 // ----------------------------------------------------------------------

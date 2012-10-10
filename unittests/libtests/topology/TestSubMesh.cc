@@ -217,6 +217,10 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 
   ALE::Obj<SieveFlexMesh::sieve_type> s = 
     new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
+
+  mesh->createDMMesh(_TestSubMesh::cellDim);
+  DM dmMesh = mesh->dmMesh();
+  PetscErrorCode err;
   
   const int cellDim = _TestSubMesh::cellDim;
   const int ncells = _TestSubMesh::ncells;
@@ -236,6 +240,48 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						       coordinates);
 
+  err = DMComplexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = 0; c < ncells; ++c) {
+    err = DMComplexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
+  }
+  err = DMSetUp(dmMesh);CHECK_PETSC_ERROR(err);
+  PetscInt *cone = new PetscInt[ncorners];
+  for(PetscInt c = 0; c < ncells; ++c) {
+    for(PetscInt v = 0; v < ncorners; ++v) {
+      cone[v] = cells[c*ncorners+v]+ncells;
+    }
+    err = DMComplexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
+  } // for
+  delete [] cone; cone = 0;
+  err = DMComplexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMComplexStratify(dmMesh);CHECK_PETSC_ERROR(err);
+  PetscSection coordSection;
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = ncells; v < ncells+nvertices; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(sieveMesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = 0; v < nvertices; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v+ncells, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = coordinates[v*spaceDim+d];
+    }
+  }
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
+
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);
   cs.initialize();
@@ -253,7 +299,10 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   for(int i=0; i < numPoints; ++i)
     groupField->setFiberDimension(numCells+_TestSubMesh::groupVertices[i], 1);
   sieveMesh->allocate(groupField);
-  
+
+  for(PetscInt i = 0; i < numPoints; ++i) {
+    err = DMComplexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
+  }
 } // _buildMesh
 
 
