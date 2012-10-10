@@ -81,3 +81,9 @@ RELEASE NOTES - PyLith v1.8.0
     Jacobian. This formulation was not setup properly for spontaneous
     rupture models and is too computationally expensive for practical
     problems. The ExplicitLumped* formulations are now simply Explicit*.
+
+  - Fixed parallel bug that resulting in inconsistent orientation of
+    fault slip directions. Flipping the fault orientation was not
+    synchronized across processors. This bug would only appear when
+    running in parallel with faults that change from dipping in one
+    direction to dipping in the opposite direction.
