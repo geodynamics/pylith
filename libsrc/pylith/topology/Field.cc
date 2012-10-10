@@ -705,7 +705,8 @@ pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec
     }
     err = PetscSectionSetUp(*s);CHECK_PETSC_ERROR(err);
     for(PetscInt p = pStart; p < pStart+numNormalCells; ++p) {
-      PetscInt *cind, *cfind, q = p;
+      const PetscInt *cind, *cfind;
+      PetscInt        q = p;
 
       err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
@@ -715,7 +716,8 @@ pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec
       }
     }
     for(PetscInt p = pStart+numNormalCells; p < pStart+numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices; ++p) {
-      PetscInt *cind, *cfind, q = p + numCohesiveCells;
+      const PetscInt *cind, *cfind;
+      PetscInt        q = p + numCohesiveCells;
 
       err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
@@ -725,7 +727,8 @@ pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec
       }
     }
     for(PetscInt p = pStart+numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices; p < pEnd; ++p) {
-      PetscInt *cind, *cfind, q = p - (numNormalVertices+numShadowVertices+numLagrangeVertices);
+      const PetscInt *cind, *cfind;
+      PetscInt        q = p - (numNormalVertices+numShadowVertices+numLagrangeVertices);
 
       err = PetscSectionGetConstraintIndices(section, p, &cind);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetConstraintIndices(*s, q, cind);CHECK_PETSC_ERROR(err);
