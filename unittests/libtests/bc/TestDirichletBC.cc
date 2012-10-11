@@ -243,8 +243,8 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   const PetscInt offset   = numCells;
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt *cInd, *fcInd;
-    PetscInt  dof, cdof, fdof, fcdof;
+    const PetscInt *cInd, *fcInd;
+    PetscInt        dof, cdof, fdof, fcdof;
 
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);

@@ -1437,7 +1437,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
        const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
        const char* context)
 { // createScatterWithBC
-  assert(!numbering.isNull());
   assert(context);
   PetscErrorCode err = 0;
 
@@ -1454,7 +1453,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
-  if (!_section.isNull()) {
+  if (!_section.isNull() && !numbering.isNull()) {
     // Get global order (create if necessary).
     const std::string& orderLabel = 
       (strlen(context) > 0) ?
