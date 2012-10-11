@@ -145,8 +145,8 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     const int numConstrainedDOF = _data->constraintSizes[v-offset];
-    PetscInt *cInd;
-    PetscInt  dof, cdof;
+    const PetscInt *cInd;
+    PetscInt        dof, cdof;
 
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
