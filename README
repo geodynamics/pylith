@@ -127,6 +127,10 @@ Version 1.8.0
     running in parallel with faults that change from dipping in one
     direction to dipping in the opposite direction.
 
+  - Fixed bug in setting name of field in OutputSolnPoints when output
+    multiple fields. This bug caused the name of the first output
+    field to be used and output data to overrite each other.
+
 ======================================================================
 MIGRATING FROM VERSION 1.6 TO 1.7
 ======================================================================
