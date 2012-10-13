@@ -97,7 +97,6 @@ class Implicit(Formulation, ModuleImplicit):
     Formulation.__init__(self, name)
     ModuleImplicit.__init__(self)
     self._loggingPrefix = "TSIm "
-    self._stepCount = None
     return
 
 
@@ -171,25 +170,9 @@ class Implicit(Formulation, ModuleImplicit):
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
 
-    # Initial time step solves for total displacement field, not increment
-    self._stepCount = 0
-    for constraint in self.constraints:
-      constraint.useSolnIncr(False)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.useSolnIncr(False)
-
     memoryLogger.stagePop()
     memoryLogger.setDebug(0)
     return
-
-
-  def getStartTime(self):
-    """
-    Get time at which time stepping should start.
-    """
-    dt = self.timeStep.timeStep(self.mesh,
-                                self.integratorsMesh + self.integratorsSubMesh)
-    return -dt
 
 
   def prestep(self, t, dt):
@@ -199,30 +182,14 @@ class Implicit(Formulation, ModuleImplicit):
     from pylith.mpi.Communicator import mpi_comm_world
     comm = mpi_comm_world()
     
-    # If finishing first time step, then switch from solving for total
-    # displacements to solving for incremental displacements
-    needNewJacobian = False
-    if 1 == self._stepCount:
-      if 0 == comm.rank:
-        self._info.log("Switching from total field solution to incremental " \
-                         "field solution.")
-      for constraint in self.constraints:
-        constraint.useSolnIncr(True)
-      for integrator in self.integratorsMesh + self.integratorsSubMesh:
-        integrator.useSolnIncr(True)
-      needNewJacobian = True
-
     if 0 == comm.rank:
       self._info.log("Setting constraints.")
     dispIncr = self.fields.get("dispIncr(t->t+dt)")
     dispIncr.zero()
-    if 0 == self._stepCount:
-      for constraint in self.constraints:
-        constraint.setField(t+dt, dispIncr)
-    else:
-      for constraint in self.constraints:
-        constraint.setFieldIncr(t, t+dt, dispIncr)
+    for constraint in self.constraints:
+      constraint.setFieldIncr(t, t+dt, dispIncr)
 
+    needNewJacobian = False
     for integrator in self.integratorsMesh + self.integratorsSubMesh:
       integrator.timeStep(dt)
       if integrator.needNewJacobian():
@@ -285,7 +252,6 @@ class Implicit(Formulation, ModuleImplicit):
       output.writeData(t+dt, self.fields)
     self._writeData(t+dt)
 
-    self._stepCount += 1
     return
 
 

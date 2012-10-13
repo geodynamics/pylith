@@ -29,7 +29,7 @@ from pylith.utils.profiling import resourceUsageString
 # TimeStepUniform class
 class TimeStepUniform(TimeStep):
   """
-  Python abstract base class for marching format in time with a uniform time step.
+  Python object for marching format in time with a uniform time step.
 
   Factory: time_step.
   """
@@ -45,7 +45,6 @@ class TimeStepUniform(TimeStep):
     ## Python object for managing TimeStepUniform facilities and properties.
     ##
     ## \b Properties
-    ## @li \b total_time Time duration for simulation.
     ## @li \b dt Time step for simulation.
     ##
     ## \b Facilities
@@ -54,10 +53,6 @@ class TimeStepUniform(TimeStep):
     import pyre.inventory
 
     from pyre.units.time import second
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                          validator=pyre.inventory.greaterEqual(0.0*second))
-    totalTime.meta['tip'] = "Time duration for simulation."
-
     dt = pyre.inventory.dimensional("dt", default=1.0*second,
                                     validator=pyre.inventory.greater(0.0*second))
     dt.meta['tip'] = "Time step for simulation."
@@ -101,7 +96,6 @@ class TimeStepUniform(TimeStep):
     Set members based using inventory.
     """
     TimeStep._configure(self)
-    self.totalTime = self.inventory.totalTime
     self.dt = self.inventory.dt
     return
 
