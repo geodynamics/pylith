@@ -120,12 +120,6 @@ pylith::problems::SolverLinear::solve(
   } // else
   jacobian->resetValuesChanged();
 
-  // Update KSP operators with custom preconditioner if necessary.
-  const ALE::Obj<RealSection>& solutionSection = solution->section();
-  assert(!solutionSection.isNull());
-  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-
   const PetscVec residualVec = residual.vector();
   const PetscVec solutionVec = solution->vector();
 
