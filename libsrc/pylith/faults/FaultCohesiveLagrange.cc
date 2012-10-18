@@ -1417,7 +1417,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   } // for
   PetscLogFlops(count * orientationSize * 4);
 
-  if (1 == cohesiveDim && vertices->size() > 0) {
+  if (1 == cohesiveDim) {
     // Default sense of positive slip is left-lateral and
     // fault-opening.
     // 
