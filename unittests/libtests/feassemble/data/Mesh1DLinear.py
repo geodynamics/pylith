@@ -47,10 +47,12 @@ class Mesh1DLinear(Component):
     self.cellDim = 1
     self.numVertices = 2
     self.numCells = 1    
-    self.gravityVec = numpy.array( [-1.0e8], dtype=numpy.float64)
+    self.gravityVec = numpy.array( [-1.0e+8], dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
     self.verticesRef = numpy.array( [[-1.0], [+1.0]], dtype=numpy.float64)
+
+    self.minCellWidth = 2.25
     return
   
 

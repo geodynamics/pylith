@@ -317,6 +317,7 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
 		tests_auto/petsc/Makefile
+		tests_auto/eqinfo/Makefile
 		tests/Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
@@ -381,6 +382,8 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile
 		examples/meshing/surface_nurbs/triangles/Makefile
+		examples/meshing/surface_nurbs/merge_surfs/Makefile
+		examples/meshing/cubit_cellsize/Makefile
 		templates/Makefile
 		share/Makefile
 		])

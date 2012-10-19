@@ -56,7 +56,6 @@ class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testNormViscosity );
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
-  CPPUNIT_TEST( testUseSolnIncr );
 
   // Testing of initialize(), integrateResidual(),
   // integrateJacobian(), and updateStateVars() handled by derived
@@ -88,23 +87,14 @@ public :
   /// Test needNewJacobian().
   void testNeedNewJacobian(void);
 
-  /// Test useSolnIncr().
-  void testUseSolnIncr(void);
-
   /// Test initialize().
   void testInitialize(void);
 
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateResidualLumped().
-  void testIntegrateResidualLumped(void);
-
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
-
-  /// Test integrateJacobianLumped().
-  void testIntegrateJacobianLumped(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);

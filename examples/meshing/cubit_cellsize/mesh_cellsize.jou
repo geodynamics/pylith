@@ -1,0 +1,47 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2012 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file to create an ExodusII file with a mesh at uniform
+# resolution to which we will add a field specifying the cell size for
+# the real mesh.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Create tet4 mesh at 4.0 km resolution.
+# ----------------------------------------------------------------------
+
+#{dx=4.0*km}
+volume all size {dx}
+volume all scheme tetmesh
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+set large exodus off
+export mesh "mesh_cellsize.exo" dimension 3 overwrite
+
+
+# End of file

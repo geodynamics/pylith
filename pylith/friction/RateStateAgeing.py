@@ -44,18 +44,18 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
     ## Python object for managing RateStateAgeing facilities and properties.
     ##
     ## \b Properties
-    ## @li \b min_slip_rate Floor for nondimensional slip rate used in 
-    ##   friction calculation.
+    ## @li \b linear_slip_rate Nondimensional slip rate below which friction 
+    ## varies linearly with slip rate.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
 
-    minSlipRate = pyre.inventory.float("min_slip_rate", default=1.0e-12,
-                                       validator=pyre.inventory.greaterEqual(0.0))
-    minSlipRate.meta['tip'] = "Floor for nondimensional slip rate used in "\
-        "friction calculation."
+    linearSlipRate = pyre.inventory.float("linear_slip_rate", default=1.0e-12,
+                                          validator=pyre.inventory.greaterEqual(0.0))
+    linearSlipRate.meta['tip'] = "Nondimensional slip rate below which friction " \
+        "varies linearly with slip rate."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -88,7 +88,7 @@ class RateStateAgeing(FrictionModel, ModuleRateStateAgeing):
     """
     try:
       FrictionModel._configure(self)
-      ModuleRateStateAgeing.minSlipRate(self, self.inventory.minSlipRate)
+      ModuleRateStateAgeing.linearSlipRate(self, self.inventory.linearSlipRate)
     except ValueError, err:
       aliases = ", ".join(self.aliases)
       raise ValueError("Error while configuring friction model "

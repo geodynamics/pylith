@@ -32,7 +32,6 @@ def implementsConstraint(obj):
               "initialize",
               "setConstraintSizes",
               "setConstraints",
-              "useSolnIncr",
               "setField",
               "poststep",
               "writeData",
@@ -105,7 +104,6 @@ class Constraint(object):
 
     events = ["verify",
               "init",
-              "solnIncr",
               "setSizes",
               "constraints",
               "setField",

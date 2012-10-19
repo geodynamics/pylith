@@ -26,13 +26,13 @@ dist_noinst_DATA = \
 	matprops.spatialdb \
 	mesh_quad4_200m.jou \
 	pylithapp.cfg \
-	kinematic.cfg \
-	kinematic_slip.spatialdb \
-	kinematic_risetime.spatialdb \
-	kinematic_sliptime.spatialdb \
-	dynamic.cfg \
-	dynamic_staticfriction.cfg \
-	dynamic_slipweakening.cfg \
-	dynamic_ratestateageing.cfg
+	prescribedrup.cfg \
+	prescribedrup_slip.spatialdb \
+	prescribedrup_risetime.spatialdb \
+	prescribedrup_sliptime.spatialdb \
+	spontaneousrup.cfg \
+	spontaneousrup_staticfriction.cfg \
+	spontaneousrup_slipweakening.cfg \
+	spontaneousrup_ratestateageing.cfg
 
 # End of file 

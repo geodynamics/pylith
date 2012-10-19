@@ -974,6 +974,30 @@ pylith::materials::GenMaxwellQpQsIsotropic3D::_stableTimeStepImplicit(
 } // _stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::GenMaxwellQpQsIsotropic3D::_stableTimeStepExplicit(const PylithScalar* properties,
+								      const int numProperties,
+								      const PylithScalar* stateVars,
+								      const int numStateVars,
+								      const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_muEff];
+  const PylithScalar kappa = properties[p_kEff];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((kappa + 4.0/3.0*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
+
+
+// ----------------------------------------------------------------------
 // Compute viscous strain for current time step.
 void
 pylith::materials::GenMaxwellQpQsIsotropic3D::_computeStateVars(

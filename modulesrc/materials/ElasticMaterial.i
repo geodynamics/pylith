@@ -71,9 +71,6 @@ namespace pylith {
 
       /** Get stable time step for implicit time integration.
        *
-       * @pre Must call retrievePropsAndVars for cell before calling
-       * stableTimeStep().
-       *
        * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
        *
        * @returns Time step
@@ -81,6 +78,18 @@ namespace pylith {
       virtual
       PylithScalar stableTimeStepImplicit(const pylith::topology::Mesh& mesh);
 
+      /** Get stable time step for explicit time integration.
+       *
+       * Default is MAXFLOAT (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+       *
+       * @param mesh Finite-element mesh.
+       * @param quadrature Quadrature for finite-element integration
+       * @returns Time step
+       */
+      virtual
+      PylithScalar stableTimeStepExplicit(const pylith::topology::Mesh& mesh,
+					  pylith::feassemble::Quadrature<pylith::topology::Mesh>* quadrature);
+      
       /** Set whether elastic or inelastic constitutive relations are used.
        *
        * @param flag True to use elastic, false to use inelastic.
@@ -190,6 +199,23 @@ namespace pylith {
 				     const PylithScalar* stateVars,
 				     const int numStateVars) const = 0;
       
+      /** Get stable time step for explicit time integration.
+       *
+       * @param properties Properties at location.
+       * @param numProperties Number of properties.
+       * @param stateVars State variables at location.
+       * @param numStateVars Number of state variables.
+       * @param minCellWidth Minimum width across cell.
+       *
+       * @returns Time step
+       */
+      virtual
+      PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
+					   const int numProperties,
+					   const PylithScalar* stateVars,
+					   const int numStateVars,
+					   const double minCellWidth) const = 0;
+  
     }; // class ElasticMaterial
 
   } // materials

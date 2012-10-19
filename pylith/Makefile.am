@@ -21,6 +21,7 @@ nobase_pkgpyexec_PYTHON = \
 	apps/__init__.py \
 	apps/PyLithApp.py \
 	apps/PetscApplication.py \
+	apps/EqInfoApp.py \
 	apps/PrepMeshApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
@@ -136,9 +137,8 @@ nobase_pkgpyexec_PYTHON = \
 	perf/Jacobian.py \
 	problems/__init__.py \
 	problems/Explicit.py \
-	problems/ExplicitLumped.py \
-	problems/ExplicitLumpedTri3.py \
-	problems/ExplicitLumpedTet4.py \
+	problems/ExplicitTri3.py \
+	problems/ExplicitTet4.py \
 	problems/ExplicitLgDeform.py \
 	problems/Formulation.py \
 	problems/Implicit.py \

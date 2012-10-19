@@ -217,8 +217,8 @@ pylithapp.cfg
  We set the parameters for the journal information followed by the mesh
  reader, problem, materials, boundary conditions, fault, and output.
  We change the time-stepping formulation from the default value of implicit
- time stepping to explicit time stepping by setting the formulation object
- via
+ time stepping to explicit time stepping with a lumped Jacobian matrix by
+ setting the formulation object via
 \end_layout
 
 \begin_layout LyX-Code
@@ -226,14 +226,12 @@ formulation = pylith.problems.Explicit
 \end_layout
 
 \begin_layout Standard
-We can switch to explicit time stepping with a lumped Jacobian matrix (rather
- than the full Jacobian matrix) by changing Explicit to ExplicitLumped.
- Using the ExplicitLumped object automatically triggers lumping of the Jacobian
+Using the Explicit object automatically triggers lumping of the Jacobian
  cell matrices and assembly into a vector rather than a sparse matrix.
  Lumping the Jacobian decouples the equations, so we can use a very simple
  direct solver.
- Use of this simple solver is also triggered by the selection of the ExplicitLum
-ped object.
+ Use of this simple solver is also triggered by the selection of any of
+ the Explicit formulation objects.
  
 \end_layout
 

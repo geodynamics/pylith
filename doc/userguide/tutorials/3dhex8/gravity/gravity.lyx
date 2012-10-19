@@ -562,7 +562,7 @@ Stress field (xx-component) for example step16 at t = 200 years visualized
  using ParaView.
  Note that for this example, Stress_xx = Stress_yy = Stress_zz, and there
  is no vertical displacement throughout the simulation.
- Also note that the stresses appear as 4 layers since we have used 
+ Also note that the stresses appear as four layers since we have used 
 \family typewriter
 CellFilterAvgMesh
 \family default

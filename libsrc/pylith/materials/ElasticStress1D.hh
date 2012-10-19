@@ -61,9 +61,12 @@ public :
    * Default is MAXDOUBLE (or 1.0e+30 if MAXFLOAT is not defined in math.h).
    *
    * @param mesh Finite-element mesh.
+   * @param field Field for storing min stable time step for each cell.
+   *
    * @returns Time step
    */
-  PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh);
+  PylithScalar stableTimeStepImplicit(const topology::Mesh& mesh,
+				      topology::Field<topology::Mesh>* field =0);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -183,6 +186,22 @@ protected :
 				 const PylithScalar* stateVars,
 				 const int numStateVars) const;
 
+  /** Get stable time step for explicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param minCellWidth Minimum width across cell.
+   *
+   * @returns Time step
+   */
+  PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars,
+				       const double minCellWidth) const;
+  
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 

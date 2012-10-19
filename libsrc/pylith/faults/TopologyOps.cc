@@ -116,7 +116,12 @@ pylith::faults::TopologyOps::classifyCells(const ALE::Obj<SieveMesh::sieve_type>
     }
     assert(classifySize < vReplaceCells.size() + vNoReplaceCells.size());
     classifySize = vReplaceCells.size() + vNoReplaceCells.size();
-    assert(classifySize <= classifyTotal);
+    if (classifySize > classifyTotal) {
+      std::ostringstream msg;
+      msg << "Error classifying cells during creation of cohesive cells.\n"
+	  << "  classifySize: " << classifySize << ", classifyTotal: " << classifyTotal;
+      throw std::logic_error(msg.str());
+    } // if
   }
   replaceCells.insert(vReplaceCells.begin(), vReplaceCells.end());
   // More checking

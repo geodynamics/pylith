@@ -88,13 +88,6 @@ public :
    */
   PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
 
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  void useSolnIncr(const bool flag);
-
   /** Integrate residual part of RHS for 3-D finite elements.
    * Includes gravity and element internal force contribution.
    *

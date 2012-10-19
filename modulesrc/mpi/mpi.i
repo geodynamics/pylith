@@ -29,6 +29,7 @@
 // Interfaces
 %include "mpi_comm.i"
 %include "mpi_error.i"
+%include "mpi_reduce.i"
 
 
 // End of file

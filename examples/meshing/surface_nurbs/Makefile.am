@@ -19,7 +19,8 @@
 SUBDIRS = \
 	contours \
 	dem \
-	triangles
+	triangles \
+	merge_surfs
 
 
 dist_noinst_DATA = \

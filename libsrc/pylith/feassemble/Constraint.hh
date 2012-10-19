@@ -59,14 +59,6 @@ public :
    */
   void normalizer(const spatialdata::units::Nondimensional& dim);
 
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  virtual
-  void useSolnIncr(const bool flag);
-
   /** Get number of constraints per location.
    *
    * @returns Number of constraints per location.
@@ -112,10 +104,6 @@ public :
 protected :
 
   spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
-
-  /// Flag indicating whether to set constraints for a total field
-  /// solution or an incremental field solution
-  bool _useSolnIncr;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

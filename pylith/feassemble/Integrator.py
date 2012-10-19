@@ -31,7 +31,6 @@ def implementsIntegrator(obj):
   available = dir(obj)
   required = ["timeStep",
               "stableTimeStep",
-              "useSolnIncr",
               "integrateResidual",
               "integrateJacobian",
               "preinitialize",

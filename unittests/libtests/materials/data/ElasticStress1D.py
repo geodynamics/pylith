@@ -118,6 +118,9 @@ class ElasticStress1D(ElasticMaterialApp):
 
     self.stress = stress
     self.elasticConsts = elasticConsts
+
+    self.dtStableExplicit = 1000.0 / vpA
+
     return
 
 

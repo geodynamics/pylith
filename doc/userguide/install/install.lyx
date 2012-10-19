@@ -253,7 +253,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.7.1-linux-i686.tgz
+$ tar -xzf pylith-1.8.0-linux-i686.tgz
 \end_layout
 
 \end_deeper
@@ -328,7 +328,7 @@ Unpack the tarball.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -xzf pylith-1.7.1-darwin-10.5.tgz
+$ tar -xzf pylith-1.8.0-darwin-10.5.tgz
 \end_layout
 
 \end_deeper

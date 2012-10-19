@@ -25,6 +25,7 @@
 #include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -107,9 +108,9 @@ pylith::feassemble::GeometryTri2D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryTri2D::jacobian(scalar_array* jacobian,
-					  PylithScalar* det,
-					  const scalar_array& vertices,
-					  const scalar_array& location) const
+					    PylithScalar* det,
+					    const scalar_array& vertices,
+					    const scalar_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
@@ -180,6 +181,64 @@ pylith::feassemble::GeometryTri2D::jacobian(PylithScalar* jacobian,
 
   PetscLogFlops(11);
 } // jacobian
+
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryTri2D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  const int numCorners = 3;
+  const int spaceDim = 2;
+  assert(3*spaceDim == coordinatesCell.size() ||
+	 6*spaceDim == coordinatesCell.size()); // :KLUDGE: allow quadratic
+
+  const int numEdges = 3;
+  const int edges[numEdges][2] = {
+    {0, 1}, {1, 2}, {2, 0},
+  };
+
+  PylithScalar minWidth = PYLITH_MAXSCALAR;
+  for (int iedge=0; iedge < numEdges; ++iedge) {
+    const int iA = edges[iedge][0];
+    const int iB = edges[iedge][1];
+    const PylithScalar xA = coordinatesCell[spaceDim*iA  ];
+    const PylithScalar yA = coordinatesCell[spaceDim*iA+1];
+    const PylithScalar xB = coordinatesCell[spaceDim*iB  ];
+    const PylithScalar yB = coordinatesCell[spaceDim*iB+1];
+    
+    const PylithScalar edgeLen = sqrt(pow(xB-xA,2) + pow(yB-yA,2));
+    if (edgeLen < minWidth) {
+      minWidth = edgeLen;
+    } // if
+  } // for
+
+  PetscLogFlops(numEdges*6);
+
+  // Ad-hoc to account for distorted cells.
+  // Radius of inscribed circle.
+  const PylithScalar xA = coordinatesCell[0];
+  const PylithScalar yA = coordinatesCell[1];
+  const PylithScalar xB = coordinatesCell[2];
+  const PylithScalar yB = coordinatesCell[3];
+  const PylithScalar xC = coordinatesCell[4];
+  const PylithScalar yC = coordinatesCell[5];
+
+  const PylithScalar c  = sqrt(pow(xB-xA,2) + pow(yB-yA, 2));
+  const PylithScalar a  = sqrt(pow(xC-xB,2) + pow(yC-yB, 2));
+  const PylithScalar b  = sqrt(pow(xA-xC,2) + pow(yA-yC, 2));
+  
+  const PylithScalar k = 0.5 * (a + b + c);
+  const PylithScalar r = sqrt(k*(k-a)*(k-b)*(k-c)) / k;
+  const PylithScalar rwidth = 3.0*r; // based on empirical tests
+  if (rwidth < minWidth) {
+    minWidth = rwidth;
+  } // if
+
+  PetscLogFlops(3*6 + 3 + 8);
+
+  return minWidth;
+} // minCellWidth
 
 
 // End of file

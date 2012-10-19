@@ -195,6 +195,7 @@ class DruckerPragerPlaneStrainTimeDep(ElasticMaterialApp):
                                                stateVarsB)
 
     self.dtStableImplicit = 1.0e+99
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

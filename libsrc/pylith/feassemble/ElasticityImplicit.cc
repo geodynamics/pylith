@@ -98,16 +98,6 @@ pylith::feassemble::ElasticityImplicit::stableTimeStep(const topology::Mesh& mes
 } // stableTimeStep
 
 // ----------------------------------------------------------------------
-// Set flag for setting constraints for total field solution or
-// incremental field solution.
-void
-pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
-{ // useSolnIncr
-  assert(0 != _material);
-  _useSolnIncr = flag;
-  _material->useElasticBehavior(!_useSolnIncr);
-} // useSolnIncr
-
 void
 pylith::feassemble::ElasticityImplicit::integrateResidual(
 			  const topology::Field<topology::Mesh>& residual,

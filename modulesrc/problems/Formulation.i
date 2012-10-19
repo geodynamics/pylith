@@ -141,14 +141,6 @@ namespace pylith {
       void reformResidual(const PetscVec* tmpResidualVec =0,
 			  const PetscVec* tmpSolveSolnVec =0);
       
-      /** Reform system residual for case with lumped Jacobian.
-       *
-       * @param tmpResidualVec Temporary PETSc vector for residual.
-       * @param tmpSolveSolnVec Temporary PETSc vector for solution.
-       */
-      void reformResidualLumped(const PetscVec* tmpResidualVec =0,
-			  const PetscVec* tmpSolveSolnVec =0);
-      
       /* Reform system Jacobian.
        *
        * @param tmpSolveSolnVec Temporary PETSc vector for solution.
@@ -158,6 +150,12 @@ namespace pylith {
       /* Reform system Jacobian.
        */
       void reformJacobianLumped(void);
+
+      /** Constrain solution space.
+       *
+       * @param tmpSolutionVec Temporary PETSc vector for solution.
+       */
+      void constrainSolnSpace(const PetscVec* tmpSolutionVec);
 
       /// Compute rate fields (velocity and/or acceleration) at time t.
       virtual

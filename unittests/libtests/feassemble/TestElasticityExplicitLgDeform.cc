@@ -108,52 +108,6 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidual(void)
   const PylithScalar* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
 
-#if 0 // DEBUGGING
-  residual.view("RESIDUAL");
-  std::cout << "RESIDUAL EXPECTED\n";
-  for (int i=0; i < sizeE; ++i)
-    std::cout << "  " << valsE[i] << "\n";
-#endif
-
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
-  PetscScalar   *vals;
-  PetscInt       size;
-  PetscErrorCode err;
-
-  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
-
-  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-} // testIntegrateResidual
-
-// ----------------------------------------------------------------------
-// Test integrateResidual().
-void
-pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidualLumped(void)
-{ // testIntegrateResidualLumped
-  CPPUNIT_ASSERT(0 != _data);
-
-  topology::Mesh mesh;
-  ElasticityExplicitLgDeform integrator;
-  topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &integrator, &fields);
-
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const PylithScalar t = 1.0;
-  integrator.integrateResidualLumped(residual, t, &fields);
-
-  const PylithScalar* valsE = _data->valsResidualLumped;
-  const int sizeE = _data->spaceDim * _data->numVertices;
-
   PetscSection residualSection = residual.petscSection();
   Vec          residualVec     = residual.localVector();
   PetscScalar   *vals;
@@ -169,7 +123,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidualLumped(
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
-    std::cout << "  " << valsE[i] << std::endl;
+    std::cout << "valE: " << valsE[i] << ", val: " << vals[i] << ", val/valE: " << vals[i]/valsE[i] << std::endl;
 #endif
 
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
@@ -179,68 +133,13 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateResidualLumped(
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
   err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-} // testIntegrateResidualLumped
+} // testIntegrateResidual
 
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
 pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  CPPUNIT_ASSERT(0 != _data);
-
-  topology::Mesh mesh;
-  ElasticityExplicitLgDeform integrator;
-  topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &integrator, &fields);
-  integrator._needNewJacobian = true;
-
-  topology::Jacobian jacobian(fields.solution());
-
-  const PylithScalar t = 1.0;
-  integrator.integrateJacobian(&jacobian, t, &fields);
-  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-  jacobian.assemble("final_assembly");
-
-  const PylithScalar* valsE = _data->valsJacobian;
-  const int nrowsE = _data->numVertices * _data->spaceDim;
-  const int ncolsE = _data->numVertices * _data->spaceDim;
-
-  const PetscMat jacobianMat = jacobian.matrix();
-
-  int nrows = 0;
-  int ncols = 0;
-  MatGetSize(jacobianMat, &nrows, &ncols);
-  CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
-  CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
-
-  PetscMat jDense;
-  MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
-
-  scalar_array vals(nrows*ncols);
-  int_array rows(nrows);
-  int_array cols(ncols);
-  for (int iRow=0; iRow < nrows; ++iRow)
-    rows[iRow] = iRow;
-  for (int iCol=0; iCol < ncols; ++iCol)
-    cols[iCol] = iCol;
-  MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const PylithScalar tolerance = 1.0e-06;
-  for (int iRow=0; iRow < nrows; ++iRow)
-    for (int iCol=0; iCol < ncols; ++iCol) {
-      const int index = ncols*iRow+iCol;
-      if (fabs(valsE[index]) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
-    } // for
-  MatDestroy(&jDense);
-} // testIntegrateJacobian
-
-// ----------------------------------------------------------------------
-// Test integrateJacobian().
-void
-pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobianLumped(void)
-{ // testIntegrateJacobianLumped
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
@@ -260,7 +159,7 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobianLumped(
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
-  const PylithScalar* valsE = _data->valsJacobianLumped;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int sizeE = _data->numVertices * _data->spaceDim;
 
 #if 0 // DEBUGGING
@@ -292,8 +191,9 @@ pylith::feassemble::TestElasticityExplicitLgDeform::testIntegrateJacobianLumped(
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+
   err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
-} // testIntegrateJacobianLumped
+} // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().

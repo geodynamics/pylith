@@ -57,6 +57,13 @@ class Mesh2DLinear(Component):
                                      [+1.0, -1.0],
                                      [-1.0, +1.0]],
                                     dtype=numpy.float64)
+
+    a = (0.1**2 + 0.9**2)**0.5
+    b = (1.3**2 + 0.7**2)**0.5
+    c = (1.2**2 + 0.2**2)**0.5
+    k = 0.5 * (a + b + c)
+    r = (k*(k-a)*(k-b)*(k-c))**0.5 / k
+    self.minCellWidth = min(a, b, c, 3.0*r)
     return
   
 

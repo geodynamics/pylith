@@ -124,7 +124,9 @@ dist_noinst_DATA = \
 	tri3_vertex.xmf \
 	quad4.h5 \
 	quad4_cell.h5 \
+	quad4_cell.xmf \
 	quad4_vertex.h5 \
+	quad4_vertex.xmf \
 	tet4.h5 \
 	tet4_cell.h5 \
 	tet4_cell.xmf \
@@ -132,7 +134,9 @@ dist_noinst_DATA = \
 	tet4_vertex.xmf \
 	hex8.h5 \
 	hex8_cell.h5 \
+	hex8_cell.xmf \
 	hex8_vertex.h5 \
+	hex8_vertex.xmf \
 	line2_mat.h5 \
 	line2_mat_vertex.h5 \
 	line2_mat_cell.h5 \

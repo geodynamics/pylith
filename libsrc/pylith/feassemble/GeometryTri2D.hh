@@ -115,6 +115,13 @@ public :
 		const int dim,
 		const int npts =1) const;
 
+  /** Compute minimum width across cell.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @returns Minimum width across cell.
+   */
+  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

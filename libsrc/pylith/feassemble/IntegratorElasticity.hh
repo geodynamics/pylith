@@ -82,13 +82,6 @@ public :
    */
   bool needNewJacobian(void);
 
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  void useSolnIncr(const bool flag);
-
   /** Initialize integrator.
    *
    * @param mesh Finite-element mesh.
@@ -108,6 +101,7 @@ public :
    *
    * @param mesh Finite-element mesh
    */
+  virtual
   void verifyConfiguration(const topology::Mesh& mesh) const;
 
   /** Get output fields.
@@ -243,15 +237,6 @@ protected :
 			  const int numBasis,
 			  const int numQuadPts);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
-
-  /// Elastic material associated with integrator
-  materials::ElasticMaterial* _material;
-
-  /// Buffers for output.
-  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
-
 // PROTECTED TYPEDEFS ///////////////////////////////////////////////////
 protected :
 
@@ -261,6 +246,15 @@ protected :
   typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
   typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  /// Elastic material associated with integrator
+  materials::ElasticMaterial* _material;
+
+  /// Buffers for output.
+  topology::Fields<topology::Field<topology::Mesh> >* _outputFields;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

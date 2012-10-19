@@ -247,6 +247,7 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
                          strainTB, visStrainB, visStrainBulkB,
                          initialStressB, initialStrainB)
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB),min(maxwellTimeBulkA), min(maxwellTimeBulkB))
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

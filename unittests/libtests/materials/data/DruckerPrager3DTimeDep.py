@@ -46,8 +46,6 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
     """
     ElasticMaterialApp.__init__(self, name)
 
-    # import pdb
-    # pdb.set_trace()
     numLocs = 2
 
     self.dimension = dimension
@@ -190,6 +188,7 @@ class DruckerPrager3DTimeDep(ElasticMaterialApp):
                                                initialStressB, initialStrainB)
 
     self.dtStableImplicit = 1.0e+99
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

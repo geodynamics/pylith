@@ -52,55 +52,23 @@ class ElasticityExplicit(Component):
     Calculate contribution to residual of operator for integrator.
 
     {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
-          Sum(wt * [BL]^T [S])
-    """
-    import feutils
-
-    # Calculate action for inertia
-    M = integrator._calculateMassMat()
-    acc = (integrator.fieldTIncr - 
-           integrator.fieldT + 
-           integrator.fieldTmdt) / (integrator.dt**2) 
-    residual = -numpy.dot(M, acc)
-    residual = residual.flatten()
-    residual += self._elasticityResidual(integrator)
-    return residual
-
-
-  def calculateJacobian(self, integrator):
-    """
-    Calculate contribution to Jacobian matrix of operator for integrator.
-
-    [A] = (1/dt**2)[M]
-    """
-    M = integrator._calculateMassMat()
-
-    jacobian = 1.0/integrator.dt**2 * M
-    return jacobian
-
-
-  def calculateResidualLumped(self, integrator):
-    """
-    Calculate contribution to residual of operator for integrator.
-
-    {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
           [K]{u(t)}
     """
     M = integrator._calculateMassMat()
     Ml = self._lumpMatrix(M, integrator.numBasis, integrator.spaceDim)
     
-    acc = (integrator.fieldTIncr - 
-           integrator.fieldT + 
-           integrator.fieldTmdt) / (integrator.dt**2)
-    acc = acc.flatten()
+    vel = (integrator.fieldT + integrator.fieldTIncr - integrator.fieldTmdt) / (2.0*integrator.dt)
+    acc = (integrator.fieldTIncr - integrator.fieldT + integrator.fieldTmdt) / (integrator.dt**2) 
+    dispAdj = integrator.fieldT + integrator.dt*integrator.normViscosity*vel
+    
     residual = -Ml*acc
     residual.flatten()
 
-    residual += self._elasticityResidual(integrator)
+    residual += self._elasticityResidual(integrator, dispAdj)
     return residual
 
 
-  def calculateJacobianLumped(self, integrator):
+  def calculateJacobian(self, integrator):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
 
@@ -131,7 +99,7 @@ class ElasticityExplicit(Component):
     return vector
 
 
-  def _elasticityResidual(self, integrator):
+  def _elasticityResidual(self, integrator, dispAdj):
     """
     Calculate action for elasticity.
     """
@@ -147,13 +115,13 @@ class ElasticityExplicit(Component):
       vertices = integrator.vertices[cell, :]
       (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
           feutils.calculateJacobian(integrator.quadrature, vertices)
-      fieldT = integrator.fieldT
+
       for iQuad in xrange(integrator.numQuadPts):
         wt = integrator.quadWts[iQuad] * jacobianDet[iQuad]
         BL0 = integrator._calculateBasisDerivMatLinear0(basisDeriv, iQuad)
-        BL1 = integrator._calculateBasisDerivMatLinear1(basisDeriv, iQuad, fieldT)
+        BL1 = integrator._calculateBasisDerivMatLinear1(basisDeriv, iQuad, dispAdj)
         BL = BL0 + BL1
-        strain = integrator._calculateStrain(basisDeriv, iQuad, fieldT)
+        strain = integrator._calculateStrain(basisDeriv, iQuad, dispAdj)
         S = numpy.dot(D, strain.transpose())
         cellR -= wt * numpy.dot(BL.transpose(), S)
       

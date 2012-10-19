@@ -22,6 +22,7 @@
 
 #include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
 #include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
+#include "pylith/bc/Neumann.hh" // USES Neumann
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/constdefs.h" // USES MAXSCALAR
@@ -48,7 +49,7 @@ pylith::feassemble::TestIntegrator::testTimeStep(void)
 void
 pylith::feassemble::TestIntegrator::testStableTimeStep(void)
 { // testStableTimeStep
-  ElasticityExplicit integrator;
+  bc::Neumann integrator;
   topology::Mesh mesh;
 
   CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR,

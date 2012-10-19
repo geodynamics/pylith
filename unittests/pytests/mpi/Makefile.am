@@ -25,7 +25,8 @@ dist_check_SCRIPTS = testmpi.py
 TESTS_ENVIRONMENT = $(PYTHON)
 
 noinst_PYTHON = \
-	TestCommunicator.py
+	TestCommunicator.py \
+	TestReduce.py
 
 
 # End of file 

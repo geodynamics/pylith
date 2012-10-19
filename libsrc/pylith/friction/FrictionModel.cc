@@ -234,7 +234,9 @@ pylith::friction::FrictionModel::initialize(
     } // for
     // Close database
     _dbInitialState->close();
-  } // if
+  } else if (_metadata.numDBStateVars()) {
+    std::cerr << "WARNING: No initial state given for friction model '" << label() << "'. Using default value of zero." << std::endl;
+  } // if/else
 
   // Setup buffers for restrict/update of properties and state variables.
   _propsStateVarsVertex.resize(fieldsFiberDim);

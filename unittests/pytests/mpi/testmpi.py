@@ -65,6 +65,9 @@ class TestApp(Script):
     from TestCommunicator import TestCommunicator
     suite.addTest(unittest.makeSuite(TestCommunicator))
 
+    from TestReduce import TestReduce
+    suite.addTest(unittest.makeSuite(TestReduce))
+
     return suite
 
 

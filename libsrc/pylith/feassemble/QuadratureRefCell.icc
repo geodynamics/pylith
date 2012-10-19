@@ -90,6 +90,14 @@ pylith::feassemble::QuadratureRefCell::spaceDim(void) const {
   return _spaceDim;
 }
 
+// Compute minimum width across cell.
+inline
+PylithScalar
+pylith::feassemble::QuadratureRefCell::minCellWidth(const scalar_array& coordinatesCell) const {
+  assert(_geometry);
+  return _geometry->minCellWidth(coordinatesCell);
+}
+
 #endif
 
 // End of file

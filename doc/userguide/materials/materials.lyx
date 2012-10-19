@@ -191,11 +191,7 @@ reference "sec:Tutorial-3d-tet4"
 
 \end_inset
 
-for examples 
-\family typewriter
-that
-\family default
- demonstrate how to specify more than one material model.
+ for examples that demonstrate how to specify more than one material model.
 \end_layout
 
 \begin_layout Subsection
@@ -325,11 +321,7 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout Standard
-These settings correspond to the the problem in 
-\family typewriter
-Section 
-\family default
-
+These settings correspond to the the problem in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
@@ -396,11 +388,7 @@ writer.filename = dislocation-viscoelastic.vtk
 \end_layout
 
 \begin_layout Standard
-These settings again correspond to the problem in 
-\family typewriter
-Section 
-\family default
-
+These settings again correspond to the problem in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
@@ -443,11 +431,7 @@ writer.filename
  Similarly, other material models require state variables in addition to
  the default stress and strain variables that are used by all material models.
  Additional output may be requested for a material model, as in this example
- (
-\family typewriter
-see Section 
-\family default
-
+ (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-Two-hexahedra"
@@ -816,9 +800,9 @@ Drucker-Prager Elastoplastic
 \begin_layout Plain Layout
 
 \family typewriter
-mu, lambda, density, 
+mu, lambda, density, alpha_yield
 \family default
-alpha_yield,
+,
 \family typewriter
  beta, alpha_flow 
 \end_layout
@@ -1224,232 +1208,109 @@ stress4
 \end_inset
 
 
-\begin_inset Float table
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:material:output:components"
-
-\end_inset
-
-Order of components in tensor values in Xdmf files for 3-D material models.
- All nine tensor components are available even though the tensor is symmetric
- with six independent components.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="1.25in">
-<column alignment="center" valignment="top" width="2.25in">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Index
+\begin_layout Subsection
+Stable time step
 \end_layout
 
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\series bold
-Component
+\begin_layout Standard
+PyLith computes the stable time step in both quasi-static and dynamic simulation
+s.
+ In quasi-static simulations the stability of the implicit time stepping
+ scheme does not depend on the time step; instead, the stable time step
+ is associated with the accuracy of the solution.
+ In purely elastic materials, the accuracy is independent of the time step,
+ so the stable time step is infinite.
+ For viscoelastic materials we set the stable time step to be 1/5 of the
+ relaxation time.
+ In quasi-static simulations we check the stable time step at every time
+ step.
 \end_layout
 
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-0
-\end_layout
+\begin_layout Standard
+In dynamic simulations the stability of the explicit time stepping scheme
+ integration does depend on the time step via the Courant-Friderichs-Lewy
+ condition 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Courant:etal:1967"
 
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{xx}$
+.
+ This condition states that the critical time step is the time it takes
+ for the P wave to travel across the shortest dimension of a cell.
+ In most cases this is the shortest edge length.
+ However, distorted cells which have relatively small areas in 2-D or relatively
+ small volumes in 3-D for the given edge lengths also require small time
+ steps due to the artificially high stiffness associated with the distorted
+ shape.
+ As a result, we set the stable time step to be the smaller of the shortest
+ edge length and a scaling factor times the radius of an inscribed circle
+ (in 2-D), 
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},3.0r_{inscribed})\\
+r_{inscribed}=\sqrt{\frac{k(k-e_{0})(k-e_{1})(k-e_{2})}{k}}\\
+k=\frac{1}{2}(e_{0}+e_{1}+e_{2})
+\end{gather}
+
+\end_inset
+
+and sphere (in 3-D),
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},6.38r_{inscribed})\\
+r_{inscribed}=3V/(A_{0}+A_{1}+A_{2}+A_{3}),
+\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ denotes the length of edge 
+\begin_inset Formula $i$
 \end_inset
 
 , 
-\begin_inset Formula $\sigma_{xx}$
+\begin_inset Formula $A_{i}$
 \end_inset
 
+ denotes the area of face 
+\begin_inset Formula $i$
+\end_inset
 
+, and 
+\begin_inset Formula $V$
+\end_inset
+
+ is the volume of the cell.
+ We determined the scaling factoring empirically using several benchmarks.
+ In dynamic simulations we check the stable time step only at the beginning
+ of the simulation.
+ That is, we assume the elastic properties and mesh do not change, so that
+ the stable time step is constant throughout the simulation.
 \end_layout
 
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1, 3
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{xy}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{xy}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2, 6
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{xz}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{xz}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{yy}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{yy}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-5, 7
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{yz}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{yz}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-8
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $\epsilon_{zz}$
-\end_inset
-
-, 
-\begin_inset Formula $\sigma_{zz}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Standard
+The stable time steps for each cell can be included in the output with the
+ other 
+\family typewriter
+cell_info_fields
+\family default
+.
+ For implicit time stepping the field is 
+\family typewriter
+stable_dt_implicit
+\family default
+ and for explicit time stepping the field is 
+\family typewriter
+stable_dt_explicit
+\family default
+.
 \end_layout
 
 \begin_layout Section
@@ -4378,7 +4239,7 @@ Then
 
 \end_inset
 
-Where
+where
 \begin_inset Formula 
 \begin{gather}
 ^{t+\Delta t}T_{i}=\phantom{}^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:91}\\
@@ -4920,14 +4781,14 @@ middle version).
 \begin_inset Formula $\theta$
 \end_inset
 
- into equation (
+ into Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:drucker:prager:haigh:westergaard"
 
 \end_inset
 
-) and casting it into the same form as equation (
+) and casting it into the same form as Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:101"
@@ -5945,7 +5806,7 @@ In addition to the properties available for every material, the properties
 
 \begin_layout Description
 fit_mohr_coulomb Fit to the yield surface to the Mohr-Coulomb model (default
- is a inscribed).
+ is inscribed).
 \end_layout
 
 \begin_layout Description
