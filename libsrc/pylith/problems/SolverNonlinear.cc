@@ -107,6 +107,7 @@ pylith::problems::SolverNonlinear::initialize(
   PetscSNESLineSearch ls;
   err = SNESGetSNESLineSearch(_snes, &ls);CHECK_PETSC_ERROR(err);
   err = SNESLineSearchSetType(ls, SNESSHELL);CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSetOrder(ls, SNES_LINESEARCH_ORDER_CUBIC);CHECK_PETSC_ERROR(err);
   err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);CHECK_PETSC_ERROR(err);
 
   // Get SNES options and allow the user to override the line search type
