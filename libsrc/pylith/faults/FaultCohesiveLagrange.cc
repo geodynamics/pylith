@@ -1422,7 +1422,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscLogFlops(count * orientationSize * 4);
 
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  if (1 == cohesiveDim && vEnd > vStart) {
+  if (1 == cohesiveDim) {
     // Default sense of positive slip is left-lateral and
     // fault-opening.
     // 
@@ -1442,25 +1442,32 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // opposite of what we would want, but we cannot flip the fault
     // normal direction because it is tied to how the cohesive cells
     // are created.
-    assert(vEnd > vStart);
     PetscInt off;
-
+    int flipLocal = 0;
+    if (vEnd > vStart) {
     err = PetscSectionGetOffset(orientationSection, vStart, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < orientationSize; ++d) {
+    for (PetscInt d = 0; d < orientationSize; ++d) {
       orientationVertex[d] = orientationArray[off+d];
-    }
+    } // for
 
-    assert(2 == spaceDim);
-    const PylithScalar* shearDirVertex = &orientationVertex[0];
-    const PylithScalar* normalDirVertex = &orientationVertex[2];
-    const PylithScalar shearDirDot = 
-      upDir[0] * shearDirVertex[0] + upDir[1] * shearDirVertex[1];
-    const PylithScalar normalDirDot = 
-      upDir[0] * normalDirVertex[0] + upDir[1] * normalDirVertex[1];
+      assert(2 == spaceDim);
+      const PylithScalar* shearDirVertex = &orientationVertex[0];
+      const PylithScalar* normalDirVertex = &orientationVertex[2];
+      const PylithScalar shearDirDot = 
+	upDir[0] * shearDirVertex[0] + upDir[1] * shearDirVertex[1];
+      const PylithScalar normalDirDot = 
+	upDir[0] * normalDirVertex[0] + upDir[1] * normalDirVertex[1];
+      if (normalDirDot * shearDirDot < 0.0) {
+	flipLocal = 1;
+      } // if
+    } // if
+    // Collect flip decisions across all processors
+    int flipGlobal = 0;
+   MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, ((PetscObject) faultDMMesh)->comm);
 
     const int ishear = 0;
     const int inormal = 2;
-    if (normalDirDot * shearDirDot < 0.0) {
+    if (flipGlobal > 0) { // flip in any processor wants to flip
       // Flip shear direction
       for(PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof;
@@ -1482,11 +1489,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
       PetscLogFlops(3 + count * 2);
     } // if
 
-  } else if (2 == cohesiveDim && vEnd > vStart) {
-    // Check orientation of first vertex, if dot product of fault
-    // normal with preferred normal is negative, flip up/down dip
-    // direction.
-    //
+  } else if (2 == cohesiveDim) {
     // Check orientation of first vertex, (1) if dot product of the
     // normal-dir with preferred up-dir is positive, then we want dot
     // product of shear-dir and preferred up-dir to be positive and
@@ -1500,35 +1503,43 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     // are used are the opposite of what we would want, but we cannot
     // flip the fault normal direction because it is tied to how the
     // cohesive cells are created.
-    assert(vEnd > vStart);
     PetscInt off;
 
-    err = PetscSectionGetOffset(orientationSection, vStart, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < orientationSize; ++d) {
-      orientationVertex[d] = orientationArray[off+d];
-    }
+    int flipLocal = 0;
+    if (vEnd > vStart) {
+      err = PetscSectionGetOffset(orientationSection, vStart, &off);CHECK_PETSC_ERROR(err);
+      for (PetscInt d = 0; d < orientationSize; ++d) {
+	orientationVertex[d] = orientationArray[off+d];
+      } // for
+      
+      assert(3 == spaceDim);
+      const PylithScalar* dipDirVertex = &orientationVertex[3];
+      const PylithScalar* normalDirVertex = &orientationVertex[6];
+      const PylithScalar dipDirDot = 
+	upDir[0]*dipDirVertex[0] + 
+	upDir[1]*dipDirVertex[1] + 
+	upDir[2]*dipDirVertex[2];
+      const PylithScalar normalDirDot = 
+	upDir[0]*normalDirVertex[0] +
+	upDir[1]*normalDirVertex[1] +
+	upDir[2]*normalDirVertex[2];
 
-    assert(3 == spaceDim);
-    const PylithScalar* dipDirVertex = &orientationVertex[3];
-    const PylithScalar* normalDirVertex = &orientationVertex[6];
-    const PylithScalar dipDirDot = 
-      upDir[0]*dipDirVertex[0] + 
-      upDir[1]*dipDirVertex[1] + 
-      upDir[2]*dipDirVertex[2];
-    const PylithScalar normalDirDot = 
-      upDir[0]*normalDirVertex[0] +
-      upDir[1]*normalDirVertex[1] +
-      upDir[2]*normalDirVertex[2];
+      if (dipDirDot * normalDirDot < 0.0 || fabs(normalDirVertex[2] + 1.0) < 0.001) {
+	// if fault normal is (0,0,+-1) then up-dir dictates reverse
+	// motion for case with normal (0,0,1), so we reverse the dip-dir
+	// if we have (0,0,-1).
+	flipLocal = 1;
+      } // if
+    } // if
+
+    // Collect flip decisions across all processors
+    int flipGlobal = 0;
+    MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, ((PetscObject) faultDMMesh)->comm);
 
     const int istrike = 0;
     const int idip = 3;
     const int inormal = 6;
-    if (dipDirDot * normalDirDot < 0.0 ||
-	fabs(normalDirVertex[2] + 1.0) < 0.001) {
-      // if fault normal is (0,0,+-1) then up-dir dictates reverse
-      // motion for case with normal (0,0,1), so we reverse the dip-dir
-      // if we have (0,0,-1).
-
+    if (flipGlobal > 0) { // flip in any processor wants to flip
       // Flip dip direction
       for(PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof;

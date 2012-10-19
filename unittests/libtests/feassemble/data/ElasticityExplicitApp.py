@@ -54,8 +54,7 @@ class ElasticityExplicitApp(ElasticityApp):
     self._collectData()
     self._calculateResidual()
     self._calculateJacobian()
-    self._calculateResidualLumped()
-    self._calculateJacobianLumped()
+    self._calcDtStable()
     self._initData()
     self.data.write(self.name)
     return
@@ -63,34 +62,42 @@ class ElasticityExplicitApp(ElasticityApp):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
-  def _calculateResidualLumped(self):
+  def _calcDtStable(self):
     """
-    Calculate contribution to residual of operator for integrator.
+    Calculate stable time step for explicit time stepping.
     """
-    self.valsResidualLumped = self.formulation.calculateResidualLumped(self)
-    if self.useGravity:
-      self.valsResidualLumped += self._calculateGravityVec()
+    vp = ((self.lameLambda + 2.0*self.lameMu) / self.density)**0.5
+    minCellWidth = self.mesh.minCellWidth
+    self.dtStableExplicit = minCellWidth / vp
     return
 
 
-  def _calculateJacobianLumped(self):
+  def _calculateResidual(self):
+    """
+    Calculate contribution to residual of operator for integrator.
+    """
+    self.valsResidual = self.formulation.calculateResidual(self)
+    if self.useGravity:
+      self.valsResidual += self._calculateGravityVec()
+    return
+
+
+  def _calculateJacobian(self):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
     """
-    self.valsJacobianLumped = self.formulation.calculateJacobianLumped(self)
+    self.valsJacobian = self.formulation.calculateJacobian(self)
     return
 
 
   def _initData(self):
 
     ElasticityApp._initData(self)
+    
     # Calculated values
-    self.data.addArray(vtype="PylithScalar", name="_valsResidualLumped",
-                       values=self.valsResidualLumped,
-                       format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="PylithScalar", name="_valsJacobianLumped",
-                       values=self.valsJacobianLumped,
-                       format="%16.8e", ncols=self.spaceDim)
+    self.data.addScalar(vtype="PylithScalar", name="_dtStableExplicit",
+                       value=self.dtStableExplicit,
+                       format="%16.8e");
     return
 
 

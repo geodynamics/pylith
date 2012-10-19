@@ -108,7 +108,11 @@ class TestTimeStepUser(unittest.TestCase):
 
     integrators = [Integrator(40.0),
                    Integrator(80.0)]
-    mesh = None
+
+    from pylith.topology.Mesh import Mesh
+    from pylith.mpi.Communicator import petsc_comm_world
+    mesh = Mesh()
+    #mesh.setComm(petsc_comm_world())
 
     self.assertEqual(step1, tstep.timeStep(mesh, integrators))
     self.assertEqual(step2, tstep.timeStep(mesh, integrators))
@@ -144,7 +148,11 @@ class TestTimeStepUser(unittest.TestCase):
 
     integrators = [Integrator(4.0),
                    Integrator(8.0)]
-    mesh = None
+
+    from pylith.topology.Mesh import Mesh
+    from pylith.mpi.Communicator import petsc_comm_world
+    mesh = Mesh()
+    #mesh.setComm(petsc_comm_world())
 
     tstep.timeStep(mesh, integrators)
     stepE = 1.0 / 0.5 # Nondimensionalize

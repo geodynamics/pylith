@@ -16,21 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/ExplicitLumpedTet4.py
+## @file pylith/problems/ExplicitTet4.py
 ##
-## @brief Python ExplicitLumpedTet4 object for solving equations using an
+## @brief Python ExplicitTet4 object for solving equations using an
 ## explicit formulation with a lumped Jacobian matrix that is stored
 ## as a Field.
 ##
 ## Factory: pde_formulation
 
-from ExplicitLumped import ExplicitLumped
+from Explicit import Explicit
 from pylith.utils.profiling import resourceUsageString
 
-# ExplicitLumpedTet4 class
-class ExplicitLumpedTet4(ExplicitLumped):
+# ExplicitTet4 class
+class ExplicitTet4(Explicit):
   """
-  Python ExplicitLumpedTet4 object for solving equations using an explicit
+  Python ExplicitTet4 object for solving equations using an explicit
   formulation.
 
   The formulation has the general form, [A(t)] {u(t+dt)} = {b(t)},
@@ -48,11 +48,11 @@ class ExplicitLumpedTet4(ExplicitLumped):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitlumpedtet4"):
+  def __init__(self, name="explicittet4"):
     """
     Constructor.
     """
-    ExplicitLumped.__init__(self, name)
+    Explicit.__init__(self, name)
     return
 
 
@@ -72,7 +72,7 @@ class ExplicitLumpedTet4(ExplicitLumped):
     """
     Set members based using inventory.
     """
-    ExplicitLumped._configure(self)
+    Explicit._configure(self)
     return
 
 
@@ -80,9 +80,9 @@ class ExplicitLumpedTet4(ExplicitLumped):
 
 def pde_formulation():
   """
-  Factory associated with ExplicitLumped.
+  Factory associated with Explicit.
   """
-  return ExplicitLumpedTet4()
+  return ExplicitTet4()
 
 
 # End of file 

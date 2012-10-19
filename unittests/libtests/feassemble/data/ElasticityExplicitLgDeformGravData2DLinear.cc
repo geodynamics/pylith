@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_mat
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_dtStableExplicit =   1.50923086e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_gravityVec[] = {
   0.00000000e+00, -1.00000000e+08,
 };
@@ -100,39 +102,12 @@ const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinea
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_valsResidual[] = {
- -5.23632630e+11,  5.37472513e+11,
-  1.65372743e+11, -6.24519323e+11,
-  3.58250262e+11, -5.04563977e+10,
+ -5.97679777e+11,  6.82695164e+11,
+  1.92811652e+11, -7.67081025e+11,
+  4.04858499e+11, -5.31173476e+10,
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_valsJacobian[] = {
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  1.52777778e+06,  0.00000000e+00,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-  0.00000000e+00,  1.52777778e+06,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_valsResidualLumped[] = {
- -5.23631714e+11,  5.37473582e+11,
-  1.65371368e+11, -6.24523296e+11,
-  3.58250720e+11, -5.04534949e+10,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::_valsJacobianLumped[] = {
   4.58333333e+06,  4.58333333e+06,
   4.58333333e+06,  4.58333333e+06,
   4.58333333e+06,  4.58333333e+06,
@@ -151,6 +126,7 @@ pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::ElasticityExplic
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
@@ -164,8 +140,6 @@ pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::ElasticityExplic
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitLgDeformGravData2DLinear::~ElasticityExplicitLgDeformGravData2DLinear(void)

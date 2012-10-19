@@ -51,13 +51,6 @@ namespace pylith {
        */
       void normViscosity(const PylithScalar viscosity);
 
-      /** Set flag for setting constraints for total field solution or
-       *  incremental field solution.
-       *
-       * @param flag True if using incremental solution, false otherwise.
-       */
-      void useSolnIncr(const bool flag);
-
       /** Integrate contributions to residual term (r) for operator.
        *
        * @param residual Field containing values for residual
@@ -65,27 +58,6 @@ namespace pylith {
        * @param fields Solution fields
        */
       void integrateResidual(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-			     const PylithScalar t,
-			     pylith::topology::SolutionFields* const fields);
-
-      /** Integrate contributions to residual term (r) for operator.
-       *
-       * @param residual Field containing values for residual
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateResidualLumped(const pylith::topology::Field<pylith::topology::Mesh>& residual,
-				   const PylithScalar t,
-				   pylith::topology::SolutionFields* const fields);
-
-      /** Integrate contributions to Jacobian matrix (A) associated with
-       * operator.
-       *
-       * @param jacobian Sparse matrix for Jacobian of system.
-       * @param t Current time
-       * @param fields Solution fields
-       */
-      void integrateJacobian(pylith::topology::Jacobian* jacobian,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
 
@@ -100,6 +72,15 @@ namespace pylith {
       void integrateJacobian(pylith::topology::Field<pylith::topology::Mesh>* jacobian,
 			     const PylithScalar t,
 			     pylith::topology::SolutionFields* const fields);
+
+      // NOT IMPLEMENTED //////////////////////////////////////////////////
+    private :
+
+      /// Not implemented.
+      void integrateJacobian(topology::Jacobian*,
+			     const PylithScalar,
+			     topology::SolutionFields* const);
+
 
     }; // ElasticityExplicitLgDeform
 

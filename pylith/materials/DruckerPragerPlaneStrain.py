@@ -86,7 +86,7 @@ class DruckerPragerPlaneStrain(ElasticMaterial, ModuleDruckerPragerPlaneStrain):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density", 
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "alpha_yield", "beta", "alpha_flow"],
             'data': ["total_strain", "stress", "stress_zz_initial",
                      "plastic_strain"]}}

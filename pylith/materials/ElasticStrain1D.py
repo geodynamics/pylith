@@ -46,7 +46,7 @@ class ElasticStrain1D(ElasticMaterial, ModuleElasticStrain1D):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density"],
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",],
             'data': ["total_strain", "stress"]}}
     self._loggingPrefix = "MaSt1D "
     return

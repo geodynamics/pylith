@@ -109,9 +109,8 @@ pylith::materials::Material::normalizer(const spatialdata::units::Nondimensional
 // ----------------------------------------------------------------------
 // Get physical property parameters and initial state (if used) from database.
 void
-pylith::materials::Material::initialize(
-		     const topology::Mesh& mesh,
-		     feassemble::Quadrature<topology::Mesh>* quadrature)
+pylith::materials::Material::initialize(const topology::Mesh& mesh,
+					feassemble::Quadrature<topology::Mesh>* quadrature)
 { // initialize
   assert(0 != _dbProperties);
   assert(0 != quadrature);
@@ -149,12 +148,12 @@ pylith::materials::Material::initialize(
   _properties->allocate();
   _properties->zero();
   PetscSection propertiesSection = _properties->petscSection();
-  Vec          propertiesVec     = _properties->localVector();
+  PetscVec propertiesVec = _properties->localVector();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
-  Vec          coordVec;
+  PetscVec coordVec;
   err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
@@ -176,7 +175,7 @@ pylith::materials::Material::initialize(
   // if there is no initial state, because this we will use this field
   // to hold the state variables.
   PetscSection stateVarsSection = PETSC_NULL;
-  Vec          stateVarsVec     = PETSC_NULL;
+  PetscVec stateVarsVec = PETSC_NULL;
   delete _stateVars; _stateVars = new topology::Field<topology::Mesh>(mesh);
   _stateVars->label("state variables");
   fiberDim = numQuadPts * _numVarsQuadPt;
@@ -489,7 +488,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
 
     // Allocate buffer for state variable field if necessary.
     PetscSection fieldSection    = field->petscSection();
-    Vec          fieldVec        = field->localVector();
+    PetscVec          fieldVec        = field->localVector();
     bool useCurrentField = fieldSection != PETSC_NULL;
     if (fieldSection) {
       // check fiber dimension

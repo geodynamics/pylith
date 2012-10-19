@@ -142,28 +142,6 @@ pylith::feassemble::TestElasticityExplicit::testNeedNewJacobian(void)
 } // testNeedNewJacobian
 
 // ----------------------------------------------------------------------
-// Test useSolnIncr().
-void
-pylith::feassemble::TestElasticityExplicit::testUseSolnIncr(void)
-{ // testUseSolnIncr
-  ElasticityExplicit integrator;
-
-  materials::ElasticIsotropic3D material;
-  integrator.material(&material);
-  CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
-  try {
-    integrator.useSolnIncr(false);
-
-    // Should have thrown exception, so don't make it here.
-    CPPUNIT_ASSERT(false);
-  } catch (const std::logic_error& err) {
-    // Expect logic error so don't do anything.
-  } catch (...) {
-    CPPUNIT_ASSERT(false);
-  } // try/catch
-} // testUseSolnIncr
-
-// ----------------------------------------------------------------------
 // Test initialize().
 void 
 pylith::feassemble::TestElasticityExplicit::testInitialize(void)
@@ -207,7 +185,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
   err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
-#if 0
+#if 0 // DEBUGGING
   residual.view("RESIDUAL");
   std::cout << "EXPECTED RESIDUAL" << std::endl;
   for (int i=0; i < size; ++i)
@@ -224,111 +202,10 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
-// Test integrateResidual().
-void
-pylith::feassemble::TestElasticityExplicit::testIntegrateResidualLumped(void)
-{ // testIntegrateResidualLumped
-  CPPUNIT_ASSERT(0 != _data);
-
-  topology::Mesh mesh;
-  ElasticityExplicit integrator;
-  topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &integrator, &fields);
-
-  topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const PylithScalar t = 1.0;
-  integrator.integrateResidualLumped(residual, t, &fields);
-
-  const PylithScalar* valsE = _data->valsResidualLumped;
-  const int sizeE = _data->spaceDim * _data->numVertices;
-
-  PetscSection   residualSection = residual.petscSection();
-  Vec            residualVec     = residual.localVector();
-  PetscScalar   *vals;
-  PetscInt       size;
-  PetscErrorCode err;
-
-  CPPUNIT_ASSERT(residualSection);
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
-
-#if 0
-  residual.view("RESIDUAL");
-  std::cout << "EXPECTED RESIDUAL" << std::endl;
-  for (int i=0; i < size; ++i)
-    std::cout << "  " << valsE[i] << std::endl;
-#endif
-
-  const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-} // testIntegrateResidualLumped
-
-// ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
 pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  CPPUNIT_ASSERT(0 != _data);
-
-  topology::Mesh mesh;
-  ElasticityExplicit integrator;
-  topology::SolutionFields fields(mesh);
-  _initialize(&mesh, &integrator, &fields);
-  integrator._needNewJacobian = true;
-
-  topology::Jacobian jacobian(fields.solution());
-
-  const PylithScalar t = 1.0;
-  integrator.integrateJacobian(&jacobian, t, &fields);
-  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-  jacobian.assemble("final_assembly");
-
-  const PylithScalar* valsE = _data->valsJacobian;
-  const int nrowsE = _data->numVertices * _data->spaceDim;
-  const int ncolsE = _data->numVertices * _data->spaceDim;
-
-  const PetscMat jacobianMat = jacobian.matrix();
-
-  int nrows = 0;
-  int ncols = 0;
-  MatGetSize(jacobianMat, &nrows, &ncols);
-  CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
-  CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
-
-  PetscMat jDense;
-  MatConvert(jacobianMat, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
-
-  scalar_array vals(nrows*ncols);
-  int_array rows(nrows);
-  int_array cols(ncols);
-  for (int iRow=0; iRow < nrows; ++iRow)
-    rows[iRow] = iRow;
-  for (int iCol=0; iCol < ncols; ++iCol)
-    cols[iCol] = iCol;
-  MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
-  const PylithScalar tolerance = 1.0e-06;
-  for (int iRow=0; iRow < nrows; ++iRow)
-    for (int iCol=0; iCol < ncols; ++iCol) {
-      const int index = ncols*iRow+iCol;
-      if (fabs(valsE[index]) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
-    } // for
-  MatDestroy(&jDense);
-} // testIntegrateJacobian
-
-// ----------------------------------------------------------------------
-// Test integrateJacobian().
-void
-pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
-{ // testIntegrateJacobianLumped
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
@@ -348,7 +225,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
   jacobian.complete();
 
-  const PylithScalar* valsE = _data->valsJacobianLumped;
+  const PylithScalar* valsE = _data->valsJacobian;
   const int sizeE = _data->numVertices * _data->spaceDim;
 
 #if 0 // DEBUGGING
@@ -381,14 +258,14 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobianLumped(void)
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
   err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
-} // testIntegrateJacobianLumped
+} // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
 // Test updateStateVars().
 void 
 pylith::feassemble::TestElasticityExplicit::testUpdateStateVars(void)
 { // testUpdateStateVars
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   ElasticityExplicit integrator;
@@ -404,13 +281,16 @@ pylith::feassemble::TestElasticityExplicit::testUpdateStateVars(void)
 void
 pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
 { // testStableTimeStep
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   ElasticityExplicit integrator;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const PylithScalar stableTimeStep = integrator.stableTimeStep(mesh);
-  CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
+  const PylithScalar dtStable = integrator.stableTimeStep(mesh);
+  const PylithScalar tolerance = 1.0e-6;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dtStable/_data->dtStableExplicit, tolerance);
 } // testStableTimeStep
 
 extern PetscErrorCode DMComplexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);

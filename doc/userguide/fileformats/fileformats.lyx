@@ -1359,10 +1359,10 @@ Time History Database Files
 \end_layout
 
 \begin_layout Standard
-Time history database files contain a header describing the numer of points
+Time history database files contain a header describing the number of points
  in the time history and the units for the time stamps followed by a list
  with pairs of time stamps and amplitude values.
- The amplitude at an arbitraty point in time is computed via interpolation
+ The amplitude at an arbitrary point in time is computed via interpolation
  of the values in the database.
  This means that the time history database must span the range of time values
  of interest.
@@ -1507,14 +1507,14 @@ name "sec:FileFormat:TimeStepUser"
 
 \end_inset
 
-User-Specified Time Step File
+User-Specified Time-Step File
 \end_layout
 
 \begin_layout Standard
-This file lists the time step sizes for nonuniform, user-specified time
+This file lists the time-step sizes for nonuniform, user-specified time
  steps.
- The file's format is an ASCII file that includes the units for the time
- step sizes and then a list of the time steps.
+ The file's format is an ASCII file that includes the units for the time-step
+ sizes and then a list of the time steps.
  
 \end_layout
 
@@ -1586,7 +1586,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Format of user-specified time step files.
+Format of user-specified time-step files.
 \end_layout
 
 \end_inset

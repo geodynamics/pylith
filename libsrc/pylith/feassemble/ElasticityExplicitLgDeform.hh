@@ -69,8 +69,7 @@
  * See governing equations section of user manual for more
  * information.
 */
-class pylith::feassemble::ElasticityExplicitLgDeform :
-  public IntegratorElasticityLgDeform
+class pylith::feassemble::ElasticityExplicitLgDeform : public IntegratorElasticityLgDeform
 { // ElasticityExplicitLgDeform
   friend class TestElasticityExplicitLgDeform; // unit testing
 
@@ -92,18 +91,20 @@ public :
    */
   void timeStep(const PylithScalar dt);
 
+  /** Get stable time step for advancing from time t to time t+dt.
+   *
+   * Default is current time step.
+   *
+   * @param mesh Finite-element mesh.
+   * @returns Time step
+   */
+  PylithScalar stableTimeStep(const topology::Mesh& mesh) const;
+
   /** Set normalized viscosity for numerical damping.
    *
    * @param viscosity Normalized viscosity (viscosity / elastic modulus).
    */
   void normViscosity(const PylithScalar viscosity);
-
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  void useSolnIncr(const bool flag);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -112,27 +113,6 @@ public :
    * @param fields Solution fields
    */
   void integrateResidual(const topology::Field<topology::Mesh>& residual,
-			 const PylithScalar t,
-			 topology::SolutionFields* const fields);
-
-  /** Integrate contributions to residual term (r) for operator.
-   *
-   * @param residual Field containing values for residual
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
-       const PylithScalar t,
-       topology::SolutionFields* const fields);
-
-  /** Integrate contributions to Jacobian matrix (A) associated with
-   * operator.
-   *
-   * @param jacobian Sparse matrix for Jacobian of system.
-   * @param t Current time
-   * @param fields Solution fields
-   */
-  void integrateJacobian(topology::Jacobian* jacobian,
 			 const PylithScalar t,
 			 topology::SolutionFields* const fields);
 
@@ -155,6 +135,12 @@ private :
 
   /// Not implemented
   const ElasticityExplicitLgDeform& operator=(const ElasticityExplicitLgDeform&);
+
+  /// Not implemented.
+  void integrateJacobian(topology::Jacobian*,
+			 const PylithScalar,
+			 topology::SolutionFields* const);
+
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

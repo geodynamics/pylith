@@ -165,14 +165,6 @@ public :
   void reformResidual(const PetscVec* tmpResidualVec =0,
 		      const PetscVec* tmpSolutionVec =0);
   
-  /** Reform system residual.
-   *
-   * @param tmpResidualVec Temporary PETSc vector for residual.
-   * @param tmpSolutionVec Temporary PETSc vector for solution.
-   */
-  void reformResidualLumped(const PetscVec* tmpResidualVec =0,
-          const PetscVec* tmpSolutionVec =0);
-
   /* Reform system Jacobian.
    *
    * @param tmpSolveSolnVec Temporary PETSc vector for solution.

@@ -175,7 +175,7 @@ scecdata.usc.edu/cvws/cgi-bin/cvws.cgi
  Benchmark results for PyLith are available for TPV205-2D (horizontal slice
  through a vertical strike-slip fault), TPV205 (vertical strike-slip fault
  with high and low stress asperities), TPV210-2D (vertical slice through
- a 60 degree dipping normal fault), TPV210 (60 degree dipping normal fault),
+ a 60-degree dipping normal fault), TPV210 (60-degree dipping normal fault),
  TPV11, TPV12, TPV13, TPV14-2D and TPV15-2D (horizontal slice through a
  verticel strike-slip fault with a branch), TPV14 and TPV15 (vertical strike-sli
 p fault with a branch), and TPV 16 and 17.

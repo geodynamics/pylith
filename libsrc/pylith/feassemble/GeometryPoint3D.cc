@@ -21,6 +21,7 @@
 #include "GeometryPoint3D.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -114,6 +115,15 @@ pylith::feassemble::GeometryPoint3D::jacobian(PylithScalar* jacobian,
     det[i] = 1.0;
   } // for
 } // jacobian
+
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryPoint3D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  return PYLITH_MAXSCALAR;
+} // minCellWidth
 
 
 // End of file

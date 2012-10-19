@@ -41,14 +41,6 @@ namespace pylith {
       virtual
       void deallocate(void);
   
-      /** Set flag for setting constraints for total field solution or
-       *  incremental field solution.
-       *
-       * @param flag True if using incremental solution, false otherwise.
-       */
-      virtual
-      void useSolnIncr(const bool flag);
-      
       /** Get number of constraints per location.
        *
        * @returns Number of constraints per location.

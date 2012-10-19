@@ -54,12 +54,9 @@ class pylith::feassemble::TestElasticityExplicitTet4 : public CppUnit::TestFixtu
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testMaterial );
   CPPUNIT_TEST( testNeedNewJacobian );
-  CPPUNIT_TEST( testUseSolnIncr );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
-  CPPUNIT_TEST( testIntegrateResidualLumped );
   CPPUNIT_TEST( testIntegrateJacobian );
-  CPPUNIT_TEST( testIntegrateJacobianLumped );
   CPPUNIT_TEST( testUpdateStateVars );
   CPPUNIT_TEST( testStableTimeStep );
 
@@ -86,23 +83,14 @@ public :
   /// Test needNewJacobian().
   void testNeedNewJacobian(void);
 
-  /// Test useSolnIncr().
-  void testUseSolnIncr(void);
-
   /// Test initialize().
   void testInitialize(void);
 
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateResidualLumped().
-  void testIntegrateResidualLumped(void);
-
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
-
-  /// Test integrateJacobianLumped().
-  void testIntegrateJacobianLumped(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);

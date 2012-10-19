@@ -85,7 +85,7 @@ class IntegratorElasticity(Integrator):
                         self.materialObj.label(),
                         self.materialObj,
                         self.materialObj.dimension()))
-    
+    self._verifyConfiguration()
     self.output.verifyConfiguration(self.mesh)
 
     self._eventLogger.eventEnd(logEvent)    
@@ -168,6 +168,10 @@ class IntegratorElasticity(Integrator):
     self.output.writeInfo()
     self.output.open(totalTime, numTimeSteps)
     return
+
+
+  def _verifyConfiguration(self):
+    raise NotImplementedError("Implement _verifyConfiguration() in child class.")
 
 
   def _modelMemoryUse(self):

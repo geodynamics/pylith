@@ -72,7 +72,6 @@ class Quadrature2DLinear(Component):
     Component.__init__(self, name, facility="quadrature")
     
     self.quadPtsRef = numpy.array( [[-1.0/3.0, -1.0/3.0]], dtype=numpy.float64)
-    #self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0]], dtype=numpy.float64)
     self.quadWts = numpy.array([2.0], dtype=numpy.float64)
     self.numBasis = 3
     self.numQuadPts = 1

@@ -122,7 +122,7 @@ pylith::friction::RateStateAgeing::RateStateAgeing(void) :
 				    _RateStateAgeing::numStateVars,
 				    _RateStateAgeing::dbStateVars,
 				    _RateStateAgeing::numDBStateVars)),
-  _minSlipRate(1.0e-12)
+  _linearSlipRate(1.0e-12)
 { // constructor
 } // constructor
 
@@ -133,19 +133,20 @@ pylith::friction::RateStateAgeing::~RateStateAgeing(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Set floor for slip rate used in computing friction. Used to
+// Set nondimensional slip rate below which friction varies
+//  linearly with slip rate.
 void
-pylith::friction::RateStateAgeing::minSlipRate(const PylithScalar value)
-{ // minSlipRate
+pylith::friction::RateStateAgeing::linearSlipRate(const PylithScalar value)
+{ // linearSlipRate
   if (value < 0.0) {
     std::ostringstream msg;
-    msg << "Minimum slip rate (" << value << ") for rate state friction model "
+    msg << "Nondimensional linear slip rate threshold (" << value << ") for rate state friction model "
 	<< label() << " must be nonnegative.";
     throw std::runtime_error(msg.str());
   } // if
-
-  _minSlipRate = value;
-} // minSlipRate
+  
+  _linearSlipRate = value;
+} // linearSlipRate
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
@@ -310,14 +311,16 @@ pylith::friction::RateStateAgeing::_calcFriction(const PylithScalar t,
   if (normalTraction <= 0.0) {
     // if fault is in compression
 
-    const PylithScalar slipRateLinear = _minSlipRate;
+    const PylithScalar slipRateLinear = _linearSlipRate;
 
     const PylithScalar f0 = properties[p_coef];
     const PylithScalar a = properties[p_a];
     const PylithScalar b = properties[p_b];
     const PylithScalar L = properties[p_L];
     const PylithScalar slipRate0 = properties[p_slipRate0];
-    const PylithScalar theta = stateVars[s_state];
+
+    // Prevent zero value for theta, reasonable value is L / slipRate0
+    const PylithScalar theta = (stateVars[s_state] > 0.0) ? stateVars[s_state] : L / slipRate0;
 
     if (slipRate >= slipRateLinear) {
       mu_f = f0 + a*log(slipRate / slipRate0) + b*log(slipRate0*theta/L);
@@ -375,7 +378,7 @@ pylith::friction::RateStateAgeing::_updateStateVars(const PylithScalar t,
 
   // Since regulatized friction -> 0 as slipRate -> 0, limit slip
   // rate to some minimum value
-  const PylithScalar slipRateEff = std::max(_minSlipRate, slipRate);
+  const PylithScalar slipRateEff = std::max(1.0e-2*_linearSlipRate, slipRate);
 
   const PylithScalar dt = _dt;
   const PylithScalar thetaTVertex = stateVars[s_state];

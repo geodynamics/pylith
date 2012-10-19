@@ -148,10 +148,12 @@ private :
    * @param metadata Metadata for field.
    * @param iTime Index of time step.
    * @param component Index of component.
+   * @param spaceDim Spatial dimension.
    */
   void _writeGridAttributeComponent(const FieldMetadata& metadata,
 				    const int iTime,
-				    const int component);
+				    const int component,
+				    const int spaceDim);
 
 // PRIVATE MEMBERS ------------------------------------------------------
 private :

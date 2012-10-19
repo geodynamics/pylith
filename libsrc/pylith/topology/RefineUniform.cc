@@ -45,7 +45,15 @@ pylith::topology::RefineUniform::RefineUniform(void)
 // Destructor
 pylith::topology::RefineUniform::~RefineUniform(void)
 { // destructor
+  deallocate();
 } // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate data structures.
+void
+pylith::topology::RefineUniform::deallocate(void)
+{ // deallocate
+} // deallocate
 
 // ----------------------------------------------------------------------
 // Refine mesh.

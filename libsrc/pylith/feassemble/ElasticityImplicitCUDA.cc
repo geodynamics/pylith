@@ -104,17 +104,6 @@ pylith::feassemble::ElasticityImplicitCUDA::stableTimeStep(const topology::Mesh&
 } // stableTimeStep
 
 // ----------------------------------------------------------------------
-// Set flag for setting constraints for total field solution or
-// incremental field solution.
-void
-pylith::feassemble::ElasticityImplicitCUDA::useSolnIncr(const bool flag)
-{ // useSolnIncr
-  assert(0 != _material);
-  _useSolnIncr = flag;
-  _material->useElasticBehavior(!_useSolnIncr);
-} // useSolnIncr
-
-// ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
 pylith::feassemble::ElasticityImplicitCUDA::integrateResidual(

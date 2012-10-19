@@ -16,21 +16,21 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/ExplicitLumpedTri3.py
+## @file pylith/problems/ExplicitTri3.py
 ##
-## @brief Python ExplicitLumpedTri3 object for solving equations using an
+## @brief Python ExplicitTri3 object for solving equations using an
 ## explicit formulation with a lumped Jacobian matrix that is stored
 ## as a Field.
 ##
 ## Factory: pde_formulation
 
-from ExplicitLumped import ExplicitLumped
+from Explicit import Explicit
 from pylith.utils.profiling import resourceUsageString
 
-# ExplicitLumpedTri3 class
-class ExplicitLumpedTri3(ExplicitLumped):
+# ExplicitTri3 class
+class ExplicitTri3(Explicit):
   """
-  Python ExplicitLumpedTri3 object for solving equations using an explicit
+  Python ExplicitTri3 object for solving equations using an explicit
   formulation.
 
   The formulation has the general form, [A(t)] {u(t+dt)} = {b(t)},
@@ -48,11 +48,11 @@ class ExplicitLumpedTri3(ExplicitLumped):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitlumpedtri3"):
+  def __init__(self, name="explicittri3"):
     """
     Constructor.
     """
-    ExplicitLumped.__init__(self, name)
+    Explicit.__init__(self, name)
     return
 
 
@@ -72,7 +72,7 @@ class ExplicitLumpedTri3(ExplicitLumped):
     """
     Set members based using inventory.
     """
-    ExplicitLumped._configure(self)
+    Explicit._configure(self)
     return
 
 
@@ -80,9 +80,9 @@ class ExplicitLumpedTri3(ExplicitLumped):
 
 def pde_formulation():
   """
-  Factory associated with ExplicitLumped.
+  Factory associated with Explicit.
   """
-  return ExplicitLumpedTri3()
+  return ExplicitTri3()
 
 
 # End of file 

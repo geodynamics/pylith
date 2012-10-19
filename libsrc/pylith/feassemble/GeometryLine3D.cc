@@ -25,6 +25,7 @@
 #include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES scalar_array
 
 #include <cassert> // USES assert()
 
@@ -170,6 +171,30 @@ pylith::feassemble::GeometryLine3D::jacobian(PylithScalar* jacobian,
 
   PetscLogFlops(12);
 } // jacobian
+
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryLine3D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  const int numCorners = 2;
+  const int spaceDim = 3;
+  assert(numCorners*spaceDim == coordinatesCell.size());
+
+  const PylithScalar xA = coordinatesCell[0];
+  const PylithScalar yA = coordinatesCell[1];
+  const PylithScalar zA = coordinatesCell[2];
+  const PylithScalar xB = coordinatesCell[3];
+  const PylithScalar yB = coordinatesCell[4];
+  const PylithScalar zB = coordinatesCell[5];
+    
+  const PylithScalar minWidth = sqrt(pow(xB-xA,2) + pow(yB-yA,2) + pow(zB-zA,2));
+
+  PetscLogFlops(9);
+
+  return minWidth;
+} // minCellWidth
 
 
 // End of file

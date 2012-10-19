@@ -70,9 +70,10 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
 { // deallocate
-  if (0 != _viewer)
-    PetscViewerDestroy(&_viewer);
-  _viewer = 0;
+  DataWriter<mesh_type, field_type>::deallocate();
+
+  PetscErrorCode err = 0;
+  err = PetscViewerDestroy(&_viewer);CHECK_PETSC_ERROR(err);
 } // deallocate
   
 // ----------------------------------------------------------------------

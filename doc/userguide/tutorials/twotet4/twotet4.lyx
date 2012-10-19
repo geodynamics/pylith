@@ -470,18 +470,12 @@ matprops.spatialdb
 \family default
 ) along with the problem-specific files (
 \family typewriter
-\size small
-dislocation.cfg
-\family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
+dislocation.cfg, dislocation_slip.spatialdb, 
+\begin_inset Newline linebreak
+\end_inset
+
 dislocation_sliptime.spatialdb
 \family default
-\size default
 ) provide a complete description of the problem, and we can then run this
  example by typing
 \end_layout

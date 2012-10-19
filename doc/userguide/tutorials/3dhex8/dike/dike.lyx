@@ -261,11 +261,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Displacement magnitude for example 
-\family typewriter
-step20
-\family default
- visualized using ParaView.
+Displacement magnitude for example step20 visualized using ParaView.
  
 \begin_inset CommandInset label
 LatexCommand label

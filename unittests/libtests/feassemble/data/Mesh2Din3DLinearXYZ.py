@@ -58,6 +58,13 @@ class Mesh2Din3DLinearXYZ(Component):
                                      [+1.0, -1.0],
                                      [-1.0, +1.0]],
                                     dtype=numpy.float64)
+
+    a = (1.0**2 + 0.0**2 + 0.0**2)**0.5
+    b = (1.0**2 + 0.0**2 + 1.0**2)**0.5
+    c = (0.0**2 + 0.0**2 + 1.0**2)**0.5
+    k = 0.5 * (a + b + c)
+    r = (k*(k-a)*(k-b)*(k-c))**0.5 / k
+    self.minCellWidth = r
     return
   
 

@@ -36,18 +36,12 @@
 #define isinf std::isinf // TEMPORARY
 
 // Customized line search based on PETSc code in
-// src/snes/linesearch/bt/linesearchbt.c.
+// src/snes/linesearch/impls/bt/linesearchbt.c.
 #include <petsc-private/snesimpl.h>
 #include <petsc-private/linesearchimpl.h>
 
-typedef enum {
-  SNES_LINESEARCH_BT_QUADRATIC, 
-  SNES_LINESEARCH_BT_CUBIC,
-} PetscSNESLineSearchBTOrder;
-
 struct PetscSNESLineSearch_BT {
   PetscReal        alpha; /* sufficient decrease parameter */
-  PetscSNESLineSearchBTOrder order;
 };
 
 #define PYLITH_CUSTOM_LINESEARCH 1
@@ -109,13 +103,15 @@ pylith::problems::SolverNonlinear::initialize(
   err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);
   CHECK_PETSC_ERROR(err);
 
-  err = SNESSetFromOptions(_snes); CHECK_PETSC_ERROR(err);
-  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation); CHECK_PETSC_ERROR(err);
+  // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
+  err = SNESGetSNESLineSearch(_snes, &ls);CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchSetType(ls, SNESSHELL);CHECK_PETSC_ERROR(err);
+  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation);CHECK_PETSC_ERROR(err);
 
-  err = SNESGetSNESLineSearch(_snes, &ls); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchSetType(ls, SNESLINESEARCHSHELL); CHECK_PETSC_ERROR(err);
-  err = SNESLineSearchShellSetUserFunc(ls, lineSearch, (void*) formulation); CHECK_PETSC_ERROR(err);
+  // Get SNES options and allow the user to override the line search type
+  err = SNESSetFromOptions(_snes);CHECK_PETSC_ERROR(err);
+  err = SNESSetComputeInitialGuess(_snes, initialGuess, (void*) formulation);CHECK_PETSC_ERROR(err);
 
   if (formulation->splitFields()) {
     PetscKSP ksp = 0;
@@ -170,7 +166,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   Formulation* formulation = (Formulation*) context;
   assert(0 != formulation);
 
-  // Make sure we have an admissible Lagrange force (\lambda)
+  // Make sure we have an admissible Lagrange multiplier (\lambda)
   formulation->constrainSolnSpace(&tmpSolutionVec);
 
   // Reform residual
@@ -219,8 +215,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   Vec            X, F, Y, W, G;
   SNES           snes;
   PetscReal      fnorm, xnorm, ynorm, gnorm, gnormprev;
-  PetscReal      lambda, lambdatemp, lambdaprev, minlambda, maxstep, rellength, initslope, alpha;
-  PetscReal      t1, t2, a, b, d, steptol;
+  PetscReal      lambda, lambdatemp, lambdaprev, minlambda, maxstep, initslope, alpha, stol;
+  PetscReal      t1, t2, a, b, d;
 #if defined(PETSC_USE_COMPLEX)
   PetscScalar    cinitslope;
 #endif
@@ -238,7 +234,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   ierr = SNESLineSearchGetLambda(linesearch, &lambda);CHKERRQ(ierr);
   ierr = SNESLineSearchGetSNES(linesearch, &snes);CHKERRQ(ierr);
   ierr = SNESLineSearchGetMonitor(linesearch, &monitor);CHKERRQ(ierr);
-  ierr = SNESLineSearchGetTolerances(linesearch, &steptol, &maxstep, PETSC_NULL, PETSC_NULL, PETSC_NULL, &max_its);
+  ierr = SNESLineSearchGetTolerances(linesearch, &minlambda, &maxstep, PETSC_NULL, PETSC_NULL, PETSC_NULL, &max_its);CHKERRQ(ierr);
+  ierr = SNESGetTolerances(snes, PETSC_NULL, PETSC_NULL, &stol, PETSC_NULL, PETSC_NULL);CHKERRQ(ierr);
   bt = (PetscSNESLineSearch_BT *)linesearch->data;
 
   alpha = bt->alpha;
@@ -251,7 +248,11 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   ierr = SNESLineSearchPreCheck(linesearch, X, Y, &changed_y);CHKERRQ(ierr);
   ierr = SNESLineSearchSetSuccess(linesearch, PETSC_TRUE);CHKERRQ(ierr);
 
-  ierr = VecNorm(Y, NORM_2, &ynorm);CHKERRQ(ierr);
+  ierr = VecNormBegin(Y, NORM_2, &ynorm);CHKERRQ(ierr);
+  ierr = VecNormBegin(X, NORM_2, &xnorm);CHKERRQ(ierr);
+  ierr = VecNormEnd(Y, NORM_2, &ynorm);CHKERRQ(ierr);
+  ierr = VecNormEnd(X, NORM_2, &xnorm);CHKERRQ(ierr);
+
   if (ynorm == 0.0) {
     if (monitor) {
       ierr = PetscViewerASCIIAddTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
@@ -272,14 +273,6 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
     ierr = VecScale(Y,maxstep/(ynorm));CHKERRQ(ierr);
     ynorm = maxstep;
   }
-  ierr      = VecMaxPointwiseDivide(Y,X,&rellength);CHKERRQ(ierr);
-
-#if defined(PYLITH_CUSTOM_LINESEARCH)
-  // Place reasonable absolute limit on minimum lambda
-  minlambda = std::max(steptol/rellength, PylithScalar(1.0)/PYLITH_MAXSCALAR);
-#else // ORIGINAL
-  minlambda = steptol/rellength;
-#endif
 
   ierr      = MatMult(jac,Y,W);CHKERRQ(ierr);
 #if defined(PETSC_USE_COMPLEX)
@@ -316,13 +309,19 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
 
   if (PetscIsInfOrNanReal(gnorm)) SETERRQ(PETSC_COMM_SELF,PETSC_ERR_FP,"User provided compute function generated a Not-a-Number");
   ierr = PetscInfo2(snes,"Initial fnorm %14.12e gnorm %14.12e\n", fnorm, gnorm);CHKERRQ(ierr);
-  if (.5*gnorm*gnorm <= .5*fnorm*fnorm + lambda*alpha*initslope) { /* Sufficient reduction */
+  if (.5*gnorm*gnorm <= .5*fnorm*fnorm + lambda*alpha*initslope) { /* Sufficient reduction or step tolerance convergence */
     if (monitor) {
       ierr = PetscViewerASCIIAddTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
       ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Using full step: fnorm %14.12e gnorm %14.12e\n", fnorm, gnorm);CHKERRQ(ierr);
       ierr = PetscViewerASCIISubtractTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
     }
   } else {
+    /* Since the full step didn't work and the step is tiny, quit */
+    if (stol*xnorm > ynorm) {
+      ierr = SNESLineSearchSetSuccess(linesearch, PETSC_FALSE);CHKERRQ(ierr);
+      ierr = PetscInfo2(monitor, "Aborted due to ynorm < stol*xnorm (%14.12e < %14.12e) and inadequate full step.\n",ynorm,stol*xnorm);CHKERRQ(ierr);
+      PetscFunctionReturn(0);
+    }
     /* Fit points with quadratic */
     lambdatemp = -initslope/(gnorm*gnorm - fnorm*fnorm - 2.0*lambda*initslope);
     lambdaprev = lambda;
@@ -391,7 +390,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
           PetscFunctionReturn(0);
 #endif
         }
-        if (bt->order == SNES_LINESEARCH_BT_CUBIC) {
+        if (linesearch->order == SNES_LINESEARCH_ORDER_CUBIC) {
           t1 = .5*(gnorm*gnorm - fnorm*fnorm) - lambda*initslope;
           t2 = .5*(gnormprev*gnormprev  - fnorm*fnorm) - lambdaprev*initslope;
           a  = (t1/(lambda*lambda) - t2/(lambdaprev*lambdaprev))/(lambda-lambdaprev);
@@ -403,8 +402,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
           } else {
             lambdatemp = (-b + PetscSqrtReal(d))/(3.0*a);
           }
-        } else if (bt->order == SNES_LINESEARCH_BT_QUADRATIC) {
+        } else if (linesearch->order == SNES_LINESEARCH_ORDER_QUADRATIC) {
           lambdatemp = -initslope/(gnorm*gnorm - fnorm*fnorm - 2.0*initslope);
+	} else {
+	  SETERRQ(((PetscObject) linesearch)->comm, PETSC_ERR_SUP, "unsupported line search order for type bt");
         }
           lambdaprev = lambda;
           gnormprev  = gnorm;
@@ -412,6 +413,9 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
         if (lambdatemp <= .1*lambda) lambda     = .1*lambda;
         else                         lambda     = lambdatemp;
         ierr  = VecWAXPY(W,-lambda,Y,X);CHKERRQ(ierr);
+        if (linesearch->ops->viproject) {
+          ierr = (*linesearch->ops->viproject)(snes,W);CHKERRQ(ierr);
+        }
         if (snes->nfuncs >= snes->max_funcs) {
           ierr = PetscInfo1(snes,"Exceeded maximum function evaluations, while looking for good step length! %D \n",count);CHKERRQ(ierr);
           ierr = PetscInfo5(snes,"fnorm=%18.16e, gnorm=%18.16e, ynorm=%18.16e, lambda=%18.16e, initial slope=%18.16e\n",
@@ -436,10 +440,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
         if (.5*gnorm*gnorm < .5*fnorm*fnorm + lambda*alpha*initslope) { /* is reduction enough? */
           if (monitor) {
             ierr = PetscViewerASCIIAddTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
-            if (bt->order == SNES_LINESEARCH_BT_CUBIC) {
-              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Cubically determined step, current gnorm %14.12e lambda=%18.16e\n",gnorm,lambda);CHKERRQ(ierr);
+            if (linesearch->order == SNES_LINESEARCH_ORDER_CUBIC) {
+              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Cubically determined step, current gnorm %14.12e lambda=%18.16e\n",(double)gnorm,(double)lambda);CHKERRQ(ierr);
             } else {
-              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Quadratically determined step, current gnorm %14.12e lambda=%18.16e\n",gnorm,lambda);CHKERRQ(ierr);
+              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Quadratically determined step, current gnorm %14.12e lambda=%18.16e\n",(double)gnorm,(double)lambda);CHKERRQ(ierr);
             }
             ierr = PetscViewerASCIISubtractTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
           }
@@ -447,10 +451,10 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
         } else {
           if (monitor) {
             ierr = PetscViewerASCIIAddTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
-            if (bt->order == SNES_LINESEARCH_BT_CUBIC) {
-              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Cubic step no good, shrinking lambda, current gnorm %12.12e lambda=%18.16e\n",gnorm,lambda);CHKERRQ(ierr);
+            if (linesearch->order == SNES_LINESEARCH_ORDER_CUBIC) {
+              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Cubic step no good, shrinking lambda, current gnorm %12.12e lambda=%18.16e\n",(double)gnorm,(double)lambda);CHKERRQ(ierr);
             } else {
-              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Quadratic step no good, shrinking lambda, current gnorm %12.12e lambda=%18.16e\n",gnorm,lambda);CHKERRQ(ierr);
+              ierr = PetscViewerASCIIPrintf(monitor,"    Line search: Quadratic step no good, shrinking lambda, current gnorm %12.12e lambda=%18.16e\n",(double)gnorm,(double)lambda);CHKERRQ(ierr);
             }
             ierr = PetscViewerASCIISubtractTab(monitor,((PetscObject)linesearch)->tablevel);CHKERRQ(ierr);
           }
