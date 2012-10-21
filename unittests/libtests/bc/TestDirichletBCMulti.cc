@@ -243,9 +243,6 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
-  bcA.useSolnIncr(true);
-  bcB.useSolnIncr(true);
-  bcC.useSolnIncr(true);
 
   DM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
