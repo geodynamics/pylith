@@ -774,7 +774,7 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
   int icell = 0;
   const PylithScalar tolerance = 1.0e-06;
   err = VecGetArray(vec, &array);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c) {
+  for(PetscInt c = cStart; c < cEnd; ++c, ++icell) {
     PetscInt dof, off;
 
     err = PetscSectionGetDof(section, c, &dof);CHECK_PETSC_ERROR(err);
