@@ -26,7 +26,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -94,45 +94,43 @@ pylith::bc::TestDirichletBC::testInitialize(void)
   if (numFixedDOF > 0) {
     // Check values
     CPPUNIT_ASSERT(0 != bc._parameters);
-    const ALE::Obj<RealUniformSection>& parametersSection =
-      bc._parameters->section();
-    CPPUNIT_ASSERT(!parametersSection.isNull());
-    const int parametersFiberDim = bc._parameters->fiberDim();
-    const int initialIndex = bc._parameters->sectionIndex("initial");
-    const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
-    CPPUNIT_ASSERT_EQUAL(numFixedDOF, initialFiberDim);
+    PetscSection initialSection = bc._parameters->get("initial").petscSection();
+    Vec          initialVec     = bc._parameters->get("initial").localVector();
+    PetscScalar *initialArray;
+    PetscErrorCode err;
+    CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
 
     const PylithScalar tolerance = 1.0e-06;
+    err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
     for (int i=0; i < numPoints; ++i) {
-      const int p_value = _data->constrainedPoints[i]+offset;
-      CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
-			   parametersSection->getFiberDimension(p_value));
-      const PylithScalar* parametersVertex = 
-	parametersSection->restrictPoint(p_value);
-      CPPUNIT_ASSERT(parametersVertex);
-      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i*numFixedDOF+iDOF],
-				     parametersVertex[initialIndex+iDOF],
-				     tolerance);
+      const PetscInt p_value = _data->constrainedPoints[i]+offset;
+      PetscInt       dof, off;
+
+      err = PetscSectionGetDof(initialSection, p_value, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(initialSection, p_value, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(numFixedDOF, dof);
+      for(int iDOF = 0; iDOF < numFixedDOF; ++iDOF) 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i*numFixedDOF+iDOF], initialArray[off+iDOF], tolerance);
     } // for
+    err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
     
     // Check rate of change
-    const int rateIndex = bc._parameters->sectionIndex("rate");
-    const int rateFiberDim = bc._parameters->sectionFiberDim("rate");
-    CPPUNIT_ASSERT_EQUAL(numFixedDOF, rateFiberDim);
+    PetscSection rateSection = bc._parameters->get("rate").petscSection();
+    Vec          rateVec     = bc._parameters->get("rate").localVector();
+    PetscScalar *rateArray;
     
+    err = VecGetArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
     for (int i=0; i < numPoints; ++i) {
-      const int p_value = _data->constrainedPoints[i]+offset;
-      CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
-			   parametersSection->getFiberDimension(p_value));
-      const PylithScalar* parametersVertex = 
-	parametersSection->restrictPoint(p_value);
-      CPPUNIT_ASSERT(parametersVertex);
-      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) 
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, 
-				     parametersVertex[rateIndex+iDOF],
-				     tolerance);
+      const PetscInt p_value = _data->constrainedPoints[i]+offset;
+      PetscInt       dof, off;
+
+      err = PetscSectionGetDof(rateSection, p_value, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(rateSection, p_value, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(numFixedDOF, dof);
+      for(int iDOF = 0; iDOF < numFixedDOF; ++iDOF) 
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, rateArray[off+iDOF], tolerance);
     } // for
+    err = VecRestoreArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
   } // if
 } // testInitialize
 

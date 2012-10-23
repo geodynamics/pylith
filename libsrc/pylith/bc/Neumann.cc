@@ -21,7 +21,7 @@
 #include "Neumann.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldsNew.hh" // HOLDSA FieldsNew
+#include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Field.hh" // USES Field
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
@@ -106,57 +106,59 @@ pylith::bc::Neumann::integrateResidual(
   scalar_array tractionsCell(numQuadPts*spaceDim);
 
   // Get cell information
-  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
-  assert(!subSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    subSieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM       subMesh = _boundaryMesh->dmMesh();
+  IS       subpointMap;
+  PetscInt cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(subMesh);
+  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(subMesh, &subpointMap);CHECK_PETSC_ERROR(err);
 
   // Get sections
   _calculateValue(t);
-  const ALE::Obj<SubRealUniformSection>& parametersSection =
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueFiberDim == tractionsCell.size());
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  PetscSection valueSection = _parameters->get("value").petscSection();
+  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscScalar *tractionsArray;
+  assert(valueSection);assert(valueVec);
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  UpdateAddVisitor residualVisitor(*residualSection, &_cellVector[0]);
+  PetscSection residualSection = residual.petscSection(), residualSubsection;
+  Vec          residualVec     = residual.localVector();
+  assert(residualSection);assert(residualVec);
+  err = PetscSectionCreateSubmeshSection(residualSection, subpointMap, &residualSubsection);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    subSieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates,
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 #endif
 
   // Loop over faces and integrate contribution from each face
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
+  err = VecGetArray(valueVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(c);
 #else
-    coordsVisitor.clear();
-    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, c);
+    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict tractions to cell
-    assert(parametersFiberDim == 
-	   parametersSection->getFiberDimension(*c_iter));
-    const PylithScalar* parametersCell = parametersSection->restrictPoint(*c_iter);
-    assert(parametersCell);
-    const PylithScalar* tractionsCell = &parametersCell[valueIndex];
-    assert(tractionsCell);
+    PetscInt vdof, voff;
+
+    err = PetscSectionGetDof(valueSection, c, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, c, &voff);CHECK_PETSC_ERROR(err);
+    assert(vdof == numQuadPts*spaceDim);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -171,16 +173,14 @@ pylith::bc::Neumann::integrateResidual(
           const PylithScalar valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      tractionsCell[iQuad*spaceDim+iDim] * valIJ;
+              tractionsArray[voff+iQuad*spaceDim+iDim] * valIJ;
         } // for
       } // for
     } // for
-    // Assemble cell contribution into field
-    residualVisitor.clear();
-    subSieveMesh->updateClosure(*c_iter, residualVisitor);
-
+    err = DMComplexVecSetClosure(subMesh, residualSubsection, residualVec, c, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for
+  err = VecRestoreArray(valueVec, &tractionsArray);CHECK_PETSC_ERROR(err);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -245,37 +245,39 @@ pylith::bc::Neumann::_queryDatabases(void)
   const int numQuadPts = _quadrature->numQuadPts();
 
   delete _parameters; 
-  _parameters = 
-    new topology::FieldsNew<topology::SubMesh>(*_boundaryMesh);
+  _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
 
   // Create section to hold time dependent values
-  _parameters->add("value", "traction", 
-		   numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
-		   pressureScale);
-  if (_dbInitial) 
-    _parameters->add("initial", "initial_traction",
-		     numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
-		     pressureScale);
+  _parameters->add("value", "traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
+  _parameters->get("value").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+  _parameters->get("value").scale(pressureScale);
+  _parameters->get("value").allocate();
+  if (_dbInitial) {
+    _parameters->add("initial", "initial_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
+    _parameters->get("initial").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    _parameters->get("initial").scale(pressureScale);
+    _parameters->get("initial").allocate();
+  }
   if (_dbRate) {
-    _parameters->add("rate", "traction_rate",
-		     numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
-		     rateScale);
-    _parameters->add("rate time", "traction_rate_time",
-		     numQuadPts, topology::FieldBase::MULTI_SCALAR,
-		     timeScale);
+    _parameters->add("rate", "traction_rate", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
+    _parameters->get("rate").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    _parameters->get("rate").scale(rateScale);
+    _parameters->get("rate").allocate();
+    _parameters->add("rate time", "traction_rate_time", topology::FieldBase::FACES_FIELD, numQuadPts);
+    _parameters->get("rate time").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    _parameters->get("rate time").scale(timeScale);
+    _parameters->get("rate time").allocate();
   } // if
   if (_dbChange) {
-    _parameters->add("change", "change_traction",
-		     numQuadPts*spaceDim, topology::FieldBase::MULTI_VECTOR,
-		     pressureScale);
-    _parameters->add("change time", "change_traction_time",
-		     numQuadPts, topology::FieldBase::MULTI_SCALAR,
-		     timeScale);
+    _parameters->add("change", "change_traction", topology::FieldBase::FACES_FIELD, numQuadPts*spaceDim);
+    _parameters->get("change").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    _parameters->get("change").scale(pressureScale);
+    _parameters->get("change").allocate();
+    _parameters->add("change time", "change_traction_time", topology::FieldBase::FACES_FIELD, numQuadPts);
+    _parameters->get("change time").vectorFieldType(topology::FieldBase::MULTI_VECTOR);
+    _parameters->get("change time").scale(timeScale);
+    _parameters->get("change time").allocate();
   } // if
-  _parameters->allocate(topology::FieldBase::CELLS_FIELD, 1);
-  const ALE::Obj<SubRealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
 
   if (0 != _dbInitial) { // Setup initial values, if provided.
     _dbInitial->open();
@@ -396,13 +398,12 @@ pylith::bc::Neumann::_queryDB(const char* name,
   assert(_parameters);
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
-  assert(!subSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    subSieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM       subMesh = _boundaryMesh->dmMesh();
+  PetscInt cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(subMesh);
+  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
@@ -416,20 +417,16 @@ pylith::bc::Neumann::_queryDB(const char* name,
 
   // Get sections.
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    subSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
-  const ALE::Obj<SubRealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex(name);
-  const int valueFiberDim = _parameters->sectionFiberDim(name);
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
-  scalar_array parametersCell(parametersFiberDim);
+  PetscSection valueSection = _parameters->get(name).petscSection();
+  Vec          valueVec     = _parameters->get(name).localVector();
+  PetscScalar *valueArray;
+  assert(valueSection);assert(valueVec);
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(cs);
@@ -444,52 +441,49 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #endif
 
   // Loop over cells in boundary mesh and perform queries.
-  for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.clear();
-    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, c);
+    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				lengthScale);
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
     
     valuesCell = 0.0;
-    for (int iQuad=0, iSpace=0; 
-	 iQuad < numQuadPts;
-	 ++iQuad, iSpace+=spaceDim) {
+    for (int iQuad=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iSpace+=spaceDim) {
       const int err = db->query(&valuesCell[iQuad*querySize], querySize,
-				&quadPtsGlobal[iSpace], spaceDim, cs);
+                                &quadPtsGlobal[iSpace], spaceDim, cs);
       
       if (err) {
-	std::ostringstream msg;
-	msg << "Could not find values at (";
-	for (int i=0; i < spaceDim; ++i)
-	  msg << " " << quadPtsGlobal[i+iSpace];
-	msg << ") for traction boundary condition " << _label << "\n"
-	    << "using spatial database " << db->label() << ".";
-	throw std::runtime_error(msg.str());
+        std::ostringstream msg;
+        msg << "Could not find values at (";
+        for (int i=0; i < spaceDim; ++i)
+          msg << " " << quadPtsGlobal[i+iSpace];
+        msg << ") for traction boundary condition " << _label << "\n"
+            << "using spatial database " << db->label() << ".";
+        throw std::runtime_error(msg.str());
       } // if
-
     } // for
-    _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(),
-				   scale);
+    _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(), scale);
 
     // Update section
-    assert(parametersFiberDim == parametersSection->getFiberDimension(*c_iter));
-    parametersSection->restrictPoint(*c_iter, 
-				     &parametersCell[0], parametersCell.size());
-    for (int i=0; i < valueFiberDim; ++i)
-      parametersCell[valueIndex+i] = valuesCell[i];
-    
-    parametersSection->updatePoint(*c_iter, &parametersCell[0]);
+    PetscInt vdof, voff;
+
+    err = PetscSectionGetDof(valueSection, c, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, c, &voff);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < vdof; ++d)
+      valueArray[voff+d] = valuesCell[d];
   } // for
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
 } // _queryDB
 
 // ----------------------------------------------------------------------
@@ -507,13 +501,12 @@ void
     up[i] = upDir[i];
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
-  assert(!subSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    subSieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM       subMesh = _boundaryMesh->dmMesh();
+  PetscInt cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(subMesh);
+  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -533,118 +526,139 @@ void
 
   // Get sections.
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    subSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
-  const ALE::Obj<SubRealUniformSection>& parametersSection =
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  scalar_array parametersCellLocal(parametersFiberDim);
-  scalar_array parametersCellGlobal(parametersFiberDim);
+  scalar_array   parametersCellLocal(spaceDim);
+  PetscSection   initialSection, rateSection, rateTimeSection, changeSection, changeTimeSection;
+  Vec            initialVec, rateVec, rateTimeVec, changeVec, changeTimeVec;
+  PetscScalar   *valuesArray, *initialArray, *rateArray, *rateTimeArray, *changeArray, *changeTimeArray;
 
-  const int initialIndex = 
-    (_dbInitial) ? _parameters->sectionIndex("initial") : -1;
-  const int initialFiberDim = 
-    (_dbInitial) ? _parameters->sectionFiberDim("initial") : 0;
-
-  const int rateIndex = (_dbRate) ? _parameters->sectionIndex("rate") : -1;
-  const int rateFiberDim = 
-    (_dbRate) ? _parameters->sectionFiberDim("rate") : 0;
-
-  const int changeIndex = (_dbChange) ? _parameters->sectionIndex("change") : -1;
-  const int changeFiberDim = 
-    (_dbChange) ? _parameters->sectionFiberDim("change") : 0;
+  PetscSection valuesSection     = _parameters->get("value").petscSection();
+  Vec          valuesVec         = _parameters->get("value").localVector();
+  assert(valuesSection);assert(valuesVec);
+  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
+  if (_dbInitial) {
+    initialSection    = _parameters->get("initial").petscSection();
+    initialVec        = _parameters->get("initial").localVector();
+    assert(initialSection);assert(initialVec);
+    err = VecGetArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbRate) {
+    rateSection       = _parameters->get("rate").petscSection();
+    rateTimeSection   = _parameters->get("rate time").petscSection();
+    rateVec           = _parameters->get("rate").localVector();
+    rateTimeVec       = _parameters->get("rate time").localVector();
+    assert(rateSection);assert(rateTimeSection);assert(rateVec);assert(rateTimeVec);
+    err = VecGetArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbChange) {
+    changeSection     = _parameters->get("change").petscSection();
+    changeTimeSection = _parameters->get("change time").petscSection();
+    changeVec         = _parameters->get("change").localVector();
+    changeTimeVec     = _parameters->get("change time").localVector();
+    assert(changeSection);assert(changeTimeSection);assert(changeVec);assert(changeTimeVec);
+    err = VecGetArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  }
 
   // Loop over cells in boundary mesh, compute orientations, and then
   // rotate corresponding traction vector from local to global coordinates.
-  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
+  for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.clear();
-    subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords;
+    PetscInt           coordsSize;
+    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, c);
+    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
-    // Get parameters
-    parametersSection->restrictPoint(*c_iter, 
-				     &parametersCellLocal[0], 
-				     parametersCellLocal.size());
-    // Copy parameter values to global (not all are tranformed)
-    parametersCellGlobal = parametersCellLocal;
-
-    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts;
-	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
-      // Compute Jacobian and determinant at quadrature point, then get
-      // orientation.
+    for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
+      // Compute Jacobian and determinant at quadrature point, then get orientation.
       memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(PylithScalar));
 #if defined(PRECOMPUTE_GEOMETRY)
       coordsVisitor.clear();
       subSieveMesh->restrictClosure(*c_iter, coordsVisitor);
 #endif
-      cellGeometry.jacobian(&jacobian, &jacobianDet,
-			    coordinatesCell, quadPtRef);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, coordinatesCell, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, up);
       assert(jacobianDet > 0.0);
       orientation /= jacobianDet;
 
       if (0 != _dbInitial) {
-	// Rotate traction vector from local coordinate system to global
-	// coordinate system
-	assert(initialIndex >= 0);
-	assert(initialFiberDim == numQuadPts*spaceDim);
-	PylithScalar* initialGlobal = &parametersCellGlobal[initialIndex+iSpace];
-	PylithScalar* initialLocal = &parametersCellLocal[initialIndex+iSpace];
-	for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	  initialGlobal[iDim] = 0.0;
-	  for(int jDim = 0; jDim < spaceDim; ++jDim)
-	    initialGlobal[iDim] += 
-	      orientation[jDim*spaceDim+iDim] * initialLocal[jDim];
-	} // for
+        // Rotate traction vector from local coordinate system to global coordinate system
+        PylithScalar *initialLocal = &parametersCellLocal[0];
+        PetscInt      idof, ioff;
+
+        err = PetscSectionGetDof(initialSection, c, &idof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(initialSection, c, &ioff);CHECK_PETSC_ERROR(err);
+        assert(idof == numQuadPts*spaceDim);
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          initialLocal[iDim] = initialArray[ioff+iSpace+iDim];
+        }
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          initialArray[ioff+iSpace+iDim] = 0.0;
+          for(int jDim = 0; jDim < spaceDim; ++jDim)
+            initialArray[ioff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * initialLocal[jDim];
+        } // for
       } // if
 
       if (0 != _dbRate) {
-	// Rotate traction vector from local coordinate system to global
-	// coordinate system
-	assert(rateIndex >= 0);
-	assert(rateFiberDim == numQuadPts*spaceDim);
-	PylithScalar* rateGlobal = &parametersCellGlobal[rateIndex+iSpace];
-	PylithScalar* rateLocal = &parametersCellLocal[rateIndex+iSpace];
-	for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	  rateGlobal[iDim] = 0.0;
-	  for(int jDim = 0; jDim < spaceDim; ++jDim)
-	    rateGlobal[iDim] +=
-	      orientation[jDim*spaceDim+iDim] * rateLocal[jDim];
-	} // for
+        // Rotate traction vector from local coordinate system to global coordinate system
+        PylithScalar *rateLocal = &parametersCellLocal[0];
+        PetscInt      rdof, roff;
+
+        err = PetscSectionGetDof(rateSection, c, &rdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(rateSection, c, &roff);CHECK_PETSC_ERROR(err);
+        assert(rdof == numQuadPts*spaceDim);
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          rateLocal[iDim] = rateArray[roff+iSpace+iDim];
+        }
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          rateArray[roff+iSpace+iDim] = 0.0;
+          for(int jDim = 0; jDim < spaceDim; ++jDim)
+            rateArray[roff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * rateLocal[jDim];
+        } // for
       } // if
 
       if (0 != _dbChange) {
-	// Rotate traction vector from local coordinate system to global
-	// coordinate system
-	assert(changeIndex >= 0);
-	assert(changeFiberDim == numQuadPts*spaceDim);
-	PylithScalar* changeGlobal = &parametersCellGlobal[changeIndex+iSpace];
-	PylithScalar* changeLocal = &parametersCellLocal[changeIndex+iSpace];
-	for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	  changeGlobal[iDim] = 0.0;
-	  for(int jDim = 0; jDim < spaceDim; ++jDim)
-	    changeGlobal[iDim] +=
-	      orientation[jDim*spaceDim+iDim] * changeLocal[jDim];
-	} // for
-      } // if
+        // Rotate traction vector from local coordinate system to global coordinate system
+        PylithScalar *changeLocal = &parametersCellLocal[0];
+        PetscInt      cdof, coff;
 
+        err = PetscSectionGetDof(changeSection, c, &cdof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(changeSection, c, &coff);CHECK_PETSC_ERROR(err);
+        assert(cdof == numQuadPts*spaceDim);
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          changeLocal[iDim] = changeArray[coff+iSpace+iDim];
+        }
+        for(int iDim = 0; iDim < spaceDim; ++iDim) {
+          changeArray[coff+iSpace+iDim] = 0.0;
+          for(int jDim = 0; jDim < spaceDim; ++jDim)
+            changeArray[coff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * changeLocal[jDim];
+        } // for
+      } // if
     } // for
-    
-    // Update sections
-    assert(parametersFiberDim == parametersSection->getFiberDimension(*c_iter));
-    parametersSection->updatePoint(*c_iter, &parametersCellGlobal[0]);
   } // for
+  err = VecRestoreArray(valuesVec,     &valuesArray);CHECK_PETSC_ERROR(err);
+  if (_dbInitial) {
+    err = VecRestoreArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbRate) {
+    err = VecRestoreArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbChange) {
+    err = VecRestoreArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  }
 } // paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -659,116 +673,132 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
   const PylithScalar timeScale = _getNormalizer().timeScale();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh>& subSieveMesh = _boundaryMesh->sieveMesh();
-  assert(!subSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    subSieveMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM       subMesh = _boundaryMesh->dmMesh();
+  PetscInt cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(subMesh);
+  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
+  PetscSection   initialSection, rateSection, rateTimeSection, changeSection, changeTimeSection;
+  Vec            initialVec, rateVec, rateTimeVec, changeVec, changeTimeVec;
+  PetscScalar   *valuesArray, *initialArray, *rateArray, *rateTimeArray, *changeArray, *changeTimeArray;
 
-  const ALE::Obj<SubRealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  scalar_array parametersCell(parametersFiberDim);
-  
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(numQuadPts*spaceDim == valueFiberDim);
+  PetscSection valuesSection     = _parameters->get("value").petscSection();
+  Vec          valuesVec         = _parameters->get("value").localVector();
+  assert(valuesSection);assert(valuesVec);
+  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
+  if (_dbInitial) {
+    initialSection    = _parameters->get("initial").petscSection();
+    initialVec        = _parameters->get("initial").localVector();
+    assert(initialSection);assert(initialVec);
+    err = VecGetArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbRate) {
+    rateSection       = _parameters->get("rate").petscSection();
+    rateTimeSection   = _parameters->get("rate time").petscSection();
+    rateVec           = _parameters->get("rate").localVector();
+    rateTimeVec       = _parameters->get("rate time").localVector();
+    assert(rateSection);assert(rateTimeSection);assert(rateVec);assert(rateTimeVec);
+    err = VecGetArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbChange) {
+    changeSection     = _parameters->get("change").petscSection();
+    changeTimeSection = _parameters->get("change time").petscSection();
+    changeVec         = _parameters->get("change").localVector();
+    changeTimeVec     = _parameters->get("change time").localVector();
+    assert(changeSection);assert(changeTimeSection);assert(changeVec);assert(changeTimeVec);
+    err = VecGetArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  }
 
-  const int initialIndex = 
-    (_dbInitial) ? _parameters->sectionIndex("initial") : -1;
-  const int initialFiberDim = 
-    (_dbInitial) ? _parameters->sectionFiberDim("initial") : 0;
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt vdof, voff;
 
-  const int rateIndex = 
-    (_dbRate) ? _parameters->sectionIndex("rate") : -1;
-  const int rateFiberDim = 
-    (_dbRate) ? _parameters->sectionFiberDim("rate") : 0;
-  const int rateTimeIndex = 
-    (_dbRate) ? _parameters->sectionIndex("rate time") : -1;
-  const int rateTimeFiberDim = 
-    (_dbRate) ? _parameters->sectionFiberDim("rate time") : 0;
-
-  const int changeIndex = 
-    (_dbChange) ? _parameters->sectionIndex("change") : -1;
-  const int changeFiberDim = 
-    (_dbChange) ? _parameters->sectionFiberDim("change") : 0;
-  const int changeTimeIndex = 
-    (_dbChange) ? _parameters->sectionIndex("change time") : -1;
-  const int changeTimeFiberDim = 
-    (_dbChange) ? _parameters->sectionFiberDim("change time") : 0;
-
-  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
-    
-    assert(parametersFiberDim == parametersSection->getFiberDimension(*c_iter));
-    parametersSection->restrictPoint(*c_iter, 
-				     &parametersCell[0], parametersCell.size());
-    for (int i=0; i < valueFiberDim; ++i)
-      parametersCell[valueIndex+i] = 0.0;
+    err = PetscSectionGetDof(valuesSection, c, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valuesSection, c, &voff);CHECK_PETSC_ERROR(err);
+    assert(vdof == numQuadPts*spaceDim);
+    for(PetscInt d = 0; d < vdof; ++d)
+      valuesArray[voff+d] = 0.0;
 
     // Contribution from initial value
     if (0 != _dbInitial) {
-      assert(initialIndex >= 0);
-      assert(initialFiberDim == valueFiberDim);
-      for (int i=0; i < initialFiberDim; ++i)
-	parametersCell[valueIndex+i] += parametersCell[initialIndex+i];
+      PetscInt idof, ioff;
+
+      err = PetscSectionGetDof(initialSection, c, &idof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(initialSection, c, &ioff);CHECK_PETSC_ERROR(err);
+      assert(idof == vdof);
+      for(PetscInt d = 0; d < idof; ++d)
+        valuesArray[voff+d] += initialArray[ioff+d];
     } // if
     
     // Contribution from rate of change of value
     if (0 != _dbRate) {
-      assert(rateIndex >= 0);
-      assert(rateFiberDim == valueFiberDim);
-      assert(rateTimeIndex >= 0);
-      assert(rateTimeFiberDim == numQuadPts);
-      
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const PylithScalar tRel = t - parametersCell[rateTimeIndex+iQuad];
-	if (tRel > 0.0)  // rate of change integrated over time
-	  for (int iDim=0; iDim < spaceDim; ++iDim)
-	    parametersCell[valueIndex+iQuad*spaceDim+iDim] += 
-	      parametersCell[rateIndex+iQuad*spaceDim+iDim] * tRel;
+      PetscInt rdof, roff, rtdof, rtoff;
+
+      err = PetscSectionGetDof(rateSection, c, &rdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(rateSection, c, &roff);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(rateTimeSection, c, &rtdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(rateTimeSection, c, &rtoff);CHECK_PETSC_ERROR(err);
+      assert(rdof == vdof);
+      assert(rtdof == numQuadPts);
+
+      for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+        const PylithScalar tRel = t - rateTimeArray[rtoff+iQuad];
+        if (tRel > 0.0)  // rate of change integrated over time
+          for(int iDim = 0; iDim < spaceDim; ++iDim)
+            valuesArray[voff+iQuad*spaceDim+iDim] += rateArray[roff+iQuad*spaceDim+iDim] * tRel;
       } // for
     } // if
     
     // Contribution from change of value
     if (0 != _dbChange) {
-      assert(changeIndex >= 0);
-      assert(changeFiberDim == valueFiberDim);
-      assert(changeTimeIndex >= 0);
-      assert(changeTimeFiberDim == numQuadPts);
+      PetscInt cdof, coff, ctdof, ctoff;
 
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const PylithScalar tRel = t - parametersCell[changeTimeIndex+iQuad];
-	if (tRel >= 0) { // change in value over time
-	  PylithScalar scale = 1.0;
-	  if (0 != _dbTimeHistory) {
-	    PylithScalar tDim = tRel;
-	    _getNormalizer().dimensionalize(&tDim, 1, timeScale);
-	    const int err = _dbTimeHistory->query(&scale, tDim);
-	    if (0 != err) {
-	      std::ostringstream msg;
-	      msg << "Error querying for time '" << tDim 
-		  << "' in time history database "
-		  << _dbTimeHistory->label() << ".";
-	      throw std::runtime_error(msg.str());
-	    } // if
-	  } // if
-	  for (int iDim=0; iDim < spaceDim; ++iDim)
-	    parametersCell[valueIndex+iQuad*spaceDim+iDim] += 
-	      parametersCell[changeIndex+iQuad*spaceDim+iDim] * scale;
-	} // if
+      err = PetscSectionGetDof(changeSection, c, &cdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(changeSection, c, &coff);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(changeTimeSection, c, &ctdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(changeTimeSection, c, &ctoff);CHECK_PETSC_ERROR(err);
+      assert(cdof == vdof);
+      assert(ctdof == numQuadPts);
+
+      for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
+        const PylithScalar tRel = t - changeTimeArray[ctoff+iQuad];
+        if (tRel >= 0) { // change in value over time
+          PylithScalar scale = 1.0;
+          if (0 != _dbTimeHistory) {
+            PylithScalar tDim = tRel;
+            _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+            const int err = _dbTimeHistory->query(&scale, tDim);
+            if (0 != err) {
+              std::ostringstream msg;
+              msg << "Error querying for time '" << tDim 
+                  << "' in time history database "
+                  << _dbTimeHistory->label() << ".";
+              throw std::runtime_error(msg.str());
+            } // if
+          } // if
+          for(int iDim = 0; iDim < spaceDim; ++iDim)
+            valuesArray[voff+iQuad*spaceDim+iDim] += changeArray[coff+iQuad*spaceDim+iDim] * scale;
+        } // if
       } // for
     } // if
-    
-    parametersSection->updatePoint(*c_iter, &parametersCell[0]);
   } // for
+  err = VecRestoreArray(valuesVec,     &valuesArray);CHECK_PETSC_ERROR(err);
+  if (_dbInitial) {
+    err = VecRestoreArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbRate) {
+    err = VecRestoreArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
+  }
+  if (_dbChange) {
+    err = VecRestoreArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  }
 }  // _calculateValue
 
 

@@ -56,6 +56,7 @@ public :
     VERTICES_FIELD=0, ///< FieldBase over vertices.
     CELLS_FIELD=1, ///< FieldBase over cells.
     POINTS_FIELD=2, ///< FieldBase over all points.
+    FACES_FIELD=3, ///< FieldBase over faces.
   }; // DomainEnum
 
 // PUBLIC STRUCTS ///////////////////////////////////////////////////////

@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -193,35 +193,33 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
   const int numPoints = _points.size();
 
   assert(_parameters);
-  const ALE::Obj<RealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueFiberDim == numFixedDOF);
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  PetscSection valueSection = _parameters->get("value").petscSection();
+  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscScalar *valueArray;
+  assert(valueSection);assert(valueVec);
 
-  PetscSection   fieldSectionP = field.petscSection();
-  Vec            localVec      = field.localVector();
+  PetscSection   fieldSection = field.petscSection();
+  Vec            localVec     = field.localVector();
   PetscScalar   *array;
   PetscErrorCode err;
-  assert(fieldSectionP);
+  assert(fieldSection);assert(localVec);
   
   err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
-    PetscInt dof, off;
+    PetscInt dof, off, vdof, voff;
 
-    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    err = PetscSectionGetDof(fieldSectionP, p_bc, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSectionP, p_bc, &off);CHECK_PETSC_ERROR(err);
-    const PylithScalar *parametersVertex = parametersSection->restrictPoint(p_bc);
-
-    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      array[_bcDOF[iDOF]+off] = parametersVertex[valueIndex+iDOF];
+    err = PetscSectionGetDof(fieldSection, p_bc, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, p_bc, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(valueSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
+    assert(vdof == numFixedDOF);
+    for(PetscInt iDOF = 0; iDOF < numFixedDOF; ++iDOF)
+      array[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
   } // for
   err = VecRestoreArray(localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
 } // setField
 
 // ----------------------------------------------------------------------
@@ -241,35 +239,33 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
   const int numPoints = _points.size();
 
   assert(_parameters);
-  const ALE::Obj<RealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueFiberDim == numFixedDOF);
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
+  PetscSection valueSection = _parameters->get("value").petscSection();
+  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscScalar *valueArray;
+  assert(valueSection);assert(valueVec);
 
-  PetscSection   fieldSectionP = field.petscSection();
-  Vec            localVec      = field.localVector();
+  PetscSection   fieldSection = field.petscSection();
+  Vec            localVec     = field.localVector();
   PetscScalar   *array;
   PetscErrorCode err;
-  assert(fieldSectionP);
+  assert(fieldSection);assert(localVec);
   
   err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
-    PetscInt dof, off;
+    PetscInt dof, off, vdof, voff;
 
-    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    err = PetscSectionGetDof(fieldSectionP, p_bc, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSectionP, p_bc, &off);CHECK_PETSC_ERROR(err);
-    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_bc);
-
-    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      array[_bcDOF[iDOF]+off] = parametersVertex[valueIndex+iDOF];
+    err = PetscSectionGetDof(fieldSection, p_bc, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, p_bc, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(valueSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
+    assert(vdof == numFixedDOF);
+    for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      array[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
   } // for
   err = VecRestoreArray(localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
 } // setFieldIncr
 
 // ----------------------------------------------------------------------

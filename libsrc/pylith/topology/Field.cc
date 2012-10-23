@@ -388,6 +388,9 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const DomainEnum do
     case CELLS_FIELD:
       err = DMComplexGetHeightStratum(_dm, stratum, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
+    case FACES_FIELD:
+      err = DMComplexGetHeightStratum(_dm, stratum+1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      break;
     case POINTS_FIELD:
       err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
@@ -410,6 +413,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const DomainEnum do
     points = sieveMesh->depthStratum(stratum);
   else if (CELLS_FIELD == domain)
     points = sieveMesh->heightStratum(stratum);
+  else if (FACES_FIELD == domain)
+    points = sieveMesh->heightStratum(stratum+1);
   else {
     std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
     assert(0);
@@ -1807,6 +1812,9 @@ pylith::topology::Field<mesh_type, section_type>::updateDof(const char *name, co
     break;
   case CELLS_FIELD:
     err = DMComplexGetHeightStratum(_dm, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    break;
+  case FACES_FIELD:
+    err = DMComplexGetHeightStratum(_dm, 1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     break;
   case POINTS_FIELD:
     err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);

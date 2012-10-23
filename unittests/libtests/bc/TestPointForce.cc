@@ -26,7 +26,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -92,10 +92,13 @@ pylith::bc::TestPointForce::testInitialize(void)
   _initialize(&mesh, &bc);
   CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  
-  const int numCells = sieveMesh->heightStratum(0)->size();
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       cStart, cEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  const int numCells = cEnd-cStart;
   const int numForceDOF = _data->numForceDOF;
   const size_t numPoints = _data->numForcePts;
 
@@ -108,50 +111,44 @@ pylith::bc::TestPointForce::testInitialize(void)
   } // if
 
   CPPUNIT_ASSERT(0 != bc._parameters);
-  const ALE::Obj<RealUniformSection>& parametersSection =
-    bc._parameters->section();
-  CPPUNIT_ASSERT(!parametersSection.isNull());
-  const int parametersFiberDim = bc._parameters->fiberDim();
+  PetscSection initialSection = bc._parameters->get("initial").petscSection();
+  Vec          initialVec     = bc._parameters->get("initial").localVector();
+  PetscScalar *initialArray;
+  CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
   
-  const PylithScalar tolerance = 1.0e-06;
-
   // Check values
-  const int initialIndex = bc._parameters->sectionIndex("initial");
-  const int initialFiberDim = bc._parameters->sectionFiberDim("initial");
-  CPPUNIT_ASSERT_EQUAL(numForceDOF, initialFiberDim);
-
+  const PylithScalar tolerance = 1.0e-06;
+  err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
+    PetscInt  dof, off;
 
-    CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
-			 parametersSection->getFiberDimension(p_force));
-    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_force);
-    CPPUNIT_ASSERT(parametersVertex);
-
+    err = PetscSectionGetDof(initialSection, p_force, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(initialSection, p_force, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, dof);
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceInitial[i*numForceDOF+iDOF],
-				   parametersVertex[initialIndex+iDOF],
-				   tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceInitial[i*numForceDOF+iDOF], initialArray[off+iDOF], tolerance);
   } // for
+  err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
 
   // Check rate of change
-  const int rateIndex = bc._parameters->sectionIndex("rate");
-  const int rateFiberDim = bc._parameters->sectionFiberDim("rate");
-  CPPUNIT_ASSERT_EQUAL(numForceDOF, rateFiberDim);
+  PetscSection rateSection = bc._parameters->get("rate").petscSection();
+  Vec          rateVec     = bc._parameters->get("rate").localVector();
+  PetscScalar *rateArray;
+  CPPUNIT_ASSERT(rateSection);CPPUNIT_ASSERT(rateVec);
 
+  err = VecGetArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
+    PetscInt  dof, off;
 
-    CPPUNIT_ASSERT_EQUAL(parametersFiberDim, 
-			 parametersSection->getFiberDimension(p_force));
-    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_force);
-    CPPUNIT_ASSERT(parametersVertex);
-
+    err = PetscSectionGetDof(rateSection, p_force, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(rateSection, p_force, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, dof);
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) 
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceRate,
-				   parametersVertex[rateIndex+iDOF],
-				   tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceRate, rateArray[off+iDOF], tolerance);
   } // for
+  err = VecRestoreArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
