@@ -46,7 +46,7 @@ namespace pylith {
        *
        * @returns Parameter fields.
        */
-      const pylith::topology::FieldsNew<pylith::topology::Mesh>* parameterFields(void) const;
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> >* parameterFields(void) const;
       
       /** Get boundary mesh.
        *
