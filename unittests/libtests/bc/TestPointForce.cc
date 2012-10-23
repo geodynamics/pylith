@@ -173,28 +173,36 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
   const PylithScalar t = _data->tResidual;
   bc.integrateResidual(residual, t, &fields);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CPPUNIT_ASSERT(!sieveMesh->depthStratum(0).isNull());
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar* valsE = _data->residual;
-  const int totalNumVertices = sieveMesh->depthStratum(0)->size();
+  const int totalNumVertices = vEnd-vStart;
   const int sizeE = spaceDim * totalNumVertices;
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
-  const PylithScalar* vals = residualSection->restrictSpace();
-  const int size = residualSection->sizeWithBC();
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  PetscScalar *vals;
+  PetscInt     size;
+
+  CPPUNIT_ASSERT(residualSection);
+  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual.view("RESIDUAL");
 
   const PylithScalar tolerance = 1.0e-06;
+  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
