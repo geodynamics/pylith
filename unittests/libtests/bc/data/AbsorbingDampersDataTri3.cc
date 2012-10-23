@@ -68,8 +68,10 @@ const int pylith::bc::AbsorbingDampersDataTri3::_cellDim = 1;
 const int pylith::bc::AbsorbingDampersDataTri3::_numVertices = 2;
 const int pylith::bc::AbsorbingDampersDataTri3::_numCells = 1;
 const int pylith::bc::AbsorbingDampersDataTri3::_numCorners = 2;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::AbsorbingDampersDataTri3::_cells[] = {
-  3, 5,
+  1 /*3*/,
+  2 /*5*/,
 };
 
 

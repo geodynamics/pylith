@@ -70,8 +70,9 @@ const int pylith::bc::AbsorbingDampersDataTet4::_cellDim = 2;
 const int pylith::bc::AbsorbingDampersDataTet4::_numVertices = 3;
 const int pylith::bc::AbsorbingDampersDataTet4::_numCells = 1;
 const int pylith::bc::AbsorbingDampersDataTet4::_numCorners = 3;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::AbsorbingDampersDataTet4::_cells[] = {
-  5,  4,  2,
+  3 /*5*/,  2 /*4*/,  1 /*2*/,
 };
 
 

@@ -81,9 +81,10 @@ const int pylith::bc::NeumannDataHex8::_cellDim = 2;
 const int pylith::bc::NeumannDataHex8::_numVertices = 6;
 const int pylith::bc::NeumannDataHex8::_numCells = 2;
 const int pylith::bc::NeumannDataHex8::_numCorners = 4;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataHex8::_cells[] = {
-  4, 2, 6, 8,
-  8, 6, 10, 12,
+  3 /*4*/, 2 /*2*/, 4 /*6*/,  5 /*8*/,
+  5 /*8*/, 4 /*6*/, 6 /*10*/, 7 /*12*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataHex8::_tractionsCell[] = { 4.0, 0.0, 0.0,
