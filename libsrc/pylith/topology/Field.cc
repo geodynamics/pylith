@@ -122,6 +122,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
   PetscSection   s;
   PetscErrorCode err;
 
+  _metadata["default"] = src._metadata["default"];
   err = DMGetDefaultSection(src._dm, &s);CHECK_PETSC_ERROR(err);
   for(PetscInt f = 0; f < numFields; ++f) {
     const char *name;
