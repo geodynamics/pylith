@@ -73,9 +73,10 @@ const int pylith::bc::NeumannDataQuad4::_cellDim = 1;
 const int pylith::bc::NeumannDataQuad4::_numVertices = 3;
 const int pylith::bc::NeumannDataQuad4::_numCells = 2;
 const int pylith::bc::NeumannDataQuad4::_numCorners = 2;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataQuad4::_cells[] = {
-  2, 4,
-  4, 6,
+  2 /*2*/, 3 /*4*/,
+  3 /*4*/, 4 /*6*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataQuad4::_tractionsCell[] = {

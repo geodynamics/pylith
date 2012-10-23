@@ -62,9 +62,10 @@ const int pylith::bc::AbsorbingDampersDataLine2::_cellDim = 0;
 const int pylith::bc::AbsorbingDampersDataLine2::_numVertices = 2;
 const int pylith::bc::AbsorbingDampersDataLine2::_numCells = 2;
 const int pylith::bc::AbsorbingDampersDataLine2::_numCorners = 1;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::AbsorbingDampersDataLine2::_cells[] = {
-  2,
-  4,
+  2 /*2*/,
+  3 /*4*/,
 };
 
 

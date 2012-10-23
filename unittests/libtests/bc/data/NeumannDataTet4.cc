@@ -68,8 +68,9 @@ const int pylith::bc::NeumannDataTet4::_cellDim = 2;
 const int pylith::bc::NeumannDataTet4::_numVertices = 3;
 const int pylith::bc::NeumannDataTet4::_numCells = 1;
 const int pylith::bc::NeumannDataTet4::_numCorners = 3;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataTet4::_cells[] = {
-  3, 4, 5,
+  1 /*3*/, 2 /*4*/, 3 /*5*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataTet4::_tractionsCell[] = {

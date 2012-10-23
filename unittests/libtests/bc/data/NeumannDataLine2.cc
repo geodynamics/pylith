@@ -55,8 +55,9 @@ const int pylith::bc::NeumannDataLine2::_cellDim = 0;
 const int pylith::bc::NeumannDataLine2::_numVertices = 1;
 const int pylith::bc::NeumannDataLine2::_numCells = 1;
 const int pylith::bc::NeumannDataLine2::_numCorners = 1;
+/* Now vertices are renumbered in the submesh */
 const int pylith::bc::NeumannDataLine2::_cells[] = {
-  2,
+  1 /*2*/,
 };
 
 const PylithScalar pylith::bc::NeumannDataLine2::_tractionsCell[] = {
