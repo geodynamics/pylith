@@ -1505,11 +1505,11 @@ SimpleGridDB { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-  num-y = 2 // Number of locations along y coordinate direction
+  num-y = 1 // Number of locations along y coordinate direction
 \end_layout
 
 \begin_layout LyX-Code
-  num-z = 1 // Number of locations along z coordinate direction
+  num-z = 2 // Number of locations along z coordinate direction
 \end_layout
 
 \begin_layout LyX-Code
