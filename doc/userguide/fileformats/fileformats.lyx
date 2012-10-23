@@ -686,7 +686,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Format of spatial database files.
+Format of simple spatial database files.
 \end_layout
 
 \end_inset
@@ -941,6 +941,8 @@ This coordinate system applies to geographic projections.
  As in the geographic coordinate system, the vertical coordinate (if used)
  can be specified with respect to either the reference ellipsoid or mean
  sea level.
+ The coordinate system can use a local origin and be rotated about the vertical
+ direction.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1037,6 +1039,42 @@ mean sea level
 
 \begin_layout LyX-Code
  
+\end_layout
+
+\begin_layout LyX-Code
+  // Longitude of local origin in WGS84.
+\end_layout
+
+\begin_layout LyX-Code
+  origin_lon = -120.0
+\end_layout
+
+\begin_layout LyX-Code
+  
+\end_layout
+
+\begin_layout LyX-Code
+  // Latitude of local origin in WGS84.
+\end_layout
+
+\begin_layout LyX-Code
+  origin_lat = 37.0
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Rotation angle in degrees (CCW) or local x-axis from east.
+\end_layout
+
+\begin_layout LyX-Code
+  rotation_angle = 23.0
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1336,6 +1374,281 @@ status open
 \begin_layout Plain Layout
 Format for the geographic local Cartesian coordinate system in spatial database
  files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Spatialdata:SimpleGrid"
+
+\end_inset
+
+SimpleGridDB Spatial Database Files
+\end_layout
+
+\begin_layout Standard
+SimpleGridDB spatial database files contain a header describing the grid
+ of points and then the data with each line listing the coordinates of a
+ point followed by the values of the fields for that point.
+ The coordinates for each dimension of the grid do not need to be uniformly
+ spaced.
+ The coordinate systems are specified the same way as they are in SimpleDB
+ spatial database files as described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// This spatial database specifies the elastic properties on a
+\end_layout
+
+\begin_layout LyX-Code
+// 2-D grid in 3-D space.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// Comments can appear almost anywhere in these files and are
+\end_layout
+
+\begin_layout LyX-Code
+// delimited with two slashes (//) just like in C++.
+ All text and 
+\end_layout
+
+\begin_layout LyX-Code
+// whitespace after the delimiter on a given line is ignored.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// The next line is the magic header for spatial database files 
+\end_layout
+
+\begin_layout LyX-Code
+// in ASCII format.
+\end_layout
+
+\begin_layout LyX-Code
+#SPATIAL_GRID.ascii 1
+\end_layout
+
+\begin_layout LyX-Code
+SimpleGridDB { // start specifying the database parameters
+\end_layout
+
+\begin_layout LyX-Code
+  num-values = 3 // number of values in the database
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the names and the order of the values as they appear 
+\end_layout
+
+\begin_layout LyX-Code
+  // in the data.
+ The names of the values must correspond to the
+\end_layout
+
+\begin_layout LyX-Code
+  // names PyLith requests in querying the database.
+\end_layout
+
+\begin_layout LyX-Code
+  value-names =  Vp  Vs  Density
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the units of the values in Python syntax.
+\end_layout
+
+\begin_layout LyX-Code
+  value-units =  km/s  km/s  kg/m**3
+\end_layout
+
+\begin_layout LyX-Code
+  
+\end_layout
+
+\begin_layout LyX-Code
+  num-x = 3 // Number of locations along x coordinate direction
+\end_layout
+
+\begin_layout LyX-Code
+  num-y = 2 // Number of locations along y coordinate direction
+\end_layout
+
+\begin_layout LyX-Code
+  num-z = 1 // Number of locations along z coordinate direction
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 3 // Spatial dimension in which data resides
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the coordinate system associated with the 
+\end_layout
+
+\begin_layout LyX-Code
+  // coordinates of the locations where data is given
+\end_layout
+
+\begin_layout LyX-Code
+  cs-data = cartesian { // Use a Cartesian coordinate system
+\end_layout
+
+\begin_layout LyX-Code
+    to-meters = 1.0e+3 // Coordinates are in km
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+    // Specify the spatial dimension of the coordinate system
+\end_layout
+
+\begin_layout LyX-Code
+    // This value must match the one associated with the database
+\end_layout
+
+\begin_layout LyX-Code
+    space-dim = 3
+\end_layout
+
+\begin_layout LyX-Code
+  } // cs-data // end of coordinate system specification
+\end_layout
+
+\begin_layout LyX-Code
+} // end of SimpleGridDB specification
+\end_layout
+
+\begin_layout LyX-Code
+// x coordinates
+\end_layout
+
+\begin_layout LyX-Code
+-3.0  1.0  2.0
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+// y coordinates
+\end_layout
+
+\begin_layout LyX-Code
+8.0
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+// z coordinates
+\end_layout
+
+\begin_layout LyX-Code
+2.0  4.0
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+// The locations and values are listed after the parameters.
+\end_layout
+
+\begin_layout LyX-Code
+// Columns are coordinates of the points (1 column for each 
+\end_layout
+
+\begin_layout LyX-Code
+// spatial dimension) followed by the data values in the order 
+\end_layout
+
+\begin_layout LyX-Code
+// specified by the value-names field.
+ The points can be in any order.
+\end_layout
+
+\begin_layout LyX-Code
+-3.0  8.0  2.0    6.0  4.0  2500.0
+\end_layout
+
+\begin_layout LyX-Code
+ 1.0  8.0  2.0    6.2  4.1  2600.0
+\end_layout
+
+\begin_layout LyX-Code
+ 2.0  8.0  2.0    5.8  3.9  2400.0
+\end_layout
+
+\begin_layout LyX-Code
+-3.0  8.0  4.0    6.1  4.1  2500.0
+\end_layout
+
+\begin_layout LyX-Code
+ 1.0  8.0  4.0    5.9  3.8  2450.0
+\end_layout
+
+\begin_layout LyX-Code
+ 2.0  8.0  4.0    5.7  3.7  2400.0
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Format of grid-based spatial database files.
 \end_layout
 
 \end_inset
