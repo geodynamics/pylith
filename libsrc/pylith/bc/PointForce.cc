@@ -21,7 +21,7 @@
 #include "PointForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -99,46 +99,48 @@ pylith::bc::PointForce::integrateResidual(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  scalar_array residualVertex(spaceDim);
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  assert(!residualSection.isNull());
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  PetscScalar *residualArray;
+  assert(residualSection);assert(residualVec);
 
   // Get global order
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-        residualSection);
-  assert(!globalOrder.isNull());
+  DM             dmMesh = residual.dmMesh();
+  PetscSection   globalSection;
+  PetscErrorCode err;
 
-  const ALE::Obj<RealUniformSection>& parametersSection = 
-    _parameters->section();
-  assert(!parametersSection.isNull());
-  const int parametersFiberDim = _parameters->fiberDim();
-  const int valueIndex = _parameters->sectionIndex("value");
-  const int valueFiberDim = _parameters->sectionFiberDim("value");
-  assert(valueIndex+valueFiberDim <= parametersFiberDim);
-  assert(valueFiberDim == numBCDOF);
+  assert(dmMesh);
+  err = DMGetDefaultGlobalSection(dmMesh, &globalSection);CHECK_PETSC_ERROR(err);
 
+  PetscSection valueSection = _parameters->get("value").petscSection();
+  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscScalar *valueArray;
+  assert(valueSection);assert(valueVec);
+
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const int p_bc = _points[iPoint]; // Get point label.
+    const PetscInt p_bc = _points[iPoint]; // Get point label.
+    PetscInt       goff;
 
     // Contribute to residual only if point is local.
-    if (!globalOrder->isLocal(p_bc))
-      continue;
+    err = PetscSectionGetOffset(globalSection, p_bc, &goff);CHECK_PETSC_ERROR(err);
+    if (goff < 0) continue;
 
-    residualVertex *= 0.0; // Reset residual contribution to zero.
-    
-    assert(parametersFiberDim == parametersSection->getFiberDimension(p_bc));
-    const PylithScalar* parametersVertex = parametersSection->restrictPoint(p_bc);
-    assert(parametersVertex);
+    PetscInt vdof, voff, rdof, roff;
+
+    err = PetscSectionGetDof(valueSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(residualSection, p_bc, &rdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(residualSection, p_bc, &roff);CHECK_PETSC_ERROR(err);
+    assert(vdof == numBCDOF);
+    assert(rdof == spaceDim);
 
     for (int iDOF=0; iDOF < numBCDOF; ++iDOF)
-      residualVertex[_bcDOF[iDOF]] += parametersVertex[valueIndex+iDOF];
-
-    assert(residualVertex.size() == residualSection->getFiberDimension(p_bc));
-    residualSection->updateAddPoint(p_bc, &residualVertex[0]);
+      residualArray[roff+_bcDOF[iDOF]] += valueArray[voff+iDOF];
   } // for
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------

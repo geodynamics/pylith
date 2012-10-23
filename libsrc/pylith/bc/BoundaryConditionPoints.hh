@@ -30,7 +30,7 @@
 // Include directives ---------------------------------------------------
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
 
-#include "pylith/topology/topologyfwd.hh" // HOLDSA FieldsNew
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Fields
 #include "pylith/utils/array.hh" // HASA int_array
 
 // BoundaryConditionPoints ----------------------------------------------
@@ -59,7 +59,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::FieldsNew<topology::Mesh>* parameterFields(void) const;
+  const topology::Fields<topology::Field<topology::Mesh> >* parameterFields(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -74,7 +74,7 @@ protected :
 protected :
 
   /// Parameters for boundary condition.
-  topology::FieldsNew<topology::Mesh>* _parameters;
+  topology::Fields<topology::Field<topology::Mesh> >* _parameters;
 
   int_array _points; ///< Points for boundary condition.
 

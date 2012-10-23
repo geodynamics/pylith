@@ -27,7 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
@@ -101,64 +101,66 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   CPPUNIT_ASSERT(0 != _data);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
+  DM             subMesh = boundaryMesh.dmMesh();
+  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err;
 
   // Check boundary mesh
-  CPPUNIT_ASSERT(!submesh.isNull());
+  CPPUNIT_ASSERT(subMesh);
+
+  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(subMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const int cellDim = boundaryMesh.dimension();
   const int numCorners = _data->numCorners;
   const int spaceDim = _data->spaceDim;
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = submesh->heightStratum(1);
-  const int numVertices = submesh->depthStratum(0)->size();
-  const int numCells = cells->size();
-  const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
+  const int numVertices = vEnd-vStart;
+  const int numCells = cEnd-cStart;
+  //const int boundaryDepth = submesh->depth()-1; // depth of boundary cells
 
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
   CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = submesh->getSieve();
-  ALE::ISieveVisitor::PointRetriever<SieveSubMesh::sieve_type> pV(sieve->getMaxConeSize());
-  int dp = 0;
-  for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter) {
-    const int numCorners = submesh->getNumCellCorners(*c_iter, boundaryDepth);
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
+  PetscInt dp = 0;
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    const PetscInt *cone;
+    PetscInt        numCorners;
 
-    sieve->cone(*c_iter, pV);
-    const SieveSubMesh::point_type *cone = pV.getPoints();
-    for(int p = 0; p < pV.getSize(); ++p, ++dp) {
+    // Assume non-interpolated mesh
+    err = DMComplexGetConeSize(subMesh, c, &numCorners);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
+    err = DMComplexGetCone(subMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
     }
-    pV.clear();
   } // for
 
   // Check damping constants
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
-  scalar_array dampersCell(fiberDim);
-  int index = 0;
+  PetscInt index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
-  const ALE::Obj<SubRealUniformSection>& dampersSection = 
-    bc._parameters->section();
+  PetscSection dampersSection = bc._parameters->get("damping constants").petscSection();
+  Vec          dampersVec     = bc._parameters->get("damping constants").localVector();
+  CPPUNIT_ASSERT(dampersSection);CPPUNIT_ASSERT(dampersVec);
 
   const PylithScalar tolerance = 1.0e-06;
-  for(SieveSubMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter) {
-    dampersSection->restrictPoint(*c_iter,
-				  &dampersCell[0], dampersCell.size());
-    for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-      for (int iDim =0; iDim < spaceDim; ++iDim) {
-	const PylithScalar dampersCellData = _data->dampingConsts[index];
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     dampersCell[iQuad*spaceDim+iDim]/dampersCellData,
-				     tolerance);
-	++index;
+  PetscScalar       *dampersValues;
+  err = VecGetArray(dampersVec, &dampersValues);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(dampersSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dampersSection, c, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+    for(PetscInt iQuad=0; iQuad < numQuadPts; ++iQuad)
+      for(PetscInt iDim =0; iDim < spaceDim; ++iDim) {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dampersValues[off+iQuad*spaceDim+iDim]/_data->dampingConsts[index], tolerance);
+        ++index;
       } // for
   } // for
+  err = VecRestoreArray(dampersVec, &dampersValues);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -174,7 +176,8 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   _initialize(&mesh, &bc, &fields);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
+  DM             subMesh = boundaryMesh.dmMesh();
+  PetscErrorCode err;
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PylithScalar t = 0.0;
@@ -183,7 +186,6 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   DM             dmMesh = mesh.dmMesh();
   PetscInt       vStart, vEnd;
   const PylithScalar* valsE = _data->valsResidual;
-  PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
   err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -218,13 +220,14 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
+  CPPUNIT_ASSERT(0);
   topology::Mesh mesh;
   AbsorbingDampers bc;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
+  DM subMesh = boundaryMesh.dmMesh();
 
   topology::Field<topology::Mesh>& solution = fields.solution();
   topology::Jacobian jacobian(solution);
@@ -302,8 +305,8 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   jacobian.allocate();
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  const ALE::Obj<SieveSubMesh>& submesh = boundaryMesh.sieveMesh();
-  CPPUNIT_ASSERT(!submesh.isNull());
+  DM subMesh = boundaryMesh.dmMesh();
+  CPPUNIT_ASSERT(subMesh);
 
   const PylithScalar t = 1.0;
   bc.integrateJacobian(&jacobian, t, &fields);
@@ -420,8 +423,6 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     fields->add("velocity(t)", "velocity");
     fields->solutionName("dispIncr(t->t+dt)");
 
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  
     topology::Field<topology::Mesh>& residual = fields->get("residual");
     DM             dmMesh = mesh->dmMesh();
     PetscInt       vStart, vEnd;
