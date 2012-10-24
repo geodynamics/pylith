@@ -96,5 +96,5 @@ RELEASE NOTES - PyLith v1.8.0
 
   - Fixed bug in setting name of field in OutputSolnPoints when output
     multiple fields. This bug caused the name of the first output
-    field to be used and output data to overrite each other.
+    field to be used and output data to overwrite each other.
 
