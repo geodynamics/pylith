@@ -42,7 +42,7 @@ class TestEqInfo(unittest.TestCase):
              ]
 
     statsE.avgslip = statsE.potency / (statsE.ruparea + 1.0e-30)
-    statsE.mommag = 2.0/3.0*numpy.log10(statsE.moment) - 10.7
+    statsE.mommag = 2.0/3.0*(numpy.log10(statsE.moment) - 9.05)
 
     for attr in attrs:
       valuesE = statsE.__getattribute__(attr)
