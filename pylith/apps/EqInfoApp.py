@@ -52,7 +52,7 @@ class RuptureStats(object):
 
   def recalculate(self):
     self.avgslip = self.potency / (self.ruparea + 1.0e-30)
-    self.mommag = 2.0/3.0*numpy.log10(self.moment) - 10.7
+    self.mommag = 2.0/3.0*(numpy.log10(self.moment) - 9.05)
     return
 
 
@@ -163,6 +163,7 @@ class EqInfoApp(Application):
     """
     Run the application.
     """
+    self.cs.initialize()
     nfaults = len(self.faults)
     
     if nfaults == 0:
@@ -179,7 +180,7 @@ class EqInfoApp(Application):
 
       h5 = h5py.File(filenameIn, "r", driver='sec2')
       vertices = h5['geometry/vertices'][:]
-      cells = h5['topology/cells'][:]
+      cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int32)
       timestamps = h5['time'][:]
       cellsArea = self._calcCellArea(cells, vertices)
       cellsShearMod = self._getShearModulus(cells, vertices)
@@ -257,15 +258,15 @@ class EqInfoApp(Application):
 
   def _calcCellArea(self, cells, vertices):
     (ncells, ncorners) = cells.shape
-    if ncorners == 1:
+    if ncorners == 1: # point
       area = numpy.ones( (ncells,), dtype=numpy.float64)
-    elif ncorners == 2:
+    elif ncorners == 2: # line2
       area = self._vectorMag(vertices[cells[:,1]] - vertices[cells[:,0]])
-    elif ncorners == 3:
+    elif ncorners == 3: # tri3
       v01 = vertices[cells[:,1]] - vertices[cells[:,0]]
       v02 = vertices[cells[:,2]] - vertices[cells[:,0]]
       area = 0.5*self._vectorMag(numpy.cross(v01, v02))
-    elif ncorners == 4:
+    elif ncorners == 4: # quad4
       v01 = vertices[cells[:,1]] - vertices[cells[:,0]]
       v02 = vertices[cells[:,2]] - vertices[cells[:,0]]
       v03 = vertices[cells[:,3]] - vertices[cells[:,0]]

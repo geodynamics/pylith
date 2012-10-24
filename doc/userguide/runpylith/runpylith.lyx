@@ -4226,6 +4226,83 @@ reference "cha:Tutorials"
 \end_layout
 
 \begin_layout Subsection
+SimpleGridDB Spatial Database
+\end_layout
+
+\begin_layout Standard
+The SimpleGridDB object provides a much more efficient query algorithm than
+ SimpleDB in cases with a orthogonal grid.
+ The points do not need to be uniformly spaced along each coordinate direction.
+ Thus, in contrast to the SimpleDB there is an implicit topology.
+ Nevertheless, the points can be specified in any order, as well as over
+ a lower-dimension than the spatial dimension.
+ For example, one can specify a 2-D grid in 3-D space provided that the
+ 2-D grid is aligned with one of the coordinate axes.
+ 
+\end_layout
+
+\begin_layout Standard
+SimpleGridDB uses a simple ASCII file to specify the variation of values
+ (e.g., displacement field, slip field, physical properties) in space.
+ The file format is described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spatialdata:SimpleGrid"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+As in the other Pyre objects, spatial database objects contain parameters
+ that can be set from the command line or using 
+\family typewriter
+.cfg or .pml
+\family default
+ files.
+ The parameters for a spatial database are:
+\end_layout
+
+\begin_layout Description
+label Label for the database, which is used in diagnostic messages.
+\end_layout
+
+\begin_layout Description
+query_type Type of search query to perform.
+ Values for this parameter are ``linear'' and ``nearest'' (default).
+\end_layout
+
+\begin_layout Description
+filename Filename for the spatial database.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+label = Material properties
+\end_layout
+
+\begin_layout LyX-Code
+query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+filename = mydb_grid.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:SCECCVMH-Impl"

@@ -97,6 +97,12 @@ Version 1.8.0
     Output cell_info_fields "stable_dt_implicit" and
     "stable_dt_explicit" can be included in material output.
 
+  * Added netCDF Python module to binary distribution to provide
+    Python interface to NetCDF files, including Exodus-II files. This
+    is used in a new meshing example for setting the discretization
+    size using an Exodus-II vertex field. Note that this required
+    updating the NetCDF library.
+
 * Bug fixes
 
   - Fixed omission of synchronization of stable time step computation
@@ -129,7 +135,7 @@ Version 1.8.0
 
   - Fixed bug in setting name of field in OutputSolnPoints when output
     multiple fields. This bug caused the name of the first output
-    field to be used and output data to overrite each other.
+    field to be used and output data to overwrite each other.
 
 ======================================================================
 MIGRATING FROM VERSION 1.6 TO 1.7
