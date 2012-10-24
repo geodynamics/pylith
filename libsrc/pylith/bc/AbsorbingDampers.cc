@@ -605,10 +605,14 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   assert(valueSection);assert(valueVec);
 
   const topology::Field<topology::Mesh>& solution = fields->solution();
-  PetscSection solutionSection = solution.petscSection(), solutionSubsection;
+  PetscSection solutionSection = solution.petscSection(), solutionGlobalSection, solutionSubsection, solutionGlobalSubsection;
   Vec          solutionVec     = solution.localVector();
+  PetscSF      sf;
   assert(solutionSection);assert(solutionVec);
-  err = PetscSectionCreateSubmeshSection(solutionSection, subpointMap, &solutionSubsection);
+  err = PetscSectionCreateSubmeshSection(solutionSection, subpointMap, &solutionSubsection);CHECK_PETSC_ERROR(err);
+  err = DMGetPointSF(solution.dmMesh(), &sf);CHECK_PETSC_ERROR(err);
+  err = PetscSectionCreateGlobalSection(solutionSection, sf, PETSC_FALSE, &solutionGlobalSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionCreateSubmeshSection(solutionGlobalSection, subpointMap, &solutionGlobalSubsection);CHECK_PETSC_ERROR(err);
 
   // Get sparse matrix
   const PetscMat jacobianMat = jacobian->matrix();
@@ -698,7 +702,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #endif
     
     // Assemble cell contribution into PETSc Matrix
-    err = DMComplexMatSetClosure(subMesh, solutionSubsection, PETSC_NULL, jacobianMat, c, &_cellMatrix[0], ADD_VALUES);
+    err = DMComplexMatSetClosure(subMesh, solutionSubsection, solutionGlobalSubsection, jacobianMat, c, &_cellMatrix[0], ADD_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
 #if defined(DETAILED_EVENT_LOGGING)
@@ -707,6 +711,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   } // for
   err = VecRestoreArray(valueVec, &dampingArray);CHECK_PETSC_ERROR(err);
   err = PetscSectionDestroy(&solutionSubsection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&solutionGlobalSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&solutionGlobalSubsection);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops((cEnd-cStart)*numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));

@@ -220,7 +220,6 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
-  CPPUNIT_ASSERT(0);
   topology::Mesh mesh;
   AbsorbingDampers bc;
   topology::SolutionFields fields(mesh);

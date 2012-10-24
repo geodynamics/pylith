@@ -116,6 +116,8 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 void 
 pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  //TODO Change DM coordinates here, store lengthScale for output routines
+
   // Get coordinates (currently dimensioned).
   assert(!_mesh.isNull());
   const ALE::Obj<RealSection>& coordsSection =
