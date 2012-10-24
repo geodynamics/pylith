@@ -119,10 +119,12 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     if (dmMesh) {
       PetscSection coordSection;
       Vec          coordinates;
+      PetscReal    lengthScale;
       PetscInt     vStart, vEnd, vMax, verticesSize, dim, dimLocal = 0;
 
       const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
       assert(cs);
+      err = DMComplexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
       err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
       err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
       err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -151,6 +153,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
       }
       err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
       err = VecRestoreArray(coordinates, &c);CHECK_PETSC_ERROR(err);
+      err = VecScale(coordVec, lengthScale);CHECK_PETSC_ERROR(err);
       err = PetscObjectSetName((PetscObject) coordVec, "vertices");CHECK_PETSC_ERROR(err);
       err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
       err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);

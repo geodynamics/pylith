@@ -142,17 +142,19 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
 #else
-    DM       coordDM;
-    Vec      coordVec, coordinatesVector;
-    PetscInt globalSize;
+    DM        coordDM;
+    Vec       coordVec, coordinatesVector;
+    PetscReal lengthScale;
+    PetscInt  globalSize;
 
-    /* Should use the coordinate DM here (once I put it in) */
+    err = DMComplexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinateDM(dmMesh, &coordDM);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
     err = DMGetGlobalVector(coordDM, &coordinatesVector);CHECK_PETSC_ERROR(err);
     err = VecGetSize(coordinatesVector, &globalSize);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalBegin(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalEnd(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
+    err = VecScale(coordinatesVector, lengthScale);CHECK_PETSC_ERROR(err);
 #endif
 
     const std::string& filenameVertices = _datasetFilename("vertices");
