@@ -116,13 +116,18 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 void 
 pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
 { // initialize
-  //TODO Change DM coordinates here, store lengthScale for output routines
 
   // Get coordinates (currently dimensioned).
   assert(!_mesh.isNull());
   const ALE::Obj<RealSection>& coordsSection =
     _mesh->getRealSection("coordinates");
   assert(!coordsSection.isNull());
+  Vec coordVec, coordDimVec;
+  PetscErrorCode err;
+
+  assert(_newMesh);
+  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordVec);
 
   // Get field for dimensioned coordinates.
   const ALE::Obj<RealSection>& coordsDimSection =
@@ -140,6 +145,10 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
     vertices->begin();
   const SieveMesh::label_sequence::iterator verticesEnd = 
     vertices->end();
+
+  // There does not seem to be an advantage to calling nondimensionalize()
+  err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
+  err = DMComplexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
 
   PylithScalar coordsVertex[3];
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
