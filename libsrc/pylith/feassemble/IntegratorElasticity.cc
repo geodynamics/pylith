@@ -331,8 +331,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
       // total strain is available as a state variable
       assert(0 != fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = 
-        _outputFields->get("buffer (tensor)");    
+      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "total_strain");
       buffer.addDimensionOkay(true);
       return buffer;
@@ -340,8 +339,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
     } else { // must calculate total strain
       assert(0 != fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = 
-        _outputFields->get("buffer (tensor)");
+      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");
       buffer.label("total_strain");
       buffer.scale(1.0);
       buffer.addDimensionOkay(true);
@@ -355,8 +353,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
       // stress is available as a state variable
       assert(0 != fields);
       _allocateTensorField(mesh);
-      topology::Field<topology::Mesh>& buffer = 
-        _outputFields->get("buffer (tensor)");    
+      topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "stress");
       buffer.addDimensionOkay(true);
       return buffer;
@@ -606,11 +603,11 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, numBasis, numQuadPts);
     
     if (!calcStress) {
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
     } // else
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
@@ -667,7 +664,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
 
     _material->retrievePropsAndVars(cell);
     stressCell = _material->calcStress(strainCell);
-    err = DMComplexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMComplexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
