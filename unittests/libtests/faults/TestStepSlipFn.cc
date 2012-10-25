@@ -263,7 +263,8 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
 
   // Set up coordinates
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(mesh->dimension());
+  const int spaceDim = mesh->dimension();
+  cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
 
@@ -289,8 +290,46 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
+  const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
+  faultSieveMesh->setRealSection("coordinates", oldCoordSection);
+  DM              dmMesh = faultMesh->dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscSection    coordSection;
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    const PetscScalar *oldCoords = oldCoordSection->restrictPoint(points[v]);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = oldCoords[d];
+    }
+  }
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -351,18 +390,50 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
                            data.faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
-  // Need to copy coordinates from mesh to fault mesh since we are not
+  // Need to copy coordinates from mesh to fault mesh since we are
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
-  DM dmMesh = faultMesh.dmMesh();
-  PetscErrorCode err;
+  const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
+  faultSieveMesh->setRealSection("coordinates", oldCoordSection);
+  DM              dmMesh = faultMesh.dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscSection    coordSection;
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
   CPPUNIT_ASSERT(dmMesh);
 
-  PetscInt       vStart, vEnd;
   err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    const PetscScalar *oldCoords = oldCoordSection->restrictPoint(points[v]);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = oldCoords[d];
+    }
+  }
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
