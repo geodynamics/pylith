@@ -48,7 +48,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
                                               ALE::Obj<SieveFlexMesh>& faultBoundary,
                                               const topology::Mesh& mesh,
                                               const ALE::Obj<topology::Mesh::IntSection>& groupField,
-					      const bool flipFault)
+                                              const bool flipFault)
 { // createFault
   assert(0 != faultMesh);
   assert(!groupField.isNull());
@@ -59,23 +59,18 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 
   faultMesh->coordsys(mesh);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  const ALE::Obj<SieveMesh>&             sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
-  ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-  faultSieveMesh =
-    new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
-
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
+  const ALE::Obj<SieveMesh::sieve_type>& sieve     = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = 
-    new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
+  ALE::Obj<SieveSubMesh>&                faultSieveMesh = faultMesh->sieveMesh();
+  faultSieveMesh = new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+  const ALE::Obj<SieveSubMesh::sieve_type> ifaultSieve = new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!ifaultSieve.isNull());
-  ALE::Obj<SieveFlexMesh> fault =
-    new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
-  assert(!fault.isNull());
-  ALE::Obj<SieveFlexMesh::sieve_type> faultSieve  =
-    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-  assert(!faultSieve.isNull());
+
+  ALE::Obj<SieveFlexMesh>             fault      = new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+  ALE::Obj<SieveFlexMesh::sieve_type> faultSieve = new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
+  assert(!fault.isNull());assert(!faultSieve.isNull());
   const int debug = mesh.debug();
 
   // Create set with vertices on fault
@@ -122,6 +117,35 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   faultSieveMesh->setSieve(ifaultSieve);
   ALE::ISieveConverter::convertMesh(*fault, *faultSieveMesh, renumbering, false);
   renumbering.clear();
+
+  // Convert fault to a DM
+  {
+    DM             dm;
+    IS             subpointMap;
+    PetscInt      *renum;
+    PetscInt       pStart, pEnd;
+    PetscErrorCode err;
+    SieveSubMesh::renumbering_type renumbering;
+
+    ALE::ISieveConverter::convertMesh(*fault, &dm, renumbering, true);
+    // Have to make subpointMap here: renumbering[original] = fault
+    err = DMComplexGetChart(dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    assert(renumbering.size() == pEnd-pStart);
+    err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
+    for(SieveSubMesh::renumbering_type::const_iterator p_iter = renumbering.begin(); p_iter != renumbering.end(); ++p_iter) {
+      renum[p_iter->second] = p_iter->first;
+#if 0
+      std::cout << "renum["<<p_iter->second<<"]: "<<p_iter->first<<std::endl;
+#endif
+    }
+    for(PetscInt p = 1; p < pEnd-pStart; ++p) {
+      assert(renum[p] > renum[p-1]);
+    }
+    err = ISCreateGeneral(fault->comm(), pEnd-pStart, renum, PETSC_OWN_POINTER, &subpointMap);CHECK_PETSC_ERROR(err);
+    err = DMComplexSetSubpointMap(dm, subpointMap);CHECK_PETSC_ERROR(err);
+    renumbering.clear();
+    faultMesh->setDMMesh(dm);
+  }
 
   logger.stagePop();
 } // createFault
