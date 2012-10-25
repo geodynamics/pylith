@@ -64,6 +64,12 @@ RELEASE NOTES - PyLith v1.8.0
     size using an Exodus-II vertex field. Note that this required
     updating the NetCDF library.
 
+  * New CUBIT meshing examples demonstrating how to merge surfaces and
+    use and an Exodus-II vertex field to specify the discretization
+    size.
+    + examples/meshing/surface_nurbs/merge_surfs
+    + examples/meshing/cubit_cellsize
+
 * Bug fixes
 
   - Fixed omission of synchronization of stable time step computation
