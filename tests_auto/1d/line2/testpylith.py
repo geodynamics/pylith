@@ -29,6 +29,9 @@ def suite():
   from TestExtensionDisp import TestExtensionDisp
   suite.addTest(unittest.makeSuite(TestExtensionDisp))
 
+  from TestExtensionDispParallel import TestExtensionDispParallel
+  suite.addTest(unittest.makeSuite(TestExtensionDispParallel))
+
   from TestExtensionForce import TestExtensionForce
   suite.addTest(unittest.makeSuite(TestExtensionForce))
 
