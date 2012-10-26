@@ -235,13 +235,14 @@ pylith::faults::TestTimeHistorySlipFn::testSlip(void)
   CPPUNIT_ASSERT(0 != cs);
 
   const int spaceDim = cs->spaceDim();
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM dmMesh = faultMesh.dmMesh();
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  PetscInt       vStart, vEnd;
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   topology::Field<topology::SubMesh> slip(faultMesh);
-  slip.newSection(vertices, spaceDim);
+  slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
 
   const PylithScalar t = 2.0;
@@ -249,19 +250,20 @@ pylith::faults::TestTimeHistorySlipFn::testSlip(void)
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  const ALE::Obj<RealSection>& slipSection = slip.section();
-  CPPUNIT_ASSERT(!slipSection.isNull());
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++iPoint) {
-    const int fiberDim = slipSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* vals = slipSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != vals);
+  PetscSection slipSection = slip.petscSection();
+  Vec          slipVec     = slip.localVector();
+  PetscScalar *slipArray;
+  CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
+  err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
     
-    for (int iDim=0; iDim < fiberDim; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE[iPoint*spaceDim+iDim], 
-				   vals[iDim], tolerance);
+    for(PetscInt d = 0; d < dof; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE[iPoint*spaceDim+d], slipArray[off+d], tolerance);
   } // for
 } // testSlip
 
@@ -291,7 +293,8 @@ pylith::faults::TestTimeHistorySlipFn::_initialize(topology::Mesh* mesh,
 
   // Set up coordinates
   spatialdata::geocoords::CSCart cs;
-  cs.setSpaceDim(mesh->dimension());
+  const int spaceDim = mesh->dimension();
+  cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
 
@@ -316,8 +319,46 @@ pylith::faults::TestTimeHistorySlipFn::_initialize(topology::Mesh* mesh,
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
+  const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
+  faultSieveMesh->setRealSection("coordinates", oldCoordSection);
+  DM              dmMesh = faultMesh->dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscSection    coordSection;
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    const PetscScalar *oldCoords = oldCoordSection->restrictPoint(points[v]);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = oldCoords[d];
+    }
+  }
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbAmplitude("slip amplitude");
@@ -385,8 +426,46 @@ pylith::faults::TestTimeHistorySlipFn::_testInitialize(const _TestTimeHistorySli
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
+  const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
+  faultSieveMesh->setRealSection("coordinates", oldCoordSection);
+  DM              dmMesh = faultMesh.dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscSection    coordSection;
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+  CPPUNIT_ASSERT(dmMesh);
+
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    const PetscScalar *oldCoords = oldCoordSection->restrictPoint(points[v]);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = oldCoords[d];
+    }
+  }
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbAmplitude("slip amplitude");
@@ -413,36 +492,33 @@ pylith::faults::TestTimeHistorySlipFn::_testInitialize(const _TestTimeHistorySli
   
   slipfn.initialize(faultMesh, normalizer, originTime);
 
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-
   CPPUNIT_ASSERT(0 != slipfn._parameters);
-  const ALE::Obj<RealSection>& finalSlipSection =
-    slipfn._parameters->get("slip amplitude").section();
-  CPPUNIT_ASSERT(!finalSlipSection.isNull());
-  const ALE::Obj<RealSection>& slipTimeSection =
-    slipfn._parameters->get("slip time").section();
-  CPPUNIT_ASSERT(!slipTimeSection.isNull());
+  PetscSection finalSlipSection = slipfn._parameters->get("slip amplitude").petscSection();
+  Vec          finalSlipVec     = slipfn._parameters->get("slip amplitude").localVector();
+  PetscScalar *finalSlipArray;
+  CPPUNIT_ASSERT(finalSlipSection);CPPUNIT_ASSERT(finalSlipVec);
+  PetscSection slipTimeSection = slipfn._parameters->get("slip time").petscSection();
+  Vec          slipTimeVec     = slipfn._parameters->get("slip time").localVector();
+  PetscScalar *slipTimeArray;
+  CPPUNIT_ASSERT(slipTimeSection);CPPUNIT_ASSERT(slipTimeVec);
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++iPoint) {
-    CPPUNIT_ASSERT_EQUAL(spaceDim, finalSlipSection->getFiberDimension(*v_iter));
-    const PylithScalar* amplitudeVertex = finalSlipSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != amplitudeVertex);
-    for (int iDim=0; iDim < spaceDim; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(data.amplitudeE[iPoint*spaceDim+iDim],
-				   amplitudeVertex[iDim],
-				   tolerance);
+  err = VecGetArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(slipTimeVec,  &slipTimeArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+    PetscInt fsdof, fsoff, stdof, stoff;
 
-    CPPUNIT_ASSERT_EQUAL(1, slipTimeSection->getFiberDimension(*v_iter));
-    const PylithScalar* slipTimeVertex = slipTimeSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != slipTimeVertex);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint]+originTime,
-				 slipTimeVertex[0], tolerance);
+    err = PetscSectionGetDof(finalSlipSection, v, &fsdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(finalSlipSection, v, &fsoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(slipTimeSection, v, &stdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(slipTimeSection, v, &stoff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fsdof);
+    for(PetscInt d = 0; d < fsdof; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(data.amplitudeE[iPoint*spaceDim+d], finalSlipArray[fsoff+d], tolerance);
+
+    CPPUNIT_ASSERT_EQUAL(1, stdof);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(data.slipTimeE[iPoint]+originTime, slipTimeArray[stoff], tolerance);
   } // for
 } // _testInitialize
 

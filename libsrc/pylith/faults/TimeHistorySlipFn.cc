@@ -93,25 +93,26 @@ pylith::faults::TimeHistorySlipFn::initialize(
   logger.stagePush("Fault");
 
   // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = faultMesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const label_sequence::iterator verticesBegin = vertices->begin();
-  const label_sequence::iterator verticesEnd = vertices->end();
+  DM             dmMesh = faultMesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  assert(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
   _parameters->add("slip amplitude", "slip_amplitude");
 
-  topology::Field<topology::SubMesh>& slipAmplitude = 
-    _parameters->get("slip amplitude");
-  slipAmplitude.newSection(vertices, spaceDim);
+  topology::Field<topology::SubMesh>& slipAmplitude = _parameters->get("slip amplitude");
+  slipAmplitude.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slipAmplitude.allocate();
   slipAmplitude.scale(lengthScale);
   slipAmplitude.vectorFieldType(topology::FieldBase::VECTOR);
-  const ALE::Obj<RealSection>& slipAmplitudeSection = slipAmplitude.section();
-  assert(!slipAmplitudeSection.isNull());  
+  PetscSection finalSlipSection  = slipAmplitude.petscSection();
+  Vec          finalSlipVec      = slipAmplitude.localVector();
+  PetscScalar *finalSlipArray;
+  assert(finalSlipSection);assert(finalSlipVec);
 
   _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
@@ -119,8 +120,10 @@ pylith::faults::TimeHistorySlipFn::initialize(
   slipTime.allocate();
   slipTime.scale(timeScale);
   slipTime.vectorFieldType(topology::FieldBase::SCALAR);
-  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
-  assert(!slipTimeSection.isNull());
+  PetscSection slipTimeSection  = slipTime.petscSection();
+  Vec          slipTimeVec      = slipTime.localVector();
+  PetscScalar *slipTimeArray;
+  assert(slipTimeSection);assert(slipTimeVec);
 
   logger.stagePop();
 
@@ -155,32 +158,44 @@ pylith::faults::TimeHistorySlipFn::initialize(
   _dbSlipTime->queryVals(slipTimeValues, 1);
 
   // Get coordinates of vertices
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
+  scalar_array vCoordsGlobal(spaceDim);
+  PetscSection coordSection;
+  Vec          coordVec;
+  PetscScalar *coordArray;
+  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordSection);assert(coordVec);
 
   _slipVertex.resize(spaceDim);
-  scalar_array vCoordsGlobal(spaceDim);  
-  for (label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    coordinates->restrictPoint(*v_iter, 
-			       &vCoordsGlobal[0], vCoordsGlobal.size());
-    normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
-			      lengthScale);
+  err = VecGetArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(slipTimeVec,  &slipTimeArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt fsdof, fsoff, stdof, stoff, cdof, coff;
+
+    err = PetscSectionGetDof(finalSlipSection, v, &fsdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(finalSlipSection, v, &fsoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(slipTimeSection, v, &stdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(slipTimeSection, v, &stoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(coordSection, v, &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
+    assert(cdof == spaceDim);
+
+    for(PetscInt d = 0; d < cdof; ++d) {
+      vCoordsGlobal[d] = coordArray[coff+d];
+    }
+    normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(), lengthScale);
         
-    int err = _dbAmplitude->query(&_slipVertex[0], _slipVertex.size(), 
-				  &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
+    int err = _dbAmplitude->query(&_slipVertex[0], _slipVertex.size(), &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find slip amplitude at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoordsGlobal[i];
+        msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _dbAmplitude->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    normalizer.nondimensionalize(&_slipVertex[0], _slipVertex.size(),
-				 lengthScale);
+    normalizer.nondimensionalize(&_slipVertex[0], _slipVertex.size(), lengthScale);
 
     err = _dbSlipTime->query(&_slipTimeVertex, 1, 
 			     &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
@@ -188,7 +203,7 @@ pylith::faults::TimeHistorySlipFn::initialize(
       std::ostringstream msg;
       msg << "Could not find slip initiation time at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << vCoordsGlobal[i];
+        msg << "  " << vCoordsGlobal[i];
       msg << ") using spatial database " << _dbSlipTime->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
@@ -196,8 +211,10 @@ pylith::faults::TimeHistorySlipFn::initialize(
     // add origin time to rupture time
     _slipTimeVertex += originTime;
 
-    slipAmplitudeSection->updatePoint(*v_iter, &_slipVertex[0]);
-    slipTimeSection->updatePoint(*v_iter, &_slipTimeVertex);
+    for(PetscInt d = 0; d < fsdof; ++d) {
+      finalSlipArray[fsoff+d] = _slipVertex[d];
+    }
+    slipTimeArray[stoff] = _slipTimeVertex;
   } // for
 
   // Close databases.
@@ -220,54 +237,64 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
   assert(0 != _dbTimeHistory);
 
   // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = slip->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const label_sequence::iterator verticesBegin = vertices->begin();
-  const label_sequence::iterator verticesEnd = vertices->end();
+  DM             dmMesh = slip->mesh().dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  assert(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  const topology::Field<topology::SubMesh>& slipAmplitude = 
-    _parameters->get("slip amplitude");
-  const ALE::Obj<RealSection>& slipAmplitudeSection = slipAmplitude.section();
-  assert(!slipAmplitudeSection.isNull());
-  const topology::Field<topology::SubMesh>& slipTime =
-    _parameters->get("slip time");
-  const ALE::Obj<RealSection>& slipTimeSection = slipTime.section();
-  assert(!slipTimeSection.isNull());
-  const ALE::Obj<RealSection>& slipSection = slip->section();
-  assert(!slipSection.isNull());
+  const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("slip amplitude");
+  PetscSection finalSlipSection  = finalSlip.petscSection();
+  Vec          finalSlipVec      = finalSlip.localVector();
+  PetscScalar *finalSlipArray;
+  assert(finalSlipSection);assert(finalSlipVec);
+  const topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  PetscSection slipTimeSection  = slipTime.petscSection();
+  Vec          slipTimeVec      = slipTime.localVector();
+  PetscScalar *slipTimeArray;
+  assert(slipTimeSection);assert(slipTimeVec);
+  PetscSection slipSection  = slip->petscSection();
+  Vec          slipVec      = slip->localVector();
+  PetscScalar *slipArray;
+  assert(slipSection);assert(slipVec);
 
   PylithScalar amplitude = 0.0;
-  for (label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    slipAmplitudeSection->restrictPoint(*v_iter, 
-					&_slipVertex[0], _slipVertex.size());
-    slipTimeSection->restrictPoint(*v_iter, &_slipTimeVertex, 1);
+  err = VecGetArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(slipTimeVec, &slipTimeArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt fsdof, fsoff, stdof, stoff, sdof, soff;
 
-    PylithScalar relTime = t - _slipTimeVertex;
-    if (relTime < 0.0)
-      _slipVertex = 0.0;
-    else {
+    err = PetscSectionGetDof(finalSlipSection, v, &fsdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(finalSlipSection, v, &fsoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(slipTimeSection, v, &stdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(slipTimeSection, v, &stoff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(slipSection, v, &sdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(slipSection, v, &soff);CHECK_PETSC_ERROR(err);
+    assert(fsdof == sdof);
+    assert(stdof == 1);
+
+    PylithScalar relTime = t - slipTimeArray[stoff];
+    if (relTime >= 0.0) {
       relTime *= _timeScale;
       const int err = _dbTimeHistory->query(&amplitude, relTime);
       if (0 != err) {
-	std::ostringstream msg;
-	msg << "Error querying for time '" << relTime
-	    << "' in time history database "
-	    << _dbTimeHistory->label() << ".";
-	throw std::runtime_error(msg.str());
+        std::ostringstream msg;
+        msg << "Error querying for time '" << relTime
+            << "' in time history database "
+            << _dbTimeHistory->label() << ".";
+        throw std::runtime_error(msg.str());
       } // if
-      _slipVertex *= amplitude;
+
+      for(PetscInt d = 0; d < sdof; ++d) {
+        slipArray[soff+d] += finalSlipArray[fsoff+d] * amplitude;
+      }
     } // else
-    
-    // Update field
-    slipSection->updateAddPoint(*v_iter, &_slipVertex[0]);
   } // for
 
-  PetscLogFlops(vertices->size() * 3);
+  PetscLogFlops((vEnd-vStart) * 3);
 } // slip
 
 // ----------------------------------------------------------------------
