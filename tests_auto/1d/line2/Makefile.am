@@ -23,6 +23,7 @@ check_SCRIPTS = testpylith.py
 dist_noinst_PYTHON = \
 	TestLine2.py \
 	TestExtensionDisp.py \
+	TestExtensionDispParallel.py \
 	TestExtensionForce.py \
 	TestDislocation.py \
 	testpylith.py
@@ -31,6 +32,7 @@ dist_noinst_DATA = \
 	bar.mesh \
 	matprops.spatialdb \
 	extensiondisp.cfg \
+	extensiondisp_np2.cfg \
 	extensiondisp_disp.spatialdb \
 	extensionforce.cfg \
 	extensionforce_force.spatialdb \
@@ -43,6 +45,9 @@ noinst_TMP = \
 	extensiondisp_t0000000.vtk \
 	extensiondisp-elastic_info.vtk \
 	extensiondisp-elastic_t0000000.vtk \
+	extensiondisp_np2_t0000000.vtk \
+	extensiondisp_np2-elastic_info.vtk \
+	extensiondisp_np2-elastic_t0000000.vtk \
 	extensionforce_t0000000.vtk \
 	extensionforce-elastic_info.vtk \
 	extensionforce-elastic_t0000000.vtk \
