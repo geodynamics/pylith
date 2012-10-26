@@ -7,7 +7,7 @@
 svn log | less
 
 # Merge from stable branch.
-svn merge -r REV_FROM_LAST_MERGE:HEAD svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/branches/v1.6-stable .
+svn merge -r REV_FROM_LAST_MERGE:HEAD svn+ssh://svn@geodynamics.org/cig/short/3D/PyLith/branches/v1.8-stable .
 
 
 
