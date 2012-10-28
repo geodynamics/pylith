@@ -992,6 +992,77 @@ pylith::topology::Field<mesh_type, section_type>::copy(const ALE::Obj<section_ty
   } // if
 } // copy
 
+template<typename mesh_type, typename section_type>
+void
+pylith::topology::Field<mesh_type, section_type>::copy(PetscSection osection, PetscInt field, PetscInt component, Vec ovec)
+{ // copy
+  PetscSection   section;
+  PetscScalar   *array, *oarray;
+  PetscInt       numFields, numComp, pStart, pEnd, qStart, qEnd;
+  PetscErrorCode err;
+
+  assert(_dm);
+  err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+  assert(section);assert(_localVec);
+  assert(osection);assert(ovec);
+  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetChart(osection, &qStart, &qEnd);CHECK_PETSC_ERROR(err);
+  if ((pStart != qStart) || (pEnd != qEnd)) {
+    std::ostringstream msg;
+
+    msg << "Cannot copy values from Sieve section "
+	<< _metadata["default"].label << "'. Sections are incompatible.\n"
+	<< "  Source section:\n"
+    << "    chart: ["<<pStart<<","<<pEnd<<")\n"
+	<< "  Destination section:\n"
+	<< "    space dim: " << spaceDim() << "\n"
+	<< "    vector field type: " << _metadata["default"].vectorFieldType << "\n"
+	<< "    scale: " << _metadata["default"].scale << "\n"
+    << "    chart: ["<<qStart<<","<<qEnd<<")";
+    throw std::runtime_error(msg.str());
+  } // if
+  if (field >= numFields) {
+    std::ostringstream msg;
+    msg << "Invalid field "<<field<<" should be in [0, "<<numFields<<")";
+    throw std::runtime_error(msg.str());
+  }
+  if (field >= 0) {
+    err = PetscSectionGetFieldComponents(section, field, &numComp);CHECK_PETSC_ERROR(err);
+    if (component >= numComp) {
+      std::ostringstream msg;
+      msg << "Invalid field component "<<component<<" should be in [0, "<<numComp<<")";
+      throw std::runtime_error(msg.str());
+    }
+  }
+  // Copy values from field
+  err = VecGetArray(_localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(ovec, &oarray);CHECK_PETSC_ERROR(err);
+  for(PetscInt p = pStart; p < pEnd; ++p) {
+    PetscInt dof, off, odof, ooff;
+
+    err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, p, &off);CHECK_PETSC_ERROR(err);
+    if (field >= 0) {
+      err = PetscSectionGetFieldDof(osection, p, field, &odof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetFieldOffset(osection, p, field, &ooff);CHECK_PETSC_ERROR(err);
+      assert(!(odof%numComp));
+      odof  = odof/numComp;
+      ooff += odof*component;
+    } else {
+      err = PetscSectionGetDof(osection, p, &odof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(osection, p, &ooff);CHECK_PETSC_ERROR(err);
+    }
+    assert(odof == dof);
+    if (!odof) continue;
+    for(PetscInt d = 0; d < dof; ++d) {
+      array[off+d] = oarray[ooff+d];
+    }
+  } // for
+  err = VecRestoreArray(_localVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(ovec, &oarray);CHECK_PETSC_ERROR(err);
+} // copy
+
 // ----------------------------------------------------------------------
 // Add two fields, storing the result in one of the fields.
 template<typename mesh_type, typename section_type>

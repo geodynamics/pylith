@@ -310,6 +310,15 @@ public :
    */
   void copy(const ALE::Obj<section_type>& field);
 
+  /** Copy field values.
+   *
+   * @param osection Field to copy.
+   * @param field Section field or -1
+   * @param component Section field component or -1
+   * @param ovec Values to copy.
+   */
+  void copy(PetscSection osection, PetscInt field, PetscInt component, Vec ovec);
+
   /** Add two fields, storing the result in one of the fields.
    *
    * @param field Field to add.

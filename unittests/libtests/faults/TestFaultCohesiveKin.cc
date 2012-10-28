@@ -139,40 +139,38 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  SieveSubMesh::renumbering_type& renumbering = 
-    faultSieveMesh->getRenumbering();
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    faultSieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  int iVertex = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    CPPUNIT_ASSERT(renumbering.find(_data->verticesLagrange[iVertex]) !=
-		   renumbering.end());
-#if 0
-    CPPUNIT_ASSERT_EQUAL(renumbering[_data->verticesLagrange[iVertex]],
-			 *v_iter);
+  DM              dmMesh = fault._faultMesh->dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscInt        vStart, vEnd, numPoints;
+  PetscErrorCode  err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(subpointMap);
+  err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt faultPoint;
+
+    err = PetscFindInt(_data->verticesLagrange[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT(faultPoint >= 0);
+#if 1
+    CPPUNIT_ASSERT_EQUAL(faultPoint, v);
 #endif
   } // for
-  CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, iVertex);
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, vEnd-vStart);
 
   // Check cohesive vertex info
   const int numFaultVertices = _data->numFaultVertices;
   CPPUNIT_ASSERT_EQUAL(numFaultVertices, int(fault._cohesiveVertices.size()));
   for (int i=0; i < numFaultVertices; ++i) {
-    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[i], 
-			 fault._cohesiveVertices[i].fault);
-    CPPUNIT_ASSERT_EQUAL(_data->verticesLagrange[i], 
-			 fault._cohesiveVertices[i].lagrange);
-    CPPUNIT_ASSERT_EQUAL(_data->verticesNegative[i], 
-			 fault._cohesiveVertices[i].negative);
-    CPPUNIT_ASSERT_EQUAL(_data->verticesPositive[i], 
-			 fault._cohesiveVertices[i].positive);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[i], fault._cohesiveVertices[i].fault);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesLagrange[i], fault._cohesiveVertices[i].lagrange);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesNegative[i], fault._cohesiveVertices[i].negative);
+    CPPUNIT_ASSERT_EQUAL(_data->verticesPositive[i], fault._cohesiveVertices[i].positive);
   } // for
 
   // Check cohesive cell info
@@ -192,46 +190,46 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
   // Check orientation
   //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
-  const ALE::Obj<RealSection>& orientationSection = 
-    fault._fields->get("orientation").section();
-  CPPUNIT_ASSERT(!orientationSection.isNull());
+  PetscSection orientationSection = fault._fields->get("orientation").petscSection();
+  Vec          orientationVec     = fault._fields->get("orientation").localVector();
+  PetscScalar *orientationArray;
+  CPPUNIT_ASSERT(orientationSection);CPPUNIT_ASSERT(orientationVec);
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
-  iVertex = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = orientationSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(orientationSize, fiberDim);
-    const PylithScalar* orientationVertex =
-      orientationSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != orientationVertex);
+  int iVertex = 0;
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(orientationSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(orientationSize, dof);
 
     const PylithScalar tolerance = 1.0e-06;
-    for (int i=0; i < orientationSize; ++i) {
-      const int index = iVertex*orientationSize+i;
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->orientation[index],
-				   orientationVertex[i], tolerance);
+    for(int d = 0; d < orientationSize; ++d) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->orientation[iVertex*orientationSize+d], orientationArray[off+d], tolerance);
     } // for
   } // for
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
   // Check area
-  const ALE::Obj<RealSection>& areaSection =
-    fault._fields->get("area").section();
-  CPPUNIT_ASSERT(!areaSection.isNull());
+  PetscSection areaSection = fault._fields->get("area").petscSection();
+  Vec          areaVec     = fault._fields->get("area").localVector();
+  PetscScalar *areaArray;
+  CPPUNIT_ASSERT(areaSection);CPPUNIT_ASSERT(areaVec);
   iVertex = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = areaSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
-    const PylithScalar* areaVertex = areaSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != areaVertex);
+  err = VecGetArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(areaSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(areaSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(1, dof);
 
     const PylithScalar tolerance = 1.0e-06;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaVertex[0],
-				 tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->area[iVertex], areaArray[off], tolerance);
   } // for
+  err = VecRestoreArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -251,23 +249,36 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 
   const int spaceDim = _data->spaceDim;
   topology::Field<topology::Mesh>& residual = fields.get("residual");
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  CPPUNIT_ASSERT(!residualSection.isNull());
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  PetscScalar *residualArray;
+  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
 
-  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
-  CPPUNIT_ASSERT(!dispSection.isNull());
+  PetscSection dispSection = fields.get("disp(t)").petscSection();
+  Vec          dispVec     = fields.get("disp(t)").localVector();
+  PetscScalar *dispArray;
+  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+
   int iVertex = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex)
-    dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(dispSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+    for(PetscInt d = 0; d < dof; ++d) {
+      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+    }
+  }
+  err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   
   const PylithScalar t = 2.134;
   const PylithScalar dt = 0.01;
@@ -283,23 +294,23 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-      const int fiberDim = residualSection->getFiberDimension(*v_iter);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-      const PylithScalar* vals = residualSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
+    err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(residualSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(residualSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
       
-      for (int i = 0; i < fiberDimE; ++i) {
-        const int index = iVertex * spaceDim + i;
-        const PylithScalar valE = valsE[index];
+      for(PetscInt d = 0; d < fiberDimE; ++d) {
+        const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
       } // for
     } // for
+    err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
   } // Integrate residual with disp (as opposed to disp increment).
 
   residual.zero();
@@ -313,23 +324,23 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-	 v_iter != verticesEnd;
-	 ++v_iter, ++iVertex) {
-      const int fiberDim = residualSection->getFiberDimension(*v_iter);
-      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-      const PylithScalar* vals = residualSection->restrictPoint(*v_iter);
-      CPPUNIT_ASSERT(0 != vals);
+    err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(residualSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(residualSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
       
-      for (int i = 0; i < fiberDimE; ++i) {
-        const int index = iVertex * spaceDim + i;
-        const PylithScalar valE = valsE[index];
+      for(PetscInt d = 0; d < fiberDimE; ++d) {
+        const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+d]/valE, tolerance);
         else
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
       } // for
     } // for
+    err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
   } // Integrate residual with disp increment.
 } // testIntegrateResidual
 
@@ -348,20 +359,29 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   _initialize(&mesh, &fault, &fields);
 
   const int spaceDim = _data->spaceDim;
-  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
-  CPPUNIT_ASSERT(!dispSection.isNull());
+  PetscSection dispSection = fields.get("disp(t)").petscSection();
+  Vec          dispVec     = fields.get("disp(t)").localVector();
+  PetscScalar *dispArray;
+  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   int iVertex = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex)
-    dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(dispSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+    }
+  }
+  err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
 
   topology::Jacobian jacobian(fields.solution());
 
@@ -374,8 +394,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   //MatView(jacobian.matrix(), PETSC_VIEWER_STDOUT_WORLD); // DEBUGGING
 
   const PylithScalar* valsE = _data->jacobian;
-  const int nrowsE = dispSection->sizeWithBC();
-  const int ncolsE = nrowsE;
+  PetscInt nrowsE, ncolsE;
+  err = PetscSectionGetStorageSize(dispSection, &nrowsE);CHECK_PETSC_ERROR(err);
+  ncolsE = nrowsE;
 
   PetscMat jacobianMat = jacobian.matrix();
 
@@ -443,68 +464,65 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
 
   //jacobian.view("JACOBIAN"); // DEBUGGING
 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
-  CPPUNIT_ASSERT(!jacobianSection.isNull());
+  PetscSection jacobianSection = jacobian.petscSection();
+  Vec          jacobianVec     = jacobian.localVector();
+  PetscScalar *jacobianArray;
+  CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
 
   // Only check Lagrange multiplier values
 
-  int iVertex = 0;
-  const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _data->spaceDim;
 
-  const ALE::Obj<SieveSubMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  SieveSubMesh::renumbering_type& renumbering = 
-    faultSieveMesh->getRenumbering();
-  const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
-    renumbering.begin();
-  const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
-    renumbering.end();
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    bool found = false;
+  DM              faultDMMesh = fault._faultMesh->dmMesh();
+  IS              subpointMap;
 
-    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
-	 r_iter != renumberingEnd;
-	 ++r_iter) {
-      if (r_iter->first == *v_iter) {
-        found = true;
-        break;
-      } // if
-    } // for
-    if (!found) // only check Lagrange multiplier values
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(subpointMap);
+
+  const PylithScalar tolerance = 1.0e-06;
+  int iVertex = 0;
+  const PetscInt *points;
+  PetscInt        numPoints;
+
+  err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    PetscInt faultPoint;
+
+    err = PetscFindInt(v, numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
+    if (faultPoint < 0) // only check Lagrange multiplier values
       continue;
+    PetscInt dof, off;
 
-    CPPUNIT_ASSERT(found);
-    int fiberDim = jacobianSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* vals = jacobianSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != vals);
+    err = PetscSectionGetDof(jacobianSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(jacobianSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
     
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const PylithScalar valE = _data->jacobianLumped[iVertex*spaceDim+iDim];
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      const PylithScalar valE = _data->jacobianLumped[iVertex*spaceDim+d];
 #if 0 // debugging
       std::cout << "vertex: " << *v_iter << ", iDim: " << iDim
-		<< ", valE: " << valE
-		<< ", val: " << vals[iDim]
-		<< std::endl;
+                << ", valE: " << valE
+                << ", val: " << vals[iDim]
+                << std::endl;
 #endif
       if (fabs(valE) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valE, tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobianArray[off+d]/valE, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[iDim], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, jacobianArray[off+d], tolerance);
     } // for
   } // for
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobianLumped
 
 // ----------------------------------------------------------------------
@@ -524,23 +542,31 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   _initialize(&mesh, &fault, &fields);
 
   const int spaceDim = _data->spaceDim;
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        vStart, vEnd;
+  PetscErrorCode  err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   { // setup disp
-    const ALE::Obj<RealSection>& dispTSection = fields.get("disp(t)").section();
-    CPPUNIT_ASSERT(!dispTSection.isNull());
+    PetscSection dispSection = fields.get("disp(t)").petscSection();
+    Vec          dispVec     = fields.get("disp(t)").localVector();
+    PetscScalar *dispArray;
+    CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
     int iVertex = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-        dispTSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(dispSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+      }
     } // for
+    err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   } // setup disp
 
   // compute residual so that slip and residual are setup
@@ -552,14 +578,23 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   residual.complete();
 
   { // setup disp increment
-    const ALE::Obj<RealSection>& dispIncrSection = fields.get("dispIncr(t->t+dt)").section();
-    CPPUNIT_ASSERT(!dispIncrSection.isNull());
+    PetscSection dispSection = fields.get("disp(t->t+dt)").petscSection();
+    Vec          dispVec     = fields.get("disp(t->t+dt)").localVector();
+    PetscScalar *dispArray;
+    CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
     int iVertex = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-        dispIncrSection->updatePoint(*v_iter, &_data->fieldIncr[iVertex*spaceDim]);
+    err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(dispSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispArray[off+d] = _data->fieldIncr[iVertex*spaceDim+d];
+      }
     } // for
+    err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   } // setup disp increment
 
   // Set Jacobian values
@@ -568,48 +603,58 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   jacobian.vectorFieldType(topology::FieldBase::VECTOR);
   jacobian.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
   jacobian.allocate();
-  { // setup disp
-    const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
-    CPPUNIT_ASSERT(!jacobianSection.isNull());
+  { // setup jacobian
+    PetscSection jacobianSection = jacobian.petscSection();
+    Vec          jacobianVec     = jacobian.localVector();
+    PetscScalar *jacobianArray;
+    CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
     int iVertex = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter, ++iVertex) {
-        jacobianSection->updatePoint(*v_iter, &_data->jacobianLumped[iVertex*spaceDim]);
+    err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(jacobianSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(jacobianSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+      for(PetscInt d = 0; d < dof; ++d) {
+        jacobianArray[off+d] = _data->jacobianLumped[iVertex*spaceDim+d];
+      }
     } // for
-  } // setup disp
+    err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  } // setup jacobian
   jacobian.complete();
 
   topology::Field<topology::Mesh>& solution = fields.get("dispIncr(t->t+dt)");
   fault.adjustSolnLumped(&fields, t, jacobian);
-  const topology::Field<topology::Mesh>& dispIncrAdj = 
-    fields.get("dispIncr adjust");
+  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
   solution += dispIncrAdj;
 
   //solution.view("SOLUTION AFTER ADJUSTMENT"); // DEBUGGING
 
-  const ALE::Obj<RealSection>& solutionSection = solution.section();
-  CPPUNIT_ASSERT(!solutionSection.isNull());
+  PetscSection solutionSection = solution.petscSection();
+  Vec          solutionVec     = solution.localVector();
+  PetscScalar *solutionArray;
+  CPPUNIT_ASSERT(solutionSection);CPPUNIT_ASSERT(solutionVec);
 
   int i = 0;
   const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
   const PylithScalar* solutionE = _data->fieldIncrAdjusted;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    const int fiberDim = solutionSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* solutionVertex = solutionSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != solutionVertex);
-    for (int iDim=0; iDim < spaceDim; ++iDim, ++i) {
+  err = VecGetArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(solutionSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(solutionSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+
+    for(PetscInt d = 0; d < dof; ++d, ++i) {
       if (0.0 != solutionE[i])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionVertex[iDim]/solutionE[i],
-          tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, solutionArray[off+d]/solutionE[i], tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[i], solutionVertex[iDim],
-				     tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(solutionE[i], solutionArray[off+d], tolerance);
     } // for
   } // for
+  err = VecRestoreArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
 } // testAdjustSolnLumped
 
 // ----------------------------------------------------------------------
@@ -626,22 +671,30 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   _initialize(&mesh, &fault, &fields);
   
   const int spaceDim = _data->spaceDim;
-  const ALE::Obj<RealSection>& dispSection = fields.get("disp(t)").section();
-  CPPUNIT_ASSERT(!dispSection.isNull());
+  PetscSection dispSection = fields.get("disp(t)").petscSection();
+  Vec          dispVec     = fields.get("disp(t)").localVector();
+  PetscScalar *dispArray;
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
   { // setup disp
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    CPPUNIT_ASSERT(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& vertices =
-      sieveMesh->depthStratum(0);
-    CPPUNIT_ASSERT(!vertices.isNull());
-    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+    DM              dmMesh = mesh.dmMesh();
+    PetscInt        vStart, vEnd;
+
+    CPPUNIT_ASSERT(dmMesh);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     int iVertex = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-	 v_iter != verticesEnd;
-	 ++v_iter, ++iVertex) {
-      dispSection->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
-    } // for
+    err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(dispSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+      for(PetscInt d = 0; d < dof; ++d) {
+        dispArray[off+d] = _data->fieldT[iVertex*spaceDim+d];
+      }
+    }
+    err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   } // setup disp
 
   CPPUNIT_ASSERT(0 != fault._faultMesh);
@@ -649,8 +702,10 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();
-  const ALE::Obj<RealSection>& tractionsSection = tractions.section();
-  CPPUNIT_ASSERT(!tractionsSection.isNull());
+  PetscSection tractionsSection = tractions.petscSection();
+  Vec          tractionsVec     = tractions.localVector();
+  PetscScalar *tractionsArray;
+  CPPUNIT_ASSERT(tractionsSection);CPPUNIT_ASSERT(tractionsVec);
 
   const PylithScalar t = 0;
   fault.updateStateVars(t, &fields);  
@@ -658,68 +713,44 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
 
   int iVertex = 0;
   const PylithScalar tolerance = 1.0e-06;
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault._faultMesh->sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin = 
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  SieveSubMesh::renumbering_type& renumbering = 
-    faultSieveMesh->getRenumbering();
-  const SieveMesh::renumbering_type::const_iterator renumberingBegin = 
-    renumbering.begin();
-  const SieveMesh::renumbering_type::const_iterator renumberingEnd = 
-    renumbering.end();
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter, ++iVertex) {
-    SieveMesh::point_type meshVertex = -1;
-    bool found = false;
+  DM              faultDMMesh = fault._faultMesh->dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscInt        numPoints, vStart, vEnd;
 
-    for (SieveMesh::renumbering_type::const_iterator r_iter = renumberingBegin;
-	 r_iter != renumberingEnd;
-	 ++r_iter) {
-      if (r_iter->second == *v_iter) {
-        meshVertex = r_iter->first;
-        found = true;
-        break;
-      } // if
-    } // for
-    CPPUNIT_ASSERT(found);
-    int fiberDim = tractionsSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* tractionsVertex = tractionsSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != tractionsVertex);
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(subpointMap);
+  err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    const PetscInt meshVertex = points[v];
+    PetscInt dof, off, ddof, doff;
 
-    fiberDim = dispSection->getFiberDimension(meshVertex);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
-    const PylithScalar* dispVertex = dispSection->restrictPoint(meshVertex);
-    CPPUNIT_ASSERT(0 != dispVertex);
+    err = PetscSectionGetDof(tractionsSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(tractionsSection, v, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(dispSection, meshVertex, &ddof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispSection, meshVertex, &doff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, ddof);
+    const PylithScalar *orientationVertex = &_data->orientation[iVertex*spaceDim*spaceDim];
 
-    const PylithScalar* orientationVertex = 
-      &_data->orientation[iVertex*spaceDim*spaceDim];
-
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       PylithScalar tractionE = 0.0;
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	tractionE += orientationVertex[iDim*spaceDim+jDim] * dispVertex[jDim];
-#if 0 // DEBUGGING
-      std::cout << "vertex: " << *v_iter
-		<< ", iDim: " << iDim
-		<< ", tractionE: " << tractionE
-		<< ", traction: " << tractionsVertex[iDim]
-		<< std::endl;
-#endif
+      for(PetscInt e = 0; e < spaceDim; ++e)
+        tractionE += orientationVertex[d*spaceDim+e] * dispArray[doff+e];
       if (tractionE > 1.0) 
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsVertex[iDim]/tractionE,
-				     tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsArray[off+d]/tractionE, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsVertex[iDim],
-				     tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsArray[off+d], tolerance);
     } // for
   } // for
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
 } // testCalcTractionsChange
 
 // ----------------------------------------------------------------------
@@ -746,40 +777,47 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   splitField.allocate();
   splitField.zero();
 
-  const ALE::Obj<RealSection>& section = splitField.section();
-  CPPUNIT_ASSERT(!section.isNull());
-  CPPUNIT_ASSERT_EQUAL(spaceDim+1, section->getNumSpaces());
+  PetscSection section = splitField.petscSection();
+  Vec          vec     = splitField.localVector();
+  PetscScalar *array;
+  PetscInt     numFields, numComp;
+  PetscErrorCode err;
+  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(2, numFields);
+  err = PetscSectionGetFieldComponents(section, 0, &numComp);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(spaceDim, numFields);
+  err = PetscSectionGetFieldComponents(section, 1, &numComp);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(1, numFields);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM              dmMesh = mesh.dmMesh();
+  PetscInt        vStart, vEnd;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const int numFaultVertices = _data->numFaultVertices;
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    const int fiberDim = section->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off, fdof;
+
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
     bool isLagrangeVertex = false;
-    for (int i=0; i < numFaultVertices; ++i)
-      if (*v_iter == _data->verticesLagrange[i]) {
-	isLagrangeVertex = true;
-	break;
+    for(int i = 0; i < numFaultVertices; ++i)
+      if (v == _data->verticesLagrange[i]) {
+        isLagrangeVertex = true;
+        break;
       } // if
     if (isLagrangeVertex) {
-      for (int fibration=0; fibration < spaceDim; ++fibration)
-        CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(*v_iter, fibration));
-      const int fibrationF = spaceDim;
-      CPPUNIT_ASSERT_EQUAL(spaceDim, 
-			   section->getFiberDimension(*v_iter, fibrationF));
+      err = PetscSectionGetFieldDof(section, v, 0, &fdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(0, fdof);
+      err = PetscSectionGetFieldDof(section, v, 1, &fdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, fdof);
     } else {
-      for (int fibration=0; fibration < spaceDim; ++fibration)
-        CPPUNIT_ASSERT_EQUAL(1, section->getFiberDimension(*v_iter, fibration));
-      const int fibrationF = spaceDim;
-      CPPUNIT_ASSERT_EQUAL(0, section->getFiberDimension(*v_iter, fibrationF));
+      err = PetscSectionGetFieldDof(section, v, 0, &fdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, fdof);
+      err = PetscSectionGetFieldDof(section, v, 1, &fdof);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(0, fdof);
     } // if/else
   } // for
 } // testSplitField
