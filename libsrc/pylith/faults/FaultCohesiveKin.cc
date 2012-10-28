@@ -173,61 +173,44 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& dispRel = 
-      _fields->get("relative disp");
+    const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
-
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    const ALE::Obj<RealSection>& orientationSection = _fields->get(
-      "orientation").section();
-    assert(!orientationSection.isNull());
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      0);
-    assert(!dirSection.isNull());
+    PetscSection orientationSection = _fields->get("orientation").petscSection();
+    Vec          orientationVec     = _fields->get("orientation").localVector();
+    assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    buffer.copy(orientationSection, 0, 0, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
     return buffer;
-
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    const ALE::Obj<RealSection>& orientationSection = _fields->get(
-      "orientation").section();
-    assert(!orientationSection.isNull());
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      1);
+    PetscSection orientationSection = _fields->get("orientation").petscSection();
+    Vec          orientationVec     = _fields->get("orientation").localVector();
+    assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    buffer.copy(orientationSection, 0, 1, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
     return buffer;
-
   } else if (0 == strcasecmp("normal_dir", name)) {
-    const ALE::Obj<RealSection>& orientationSection = _fields->get(
-      "orientation").section();
-    assert(!orientationSection.isNull());
+    PetscSection orientationSection = _fields->get("orientation").petscSection();
+    Vec          orientationVec     = _fields->get("orientation").localVector();
+    assert(orientationSection);assert(orientationVec);
     const int space = (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      space);
-    assert(!dirSection.isNull());
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
-    buffer.copy(dirSection);
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
+    buffer.copy(orientationSection, 0, space, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
     return buffer;
-
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen + 1);
 
@@ -237,8 +220,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     // Need to append name of rupture to final slip label. Because
     // Field is const, we use a buffer.
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(s_iter->second->finalSlip());
     assert(value.length() > 0);
     const std::string& label = (_eqSrcs.size() > 1) ? 
@@ -255,8 +237,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     // Need to append name of rupture to final slip label. Because
     // Field is const, we use a buffer.
     _allocateBufferScalarField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (scalar)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (scalar)");
     buffer.copy(s_iter->second->slipTime());
     assert(value.length() > 0);
     const std::string& label = (_eqSrcs.size() > 1) ? 
@@ -264,16 +245,13 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.label(label.c_str());
 
     return buffer;
-
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(0 != fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
     return buffer;
-
   } else {
     std::ostringstream msg;
     msg << "Request for unknown vertex field '" << name << "' for fault '"
@@ -287,8 +265,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
 
   // Satisfy return values
   assert(0 != _fields);
-  const topology::Field<topology::SubMesh>& buffer = _fields->get(
-    "buffer (vector)");
+  const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
   return buffer;
 } // vertexField
 

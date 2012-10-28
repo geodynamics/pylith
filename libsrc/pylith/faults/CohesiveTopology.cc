@@ -998,7 +998,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   SieveMesh::renumbering_type convertRenumbering;
   DM dmFaultMesh;
 
-  ALE::ISieveConverter::convertMesh(*fault, &dmFaultMesh, convertRenumbering);
+  ALE::ISieveConverter::convertMesh(*fault, &dmFaultMesh, convertRenumbering, true);
   faultMesh->setDMMesh(dmFaultMesh);
   fault      = NULL;
   faultSieve = NULL;
@@ -1089,6 +1089,55 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   }
   err = VecRestoreArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
+
+  // Have to make subpointMap here: renumbering[original] = fault
+  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
+
+  IS        subpointMap;
+  PetscInt *renum;
+  PetscInt  pStart, pEnd;
+
+  mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+  err = DMComplexGetChart(dmFaultMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
+  assert(convertRenumbering.size() == pEnd-pStart);
+  err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
+  std::cout << std::endl;
+#if 0
+  mesh.sieveMesh()->view("Sieve Mesh");
+  err = PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);CHECK_PETSC_ERROR(err);
+  err = DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+  err = PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+#endif
+  for(SieveMesh::renumbering_type::const_iterator p_iter = convertRenumbering.begin(); p_iter != convertRenumbering.end(); ++p_iter) {
+    const PetscInt sievePoint = p_iter->first;
+    const PetscInt faultPoint = p_iter->second;
+    PetscInt       dmPoint    = -1;
+
+    if ((sievePoint >= 0) && (sievePoint < numNormalCells)) {
+      dmPoint = sievePoint;
+      //std::cout << "normal cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+    } else if ((sievePoint >= numNormalCells) && (sievePoint < numNormalCells+numNormalVertices)) {
+      dmPoint = sievePoint+numCohesiveCells;
+      //std::cout << "normal vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+    } else if ((sievePoint >= numNormalCells+numNormalVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
+      dmPoint = sievePoint+numCohesiveCells;
+      //std::cout << "extra vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+    } else if ((sievePoint >= numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices+numCohesiveCells)) {
+      dmPoint = sievePoint-numNormalVertices+numShadowVertices+numLagrangeVertices;
+      //std::cout << "extra cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+    } else {
+      //std::cout << "face sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+    }
+    renum[faultPoint] = dmPoint;
+    std::cout << "renum["<<faultPoint<<"]: "<<dmPoint<<std::endl;
+  }
+  for(PetscInt p = 1; p < pEnd-pStart; ++p) {
+    if (renum[p-1] == -1) continue;
+    assert(renum[p] > renum[p-1]);
+  }
+  err = ISCreateGeneral(faultMesh->comm(), pEnd-pStart, renum, PETSC_OWN_POINTER, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexSetSubpointMap(dmFaultMesh, subpointMap);CHECK_PETSC_ERROR(err);
 
   // Update dimensioned coordinates if they exist.
   if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
