@@ -578,8 +578,8 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   residual.complete();
 
   { // setup disp increment
-    PetscSection dispSection = fields.get("disp(t->t+dt)").petscSection();
-    Vec          dispVec     = fields.get("disp(t->t+dt)").localVector();
+    PetscSection dispSection = fields.get("dispIncr(t->t+dt)").petscSection();
+    Vec          dispVec     = fields.get("dispIncr(t->t+dt)").localVector();
     PetscScalar *dispArray;
     CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
     int iVertex = 0;
