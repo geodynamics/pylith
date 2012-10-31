@@ -572,7 +572,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #endif
     // TODO: Need to reform the material label when sieve is reallocated
     sieveMesh->setValue(material, firstFaultCell, materialId);
-    err = DMComplexSetLabelValue(complexMesh, "material-id", firstFaultCellDM, materialId);CHECK_PETSC_ERROR(err);
+    err = DMComplexSetLabelValue(newMesh, "material-id", firstFaultCellDM, materialId);CHECK_PETSC_ERROR(err);
     logger.stagePop();
     logger.stagePush("SerialFaultStratification");
 #if defined(FAST_STRATIFY)
