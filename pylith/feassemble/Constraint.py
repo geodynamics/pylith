@@ -32,7 +32,6 @@ def implementsConstraint(obj):
               "initialize",
               "setConstraintSizes",
               "setConstraints",
-              "useSolnIncr",
               "setField",
               "poststep",
               "writeData",
