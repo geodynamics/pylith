@@ -25,6 +25,7 @@
 #include "petsc.h" // USES PetscLogFlops
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 
 #include <cassert> // USES assert()
 
@@ -365,6 +366,44 @@ pylith::feassemble::GeometryHex3D::jacobian(PylithScalar* jacobian,
 
   PetscLogFlops(78 + npts*69);
 } // jacobian
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryHex3D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  const int numCorners = 8;
+  const int spaceDim = 3;
+  assert(numCorners*spaceDim == coordinatesCell.size());
+
+  const int numEdges = 12;
+  const int edges[numEdges][2] = {
+    {0, 1}, {1, 2}, {2, 3}, {3, 0},
+    {4, 5}, {5, 6}, {6, 7}, {7, 0},
+    {0, 4}, {1, 5}, {2, 6}, {3, 7},
+  };
+
+  PylithScalar minWidth = PYLITH_MAXSCALAR;
+  for (int iedge=0; iedge < numEdges; ++iedge) {
+    const int iA = edges[iedge][0];
+    const int iB = edges[iedge][1];
+    const PylithScalar xA = coordinatesCell[spaceDim*iA  ];
+    const PylithScalar yA = coordinatesCell[spaceDim*iA+1];
+    const PylithScalar zA = coordinatesCell[spaceDim*iA+2];
+    const PylithScalar xB = coordinatesCell[spaceDim*iB  ];
+    const PylithScalar yB = coordinatesCell[spaceDim*iB+1];
+    const PylithScalar zB = coordinatesCell[spaceDim*iB+2];
+    
+    const PylithScalar edgeLen = sqrt(pow(xB-xA,2) + pow(yB-yA,2) + pow(zB-zA,2));
+    if (edgeLen < minWidth) {
+      minWidth = edgeLen;
+    } // if
+  } // for
+
+  PetscLogFlops(numEdges*9);
+
+  return minWidth;
+} // minCellWidth
 
 
 // End of file

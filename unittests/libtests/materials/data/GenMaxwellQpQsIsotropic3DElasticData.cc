@@ -47,6 +47,8 @@ const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_den
 
 const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dtStableImplicit =   8.88888889e+05;
 
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_dtStableExplicit =   1.92450090e-01;
+
 const int pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::_numPropertyValues[] = {
 1,
 1,
@@ -570,6 +572,7 @@ pylith::materials::GenMaxwellQpQsIsotropic3DElasticData::GenMaxwellQpQsIsotropic
   pressureScale = _pressureScale;
   densityScale = _densityScale;
   dtStableImplicit = _dtStableImplicit;
+  dtStableExplicit = _dtStableExplicit;
   numPropertyValues = const_cast<int*>(_numPropertyValues);
   numStateVarValues = const_cast<int*>(_numStateVarValues);
   dbPropertyValues = const_cast<char**>(_dbPropertyValues);

@@ -213,6 +213,7 @@ class GenMaxwellIsotropic3DTimeDep(ElasticMaterialApp):
                                                initialStressB, initialStrainB,
                                                stateVarsB)
     self.dtStableImplicit = 0.2*min(min(maxwellTimeA), min(maxwellTimeB))
+    self.dtStableExplicit = 1000.0 / vpA
 
     return
 

@@ -19,7 +19,6 @@ SimpleDB {
 // Columns are
 // (1) x coordinate (km)
 // (2) y coordinate (km)
-// (3) reverse-slip (cm)
-// (4) fault-opening (cm)
+// (3) slip (m)
 0.0  +18.0   -1.0
 0.0  +18.1    0.0

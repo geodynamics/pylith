@@ -1,0 +1,113 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_powerlawplanestrain_hh)
+#error "PowerLawPlaneStrain.icc can only be included from PowerLawPlaneStrain.hh"
+#endif
+
+#include <cassert> // USES assert()
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
+
+// Set current time step.
+inline
+void
+pylith::materials::PowerLawPlaneStrain::timeStep(const PylithScalar dt) {
+  // Not sure what to do here.  If we are using full Newton the Jacobian will
+  // always need reforming, but SNES may opt not to reform it sometimes.
+  _needNewJacobian = true;
+  _dt = dt;
+} // timeStep
+
+// Compute stress tensor from parameters.
+inline
+void
+pylith::materials::PowerLawPlaneStrain::_calcStress(
+					PylithScalar* const stress,
+					const int stressSize,
+					const PylithScalar* properties,
+					const int numProperties,
+					const PylithScalar* stateVars,
+					const int numStateVars,
+					const PylithScalar* totalStrain,
+					const int strainSize,
+					const PylithScalar* initialStress,
+					const int initialStressSize,
+					const PylithScalar* initialStrain,
+					const int initialStrainSize,
+					const bool computeStateVars)
+{
+  assert(0 != _calcStressFn);
+  CALL_MEMBER_FN(*this, _calcStressFn)(stress, stressSize, 
+				       properties, numProperties,
+				       stateVars, numStateVars,
+				       totalStrain, strainSize,
+				       initialStress, initialStressSize,
+				       initialStrain, initialStrainSize,
+				       computeStateVars);
+} // _calcStress
+
+// Compute derivatives of elasticity matrix from parameters.
+inline
+void
+pylith::materials::PowerLawPlaneStrain::_calcElasticConsts(
+					PylithScalar* const elasticConsts,
+					const int numElasticConsts,
+					const PylithScalar* properties,
+					const int numProperties,
+					const PylithScalar* stateVars,
+					const int numStateVars,
+					const PylithScalar* totalStrain,
+					const int strainSize,
+					const PylithScalar* initialStress,
+					const int initialStressSize,
+					const PylithScalar* initialStrain,
+					const int initialStrainSize)
+{
+  assert(0 != _calcElasticConstsFn);
+  CALL_MEMBER_FN(*this, _calcElasticConstsFn)(elasticConsts, numElasticConsts,
+					      properties, numProperties,
+					      stateVars, numStateVars,
+					      totalStrain, strainSize,
+					      initialStress, initialStressSize,
+					      initialStrain, initialStrainSize);
+} // _calcElasticConsts
+
+// Update state variables after solve.
+inline
+void
+pylith::materials::PowerLawPlaneStrain::_updateStateVars(
+					PylithScalar* const stateVars,
+					const int numStateVars,
+					const PylithScalar* properties,
+					const int numProperties,
+					const PylithScalar* totalStrain,
+					const int strainSize,
+					const PylithScalar* initialStress,
+					const int initialStressSize,
+					const PylithScalar* initialStrain,
+					const int initialStrainSize)
+{
+  assert(0 != _updateStateVarsFn);
+  CALL_MEMBER_FN(*this, _updateStateVarsFn)(stateVars, numStateVars,
+					     properties, numProperties,
+					     totalStrain, strainSize,
+					     initialStress, initialStressSize,
+					     initialStrain, initialStrainSize);
+} // _updateStateVars
+
+// End of file 

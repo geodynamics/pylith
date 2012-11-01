@@ -57,9 +57,10 @@ private:
   static const int _numVertices; ///< Number of vertices.
   static const FieldStruct _vertexFields[]; ///< Array of vertex fields.
 
-  static const PylithScalar _vertexField0[]; ///< Values for vertex field 0.
-  static const PylithScalar _vertexField1[]; ///< Values for vertex field 1.
-  static const PylithScalar _vertexField2[]; ///< Values for vertex field 2.
+  static const PylithScalar _vertexFieldScalar[]; ///< Values for scalar vertex field.
+  static const PylithScalar _vertexFieldVector[]; ///< Values for vector vertex field .
+  static const PylithScalar _vertexFieldTensor[]; ///< Values for tensor vertex field.
+  static const PylithScalar _vertexFieldOther[]; ///< Values for other vertex field.
   //@}
 
   /// @name Cell field information.
@@ -68,9 +69,10 @@ private:
   static const int _numCells; ///< Number of cells.
   static const FieldStruct _cellFields[]; ///< Array of cell fields.
 
-  static const PylithScalar _cellField0[]; ///< Values for cell field 0.
-  static const PylithScalar _cellField1[]; ///< Values for cell field 1.
-  static const PylithScalar _cellField2[]; ///< Values for cell field 2.
+  static const PylithScalar _cellFieldScalar[]; ///< Values for scalar cell field.
+  static const PylithScalar _cellFieldVector[]; ///< Values for vector cell field.
+  static const PylithScalar _cellFieldTensor[]; ///< Values for tensor cell field.
+  static const PylithScalar _cellFieldOther[]; ///< Values for other cell field.
   //@}
 
 }; // DataWriterHDF5DataMatMeshQuad4

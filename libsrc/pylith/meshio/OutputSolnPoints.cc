@@ -101,7 +101,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
     pointsNondim[i] = points[i] / normalizer.lengthScale();
   } // for
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   std::cout << "OUTPUT SOLN POINTS (dimensioned)" << std::endl;
   for (int i=0; i < numPoints; ++i) {
     for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -172,7 +172,7 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   ALE::OverlapBuilder<>::constructOverlap(emptyPoints, emptyRenumbering, sendOverlap, recvOverlap);
   _pointsMesh->sieveMesh()->setCalculatedOverlap(true);
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   _pointsMesh->view("POINTS MESH");
 #endif
 
@@ -257,12 +257,12 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
     _fields->get("buffer (interpolated)");
   if (fieldInterp.section().isNull() || vertices->size()*fiberDim != fieldInterp.sectionSize()) {
     fieldInterp.newSection(vertices, fiberDim);
-    fieldInterp.label(field.label());
     fieldInterp.allocate();
   } // if
   logger.stagePop();
 
   fieldInterp.zero();
+  fieldInterp.label(field.label());
   fieldInterp.vectorFieldType(field.vectorFieldType());
   fieldInterp.scale(field.scale());
 

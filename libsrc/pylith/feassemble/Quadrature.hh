@@ -135,7 +135,7 @@ public :
   /// Deallocate temporary storage.
   void clear(void);
 
-  /** Precompute geometric quantities for each cell.
+  /** Compute geometric quantities for cell.
    *
    * @param coordinatesCell Coordinates of vertices in cell.
    * @param cell Finite-element cell

@@ -44,13 +44,16 @@ class TimeDependent(Problem):
     ## Python object for managing TimeDependent facilities and properties.
     ##
     ## \b Properties
-    ## None
+    ## @li \b elastic_prestep Include a static calculation with elastic behavior before time stepping.
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
     ## @li \b checkpoint Checkpoint manager.
 
     import pyre.inventory
+
+    elasticPrestep = pyre.inventory.bool("elastic_prestep", default=True)
+    elasticPrestep.meta['tip'] = "Include a static calculation with elastic behavior before time stepping."
 
     from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
@@ -128,6 +131,42 @@ class TimeDependent(Problem):
       self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
+    # Elastic prestep
+    if self.elasticPrestep:
+      if 0 == comm.rank:
+        self._info.log("Preparing for prestep with elastic behavior.")
+      self._eventLogger.stagePush("Prestep")
+
+      t = self.formulation.getStartTime()
+      dt = self.formulation.getTimeStep()
+      t -= dt
+
+      # Limit material behavior to elastic regime
+      for material in self.materials.components():
+        material.useElasticBehavior(True)
+
+      self.formulation.prestepElastic(t, dt)
+      self._eventLogger.stagePop()
+
+      if 0 == comm.rank:
+        self._info.log("Computing prestep with elastic behavior.")
+      self._eventLogger.stagePush("Step")
+      self.formulation.step(t, dt)
+      self._eventLogger.stagePop()
+
+      if 0 == comm.rank:
+        self._info.log("Finishing prestep with elastic behavior.")
+      self._eventLogger.stagePush("Poststep")
+      self.formulation.poststep(t, dt)
+      self._eventLogger.stagePop()
+
+
+    # Allow inelastic behavior
+    for material in self.materials.components():
+      material.useElasticBehavior(False)
+
+
+    # Normal time loop
     t = self.formulation.getStartTime()
     timeScale = self.normalizer.timeScale()
     while t < self.formulation.getTotalTime():
@@ -197,6 +236,7 @@ class TimeDependent(Problem):
     Set members based using inventory.
     """
     Problem._configure(self)
+    self.elasticPrestep = self.inventory.elasticPrestep
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return

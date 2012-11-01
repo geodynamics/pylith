@@ -44,8 +44,7 @@ public:
 
   /// @name Calculated values.
   //@{
-  PylithScalar* valsResidualLumped; ///< Expected values from residual calculation (lumped Jacobian).
-  PylithScalar* valsJacobianLumped; ///< Expected values from lumped Jacobian calculation.
+  PylithScalar dtStableExplicit; ///< Stable time step for explicit time integration.
   //@}
 };
 

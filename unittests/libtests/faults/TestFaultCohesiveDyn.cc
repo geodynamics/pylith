@@ -233,6 +233,11 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+  
+  topology::Field<topology::Mesh>& solution = fields.solution();
+  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  solution += dispIncrAdj;
+
   fault.updateStateVars(t, &fields);
 
   { // Check solution values
@@ -352,6 +357,11 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+
+  topology::Field<topology::Mesh>& solution = fields.solution();
+  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  solution += dispIncrAdj;
+
   fault.updateStateVars(t, &fields);
 
   { // Check solution values
@@ -477,6 +487,11 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
+
+  topology::Field<topology::Mesh>& solution = fields.solution();
+  const topology::Field<topology::Mesh>& dispIncrAdj = fields.get("dispIncr adjust");
+  solution += dispIncrAdj;
+
   fault.updateStateVars(t, &fields);
 
   //residual.view("RESIDUAL"); // DEBUGGING
@@ -780,6 +795,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   fields->add("disp(t)", "displacement");
   fields->add("dispIncr(t->t+dt)", "displacement_increment");
   fields->add("velocity(t)", "velocity");
+  fields->add("dispIncr adjust", "dispIncr_adjust");
   fields->solutionName("dispIncr(t->t+dt)");
   
   const int spaceDim = _data->spaceDim;

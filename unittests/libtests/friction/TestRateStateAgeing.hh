@@ -43,7 +43,7 @@ class pylith::friction::TestRateStateAgeing : public TestFrictionModel
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestRateStateAgeing );
 
-  CPPUNIT_TEST( testMinSlipRate );
+  CPPUNIT_TEST( testLinearSlipRate );
   CPPUNIT_TEST( testPropertiesMetadata );
   CPPUNIT_TEST( testStateVarsMetadata );
   CPPUNIT_TEST( testDBToProperties );
@@ -64,8 +64,8 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Test floor for minimum slip rate.
-  void testMinSlipRate(void);
+  /// Test cutoff for linear slip rate.
+  void testLinearSlipRate(void);
   
   /// Test properties metadata.
   void testPropertiesMetadata(void);

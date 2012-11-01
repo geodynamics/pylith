@@ -101,7 +101,8 @@ class FaultCohesiveImpulses(FaultCohesive, Integrator, ModuleFaultCohesiveImpuls
     self.availableFields = \
         {'vertex': \
            {'info': ["normal_dir",
-                     "impulse_amplitude"],
+                     "impulse_amplitude",
+                     "area",],
             'data': ["slip",
                      "traction_change"]},
          'cell': \

@@ -393,6 +393,57 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 } // testStableTimeStepImplicit
 
 // ----------------------------------------------------------------------
+// Test calcStableTimeStepExplicit()
+void
+pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
+{ // testStableTimeStepExplicit
+  topology::Mesh mesh;
+  ElasticStrain1D material;
+  ElasticStrain1DData data;
+  _initialize(&mesh, &material, &data);
+
+  // Get cells associated with material
+  const int materialId = 24;
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::label_sequence>& cells = 
+    sieveMesh->getLabelStratum("material-id", materialId);
+  SieveMesh::point_type cell = *cells->begin();
+
+  // Setup quadrature
+  feassemble::Quadrature<topology::Mesh> quadrature;
+  feassemble::GeometryLine1D geometry;
+  quadrature.refGeometry(&geometry);
+  const int cellDim = 1;
+  const int numCorners = 3;
+  const int numQuadPts = 2;
+  const int spaceDim = 1;
+  const PylithScalar basis[] = { 0.455, -0.122, 0.667, -0.122, 0.455, 0.667 };
+  const PylithScalar basisDeriv[] = { 
+    -1.07735027e+00,
+    -7.73502692e-02,
+    1.15470054e+00,
+    7.73502692e-02,
+    1.07735027e+00,
+    -1.15470054e+00,
+  };
+  const PylithScalar quadPtsRef[] = { -0.577350269, 0.577350269 };
+  const PylithScalar quadWts[] = { 1.0, 1.0  };
+  quadrature.initialize(basis, numQuadPts, numCorners,
+			basisDeriv, numQuadPts, numCorners, cellDim,
+			quadPtsRef, numQuadPts, cellDim,
+			quadWts, numQuadPts,
+			spaceDim);
+
+  material.retrievePropsAndVars(cell);
+  const PylithScalar dt = material.stableTimeStepExplicit(mesh, &quadrature);
+
+  const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar dtE = data.dtStableExplicit / 1000.0 * 2.0;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+} // testStableTimeStepExplicit
+
+// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::materials::TestElasticMaterial::setUp(void)
@@ -635,7 +686,7 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 // Test _stableTimeStepImplicit()
 void
 pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
-{ // _testCalcDensity
+{ // test_stableTimeStepImplicit
   CPPUNIT_ASSERT(0 != _matElastic);
   CPPUNIT_ASSERT(0 != _dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -648,7 +699,30 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 
   const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
-} // _testStableTimeStepImplicit
+} // test_stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
+// Test _stableTimeStepExplicit()
+void
+pylith::materials::TestElasticMaterial::test_stableTimeStepExplicit(void)
+{ // test_stableTimeStepExplicit
+  CPPUNIT_ASSERT(0 != _matElastic);
+  CPPUNIT_ASSERT(0 != _dataElastic);
+  const ElasticMaterialData* data = _dataElastic;
+
+  const PylithScalar minCellWidth = 1000.0;
+
+  const PylithScalar dt =
+    _matElastic->_stableTimeStepExplicit(data->properties, data->numPropsQuadPt,
+					 data->stateVars, data->numVarsQuadPt,
+					 minCellWidth);
+
+  const PylithScalar dtE = data->dtStableExplicit;
+
+  const PylithScalar tolerance = 1.0e-06;
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(dtE, dt, tolerance); // TEMPORARY
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+} // test_stableTimeStepExplicit
 
 // ----------------------------------------------------------------------
 // Setup nondimensionalization.

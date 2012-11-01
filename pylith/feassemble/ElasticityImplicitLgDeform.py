@@ -62,6 +62,13 @@ class ElasticityImplicitLgDeform(IntegratorElasticityLgDeform,
     return
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _verifyConfiguration(self):
+    ModuleElasticityImplicitLgDeform.verifyConfiguration(self, self.mesh)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():

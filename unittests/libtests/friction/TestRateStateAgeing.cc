@@ -38,18 +38,18 @@ pylith::friction::TestRateStateAgeing::setUp(void)
 } // setUp
 
 // ----------------------------------------------------------------------
-// Test floor for minimum slip rate.
+// Test cutoff for linear slip rate.
 void
-pylith::friction::TestRateStateAgeing::testMinSlipRate(void)
-{ // testMinSlipRate
+pylith::friction::TestRateStateAgeing::testLinearSlipRate(void)
+{ // testLinearSlipRate
   RateStateAgeing model;
 
-  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-12), model._minSlipRate); // default
+  CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0e-12), model._linearSlipRate); // default
 
   const PylithScalar value = 1.0e-20;
-  model.minSlipRate(value);
-  CPPUNIT_ASSERT_EQUAL(value, model._minSlipRate);
-} // testMinSlipRate
+  model.linearSlipRate(value);
+  CPPUNIT_ASSERT_EQUAL(value, model._linearSlipRate);
+} // testLinearSlipRate
   
 // ----------------------------------------------------------------------
 // Test properties metadata.

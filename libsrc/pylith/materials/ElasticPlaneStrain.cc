@@ -311,9 +311,9 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
 // ----------------------------------------------------------------------
 // Get stable time step for implicit time integration.
 PylithScalar
-pylith::materials::ElasticPlaneStrain::stableTimeStepImplicit(
-					const topology::Mesh& mesh) {
-  return pylith::PYLITH_MAXSCALAR;
+pylith::materials::ElasticPlaneStrain::stableTimeStepImplicit(const topology::Mesh& mesh,
+							      topology::Field<topology::Mesh>* field) {
+  return ElasticMaterial::_stableTimeStepImplicitMax(mesh, field);
 }
 
 // ----------------------------------------------------------------------
@@ -327,6 +327,30 @@ pylith::materials::ElasticPlaneStrain::_stableTimeStepImplicit(
 { // _stableTimeStepImplicit
   return pylith::PYLITH_MAXSCALAR;
 } // _stableTimeStepImplicit
+
+
+// ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::ElasticPlaneStrain::_stableTimeStepExplicit(const PylithScalar* properties,
+							       const int numProperties,
+							       const PylithScalar* stateVars,
+							       const int numStateVars,
+							       const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
 
 
 // End of file 

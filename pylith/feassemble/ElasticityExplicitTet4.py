@@ -60,6 +60,13 @@ class ElasticityExplicitTet4(IntegratorElasticity, ModuleElasticityExplicitTet4)
     return
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _verifyConfiguration(self):
+    ModuleElasticityExplicitTet4.verifyConfiguration(self, self.mesh)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():

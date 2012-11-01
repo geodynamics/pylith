@@ -136,7 +136,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   } // else
   for (int i=0; i < nfields; ++i) {
     MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
-    field.view("FIELD");
+    // field.view("FIELD"); // DEBUGGING
     output.appendVertexField(t, field, *_mesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
     CPPUNIT_ASSERT(false == writer._wroteCellHeader);
@@ -145,7 +145,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   output.close();
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
-  
+
   checkFile(_data->vertexFilename, t, _data->timeFormat);
 } // testWriteVertexField
 

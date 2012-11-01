@@ -167,7 +167,8 @@ class DruckerPrager3DElastic(ElasticMaterialApp):
         self._calcStress(strainB, muB, lambdaB, \
                            initialStressB, initialStrainB)
 
-    self.dtStableImplicit = 1.0e10
+    self.dtStableImplicit = 1.0e+10
+    self.dtStableExplicit = 1000.0 / vpA
 
     plasticStrainUpdated = numpy.zeros((numLocs, tensorSize),
                                        dtype=numpy.float64)

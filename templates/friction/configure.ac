@@ -48,7 +48,14 @@ CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
 AC_PROG_SWIG(1.3.33)
 
+# PETSC (dictates precision)
+AC_LANG(C++)
+CIT_PATH_PETSC([3.3.0])
+CIT_HEADER_PETSC
+
 # PYLITH
+pylith_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$PETSC_CC_INCLUDES $CPPFLAGS"
 AC_LANG(C++)
 AC_CHECK_HEADER([pylith/friction/FrictionModel.hh], [], [
   AC_MSG_ERROR([PyLith FrictionModel header not found; try CPPFLAGS="-I<PyLith include dir>"])
@@ -70,7 +77,7 @@ else
   AC_CHECK_FILE([friction/FrictionModel.i], [], [
     AC_MSG_ERROR([PyLith FrictionModel.i SWIG interface file not found; Try setting PYLITH_SWIG_DIR=<directory containing friction/FrictionModel.i>])])
 fi
-
+CPPFLAGS=$pylith_save_CPPFLAGS
 
 # ENDIANNESS
 AC_C_BIGENDIAN

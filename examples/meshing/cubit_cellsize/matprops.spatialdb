@@ -1,0 +1,29 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies a piecewise linear depth variation
+// in the material properties.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3 // number of material property values
+  value-names =  density vs vp // names of the material property values
+  value-units =  kg/m**3  m/s  m/s // units
+  num-locs = 4 // number of locations
+  data-dim = 1
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0e+3  // use km
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) density (kg/m^3)
+// (5) vs (m/s)
+// (6) vp (m/s)
+0.0  0.0   0.0   2500.0   2000.0  4874.8
+0.0  0.0 -10.0   2800.0   3000.0  6306.8
+0.0  0.0 -30.0   2900.0   3500.0  6321.9
+0.0  0.0 -50.0   2950.0   3500.0  6321.9

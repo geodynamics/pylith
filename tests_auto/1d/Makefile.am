@@ -17,8 +17,10 @@
 #
 
 SUBDIRS = \
-	line2 \
-	line3
+	line2
+
+
+#	line3 (disable until higher order with 2 vertices works)
 
 
 # End of file 

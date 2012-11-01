@@ -21,20 +21,23 @@
 ## @brief Check physical properties output from PyLith.
 
 import numpy
+import h5py
 
 def check_properties(testcase, filename, mesh, properties):
   """
   Check properties.
   """
-  data = testcase.reader.read(filename)
+  h5 = h5py.File(filename, "r", driver="sec2")
   
   # Check cells
-  (ncells, ncorners) = data['cells'].shape
+  cells = h5['topology/cells'][:]
+  (ncells, ncorners) = cells.shape
   testcase.assertEqual(mesh['ncells'], ncells)
   testcase.assertEqual(mesh['ncorners'], ncorners)
 
   # Check vertices
-  (nvertices, spaceDim) = data['vertices'].shape
+  vertices = h5['geometry/vertices'][:]
+  (nvertices, spaceDim) = vertices.shape
   testcase.assertEqual(mesh['nvertices'], nvertices)
   testcase.assertEqual(mesh['spaceDim'], spaceDim)
 
@@ -43,7 +46,7 @@ def check_properties(testcase, filename, mesh, properties):
 
   for name in properties.keys():
     propertyE = properties[name]
-    property = data['cell_fields'][name]
+    property = h5['cell_fields/%s' % name][:]
     ratio = numpy.abs(1.0 - property[:]/propertyE[:,0])
     diff = numpy.abs(property[:] - propertyE[:,0])
     mask = propertyE[:,0] != 0.0
@@ -52,8 +55,9 @@ def check_properties(testcase, filename, mesh, properties):
       print "Error in values for physical property '%s'." % name
       print "Expected values:",propertyE
       print "Output values:",property
-    testcase.assertEqual(numpy.sum(okay), ncells)
+    testcase.assertEqual(ncells, numpy.sum(okay))
 
+  h5.close()
   return
 
 

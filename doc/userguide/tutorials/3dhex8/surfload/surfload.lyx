@@ -93,6 +93,10 @@ Dirichlet boundary conditions
 Elastic material
 \end_layout
 
+\begin_layout Itemize
+Output of solution at user-defined locations
+\end_layout
+
 \begin_layout Subsubsection
 Overview
 \end_layout
@@ -103,6 +107,8 @@ This set of examples describes a set of problems for PyLith involving surface
  The first example demonstrates the use of a surface load in a static problem,
  and the second example demonstates how to apply a cyclic load in a quasi-static
  problem.
+ The second problem also includes output of the solution at user-defined
+ locations.
  All of the examples are contained in the directory 
 \family typewriter
 examples/3d/hex8
@@ -147,7 +153,7 @@ stepXX.cfg
 \end_layout
 
 \begin_layout Subsubsection
-Step18 - Static surface load
+Step18 - Static Surface Load
 \end_layout
 
 \begin_layout Standard
@@ -325,9 +331,9 @@ examples/3d/hex8/output
 \family default
  (all with a prefix of 
 \family typewriter
-step1
+step18
 \family default
-8).
+).
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -383,7 +389,7 @@ name "fig:step18-displ"
 \end_layout
 
 \begin_layout Subsubsection
-Step19 - Time-dependent surface load
+Step19 - Time-Dependent Surface Load
 \end_layout
 
 \begin_layout Standard
@@ -465,9 +471,9 @@ examples/3d/hex8/output
 \family default
  (all with a prefix of 
 \family typewriter
-step1
+step19
 \family default
-9).
+).
  Results using ParaView are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -476,6 +482,29 @@ reference "fig:step19-stress-t200"
 \end_inset
 
 .
+ We also output the solution at user-defined locations, which are given
+ in the file 
+\family typewriter
+output_points.txt.
+
+\family default
+ See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:output:points"
+
+\end_inset
+
+ for a discussion of the output parameters.
+ This type of output is designed for comparison against observations and
+ inversions and output via HDF5 files (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:HDF5/Xdmf-Output"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -502,7 +531,7 @@ status open
 \begin_layout Plain Layout
 Stress field (zz-component) for example step19 at t = 200 years visualized
  using ParaView.
- The stresses appear as 4 layers since we have used 
+ The stresses appear as four layers since we have used 
 \family typewriter
 CellFilterAvgMesh
 \family default

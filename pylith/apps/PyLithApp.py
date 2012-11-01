@@ -39,7 +39,7 @@ class PyLithApp(PetscApplication):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b initialize_only Stop simulation after initializing problem.
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -47,6 +47,9 @@ class PyLithApp(PetscApplication):
     ## @li \b petsc Manager for PETSc options
 
     import pyre.inventory
+
+    initializeOnly = pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.topology.MeshImporter import MeshImporter
     mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator",
@@ -115,6 +118,10 @@ class PyLithApp(PetscApplication):
 
     self._eventLogger.stagePop()
 
+    # If initializing only, stop before running problem
+    if self.initializeOnly:
+      return
+
     # Run problem
     self.problem.run(self)
     self._debug.log(resourceUsageString())
@@ -141,6 +148,7 @@ class PyLithApp(PetscApplication):
     Setup members using inventory.
     """
     PetscApplication._configure(self)
+    self.initializeOnly = self.inventory.initializeOnly
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     self.perfLogger = self.inventory.perfLogger

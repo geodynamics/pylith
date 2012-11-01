@@ -57,6 +57,7 @@ class pylith::materials::TestElasticIsotropic3D : public TestElasticMaterial
   CPPUNIT_TEST( test_calcElasticConsts );
   CPPUNIT_TEST( test_updateStateVars );
   CPPUNIT_TEST( test_stableTimeStepImplicit );
+  CPPUNIT_TEST( test_stableTimeStepExplicit );
 
   CPPUNIT_TEST( testHasProperty );
   CPPUNIT_TEST( testHasStateVar );

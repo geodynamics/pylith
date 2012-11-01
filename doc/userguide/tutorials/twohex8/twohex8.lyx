@@ -237,54 +237,80 @@ pylithapp.cfg
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.materials]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 material = pylith.materials.MaxwellIsotropic3D
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
  
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 label = viscoelastic material
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 id = 1
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
  
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db = spatialdata.spatialdb.UniformDB
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db.values = [vp,vs,density,viscosity]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 db.data = [5773.502691896258*m/s, 3333.333333333333*m/s, 2700.0*kg/m**3, 1.0e18*Pa*s]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
  
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 quadrature.cell = pylith.feassemble.FIATLagrange
 \end_layout
 
 \begin_layout LyX-Code
+
+\size small
 quadrature.cell.dimension = 3
 \end_layout
 
@@ -330,9 +356,9 @@ axialdisp.spatialdb
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default
@@ -471,7 +497,7 @@ density
 maxwell_time
 \family default
 ).
- If the problem ran correctly, you should be able to generate a figure such
+ If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -566,9 +592,9 @@ sheardisp.spatialdb
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default
@@ -716,9 +742,9 @@ twohex8.mesh
 pylithapp.timedependent.bc.x_pos Defines which degrees of freedom are being
  constrained (x, y, and z), gives the label (
 \family typewriter
-x_
+x_pos
 \family default
-pos, defined in 
+, defined in 
 \family typewriter
 twohex8.mesh
 \family default
@@ -763,28 +789,23 @@ dislocation_sliptime.spatialdb
 .
  The files containing common information (
 \family typewriter
-\size small
-twohex8.mesh
+twohex8.mesh,
 \family default
-, 
+\size small
+ 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
+
+\size default
 pylithapp.cfg
 \family default
-\size default
 ) along with the problem-specific files (
 \family typewriter
-\size small
-dislocation.cfg
+dislocation.cfg, dislocation_slip.spatialdb, dislocation_sliptime.spatialdb
 \family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-\size default
 ) provide a complete description of the problem, and we can then run this
  example by typing
 \end_layout

@@ -47,7 +47,7 @@ class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "k", "density",
+           {'info': ["mu", "k", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "shear_ratio", 
                      "bulk_ratio",
                      "maxwell_time_shear",
@@ -56,7 +56,7 @@ class GenMaxwellQpQsIsotropic3D(ElasticMaterial, ModuleGenMaxwellQpQsIsotropic3D
                      "viscous_deviatoric_strain", 
                      "viscous_mean_strain", 
                      ]}}
-    self._loggingPrefix = "MaMx3D "
+    self._loggingPrefix = "MaGQ3D "
     return
 
 

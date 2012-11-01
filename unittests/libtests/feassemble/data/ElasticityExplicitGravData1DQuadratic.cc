@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_matLabel
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_dtStableExplicit =   3.75000000e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_gravityVec[] = {
  -1.00000000e+08,
 };
@@ -109,30 +111,12 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_f
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_valsResidual[] = {
- -3.36995833e+10,
-  5.15107292e+10,
- -5.80377708e+11,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_valsJacobian[] = {
-  6.25000000e+06,
- -3.12500000e+06,
-  6.25000000e+06,
- -3.12500000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  6.25000000e+06,
-  2.50000000e+07,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_valsResidualLumped[] = {
  -3.36936458e+10,
   5.15166667e+10,
  -5.80389583e+11,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData1DQuadratic::_valsJacobian[] = {
   9.37500000e+06,
   9.37500000e+06,
   3.75000000e+07,
@@ -151,6 +135,7 @@ pylith::feassemble::ElasticityExplicitGravData1DQuadratic::ElasticityExplicitGra
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
@@ -164,8 +149,6 @@ pylith::feassemble::ElasticityExplicitGravData1DQuadratic::ElasticityExplicitGra
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitGravData1DQuadratic::~ElasticityExplicitGravData1DQuadratic(void)

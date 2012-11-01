@@ -54,8 +54,7 @@ class ElasticityLgDeformExplicitApp(ElasticityLgDeformApp,
     self._collectData()
     self._calculateResidual()
     self._calculateJacobian()
-    self._calculateResidualLumped()
-    self._calculateJacobianLumped()
+    self._calcDtStable()
     self._initData()
     self.data.write(self.name)
     return

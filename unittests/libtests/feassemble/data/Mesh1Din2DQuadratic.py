@@ -52,6 +52,9 @@ class Mesh1Din2DQuadratic(Component):
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     self.verticesRef = numpy.array([[-1.0], [1.0], [0.0]], dtype=numpy.float64)
+
+    self.minCellWidth = ((self.vertices[1][0]-self.vertices[0][0])**2 + \
+                          (self.vertices[1][1]-self.vertices[0][1])**2)**0.5
     return
   
 

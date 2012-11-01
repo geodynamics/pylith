@@ -289,6 +289,31 @@ class Implicit(Formulation, ModuleImplicit):
     return
 
 
+  def prestepElastic(self, t, dt):
+    """
+    Hook for doing stuff before advancing time step.
+    """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    
+    if 0 == comm.rank:
+      self._info.log("Setting constraints.")
+    disp = self.fields.get("dispIncr(t->t+dt)")
+    disp.zero()
+    for constraint in self.constraints:
+      constraint.setField(t+dt, disp)
+
+    needNewJacobian = False
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.timeStep(dt)
+      if integrator.needNewJacobian():
+        needNewJacobian = True
+    if needNewJacobian:
+      self._reformJacobian(t, dt)
+
+    return
+
+
   def finalize(self):
     """
     Cleanup after time stepping.

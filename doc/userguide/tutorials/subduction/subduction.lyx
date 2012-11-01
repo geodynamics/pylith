@@ -148,7 +148,7 @@ Plane Maxwell linear viscoelastic material
 \end_layout
 
 \begin_layout Itemize
-Kinematic fault interface conditions
+Prescribed slip
 \end_layout
 
 \begin_deeper
@@ -169,6 +169,20 @@ Spatially variable aseismic creep
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+Afterslip via fault friction
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Static fault rupture
+\end_layout
+
+\begin_layout Itemize
+Static friction
+\end_layout
+
+\end_deeper
 \begin_layout Standard
 All of the files necessary to run the examples are contained in the directory
  
@@ -182,7 +196,7 @@ Overview
 
 \begin_layout Standard
 This tutorial examines quasi-static interseismic and coseismic deformation
- in 2-D for a subduction zone (see Figure 
+ in 2D for a subduction zone (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:tutorial:subduction:overview"
@@ -202,7 +216,8 @@ reference "fig:tutorial:subduction:steps"
  Step 1 focuses on the coseismic slip, Step 2 focuses on interseismic deformatio
 n, and Step 3 combines the two into a pseudo-earthquake cycle deformation
  simulation.
- 
+ Step 4 focuses on using the change in tractions from Step 1 to construct
+ a simulation with afterslip controlled by frictional sliding.
 \end_layout
 
 \begin_layout Standard
@@ -383,9 +398,20 @@ We construct the mesh in CUBIT by constructing the geometry, prescribing
  An appendix in the CUBIT documentation discusses the features available
  with APREPRO in CUBIT.
  The CUBIT commands are in three separate journal files.
- The main driver is in the journal file mesh_tri3.jou.
- It calls the journal file geometry.jou to construct the geometry and createbc.jou
- to setup the groups associated with boundary conditions and materials.
+ The main driver is in the journal file 
+\family typewriter
+mesh_tri3.jou
+\family default
+.
+ It calls the journal file 
+\family typewriter
+geometry.jou
+\family default
+ to construct the geometry and 
+\family typewriter
+createbc.jou
+\family default
+ to set up the groups associated with boundary conditions and materials.
  The journal files are documented and describe the various steps outlined
  below.
 \end_layout
@@ -517,14 +543,14 @@ pylithapp.mesh_generator Settings that control mesh importing, such as the
 
 \begin_layout Description
 pylithapp.timedependent Settings that control the problem, such as the total
- time, time step size, and spatial dimension.
+ time, time-step size, and spatial dimension.
 \end_layout
 
 \begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material IDs are to be associated with a particular material
  type, and give the name of the spatial database containing the physical
-  properties for the material.
+ properties for the material.
  The quadrature information is also given.
 \end_layout
 
@@ -553,8 +579,11 @@ pylithapp.petsc PETSc settings to use for the problem, such as the preconditione
 \begin_layout Standard
 The physical properties for each material are specified in spatial database
  files.
- For example, the elastic properties for the continental crust are in mat_concru
-st.spatialdb.
+ For example, the elastic properties for the continental crust are in 
+\family typewriter
+mat_concrust.spatialdb
+\family default
+.
  The provided spatial database files all use just a single point to specify
  uniform physical properties within each material.
  A good exercise is to alter the spatial database files with the physical
@@ -568,7 +597,7 @@ Step 1: Coseismic Slip Simulation
 \begin_layout Standard
 The first example problem is earthquake rupture involving coseismic slip
  along the interface between the subducting slab and the continental crust
- and upper most portion of the mantle below the continental crust.
+ and uppermost portion of the mantle below the continental crust.
  The spatial variation of slip comes from a cross-section of Gavin Hayes'
  finite-source model 
 \begin_inset Flex URL
@@ -638,9 +667,9 @@ pylithapp.timedependent.interfaces.fault Specify the coseismic slip along the
 
 \begin_layout Description
 pylithapp.problem.formulation.output.domain Gives the base filenames for HDF5
- output (
+ output (for example, 
 \family typewriter
-for example, step01.h5
+step01.h5
 \family default
 ).
 \end_layout
@@ -680,7 +709,7 @@ reference "fig:tutorial:subduction:step01"
 \end_layout
 
 \begin_layout LyX-Code
-displacement_x*iHat + displacement_y*jHat + 0*kHat
+displacement_x*iHat + displacement_y*jHat
 \end_layout
 
 \begin_layout Standard
@@ -713,7 +742,7 @@ status open
 
 \begin_layout Plain Layout
 Solution for Step 1.
- The colors indicate the magnitude of the displacement and the deformation
+ The colors indicate the magnitude of the displacement, and the deformation
  is exaggerated by a factor of 1000.
  
 \begin_inset CommandInset label
@@ -803,9 +832,9 @@ pylithapp.timedependent.interfaces Specify the steady aseismic slip as a constan
 
 \begin_layout Description
 pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
- output (
+ output (for example, 
 \family typewriter
-for example, step02.h5
+step02.h5
 \family default
 ).
 \end_layout
@@ -861,7 +890,7 @@ status open
 
 \begin_layout Plain Layout
 Solution for Step 2 at 100 years.
- The colors indicate the magnitude of the displacement and the deformation
+ The colors indicate the magnitude of the displacement, and the deformation
  is exaggerated by a factor of 1000.
 \begin_inset CommandInset label
 LatexCommand label
@@ -883,7 +912,7 @@ name "fig:tutorial:subduction:step02"
 \end_layout
 
 \begin_layout Subsection
-Step 3: Pseudo-earthquake Cycle Model
+Step 3: Pseudo-Earthquake Cycle Model
 \end_layout
 
 \begin_layout Standard
@@ -931,9 +960,9 @@ pylithapp.timedependent.interfaces On the interface between the subducting
 
 \begin_layout Description
 pylithapp.problem.formulation.output.domain Gives the base filename for HDF5
- output (
+ output (for example, 
 \family typewriter
-for example, step03.h5
+step03.h5
 \family default
 ).
 \end_layout
@@ -989,11 +1018,198 @@ status open
 
 \begin_layout Plain Layout
 Solution for Step 3 at 150 years (immediately following the earthquake rupture).
- The colors indicate the magnitude of the displacement and the deformation
+ The colors indicate the magnitude of the displacement, and the deformation
  is exaggerated by a factor of 1000.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:tutorial:subduction:step03"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Step 4: Frictional Afterslip Simulation
+\end_layout
+
+\begin_layout Standard
+This simulation demonstrates how to combine the change in tractions associated
+ with coseismic slip with a background stress field to compute afterslip
+ controlled by static friction.
+ The Python script 
+\family typewriter
+afterslip_tractions.py
+\family default
+ will create a spatial database file with initial tractions based on the
+ change in tractions from Step 1 and a background stress field.
+ The background stress field is simply normal tractions consistent with
+ the overburden (lithostatic load) for a uniform half-space and shear tractions
+ consistent with a coefficient of friction of 0.6.
+ The 
+\family typewriter
+afterslip_tractions.
+\begin_inset Newline linebreak
+\end_inset
+
+spatialdb
+\family default
+ file is provided, so you do not need to run the Python script 
+\family typewriter
+afterslip_tractions.py
+\family default
+; however, you can do so by typing
+\end_layout
+
+\begin_layout LyX-Code
+python afterslip_tractions.py
+\end_layout
+
+\begin_layout Standard
+We provide 2.0 MPa of strength excess associated with the background stress
+ field by using a cohesion of 2.0 MPa in the static friction model.
+ Slip will occur in regions where the coseismic slip increased the shear
+ tractions by more than 2.0 MPa.
+ On the lateral and bottom boundaries of the domain, we fix the degrees
+ of freedom perpendicular to the boundary as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:steps"
+
+\end_inset
+
+.
+ Parameter settings that augment those in 
+\family typewriter
+pylithapp.cfg
+\family default
+ are contained in the file 
+\family typewriter
+step04.cfg
+\family default
+.
+ These settings are:
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.formulation.time_step Adjust the total simulation time
+ to 0 years (static simulation).
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent Selects the nonlinear solver and specifies the array
+ of boundary conditions.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.bc.
+\shape italic
+BOUNDARY
+\shape default
+ Defines the settings for boundary 
+\shape italic
+BOUNDARY
+\shape default
+, including which degrees of freedom are being constrained (x or y), the
+ label (defined in
+\family typewriter
+ mesh_tri3.exo
+\family default
+) corresponding to the nodeset in CUBIT, and a label to the boundary condition
+ used in any error messages.
+\end_layout
+
+\begin_layout Description
+pylithapp.timedependent.interfaces.fault Specify a fault with a fault constitutive
+ model (static friction) and initial fault tractions.
+ 
+\end_layout
+
+\begin_layout Description
+pylithapp.problem.formulation.output.domain Gives the base filenames for HDF5
+ output (for example, 
+\family typewriter
+step04.h5
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+We run this example by typing
+\end_layout
+
+\begin_layout LyX-Code
+pylith step04.cfg
+\end_layout
+
+\begin_layout Standard
+The problem will produce twelve pairs of HDF5/Xdmf files.
+ The HDF5 files contain the data and the Xdmf files contain the metadata
+ required by ParaView and Visit (and possibly other visualization tools
+ that use Xdmf files) to access the mesh and data sets in the HDF5 files.
+ The files include the solution over the domain and ground surface (two
+ pairs of files), physical properties, stress, and strain within each material
+ (eight pairs of files), and fault parameters, slip, and traction (two pairs
+ of files).
+ 
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tutorial:subduction:step04"
+
+\end_inset
+
+, which was created using ParaView, displays the magnitude of the displacement
+ field with the original configuration.
+ Slip occurs down-dip from the coseismic slip as well as in three areas
+ with sharp gradients in slip, including the trench.
+ The location of the afterslip can be shifted by changing the spatial variation
+ of the coseismic slip and background stress field.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/step01_soln.png
+	lyxscale 50
+	width 4.5in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Solution for Step 4.
+ The colors indicate the magnitude of the displacement.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tutorial:subduction:step04"
 
 \end_inset
 
@@ -1021,7 +1237,11 @@ The list below includes some suggested modifications to the problem that
 \end_layout
 
 \begin_layout Itemize
-Change the resolution of the mesh by editing the mesh_tri3.jou journal file.
+Change the resolution of the mesh by editing the 
+\family typewriter
+mesh_tri3.jou
+\family default
+ journal file.
  Change the resolution and bias factor.
 \end_layout
 
@@ -1050,7 +1270,7 @@ geophysics.ou.edu/solid_earth/prem.html
 \end_inset
 
  for a simple table of values.
- Add points, update num-locs accordingly, and change data-dim to be 1.
+ Add points, update num-locs accordingly, and change data-dim to 1.
 \end_layout
 
 \begin_layout Itemize

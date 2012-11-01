@@ -19,7 +19,8 @@
 SUBDIRS = \
 	1d \
 	2d \
-	petsc
+	petsc \
+	eqinfo
 
 
 # End of file 

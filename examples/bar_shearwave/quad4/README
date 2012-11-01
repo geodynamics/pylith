@@ -5,14 +5,14 @@ directory.
 
 Example problems
 
-  * Kinematic fault slip (same as problem in tri3, tet4, and hex8
+  * Prescribed rupture (same as problem in tri3, tet4, and hex8
     subdirectories)
 
-  * Dynamic fault slip with static friction fault constitutive model
+  * Spontaneous rupture with static friction fault constitutive model
 
-  * Dynamic fault slip with linear slip-weakening fault constitutive model
+  * Spontaneous rupture with linear slip-weakening fault constitutive model
 
-  * Dynamic fault slip with rate- and state-friction fault constitutive model
+  * Spontaneous rupture with rate- and state-friction fault constitutive model
 
 
 Files common to all example problems
@@ -25,23 +25,23 @@ Files common to all example problems
 
 Files associated with the example problems:
 
-  + Kinematic fault slip
-    - kinematic.cfg: Parameters for simulation
-    - kinematic_risetime.spatialdb: Spatial database for slip rise time
-    - kinematic_slip.spatialdb: Spatial database for final slip
-    - kinematic_sliptime.spatialdb: Spatial database for slip initiation time 
+  + Prescribed rupture
+    - prescribedrup.cfg: Parameters for simulation
+    - prescribedrup_risetime.spatialdb: Spatial database for slip rise time
+    - prescribedrup_slip.spatialdb: Spatial database for final slip
+    - prescribedrup_sliptime.spatialdb: Spatial database for slip initiation time 
 
-  + Dynamic fault slip with static friction fault constitutive model
+  + Spontaneous rupture with static friction fault constitutive model
 
-    - dynamic.cfg: Parameters common to dynamic friction problems
-    - dynamic_staticfriction.cfg: Parameters for simulation 
+    - spontaneousrup.cfg: Parameters common to dynamic friction problems
+    - spontaneousrup_staticfriction.cfg: Parameters for simulation 
 
-  + Dynamic fault slip with linear slip-weakening fault constitutive model
+  + Spontaneous rupture with linear slip-weakening fault constitutive model
 
-    - dynamic.cfg: Parameters common to dynamic friction problems
-    - dynamic_slipweakening.cfg: Parameters for simulation 
+    - spontaneousrup.cfg: Parameters common to dynamic friction problems
+    - spontaneousrup_slipweakening.cfg: Parameters for simulation 
 
-  + Dynamic fault slip with rate- and state-friction fault constitutive model
+  + Spontaneous rupture with rate- and state-friction fault constitutive model
 
-    - dynamic.cfg: Parameters common to dynamic friction problems
-    - dynamic_ratestateageing.cfg: Parameters for simulation 
+    - spontaneousrup.cfg: Parameters common to dynamic friction problems
+    - spontaneousrup_ratestateageing.cfg: Parameters for simulation 

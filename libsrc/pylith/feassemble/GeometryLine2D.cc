@@ -23,6 +23,7 @@
 #include "GeometryPoint2D.hh" // USES GeometryPoint
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES scalar_array
 
 #include "petsc.h" // USES PetscLogFlops
 
@@ -159,6 +160,28 @@ pylith::feassemble::GeometryLine2D::jacobian(PylithScalar* jacobian,
 
   PetscLogFlops(8);
 } // jacobian
+
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryLine2D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  const int numCorners = 2;
+  const int spaceDim = 2;
+  assert(numCorners*spaceDim == coordinatesCell.size());
+
+  const PylithScalar xA = coordinatesCell[0];
+  const PylithScalar yA = coordinatesCell[1];
+  const PylithScalar xB = coordinatesCell[2];
+  const PylithScalar yB = coordinatesCell[3];
+    
+  const PylithScalar minWidth = sqrt(pow(xB-xA,2) + pow(yB-yA,2));
+
+  PetscLogFlops(6);
+
+  return minWidth;
+} // minCellWidth
 
 
 // End of file

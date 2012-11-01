@@ -208,7 +208,7 @@ reference "sec:Tutorial-Two-tet4"
  coordinates are significantly different.
  We use zone 11 UTM coordinates with the NAD27 datum for the mesh.
  Although we used the same coordinate system as the SCEC CVM-H, we could
- have also used any another geographic projection supported by spatialdata
+ have also used any other geographic projection supported by spatialdata
  and Proj.4.
  See Appendix 
 \begin_inset CommandInset ref
@@ -463,6 +463,10 @@ This example problem is a left-lateral fault slip applied between the two
  Note that we vary the amount of fault slip for each vertex with this example,
  as described in 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 dislocation_slip.spatialdb
 \family default
 .
@@ -497,18 +501,8 @@ pylithapp.cfg
 \family default
 ) along with the problem-specific files (
 \family typewriter
-\size small
-dislocation.cfg
+dislocation.cfg, dislocation_slip.spatialdb, dislocation_sliptime.spatialdb
 \family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
-dislocation_sliptime.spatialdb
-\family default
-\size default
 ) provide a complete description of the problem, and we can then run this
  example by typing
 \end_layout

@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_matLabe
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_dtStableExplicit =   3.75000000e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_gravityVec[] = {
  -1.00000000e+08,
 };
@@ -95,23 +97,11 @@ const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_valsResidual[] = {
-  2.04829437e+10,
- -2.05560687e+10,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_valsJacobian[] = {
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_valsResidualLumped[] = {
   2.04885687e+10,
  -2.05616937e+10,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::_valsJacobian[] = {
   2.81250000e+07,
   2.81250000e+07,
 };
@@ -129,6 +119,7 @@ pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::ElasticityExplicitLg
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
@@ -142,8 +133,6 @@ pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::ElasticityExplicitLg
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitLgDeformData1DLinear::~ElasticityExplicitLgDeformData1DLinear(void)

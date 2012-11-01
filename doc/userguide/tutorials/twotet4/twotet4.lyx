@@ -307,7 +307,7 @@ pylith axialdisp.cfg
 \end_layout
 
 \begin_layout Standard
-If the problem ran correctly, you should be able to generate a figure such
+If the problem ran correctly, you should be able to produce a figure such
  as Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -414,7 +414,7 @@ twotet4.mesh
 ) defining the points desired, and assigns a label to the boundary condition
  set.
  Rather than specifying a spatial database file to define the boundary condition
-s, we use the default spatial database (ZeroDispDB) for  the Dirichlet boundary
+s, we use the default spatial database (ZeroDispDB) for the Dirichlet boundary
  condition, which sets the displacements to zero.
 \end_layout
 
@@ -470,18 +470,12 @@ matprops.spatialdb
 \family default
 ) along with the problem-specific files (
 \family typewriter
-\size small
-dislocation.cfg
-\family default
-, 
-\family typewriter
-dislocation_slip.spatialdb
-\family default
-, 
-\family typewriter
+dislocation.cfg, dislocation_slip.spatialdb, 
+\begin_inset Newline linebreak
+\end_inset
+
 dislocation_sliptime.spatialdb
 \family default
-\size default
 ) provide a complete description of the problem, and we can then run this
  example by typing
 \end_layout
