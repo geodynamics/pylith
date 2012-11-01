@@ -198,13 +198,6 @@ public :
 				      feassemble::Quadrature<topology::Mesh>* quadrature,
 				      topology::Field<topology::Mesh>* field =0);
 
-  /** Set whether elastic or inelastic constitutive relations are used.
-   *
-   * @param flag True to use elastic, false to use inelastic.
-   */
-  virtual
-  void useElasticBehavior(const bool flag);
-
   /** Get initial stress/strain fields.
    *
    * @returns Initial stress field.

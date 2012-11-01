@@ -20,14 +20,6 @@
 #error "Constraint.icc must be included only from Constraint.hh"
 #else
 
-// Set flag for setting constraints for total field solution or
-inline
-void
-pylith::feassemble::Constraint::useSolnIncr(const bool flag) {
-  _useSolnIncr = flag;
-} // useSolnIncr
-
-
 #endif
 
 // End of file

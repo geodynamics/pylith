@@ -88,17 +88,6 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 } // needNewJacobian
 
 // ----------------------------------------------------------------------
-// Set flag for setting constraints for total field solution or
-void
-pylith::feassemble::IntegratorElasticity::useSolnIncr(const bool flag)
-{ // useSolnIncr
-  Integrator<Quadrature<topology::Mesh> >::useSolnIncr(flag);
-  
-  assert(0 != _material);
-  _material->useElasticBehavior(!flag);
-} // useSolnIncr
-
-// ----------------------------------------------------------------------
 // Initialize integrator.
 void
 pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)

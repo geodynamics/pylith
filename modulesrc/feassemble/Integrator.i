@@ -99,14 +99,6 @@ namespace pylith {
       virtual
       bool isJacobianSymmetric(void) const;
 
-      /** Set flag for setting constraints for total field solution or
-       *  incremental field solution.
-       *
-       * @param flag True if using incremental solution, false otherwise.
-       */
-      virtual
-      void useSolnIncr(const bool flag);
-      
       /** Initialize integrator.
        *
        * @param mesh Finite-element mesh.

@@ -70,7 +70,6 @@ class TimeStepUser(TimeStep):
     ## Python object for managing TimeStepUser facilities and properties.
     ##
     ## \b Properties
-    ## @li \b total_time Time duration for simulation.
     ## @li \b filename Name of file with time step sizes.
     ## @li \b loop_steps Loop over steps if true, otherwise keep
     ##   using last time step size.
@@ -79,11 +78,6 @@ class TimeStepUser(TimeStep):
     ## @li None
 
     import pyre.inventory
-
-    from pyre.units.time import second
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                          validator=pyre.inventory.greaterEqual(0.0*second))
-    totalTime.meta['tip'] = "Time duration for simulation."
 
     filename = pyre.inventory.str("filename", default="timesteps.txt")
     filename.meta['tip'] = "Name of file with tme step sizes."
@@ -121,7 +115,6 @@ class TimeStepUser(TimeStep):
 
     # Nondimensionalize time steps
     timeScale = normalizer.timeScale()
-    self.totalTimeN = normalizer.nondimensionalize(self.totalTime, timeScale)
     for i in xrange(len(self.steps)):
       step = normalizer.nondimensionalize(self.steps[i], timeScale)
       assert(step > 0.0)
@@ -181,7 +174,6 @@ class TimeStepUser(TimeStep):
     Set members based using inventory.
     """
     TimeStep._configure(self)
-    self.totalTime = self.inventory.totalTime
     self.filename = self.inventory.filename
     self.loopSteps = self.inventory.loopSteps
     return
