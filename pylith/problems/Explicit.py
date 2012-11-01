@@ -19,7 +19,8 @@
 ## @file pylith/problems/Explicit.py
 ##
 ## @brief Python Explicit object for solving equations using an
-## explicit formulation.
+## explicit formulation with a lumped Jacobian matrix that is stored
+## as a Field.
 ##
 ## Factory: pde_formulation
 
@@ -50,22 +51,29 @@ class Explicit(Formulation, ModuleExplicit):
 
   class Inventory(Formulation.Inventory):
     """
-    Python object for managing Formulation facilities and properties.
+    Python object for managing Explicit facilities and properties.
+
+    Provide appropriate solver for lumped Jacobian as the default.
     """
 
     ## @class Inventory
-    ## Python object for managing Formulation facilities and properties.
+    ## Python object for managing Explicit facilities and properties.
     ##
     ## \b Properties
     ## @li \b norm_viscosity Normalized viscosity for numerical damping.
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b solver Algebraic solver.
 
     import pyre.inventory
 
     normViscosity = pyre.inventory.float("norm_viscosity", default=0.1)
     normViscosity.meta['tip'] = "Normalized viscosity for numerical damping."
+
+    from SolverLumped import SolverLumped
+    solver = pyre.inventory.facility("solver", family="solver",
+                                     factory=SolverLumped)
+    solver.meta['tip'] = "Algebraic solver."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -77,6 +85,7 @@ class Explicit(Formulation, ModuleExplicit):
     Formulation.__init__(self, name)
     ModuleExplicit.__init__(self)
     self._loggingPrefix = "TSEx "
+    self.dtStable = None
     return
 
 
@@ -141,12 +150,14 @@ class Explicit(Formulation, ModuleExplicit):
     logger.stagePop()
 
     if 0 == comm.rank:
-      self._info.log("Creating Jacobian matrix.")
-    self._setJacobianMatrixType()
-    from pylith.topology.Jacobian import Jacobian
-    self.jacobian = Jacobian(self.fields.solution(),
-                             self.matrixType, self.blockMatrixOkay)
-    self.jacobian.zero() # TEMPORARY, to get correct memory usage
+      self._info.log("Creating lumped Jacobian matrix.")
+    from pylith.topology.topology import MeshField
+    jacobian = MeshField(self.mesh)
+    jacobian.newSection(jacobian.VERTICES_FIELD, dimension)
+    jacobian.allocate()
+    jacobian.label("jacobian")
+    jacobian.vectorFieldType(jacobian.VECTOR)
+    self.jacobian = jacobian
     self._debug.log(resourceUsageString())
 
     logger.stagePush("Problem")
@@ -154,12 +165,6 @@ class Explicit(Formulation, ModuleExplicit):
       self._info.log("Initializing solver.")
     self.solver.initialize(self.fields, self.jacobian, self)
     self._debug.log(resourceUsageString())
-
-    # Solve for increment in displacement field.
-    for constraint in self.constraints:
-      constraint.useSolnIncr(True)
-    for integrator in self.integratorsMesh + self.integratorsSubMesh:
-      integrator.useSolnIncr(True)
 
     logger.stagePop()
     logger.setDebug(0)
@@ -248,6 +253,48 @@ class Explicit(Formulation, ModuleExplicit):
     return
 
 
+  def prestepElastic(self, t, dt):
+    """
+    Hook for doing stuff before advancing time step.
+    """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+    
+    if 0 == comm.rank:
+      self._info.log("Setting constraints.")
+    disp = self.fields.get("dispIncr(t->t+dt)")
+    disp.zero()
+    for constraint in self.constraints:
+      constraint.setField(t+dt, disp)
+
+    needNewJacobian = False
+    for integrator in self.integratorsMesh + self.integratorsSubMesh:
+      integrator.timeStep(dt)
+      if integrator.needNewJacobian():
+        needNewJacobian = True
+    if needNewJacobian:
+      self._reformJacobian(t, dt)
+
+    return
+
+
+  def getTimeStep(self):
+    """
+    Get stable time step for advancing forward in time. Use cached
+    value if available.
+
+    Assume stable time step depends only on initial elastic properties
+    and original mesh geometry.
+    """
+    logEvent = "%stimestep" % self._loggingPrefix
+    self._eventLogger.eventBegin(logEvent)
+
+    if self.dtStable is None:
+      self.dtStable = self.timeStep.timeStep(self.mesh, self.integratorsMesh + self.integratorsSubMesh)
+    self._eventLogger.eventEnd(logEvent)
+    return self.dtStable
+  
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -257,6 +304,40 @@ class Explicit(Formulation, ModuleExplicit):
     Formulation._configure(self)
 
     self.normViscosity = self.inventory.normViscosity
+    self.solver = self.inventory.solver
+    return
+
+
+  def _reformJacobian(self, t, dt):
+    """
+    Reform Jacobian matrix for operator.
+    """
+    from pylith.mpi.Communicator import mpi_comm_world
+    comm = mpi_comm_world()
+
+    self._debug.log(resourceUsageString())
+    if 0 == comm.rank:
+      self._info.log("Integrating Jacobian operator.")
+    self._eventLogger.stagePush("Reform Jacobian")
+
+    self.updateSettings(self.jacobian, self.fields, t, dt)
+    ModuleExplicit.reformJacobianLumped(self)
+
+    self._eventLogger.stagePop()
+
+    if self.viewJacobian:
+      self.jacobian.view("Jacobian")
+
+    self._debug.log(resourceUsageString())
+    return
+
+
+  def _cleanup(self):
+    """
+    Deallocate PETSc and local data structures.
+    """
+    if not self.fields is None:
+      self.fields.cleanup()
     return
 
 
