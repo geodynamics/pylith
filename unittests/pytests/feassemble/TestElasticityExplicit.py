@@ -143,26 +143,6 @@ class TestElasticityExplicit(unittest.TestCase):
     return
 
 
-  def test_useSolnIncr(self):
-    """
-    Test useSolnIncr().
-
-    WARNING: This is not a rigorous test of useSolnIncr() because we
-    neither set the input fields or verify the results.
-    """
-    (mesh, integrator) = self._preinitialize()
-    fields = self._initialize(mesh, integrator)
-
-    try:
-      integrator.useSolnIncr(True)
-      self.failIf(True)
-    except:
-      self.failIf(False)
-
-    # No test of result.
-    return
-
-
   def test_integrateResidual(self):
     """
     Test integrateResidual().

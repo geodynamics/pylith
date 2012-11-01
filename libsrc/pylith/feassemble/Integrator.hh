@@ -122,14 +122,6 @@ public :
   virtual
   bool isJacobianSymmetric(void) const;
 
-  /** Set flag for setting constraints for total field solution or
-   *  incremental field solution.
-   *
-   * @param flag True if using incremental solution, false otherwise.
-   */
-  virtual
-  void useSolnIncr(const bool flag);
-
   /** Initialize integrator.
    *
    * @param mesh Finite-element mesh.
@@ -293,10 +285,6 @@ protected :
   /// True if we need to compute velocity field, false otherwise.
   /// Default is false;
   bool _isJacobianSymmetric;
-
-  /// Flag indicating whether to set constraints for a total field
-  /// solution or an incremental field solution
-  bool _useSolnIncr;
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

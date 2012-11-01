@@ -56,7 +56,7 @@ class TestDruckerPragerPlaneStrain(unittest.TestCase):
 
   def test_fitMohrCoulomb(self):
     """
-    Test useElasticBehavior().
+    Test fitMohrCoulomb().
     """
     self.material.fitMohrCoulomb(self.material.MOHR_COULOMB_MIDDLE)
     return

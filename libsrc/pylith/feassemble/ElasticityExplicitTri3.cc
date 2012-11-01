@@ -111,19 +111,6 @@ pylith::feassemble::ElasticityExplicitTri3::normViscosity(const PylithScalar vis
 } // normViscosity
 
 // ----------------------------------------------------------------------
-// Set flag for setting constraints for total field solution or
-// incremental field solution.
-void
-pylith::feassemble::ElasticityExplicitTri3::useSolnIncr(const bool flag)
-{ // useSolnIncr
-  _material->useElasticBehavior(false);
-  if (!flag)
-    throw std::logic_error("Non-incremental solution not supported for "
-			   "explicit time integration of elasticity "
-			   "equation.");
-} // useSolnIncr
-
-// ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
 pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Field<topology::Mesh>& residual,
