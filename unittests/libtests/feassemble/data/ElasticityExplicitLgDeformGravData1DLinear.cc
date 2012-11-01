@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_mat
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_dtStableExplicit =   3.75000000e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_gravityVec[] = {
  -1.00000000e+08,
 };
@@ -95,23 +97,11 @@ const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinea
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsResidual[] = {
- -2.60767056e+11,
- -3.01806069e+11,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsJacobian[] = {
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-  1.40625000e+07,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsResidualLumped[] = {
  -2.60761431e+11,
  -3.01811694e+11,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::_valsJacobian[] = {
   2.81250000e+07,
   2.81250000e+07,
 };
@@ -129,6 +119,7 @@ pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::ElasticityExplic
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
@@ -142,8 +133,6 @@ pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::ElasticityExplic
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitLgDeformGravData1DLinear::~ElasticityExplicitLgDeformGravData1DLinear(void)

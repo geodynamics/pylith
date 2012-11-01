@@ -78,7 +78,7 @@ class DruckerPragerPlaneStrainElastic(ElasticMaterialApp):
     initialStrainA = [3.1e-4, 3.2e-4, 3.4e-4]
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
-    stressZZInitialA = numpy.array([1.075e4], dtype=numpy.float64)
+    stressZZInitialA = 1.075e+4
 
     denomFrictionA = math.sqrt(3.0) * (3.0 - math.sin(frictionAngleA))
     denomDilatationA = math.sqrt(3.0) * (3.0 - math.sin(dilatationAngleA))
@@ -103,7 +103,7 @@ class DruckerPragerPlaneStrainElastic(ElasticMaterialApp):
     alphaYieldB = 2.0 * math.sin(frictionAngleB)/denomFrictionB
     betaB = 6.0 * cohesionB * math.cos(frictionAngleB)/denomFrictionB
     alphaFlowB = 2.0 * math.sin(dilatationAngleB)/denomDilatationB
-    stressZZInitialB = numpy.array([2.575e4], dtype=numpy.float64)
+    stressZZInitialB = 2.575e+4
 
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
@@ -179,6 +179,7 @@ class DruckerPragerPlaneStrainElastic(ElasticMaterialApp):
                            initialStressB, initialStrainB)
 
     self.dtStableImplicit = 1.0e10
+    self.dtStableExplicit = 1000.0 / vpA
 
     stateVarsUpdatedA = numpy.array([stressZZInitialA, 0.0, 0.0, 0.0, 0.0],
                                     dtype=numpy.float64)

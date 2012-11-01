@@ -90,9 +90,11 @@ class Formulation(PetscComponent, ModuleFormulation):
 
     import pyre.inventory
 
+    # WARNING: This setting is not yet functional!!!!!!!!!
     useCUDA = pyre.inventory.bool("use_cuda", default=False,
                                   validator=validateUseCUDA)
     useCUDA.meta['tip'] = "Enable use of CUDA for finite-element integrations."
+    
 
     matrixType = pyre.inventory.str("matrix_type", default="unknown")
     matrixType.meta['tip'] = "Type of PETSc sparse matrix."
@@ -366,7 +368,7 @@ class Formulation(PetscComponent, ModuleFormulation):
         self.matrixType = matrixMap[self.matrixType]
     self.blockMatrixOkay = True
     if self.matrixType == "unknown" and self.solver.useCUDA:
-      self.matrixType = "mpiaijcusp"
+      self.matrixType = "aijcusp"
     for constraint in self.constraints:
       numDimConstrained = constraint.numDimConstrained()
       if numDimConstrained > 0 and self.mesh.dimension() != numDimConstrained:

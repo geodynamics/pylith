@@ -1,5 +1,5 @@
-#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
-\lyxformat 345
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass book
@@ -7,18 +7,26 @@
 
 \end_preamble
 \use_default_options false
+\maintain_unincluded_children false
 \language english
+\language_package default
 \inputencoding latin1
+\fontencoding global
 \font_roman default
 \font_sans default
 \font_typewriter default
 \font_default_family default
+\use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
 
 \graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -26,9 +34,18 @@
 \use_geometry true
 \use_amsmath 1
 \use_esint 0
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
 \use_bibtopic false
+\use_indices false
 \paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
 \leftmargin 1in
 \topmargin 1in
 \rightmargin 1in
@@ -36,15 +53,16 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
-\defskip medskip
+\paragraph_indentation default
 \quotes_language english
 \papercolumns 1
 \papersides 2
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
-\author "" 
-\author "" 
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
 \end_header
 
 \begin_body
@@ -182,8 +200,8 @@ ion process.
 \end_layout
 
 \begin_layout Standard
-The UniformVelModel component provides uniform physical properties: P wave
- speed, S wave speed, and density.
+The UniformVelModel component provides uniform physical properties: P-wave
+ speed, S-wave speed, and density.
  Although this is a rather trivial specification of physical properties
  that could be easily done using a UniformDB, this example demonstrates
  how to create a user-defined component that matches the requirements of
@@ -207,7 +225,7 @@ Using a top-down approach, the first step is to determine what information
  known names might be necessary.
  Are there other parameters that control the behavior of the component,
  such as a minimum shear wave speed? In our example the user supplies values
- for the P wave speed, S wave speed, and density.
+ for the P-wave speed, S-wave speed, and density.
  The user-supplied parameters become Pyre properties and facilities in the
  Python source file.
  Because our user supplied parameters are floating point values with dimensions,
@@ -252,7 +270,7 @@ UniformVelModel.hh
 \family default
 .
  The C++ object also includes the accessor functions that allow us to set
- the P wave speed, S wave speed, and density values to the user-specified
+ the P-wave speed, S-wave speed, and density values to the user-specified
  values in the Python object.
  Additional information, such as a file name, parameters defined as data
  structures, etc., would be set via similar accessor functions.
@@ -368,9 +386,9 @@ Once you have built, installed, and tested the UniformVelModel, it is time
  example must also use georeferenced coordinates.
  The dislocation example in the PyLith 
 \family typewriter
-examples/twocells/twotet4-geopro
+examples/twocells/twotet4-geoproj
 \family default
-j directory uses UTM zone 11 coordinates.
+ directory uses UTM zone 11 coordinates.
  The spatial database package will transform the coordinates between the
  two projections as defined in the UniformVelModel 
 \family typewriter
@@ -446,8 +464,7 @@ PlaneStrainState
 \family default
 , is not particularly useful, but it illustrates the basic steps involved
  in creating a bulk constitutive model with state variables.
- The sources files are included with the main PyLith source code in the
- 
+ The source files are included with the main PyLith source code in the 
 \family typewriter
 templates/materials
 \family default
@@ -471,8 +488,8 @@ In contrast to our previous example of creating a customized spatial database,
  The specification of the physical properties and state variables associated
  with the constitutive model is handled directly in the C++ code.
  As a result, the Python object for the constitutive model component is
- very simple and customization is limited to simply changing the names of
- objects and labels.
+ very simple, and customization is limited to simply changing the names
+ of objects and labels.
 \end_layout
 
 \begin_layout Standard
@@ -571,7 +588,7 @@ _updateStateVars()
 \begin_layout Standard
 Because it is sometimes convenient to supply physical properties for a bulk
  constitutive model that are equivalent but different from the ones that
- appear in the constitutive equations (e.g., P wave speed, S wave speed, and
+ appear in the constitutive equations (e.g., P-wave speed, S-wave speed, and
  density rather then Lame's constants 
 \begin_inset Formula $\mu,$
 \end_inset
@@ -602,7 +619,7 @@ Because it is sometimes convenient to supply physical properties for a bulk
 \end_layout
 
 \begin_layout Standard
-The SWIG interface files for a bulk constitutive component are setup in
+The SWIG interface files for a bulk constitutive component are set up in
  the same manner as in the previous example of creating a customized spatial
  database component.
  The ``main'' SWIG interface file (
@@ -648,8 +665,11 @@ Once the Python, C++, and SWIG interface files are complete, you are ready
 \family typewriter
 Makefile.am
 \family default
- file as necessary, then generate the configure script, run configure, and
- then build and install the library and module (see the 
+ file as necessary, then generate the configure script, run 
+\family typewriter
+configure
+\family default
+, and then build and install the library and module (see the 
 \family typewriter
 README
 \family default
@@ -751,9 +771,9 @@ Fault Constitutive Models
 \end_layout
 
 \begin_layout Standard
-PyLith includes a two of the most widely used fault constitutive models,
- but there are a wide range of models that have been proposed to explain
- earthquake source processes.
+PyLith includes two of the most widely used fault constitutive models, but
+ there are a wide range of models that have been proposed to explain earthquake
+ source processes.
  In this example, we demonstrate how to extend PyLith by adding your own
  fault constitutive model.
  We implement a linear viscous fault constitutive model wherein the perturbation
@@ -764,8 +784,7 @@ ViscousFriction
 \family default
 , is not particularly useful, but it illustrates the basic steps involved
  in creating a fault constitutive model.
- The sources files are included with the main PyLith source code in the
- 
+ The source files are included with the main PyLith source code in the 
 \family typewriter
 templates/friction
 \family default
@@ -904,7 +923,7 @@ Because it is sometimes convenient to supply physical properties for a fault
 \end_layout
 
 \begin_layout Standard
-The SWIG interface files for a fault constitutive component are setup in
+The SWIG interface files for a fault constitutive component are set up in
  the same manner as in the previous examples of creating a bulk constitutive
  model or a customized spatial database component.
  The ``main'' SWIG interface file (
@@ -950,8 +969,11 @@ Once the Python, C++, and SWIG interface files are complete, you are ready
 \family typewriter
 Makefile.am
 \family default
- file as necessary, then generate the configure script, run configure, and
- then build and install the library and module (see the 
+ file as necessary, then generate the configure script, run 
+\family typewriter
+configure
+\family default
+, and then build and install the library and module (see the 
 \family typewriter
 README
 \family default
@@ -998,7 +1020,11 @@ ViscousFriction
  You can try using it in any of the 2D or 3D examples.
  For the examples in 
 \family typewriter
-examples/bar_shearwave/quad4, in shearwave_staticfriction.cfg
+examples/bar_shearwave/quad4,
+\family default
+ in 
+\family typewriter
+shearwave_staticfriction.cfg
 \family default
  replace the line
 \end_layout

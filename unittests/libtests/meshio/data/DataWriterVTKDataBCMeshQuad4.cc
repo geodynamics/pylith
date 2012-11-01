@@ -40,46 +40,55 @@ const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_time = 1.0;
 const char* pylith::meshio::DataWriterVTKDataBCMeshQuad4::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numVertexFields = 3;
 const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numVertices = 3;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFields[] = {
-  { "displacements", topology::FieldBase::VECTOR, 2 },
+pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
+  { "displacement", topology::FieldBase::VECTOR, 2 },
+  { "stress", topology::FieldBase::TENSOR, 3 },
   { "other", topology::FieldBase::OTHER, 2 },
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField0[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFieldScalar[3*1] = {
+  2.1, 3.2, 4.3,
+};
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFieldVector[3*2] = {
   1.1, 2.2,
   3.3, 4.4,
   5.5, 6.6,
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField1[] = {
-  2.1, 3.2, 4.3,
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFieldTensor[3*3] = {
+  1.1, 1.2, 1.3,
+  2.1, 2.2, 2.3,
+  3.1, 3.2, 3.3,
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexField2[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_vertexFieldOther[3*2] = {
   1.2, 2.3,
   3.4, 4.5,
   5.6, 6.7,
 };
 
-const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numCellFields = 3;
 const int pylith::meshio::DataWriterVTKDataBCMeshQuad4::_numCells = 2;
 
 const pylith::meshio::DataWriterData::FieldStruct
-pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFields[] = {
-  { "traction", topology::FieldBase::VECTOR, 2 },
+pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFields[4] = {
   { "pressure", topology::FieldBase::SCALAR, 1 },
-  { "other", topology::FieldBase::TENSOR, 3 },
+  { "traction", topology::FieldBase::VECTOR, 2 },
+  { "stress", topology::FieldBase::TENSOR, 3 },
+  { "other", topology::FieldBase::OTHER, 3 },
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellField0[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFieldScalar[2*1] = {
+  2.1, 3.2,
+};
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFieldVector[2*2] = {
   1.1, 2.2,
   3.3, 4.4,
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellField1[] = {
-  2.1, 3.2,
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFieldTensor[2*3] = {
+  1.2, 1.3, 1.4,
+  2.2, 2.3, 2.4,
 };
-const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellField2[] = {
+const PylithScalar pylith::meshio::DataWriterVTKDataBCMeshQuad4::_cellFieldOther[2*3] = {
   1.2, 2.3, 3.4,
   4.5, 5.6, 6.7,
 };
@@ -96,21 +105,21 @@ pylith::meshio::DataWriterVTKDataBCMeshQuad4::DataWriterVTKDataBCMeshQuad4(void)
   time = _time;
   timeFormat = const_cast<char*>(_timeFormat);
   
-  numVertexFields = _numVertexFields;
-  assert(3 == numVertexFields);
   numVertices = _numVertices;
+  assert(DataWriterData::numVertexFields == numVertexFields);
   vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
-  vertexFields[0] = const_cast<PylithScalar*>(_vertexField0);
-  vertexFields[1] = const_cast<PylithScalar*>(_vertexField1);
-  vertexFields[2] = const_cast<PylithScalar*>(_vertexField2);
+  vertexFields[0] = const_cast<PylithScalar*>(_vertexFieldScalar);
+  vertexFields[1] = const_cast<PylithScalar*>(_vertexFieldVector);
+  vertexFields[2] = const_cast<PylithScalar*>(_vertexFieldTensor);
+  vertexFields[3] = const_cast<PylithScalar*>(_vertexFieldOther);
 
-  numCellFields = _numCellFields;
-  assert(3 == numCellFields);
   numCells = _numCells;
+  assert(DataWriterData::numCellFields == numCellFields);
   cellFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_cellFields);
-  cellFields[0] = const_cast<PylithScalar*>(_cellField0);
-  cellFields[1] = const_cast<PylithScalar*>(_cellField1);
-  cellFields[2] = const_cast<PylithScalar*>(_cellField2);
+  cellFields[0] = const_cast<PylithScalar*>(_cellFieldScalar);
+  cellFields[1] = const_cast<PylithScalar*>(_cellFieldVector);
+  cellFields[2] = const_cast<PylithScalar*>(_cellFieldTensor);
+  cellFields[3] = const_cast<PylithScalar*>(_cellFieldOther);
 } // constructor
 
 pylith::meshio::DataWriterVTKDataBCMeshQuad4::~DataWriterVTKDataBCMeshQuad4(void)

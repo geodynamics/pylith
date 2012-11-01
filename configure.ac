@@ -17,7 +17,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [1.7.0], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [1.8.0], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -151,7 +151,7 @@ AC_LANG(C++)
 #CIT_CHECK_LIB_MPI
 
 # PETSC
-CIT_PATH_PETSC([3.2.0])
+CIT_PATH_PETSC([3.3.0])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 CIT_CHECK_LIB_PETSC_SIEVE
@@ -312,14 +312,15 @@ AC_CONFIG_FILES([Makefile
 		tests_auto/Makefile
 		tests_auto/1d/Makefile
 		tests_auto/1d/line2/Makefile
-		tests_auto/1d/line3/Makefile
 		tests_auto/2d/Makefile
 		tests_auto/2d/tri3/Makefile
 		tests_auto/2d/quad4/Makefile
 		tests_auto/petsc/Makefile
+		tests_auto/eqinfo/Makefile
 		tests/Makefile
 		tests/2d/Makefile
 		tests/2d/maxwell/Makefile
+		tests/2d/powerlaw/Makefile
 		tests/2d/slipdir/Makefile
 		tests/2d/frictionslide/Makefile
 		tests/3d/Makefile
@@ -367,11 +368,6 @@ AC_CONFIG_FILES([Makefile
 		examples/bar_shearwave/tet4/output/Makefile
 		examples/bar_shearwave/tri3/Makefile
 		examples/bar_shearwave/tri3/output/Makefile
-		examples/greensfns/Makefile
-		examples/greensfns/hex8/Makefile
-		examples/greensfns/hex8/gfimpulses/Makefile
-		examples/greensfns/hex8/gfresponses/Makefile
-		examples/greensfns/hex8/gfspatialdb/Makefile
 		examples/twocells/twohex8/Makefile
 		examples/twocells/twoquad4/Makefile
 		examples/twocells/twotet4/Makefile
@@ -385,6 +381,8 @@ AC_CONFIG_FILES([Makefile
 		examples/meshing/surface_nurbs/dem/ulines/Makefile
 		examples/meshing/surface_nurbs/dem/vlines/Makefile
 		examples/meshing/surface_nurbs/triangles/Makefile
+		examples/meshing/surface_nurbs/merge_surfs/Makefile
+		examples/meshing/cubit_cellsize/Makefile
 		templates/Makefile
 		share/Makefile
 		])

@@ -89,7 +89,7 @@ Viscoelastic Formulations
 
 \begin_layout Standard
 The viscoelastic formulations presently used in PyLith are described in
- 
+ Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Viscoelastic-Materials"
@@ -113,7 +113,8 @@ Effective Stress Formulation for a Linear Maxwell Viscoelastic Material
 
 \begin_layout Standard
 An alternative technique for solving the equations for a Maxwell viscoelastic
- material is based on the effective stress formulation described in 
+ material is based on the effective stress formulation described in Section
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Effective-Stress-Formulations-Viscoelastic"
@@ -214,7 +215,7 @@ In this case it is possible to solve directly for the deviatoric stresses,
 
 \begin_layout Standard
 To compute the viscoelastic tangent material matrix relating stress and
- strain, we need to compute the first term in 
+ strain, we need to compute the first term in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:58"
@@ -237,7 +238,7 @@ reference "eq:D4"
 
 \end_inset
 
-Using this, along with 
+Using this, along with Equations 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:58"

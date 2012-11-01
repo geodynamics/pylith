@@ -191,14 +191,16 @@ reference "sec:Tutorial-3d-tet4"
 
 \end_inset
 
-for examples 
-\family typewriter
-that
-\family default
- demonstrate how to specify more than one material model.
+ for examples that demonstrate how to specify more than one material model.
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:material:parameters"
+
+\end_inset
+
 Material Parameters
 \end_layout
 
@@ -319,11 +321,7 @@ quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout Standard
-These settings correspond to the the problem in 
-\family typewriter
-Section 
-\family default
-
+These settings correspond to the the problem in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
@@ -390,11 +388,7 @@ writer.filename = dislocation-viscoelastic.vtk
 \end_layout
 
 \begin_layout Standard
-These settings again correspond to the problem in 
-\family typewriter
-Section 
-\family default
-
+These settings again correspond to the problem in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-3d-hex8"
@@ -437,11 +431,7 @@ writer.filename
  Similarly, other material models require state variables in addition to
  the default stress and strain variables that are used by all material models.
  Additional output may be requested for a material model, as in this example
- (
-\family typewriter
-see Section 
-\family default
-
+ (see Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Tutorial-Two-hexahedra"
@@ -810,9 +800,9 @@ Drucker-Prager Elastoplastic
 \begin_layout Plain Layout
 
 \family typewriter
-mu, lambda, density, 
+mu, lambda, density, alpha_yield
 \family default
-alpha_yield,
+,
 \family typewriter
  beta, alpha_flow 
 \end_layout
@@ -874,7 +864,7 @@ Order of components in tensor state-variables for material models.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="4">
+<lyxtabular version="3" rows="5" columns="4">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.25in">
 <column alignment="center" valignment="top" width="0.5in">
@@ -931,7 +921,7 @@ State Variable
 \begin_inset Text
 
 \begin_layout Plain Layout
-total_strain, viscous_strain
+total_strain
 \end_layout
 
 \end_inset
@@ -1002,7 +992,7 @@ total_strain, viscous_strain
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1011,7 +1001,7 @@ stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1023,7 +1013,7 @@ stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1043,7 +1033,7 @@ stress
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1076,6 +1066,138 @@ stress
 \end_inset
 </cell>
 </row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+viscous_strain, plastic_strain
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{yy}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{zz}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{xy}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\epsilon_{xx}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{yy}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{zz}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{xy}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{yz}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{xz}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+stress4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xx}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{yy}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{zz}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{xy}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
 </lyxtabular>
 
 \end_inset
@@ -1086,6 +1208,109 @@ stress
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Stable time step
+\end_layout
+
+\begin_layout Standard
+PyLith computes the stable time step in both quasi-static and dynamic simulation
+s.
+ In quasi-static simulations the stability of the implicit time stepping
+ scheme does not depend on the time step; instead, the stable time step
+ is associated with the accuracy of the solution.
+ In purely elastic materials, the accuracy is independent of the time step,
+ so the stable time step is infinite.
+ For viscoelastic materials we set the stable time step to be 1/5 of the
+ relaxation time.
+ In quasi-static simulations we check the stable time step at every time
+ step.
+\end_layout
+
+\begin_layout Standard
+In dynamic simulations the stability of the explicit time stepping scheme
+ integration does depend on the time step via the Courant-Friderichs-Lewy
+ condition 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Courant:etal:1967"
+
+\end_inset
+
+.
+ This condition states that the critical time step is the time it takes
+ for the P wave to travel across the shortest dimension of a cell.
+ In most cases this is the shortest edge length.
+ However, distorted cells which have relatively small areas in 2-D or relatively
+ small volumes in 3-D for the given edge lengths also require small time
+ steps due to the artificially high stiffness associated with the distorted
+ shape.
+ As a result, we set the stable time step to be the smaller of the shortest
+ edge length and a scaling factor times the radius of an inscribed circle
+ (in 2-D), 
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},3.0r_{inscribed})\\
+r_{inscribed}=\sqrt{\frac{k(k-e_{0})(k-e_{1})(k-e_{2})}{k}}\\
+k=\frac{1}{2}(e_{0}+e_{1}+e_{2})
+\end{gather}
+
+\end_inset
+
+and sphere (in 3-D),
+\begin_inset Formula 
+\begin{gather}
+dt=\min(e_{\mathit{min}},6.38r_{inscribed})\\
+r_{inscribed}=3V/(A_{0}+A_{1}+A_{2}+A_{3}),
+\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $e_{i}$
+\end_inset
+
+ denotes the length of edge 
+\begin_inset Formula $i$
+\end_inset
+
+, 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ denotes the area of face 
+\begin_inset Formula $i$
+\end_inset
+
+, and 
+\begin_inset Formula $V$
+\end_inset
+
+ is the volume of the cell.
+ We determined the scaling factoring empirically using several benchmarks.
+ In dynamic simulations we check the stable time step only at the beginning
+ of the simulation.
+ That is, we assume the elastic properties and mesh do not change, so that
+ the stable time step is constant throughout the simulation.
+\end_layout
+
+\begin_layout Standard
+The stable time steps for each cell can be included in the output with the
+ other 
+\family typewriter
+cell_info_fields
+\family default
+.
+ For implicit time stepping the field is 
+\family typewriter
+stable_dt_implicit
+\family default
+ and for explicit time stepping the field is 
+\family typewriter
+stable_dt_explicit
+\family default
+.
 \end_layout
 
 \begin_layout Section
@@ -1209,7 +1434,7 @@ ve models.
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1234,7 +1459,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1259,7 +1484,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1284,7 +1509,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1575,7 +1800,7 @@ Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are five viscoelastic material models available in PyLith
+At present, there are six viscoelastic material models available in PyLith
  (Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1618,9 +1843,30 @@ reference "cha:Alternative-Formulations"
 \begin_inset Formula $\sigma_{33}^{I}$
 \end_inset
 
- is provided.
+ is provided (
+\family typewriter
+stress_zz_initial
+\family default
+).
  Note that this is not an issue for the 2D elastic models, since this initial
  stress component is not needed.
+ For the PowerLawPlaneStrain model, all four of the stress components are
+ needed, so a 4-component stress state variable (
+\family typewriter
+stress4
+\family default
+) is provided in addition to the normal 3-component 
+\family typewriter
+stress
+\family default
+ state variable (see Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-output"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -1651,12 +1897,12 @@ Available viscoelastic materials for PyLith.
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="2">
+<lyxtabular version="3" rows="7" columns="2">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="2.85in">
 <column alignment="center" valignment="top" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1680,7 +1926,7 @@ Description
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1700,7 +1946,7 @@ Plane strain Maxwell material with linear viscous rheology
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1720,7 +1966,27 @@ Plane strain generalized Maxwell material (3 Maxwell models in parallel)
 </cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PowerLawPlaneStrain
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Plane strain Maxwell material with power-law viscous rheology
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1740,7 +2006,7 @@ Isotropic Maxwell material with linear viscous rheology
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1760,7 +2026,7 @@ Generalized model consisting of 3 Maxwell models in parallel
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2671,7 +2937,7 @@ Values in spatial database used as parameters in the linear Maxwell viscoelastic
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2696,7 +2962,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2721,7 +2987,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2746,7 +3012,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2771,7 +3037,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2841,7 +3107,7 @@ Values in spatial database used as parameters in the generalized linear
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2866,7 +3132,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2891,7 +3157,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2916,7 +3182,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2941,7 +3207,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2966,7 +3232,7 @@ shear-ratio-1
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2991,7 +3257,7 @@ shear-ratio-2
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3016,7 +3282,7 @@ shear-ratio-3
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3041,7 +3307,7 @@ viscosity-1
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3066,7 +3332,7 @@ viscosity-2
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -3973,7 +4239,7 @@ Then
 
 \end_inset
 
-Where
+where
 \begin_inset Formula 
 \begin{gather}
 ^{t+\Delta t}T_{i}=\phantom{}^{t+\Delta t}S_{i}\:;\:\:1\leq i\leq3\label{eq:91}\\
@@ -4139,7 +4405,7 @@ Values in spatial database used as parameters in the nonlinear power-law
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4164,7 +4430,7 @@ Name in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4189,7 +4455,7 @@ Vp
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4214,7 +4480,7 @@ Vs
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4239,7 +4505,7 @@ density
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4264,7 +4530,7 @@ reference-strain-rate
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4289,7 +4555,7 @@ reference-stress
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -4330,11 +4596,10 @@ Elastoplastic Materials
 \end_layout
 
 \begin_layout Standard
-At present, there are two elastoplastic material models available in PyLith.
- Both materials make use of the Drucker-Prager yield criterion.
- The only difference is that one model includes hardening/softening, and
- the other is for the case of perfect plasticity.
- Additional elastoplastic materials will be available in future versions.
+PyLith presently contains just a single elastoplastic material that implements
+ the Drucker-Prager yield criterion.
+ Future releases of PyLith may contain additional elastoplastic materials,
+ such as Drucker-Prager with hardening/softening.
 \end_layout
 
 \begin_layout Subsection
@@ -4462,23 +4727,20 @@ f\left(\underline{\sigma},k\right)=\alpha_{f}I_{1}+\sqrt{J_{2}^{\prime}}-\beta\:
 
 \end_inset
 
-where
+and a flow rule given by:
 \begin_inset Formula 
 \begin{equation}
-\alpha_{f}=\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}\:,\label{eq:101}
+g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:.\label{eq:101}
 \end{equation}
 
 \end_inset
 
-and
-\begin_inset Formula 
-\begin{equation}
-\beta=\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}\:.\label{eq:102}
-\end{equation}
 
-\end_inset
+\end_layout
 
-The friction angle, 
+\begin_layout Standard
+The yield surface represents a circular cone in principal stress space,
+ and the parameters can be related to the friction angle, 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -4486,57 +4748,341 @@ The friction angle,
 \begin_inset Formula $\bar{c}$
 \end_inset
 
-, may both be functions of the internal state parameter, and they correspond
- to the values used in the Mohr-Coulomb model.
- The initial friction angle is given by 
-\begin_inset Formula $\phi_{0}$
+, of the Mohr-Coulomb model.
+ The yield surface in Haigh-Westergaard space (
+\begin_inset Formula $\zeta=\frac{1}{\sqrt{3}}I_{1},p=\sqrt{2J_{2}},\cos(3\theta)=\frac{3\sqrt{3}}{2}\frac{J_{3}}{J_{2}^{3/2}}$
 \end_inset
 
-.
- The yield surface defined by Equations 
+) is
+\begin_inset Formula 
+\begin{equation}
+\left(\sqrt{3}\sin\left(\theta+\frac{\pi}{3}\right)-\sin\phi\cos\left(\theta+\frac{\pi}{3}\right)\right)p-\sqrt{2}\sin\phi\zeta=\sqrt{6}\overline{c}\cos\theta.\label{eq:drucker:prager:haigh:westergaard}
+\end{equation}
+
+\end_inset
+
+The yield surface can be fit to the Mohr-Coulomb model in several different
+ ways.
+ The yield surface can touch the outer apices (
+\begin_inset Formula $\theta=\pi/3$
+\end_inset
+
+) of the Mohr-Coulomb model (inscribed version), the inner apices (
+\begin_inset Formula $\theta=0$
+\end_inset
+
+) of the Mohr-Coulomb model (circumscribed version), or halfway between
+ the two (
+\begin_inset Formula $\theta=pi/6,$
+\end_inset
+
+middle version).
+ Substituting these values for 
+\begin_inset Formula $\theta$
+\end_inset
+
+ into Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:100"
+reference "eq:drucker:prager:haigh:westergaard"
 
 \end_inset
 
-, 
+) and casting it into the same form as Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:101"
 
 \end_inset
 
+) yields the values of 
+\begin_inset Formula $\alpha_{f}$
+\end_inset
+
+, 
+\begin_inset Formula $\beta$
+\end_inset
+
 , and 
+\begin_inset Formula $\alpha_{g}$
+\end_inset
+
+ given in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:102"
+reference "tab:fit_mohr_coulomb"
 
 \end_inset
 
- represents a circular cone in principal stress space that is coincident
- with the outer apices of the corresponding Mohr-Coulomb yield surface.
- The flow rule is given by:
-\begin_inset Formula 
-\begin{equation}
-g\left(\underline{\sigma},k\right)=\sqrt{J_{2}^{\prime}}+\alpha_{g}I_{1}\:,\label{eq:103}
-\end{equation}
-
+, where 
+\begin_inset Formula $\phi_{0}$
 \end_inset
 
-where
-\begin_inset Formula 
-\begin{equation}
-\alpha_{g}=\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}\:.\label{eq:104}
-\end{equation}
-
-\end_inset
-
-The dilatation angle, 
+ refers to the initial friction angle.
+ Similarly, the flow rule can be related to the dilatation angle, 
 \begin_inset Formula $\psi$
 \end_inset
 
-, may also be a function of the internal state parameter.
+, of a Mohr-Coulomb model.
+ It is also possible for the Mohr-Coulomb parameters to be functions of
+ the internal state parameter, 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ In PyLith, the fit to the Mohr-Coulomb yield surface and flow rule is controlle
+d by the 
+\family typewriter
+fit_mohr_coulomb
+\family default
+ property.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:fit_mohr_coulomb"
+
+\end_inset
+
+Options for fitting the Drucker-Prager plastic parameters to a Mohr-Coulomb
+ model using 
+\family typewriter
+fit_mohr_coulomb
+\family default
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Parameter Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\beta$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha_{g}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+inscribed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3-\sin\phi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3-\sin\phi_{0}\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\psi(k)}{\sqrt{3}\left(3-\sin\psi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+middle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\sin\phi\left(k\right)}{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\bar{c}\left(k\right)\cos\left(\phi_{0}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{\sin\psi\left(k\right)}{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+circumscribed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\phi\left(k\right)}{\sqrt{3}\left(3+\sin\phi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{6\bar{c}\left(k\right)\cos\phi_{0}}{\sqrt{3}\left(3+\sin\phi_{0}\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{2\sin\psi(k)}{\sqrt{3}\left(3+\sin\psi\left(k\right)\right)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4629,7 +5175,7 @@ reference "tab:druckerPrager"
 
 \end_inset
 
- refer to 
+ refer respectively to 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -4641,41 +5187,39 @@ reference "tab:druckerPrager"
 \begin_inset Formula $\psi$
 \end_inset
 
- in Equations 
+ in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:101"
+reference "tab:fit_mohr_coulomb"
 
 \end_inset
 
-, 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:102"
-
-\end_inset
-
-, and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:104"
-
-\end_inset
-
-, respectively.
+.
  These are then converted to the properties 
 \begin_inset Formula $\alpha_{f}$
 \end_inset
 
- (alpha-yield), 
+ (
+\family typewriter
+alpha-yield
+\family default
+), 
 \begin_inset Formula $\beta$
 \end_inset
 
- (beta), and 
+ (
+\family typewriter
+beta
+\family default
+), and 
 \begin_inset Formula $\alpha_{g}$
 \end_inset
 
- (alpha-flow), as shown in Table 
+ (
+\family typewriter
+alpha-flow
+\family default
+), as shown in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:material-model-output"
@@ -4746,7 +5290,7 @@ reference "eq:108"
  as:
 \begin_inset Formula 
 \begin{equation}
-^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)\:.\label{eq:113}
+^{t+\Delta t}P=\frac{^{t+\Delta t}I_{1}}{3}=\frac{1}{a_{m}}\left(^{t+\Delta t}\theta^{\prime}-\lambda\alpha_{g}\right)+P^{I}\:.\label{eq:113}
 \end{equation}
 
 \end_inset
@@ -4837,6 +5381,54 @@ reference "eq:105"
 \end_inset
 
  to obtain the deviatoric plastic strains and the deviatoric stresses.
+\end_layout
+
+\begin_layout Standard
+In certain cases where the mean stress is tensile, it is possible that the
+ flow rule will not allow the stresses to project back to the yield surface,
+ since they would project beyond the tip of the cone.
+ Although this stress state is not likely to be encountered for quasi-static
+ tectonic problems, it can occur for dynamic problems.
+ One simple solution is to redefine the plastic multiplier, 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ We do this by taking the smaller of the values yielded by Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:114"
+
+\end_inset
+
+ or by the following relation:
+\begin_inset Formula 
+\begin{equation}
+\lambda=\sqrt{2}\,\phantom{}^{t+\Delta t}d\:.\label{eq:127}
+\end{equation}
+
+\end_inset
+
+This is equivalent to setting the second deviatoric stress invariant to
+ zero in Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:110"
+
+\end_inset
+
+.
+ By default, PyLith does not allow such tensile yield, since this would
+ generally represent an error in problem setup for tectonic problems; however,
+ for cases where such behavior is necessary, the material flag 
+\family typewriter
+allow_tensile_yield
+\family default
+ may be set to 
+\family typewriter
+True
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -5207,6 +5799,58 @@ dilatation-angle
 
 \end_layout
 
+\begin_layout Standard
+In addition to the properties available for every material, the properties
+ for the Drucker-Prager model also includes:
+\end_layout
+
+\begin_layout Description
+fit_mohr_coulomb Fit to the yield surface to the Mohr-Coulomb model (default
+ is inscribed).
+\end_layout
+
+\begin_layout Description
+allow_tensile_yield If true, allow yield beyond tensile strength; otherwise
+ an error message will occur when the model fails beyond the tensile strength
+ (default is false).
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent]
+\end_layout
+
+\begin_layout LyX-Code
+materials = [plastic]
+\end_layout
+
+\begin_layout LyX-Code
+materials.plastic = pylith.materials.DruckerPrager3D
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.materials.plastic]
+\end_layout
+
+\begin_layout LyX-Code
+fit_mohr_coulomb = inscribed ; default
+\end_layout
+
+\begin_layout LyX-Code
+allow_tensile_yield = False ; default
+\end_layout
+
 \begin_layout Section
 Initial State Variables
 \end_layout
@@ -5310,7 +5954,7 @@ reference "tab:material-model-output"
 <column alignment="center" valignment="middle" width="0.85in">
 <column alignment="center" valignment="middle" width="2.47in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5335,7 +5979,7 @@ Values in Spatial Database
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -5357,7 +6001,7 @@ stress-xx, stress-yy, stress-zz, stress-xy, stress-yz, stress-xz
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout

@@ -151,6 +151,14 @@ public :
 		const int dim,
 		const int npts) const = 0;
 
+  /** Compute minimum width across cell.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @returns Minimum width across cell.
+   */
+  virtual
+  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const = 0;
+
   /** Compute orientation of cell at location.
    *
    * The orientation is returned as an array of direction cosines

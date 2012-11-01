@@ -149,7 +149,7 @@ pylith::materials::MaxwellPlaneStrain::MaxwellPlaneStrain(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
   _viscousStrain.resize(4);
 } // constructor
 
@@ -695,6 +695,30 @@ pylith::materials::MaxwellPlaneStrain::_stableTimeStepImplicit(
 
   return dtStable;
 } // _stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::MaxwellPlaneStrain::_stableTimeStepExplicit(const PylithScalar* properties,
+							       const int numProperties,
+							       const PylithScalar* stateVars,
+							       const int numStateVars,
+							       const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
+
 
 // ----------------------------------------------------------------------
 // Compute viscous strain for current time step.

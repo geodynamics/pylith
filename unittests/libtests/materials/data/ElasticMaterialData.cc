@@ -20,6 +20,7 @@
 
 pylith::materials::ElasticMaterialData::ElasticMaterialData(void) :
   dtStableImplicit(0.0),
+  dtStableExplicit(0.0),
   density(0),
   strain(0),
   stress(0),

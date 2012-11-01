@@ -65,6 +65,8 @@ private:
 
   static const PylithScalar _dt;
 
+  static const PylithScalar _dtStableExplicit;
+
   static const PylithScalar _gravityVec[];
 
   static const PylithScalar _vertices[];
@@ -90,10 +92,6 @@ private:
   static const PylithScalar _valsResidual[];
 
   static const PylithScalar _valsJacobian[];
-
-  static const PylithScalar _valsResidualLumped[];
-
-  static const PylithScalar _valsJacobianLumped[];
 
 };
 

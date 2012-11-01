@@ -43,6 +43,8 @@ const char* pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_matLabel
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_dt =   1.00000000e-02;
 
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_dtStableExplicit =   2.63523138e-04;
+
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_gravityVec[] = {
   0.00000000e+00, -1.00000000e+08,
 };
@@ -170,90 +172,6 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_f
 };
 
 const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsResidual[] = {
-  1.14469580e+10,  5.67331525e+10,
- -3.22261697e+10, -4.50853997e+10,
-  5.33382294e+09,  2.81311394e+10,
-  6.97040375e+10, -1.14320882e+11,
- -7.00903642e+10, -2.54877652e+11,
-  1.58455201e+10, -1.20572343e+11,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJacobian[] = {
-  2.24121094e+06,  0.00000000e+00,
-  2.41699219e+05,  0.00000000e+00,
-  2.41699219e+05,  0.00000000e+00,
-  4.21875000e+06,  0.00000000e+00,
- -1.36230469e+06,  0.00000000e+00,
- -1.36230469e+06,  0.00000000e+00,
-  0.00000000e+00,  2.24121094e+06,
-  0.00000000e+00,  2.41699219e+05,
-  0.00000000e+00,  2.41699219e+05,
-  0.00000000e+00,  4.21875000e+06,
-  0.00000000e+00, -1.36230469e+06,
-  0.00000000e+00, -1.36230469e+06,
-  2.41699219e+05,  0.00000000e+00,
-  3.61083984e+06,  0.00000000e+00,
- -6.73828125e+05,  0.00000000e+00,
-  3.45703125e+06,  0.00000000e+00,
- -1.52343750e+06,  0.00000000e+00,
- -1.12792969e+06,  0.00000000e+00,
-  0.00000000e+00,  2.41699219e+05,
-  0.00000000e+00,  3.61083984e+06,
-  0.00000000e+00, -6.73828125e+05,
-  0.00000000e+00,  3.45703125e+06,
-  0.00000000e+00, -1.52343750e+06,
-  0.00000000e+00, -1.12792969e+06,
-  2.41699219e+05,  0.00000000e+00,
- -6.73828125e+05,  0.00000000e+00,
-  3.61083984e+06,  0.00000000e+00,
-  3.45703125e+06,  0.00000000e+00,
- -1.12792969e+06,  0.00000000e+00,
- -1.52343750e+06,  0.00000000e+00,
-  0.00000000e+00,  2.41699219e+05,
-  0.00000000e+00, -6.73828125e+05,
-  0.00000000e+00,  3.61083984e+06,
-  0.00000000e+00,  3.45703125e+06,
-  0.00000000e+00, -1.12792969e+06,
-  0.00000000e+00, -1.52343750e+06,
-  4.21875000e+06,  0.00000000e+00,
-  3.45703125e+06,  0.00000000e+00,
-  3.45703125e+06,  0.00000000e+00,
-  2.21484375e+07,  0.00000000e+00,
- -5.39062500e+06,  0.00000000e+00,
- -5.39062500e+06,  0.00000000e+00,
-  0.00000000e+00,  4.21875000e+06,
-  0.00000000e+00,  3.45703125e+06,
-  0.00000000e+00,  3.45703125e+06,
-  0.00000000e+00,  2.21484375e+07,
-  0.00000000e+00, -5.39062500e+06,
-  0.00000000e+00, -5.39062500e+06,
- -1.36230469e+06,  0.00000000e+00,
- -1.52343750e+06,  0.00000000e+00,
- -1.12792969e+06,  0.00000000e+00,
- -5.39062500e+06,  0.00000000e+00,
-  8.46679688e+06,  0.00000000e+00,
-  6.09375000e+06,  0.00000000e+00,
-  0.00000000e+00, -1.36230469e+06,
-  0.00000000e+00, -1.52343750e+06,
-  0.00000000e+00, -1.12792969e+06,
-  0.00000000e+00, -5.39062500e+06,
-  0.00000000e+00,  8.46679688e+06,
-  0.00000000e+00,  6.09375000e+06,
- -1.36230469e+06,  0.00000000e+00,
- -1.12792969e+06,  0.00000000e+00,
- -1.52343750e+06,  0.00000000e+00,
- -5.39062500e+06,  0.00000000e+00,
-  6.09375000e+06,  0.00000000e+00,
-  8.46679688e+06,  0.00000000e+00,
-  0.00000000e+00, -1.36230469e+06,
-  0.00000000e+00, -1.12792969e+06,
-  0.00000000e+00, -1.52343750e+06,
-  0.00000000e+00, -5.39062500e+06,
-  0.00000000e+00,  6.09375000e+06,
-  0.00000000e+00,  8.46679688e+06,
-};
-
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsResidualLumped[] = {
   1.14454133e+10,  5.67334294e+10,
  -3.22283567e+10, -4.50868389e+10,
   5.33172309e+09,  2.81304297e+10,
@@ -262,7 +180,7 @@ const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_v
   1.58484937e+10, -1.20568932e+11,
 };
 
-const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJacobianLumped[] = {
+const PylithScalar pylith::feassemble::ElasticityExplicitGravData2DQuadratic::_valsJacobian[] = {
   4.21875000e+06,  4.21875000e+06,
   3.98437500e+06,  3.98437500e+06,
   3.98437500e+06,  3.98437500e+06,
@@ -284,6 +202,7 @@ pylith::feassemble::ElasticityExplicitGravData2DQuadratic::ElasticityExplicitGra
   matId = _matId;
   matLabel = const_cast<char*>(_matLabel);
   dt = _dt;
+  dtStableExplicit = _dtStableExplicit;
   gravityVec = const_cast<PylithScalar*>(_gravityVec);
   vertices = const_cast<PylithScalar*>(_vertices);
   cells = const_cast<int*>(_cells);
@@ -297,8 +216,6 @@ pylith::feassemble::ElasticityExplicitGravData2DQuadratic::ElasticityExplicitGra
   fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
   valsResidual = const_cast<PylithScalar*>(_valsResidual);
   valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
-  valsResidualLumped = const_cast<PylithScalar*>(_valsResidualLumped);
-  valsJacobianLumped = const_cast<PylithScalar*>(_valsJacobianLumped);
 } // constructor
 
 pylith::feassemble::ElasticityExplicitGravData2DQuadratic::~ElasticityExplicitGravData2DQuadratic(void)

@@ -86,7 +86,7 @@ class DruckerPrager3D(ElasticMaterial, ModuleDruckerPrager3D):
            {'info': [],
             'data': []},
          'cell': \
-           {'info': ["mu", "lambda", "density", 
+           {'info': ["mu", "lambda", "density", "stable_dt_implicit", "stable_dt_explicit",
                      "alpha_yield", "beta", "alpha_flow"],
             'data': ["total_strain", "stress", "plastic_strain"]}}
     self._loggingPrefix = "MaDP3D "

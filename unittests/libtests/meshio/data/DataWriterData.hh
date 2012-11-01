@@ -69,18 +69,18 @@ public:
 
   /// @name Vertex field information.
   //@{
-  int numVertexFields; ///< Number of vertex fields.
+  static const int numVertexFields; ///< Number of vertex fields.
   int numVertices; ///< Number of vertices.
   FieldStruct* vertexFieldsInfo; ///< Array of vertex field information.
-  PylithScalar* vertexFields[3]; ///< Array of vertex field values.
+  PylithScalar* vertexFields[4]; ///< Array of vertex field values.
   //@}
 
   /// @name Cell field information.
   //@{
-  int numCellFields; ///< Number of cell fields.
+  static const int numCellFields; ///< Number of cell fields.
   int numCells; ///< Number of vertices.
   FieldStruct* cellFieldsInfo; ///< Array of cell fields information.
-  PylithScalar* cellFields[3]; /// Array of cell field values.
+  PylithScalar* cellFields[4]; /// Array of cell field values.
   //@}
 
 }; // DataWriterData

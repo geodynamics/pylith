@@ -229,6 +229,22 @@ protected :
 				 const PylithScalar* stateVars,
 				 const int numStateVars) const;
 
+  /** Get stable time step for explicit time integration.
+   *
+   * @param properties Properties at location.
+   * @param numProperties Number of properties.
+   * @param stateVars State variables at location.
+   * @param numStateVars Number of state variables.
+   * @param minCellWidth Minimum width across cell.
+   *
+   * @returns Time step
+   */
+  PylithScalar _stableTimeStepExplicit(const PylithScalar* properties,
+				       const int numProperties,
+				       const PylithScalar* stateVars,
+				       const int numStateVars,
+				       const double minCellWidth) const;
+  
   /** Update state variables (for next time step).
    *
    * @param stateVars State variables at location.
@@ -464,30 +480,6 @@ private :
 				     const int initialStressSize,
 				     const PylithScalar* initialStrain,
 				     const int initialStrainSize);
-
-  /** Compute scalar product, assuming vector form of a tensor.
-   *
-   * @param tensor1 First tensor.
-   * @param tensor2 Second tensor.
-   */
-  /*
-  PylithScalar _scalarProduct(const PylithScalar* tensor1,
-			const PylithScalar* tensor2) const;
-  */
-
-  /** Compute tensor mean, assuming vector form of a tensor.
-   *
-   * @param vec Tensor represented as a vector.
-   */
-  PylithScalar _calcMean(const PylithScalar* vec) const;
-
-  /** Compute deviatoric components, assuming vector form of a tensor.
-   *
-   * @param vec Tensor represented as a vector.
-   * @param vecMean Tensor mean.
-   */
-  PylithScalar _calcDeviatoric(const PylithScalar* vec,
-			 const PylithScalar vecMean) const;
 
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////

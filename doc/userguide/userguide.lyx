@@ -15,10 +15,10 @@
 \language english
 \language_package default
 \inputencoding latin1
-\fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
+\fontencoding T1
+\font_roman times
+\font_sans helvet
+\font_typewriter courier
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
@@ -136,7 +136,7 @@ PyLith User Manual
 \begin_inset Newline newline
 \end_inset
 
-Version 1.7.0
+Version 1.8.0
 \end_layout
 
 \begin_layout Date
@@ -158,7 +158,7 @@ today
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -270,12 +270,12 @@ filename "materials/materials.lyx"
 
 \begin_layout Standard
 \begin_inset CommandInset include
-LatexCommand input
+LatexCommand include
 filename "boundaryconditions/boundaryconditions.lyx"
 
 \end_inset
 
- 
+
 \begin_inset CommandInset include
 LatexCommand input
 filename "tutorials/tutorials.lyx"
@@ -475,9 +475,14 @@ key "BenZion:Rice:1997"
 Ben-Zion, Y.
  and J.R.
  Rice (1997), Dynamic simulations of slip on a smooth fault in an elastic
- solid, J.
- Geophys.
- Res., 102, 17,771–17,784.
+ solid, 
+\emph on
+Journal of Geophysical Research
+\shape italic
+\emph default
+, 102
+\shape default
+, 17,771–17,784.
 \end_layout
 
 \begin_layout Bibliography
@@ -496,6 +501,25 @@ Brune, J.N.
 Journal of Geophysical Research, 75
 \emph default
 , 4997-5009.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Courant et al., 1967"
+key "Courant:etal:1967"
+
+\end_inset
+
+Courant, R., K.
+ Friedrichs and H.
+ Lewy (1967), On the Partial Differential Equations of Mathematical Physics,
+ 
+\shape italic
+IBM Jounral of Research and Development
+\shape default
+, 11(2), 215--234.
 \end_layout
 
 \begin_layout Bibliography
@@ -562,9 +586,9 @@ Liu, P., R.J.
 Bull.
  Seismol.
  Soc.
- Am.
+ Am., 96
 \shape default
-, 96, 2118-2130.
+, 2118-2130.
 \end_layout
 
 \begin_layout Bibliography
@@ -584,7 +608,11 @@ Kaneko, Y., N.
 \shape italic
 Journal of Geophysical Research
 \shape default
-, 113, B09317, doi:10.1029/2007JB005553.
+,
+\shape italic
+ 113
+\shape default
+, B09317, doi:10.1029/2007JB005553.
 \end_layout
 
 \begin_layout Bibliography
@@ -620,9 +648,13 @@ Knopoff, L.
  and X.X.
  Ni (2001), Numerical instability at the edge of a dynamic fracture, 
 \emph on
-Geophysical Journal International, 
+Geophysical Journal International,
+\shape italic
+ 
 \emph default
-147(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
+147
+\shape default
+(3), 1-6, doi: 10.1046/j.1365-246x.2001.01567.x.
 \end_layout
 
 \begin_layout Bibliography
@@ -672,6 +704,23 @@ Journal of Geophysical Research
 93
 \shape default
 , 13,609-13,617.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "Menke, 1984"
+key "Menke:1984"
+
+\end_inset
+
+Menke, W.
+ (1984), 
+\shape italic
+Geophysical Data Analysis: Discrete Inverse Theory
+\shape default
+, Academic Press, Inc., Orlando, 260 pp.
 \end_layout
 
 \begin_layout Bibliography

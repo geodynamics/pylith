@@ -109,6 +109,29 @@ public :
 		const int dim,
 		const int npts =1) const;
 
+  /** Compute minimum width across cell.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @returns Minimum width across cell.
+   */
+  PylithScalar minCellWidth(const scalar_array& coordinatesCell) const;
+
+  /** Compute cell volume.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @returns Volume of cell.
+   */
+  PylithScalar volume(const scalar_array& coordinatesCell) const;
+
+  /** Compute area of face.
+   *
+   * @param coordinatesCell Coordinates of vertices in cell.
+   * @param face Index of vertex across from face.
+   * @returns Area of cell face.
+   */
+  PylithScalar faceArea(const scalar_array& coordinatesCell,
+			const int face) const;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

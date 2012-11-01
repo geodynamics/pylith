@@ -42,21 +42,15 @@ class ExplicitLgDeform(Explicit):
     """
 
     ## @class Inventory
-    ## Python object for managing ExplicitLumped facilities and properties.
+    ## Python object for managing Explicit facilities and properties.
     ##
     ## \b Properties
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b solver Algebraic solver.
+    ## @li None
 
     import pyre.inventory
-
-    from SolverNonlinear import SolverNonlinear
-    solver = pyre.inventory.facility("solver", family="solver",
-                                     factory=SolverNonlinear)
-    solver.meta['tip'] = "Algebraic solver."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -83,7 +77,6 @@ class ExplicitLgDeform(Explicit):
     Set members based using inventory.
     """
     Explicit._configure(self)
-    self.solver = self.inventory.solver
     return
 
 

@@ -89,6 +89,7 @@ class ElasticMaterialApp(Script):
 
     # Elastic material information
     self.dtStableImplicit = 1.0e+99
+    self.dtStableExplicit = 1.0e+99
     self.density = None
     self.strain = None
     self.stress = None
@@ -199,6 +200,9 @@ class ElasticMaterialApp(Script):
 
     self.data.addScalar(vtype="PylithScalar", name="_dtStableImplicit",
                         value=self.dtStableImplicit,
+                        format="%16.8e")
+    self.data.addScalar(vtype="PylithScalar", name="_dtStableExplicit",
+                        value=self.dtStableExplicit,
                         format="%16.8e")
     self.data.addArray(vtype="PylithScalar", name="_density",
                        values=self.density,

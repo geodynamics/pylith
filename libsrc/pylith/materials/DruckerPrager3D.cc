@@ -159,7 +159,7 @@ pylith::materials::DruckerPrager3D::DruckerPrager3D(void) :
   _calcStressFn(0),
   _updateStateVarsFn(0)
 { // constructor
-  useElasticBehavior(true);
+  useElasticBehavior(false);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -430,6 +430,30 @@ pylith::materials::DruckerPrager3D::_stableTimeStepImplicit(
 
   return dtStable;
 } // _stableTimeStepImplicit
+
+// ----------------------------------------------------------------------
+// Get stable time step for explicit time integration.
+PylithScalar
+pylith::materials::DruckerPrager3D::_stableTimeStepExplicit(const PylithScalar* properties,
+							    const int numProperties,
+							    const PylithScalar* stateVars,
+							    const int numStateVars,
+							    const double minCellWidth) const
+{ // _stableTimeStepExplicit
+  assert(properties);
+  assert(_numPropsQuadPt == numProperties);
+ 
+  const PylithScalar mu = properties[p_mu];
+  const PylithScalar lambda = properties[p_lambda];
+  const PylithScalar density = properties[p_density];
+
+  assert(density > 0.0);
+  const PylithScalar vp = sqrt((lambda + 2*mu) / density);
+
+  const PylithScalar dtStable = minCellWidth / vp;
+  return dtStable;
+} // _stableTimeStepExplicit
+
 
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from properties as an elastic
@@ -1272,10 +1296,8 @@ pylith::materials::DruckerPrager3D::_updateStateVarsElastoplastic(
 
     PylithScalar plasticMult = 0.0;
     if (_allowTensileYield) {
-      plasticMult = std::min(sqrt(2.0) * d,
-			     plasticFac *
-			     (meanStrainFac * meanStrainPPTpdt + dFac * d -
-			      beta));
+      plasticMult = std::min(PylithScalar(sqrt(2.0)*d), 
+			     plasticFac * (meanStrainFac * meanStrainPPTpdt + dFac * d - beta));
     } else {
       plasticMult = plasticFac *
 	(meanStrainFac * meanStrainPPTpdt + dFac * d - beta);

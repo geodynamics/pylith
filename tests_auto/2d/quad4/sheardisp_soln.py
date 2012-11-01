@@ -61,9 +61,9 @@ class AnalyticalSoln(object):
     Compute displacement field at locations.
     """
     (npts, dim) = locs.shape
-    disp = numpy.zeros( (npts, 3), dtype=numpy.float64)
-    disp[:,0] = exx*locs[:,0] + exy*locs[:,1]
-    disp[:,1] = eyy*locs[:,1] + exy*locs[:,0]
+    disp = numpy.zeros( (1, npts, 2), dtype=numpy.float64)
+    disp[0,:,0] = exx*locs[:,0] + exy*locs[:,1]
+    disp[0,:,1] = eyy*locs[:,1] + exy*locs[:,0]
     return disp
 
 
@@ -72,10 +72,10 @@ class AnalyticalSoln(object):
     Compute strain field at locations.
     """
     (npts, dim) = locs.shape
-    strain = numpy.zeros( (npts, 3), dtype=numpy.float64)
-    strain[:,0] = exx
-    strain[:,1] = eyy
-    strain[:,2] = exy
+    strain = numpy.zeros( (1, npts, 3), dtype=numpy.float64)
+    strain[0,:,0] = exx
+    strain[0,:,1] = eyy
+    strain[0,:,2] = exy
     return strain
   
 
@@ -84,10 +84,10 @@ class AnalyticalSoln(object):
     Compute stress field at locations.
     """
     (npts, dim) = locs.shape
-    stress = numpy.zeros( (npts, 3), dtype=numpy.float64)
-    stress[:,0] = sxx
-    stress[:,1] = syy
-    stress[:,2] = sxy
+    stress = numpy.zeros( (1, npts, 3), dtype=numpy.float64)
+    stress[0,:,0] = sxx
+    stress[0,:,1] = syy
+    stress[0,:,2] = sxy
     return stress
 
 

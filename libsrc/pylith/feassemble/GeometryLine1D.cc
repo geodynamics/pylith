@@ -23,6 +23,7 @@
 #include "GeometryPoint1D.hh" // USES GeometryPoint
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/constdefs.h" // USES scalar_array
 
 #include "petsc.h" // USES PetscLogFlops
 
@@ -138,6 +139,27 @@ pylith::feassemble::GeometryLine1D::jacobian(PylithScalar* jacobian,
 
   PetscLogFlops(2);
 } // jacobian
+
+
+// ----------------------------------------------------------------------
+// Compute minimum width across cell.
+PylithScalar
+pylith::feassemble::GeometryLine1D::minCellWidth(const scalar_array& coordinatesCell) const
+{ // minCellWidth
+  const int numCorners = 2;
+  const int spaceDim = 1;
+  assert(2*spaceDim == coordinatesCell.size() ||
+	 3*spaceDim == coordinatesCell.size()); // :KLUDGE: allow quadratic
+
+  const PylithScalar xA = coordinatesCell[0];
+  const PylithScalar xB = coordinatesCell[1];
+    
+  const PylithScalar minWidth = fabs(xB-xA);
+
+  PetscLogFlops(2);
+
+  return minWidth;
+} // minCellWidth
 
 
 // End of file

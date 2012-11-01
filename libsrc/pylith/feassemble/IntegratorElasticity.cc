@@ -256,8 +256,8 @@ void
 pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 					   const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  assert(_quadrature);
+  assert(_material);
 
   const int dimension = mesh.dimension();
 
@@ -282,8 +282,8 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
 	<< ".";
     throw std::runtime_error(msg.str());
   } // if
-  const int numCorners = _quadrature->refGeometry().numCorners();
 
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -386,6 +386,23 @@ pylith::feassemble::IntegratorElasticity::cellField(
       } // else
 
     } // else
+
+  } else if (0 == strcasecmp(name, "stable_dt_implicit")) {
+    if (!_outputFields->hasField("buffer (other)"))
+      _outputFields->add("buffer (other)", "buffer");
+    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    _material->stableTimeStepImplicit(mesh, &buffer);
+    buffer.addDimensionOkay(true);
+    return buffer;
+    
+  } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
+    if (!_outputFields->hasField("buffer (other)"))
+      _outputFields->add("buffer (other)", "buffer");
+    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
+    _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
+    buffer.addDimensionOkay(true);
+    return buffer;
+    
   } else {
     if (!_outputFields->hasField("buffer (other)"))
       _outputFields->add("buffer (other)", "buffer");

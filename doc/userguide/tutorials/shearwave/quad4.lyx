@@ -74,7 +74,7 @@ name "sec:tutorial:shearwave:quad4"
 
 \end_inset
 
-3-D Bar Discretized with Quadrilaterals
+3D Bar Discretized with Quadrilaterals
 \end_layout
 
 \begin_layout Standard
@@ -137,7 +137,7 @@ Mesh Generation
 \end_layout
 
 \begin_layout Standard
-The mesh is a simple rectangular prism 8 km by 400 m by 400m (Figure 
+The mesh is a simple rectangular prism 8 km by 400 m by 400 m (Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:shearwave:quad4:mesh"
@@ -217,20 +217,21 @@ The simulation parameters match those in the tri3, tet4, and hex8 examples.
 .cfg
 \family default
  files.
- The parameters common parameters are placed in 
+ The common parameters are placed in 
 \family typewriter
 pylithapp.cfg
 \family default
- with the parameters specific to the kinematic fault example in 
+ with the parameters specific to the kinematic fault (prescribed rupture)
+ example in 
 \family typewriter
-kinematic.cfg
+prescribedrup.cfg
 \family default
 .
  To run the problem, simply run PyLith via:
 \end_layout
 
 \begin_layout LyX-Code
-pylith kinematic.cfg
+pylith prescribedrup.cfg
 \end_layout
 
 \begin_layout Standard
@@ -240,7 +241,7 @@ output
 \family default
  directory with the prefix 
 \family typewriter
-kinematic
+prescribedrup
 \family default
 .
  The output includes the displacement field over the entire domain at every
@@ -329,10 +330,9 @@ reference "sec:fault:constitutive:models"
  10.0 MPa of normal compression for the initial fault tractions.
  The parameters common to the dynamic fault simulations are in 
 \family typewriter
-dynamic.cfg
+spontaneousrup.cfg
 \family default
 .
- We use the explicit time-stepping with a lumped Jacobian matrix.
  We also request that the fault output include slip, slip rate, and traction
  fields:
 \end_layout
@@ -368,13 +368,13 @@ and use a UniformDB to set the static friction parameters.
  We use a coefficient of friction of 0.6 and no cohesion (0 MPa).
  The parameters specific to this example are in 
 \family typewriter
-dynamic_staticfriction.cfg
+spontaneousrup_staticfriction.cfg
 \family default
 , so we run the problem via:
 \end_layout
 
 \begin_layout LyX-Code
-pylith dynamic.cfg dynamic_staticfriction.cfg
+pylith spontaneousrup.cfg spontaneousrup_staticfriction.cfg
 \end_layout
 
 \begin_layout Standard
@@ -513,7 +513,7 @@ dynamic_slipweakening.cfg
 \end_layout
 
 \begin_layout LyX-Code
-pylith dynamic.cfg dynamic_slipweakening.cfg
+pylith spontaneousrup.cfg spontaneousrup_slipweakening.cfg
 \end_layout
 
 \begin_layout Standard
@@ -626,7 +626,7 @@ dynamic_ratestateageing.cfg
 \end_layout
 
 \begin_layout LyX-Code
-pylith dynamic.cfg dynamic_ratestateageing.cfg
+pylith spontaneousrup.cfg spontaneousrup_ratestateageing.cfg
 \end_layout
 
 \begin_layout Standard

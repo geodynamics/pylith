@@ -1308,7 +1308,7 @@ Refiner
 \begin_layout Standard
 The refiner is used to decrease node spacing by a factor of two by subdividing
  each cell.
- In a 2-D triangular mesh a node is inserted at the midpoint of each edge,
+ In a 2D triangular mesh a node is inserted at the midpoint of each edge,
  splitting each cell into four cells (see Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1317,11 +1317,11 @@ reference "fig:uniform:refinement:2x"
 \end_inset
 
 ).
- In a 2-D quadrilateral mesh a node is inserted at the midpoint of each
- edge and at the centroid of the cell, splitting each cell into four cells.
- In a 3-D tetrahedral mesh a node is inserted at the midpoint of each edge,
+ In a 2D quadrilateral mesh a node is inserted at the midpoint of each edge
+ and at the centroid of the cell, splitting each cell into four cells.
+ In a 3D tetrahedral mesh a node is inserted at the midpoint of each edge,
  splitting each cell into eight cells.
- In a 3-D hexahedral mesh a node is inserted at the midpoint of each edge,
+ In a 3D hexahedral mesh a node is inserted at the midpoint of each edge,
  the centroid of each face, and at the centroid of the cell, splitting each
  cell into eight cells.
 \end_layout
@@ -1351,7 +1351,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Global uniform mesh refinement of 2-D and 3-D linear cells.
+Global uniform mesh refinement of 2D and 3D linear cells.
  The blue lines and orange circles identify the edges and vertices in the
  original cells.
  The purple lines and green circles identify the new edges and vertices
@@ -1383,8 +1383,8 @@ Refinement occurs after distribution of the mesh among processors.
  the simulation setup phase, such as, adjusting the topology to insert cohesive
  cells and distribution of the mesh among processors uses this much smaller
  coarse mesh.
- For 2-D problems the global mesh refinement increases the maximum problem
- size by a factor of four, and for 3-D problems it increases the maximum
+ For 2D problems the global mesh refinement increases the maximum problem
+ size by a factor of four, and for 3D problems it increases the maximum
  problem size by a factor of eight.
 \end_layout
 
@@ -1591,6 +1591,68 @@ wave_period = 1.0*s
 \end_layout
 
 \begin_layout Subsection
+Finite-Element Integration Settings
+\end_layout
+
+\begin_layout Standard
+PyLith uses numerical quadrature to evaluate the finite-element integrals
+ for the residual and system Jacobian (see Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Governing-Equations"
+
+\end_inset
+
+).
+ PyLith employs FIAT (finite element automatic tabulator) to compute the
+ basis functions and their derivatives at the quadrature points for various
+ quadrature schemes and cell shapes.
+ The parameters for Lagrange cells (lines, quadrilaterals, hexahedra) are
+ specified using the FIATLagrange object, whereas the parameters for Simplex
+ cells (lines, triangles, tetrahedra) are specified using the FIATSimplex
+ object.
+ Both objects use the same set of parameters and PyLith will setup the basis
+ functions and quadrature scheme appropriately for the two families of cells.
+ The quadrature scheme and basis functions must be set for each material
+ and boundary condition involving finite-element integrations (Dirichlet
+ boundary conditions are constraints and do not involve integrations).
+ Furthermore, the integration schemes can be set independently.
+ The current version of PyLith supports basis functions with linear variations
+ in the field (P1); support for higher order cells will be added in the
+ future.
+ The properties for the FIATLagrange and FIATSimplex objects are
+\end_layout
+
+\begin_layout Description
+dimension Dimension of the cell (0,1,2,3; default is 3).
+\end_layout
+
+\begin_layout Description
+degree Degree of the finite-element cell (default is 1).
+\end_layout
+
+\begin_layout Description
+order Order of quadrature rule (default is degree+1); hardwired to be equal
+ to degree for faults.
+\end_layout
+
+\begin_layout Description
+collocate_quad Collocate quadrature points with vertices (default is False);
+ hardwired to True for faults.
+\end_layout
+
+\begin_layout Standard
+See Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for an example of setting these properties for a material.
+\end_layout
+
+\begin_layout Subsection
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:petsc:options"
@@ -1742,8 +1804,8 @@ reference "sec:Troubleshooting"
 \end_layout
 
 \begin_layout Standard
-These more advanced settings allow each component of displacement, as well
- as Lagrange multipliers for fault tractions, to be preconditioned separately.
+These more advanced settings allow the displacement fields and Lagrange
+ multipliers for fault tractions to be preconditioned separately.
  This usually results in a much stronger preconditioner.
  In simulations with fault slip, the degrees of freedom associated with
  the Lagrange multipliers should be preconditioned with a custom preconditioner
@@ -2247,6 +2309,8 @@ Additive Schwarz method.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family typewriter
 ksp_type
 \end_layout
 
@@ -2641,21 +2705,19 @@ name "tab:petsc:options:advanced"
 
 PETSc options used with split fields algebraic multigrid preconditioning
  that often provide improved performance in quasi-static elasticity problems.
- N is the dimension of the problem.
- For simulations with faults, the number of split fields is N+1.
 \end_layout
 
 \end_inset
 
 
 \begin_inset Tabular
-<lyxtabular version="3" rows="5" columns="3">
+<lyxtabular version="3" rows="8" columns="3">
 <features tabularvalignment="middle">
-<column alignment="left" valignment="top" width="2in">
+<column alignment="left" valignment="top" width="2.25in">
 <column alignment="center" valignment="middle" width="0.75in">
 <column alignment="left" valignment="top" width="3in">
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2690,12 +2752,13 @@ Description
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_type
 \end_layout
 
@@ -2723,22 +2786,25 @@ Precondition fields separately.
 </cell>
 </row>
 <row>
-<cell multicolumn="1" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_fieldsplit_real_diagonal
 \end_layout
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
+\shape italic
+true
 \end_layout
 
 \end_inset
@@ -2754,12 +2820,13 @@ Use diagonal blocks from the true operator, rather than the preconditioner.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
+\size footnotesize
 fs_pc_fieldsplit_type
 \end_layout
 
@@ -2788,13 +2855,14 @@ Apply each field preconditioning in sequence, which is stronger than all-at-once
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 
 \family typewriter
-fs_fieldsplit_X_pc_type
+\size footnotesize
+fs_fieldsplit_0_pc_type
 \end_layout
 
 \end_inset
@@ -2815,7 +2883,109 @@ ml
 
 \begin_layout Plain Layout
 Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
- X=0,1,2, ..., N+1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size footnotesize
+fs_fieldsplit_1_pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+jacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Jacobi preconditioning for Lagrange multiplier block (only use if there
+ is at least one fault)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size footnotesize
+fs_fieldsplit_0_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size footnotesize
+fs_fieldsplit_1_ksp_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\shape italic
+preonly
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Apply only the preconditioner.
 \end_layout
 
 \end_inset
@@ -2831,6 +3001,168 @@ Multilevel algebraic multigrid preconditioning using Trilinos/ML via PETSc.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Model Verification with PETSc Direct Solvers
+\end_layout
+
+\begin_layout Standard
+It is often useful to apply a direct solver so that solver convergence is
+ decoupled from model verification for the purposes of testing.
+ Unfortunately, the traditional LU factorization solvers cannot be directly
+ applied in PyLith due to the saddle-point formulation used to accomodate
+ the fault slip constraints.
+ However, we can combine an LU factorization of the displacement sub-block
+ with a full Schur complement factorization using the PETSc FieldSplit precondit
+ioner.
+ If the solver for the Schur complement S is given a very low tolerance,
+ this is effectively a direct solver.
+ The options given below will construct this solver in PyLith.
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.timedependent.formulation]
+\end_layout
+
+\begin_layout LyX-Code
+split_fields = True
+\end_layout
+
+\begin_layout LyX-Code
+matrix_type = aij
+\end_layout
+
+\begin_layout LyX-Code
+use_custom_constraint_pc = True
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.petsc]
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_type = fieldsplit
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_type = schur
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_schur_precondition = user
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_schur_factorization_type = full
+\end_layout
+
+\begin_layout LyX-Code
+fs_pc_fieldsplit_real_diagonal = true
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_pc_type = lu
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_type = gmres
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_0_ksp_rtol = 1.0e-10
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_pc_type = jacobi
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_type = gmres
+\end_layout
+
+\begin_layout LyX-Code
+fs_fieldsplit_1_ksp_rtol = 1.0e-10 
+\end_layout
+
+\begin_layout Subsubsection
+PETSc Solvers and nVidia GPUs
+\end_layout
+
+\begin_layout Standard
+The development version of PETSc contains some support for using PETSc solvers
+ and nVidia GPUs via CUDA.
+ Building PETSc requires some additional dependencies as described in 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.mcs.anl.gov/petsc/documentation/installation.html#CUDA
+\end_layout
+
+\end_inset
+
+.
+ Additionally, PyLith must be configured with the 
+\family typewriter
+--enable-cuda
+\family default
+ option.
+ See the PyLith Installer documentation for how to enable support for CUDA
+ when building PETSc and PyLith with the installer (the installer does not
+ install CUDA or cusp).
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Development of PETSc solvers leveraging nVidia GPUs to accelerate the computatio
+ns is still a work in progress.
+ This feature requires building PETSc and PyLith from source after installing
+ CUDA and the development version of cusp.
+ If your GPU only supports single-precision floating point operations, then
+ PETSc must be built with single precision and without support for ML and
+ ParMetis/Metis.
+\end_layout
+
+\begin_layout Standard
+Solver and preconditioning options are relatively limited when using CUDA.
+ CUDA works with the Additive Schwarz preconditioner and GMRES linear solver.
+ Enabling use of CUDA with the PETSc solver involves just one setting:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.formulation.solver]
+\begin_inset Newline newline
+\end_inset
+
+use_cuda = True
+\end_layout
+
+\begin_layout Standard
+If the matrix type and vector types have not already been set, this will
+ set matrix type and vector types to 
+\family typewriter
+aijcusp
+\family default
+ and 
+\family typewriter
+cusp
+\family default
+, respectively, to indicate to PETSc that CUDA should be used by the solver.
+ If they have already been set to a value, then the values will not be changed
+ even if they are incompatible with using CUDA.
 \end_layout
 
 \begin_layout Section
@@ -2874,20 +3206,6 @@ ImplicitLgDeform Implicit time stepping for static and quasi-static problems
 
 \begin_layout Description
 Explicit Explicit time stepping for dynamic problems with infinitesimal
- strains.
- This formulation uses consistent mass and damping matrices for the system
- Jacobian matrix.
-\end_layout
-
-\begin_layout Description
-ExplicitLgDeform Explicit time stepping for dynamic problems including the
- effects of rigid body motion and small strains.
- This formulation requires the use of the nonlinear solver, which is selected
- automatically.
-\end_layout
-
-\begin_layout Description
-ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
  strains and lumped system Jacobian.
  The cell matrices are lumped before assembly, permitting use of a vector
  for the diagonal system Jacobian matrix.
@@ -2895,22 +3213,85 @@ ExplicitLumped Explicit time stepping for dynamic problems with infinitesimal
 \end_layout
 
 \begin_layout Description
-ExplicitLumpedTri3 Optimized elasticity formulation for linear triangular
- cells with one point quadrature for dynamic problems with infinitesimal
- strains and lumped system Jacobian.
+ExplicitLgDeform Explicit time stepping for dynamic problems including the
+ effects of rigid body motion and small strains.
+ The cell matrices are lumped before assembly, permitting use of a vector
+ for the diagonal system Jacobian matrix.
  The built-in lumped solver is selected automatically.
 \end_layout
 
 \begin_layout Description
-ExplicitLumpedTet4 Optimized elasticity formulation for linear tetrahedral
- cells with one point quadrature for dynamic problems with infinitesimal
- strains and lumped system Jacobian.The built-in lumped solver is selected
- automatically.
+ExplicitTri3 Optimized elasticity formulation for linear triangular cells
+ with one point quadrature for dynamic problems with infinitesimal strains
+ and lumped system Jacobian.
+ The built-in lumped solver is selected automatically.
+\end_layout
+
+\begin_layout Description
+ExplicitTet4 Optimized elasticity formulation for linear tetrahedral cells
+ with one point quadrature for dynamic problems with infinitesimal strains
+ and lumped system Jacobian.The built-in lumped solver is selected automatically.
 \end_layout
 
 \begin_layout Standard
-An example of setting the formulation facility to the implicit time stepping
- component is:
+In many quasi-static simulations it is convenient to compute a static problem
+ with elastic deformation prior to computing a transient response.
+ Up through PyLith version 1.6 this was hardwired into the Implicit Forumulation
+ as advancing from time step 
+\begin_inset Formula $t=-\Delta t$
+\end_inset
+
+ to 
+\begin_inset Formula $t=0$
+\end_inset
+
+, and it could not be turned off.
+ PyLith now includes a property, 
+\family typewriter
+elastic_prestep
+\family default
+ in the TimeDependent component to turn on/off this behavior (the default
+ is to retain the previous behavior of computing the elastic deformation).
+ 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+\color none
+Turning off the elastic prestep calculation means the model only deforms
+ when an 
+\family typewriter
+\shape italic
+\color inherit
+increment
+\family default
+\shape default
+\color none
+ in loading or deformation is applied, because the time-stepping formulation
+ is implemented using the increment in displacement.
+\end_layout
+
+\begin_layout Standard
+The TimeDependent properties and facilities include
+\end_layout
+
+\begin_layout Description
+elastic_preset If true, perform a static calculation with elastic behavior
+ before time stepping (default is True).
+\end_layout
+
+\begin_layout Description
+formulation Formulation for solving the partial differential equation.
+\end_layout
+
+\begin_layout Standard
+An example of setting the properties and components in a .cfg file is
 \end_layout
 
 \begin_layout LyX-Code
@@ -2918,11 +3299,17 @@ An example of setting the formulation facility to the implicit time stepping
 \end_layout
 
 \begin_layout LyX-Code
-formulation = pylith.problems.Implicit
+formulation = pylith.problems.Implicit ; default
+\end_layout
+
+\begin_layout LyX-Code
+elastic_preset = True ; default
 \end_layout
 
 \begin_layout Standard
-The formulation can be set to the other formulations in a similar fashion.
+The formulation value can be set to the other formulations in a similar
+ fashion.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -2981,27 +3368,39 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 [pylithapp.timedependent.formulation]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 time_step = pylith.problems.TimeStepUniform
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 solver = pylith.problems.SolverLinear ; Nonlinear solver is pylith.problems.SolverNo
 nlinear
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 output = [domain,ground_surface]
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 matrix_type = sbaij ; To use a non-symmetric sparse matrix, set it to aij
 \end_layout
 
 \begin_layout LyX-Code
+
+\size footnotesize
 view_jacobian = false
 \end_layout
 
@@ -3770,26 +4169,26 @@ pylithapp.cfg
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 [pylithapp.timedependent.materials.material]
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties = spatialdata.spatialdb.UniformDB ; Set the db to a UniformDB
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.values = [vp,vs,density] ; Set the names of the values in the
  database
 \end_layout
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 db_properties.data = [5773.5*m/s, 3333.3*m/s, 2700.0*kg/m**3] ; Set the values
  in the database
 \end_layout
@@ -3824,6 +4223,83 @@ reference "cha:Tutorials"
 \end_inset
 
  use this database.
+\end_layout
+
+\begin_layout Subsection
+SimpleGridDB Spatial Database
+\end_layout
+
+\begin_layout Standard
+The SimpleGridDB object provides a much more efficient query algorithm than
+ SimpleDB in cases with a orthogonal grid.
+ The points do not need to be uniformly spaced along each coordinate direction.
+ Thus, in contrast to the SimpleDB there is an implicit topology.
+ Nevertheless, the points can be specified in any order, as well as over
+ a lower-dimension than the spatial dimension.
+ For example, one can specify a 2-D grid in 3-D space provided that the
+ 2-D grid is aligned with one of the coordinate axes.
+ 
+\end_layout
+
+\begin_layout Standard
+SimpleGridDB uses a simple ASCII file to specify the variation of values
+ (e.g., displacement field, slip field, physical properties) in space.
+ The file format is described in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spatialdata:SimpleGrid"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+As in the other Pyre objects, spatial database objects contain parameters
+ that can be set from the command line or using 
+\family typewriter
+.cfg or .pml
+\family default
+ files.
+ The parameters for a spatial database are:
+\end_layout
+
+\begin_layout Description
+label Label for the database, which is used in diagnostic messages.
+\end_layout
+
+\begin_layout Description
+query_type Type of search query to perform.
+ Values for this parameter are ``linear'' and ``nearest'' (default).
+\end_layout
+
+\begin_layout Description
+filename Filename for the spatial database.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+label = Material properties
+\end_layout
+
+\begin_layout LyX-Code
+query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+filename = mydb_grid.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Subsection
@@ -4388,6 +4864,12 @@ ments'']).
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:output:points"
+
+\end_inset
+
 Output at Arbitrary Points
 \end_layout
 
@@ -4436,6 +4918,10 @@ DataWriterVTKPoints
 ).
  In most cases users will want to use the 
 \family typewriter
+
+\begin_inset Newline linebreak
+\end_inset
+
 DataWriterHDF5Mesh
 \family default
 .
@@ -4580,6 +5066,12 @@ time_constant Value used to normalize time stamp in VTK files (default is
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:HDF5/Xdmf-Output"
+
+\end_inset
+
 HDF5/Xdmf Output
 \end_layout
 
@@ -4716,6 +5208,26 @@ name "fig:hdf5:layout"
 \end_layout
 
 \begin_layout Standard
+See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-statevars"
+
+\end_inset
+
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for a table of component values for tensor output in HDF5 files.
+ To avoid confusion about the ordering of components for tensor data, we
+ separate the components in the Xdmf file.
+\end_layout
+
+\begin_layout Standard
 HDF5 files do not contain self-correcting features that allow a file to
  be read if part of a dataset is corrupted.
  This type of error can occur if a job terminates abnormally in the middle
@@ -4733,7 +5245,7 @@ HDF5 files do not contain self-correcting features that allow a file to
 \family typewriter
 .dat
 \family default
-).
+.
  The HDF5 files include relative paths to the external data files, so these
  files can also be moved, but they, too, must be kept together in the same
  directory.
@@ -4771,13 +5283,57 @@ The binary PyLith packages include this feature and it is a default setting
 \end_layout
 
 \begin_layout Standard
-Accessing the datasets for additional analysis or visualization is identical
- in the two methods because the use of external data files is completely
- transparent to the user except for the presence of the additional files.
+Accessing the datasets for additional analysis or visualization is nearly
+ identical in the two methods because the use of external data files is
+ completely transparent to the user except for the presence of the additional
+ files.
+ Note that in order for ParaView to find the HDF5 and external data files,
+ it must be run from the same relative location where the simulation was
+ run.
+ For example, if the simulation was run from a directory called 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ and the HDF5/Xdmf files were written to 
+\begin_inset Quotes eld
+\end_inset
+
+work/output
+\begin_inset Quotes erd
+\end_inset
+
+, then ParaView should be run from the 
+\begin_inset Quotes eld
+\end_inset
+
+work
+\begin_inset Quotes erd
+\end_inset
+
+ directory.
+ See Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:material-model-statevars"
+
+\end_inset
+
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:material:parameters"
+
+\end_inset
+
+ for a table of component values for tensor output.
 \end_layout
 
 \begin_layout Subsubsection
-HDF5 utilities
+HDF5 Utilities
 \end_layout
 
 \begin_layout Standard
@@ -4950,7 +5506,7 @@ pylithinfo
 \family typewriter
 --help-properties
 \family default
- command line arguments when running PyLith to check the parameters to make
+ command-line arguments when running PyLith to check the parameters to make
  sure PyLith is using the parameters you intended.
 \end_layout
 
@@ -4969,13 +5525,17 @@ Use the
 \family default
 , 
 \family typewriter
+
+\begin_inset Newline newline
+\end_inset
+
 --petsc.ksp_converged_reason
 \family default
 , and 
 \family typewriter
 --petsc.snes_converged_reason
 \family default
- command line arguments (or set them in a parameter file) to view PyLith
+ command-line arguments (or set them in a parameter file) to view PyLith
  performance and monitor the convergence.
 \end_layout
 
@@ -4995,8 +5555,19 @@ name "sec:Troubleshooting"
 \end_layout
 
 \begin_layout Itemize
-Consult the PyLith FAQ webpage (ADD URL HERE) which contains a growing list
- of common problems and their corresponding solutions.
+Consult the PyLith FAQ webpage (
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.geodynamics.org/cig/community/workinggroups/short/workarea/pylith-wiki
+\end_layout
+
+\end_inset
+
+) which contains a growing list of common problems and their corresponding
+ solutions.
 \end_layout
 
 \begin_layout Itemize
@@ -5085,12 +5656,21 @@ This error occurs when trying to use the 32-bit linux binary on some 64-bit
  The workaround is:
 \end_layout
 
+\begin_deeper
 \begin_layout Enumerate
-Go to the lib/python2.6/site-packages directory.
+Go to the 
+\family typewriter
+lib/python2.6/site-packages
+\family default
+ directory.
 \end_layout
 
 \begin_layout Enumerate
-Unzip merlin-1.7-py2.6.egg (if it is a file and not a directory).
+Unzip 
+\family typewriter
+merlin-1.7-py2.6.egg
+\family default
+ (if it is a file and not a directory).
 \end_layout
 
 \begin_layout Enumerate
@@ -5098,15 +5678,28 @@ Go to the merlin directory.
 \end_layout
 
 \begin_layout Enumerate
-Edit __init__.py.
+Edit 
+\family typewriter
+__init__.py
+\family default
+.
  Replace line 308 plat = get_platform() with plat = "linux-i686"
 \end_layout
 
 \begin_layout Enumerate
-If merlin-1.7-py2.6.egg is a file, rezip merlin.
- Go to the site-packages directory and enter "zip -r merlin-1.7-py2.6.egg merlin".
+If 
+\family typewriter
+merlin-1.7-py2.6.egg
+\family default
+ is a file, rezip merlin.
+ Go to the site-packages directory and enter "
+\family typewriter
+zip -r merlin-1.7-py2.6.egg merlin
+\family default
+".
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -5131,7 +5724,7 @@ This usually occurs when the null space of the system Jacobian is nonzero,
  such as the case of a problem without Dirichlet boundary conditions on
  any boundary.
  If this arises when using the split fields and algebraic multigrid precondition
-ing and no additional Dirichlet boundary conditions are desired, then the
+ing, and no additional Dirichlet boundary conditions are desired, then the
  workaround is to revert to using the Additive Schwarz preconditioning without
  split fields as discussed in Section 
 \begin_inset CommandInset ref
@@ -5151,8 +5744,8 @@ PyLith crashes with a bus error.
 \begin_layout Quote
 This often indicates that PyLith is using incompatible versions of libraries.
  This can result from changing your environment variables after configuring
- or installing PyLith (when building from source) or errors in setting the
- environment variables (PATH, LD_LIBRARY_PATH, and PYTHONPATH).
+ or installing PyLith (when building from source) or from errors in setting
+ the environment variables (PATH, LD_LIBRARY_PATH, and PYTHONPATH).
  If the former case, simply reconfigure and rebuild PyLith.
  In the latter case, check your environment variables (order matters!) to
  make sure PyLith finds the desired directories before system directories.
@@ -5188,7 +5781,7 @@ reference "sec:Getting-Help-and"
 \family typewriter
 --petsc.start_in_debugger
 \family default
- command line argument:
+ command-line argument:
 \end_layout
 
 \begin_layout LyX-Code
@@ -5226,9 +5819,141 @@ Instead of actually running the problem, this causes PyLith to dump the
 
 \begin_layout LyX-Code
 
-\size small
+\size footnotesize
 mpirun -np 1 /path/to/valgrind --log-file=valgrind-log  /path/to/mpinemesis
  --pyre-start [..lots of junk..]
+\end_layout
+
+\begin_layout Section
+Post-Processing Utilities
+\end_layout
+
+\begin_layout Standard
+The PyLith distribution includes a few post-processing utilities.
+ These are Python scripts that are installed into the same bin directory
+ as the 
+\family typewriter
+pylith
+\family default
+ executable.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+pylith_eqinfo
+\end_layout
+
+\begin_layout Standard
+This utility computes the moment magnitude, seismic moment, seismic potency,
+ and average slip at user-specified time snapshots from PyLith fault HDF5
+ output.
+ The utility works with output from simulations with either prescribed slip
+ and/or spontaneous rupture.
+ Currently, we compute the shear modulus from a user-specified spatial database
+ at the centroid of the fault cells.
+ In the future we plan to account for lateral variations in shear modulus
+ across the fault when calculating the seismic moment.
+ The Python script is a Pyre application, so its parameters can be specified
+ using 
+\family typewriter
+.cfg
+\family default
+ and command line arguments just like PyLith.
+ The Pyre properties and facilities include:
+\end_layout
+
+\begin_layout Description
+output_filename Filename for output of slip information.
+\end_layout
+
+\begin_layout Description
+faults Array of fault names.
+\end_layout
+
+\begin_layout Description
+filename_pattern Filename pattern in C/Python format for creating filename
+ for each fault.
+ Default is
+\begin_inset Newline newline
+\end_inset
+
+
+\family typewriter
+output/fault_%s.h5
+\family default
+.
+\end_layout
+
+\begin_layout Description
+snapshots Array of timestamps for slip snapshosts ([-1] means use last time
+ step in file, which is the default).
+\end_layout
+
+\begin_layout Description
+snapshot_units Units for timestamps in array of snapshots.
+\end_layout
+
+\begin_layout Description
+db_properties Spatial database for elastic properties.
+\end_layout
+
+\begin_layout Description
+coordsys Coordinate system associated with mesh in simulation.
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+pylith_genxdmf
+\end_layout
+
+\begin_layout Standard
+This utility generates Xdmf files from HDF5 files that conform to the layout
+ used by PyLith.
+ It is a simple Python script with a single command line argument, the HDF5
+ file for input.
+ Typically, it is sued to regenerate Xdmf files that get corrupted or lost
+ due to renaming and moving.
+ It is also useful in updating Xdmf files when users add fields to HDF5
+ files during post-processing.
+\end_layout
+
+\begin_layout LyX-Code
+pylith_genxdmf --file=
+\shape italic
+PYLITH_HDF5_FILE
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\color inherit
+ 
+\series default
+If the HDF5 files contain external datasets, then this utility should be
+ run from the same relative path to the HDF5 files as when they were created.
+ For example, if a PyLith simulation was run from directory 
+\family typewriter
+work
+\family default
+ and HDF5 files were generated in 
+\family typewriter
+output/work
+\family default
+, then the utility should be run from the directory 
+\family typewriter
+work
+\family default
+.
+ Furthermore, a visualization tool, such as ParaView, should also be started
+ from the working directory 
+\family typewriter
+work
+\family default
+.
 \end_layout
 
 \end_body

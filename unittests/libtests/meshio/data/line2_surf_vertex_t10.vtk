@@ -9,11 +9,14 @@ CELLS 1 2
 CELL_TYPES 1
 1
 POINT_DATA 1
-VECTORS displacements double
-1.100000e+00 2.200000e+00 0.0
 SCALARS pressure double 1
 LOOKUP_TABLE default
-2.100000e+00
+1.100000e+00
+VECTORS displacement double
+2.100000e+00 0.0 0.0
+SCALARS stress double 1
+LOOKUP_TABLE default
+3.100000e+00
 SCALARS other double 2
 LOOKUP_TABLE default
 1.200000e+00 2.300000e+00

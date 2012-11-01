@@ -82,6 +82,7 @@ namespace pylith {
        *
        * @param mesh Finite-element mesh
        */
+      virtual
       void verifyConfiguration(const pylith::topology::Mesh& mesh) const;
       
       /** Get cell field associated with integrator.

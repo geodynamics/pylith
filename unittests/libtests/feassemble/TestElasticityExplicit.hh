@@ -97,14 +97,8 @@ public :
   /// Test integrateResidual().
   void testIntegrateResidual(void);
 
-  /// Test integrateResidualLumped().
-  void testIntegrateResidualLumped(void);
-
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
-
-  /// Test integrateJacobianLumped().
-  void testIntegrateJacobianLumped(void);
 
   /// Test updateStateVars().
   void testUpdateStateVars(void);

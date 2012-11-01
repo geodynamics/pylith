@@ -278,16 +278,6 @@ protected :
 			       const topology::Jacobian& jacobian,
 			       const topology::SolutionFields& fields);
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  /// Array of cohesive vertex information.
-  std::vector<CohesiveInfo> _cohesiveVertices;
-
-  /// Map label of cohesive cell to label of cells in fault mesh.
-  std::map<topology::Mesh::SieveMesh::point_type,
-           topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
@@ -304,6 +294,16 @@ private :
 
   /// Calculate fault area field.
   void _calcArea(void);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  /// Array of cohesive vertex information.
+  std::vector<CohesiveInfo> _cohesiveVertices;
+
+  /// Map label of cohesive cell to label of cells in fault mesh.
+  std::map<topology::Mesh::SieveMesh::point_type,
+           topology::SubMesh::SieveMesh::point_type> _cohesiveToFault;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

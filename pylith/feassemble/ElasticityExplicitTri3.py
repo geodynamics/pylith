@@ -60,6 +60,13 @@ class ElasticityExplicitTri3(IntegratorElasticity, ModuleElasticityExplicitTri3)
     return
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _verifyConfiguration(self):
+    ModuleElasticityExplicitTri3.verifyConfiguration(self, self.mesh)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():

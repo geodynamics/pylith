@@ -56,9 +56,10 @@ private:
   static const int _numVertices; ///< Number of vertices.
   static const FieldStruct _vertexFields[]; ///< Array of vertex fields.
 
-  static const PylithScalar _vertexField0[]; ///< Values for vertex field 0.
-  static const PylithScalar _vertexField1[]; ///< Values for vertex field 1.
-  static const PylithScalar _vertexField2[]; ///< Values for vertex field 2.
+  static const PylithScalar _vertexFieldScalar[]; ///< Values for scalar vertex field.
+  static const PylithScalar _vertexFieldVector[]; ///< Values for vector vertex field .
+  static const PylithScalar _vertexFieldTensor[]; ///< Values for tensor vertex field.
+  static const PylithScalar _vertexFieldOther[]; ///< Values for other vertex field.
   //@}
 
   /// @name Point information.
@@ -66,7 +67,7 @@ private:
   static const int _numPoints; ///< Number of points.
   static const int _spaceDim; ///< Spatial dimension.
   static const PylithScalar _points[]; ///< Coordinates of points.
-  //@}  
+  //@}
 
 }; // DataWriterVTKDataPointsTet4
 

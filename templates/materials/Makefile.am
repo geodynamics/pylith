@@ -45,6 +45,7 @@ endif
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) 
 
 INCLUDES = 
+INCLUDES += $(PETSC_CC_INCLUDES)
 
 # MODULE ---------------------------------------------------------------
 

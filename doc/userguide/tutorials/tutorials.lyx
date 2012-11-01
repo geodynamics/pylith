@@ -256,28 +256,43 @@ filename "shearwave/shearwave.lyx"
 \end_inset
 
 
+\begin_inset CommandInset include
+LatexCommand input
+filename "greensfns2d/greensfns2d.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Additional Examples
 \end_layout
 
+\begin_layout Subsection
+CUBIT Meshing Examples
+\end_layout
+
 \begin_layout Standard
-The 
+The directory 
 \family typewriter
-examples
+examples/meshing
 \family default
- directory also contains an example of using PyLith to compute Green's functions
- associated with slip at points on a fault surface in the 
+ contains several examples of using CUBIT to construct finite-element meshes
+ for complex geometry.
+ This includes features such as constructing nonplanar fault geometry from
+ contours, constructing topography from a DEM, and merging sheet bodies
+ (surfaces).
+ A separate examples discusses defining the discretization size using a
+ vertex field in an Exodus-II file.
+ See the 
 \family typewriter
-greensfns
-\family default
- directory.
- The files associated with this example contain comments to explain how
- the simulation is setup.
- Once you understand the examples described in detail in the previous sections
- of this chapter, you should have little trouble understanding this additional
- one.
+README files in the subdirectories for more detailed descriptions of these
+ examples.
+\end_layout
+
+\begin_layout Subsection
+Code Verification Benchmarks
 \end_layout
 
 \begin_layout Standard
@@ -293,8 +308,8 @@ http://geodynamics.org/svn/cig/short/3D/PyLith/benchmarks/trunk
 \end_inset
 
  contains input files for a number of community benchmarks.
- Most of the benchmarks include complete sets of PyLith input files.
- Some of the dynamic benchmarks do not include the mesh files because they
+ Some of the benchmarks include complete sets of PyLith input files.
+ However, most of the benchmarks do not include the mesh files because they
  are so large; instead they include the CUBIT journal files that can be
  used to generate the meshes.
 \end_layout

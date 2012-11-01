@@ -11,53 +11,9 @@ CURRENT BUGS
     pylith step02.cfg ../../../share/debug_malloc.cfg
     pylith step04.cfg ../../../share/debug_malloc.cfg
 
-* Poor trap of detecting point outside the domain in OutputSolnPoints.
-
 ======================================================================
 CURRENT ISSUES/PRIORITIES
 ======================================================================
-
-* Add h5py to PyLith binary
-
-* Use HDF5/h5py in automated full-scale tests.
-
-* Setup fieldsplit for SolverNonlinear [Matt]
-
-* 2-D materials
-
-  + PowerLawPlaneStrain (power law plane strain ) [Charles]
-
-* Manual
-
-  - Order of tensor components for Xdmf files
-  - Drucker Prager fit to yield surface
-  - Drucker Prager allow tensile yield
-  - Output soln points [DONE]
-    + Interpolation [DONE]
-    + PointsList [DONE]
-  - Linear prestep
-    + Turned on by default
-    + Static solution is linear prestep
-    + Inelastic solution requires increment in driving forces
-  - User specified start time (default is 0.0) [DONE]
-  - FaultCohesiveDyn
-    + Add switch for turning on/off zero tractions for fault opening [DONE]
-    + Switched to time-dependent formulation for prescribed tractions [DONE]
-    + Slip-weakening healing parameter [DONE]
-    + Changed regularization of rate and state friction [DONE]
-  - Green's functions
-    + GreensFns problem [DONE]
-    + FaultCohesiveImpulses [DONE]
-  - URL for PyLith FAQ for Troubleshooting (Section 5.7)
-  - Update field split settings (Section 5.1)
-  - PETSc w/CUDA (Add to Section 5.1)
-  - Update Components appendix [DONE?, need to check]
-  - FIATSimplex, FIATLagrange
-     cell.shape -> cell.dimension
-  - Examples/Tutorials
-    + Table with concepts/features
-    + examples/3d/hex8/step20 (dike opening)
-    + examples/2d/greensfns
 
 * configure
   
@@ -75,6 +31,10 @@ CURRENT ISSUES/PRIORITIES
 
     Add elasticPrestep() to Formulation (called from Problem)
     Remove solnIncr, keep setField()
+
+* Prescribed fault with opening has zero tractions (step20) Appears to
+  be a feature/artifact associated with how we implement slip with
+  Lagrange multipliers.
 
 ======================================================================
 1.8.0

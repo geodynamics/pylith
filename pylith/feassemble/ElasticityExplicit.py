@@ -60,6 +60,13 @@ class ElasticityExplicit(IntegratorElasticity, ModuleElasticityExplicit):
     return
 
 
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _verifyConfiguration(self):
+    ModuleElasticityExplicit.verifyConfiguration(self, self.mesh)
+    return
+
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():

@@ -73,15 +73,15 @@ protected :
    * @param propValues Array of property values.
    * @param dbValues Array of database values.
    */
-  void _dbToProperties(double* const propValues,
-		       const pylith::double_array& dbValues) const;
+  void _dbToProperties(PylithScalar* const propValues,
+		       const pylith::scalar_array& dbValues) const;
 
   /** Nondimensionalize properties.
    *
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _nondimProperties(double* const values,
+  void _nondimProperties(PylithScalar* const values,
 			 const int nvalues) const;
 
   /** Dimensionalize properties.
@@ -89,7 +89,7 @@ protected :
    * @param values Array of property values.
    * @param nvalues Number of values.
    */
-  void _dimProperties(double* const values,
+  void _dimProperties(PylithScalar* const values,
 		      const int nvalues) const;
 
   /** Compute friction from properties and state variables.
@@ -102,15 +102,15 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  void _dbToStateVars(double* const stateValues,
-		      const pylith::double_array& dbValues) const;
+  void _dbToStateVars(PylithScalar* const stateValues,
+		      const pylith::scalar_array& dbValues) const;
 
   /** Nondimensionalize state variables.
    *
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  void _nondimStateVars(double* const values,
+  void _nondimStateVars(PylithScalar* const values,
 			const int nvalues) const;
   
   /** Dimensionalize state variables.
@@ -118,11 +118,12 @@ protected :
    * @param values Array of initial state values.
    * @param nvalues Number of values.
    */
-  void _dimStateVars(double* const values,
+  void _dimStateVars(PylithScalar* const values,
 		     const int nvalues) const;
 
   /** Compute friction from properties and state variables.
    *
+   * @param t Time in simulation.
    * @param slip Current slip at location.
    * @param slipRate Current slip rate at location.
    * @param normalTraction Normal traction at location.
@@ -131,13 +132,14 @@ protected :
    * @param stateVars State variables at location.
    * @param numStateVars Number of state variables.
    */
-  double _calcFriction(const double slip,
-		       const double slipRate,
-		       const double normalTraction,
-		       const double* properties,
-		       const int numProperties,
-		       const double* stateVars,
-		       const int numStateVars);
+  PylithScalar _calcFriction(const PylithScalar t,
+			     const PylithScalar slip,
+			     const PylithScalar slipRate,
+			     const PylithScalar normalTraction,
+			     const PylithScalar* properties,
+			     const int numProperties,
+			     const PylithScalar* stateVars,
+			     const int numStateVars);
 
   // --------------------------------------------------------------------
   // Optional function in the PyLith interface for a fault
@@ -148,6 +150,7 @@ protected :
 
   /** Update state variables (for next time step).
    *
+   * @param t Time in simulation.
    * @param slip Current slip at location.
    * @param slipRate Current slip rate at location.
    * @param normalTraction Normal traction at location.
@@ -156,13 +159,14 @@ protected :
    * @param properties Properties at location.
    * @param numProperties Number of properties.
    */
-  void _updateStateVars(const double slip,
-      const double slipRate,
-      const double normalTraction,
-      double* const stateVars,
-      const int numStateVars,
-      const double* properties,
-      const int numProperties);
+  void _updateStateVars(const PylithScalar t,
+			const PylithScalar slip,
+			const PylithScalar slipRate,
+			const PylithScalar normalTraction,
+			PylithScalar* const stateVars,
+			const int numStateVars,
+			const PylithScalar* properties,
+			const int numProperties);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

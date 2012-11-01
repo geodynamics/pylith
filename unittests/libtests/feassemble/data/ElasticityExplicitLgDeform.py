@@ -52,38 +52,6 @@ class ElasticityExplicit(Component):
     Calculate contribution to residual of operator for integrator.
 
     {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
-          Sum(wt * [BL]^T [S])
-    """
-    import feutils
-
-    # Calculate action for inertia
-    M = integrator._calculateMassMat()
-    acc = (integrator.fieldTIncr - 
-           integrator.fieldT + 
-           integrator.fieldTmdt) / (integrator.dt**2) 
-    residual = -numpy.dot(M, acc)
-    residual = residual.flatten()
-    residual += self._elasticityResidual(integrator)
-    return residual
-
-
-  def calculateJacobian(self, integrator):
-    """
-    Calculate contribution to Jacobian matrix of operator for integrator.
-
-    [A] = (1/dt**2)[M]
-    """
-    M = integrator._calculateMassMat()
-
-    jacobian = 1.0/integrator.dt**2 * M
-    return jacobian
-
-
-  def calculateResidualLumped(self, integrator):
-    """
-    Calculate contribution to residual of operator for integrator.
-
-    {r} = (1/dt**2)[M](-{u(t+dt)} + 2 {u(t)} - {u(t-dt)}) -
           [K]{u(t)}
     """
     M = integrator._calculateMassMat()
@@ -100,7 +68,7 @@ class ElasticityExplicit(Component):
     return residual
 
 
-  def calculateJacobianLumped(self, integrator):
+  def calculateJacobian(self, integrator):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
 

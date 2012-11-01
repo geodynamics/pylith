@@ -20,10 +20,11 @@
  *
  * @brief C++ Rate and State fault constitutive model with ageing law.
  *
- * Implementation comes from "Kaneko, Y., N. Lapusta, and J.-P. Ampuero 
- * (2008), Spectral element modeling of spontaneous earthquake rupture on
- * rate and state faults: Effect of velocity-strengthening friction at 
- * shallow depths, J. Geophys. Res., 113, B09317" 
+ * Implementation of evolving state variable comes from "Kaneko, Y.,
+ * N. Lapusta, and J.-P. Ampuero (2008), Spectral element modeling of
+ * spontaneous earthquake rupture on rate and state faults: Effect of
+ * velocity-strengthening friction at shallow depths,
+ * J. Geophys. Res., 113, B09317"
  *
  * Regularized Rate & State equation : Eqn(15) of Kaneko et. al. (2008)
  *
@@ -58,12 +59,12 @@ public :
   /// Destructor.
   ~RateStateAgeing(void);
 
-  /** Set floor for slip rate used in computing friction. Used to
-   *  avoid zero friction at zero slip rate.
+  /** Set nondimensional slip rate below which friction varies
+   *  linearly with slip rate.
    *
-   * @param value Floor for slip rate.
+   * @param value Nondimensional slip rate.
    */
-  void minSlipRate(const PylithScalar value);
+  void linearSlipRate(const PylithScalar value);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -167,7 +168,7 @@ protected :
 private :
 
   /// Floor for slip rate used in friction calculation.
-  PylithScalar _minSlipRate;
+  PylithScalar _linearSlipRate;
 
   /// Indices for properties in section and spatial database.
   static const int p_coef;
