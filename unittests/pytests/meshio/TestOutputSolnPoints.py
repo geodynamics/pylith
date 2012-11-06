@@ -102,6 +102,22 @@ class TestOutputSolnPoints(unittest.TestCase):
     return
   
   
+  def test_initialize2(self):
+    """
+    Test initialize().
+    """
+    output = OutputSolnPoints()
+    output.inventory.reader.inventory.filename = "data/point.txt"
+    output.inventory.reader._configure()
+    output.inventory.writer.inventory.filename = "test.vtk"
+    output.inventory.writer._configure()
+    output._configure()
+
+    output.preinitialize()
+    output.initialize(self.mesh, self.normalizer)
+    return
+
+
   def test_initialize(self):
     """
     Test initialize().
