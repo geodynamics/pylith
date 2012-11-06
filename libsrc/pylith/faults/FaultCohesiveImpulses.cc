@@ -424,7 +424,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     } // for
   } // for
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   const ALE::Obj<RealSection>& amplitudeSection = _fields->get("impulse amplitude").section();
   assert(!amplitudeSection.isNull());
   int impulse = 0;
