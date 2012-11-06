@@ -118,7 +118,15 @@ pylith::faults::FaultCohesiveImpulses::threshold(const PylithScalar value)
 int
 pylith::faults::FaultCohesiveImpulses::numImpulses(void) const
 { // numImpulses
-  return _impulsePoints.size();
+  assert(_faultMesh);
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  MPI_Comm comm = faultSieveMesh->comm();
+  int numImpulsesLocal = _impulsePoints.size();
+  int numImpulses = 0;
+  MPI_Allreduce(&numImpulsesLocal, &numImpulses, 1, MPI_INT, MPI_SUM, comm);
+
+  return numImpulses;
 } // numImpulses
 
 // ----------------------------------------------------------------------
@@ -416,7 +424,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     } // for
   } // for
 
-#if 0 // DEBUGGING
+#if 1 // DEBUGGING
   const ALE::Obj<RealSection>& amplitudeSection = _fields->get("impulse amplitude").section();
   assert(!amplitudeSection.isNull());
   int impulse = 0;
