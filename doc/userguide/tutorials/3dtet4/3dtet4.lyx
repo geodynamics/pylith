@@ -520,7 +520,7 @@ quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.shape = tetrahedron
+quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
@@ -548,7 +548,7 @@ quadrature.cell = pylith.feassemble.FIATSimplex
 \end_layout
 
 \begin_layout LyX-Code
-quadrature.cell.shape = tetrahedron
+quadrature.cell.dimension = 3
 \end_layout
 
 \begin_layout LyX-Code
