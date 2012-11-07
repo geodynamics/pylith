@@ -32,7 +32,6 @@ class TestEqInfo(unittest.TestCase):
     """
     Check earthquake stats.
     """
-    tol = 1.0e-6
     attrs = ["timestamp",
              "ruparea",
              "potency",
@@ -53,9 +52,9 @@ class TestEqInfo(unittest.TestCase):
       for (valueE, value) in zip(valuesE, values):
         msg = "Mismatch in value for attribute '%s', %g != %g." % (attr, valueE, value)
         if valueE != 0.0:
-          self.assertAlmostEqual(valueE, value, msg=msg, delta=abs(tol*valueE))
+          self.assertAlmostEqual(1.0, value/valueE, places=6, msg=msg)
         else:
-          self.assertAlmostEqual(valueE, value, msg=msg, delta=tol)
+          self.assertAlmostEqual(valueE, value, places=6, msg=msg)
         
     return
 
