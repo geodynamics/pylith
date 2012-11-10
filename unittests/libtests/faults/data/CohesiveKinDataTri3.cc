@@ -35,19 +35,19 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1, 10, vertices are 2-7.
+ * Cells are 0-1, 2, vertices are 3-10.
  *
- *              6 -8- 3
+ *              7 -9- 4
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
  *          /   |     |   \
- *         2    |     |    5
+ *         3    |  2  |    6
  *          \   |     |   /
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              7 -9- 4
+ *              8-10- 5
  */
 
 #include "CohesiveKinDataTri3.hh"
@@ -136,13 +136,13 @@ const int pylith::faults::CohesiveKinDataTri3::_verticesFault[] = {
   1, 2
 };
 const int pylith::faults::CohesiveKinDataTri3::_verticesLagrange[] = {
-  8, 9
+  9, 10
 };
 const int pylith::faults::CohesiveKinDataTri3::_verticesNegative[] = {
-  3, 4
+  4, 5
 };
 const int pylith::faults::CohesiveKinDataTri3::_verticesPositive[] = {
-  6, 7
+  7, 8
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_numCohesiveCells = 1;
@@ -150,7 +150,7 @@ const int pylith::faults::CohesiveKinDataTri3::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinDataTri3::_cellMappingCohesive[] = {
-  10
+  2
 };
 
 

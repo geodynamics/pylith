@@ -883,6 +883,50 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   mesh->setDMMesh(newMesh);
 } // create
 
+PetscInt convertSieveToDMPointNumbering(PetscInt sievePoint, PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices)
+{
+  PetscInt dmPoint = -1;
+
+  if ((sievePoint >= 0) && (sievePoint < numNormalCells)) {
+    dmPoint = sievePoint;
+    //std::cout << "normal cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((sievePoint >= numNormalCells) && (sievePoint < numNormalCells+numNormalVertices)) {
+    dmPoint = sievePoint+numCohesiveCells;
+    //std::cout << "normal vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((sievePoint >= numNormalCells+numNormalVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
+    dmPoint = sievePoint+numCohesiveCells;
+    //std::cout << "extra vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((sievePoint >= numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices+numCohesiveCells)) {
+    dmPoint = sievePoint-(numNormalVertices+numShadowVertices+numLagrangeVertices);
+    //std::cout << "extra cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+  } else {
+    //std::cout << "face sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
+  }
+  return dmPoint;
+}
+
+PetscInt convertDMToSievePointNumbering(PetscInt dmPoint, PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices)
+{
+  PetscInt sievePoint = -1;
+
+  if ((dmPoint >= 0) && (dmPoint < numNormalCells)) {
+    sievePoint = dmPoint;
+    //std::cout << "normal cell sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((dmPoint >= numNormalCells) && (dmPoint < numNormalCells+numCohesiveCells)) {
+    sievePoint = dmPoint+numNormalVertices+numShadowVertices+numLagrangeVertices;
+    //std::cout << "extra cell sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((dmPoint >= numNormalCells+numCohesiveCells) && (dmPoint < numNormalCells+numCohesiveCells+numNormalVertices)) {
+    sievePoint = dmPoint-numCohesiveCells;
+    //std::cout << "normal vertex sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
+  } else if ((dmPoint >= numNormalCells+numCohesiveCells+numNormalVertices) && (dmPoint < numNormalCells+numCohesiveCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
+    sievePoint = dmPoint-numCohesiveCells;
+    //std::cout << "extra vertex sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
+  } else {
+    //std::cout << "face sieve point "<<sievePoint<<" <-- "<<" dm point"<<dmPoint<<std::endl;
+  }
+  return sievePoint;
+}
+
 // ----------------------------------------------------------------------
 // Form a parallel fault mesh using the cohesive cell information
 void
@@ -1049,6 +1093,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 			      coordinates->restrictPoint(*v_iter));
   }
   //faultSieveMesh->view("Parallel fault mesh");
+  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
+  mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+
   const SieveMesh::renumbering_type::const_iterator convertRenumberingEnd = convertRenumbering.end();
   PetscSection   coordSection, faultCoordSection;
   Vec            coordinateVec, faultCoordinateVec;
@@ -1062,11 +1109,12 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   err = DMComplexGetCoordinateSection(dmFaultMesh, &faultCoordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(faultCoordSection, fvStart, fvEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = pvStart; v < pvEnd; ++v) {
+    PetscInt sievePoint = convertDMToSievePointNumbering(v, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
     PetscInt dof;
 
-    if (convertRenumbering.find(v) == convertRenumberingEnd) continue;
+    if (convertRenumbering.find(sievePoint) == convertRenumberingEnd) continue;
     err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionSetDof(faultCoordSection, convertRenumbering[v], dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetDof(faultCoordSection, convertRenumbering[sievePoint], dof);CHECK_PETSC_ERROR(err);
   }
   err = PetscSectionSetUp(faultCoordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetStorageSize(faultCoordSection, &n);CHECK_PETSC_ERROR(err);
@@ -1077,12 +1125,13 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   err = VecGetArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
   err = VecGetArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
   for(PetscInt v = pvStart; v < pvEnd; ++v) {
+    PetscInt sievePoint = convertDMToSievePointNumbering(v, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
     PetscInt dof, off, foff;
 
-    if (convertRenumbering.find(v) == convertRenumberingEnd) continue;
+    if (convertRenumbering.find(sievePoint) == convertRenumberingEnd) continue;
     err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(faultCoordSection, convertRenumbering[v], &foff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(faultCoordSection, convertRenumbering[sievePoint], &foff);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < dof; ++d) {
       fa[foff+d] = a[off+d];
     }
@@ -1091,13 +1140,10 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
 
   // Have to make subpointMap here: renumbering[original] = fault
-  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
-
   IS        subpointMap;
   PetscInt *renum;
   PetscInt  pStart, pEnd;
 
-  mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
   err = DMComplexGetChart(dmFaultMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = DMComplexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
   assert(convertRenumbering.size() == pEnd-pStart);
@@ -1112,23 +1158,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   for(SieveMesh::renumbering_type::const_iterator p_iter = convertRenumbering.begin(); p_iter != convertRenumbering.end(); ++p_iter) {
     const PetscInt sievePoint = p_iter->first;
     const PetscInt faultPoint = p_iter->second;
-    PetscInt       dmPoint    = -1;
-
-    if ((sievePoint >= 0) && (sievePoint < numNormalCells)) {
-      dmPoint = sievePoint;
-      //std::cout << "normal cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-    } else if ((sievePoint >= numNormalCells) && (sievePoint < numNormalCells+numNormalVertices)) {
-      dmPoint = sievePoint+numCohesiveCells;
-      //std::cout << "normal vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-    } else if ((sievePoint >= numNormalCells+numNormalVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices)) {
-      dmPoint = sievePoint+numCohesiveCells;
-      //std::cout << "extra vertex sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-    } else if ((sievePoint >= numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices) && (sievePoint < numNormalCells+numNormalVertices+numShadowVertices+numLagrangeVertices+numCohesiveCells)) {
-      dmPoint = sievePoint-numNormalVertices+numShadowVertices+numLagrangeVertices;
-      //std::cout << "extra cell sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-    } else {
-      //std::cout << "face sieve point "<<sievePoint<<" --> "<<" dm point"<<dmPoint<<std::endl;
-    }
+    PetscInt       dmPoint    = convertSieveToDMPointNumbering(sievePoint, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
     renum[faultPoint] = dmPoint;
     std::cout << "renum["<<faultPoint<<"]: "<<dmPoint<<std::endl;
   }
