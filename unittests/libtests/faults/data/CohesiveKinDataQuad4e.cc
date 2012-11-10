@@ -42,9 +42,9 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-3,16-17 vertices are 4-15.
+ * Cells are 0-3,4-5 vertices are 6-20.
  *
- *      10 --------11-18-15 --------12
+ *      12 --------13-20-17 --------14
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
@@ -53,7 +53,7 @@
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
- *       5 -------- 7-17-14 -------- 9
+ *       7 -------- 9-19-16 --------11
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
@@ -62,7 +62,7 @@
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
- *       4 -------- 6-16-13 -------- 8
+ *       6 -------- 8-18-15 --------10
  */
 
 
@@ -187,16 +187,16 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4e::_area[] = {
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesFault[] = {
-  3, 2, 4
+   3,  2,  4
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesLagrange[] = {
-  17, 16, 18
+  19, 18, 20
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesNegative[] = {
-  7, 6, 11
+   9,  8, 13
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_verticesPositive[] = {
-  14, 13, 15
+  16, 15, 17
 };
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numCohesiveCells = 2;
@@ -204,7 +204,7 @@ const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingFault[] = {
   0, 1
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingCohesive[] = {
-  19, 20
+  4, 5
 };
 
 

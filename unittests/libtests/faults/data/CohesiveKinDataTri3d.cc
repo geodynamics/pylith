@@ -41,27 +41,27 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-3, 13-14, vertices are 4-12.
+ * Cells are 0-3, 4-5, vertices are 6-14,15-17.
  *
- *         9
+ *        11
  *        / \
  *       /   \
  *      /     \
  *     /       \
- *    8---------  5
- * 15 |        13/|
- *   12--------10 |
+ *   10---------  7
+ * 17 |        15/|
+ *   14--------12 |
  *     \       /| |\
  *      \     / | | \
  *       \   /  | |  \
  *        \ /   | |   \
- *         4    | |    7
+ *         6    | |    9
  *          \   | |   /
  *           \  | |  /
  *            \ | | /
  *             \| |/
- *             11-6
- *               14
+ *             13-8
+ *               16
  */
 
 
@@ -174,16 +174,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTri3d::_area[] = {
 
 const int pylith::faults::CohesiveKinDataTri3d::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTri3d::_verticesFault[] = {
-  4, 2, 3
+   4,  2,  3
 };
 const int pylith::faults::CohesiveKinDataTri3d::_verticesLagrange[] = {
-  15, 13, 14
+  17, 15, 16
 };
 const int pylith::faults::CohesiveKinDataTri3d::_verticesNegative[] = {
-  8, 5, 6
+  10,  7,  8
 };
 const int pylith::faults::CohesiveKinDataTri3d::_verticesPositive[] = {
-  12, 10, 11
+  14, 12, 13
 };
 
 const int pylith::faults::CohesiveKinDataTri3d::_numCohesiveCells = 2;
@@ -191,7 +191,7 @@ const int pylith::faults::CohesiveKinDataTri3d::_cellMappingFault[] = {
   0, 1
 };
 const int pylith::faults::CohesiveKinDataTri3d::_cellMappingCohesive[] = {
-  16, 17
+  4, 5
 };
 
 const PylithScalar pylith::faults::CohesiveKinDataTri3d::_residual[] = {

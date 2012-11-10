@@ -178,16 +178,16 @@ const PylithScalar pylith::faults::CohesiveKinDataHex8::_jacobianLumped[] = {
 
 const int pylith::faults::CohesiveKinDataHex8::_numFaultVertices = 4;
 const int pylith::faults::CohesiveKinDataHex8::_verticesFault[] = {
-  3, 4, 2, 1
+   3,  4,  2,  1
 };
 const int pylith::faults::CohesiveKinDataHex8::_verticesLagrange[] = {
-  20, 21, 19, 18
+  21, 22, 20, 19
 };
 const int pylith::faults::CohesiveKinDataHex8::_verticesNegative[] = {
-  8, 9, 7, 6
+   9, 10,  8,  7
 };
 const int pylith::faults::CohesiveKinDataHex8::_verticesPositive[] = {
-  16, 17, 15, 14
+  17, 18, 16, 15
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_numCohesiveCells = 1;
@@ -195,7 +195,7 @@ const int pylith::faults::CohesiveKinDataHex8::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinDataHex8::_cellMappingCohesive[] = {
-  22
+  2
 };
 
 
