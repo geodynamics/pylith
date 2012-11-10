@@ -156,7 +156,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
     err = PetscFindInt(_data->verticesLagrange[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
-    CPPUNIT_ASSERT_EQUAL(faultPoint, v);
+    CPPUNIT_ASSERT_EQUAL(faultPoint, _data->verticesFault[v-vStart]);
   } // for
   err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, vEnd-vStart);

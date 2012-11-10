@@ -150,16 +150,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4f::_area[] = {
 
 const int pylith::faults::CohesiveKinDataTet4f::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4f::_verticesFault[] = {
-  3, 1, 2
+   3,  1,  2
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesLagrange[] = {
-  12, 10, 11
+  13, 11, 12
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesNegative[] = {
-  5, 3, 4
+   6,  4,  5
 };
 const int pylith::faults::CohesiveKinDataTet4f::_verticesPositive[] = {
-  9, 7, 8
+  10,  8,  9
 };
 
 const int pylith::faults::CohesiveKinDataTet4f::_numCohesiveCells = 1;
@@ -167,7 +167,7 @@ const int pylith::faults::CohesiveKinDataTet4f::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinDataTet4f::_cellMappingCohesive[] = {
-  13
+  2
 };
 
 

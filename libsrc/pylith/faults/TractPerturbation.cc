@@ -111,9 +111,9 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
   _parameters->get("value").allocate();
   if (_dbInitial) {
     _parameters->add("initial", "traction_initial", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    _parameters->get("value").vectorFieldType(topology::FieldBase::VECTOR);
-    _parameters->get("value").scale(pressureScale);
-    _parameters->get("value").allocate();
+    _parameters->get("initial").vectorFieldType(topology::FieldBase::VECTOR);
+    _parameters->get("initial").scale(pressureScale);
+    _parameters->get("initial").allocate();
   }
   if (_dbRate) {
     _parameters->add("rate", "traction_rate", topology::FieldBase::VERTICES_FIELD, spaceDim);

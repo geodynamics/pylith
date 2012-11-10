@@ -1160,7 +1160,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     const PetscInt faultPoint = p_iter->second;
     PetscInt       dmPoint    = convertSieveToDMPointNumbering(sievePoint, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
     renum[faultPoint] = dmPoint;
-    std::cout << "renum["<<faultPoint<<"]: "<<dmPoint<<std::endl;
+    //std::cout << "renum["<<faultPoint<<"]: "<<dmPoint<<std::endl;
   }
   for(PetscInt p = 1; p < pEnd-pStart; ++p) {
     if (renum[p-1] == -1) continue;

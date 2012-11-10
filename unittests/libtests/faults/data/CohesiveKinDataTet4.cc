@@ -26,10 +26,10 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,13, vertices are 2-9.
+ * Cells are 0-1,2, vertices are 3-13.
  *
- * 2   3,4,5  7,8,9   6
- *             10,11,12
+ * 3   4,5,6  8,9,10   7
+ *             11,12,13
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
@@ -137,16 +137,16 @@ const PylithScalar pylith::faults::CohesiveKinDataTet4::_jacobianLumped[] = {
 
 const int pylith::faults::CohesiveKinDataTet4::_numFaultVertices = 3;
 const int pylith::faults::CohesiveKinDataTet4::_verticesFault[] = {
-  2, 1, 3
+   2,  1,  3
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesLagrange[] = {
-  11, 10, 12
+  12, 11, 13
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesNegative[] = {
-  4, 3, 5
+   5,  4,  6
 };
 const int pylith::faults::CohesiveKinDataTet4::_verticesPositive[] = {
-  8, 7, 9
+   9,  8, 10
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numCohesiveCells = 1;
@@ -154,7 +154,7 @@ const int pylith::faults::CohesiveKinDataTet4::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinDataTet4::_cellMappingCohesive[] = {
-  13
+  2
 };
 
 
