@@ -66,7 +66,7 @@ public :
    *
    * @returns Parameter fields.
    */
-  const topology::FieldsNew<topology::SubMesh>* parameterFields(void) const;
+  const topology::Fields<topology::Field<topology::SubMesh> >* parameterFields(void) const;
   
   /** Initialize slip time function.
    *
@@ -129,7 +129,7 @@ protected :
 private :
   
   /// Parameters for perturbations.
-  topology::FieldsNew<topology::SubMesh>* _parameters;
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
   /// Time scale for current time.
   PylithScalar _timeScale;

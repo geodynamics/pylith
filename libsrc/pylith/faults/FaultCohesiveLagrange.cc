@@ -1687,6 +1687,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 
   logger.stagePop();
 
+  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
   err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
@@ -1703,6 +1704,9 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     const PetscScalar *coords = PETSC_NULL;
     PetscInt           coordsSize;
     err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    _quadrature->computeGeometry(coordinatesCell, c);
+    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get cell geometry information that depends on cell
@@ -1718,11 +1722,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
       } // for
     } // for
     err = DMComplexVecSetClosure(faultDMMesh, areaSection, areaVec, c, &areaCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
-
-#if not defined(PRECOMPUTE_GEOMETRY)
-    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-#endif
-    PetscLogFlops( numQuadPts*(1+numBasis*2) );
+    PetscLogFlops(numQuadPts*(1+numBasis*2));
   } // for
 
   // Assemble area information

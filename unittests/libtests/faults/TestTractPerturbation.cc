@@ -26,7 +26,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
+#include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -141,10 +141,12 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             faultDMMesh = faultMesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   //traction.view("TRACTION"); // DEBUGGING
 
@@ -152,24 +154,25 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   int iPoint = 0;
 
   CPPUNIT_ASSERT(tract._parameters);
-  const ALE::Obj<RealUniformSection>& paramsSection = tract._parameters->section();
-  CPPUNIT_ASSERT(!paramsSection.isNull());
-  const int fiberDim = tract._parameters->fiberDim();
-  const int valueIndex = tract._parameters->sectionIndex("value");
-  const int valueFiberDim = tract._parameters->sectionFiberDim("value");
-  CPPUNIT_ASSERT_EQUAL(spaceDim, valueFiberDim);
-  CPPUNIT_ASSERT(valueIndex + valueFiberDim < fiberDim);
-  
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter, ++iPoint) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, paramsSection->getFiberDimension(*v_iter));
-    const PylithScalar* vals = paramsSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(vals);
+  PetscSection valuesSection = tract._parameters->get("values").petscSection();
+  Vec          valuesVec     = tract._parameters->get("values").localVector();
+  PetscScalar *valuesArray;
+  assert(valuesSection);assert(valuesVec);
+
+  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+    PetscInt vdof, voff;
+
+    err = PetscSectionGetDof(valuesSection, v, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valuesSection, v, &voff);CHECK_PETSC_ERROR(err);
+    assert(vdof == spaceDim);
     
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const PylithScalar valueE = tractionE[iPoint*spaceDim+iDim];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[valueIndex+iDim], tolerance);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      const PylithScalar valueE = tractionE[iPoint*spaceDim+d];
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, valuesArray[voff+d], tolerance);
     } // for
   } // for
+  err = VecRestoreArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
 } // testCalculate
 
 // ----------------------------------------------------------------------
@@ -188,9 +191,9 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   TractPerturbation tract;
   _initialize(&mesh, &faultMesh, &tract);
   
-  const topology::FieldsNew<topology::SubMesh>* parameters = tract.parameterFields();
-  const ALE::Obj<RealUniformSection>& parametersSection = parameters->section();
-  CPPUNIT_ASSERT(!parametersSection.isNull());
+  const topology::Fields<topology::Field<topology::SubMesh> >* parameters = tract.parameterFields();
+  //const ALE::Obj<RealUniformSection>& parametersSection = parameters->section();
+  //CPPUNIT_ASSERT(!parametersSection.isNull());
 
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
@@ -200,14 +203,14 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
   for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter, ++iPoint) {
-    const int fiberDim = parametersSection->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-    const PylithScalar* vals = parametersSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(vals);
+    //const int fiberDim = parametersSection->getFiberDimension(*v_iter);
+    //CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+    const PylithScalar* vals;// = parametersSection->restrictPoint(*v_iter);
+    //CPPUNIT_ASSERT(vals);
 
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const PylithScalar valueE = parametersE[iPoint*fiberDim+iDim];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[iDim], tolerance);
+    for(PetscInt d = 0; d < fiberDimE; ++d) {
+      const PylithScalar valueE = parametersE[iPoint*fiberDimE+d];
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[d], tolerance);
     } // for
   } // for
 } // testParameterFields

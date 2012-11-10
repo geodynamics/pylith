@@ -156,9 +156,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
     err = PetscFindInt(_data->verticesLagrange[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
-#if 1
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
-#endif
   } // for
   err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, vEnd-vStart);
@@ -206,7 +204,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     CPPUNIT_ASSERT_EQUAL(orientationSize, dof);
 
     const PylithScalar tolerance = 1.0e-06;
-    for(int d = 0; d < orientationSize; ++d) {
+    for(PetscInt d = 0; d < orientationSize; ++d) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->orientation[iVertex*orientationSize+d], orientationArray[off+d], tolerance);
     } // for
   } // for
