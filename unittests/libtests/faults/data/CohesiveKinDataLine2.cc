@@ -23,7 +23,8 @@
  *   2 -------- 3 -------- 4
  *
  * After adding cohesive elements
- *   2 -------- 3-6-5 -------- 4
+ *                2
+ *   3 -------- 4-7-6 -------- 5
  */
 
 #include "CohesiveKinDataLine2.hh"
@@ -102,13 +103,13 @@ const int pylith::faults::CohesiveKinDataLine2::_verticesFault[] = {
   1
 };
 const int pylith::faults::CohesiveKinDataLine2::_verticesLagrange[] = {
-  6
+  7
 };
 const int pylith::faults::CohesiveKinDataLine2::_verticesPositive[] = {
-  5
+  6
 };
 const int pylith::faults::CohesiveKinDataLine2::_verticesNegative[] = {
-  3
+  4
 };
 
 const int pylith::faults::CohesiveKinDataLine2::_numCohesiveCells = 1;
@@ -116,7 +117,7 @@ const int pylith::faults::CohesiveKinDataLine2::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinDataLine2::_cellMappingCohesive[] = {
-  7
+  2
 };
 
 
