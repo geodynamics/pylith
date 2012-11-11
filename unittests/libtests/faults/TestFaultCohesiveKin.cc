@@ -769,6 +769,9 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   const int spaceDim = cs->spaceDim();
 
   topology::Field<topology::Mesh> splitField(mesh);
+  splitField.addField("displacement", spaceDim);
+  splitField.addField("multipliers", spaceDim);
+  splitField.setupFields();
   splitField.newSection(disp, spaceDim);
   splitField.splitDefault();
   fault.splitField(&splitField);
@@ -784,9 +787,9 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(2, numFields);
   err = PetscSectionGetFieldComponents(section, 0, &numComp);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(spaceDim, numFields);
+  CPPUNIT_ASSERT_EQUAL(spaceDim, numComp);
   err = PetscSectionGetFieldComponents(section, 1, &numComp);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(1, numFields);
+  CPPUNIT_ASSERT_EQUAL(spaceDim, numComp);
 
   DM              dmMesh = mesh.dmMesh();
   PetscInt        vStart, vEnd;
