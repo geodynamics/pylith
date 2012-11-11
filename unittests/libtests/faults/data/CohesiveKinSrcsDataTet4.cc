@@ -152,13 +152,13 @@ const int pylith::faults::CohesiveKinSrcsDataTet4::_verticesFault[] = {
   2, 1, 3
 };
 const int pylith::faults::CohesiveKinSrcsDataTet4::_verticesLagrange[] = {
-  11, 10, 12
+  12, 11, 13
 };
 const int pylith::faults::CohesiveKinSrcsDataTet4::_verticesNegative[] = {
-  4, 3, 5
+  5, 4, 6
 };
 const int pylith::faults::CohesiveKinSrcsDataTet4::_verticesPositive[] = {
-  8, 7, 9
+  9, 8, 10
 };
 
 const int pylith::faults::CohesiveKinSrcsDataTet4::_numCohesiveCells = 1;
@@ -166,7 +166,7 @@ const int pylith::faults::CohesiveKinSrcsDataTet4::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinSrcsDataTet4::_cellMappingCohesive[] = {
-  13
+  2
 };
 
 

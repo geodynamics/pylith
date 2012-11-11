@@ -33,18 +33,18 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10 vertices are 2-9.
+ * Cells are 0-1,2 vertices are 3-10.
  *
+ *       4 -------- 6 -12-- 10 -------- 8
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
  *       3 -------- 5 -11-- 9 -------- 7
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       2 -------- 4 -10-- 8 -------- 6
  */
 
 #include "CohesiveKinSrcsDataQuad4.hh"
@@ -148,13 +148,13 @@ const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesFault[] = {
   1, 2
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesLagrange[] = {
-  10, 11
+  11, 12
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesNegative[] = {
-  4, 5
+  5, 6
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesPositive[] = {
-  8, 9
+  9, 10
 };
 
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_numCohesiveCells = 1;
@@ -162,7 +162,7 @@ const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingCohesive[] = {
-  12
+  2
 };
 
 

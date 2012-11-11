@@ -26,7 +26,7 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,16 and vertices are 4-15.
+ * Cells are 0-1,2 and vertices are 3-15.
  *
  *       2,3,4,5 -------- 6,7,8,9 -- 14,15,16,17 -------- 10,11,12,13
  *                                    18,19,20,21
@@ -193,13 +193,13 @@ const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesFault[] = {
   3, 4, 2, 1
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesLagrange[] = {
-  20, 21, 19, 18
+  21, 22, 20, 19
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesNegative[] = {
-  8, 9, 7, 6
+  9, 10, 8, 7
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesPositive[] = {
-  16, 17, 15, 14
+  17, 18, 16, 15
 };
 
 const int pylith::faults::CohesiveKinSrcsDataHex8::_numCohesiveCells = 1;
@@ -207,7 +207,7 @@ const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingFault[] = {
   0
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingCohesive[] = {
-  22
+  2
 };
 
 
