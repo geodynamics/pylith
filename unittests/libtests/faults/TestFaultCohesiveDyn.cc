@@ -806,7 +806,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
   int nrowsM = 0;
   int ncolsM = 0;
   PetscMat jacobianMat = jacobian->matrix();
-  MatGetSize(jacobianMat, &nrowsM, &ncolsM);
+  err = MatGetSize(jacobianMat, &nrowsM, &ncolsM);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nrows, nrowsM);
   CPPUNIT_ASSERT_EQUAL(ncols, ncolsM);
 
@@ -816,8 +816,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
     rows[iRow] = iRow;
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
-  MatSetValues(jacobianMat, nrows, &rows[0], ncols, &cols[0], 
-	       _data->jacobian, INSERT_VALUES);
+  err = MatSetValues(jacobianMat, nrows, &rows[0], ncols, &cols[0], _data->jacobian, INSERT_VALUES);CHECK_PETSC_ERROR(err);
   jacobian->assemble("final_assembly");
 
 } // _setFieldsJacobian

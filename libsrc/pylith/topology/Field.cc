@@ -223,6 +223,15 @@ template<typename mesh_type, typename section_type>
 int
 pylith::topology::Field<mesh_type, section_type>::chartSize(void) const
 { // chartSize
+  if (_dm) {
+    PetscSection   s;
+    PetscInt       pStart, pEnd;
+    PetscErrorCode err;
+
+    err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetChart(s, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    return pEnd-pStart;
+  }
   return _section.isNull() ? 0 : _section->getChart().size();
 } // chartSize
 
@@ -922,10 +931,9 @@ pylith::topology::Field<mesh_type, section_type>::copy(const Field& field)
 	<< "    size: " << dstSize;
     throw std::runtime_error(msg.str());
   } // if
-  assert( (_section.isNull() && field._section.isNull()) ||
-	  (!_section.isNull() && !field._section.isNull()) );
+  assert(_localVec && field._localVec);
 
-  if (!_section.isNull()) {
+  if (!_section.isNull() && !field._section.isNull()) {
     // Copy values from field
     const chart_type& chart = _section->getChart();
     const typename chart_type::const_iterator chartBegin = chart.begin();

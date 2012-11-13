@@ -35,19 +35,19 @@
  *
  * After adding cohesive elements using Sieve labels.
  *
- * Cells are 0-1, 8, vertices are 2-7.
+ * Cells are 0-1, 2, vertices are 3-10.
  *
- *              6 -8- 3
+ *              7 -9- 4
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
  *          /   |     |   \
- *         2    |     |    5
+ *         3    |     |    6
  *          \   |     |   /
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              7 -9- 4
+ *              8-10- 5
  */
 
 #include "CohesiveDynDataTri3.hh"
@@ -259,7 +259,7 @@ const PylithScalar pylith::faults::CohesiveDynDataTri3::_initialTractions[] = {
 
 const int pylith::faults::CohesiveDynDataTri3::_numConstraintVert = 2;
 const int pylith::faults::CohesiveDynDataTri3::_constraintVertices[] = {
-  8, 9
+  9, 10
 };
 
 // ----------------------------------------------------------------------
