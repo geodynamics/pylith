@@ -62,6 +62,29 @@ and ExplicitLumped is now Explicit.
   formulation = pylith.problems.ExplicitTet4
 
 ----------------------------------------------------------------------
+Version 1.8.1
+----------------------------------------------------------------------
+
+* Bug fixes
+
+  - Fixed two MPI related bugs in computing Green's functions in
+    parallel. The number of impulses corresponded to only those on
+    process 0.
+
+  - Fixed bug when reading in list of output points with just one
+    point.
+
+  - Adjusted autoconf Python setup macro to remove temporary
+    sysconfig.pyc file.
+
+  - Added check to make sure degree of freedom specified in Dirichlet
+    BC is consistent with spatial dimension of problem.
+
+  - Corrected two typos in the manual related to fault opening and
+    tractions in examples/3d/hex8/step20 and updating to the use of
+    cell.dimension for the quadrature scheme with tets.
+
+----------------------------------------------------------------------
 Version 1.8.0
 ----------------------------------------------------------------------
 
