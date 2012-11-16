@@ -1,18 +1,14 @@
 Greetings,
 
-I am pleased to announce the release of PyLith 1.8.0, a finite-element
+I am pleased to announce the release of PyLith 1.8.1, a finite-element
 code designed to solve dynamic elastic problems and quasi-static
 viscoelastic problems in tectonic deformation.
 
-This release adds estimating the stable time step for explicit time
-stepping, adds a post-processing utility for computing the moment
-magnitude and average slip for any fault output snapshot, includes a
-couple of additional examples of CUBIT meshing techniques, fixes
-several bugs in PyLith v1.7.1 and corrects some typos in the
-manual. We strongly recommend all users of previous PyLith releases
-switch to this latest release.
+This release fixes a few bugs in PyLith v1.8.0. We strongly recommend
+all users of previous PyLith releases switch to this latest
+release.
 
-See the README file for changes required to switch to the v1.8.0
+See the README file for changes required to switch to the v1.8.x
 release series from previous versions.
 
 You can download the source code and binaries from
@@ -23,6 +19,27 @@ Detailed installation instructions for the binary packages are in the
 User Manual with detailed building instructions for a few platforms in
 the INSTALL file bundled with the PyLith Installer utility.
 
+
+RELEASE NOTES - PyLith v1.8.1
+
+* Bug fixes
+
+  - Fixed two MPI related bugs in computing Green's functions in
+    parallel. The number of impulses corresponded to only those on
+    processor 0.
+
+  - Fixed bug when reading in list of output points with just one
+    point.
+
+  - Adjusted autoconf Python setup macro to remove temporary
+    sysconfig.pyc file.
+
+  - Added check to make sure degree of freedom specified in Dirichlet
+    BC is consistent with spatial dimension of problem.
+
+  - Corrected two typos in the manual related to fault opening and
+    tractions in examples/3d/hex8/step20 and updating to the use of
+    cell.dimension for the quadrature scheme with tets.
 
 RELEASE NOTES - PyLith v1.8.0
 

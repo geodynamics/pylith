@@ -151,7 +151,7 @@ class GreensFns(Problem):
     for material in self.materials.components():
       material.useElasticBehavior(True)
 
-    nimpulses = self.source.numImpulses()*self.source.numComponents()
+    nimpulses = self.source.numImpulses()
     ipulse = 0;
     dt = 1.0
     while ipulse < nimpulses:

@@ -99,6 +99,22 @@ class TestDirichletBC(unittest.TestCase):
     return
 
 
+  def test_verifyConfiguration(self):
+    """
+    Test verifyConfiguration().
+
+    WARNING: This is not a rigorous test of verifyConfiguration() because we
+    don't verify the results.
+    """
+
+    (mesh, bc, field) = self._initialize()
+    bc.verifyConfiguration()
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
   def test_setConstraintSizes(self):
     """
     Test setConstraintSizes().
