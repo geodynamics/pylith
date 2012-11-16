@@ -90,12 +90,14 @@ void
 pylith::faults::FaultCohesiveImpulses::impulseDOF(const int* flags,
 						  const int size)
 { // impulseDOF
-  if (size > 0)
+  if (size > 0) {
     assert(flags);
+  } // if
 
   _impulseDOF.resize(size);
-  for (int i=0; i < size; ++i)
+  for (int i=0; i < size; ++i) {
     _impulseDOF[i] = flags[i];
+  } // for
 } // impulseDOF
 
 // ----------------------------------------------------------------------
@@ -118,7 +120,15 @@ pylith::faults::FaultCohesiveImpulses::threshold(const PylithScalar value)
 int
 pylith::faults::FaultCohesiveImpulses::numImpulses(void) const
 { // numImpulses
-  return _impulsePoints.size();
+  assert(_faultMesh);
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
+  MPI_Comm comm = faultSieveMesh->comm();
+  int numImpulsesLocal = _impulsePoints.size();
+  int numImpulses = 0;
+  MPI_Allreduce(&numImpulsesLocal, &numImpulses, 1, MPI_INT, MPI_SUM, comm);
+
+  return numImpulses;
 } // numImpulses
 
 // ----------------------------------------------------------------------
@@ -181,7 +191,7 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
-                                              const topology::SolutionFields* fields)
+						   const topology::SolutionFields* fields)
 { // vertexField
   assert(_faultMesh);
   assert(_quadrature);
@@ -196,11 +206,9 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
   PylithScalar scale = 0.0;
   int fiberDim = 0;
   if (0 == strcasecmp("slip", name)) {
-    const topology::Field<topology::SubMesh>& dispRel = 
-      _fields->get("relative disp");
+    const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
@@ -210,50 +218,41 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     const ALE::Obj<RealSection>& orientationSection = _fields->get(
       "orientation").section();
     assert(!orientationSection.isNull());
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      0);
+    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(0);
     assert(!dirSection.isNull());
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dirSection);
     buffer.label("strike_dir");
     buffer.scale(1.0);
     return buffer;
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    const ALE::Obj<RealSection>& orientationSection = _fields->get(
-      "orientation").section();
+    const ALE::Obj<RealSection>& orientationSection = _fields->get("orientation").section();
     assert(!orientationSection.isNull());
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      1);
+    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(1);
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dirSection);
     buffer.label("dip_dir");
     buffer.scale(1.0);
     return buffer;
 
   } else if (0 == strcasecmp("normal_dir", name)) {
-    const ALE::Obj<RealSection>& orientationSection = _fields->get(
-      "orientation").section();
+    const ALE::Obj<RealSection>& orientationSection = _fields->get("orientation").section();
     assert(!orientationSection.isNull());
     const int space = (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
-    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(
-      space);
+    const ALE::Obj<RealSection>& dirSection = orientationSection->getFibration(space);
     assert(!dirSection.isNull());
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(dirSection);
     buffer.label("normal_dir");
     buffer.scale(1.0);
     return buffer;
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
-    topology::Field<topology::SubMesh>& amplitude =
-        _fields->get("impulse amplitude");
+    topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
     return amplitude;
 
   } else if (0 == strcasecmp("area", name)) {
@@ -264,8 +263,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
-    topology::Field<topology::SubMesh>& buffer =
-        _fields->get("buffer (vector)");
+    topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
     return buffer;
 
@@ -303,8 +301,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
 
   // Create section to hold amplitudes of impulses.
   _fields->add("impulse amplitude", "impulse_amplitude");
-  topology::Field<topology::SubMesh>& amplitude = 
-    _fields->get("impulse amplitude");
+  topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
   const int fiberDim = 1;
   amplitude.newSection(dispRel, fiberDim);
@@ -322,8 +319,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   assert(!faultSieveMesh.isNull());
 
   scalar_array coordsVertex(spaceDim);
-  const ALE::Obj<RealSection>& coordsSection =
-    faultSieveMesh->getRealSection("coordinates");
+  const ALE::Obj<RealSection>& coordsSection = faultSieveMesh->getRealSection("coordinates");
   assert(!coordsSection.isNull());
 
   assert(_dbImpulseAmp);
@@ -338,12 +334,10 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
     coordsSection->restrictPoint(v_fault, &coordsVertex[0], coordsVertex.size());
-    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
-				lengthScale);
+    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
 
     amplitudeVertex = 0.0;
-    int err = _dbImpulseAmp->query(&amplitudeVertex, 1,
-				   &coordsVertex[0], coordsVertex.size(), cs);
+    int err = _dbImpulseAmp->query(&amplitudeVertex, 1, &coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find amplitude for Green's function impulses at \n" << "(";
@@ -389,13 +383,14 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
   assert(!faultSieveMesh.isNull());
 
   // Gather number of points on each processor.
-  const int numImpulsesLocal = pointOrder.size();
+  int numImpulsesLocal = pointOrder.size();
   const int commSize = faultSieveMesh->commSize();
   const int commRank = faultSieveMesh->commRank();
   int_array numImpulsesAll(commSize);
   MPI_Comm comm = faultSieveMesh->comm();
-  MPI_Allgather((void*)&numImpulsesLocal, 1, MPI_INT, (void*)&numImpulsesAll[0], commSize, MPI_INT, comm);
-  
+  PetscErrorCode err = 0;
+  err = MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulsesAll[0], 1, MPI_INT, comm);CHKERRXX(err);
+
   int localOffset = 0;
   for (int i=0; i < commRank; ++i) {
     localOffset += numImpulsesAll[i];
@@ -423,8 +418,11 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
   for (int irank=0; irank < commSize; ++irank) {
     MPI_Barrier(comm);
     if (commRank == irank) {
-      for (int i=0; i < _impulsePoints.size(); ++i, ++impulse) {
-	const ImpulseInfoStruct& info = _impulsePoints[impulse];
+      std::cout << "RANK: " << commRank << ", # impulses: " << _impulsePoints.size() << std::endl;
+      const srcs_type::const_iterator impulsePointsEnd = _impulsePoints.end();
+      for (srcs_type::const_iterator piter=_impulsePoints.begin(); piter != impulsePointsEnd; ++piter) {
+	const int impulse = piter->first;
+	const ImpulseInfoStruct& info = piter->second;
 	const PylithScalar* amplitudeVertex = amplitudeSection->restrictPoint(_cohesiveVertices[info.indexCohesive].fault);
 	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << "), v_fault: " << _cohesiveVertices[info.indexCohesive].fault << ", amplitude: " << amplitudeVertex[0] << std::endl;
       } // for
