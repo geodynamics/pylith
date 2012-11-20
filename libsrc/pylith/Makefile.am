@@ -105,6 +105,7 @@ libpylith_la_SOURCES = \
 	friction/StaticFriction.cc \
 	friction/SlipWeakening.cc \
 	friction/SlipWeakeningTime.cc \
+	friction/SlipWeakeningStress.cc \
 	friction/RateStateAgeing.cc \
 	friction/TimeWeakening.cc \
 	materials/Metadata.cc \

@@ -31,6 +31,7 @@ noinst_PYTHON = \
 	TestStaticFriction.py \
 	TestSlipWeakening.py \
 	TestSlipWeakeningTime.py \
+	TestSlipWeakeningStress.py \
 	TestRateStateAgeing.py \
 	TestTimeWeakening.py
 
