@@ -829,6 +829,13 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
+    // Set Lagrange multiplier value. Value from preliminary solve is
+    // bogus due to artificial diagonal entry.
+    dispTIncrVertexL = 0.0;
+    assert(dispTIncrVertexL.size() == 
+	   dispTIncrSection->getFiberDimension(v_lagrange));
+    dispTIncrSection->updatePoint(v_lagrange, &dispTIncrVertexL[0]);
+
     // Compute contribution only if Lagrange constraint is local.
     if (!globalOrder->isLocal(v_lagrange))
       continue;
@@ -910,8 +917,8 @@ pylith::faults::FaultCohesiveLagrange::adjustSolnLumped(topology::SolutionFields
     // Set Lagrange multiplier value. Value from preliminary solve is
     // bogus due to artificial diagonal entry.
     assert(dispTIncrVertexL.size() == 
-	   dispTIncrSection->getFiberDimension(v_lagrange));
-    dispTIncrSection->updatePoint(v_lagrange, &dispTIncrVertexL[0]);
+	   dispTIncrAdjSection->getFiberDimension(v_lagrange));
+    dispTIncrAdjSection->updatePoint(v_lagrange, &dispTIncrVertexL[0]);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
