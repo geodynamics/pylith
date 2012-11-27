@@ -1,0 +1,76 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for 2-D nonplanar fault.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+# {Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create points and curves.
+# ----------------------------------------------------------------------
+# Domain
+create vertex x { -18.0*km} y {-18.0*km}
+create vertex x { +18.0*km} y {-18.0*km}
+create vertex x { +18.0*km} y {+18.0*km}
+create vertex x { -18.0*km} y {+18.0*km}
+
+create curve vertex 1 vertex 2
+create curve vertex 2 vertex 3
+create curve vertex 3 vertex 4
+create curve vertex 4 vertex 1
+
+# Arc for fault
+create vertex x { -6.0*km} y {-18.0*km}
+create vertex x {0*km} y {0*km}
+create vertex x { -6.0*km} y {+18.0*km}
+
+create curve arc three vertex 9 10 11
+
+# ----------------------------------------------------------------------
+# Split curves to form bounding curves for surfaces
+# ----------------------------------------------------------------------
+split curve 1 at vertex 9
+split curve 3 at vertex 11
+
+# ----------------------------------------------------------------------
+# Create surfaces using bounding curves
+# ----------------------------------------------------------------------
+create surface curve 4 5 6 9
+surface {Id("surface")} name "surf_inner"
+
+create surface curve 2 5 7 8
+surface {Id("surface")} name "surf_outer"
+
+# ----------------------------------------------------------------------
+# Imprint/merge
+# ----------------------------------------------------------------------
+delete vertex all
+imprint all
+merge all
+
+# End of file
+
