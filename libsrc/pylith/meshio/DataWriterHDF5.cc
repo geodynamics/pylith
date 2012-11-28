@@ -107,7 +107,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
     assert(cs);
 
-#if 1
+#if 0
     const char *context = DataWriter<mesh_type, field_type>::_context.c_str();
     DM          dmCoord;
     PetscReal   lengthScale;
@@ -193,7 +193,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     PetscInt    *cones;
     PetscSection coneSection;
-    PetscInt     vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt     cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMComplexGetConeSection(dmMesh, &coneSection);CHECK_PETSC_ERROR(err);
     err = DMComplexGetCones(dmMesh, &cones);CHECK_PETSC_ERROR(err);
