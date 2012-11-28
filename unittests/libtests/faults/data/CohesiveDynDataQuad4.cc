@@ -34,18 +34,18 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10 vertices are 2-9.
+ * Cells are 0-1,2 vertices are 3-10,11-12.
  *
+ *       4 -------- 6 -12--10 -------- 8
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
  *       3 -------- 5 -11-- 9 -------- 7
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       2 -------- 4 -10-- 8 -------- 6
  */
 
 #include "CohesiveDynDataQuad4.hh"
@@ -289,7 +289,7 @@ const PylithScalar pylith::faults::CohesiveDynDataQuad4::_initialTractions[] = {
 
 const int pylith::faults::CohesiveDynDataQuad4::_numConstraintVert = 2;
 const int pylith::faults::CohesiveDynDataQuad4::_constraintVertices[] = {
-  10, 11
+  11, 12
 };
 
 // ----------------------------------------------------------------------

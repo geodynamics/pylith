@@ -280,6 +280,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
     iVertex = 0;
     const int fiberDimE = spaceDim;
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
+    err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
 
@@ -295,6 +296,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, residualArray[off+d], tolerance);
       } // for
     } // for
+    err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
   } // Integrate residual with disp increment.
 } // testIntegrateResidual
 

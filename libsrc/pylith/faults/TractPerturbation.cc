@@ -130,7 +130,7 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
     _parameters->get("change").vectorFieldType(topology::FieldBase::VECTOR);
     _parameters->get("change").scale(pressureScale);
     _parameters->get("change").allocate();
-    _parameters->add("change time", "change_start_time", topology::FieldBase::FACES_FIELD, 1);
+    _parameters->add("change time", "change_start_time", topology::FieldBase::VERTICES_FIELD, 1);
     _parameters->get("change time").vectorFieldType(topology::FieldBase::SCALAR);
     _parameters->get("change time").scale(timeScale);
     _parameters->get("change time").allocate();
@@ -485,8 +485,8 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
-  PetscSection valueSection = _parameters->get("value").petscSection();
-  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscSection valueSection = _parameters->get(name).petscSection();
+  Vec          valueVec     = _parameters->get(name).localVector();
   PetscScalar *tractionsArray;
   assert(valueSection);assert(valueVec);
 
@@ -523,7 +523,7 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
 
     err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
-    assert(vdof == spaceDim);
+    assert(vdof == querySize);
     for(PetscInt d = 0; d < vdof; ++d)
       tractionsArray[voff+d] = valuesVertex[d];
   } // for

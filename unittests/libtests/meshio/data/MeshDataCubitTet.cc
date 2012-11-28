@@ -47,16 +47,16 @@ const int pylith::meshio::MeshDataCubitTet::_materialIds[] = {
 const int pylith::meshio::MeshDataCubitTet::_numGroups = 2;
 
 const int pylith::meshio::MeshDataCubitTet::_groupSizes[] = 
-  { 4, 3 };
+  { 3, 4 };
 
 const int pylith::meshio::MeshDataCubitTet::_groups[] = {
-  0, 1, 2, 3,
   1, 2, 3,
+  0, 1, 2, 3,
 };
 
 const char* pylith::meshio::MeshDataCubitTet::_groupNames[] = {
-  "bottom_face",
   "mid_face",
+  "bottom_face",
 };
 
 const char* pylith::meshio::MeshDataCubitTet::_groupTypes[] = {

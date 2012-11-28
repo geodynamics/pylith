@@ -876,6 +876,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = VecRestoreArray(coordinatesVec, &coords);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(newCoordinatesVec, &newCoords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(newMesh, newCoordinatesVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&newCoordinatesVec);CHECK_PETSC_ERROR(err);
   if (debug) coordinates->view("Coordinates with shadow vertices");
 
   logger.stagePop();

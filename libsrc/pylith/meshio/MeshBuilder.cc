@@ -218,6 +218,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   }
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(complexMesh, coordVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
   logger.stagePop(); // Coordinates
 
   sieveMesh->getFactory()->clear();
