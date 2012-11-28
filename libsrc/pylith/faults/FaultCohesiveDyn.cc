@@ -2325,7 +2325,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
     err = PetscSectionGetOffset(dispRelSection, v_fault, &droff);CHECK_PETSC_ERROR(err);
     assert(spaceDim == drdof);
     for(PetscInt d = 0; d < drdof; ++d) {
-      dispRelArray[droff+d] = sign*solutionArray[soff+d];
+      dispRelArray[droff+d] += sign*solutionArray[soff+d];
     }
   } // for
   err = VecRestoreArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);

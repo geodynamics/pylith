@@ -909,6 +909,7 @@ pylith::topology::Field<mesh_type, section_type>::complete(void)
     // Not sure if DMLocalToLocal() would work
     PetscErrorCode err;
 
+    err = VecSet(_globalVec, 0.0);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalBegin(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
     err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
