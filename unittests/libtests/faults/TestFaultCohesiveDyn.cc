@@ -201,7 +201,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 
       const PylithScalar tolerance = 1.0e-06;
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], initialTractionsArray[d], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], initialTractionsArray[off+d], tolerance);
       } // for
     } // for
     err = VecRestoreArray(initialTractionsVec, &initialTractionsArray);CHECK_PETSC_ERROR(err);
@@ -622,8 +622,8 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
     err = PetscSectionGetDof(tractionsSection, v, &tdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(tractionsSection, v, &toff);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, tdof);
-    err = PetscSectionGetDof(dispSection, points[v-vStart], &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispSection, points[v-vStart], &doff);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(dispSection, points[v], &ddof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispSection, points[v], &doff);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, ddof);
 
     const PylithScalar *orientationVertex = &_data->orientation[iVertex*spaceDim*spaceDim];
@@ -809,6 +809,8 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
   err = MatGetSize(jacobianMat, &nrowsM, &ncolsM);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nrows, nrowsM);
   CPPUNIT_ASSERT_EQUAL(ncols, ncolsM);
+  // We ignore the sparsity patterns in our tests
+  err = MatSetOption(jacobianMat, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);CHECK_PETSC_ERROR(err);
 
   int_array rows(nrows);
   int_array cols(ncols);

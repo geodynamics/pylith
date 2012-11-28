@@ -26,10 +26,10 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,16 and vertices are 4-15.
+ * Cells are 0-1,2 and vertices are 3-18,19-22.
  *
- *       2,3,4,5 -------- 6,7,8,9 -- 14,15,16,17 -------- 10,11,12,13
- *                                    18,19,20,21
+ *       3,4,5,6 -------- 7,8,9,10 -- 15,16,17,18 -------- 11,12,13,14
+ *                                    19,20,21,22
  *                        ^^^^^^^^^^^^^^^^^^^^^^ Cohesive element
  *
  */
@@ -178,7 +178,7 @@ const int pylith::faults::CohesiveImpulsesDataHex8::_numImpulses = 3;
 
 const int pylith::faults::CohesiveImpulsesDataHex8::_numConstraintVert = 4;
 const int pylith::faults::CohesiveImpulsesDataHex8::_constraintVertices[4] = {
-  18, 19, 20, 21
+  19, 20, 21, 22
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataHex8::_residualIncr[] = {

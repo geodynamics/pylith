@@ -27,10 +27,10 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10, vertices are 2-9.
+ * Cells are 0-1,2, vertices are 3-10,11-13.
  *
- * 2   3,4,5  7,8,9   6
- *             10,11,12
+ * 3   4,5,6  8,9,10   7
+ *             11,12,13
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
@@ -494,7 +494,7 @@ const PylithScalar pylith::faults::CohesiveDynDataTet4::_initialTractions[] = {
 
 const int pylith::faults::CohesiveDynDataTet4::_numConstraintVert = 3;
 const int pylith::faults::CohesiveDynDataTet4::_constraintVertices[] = {
-  10, 11, 12
+  11, 12, 13
 };
 
 // ----------------------------------------------------------------------

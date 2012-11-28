@@ -35,19 +35,19 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1, 10, vertices are 2-7.
+ * Cells are 0-1, 2, vertices are 3-8,9-10.
  *
- *              6 -8- 3
+ *              7 -9- 4
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
  *          /   |     |   \
- *         2    |     |    5
+ *         3    |     |    6
  *          \   |     |   /
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              7 -9- 4
+ *              8-10- 5
  */
 
 #include "CohesiveImpulsesDataTri3.hh"
@@ -142,7 +142,7 @@ const int pylith::faults::CohesiveImpulsesDataTri3::_numImpulses = 2;
 
 const int pylith::faults::CohesiveImpulsesDataTri3::_numConstraintVert = 2;
 const int pylith::faults::CohesiveImpulsesDataTri3::_constraintVertices[] = {
-  8, 9
+  9, 10
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_residualIncr[] = {

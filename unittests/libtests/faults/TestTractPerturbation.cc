@@ -154,25 +154,25 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   int iPoint = 0;
 
   CPPUNIT_ASSERT(tract._parameters);
-  PetscSection valuesSection = tract._parameters->get("values").petscSection();
-  Vec          valuesVec     = tract._parameters->get("values").localVector();
-  PetscScalar *valuesArray;
-  assert(valuesSection);assert(valuesVec);
+  PetscSection valueSection = tract._parameters->get("value").petscSection();
+  Vec          valueVec     = tract._parameters->get("value").localVector();
+  PetscScalar *valueArray;
+  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
 
-  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
     PetscInt vdof, voff;
 
-    err = PetscSectionGetDof(valuesSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valuesSection, v, &voff);CHECK_PETSC_ERROR(err);
-    assert(vdof == spaceDim);
+    err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, vdof);
     
     for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar valueE = tractionE[iPoint*spaceDim+d];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, valuesArray[voff+d], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, valueArray[voff+d], tolerance);
     } // for
   } // for
-  err = VecRestoreArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
 } // testCalculate
 
 // ----------------------------------------------------------------------
@@ -180,6 +180,7 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
 void
 pylith::faults::TestTractPerturbation::testParameterFields(void)
 { // testParameterFields
+  const int spaceDim  = 2;
   const int fiberDimE = 7;
   const PylithScalar parametersE[2*fiberDimE] = {
     0.0, 0.0,   2.0, -1.0,   -1.0, 0.5, 1.5,
@@ -192,27 +193,78 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   _initialize(&mesh, &faultMesh, &tract);
   
   const topology::Fields<topology::Field<topology::SubMesh> >* parameters = tract.parameterFields();
-  //const ALE::Obj<RealUniformSection>& parametersSection = parameters->section();
-  //CPPUNIT_ASSERT(!parametersSection.isNull());
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             faultDMMesh = faultMesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+
+  CPPUNIT_ASSERT(tract._parameters);
+  PetscSection valueSection = tract._parameters->get("value").petscSection();
+  Vec          valueVec     = tract._parameters->get("value").localVector();
+  PetscScalar *valueArray;
+  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
+  PetscSection initialSection = tract._parameters->get("initial").petscSection();
+  Vec          initialVec     = tract._parameters->get("initial").localVector();
+  PetscScalar *initialArray;
+  CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
+  PetscSection changeSection = tract._parameters->get("change").petscSection();
+  Vec          changeVec     = tract._parameters->get("change").localVector();
+  PetscScalar *changeArray;
+  CPPUNIT_ASSERT(changeSection);CPPUNIT_ASSERT(changeVec);
+  PetscSection changeTimeSection = tract._parameters->get("change time").petscSection();
+  Vec          changeTimeVec     = tract._parameters->get("change time").localVector();
+  PetscScalar *changeTimeArray;
+  CPPUNIT_ASSERT(changeTimeSection);CPPUNIT_ASSERT(changeTimeVec);
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter, ++iPoint) {
-    //const int fiberDim = parametersSection->getFiberDimension(*v_iter);
-    //CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-    const PylithScalar* vals;// = parametersSection->restrictPoint(*v_iter);
-    //CPPUNIT_ASSERT(vals);
+  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+    PetscInt vdof, voff, e = 0;
 
-    for(PetscInt d = 0; d < fiberDimE; ++d) {
-      const PylithScalar valueE = parametersE[iPoint*fiberDimE+d];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[d], tolerance);
+    err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, vdof);
+    PetscInt idof, ioff;
+
+    err = PetscSectionGetDof(initialSection, v, &idof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(initialSection, v, &ioff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, idof);
+    PetscInt cdof, coff;
+
+    err = PetscSectionGetDof(changeSection, v, &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(changeSection, v, &coff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, cdof);
+    PetscInt ctdof, ctoff;
+
+    err = PetscSectionGetDof(changeTimeSection, v, &ctdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(changeTimeSection, v, &ctoff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(1, ctdof);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, vdof+idof+cdof+ctdof);
+
+    for(PetscInt d = 0; d < vdof; ++d, ++e) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[iPoint*fiberDimE+e], valueArray[voff+d], tolerance);
+    } // for
+    for(PetscInt d = 0; d < idof; ++d, ++e) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[iPoint*fiberDimE+e], initialArray[ioff+d], tolerance);
+    } // for
+    for(PetscInt d = 0; d < cdof; ++d, ++e) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[iPoint*fiberDimE+e], changeArray[coff+d], tolerance);
+    } // for
+    for(PetscInt d = 0; d < ctdof; ++d, ++e) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(parametersE[iPoint*fiberDimE+e], changeTimeArray[ctoff+d], tolerance);
     } // for
   } // for
+  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
 } // testParameterFields
 
 // ----------------------------------------------------------------------
@@ -233,27 +285,33 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
   _initialize(&mesh, &faultMesh, &tract);
 
   const topology::Field<topology::SubMesh>& field = tract.vertexField(label);
-  const ALE::Obj<RealSection>& section = field.section();
-  CPPUNIT_ASSERT(!section.isNull());
+  PetscSection section = field.petscSection();
+  Vec          vec     = field.localVector();
+  PetscScalar *array;
+  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             faultDMMesh = faultMesh.dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter, ++iPoint) {
-    const int fiberDim = section->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-    const PylithScalar* vals = section->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(vals);
+  err = VecGetArray(vec, &array);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+    PetscInt dof, off;
 
-    for (int iDim=0; iDim < fiberDim; ++iDim) {
-      const PylithScalar valueE = fieldE[iPoint*fiberDim+iDim];
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, vals[iDim], tolerance);
+    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+
+    for(PetscInt d = 0; d < dof; ++d) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(fieldE[iPoint*fiberDimE+d], array[off+d], tolerance);
     } // for
   } // for
+  err = VecRestoreArray(vec, &array);CHECK_PETSC_ERROR(err);
 } // testVertexField
 
 // ----------------------------------------------------------------------
@@ -289,13 +347,17 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
   const int spaceDim = cs.spaceDim();
 
+  PetscInt       labelSize;
+  PetscErrorCode err;
+  err = DMComplexGetStratumSize(mesh->dmMesh(), faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
+
   // Create fault mesh
-  int firstFaultVertex = 0;
-  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(faultLabel)->size();
-  int firstFaultCell = mesh->sieveMesh()->getIntSection(faultLabel)->size();
+  PetscInt firstFaultVertex    = 0;
+  PetscInt firstLagrangeVertex = labelSize;
+  PetscInt firstFaultCell      = labelSize;
   const bool useLagrangeConstraints = true;
   if (useLagrangeConstraints) {
-    firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
+    firstFaultCell += labelSize;
   } // if
   ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
@@ -311,8 +373,45 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
-  faultSieveMesh->setRealSection("coordinates", 
-				 sieveMesh->getRealSection("coordinates"));
+  const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
+  faultSieveMesh->setRealSection("coordinates", oldCoordSection);
+  DM              faultDMMesh = faultMesh->dmMesh();
+  IS              subpointMap;
+  const PetscInt *points;
+  PetscSection    coordSection;
+  PetscInt        vStart, vEnd;
+
+  CPPUNIT_ASSERT(faultDMMesh);
+  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
+  Vec          coordVec;
+  PetscScalar *coords;
+  PetscInt     coordSize;
+
+  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt off;
+
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    const PetscScalar *oldCoords = oldCoordSection->restrictPoint(points[v]);
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coords[off+d] = oldCoords[d];
+    }
+  }
+  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(faultDMMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbInitial("initial traction");
@@ -326,17 +425,25 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   dbChange.ioHandler(&ioChange);
 
   // Setup fault orientation
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = faultSieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
   topology::Field<topology::SubMesh> faultOrientation(*faultMesh);
-  faultOrientation.newSection(vertices, spaceDim*spaceDim);
+  faultOrientation.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim*spaceDim);
   faultOrientation.allocate();
-  const ALE::Obj<RealSection>& orientationSection = faultOrientation.section();
-  CPPUNIT_ASSERT(!orientationSection.isNull());
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin(); v_iter != verticesEnd; ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(spaceDim*spaceDim, orientationSection->getFiberDimension(*v_iter));
-    orientationSection->updatePoint(*v_iter, orientationVertex);
+  PetscSection orientationSection = faultOrientation.petscSection();
+  Vec          orientationVec     = faultOrientation.localVector();
+  PetscScalar *orientationArray;
+  CPPUNIT_ASSERT(orientationSection);CPPUNIT_ASSERT(orientationVec);
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt odof, ooff;
+
+    err = PetscSectionGetDof(orientationSection, v, &odof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, v, &ooff);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim*spaceDim, odof);
+    for(PetscInt d = 0; d < odof; ++d) {
+      orientationArray[ooff+d] = orientationVertex[d];
+    }
   } // for
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   
   spatialdata::units::Nondimensional normalizer;
 

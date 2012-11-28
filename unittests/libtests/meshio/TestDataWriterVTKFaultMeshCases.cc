@@ -40,7 +40,7 @@ pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 { // setUp
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTri3;
-  _flipFault = false;
+  _flipFault = true;
 
   _initialize();
 } // setUp

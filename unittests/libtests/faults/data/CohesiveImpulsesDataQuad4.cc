@@ -33,18 +33,18 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10 vertices are 2-9.
+ * Cells are 0-1,2 vertices are 3-10,11-12.
  *
+ *       4 -------- 6 -12--10 -------- 8
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
+ *       |          |       |          |
  *       3 -------- 5 -11-- 9 -------- 7
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       |          |       |          |
- *       2 -------- 4 -10-- 8 -------- 6
  */
 
 #include "CohesiveImpulsesDataQuad4.hh"
@@ -143,7 +143,7 @@ const int pylith::faults::CohesiveImpulsesDataQuad4::_numImpulses = 2;
 
 const int pylith::faults::CohesiveImpulsesDataQuad4::_numConstraintVert = 2;
 const int pylith::faults::CohesiveImpulsesDataQuad4::_constraintVertices[] = {
-  10, 11
+  11, 12
 };
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataQuad4::_residualIncr[] = {

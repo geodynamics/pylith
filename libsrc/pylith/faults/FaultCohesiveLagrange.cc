@@ -1687,6 +1687,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   PetscSection areaSection = area.petscSection();
   Vec          areaVec     = area.localVector();
   PetscScalar *areaArray;
+  assert(areaSection);assert(areaVec);
 
   logger.stagePop();
 

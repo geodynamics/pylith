@@ -57,7 +57,6 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
       err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
       err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
       err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
     }
     err = PetscSectionCreate(mesh.comm(), &s);CHECK_PETSC_ERROR(err);
@@ -95,7 +94,6 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
       err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
       err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
       err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
     }
     this->dmSection(&s, &_localVec);
@@ -105,7 +103,25 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
     err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   } else {
     _dm = PETSC_NULL;
+    _globalVec = PETSC_NULL;
+    _localVec  = PETSC_NULL;
   }
+} // constructor
+
+// ----------------------------------------------------------------------
+// Constructor with mesh, DM, and metadata
+template<typename mesh_type, typename section_type>
+pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh, DM dm, const Metadata& metadata) :
+  _mesh(mesh),
+  _dm(dm)
+{ // constructor
+  PetscErrorCode err;
+
+  _metadata["default"] = metadata;
+  err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
+  err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -138,7 +154,6 @@ pylith::topology::Field<mesh_type, section_type>::Field(const Field& src,
     err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
     err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) coordVec);CHECK_PETSC_ERROR(err);
     err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
   }
   _globalVec = PETSC_NULL;

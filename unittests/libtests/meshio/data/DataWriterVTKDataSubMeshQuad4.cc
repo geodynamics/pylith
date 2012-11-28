@@ -50,7 +50,11 @@ pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFields[4] = {
   { "other", topology::FieldBase::OTHER, 2 },
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFieldScalar[6*1] = {
+#if 0
   2.1, 3.2, 4.3, 5.4, 6.5, 7.6,
+#else
+  2.1, 4.3, 6.5,
+#endif
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFieldVector[6*2] = {
   1.1, 2.2,
@@ -58,12 +62,18 @@ const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFieldVe
   9.9, 10.0,
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFieldTensor[6*3] = {
+#if 0
   1.1, 1.2, 1.3,
   2.1, 2.2, 2.3,
   3.1, 3.2, 3.3,
   4.1, 4.2, 4.3,
   5.1, 5.2, 5.3,
   6.1, 6.2, 6.3,
+#else
+  1.1, 1.2, 1.3,
+  3.1, 3.2, 3.3,
+  5.1, 5.2, 5.3,
+#endif
 };
 const PylithScalar pylith::meshio::DataWriterVTKDataSubMeshQuad4::_vertexFieldOther[6*3] = {
   1.2, 2.3,
