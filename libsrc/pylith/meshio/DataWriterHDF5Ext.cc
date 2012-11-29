@@ -379,7 +379,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
 
     assert(dmMesh);
     err = MPI_Comm_rank(((PetscObject) dmMesh)->comm, &commRank);CHECK_PETSC_ERROR(err);
-    field.createScatterWithBC(mesh, PETSC_NULL, context);
+    field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
@@ -513,7 +513,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
 
     assert(dmMesh);
     err = MPI_Comm_rank(((PetscObject) dmMesh)->comm, &commRank);CHECK_PETSC_ERROR(err);
-    field.createScatterWithBC(field.mesh(), PETSC_NULL, context);
+    field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
