@@ -392,13 +392,15 @@ public :
    * from the PETSc vector.
    *
    * @param mesh Mesh associated with scatter.
-   * @param numbering Numbering used to select points in section.
+   * @param labelName The name of the label defining the point set, or PETSC_NULL
+   * @param labelValue The label stratum defining the point set
    * @param context Label for context associated with vector.
    */
   template<typename scatter_mesh_type>
   void createScatterWithBC(const scatter_mesh_type& mesh,
-			   const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
-		     const char* context ="");
+                           const std::string& labelName,
+                           PetscInt labelValue,
+                           const char* context ="");
 
   /** Get PETSc vector associated with field.
    *

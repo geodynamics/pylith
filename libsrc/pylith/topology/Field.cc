@@ -1535,7 +1535,8 @@ template<typename scatter_mesh_type>
 void
 pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
        const scatter_mesh_type& mesh,
-       const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
+       const std::string& labelName,
+       PetscInt labelValue,
        const char* context)
 { // createScatterWithBC
   assert(context);
@@ -1554,49 +1555,6 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
-  if (!_section.isNull() && !numbering.isNull()) {
-    // Get global order (create if necessary).
-    const std::string& orderLabel = 
-      (strlen(context) > 0) ?
-      _section->getName() + std::string("_") + std::string(context) :
-      _section->getName();
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<typename mesh_type::SieveMesh::order_type>& order = 
-      sieveMesh->getFactory()->getGlobalOrderWithBC(sieveMesh, orderLabel,
-                                                    numbering->getChart().begin(),
-                                                    numbering->getChart().end(),
-                                                    _section);
-    assert(!order.isNull());
-    //order->view("GLOBAL ORDER"); // DEBUG
-
-    // Create scatter
-    err = DMMeshCreateGlobalScatter(sieveMesh, _section, order, true, &sinfo.scatter); 
-    CHECK_PETSC_ERROR(err);
-
-    // Create scatterVec
-    const int blockSize = _getFiberDim();
-    if (_section->sizeWithBC() > 0) {
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF,
-                                  blockSize, _section->getStorageSize(),
-                                  _section->restrictSpace(),
-                                  &sinfo.scatterVec);CHECK_PETSC_ERROR(err);
-    } else {
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-                                  blockSize, 0, PETSC_NULL,
-                                  &sinfo.scatterVec);CHECK_PETSC_ERROR(err);
-    } // else
-
-#if 0
-    // Create vector
-    err = VecCreate(mesh.comm(), &sinfo.vector);CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject)sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
-    err = VecSetSizes(sinfo.vector,order->getLocalSize(), order->getGlobalSize());CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(sinfo.vector, blockSize);CHECK_PETSC_ERROR(err);
-    err = VecSetFromOptions(sinfo.vector); CHECK_PETSC_ERROR(err);  
-#endif
-  }
-
   PetscSection section, newSection, gsection;
   PetscSF      sf;
   PetscInt     cEnd, cMax, vEnd, vMax;
@@ -1611,7 +1569,14 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
-  err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);CHECK_PETSC_ERROR(err);
+  if (labelName.empty()) {
+    err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);CHECK_PETSC_ERROR(err);
+  } else {
+    DMLabel label;
+
+    err = DMComplexGetLabel(sinfo.dm, labelName.c_str(), &label);CHECK_PETSC_ERROR(err);
+    err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);CHECK_PETSC_ERROR(err);
+  }
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
   err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);

@@ -376,7 +376,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    field.createScatterWithBC(mesh, PETSC_NULL, context);
+    field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
@@ -435,7 +435,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeCellField(
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
     PetscErrorCode err = 0;
 
-    field.createScatterWithBC(field.mesh(), PETSC_NULL, context);
+    field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
