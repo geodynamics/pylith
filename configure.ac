@@ -43,16 +43,15 @@ AC_ARG_ENABLE([testing],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
-# Enable full-scale testing except on cygwin (need to rebase)
-if test "$enable_testing" = yes ; then
-  enable_full_testing=yes
+if test "$enable_testing" = yes; then
+  enable_full_testing=yes  
+  # Disable full-scale testing on cygwin (need to rebase)
   AC_CANONICAL_HOST
   case $host_os in
     cygwin*)
       enable_full_testing=no ;;
   esac
 fi
-AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 
 # CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
@@ -212,6 +211,21 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
 fi
+
+# Full-scale testing with h5py
+if test "$enable_full_testing" = yes ; then
+  AM_PATH_PYTHON
+   AC_MSG_CHECKING(for python module h5py for full scale testing)
+  $PYTHON -c "import h5py" 2>/dev/null   
+  if test $? == 0; then
+    AC_MSG_RESULT([found h5py, enabling full scale testing])
+    enable_full_testing=yes
+  else
+    AC_MSG_RESULT([not found, disabling full scale testing])
+    enable_full_testing=no
+  fi
+fi
+AM_CONDITIONAL([ENABLE_FULL_TESTING], [test "$enable_full_testing" = yes])
 
 # CUDA
 if test "$enable_cuda" = "yes" ; then
