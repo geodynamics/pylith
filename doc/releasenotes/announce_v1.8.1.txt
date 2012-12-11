@@ -28,6 +28,9 @@ RELEASE NOTES - PyLith v1.8.1
     parallel. The number of impulses corresponded to only those on
     processor 0.
 
+  - Corrected computation of fault tractions (Lagrange multipliers) on
+    process boundaries for prescribed slip with explicit time stepping.
+
   - Fixed bug when reading in list of output points with just one
     point.
 
