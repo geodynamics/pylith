@@ -191,22 +191,27 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
 #endif
 
-    PetscInt    *cones;
-    PetscSection coneSection;
-    PetscInt     cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
-    err = DMComplexGetConeSection(dmMesh, &coneSection);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCones(dmMesh, &cones);CHECK_PETSC_ERROR(err);
     err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
     err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     for(PetscInt cell = cStart; cell < cEnd; ++cell) {
-      err = DMComplexGetConeSize(dmMesh, cell, &numCornersLocal);CHECK_PETSC_ERROR(err);
+      PetscInt *closure = PETSC_NULL;
+      PetscInt  closureSize, v;
+
+      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      numCornersLocal = 0;
+      for (v = 0; v < closureSize*2; v += 2) {
+        if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
+          ++numCornersLocal;
+        }
+      }
+      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       if (numCornersLocal) break;
     }
     err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coneSection, cEnd, &conesSize);CHECK_PETSC_ERROR(err);
     if (label) {
       conesSize = 0;
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
@@ -216,11 +221,20 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
         if (value == labelId) ++conesSize;
       }
       conesSize *= numCorners;
+    } else {
+      conesSize = (cEnd - cStart)*numCorners;
     }
+    CHKMEMA;
 
-    PetscVec     cellVec;
-    PetscScalar *vertices;
+    IS              subpointMap, globalVertexNumbers;
+    const PetscInt *gvertex = PETSC_NULL, *gpoints = PETSC_NULL;
+    PetscVec        cellVec;
+    PetscScalar    *vertices;
 
+    err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+    if (subpointMap) {err = ISGetIndices(subpointMap, &gpoints);CHECK_PETSC_ERROR(err);}
+    err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
     err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
     err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(cellVec, numCorners);CHECK_PETSC_ERROR(err);
@@ -228,16 +242,27 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = PetscObjectSetName((PetscObject) cellVec, "cells");CHECK_PETSC_ERROR(err);
     err = VecGetArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
     for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
+      PetscInt *closure = PETSC_NULL;
+      PetscInt  closureSize, p;
+
       if (label) {
         PetscInt value;
 
         err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
         if (value != labelId) continue;
       }
-      for(PetscInt corner = 0; corner < numCorners; ++corner, ++v) {
-        vertices[v] = cones[cell*numCorners+corner] - vStart;
+      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      for(p = 0; p < closureSize*2; p += 2) {
+        if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+          //const PetscInt gv = gpoints ? gpoints[closure[p]] : gvertex[closure[p] - vStart];
+          const PetscInt gv = gvertex[closure[p] - vStart];
+          vertices[v++] = gv < 0 ? -(gv+1) : gv;
+        }
       }
+      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      //assert(v == (cell-cStart+1)*numCorners);
     }
+    CHKMEMA;
     err = VecRestoreArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/topology");CHECK_PETSC_ERROR(err);
     err = VecView(cellVec, _viewer);CHECK_PETSC_ERROR(err);
@@ -376,7 +401,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    field.createScatterWithBC(mesh, "", 0, context);
+    field.createScatterWithBC(field.mesh(), "", 0, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);
