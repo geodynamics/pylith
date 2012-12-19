@@ -53,9 +53,15 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
   const std::string filenameE = "data/" + filename;
 
   std::ifstream fileInE(filenameE.c_str());
+  if (!fileInE.is_open()) {
+    std::cerr << "Could not open file '" << filenameE << "'." << std::endl;
+  } // if
   CPPUNIT_ASSERT(fileInE.is_open());
 
   std::ifstream fileIn(filename.c_str());
+  if (!fileIn.is_open()) {
+    std::cerr << "Could not open file '" << filename << "'." << std::endl;
+  } // if
   CPPUNIT_ASSERT(fileIn.is_open());
 
   const int maxLen = 256;
