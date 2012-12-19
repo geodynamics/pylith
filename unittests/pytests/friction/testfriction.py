@@ -71,6 +71,9 @@ class TestApp(Script):
     from TestSlipWeakeningTime import TestSlipWeakeningTime
     suite.addTest(unittest.makeSuite(TestSlipWeakeningTime))
 
+    from TestSlipWeakeningStress import TestSlipWeakeningStress
+    suite.addTest(unittest.makeSuite(TestSlipWeakeningStress))
+
     from TestRateStateAgeing import TestRateStateAgeing
     suite.addTest(unittest.makeSuite(TestRateStateAgeing))
 

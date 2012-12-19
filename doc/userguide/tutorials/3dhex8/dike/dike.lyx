@@ -171,7 +171,7 @@ We use the FaultCohesiveDyn object to impose tractions on the fault surface.
 \family typewriter
 open_free_surface
 \family default
- to True in order for the tractions to be imposed when the fault is open;
+ to False in order for the tractions to be imposed when the fault is open;
  the default behavior for fault opening is a free surface (the two sides
  of the fault are completely uncoupled).
  The most important fault parameters for prescribing the tensile fault tractions
@@ -183,7 +183,7 @@ open_free_surface
 \end_layout
 
 \begin_layout LyX-Code
-open_free_surface = True
+open_free_surface = False
 \begin_inset Newline newline
 \end_inset
 

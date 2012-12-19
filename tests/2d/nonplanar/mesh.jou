@@ -1,0 +1,57 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University of Chicago
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2011 University of California, Davis
+#
+# See COPYING for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file for generating a 2-D finite-element mesh with
+# triangular cells.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size and scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+curve all scheme default
+#{dx=600.0*m}
+surface all size {600*m}
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality (if nec)
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.2 cpu 10
+smooth surface all
+
+# ----------------------------------------------------------------------
+# Setup boundary conditions.
+# ----------------------------------------------------------------------
+playback 'bc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh.exo" dimension 2 overwrite
+
+# End of file
+
+
+
