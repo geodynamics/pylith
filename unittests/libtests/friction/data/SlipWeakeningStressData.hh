@@ -16,27 +16,27 @@
 // ======================================================================
 //
 
-#if !defined(pylith_friction_slipweakeningtimedata_hh)
-#define pylith_friction_slipweakeningtimedata_hh
+#if !defined(pylith_friction_slipweakeningstressdata_hh)
+#define pylith_friction_slipweakeningstressdata_hh
 
 #include "FrictionModelData.hh"
 
 namespace pylith {
   namespace friction {
-     class SlipWeakeningTimeData;
+     class SlipWeakeningStressData;
   } // pylith
 } // friction
 
-class pylith::friction::SlipWeakeningTimeData : public FrictionModelData
+class pylith::friction::SlipWeakeningStressData : public FrictionModelData
 {
 
 public: 
 
   /// Constructor
-  SlipWeakeningTimeData(void);
+  SlipWeakeningStressData(void);
 
   /// Destructor
-  ~SlipWeakeningTimeData(void);
+  ~SlipWeakeningStressData(void);
 
 private:
 
@@ -96,6 +96,6 @@ private:
 
 };
 
-#endif // pylith_friction_slipweakeningtimedata_hh
+#endif // pylith_friction_slipweakeningstressdata_hh
 
 // End of file

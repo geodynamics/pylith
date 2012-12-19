@@ -442,14 +442,12 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
     
     const PylithScalar* const propertiesE = &_data->properties[iLoc*propertiesSize];
     const PylithScalar tolerance = 1.0e-06;
+
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
     } // for
   } // for
 } // testDBToProperties
