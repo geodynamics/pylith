@@ -94,9 +94,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-#if 0
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-#endif
     DM dmMesh = mesh.dmMesh();
     assert(dmMesh);
     PetscMPIInt    commRank;
@@ -142,19 +139,46 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     PetscVec coordinatesVector = coordinates.vector(context);
     assert(coordinatesVector);
 #else
-    DM        coordDM;
-    Vec       coordVec, coordinatesVector;
-    PetscReal lengthScale;
-    PetscInt  globalSize;
+    PetscSection coordSection;
+    Vec          coordinates, coordinatesVector;
+    PetscReal    lengthScale;
+    PetscInt     vStart, vEnd, vMax, verticesSize, globalSize, dim, dimLocal = 0;
 
+    /* TODO Get rid of this and use the createScatterWithBC(numbering) code */
     err = DMComplexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinateDM(dmMesh, &coordDM);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-    err = DMGetGlobalVector(coordDM, &coordinatesVector);CHECK_PETSC_ERROR(err);
-    err = VecGetSize(coordinatesVector, &globalSize);CHECK_PETSC_ERROR(err);
-    err = DMLocalToGlobalBegin(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
-    err = DMLocalToGlobalEnd(coordDM, coordVec, INSERT_VALUES, coordinatesVector);CHECK_PETSC_ERROR(err);
-    err = VecScale(coordinatesVector, lengthScale);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
+    if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}
+    for(PetscInt vertex = vStart; vertex < vEnd; ++vertex) {
+      err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
+      if (dimLocal) break;
+    }
+    err = MPI_Allreduce(&dimLocal, &dim, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
+    verticesSize = vEnd - vStart;
+
+    PetscVec     coordVec;
+    PetscScalar *coords, *c;
+
+    err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
+    err = VecSetSizes(coordVec, verticesSize*dim, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(coordVec, dim);CHECK_PETSC_ERROR(err);
+    err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(coordinates, &c);CHECK_PETSC_ERROR(err);
+    for(PetscInt v = 0; v < vEnd - vStart; ++v) {
+      for(PetscInt d = 0; d < dim; ++d) {
+          coords[v*dim+d] = c[v*dim+d];
+      }
+    }
+    err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+    err = VecRestoreArray(coordinates, &c);CHECK_PETSC_ERROR(err);
+    err = VecScale(coordVec, lengthScale);CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) coordVec, "vertices");CHECK_PETSC_ERROR(err);
+    err = VecGetSize(coordVec, &globalSize);CHECK_PETSC_ERROR(err);
+    globalSize /= cs->spaceDim();
+    coordinatesVector = coordVec;
 #endif
 
     const std::string& filenameVertices = _datasetFilename("vertices");
@@ -167,7 +191,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = VecView(coordinatesVector, binaryViewer); CHECK_PETSC_ERROR(err);
     err = PetscViewerDestroy(&binaryViewer); CHECK_PETSC_ERROR(err);
 
-    err = DMRestoreGlobalVector(coordDM, &coordinatesVector);CHECK_PETSC_ERROR(err);
+#if 1
+    err = VecDestroy(&coordinatesVector);CHECK_PETSC_ERROR(err);
+#endif
     
     // Create external dataset for coordinates    
     if (!commRank) {
@@ -243,63 +269,89 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
           tmpVertices[k++] = vNumbering->getIndex(cone[c].first);
       } // if
     }
-#else
-    const PetscInt *cells, *vertices;
-    IS              globalCellNumbers, globalVertexNumbers;
-    PetscInt        numCornersLocal = 0;
-    PetscInt        numCorners      = 0;
-    PetscInt        numCellsLocal   = 0, numCells;
-    PetscInt        cStart, cEnd, cMax, vStart, numIndices;
-
-    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
-    if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
-
-    err = DMComplexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
-    err = ISGetSize(globalCellNumbers, &numIndices);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(globalCellNumbers, &cells);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(globalVertexNumbers, &vertices);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < numIndices; ++i) {
-      if (cells[i] >= 0) ++numCellsLocal;
-    }
-    if (cEnd-cStart) {err = DMComplexGetConeSize(dmMesh, cStart, &numCornersLocal);CHECK_PETSC_ERROR(err);}
-    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
-    err = MPI_Allreduce(&numCellsLocal,   &numCells,   1, MPIU_INT, MPI_SUM, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
-
-    PetscScalar *tmpVertices = 0;
-    PetscInt     conesSize   = numCellsLocal*numCorners;
-
-    err = PetscMalloc(conesSize * sizeof(PetscScalar), &tmpVertices);CHECK_PETSC_ERROR(err);
-    for(PetscInt c = cStart, k = 0; c < cEnd; ++c) {
-      const PetscInt *cone;
-      PetscInt        coneSize;
-
-      if (cells[c-cStart] < 0) continue;
-      err = DMComplexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
-      err = DMComplexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
-      if (coneSize != numCorners) {
-        const char *name;
-        std::ostringstream msg;
-        err = PetscObjectGetName((PetscObject) dmMesh, &name);CHECK_PETSC_ERROR(err);
-        msg << "Inconsistency in topology found for mesh '" << name << "' during output.\n"
-            << "Number of vertices (" << coneSize << ") in cell '" << c
-            << "' does not expected number of vertices (" << numCorners << ").";
-        throw std::runtime_error(msg.str());
-      } // if
-      for(PetscInt corner = 0; corner < numCorners; ++corner) {
-        tmpVertices[k++] = vertices[cone[corner]-vStart];
-      }
-    }
-    err = ISRestoreIndices(globalCellNumbers, &cells);CHECK_PETSC_ERROR(err);
-    err = ISRestoreIndices(globalVertexNumbers, &vertices);CHECK_PETSC_ERROR(err);
-#endif
-
     PetscVec elemVec;
+
     err = VecCreateMPIWithArray(((PetscObject) dmMesh)->comm, numCorners, conesSize, PETSC_DETERMINE,
                                 tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
+#else
+    PetscInt cStart, cEnd, cMax, dof, conesSize, numCells, numCorners, numCornersLocal = 0;
+
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
+    for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+      PetscInt *closure = PETSC_NULL;
+      PetscInt  closureSize, v;
+
+      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      numCornersLocal = 0;
+      for (v = 0; v < closureSize*2; v += 2) {
+        if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
+          ++numCornersLocal;
+        }
+      }
+      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      if (numCornersLocal) break;
+    }
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
+    if (label) {
+      conesSize = 0;
+      for(PetscInt cell = cStart; cell < cEnd; ++cell) {
+        PetscInt value;
+
+        err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        if (value == labelId) ++conesSize;
+      }
+      conesSize *= numCorners;
+    } else {
+      conesSize = (cEnd - cStart)*numCorners;
+    }
+    CHKMEMA;
+
+    IS              subpointMap, globalVertexNumbers;
+    const PetscInt *gvertex = PETSC_NULL, *gpoints = PETSC_NULL;
+    PetscVec        cellVec, elemVec;
+    PetscScalar    *vertices;
+
+    err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+    if (subpointMap) {err = ISGetIndices(subpointMap, &gpoints);CHECK_PETSC_ERROR(err);}
+    err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
+    err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
+    err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+    err = VecSetBlockSize(cellVec, numCorners);CHECK_PETSC_ERROR(err);
+    err = VecSetFromOptions(cellVec);CHECK_PETSC_ERROR(err);
+    err = PetscObjectSetName((PetscObject) cellVec, "cells");CHECK_PETSC_ERROR(err);
+    err = VecGetArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
+    for(PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
+      PetscInt *closure = PETSC_NULL;
+      PetscInt  closureSize, p;
+
+      if (label) {
+        PetscInt value;
+
+        err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        if (value != labelId) continue;
+      }
+      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      for(p = 0; p < closureSize*2; p += 2) {
+        if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
+          //const PetscInt gv = gpoints ? gpoints[closure[p]] : gvertex[closure[p] - vStart];
+          const PetscInt gv = gvertex[closure[p] - vStart];
+          vertices[v++] = gv < 0 ? -(gv+1) : gv;
+        }
+      }
+      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      //assert(v == (cell-cStart+1)*numCorners);
+    }
+    CHKMEMA;
+    err = VecRestoreArray(cellVec, &vertices);CHECK_PETSC_ERROR(err);
+    err = VecGetSize(cellVec, &numCells);CHECK_PETSC_ERROR(err);
+    numCells /= numCorners;
+    elemVec = cellVec;
+#endif
 
     const std::string& filenameCells = _datasetFilename("cells");
     err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, filenameCells.c_str(),
@@ -307,7 +359,9 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, binaryViewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&elemVec);CHECK_PETSC_ERROR(err);
+#if 0
     err = PetscFree(tmpVertices);CHECK_PETSC_ERROR(err);
+#endif
     err = PetscViewerDestroy(&binaryViewer);CHECK_PETSC_ERROR(err);
 
     // Create external dataset for cells
@@ -412,16 +466,17 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     ++_datasets[field.label()].numTimeSteps;
 
     PetscSection section = field.petscSection();
-    PetscInt     dof     = 0, n, numLocalVertices = 0, numVertices;
+    PetscInt     dof     = 0, n, numLocalVertices = 0, numVertices, vStart;
     IS           globalVertexNumbers;
 
     assert(section);
+    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
     err = ISGetSize(globalVertexNumbers, &n);CHECK_PETSC_ERROR(err);
     if (n > 0) {
       const PetscInt *indices;
       err = ISGetIndices(globalVertexNumbers, &indices);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(section, indices[0], &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetDof(section, vStart, &dof);CHECK_PETSC_ERROR(err);
       for(PetscInt v = 0; v < n; ++v) {
         if (indices[v] >= 0) ++numLocalVertices;
       }
@@ -546,21 +601,40 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     ++_datasets[field.label()].numTimeSteps;
 
     PetscSection section = field.petscSection();
-    PetscInt     dof     = 0, n, numLocalCells = 0, numCells;
+    PetscInt     dof     = 0, n, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
     IS           globalCellNumbers;
 
-    /* TODO: Add code for handling a label */
     assert(section);
-    err = DMComplexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
-    err = ISGetSize(globalCellNumbers, &n);CHECK_PETSC_ERROR(err);
-    if (n > 0) {
-      const PetscInt *indices;
-      err = ISGetIndices(globalCellNumbers, &indices);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(section, indices[0], &dof);CHECK_PETSC_ERROR(err);
-      for(PetscInt v = 0; v < n; ++v) {
-        if (indices[v] >= 0) ++numLocalCells;
+    err = DMComplexGetVTKCellHeight(dmMesh, &cellHeight);CHECK_PETSC_ERROR(err);
+    err = DMComplexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    if (label) {
+      IS pointIS;
+
+      DMComplexGetStratumIS(dmMesh, label, labelId, &pointIS);CHECK_PETSC_ERROR(err);
+      err = ISGetLocalSize(pointIS, &n);CHECK_PETSC_ERROR(err);
+      if (n > 0) {
+        const PetscInt *indices;
+        err = ISGetIndices(pointIS, &indices);CHECK_PETSC_ERROR(err);
+        for(PetscInt c = 0; c < n; ++c) {
+          if ((indices[c] >= cStart) && (indices[c] < cEnd)) {
+            err = PetscSectionGetDof(section, indices[0], &dof);CHECK_PETSC_ERROR(err);
+            ++numLocalCells;
+          }
+        }
+        err = ISRestoreIndices(pointIS, &indices);CHECK_PETSC_ERROR(err);
       }
-      err = ISRestoreIndices(globalCellNumbers, &indices);CHECK_PETSC_ERROR(err);
+    } else {
+      err = DMComplexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
+      err = ISGetLocalSize(globalCellNumbers, &n);CHECK_PETSC_ERROR(err);
+      if (n > 0) {
+        const PetscInt *indices;
+        err = ISGetIndices(globalCellNumbers, &indices);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetDof(section, cStart, &dof);CHECK_PETSC_ERROR(err);
+        for(PetscInt v = 0; v < n; ++v) {
+          if (indices[v] >= 0) ++numLocalCells;
+        }
+        err = ISRestoreIndices(globalCellNumbers, &indices);CHECK_PETSC_ERROR(err);
+      }
     }
     int fiberDimLocal = dof;
     int fiberDim = 0;

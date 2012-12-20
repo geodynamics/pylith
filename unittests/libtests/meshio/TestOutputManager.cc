@@ -165,7 +165,8 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   manager.closeTimeStep();
   manager.close();
 
-  TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
+  // We do not create empty VTK files anymore
+  //TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
 } // testOpenCloseTimeStep
 
 // ----------------------------------------------------------------------

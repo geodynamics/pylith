@@ -190,7 +190,6 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
 #endif
-
     PetscInt cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);

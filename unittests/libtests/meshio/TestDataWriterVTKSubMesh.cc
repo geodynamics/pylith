@@ -101,7 +101,8 @@ pylith::meshio::TestDataWriterVTKSubMesh::testTimeStep(void)
   CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
   CPPUNIT_ASSERT(false == writer._wroteCellHeader);
 
-  checkFile(_data->timestepFilename, t, _data->timeFormat);
+  // We do not create empty VTK files anymore
+  //checkFile(_data->timestepFilename, t, _data->timeFormat);
 } // testTimeStep
 
 // ----------------------------------------------------------------------
