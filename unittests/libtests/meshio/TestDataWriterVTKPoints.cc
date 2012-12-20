@@ -97,7 +97,8 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   output.closeTimeStep();
   output.close();
 
-  checkFile(_data->timestepFilename, t, _data->timeFormat);
+  // We do not create empty VTK files anymore
+  //checkFile(_data->timestepFilename, t, _data->timeFormat);
 } // testTimeStep
 
 // ----------------------------------------------------------------------
