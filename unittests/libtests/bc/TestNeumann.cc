@@ -164,8 +164,8 @@ pylith::bc::TestNeumann::testInitialize(void)
   PetscErrorCode err;
 
   assert(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(subMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(subMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const int cellDim = boundaryMesh.dimension();
   const int numCorners = _data->numCorners;
@@ -182,8 +182,8 @@ pylith::bc::TestNeumann::testInitialize(void)
     const PetscInt *cone;
     PetscInt        numCorners;
 
-    err = DMComplexGetConeSize(subMesh, c, &numCorners);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCone(subMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(subMesh, c, &numCorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCone(subMesh, c, &cone);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
@@ -241,7 +241,7 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   const PylithScalar* valsE = _data->valsResidual;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const int totalNumVertices = vEnd - vStart;
   const int sizeE = _data->spaceDim * totalNumVertices;
 
@@ -759,7 +759,7 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar scale   = field.scale();
   PetscSection       section = field.petscSection();

@@ -89,15 +89,15 @@ pylith::topology::Mesh::createSieveMesh(const int dim)
 } // createSieveMesh
   
 // ----------------------------------------------------------------------
-// Create DMComplex mesh.
+// Create DMPlex mesh.
 void
 pylith::topology::Mesh::createDMMesh(const int dim)
 { // createDMMesh
   PetscErrorCode err;
   err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
   err = DMCreate(_comm, &_newMesh);CHECK_PETSC_ERROR(err);
-  err = DMSetType(_newMesh, DMCOMPLEX);CHECK_PETSC_ERROR(err);
-  err = DMComplexSetDimension(_newMesh, dim);CHECK_PETSC_ERROR(err);
+  err = DMSetType(_newMesh, DMPLEX);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetDimension(_newMesh, dim);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
 } // createDMMesh
 
@@ -148,7 +148,7 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
 
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
-  err = DMComplexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
 
   PylithScalar coordsVertex[3];
   for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;

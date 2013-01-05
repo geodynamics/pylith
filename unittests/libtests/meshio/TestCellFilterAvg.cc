@@ -105,7 +105,7 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   PetscSection section = field.petscSection();
   Vec          vec     = field.localVector();

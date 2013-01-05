@@ -287,7 +287,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -578,7 +578,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -586,7 +586,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -654,10 +654,10 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -687,7 +687,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     _normalizer->nondimensionalize(&stressCell[0], stressCell.size(), 
 				   pressureScale);
 
-    err = DMComplexVecSetClosure(dmMesh, initialStressSection, initialStressVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(dmMesh, initialStressSection, initialStressVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 
   // Close databases
@@ -731,7 +731,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -739,7 +739,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -807,10 +807,10 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -836,7 +836,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
       } // if
     } // for
 
-    err = DMComplexVecSetClosure(dmMesh, initialStrainSection, initialStrainVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(dmMesh, initialStrainSection, initialStrainVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 
   // Close databases

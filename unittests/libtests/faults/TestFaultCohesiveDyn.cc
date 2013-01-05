@@ -144,8 +144,8 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
   err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
@@ -242,7 +242,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
     PetscSection dispTIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
@@ -284,7 +284,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(faultDMMesh);
-    err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
     PetscSection slipSection = fault.vertexField("slip").petscSection();
@@ -355,7 +355,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
     PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
@@ -396,7 +396,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(faultDMMesh);
-    err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
     PetscSection slipSection = fault.vertexField("slip").petscSection();
@@ -466,7 +466,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
     PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
@@ -507,7 +507,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(faultDMMesh);
-    err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
     PetscSection slipSection = fault.vertexField("slip").petscSection();
@@ -601,8 +601,8 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
   err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
 
@@ -703,7 +703,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
 
   PetscInt       labelSize;
   PetscErrorCode err;
-  err = DMComplexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
 
   PetscInt firstFaultVertex    = 0;
   PetscInt firstLagrangeVertex = labelSize;
@@ -769,7 +769,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Set displacement values
   PetscSection dispSection = fields->get("disp(t)").petscSection();

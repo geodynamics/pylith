@@ -134,7 +134,7 @@ private :
 
   topology::Mesh* _mesh; ///< Domain mesh.
   topology::Mesh* _pointsMesh; ///< Mesh for points (no cells).
-  PetscDMMeshInterpolationInfo _interpolator; ///< Field interpolator.
+  DMInterpolationInfo _interpolator; ///< Field interpolator.
 
 }; // OutputSolnPoints
 

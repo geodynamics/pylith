@@ -199,7 +199,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   MeshField field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -288,7 +288,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   numCells = cEnd - cStart;
 
   MeshField field(mesh);

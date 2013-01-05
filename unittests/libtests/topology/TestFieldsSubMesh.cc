@@ -91,7 +91,7 @@ pylith::topology::TestFieldsSubMesh::testAddDomain(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const char* label = "field";
   fields.add(label, "velocity", Field<SubMesh>::VERTICES_FIELD, fiberDim);
@@ -196,7 +196,7 @@ pylith::topology::TestFieldsSubMesh::testCopyLayout(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const char* labelA = "field A";
   fields.add(labelA, "velocity", Field<SubMesh>::VERTICES_FIELD, fiberDim);

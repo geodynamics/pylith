@@ -79,7 +79,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   mesh->createSieveMesh(dim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
-  /* DMComplex */
+  /* DMPlex */
   mesh->createDMMesh(dim);
   DM complexMesh = mesh->dmMesh();
   assert(complexMesh);
@@ -122,10 +122,10 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       delete[] coneO; coneO = 0;
       // Symmetrize to fill up supports
       sieve->symmetrize();
-      /* DMComplex */
-      err = DMComplexSetChart(complexMesh, 0, numCells+numVertices);CHECK_PETSC_ERROR(err);
+      /* DMPlex */
+      err = DMPlexSetChart(complexMesh, 0, numCells+numVertices);CHECK_PETSC_ERROR(err);
       for(PetscInt c = 0; c < numCells; ++c) {
-        err = DMComplexSetConeSize(complexMesh, c, numCorners);CHECK_PETSC_ERROR(err);
+        err = DMPlexSetConeSize(complexMesh, c, numCorners);CHECK_PETSC_ERROR(err);
       }
       err = DMSetUp(complexMesh);CHECK_PETSC_ERROR(err);
       PetscInt *cone2 = new PetscInt[numCorners];
@@ -133,11 +133,11 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         for(PetscInt v = 0; v < numCorners; ++v) {
           cone2[v] = cells[c*numCorners+v]+numCells;
         }
-        err = DMComplexSetCone(complexMesh, c, cone2);CHECK_PETSC_ERROR(err);
+        err = DMPlexSetCone(complexMesh, c, cone2);CHECK_PETSC_ERROR(err);
       } // for
       delete [] cone2; cone2 = 0;
-      err = DMComplexSymmetrize(complexMesh);CHECK_PETSC_ERROR(err);
-      err = DMComplexStratify(complexMesh);CHECK_PETSC_ERROR(err);
+      err = DMPlexSymmetrize(complexMesh);CHECK_PETSC_ERROR(err);
+      err = DMPlexStratify(complexMesh);CHECK_PETSC_ERROR(err);
     } else {
       // Same old thing
       ALE::Obj<SieveFlexMesh::sieve_type> s =
@@ -191,13 +191,13 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   logger.stagePush("MeshCoordinates");
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						 &(*coordinates)[0]);
-  /* DMComplex */
+  /* DMPlex */
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coords;
   PetscInt     coordSize;
 
-  err = DMComplexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, numCells, numCells+numVertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = numCells; v < numCells+numVertices; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);

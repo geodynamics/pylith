@@ -2020,8 +2020,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   PetscInt        numCohesiveCells, vStart, vEnd;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellsCohesiveIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellsCohesiveIS);CHECK_PETSC_ERROR(err);
   err = ISGetLocalSize(cellsCohesiveIS, &numCohesiveCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellsCohesiveIS, &cellsCohesive);CHECK_PETSC_ERROR(err);
 
@@ -2058,7 +2058,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     // Get cone for cohesive cell
     PetscInt          *closure = PETSC_NULL;
     PetscInt           closureSize, q = 0;
-    err = DMComplexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     // Filter out non-vertices
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
@@ -2081,7 +2081,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
         indicesGlobal[iB+iDim] = gind + iDim;
       } // for
     } // for
-    err = DMComplexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cellsCohesive[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
 
     for (int i=0; i < subnrows; ++i) {
       indicesPerm[i]  = i;
@@ -2106,7 +2106,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 
     // Insert cell contribution into PETSc Matrix
     PetscInt c_fault = _cohesiveToFault[cellsCohesive[c]];
-    err = DMComplexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);
+    err = DMPlexMatSetClosure(faultDMMesh, solutionFaultSection, solutionFaultGlobalSection,  jacobianFaultMatrix, c_fault, &jacobianSubCell[0], INSERT_VALUES);
     CHECK_PETSC_ERROR_MSG(err, "Update to PETSc Mat failed.");
 
     // Destory IS for cohesiveCell
@@ -2157,14 +2157,14 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   PetscErrorCode err;
 
   assert(faultDMMesh);
-  err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   const int numCells = cEnd-cStart;
 
   // Get sections
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   PetscSection dLagrangeSection = _fields->get("sensitivity dLagrange").petscSection();
@@ -2183,15 +2183,15 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
     // Compute geometry
     const PetscScalar *coords = PETSC_NULL;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
     // Restrict input fields to cell
     const PetscScalar *dLagrangeArray = PETSC_NULL;
     PetscInt           dLagrangeSize;
-    err = DMComplexVecGetClosure(faultDMMesh, dLagrangeSection, dLagrangeVec, c, &dLagrangeSize, &dLagrangeArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(faultDMMesh, dLagrangeSection, dLagrangeVec, c, &dLagrangeSize, &dLagrangeArray);CHECK_PETSC_ERROR(err);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -2223,10 +2223,10 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
         } // for
       } // for
     } // for
-    err = DMComplexVecRestoreClosure(faultDMMesh, dLagrangeSection, dLagrangeVec, c, &dLagrangeSize, &dLagrangeArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(faultDMMesh, dLagrangeSection, dLagrangeVec, c, &dLagrangeSize, &dLagrangeArray);CHECK_PETSC_ERROR(err);
 
     // Assemble cell contribution into field
-    err = DMComplexVecSetClosure(faultDMMesh, residualSection, residualVec, c, &residualCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(faultDMMesh, residualSection, residualVec, c, &residualCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 } // _sensitivityReformResidual
 

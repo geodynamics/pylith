@@ -65,7 +65,7 @@ pylith::topology::TestSolutionFields::testSolution(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const char* labels[] = { "field A", "field B", "field C" };
   const int size = 3;

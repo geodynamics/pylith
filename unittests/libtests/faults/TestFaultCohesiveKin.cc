@@ -146,8 +146,8 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
   err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
@@ -262,7 +262,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   int iVertex = 0;
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
@@ -367,7 +367,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   int iVertex = 0;
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
@@ -476,13 +476,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobianLumped(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   DM              faultDMMesh = fault._faultMesh->dmMesh();
   IS              subpointMap;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
 
   const PylithScalar tolerance = 1.0e-06;
@@ -545,7 +545,7 @@ pylith::faults::TestFaultCohesiveKin::testAdjustSolnLumped(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   { // setup disp
     PetscSection dispSection = fields.get("disp(t)").petscSection();
@@ -679,7 +679,7 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
     PetscInt        vStart, vEnd;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     int iVertex = 0;
     err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
@@ -717,8 +717,8 @@ pylith::faults::TestFaultCohesiveKin::testCalcTractionsChange(void)
   PetscInt        numPoints, vStart, vEnd;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
   err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
@@ -795,7 +795,7 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   PetscInt        vStart, vEnd;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const int numFaultVertices = _data->numFaultVertices;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, off, fdof;

@@ -240,9 +240,9 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						       coordinates);
 
-  err = DMComplexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {
-    err = DMComplexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
   }
   err = DMSetUp(dmMesh);CHECK_PETSC_ERROR(err);
   PetscInt *cone = new PetscInt[ncorners];
@@ -250,17 +250,17 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
     for(PetscInt v = 0; v < ncorners; ++v) {
       cone[v] = cells[c*ncorners+v]+ncells;
     }
-    err = DMComplexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
   } // for
   delete [] cone; cone = 0;
-  err = DMComplexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
-  err = DMComplexStratify(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexStratify(dmMesh);CHECK_PETSC_ERROR(err);
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coords;
   PetscInt     coordSize;
 
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = ncells; v < ncells+nvertices; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
@@ -301,7 +301,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   sieveMesh->allocate(groupField);
 
   for(PetscInt i = 0; i < numPoints; ++i) {
-    err = DMComplexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
   }
 } // _buildMesh
 

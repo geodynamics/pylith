@@ -213,7 +213,7 @@ pylith::topology::TestFieldsNewMesh::testGet(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);
@@ -270,7 +270,7 @@ pylith::topology::TestFieldsNewMesh::testGetConst(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   fields.add("field A", "velocity", 3, FieldBase::VECTOR);
   fields.add("field B", "displacement", 4, FieldBase::OTHER, 2.0, true);

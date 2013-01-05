@@ -96,15 +96,15 @@ public :
    */
   ALE::Obj<SieveMesh>& sieveMesh(void);
 
-  /** Get DMComplex mesh.
+  /** Get DMPlex mesh.
    *
-   * @returns DMComplex mesh.
+   * @returns DMPlex mesh.
    */
   DM dmMesh(void) const;
 
-  /** Set DMComplex mesh.
+  /** Set DMPlex mesh.
    *
-   * @param DMComplex mesh.
+   * @param DMPlex mesh.
    */
   void setDMMesh(DM dm);
 

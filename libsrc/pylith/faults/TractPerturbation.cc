@@ -262,7 +262,7 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
   assert(cs);
@@ -464,7 +464,7 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
   assert(cs);
@@ -481,7 +481,7 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coordArray;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 

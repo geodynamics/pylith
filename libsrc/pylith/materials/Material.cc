@@ -131,7 +131,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
@@ -154,7 +154,7 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   PetscVec coordVec;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -221,10 +221,10 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
@@ -373,7 +373,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _id, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -409,7 +409,7 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
 
     err = PetscSectionGetChart(fieldSection, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     if (pEnd < 0) {
-      err = DMComplexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetHeightStratum(dmMesh, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(fieldSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
     } else {
       // check fiber dimension

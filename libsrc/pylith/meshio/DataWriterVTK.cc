@@ -19,13 +19,13 @@
 #include <portinfo>
 
 #include <petscdmmesh_viewers.hh> // USES VTKViewer
-#include <petscdmcomplex.h>
+#include <petscdmplex.h>
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-extern PetscErrorCode DMComplexVTKWriteAll(PetscObject odm, PetscViewer viewer);
+extern PetscErrorCode DMPlexVTKWriteAll(PetscObject odm, PetscViewer viewer);
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -122,7 +122,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
     DM complexMesh = mesh.dmMesh();
 
     if (complexMesh) {
-      /* DMComplex */
+      /* DMPlex */
       err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
       err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
       err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
@@ -137,7 +137,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
         const typename mesh_type::SieveMesh::label_sequence::const_iterator  cEnd   = cells->end();
 
         for(typename mesh_type::SieveMesh::label_sequence::const_iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
-          err = DMComplexSetLabelValue(complexMesh, "vtk", *c_iter, 1);CHECK_PETSC_ERROR(err);
+          err = DMPlexSetLabelValue(complexMesh, "vtk", *c_iter, 1);CHECK_PETSC_ERROR(err);
         }
       }
     } else {
@@ -197,8 +197,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
   PetscErrorCode err;
 
   if (complexMesh) {
-    err = DMComplexClearLabelStratum(complexMesh, "vtk", 1);CHECK_PETSC_ERROR(err);
-    err = DMComplexClearLabelStratum(complexMesh, "vtk", 2);CHECK_PETSC_ERROR(err);
+    err = DMPlexClearLabelStratum(complexMesh, "vtk", 1);CHECK_PETSC_ERROR(err);
+    err = DMPlexClearLabelStratum(complexMesh, "vtk", 2);CHECK_PETSC_ERROR(err);
   }
 #endif
   PetscViewerDestroy(&_viewer); _viewer = 0;
@@ -222,7 +222,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
     DM complexMesh = mesh.dmMesh();
 
     if (complexMesh) {
-      /* DMComplex */
+      /* DMPlex */
       PetscContainer c;
       PetscSection   s = field.petscSection();
       Vec            v = field.localVector();
@@ -230,7 +230,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
 
       /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
       PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMComplexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
+      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
       err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
       err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
       err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
@@ -309,7 +309,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
     DM complexMesh = field.mesh().dmMesh();
 
     if (complexMesh) {
-      /* DMComplex */
+      /* DMPlex */
       PetscContainer c;
       PetscSection   s = field.petscSection();
       Vec            v = field.localVector();
@@ -317,7 +317,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
 
       /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
       PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMComplexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
+      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
       err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
       err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
       err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);

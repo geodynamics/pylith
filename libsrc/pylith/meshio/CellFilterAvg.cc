@@ -106,14 +106,14 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
   if (!label) {
     PetscInt cMax;
 
-    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     numCells = cEnd - cStart;
   } else {
     const PetscInt *cells;
 
-    err = DMComplexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumIS(dmMesh, label, 1, &cellIS);CHECK_PETSC_ERROR(err);
     err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
     err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
     cStart = cells[0];

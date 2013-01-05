@@ -106,9 +106,9 @@ public :
    */
   const ALE::Obj<section_type>& section(void) const;
   
-  /** Get DMComplex section.
+  /** Get DMPlex section.
    *
-   * @returns DMComplex section.
+   * @returns DMPlex section.
    */
   void dmSection(PetscSection *s, Vec *v) const;
   

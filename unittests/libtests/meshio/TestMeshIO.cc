@@ -82,7 +82,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   PetscBool      interpolateMesh = interpolate ? PETSC_TRUE : PETSC_FALSE;
   PetscErrorCode err;
 
-  err = DMComplexCreateFromCellList(mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateFromCellList(mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(dmMesh);
 
   // Material ids
@@ -96,9 +96,9 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
 
   PetscInt cStart, cEnd;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMComplexSetLabelValue(dmMesh, "material-id", c, data.materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetLabelValue(dmMesh, "material-id", c, data.materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
   }
 
   // Groups
@@ -107,7 +107,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
     CPPUNIT_ASSERT(!groupField.isNull());
     groupField->setChart(sieveMesh->getSieve()->getChart());
 
-    err = DMComplexCreateLabel(dmMesh, data.groupNames[iGroup]);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateLabel(dmMesh, data.groupNames[iGroup]);CHECK_PETSC_ERROR(err);
 
     MeshIO::GroupPtType type;
     const int numPoints = data.groupSizes[iGroup];
@@ -115,14 +115,14 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
       type = MeshIO::CELL;
       for(int i=0; i < numPoints; ++i, ++index) {
         groupField->setFiberDimension(data.groups[index], 1);
-        err = DMComplexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index], 1);CHECK_PETSC_ERROR(err);
+        err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index], 1);CHECK_PETSC_ERROR(err);
       }
     } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
       type = MeshIO::VERTEX;
       const int numCells = sieveMesh->heightStratum(0)->size();
       for(int i=0; i < numPoints; ++i, ++index) {
         groupField->setFiberDimension(data.groups[index]+numCells, 1);
-        err = DMComplexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index]+numCells, 1);CHECK_PETSC_ERROR(err);
+        err = DMPlexSetLabelValue(dmMesh, data.groupNames[iGroup], data.groups[index]+numCells, 1);CHECK_PETSC_ERROR(err);
       }
     } else
       throw std::logic_error("Could not parse group type.");
@@ -192,8 +192,8 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
   PetscInt     vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(coordSection);CPPUNIT_ASSERT(coordVec);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
@@ -239,14 +239,14 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
   } // for
   PetscInt cStart, cEnd;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(data.numCells, cEnd-cStart);
   for(PetscInt c = cStart; c < cEnd; ++c) {
     const PetscInt *cone;
     PetscInt        coneSize;
 
-    err = DMComplexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.numCorners, coneSize);
     for(PetscInt p = 0; p < coneSize; ++p) {
       CPPUNIT_ASSERT_EQUAL(data.cells[(c-cStart)*coneSize+p], cone[p]-offset);
@@ -270,7 +270,7 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
   for(PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt matId;
 
-    err = DMComplexGetLabelValue(dmMesh, "material-id", c, &matId);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelValue(dmMesh, "material-id", c, &matId);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.materialIds[c-cStart], matId);
   }
 
@@ -322,8 +322,8 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
 
   PetscInt numLabels, pStart, pEnd;
 
-  err = DMComplexGetChart(dmMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetChart(dmMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
   numLabels -= 2; /* Remove depth and material labels */
   CPPUNIT_ASSERT_EQUAL(data.numGroups, numLabels);
   PetscInt iGroup = 0;
@@ -332,12 +332,12 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
     const char *name;
     PetscInt    firstPoint;
 
-    err = DMComplexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), std::string(name));
     for(PetscInt p = pStart; p < pEnd; ++p) {
       PetscInt val;
 
-      err = DMComplexGetLabelValue(dmMesh, name, p, &val);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetLabelValue(dmMesh, name, p, &val);CHECK_PETSC_ERROR(err);
       if (val >= 0) {
         firstPoint = p;
         break;
@@ -346,12 +346,12 @@ pylith::meshio::TestMeshIO::_checkVals(const topology::Mesh& mesh,
     std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
     PetscInt numPoints;
-    err = DMComplexGetStratumSize(dmMesh, name, 1, &numPoints);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumSize(dmMesh, name, 1, &numPoints);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
     IS              pointIS;
     const PetscInt *points;
     const PetscInt  offset = ("vertex" == groupType) ? numCells : 0;
-    err = DMComplexGetStratumIS(dmMesh, name, 1, &pointIS);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetStratumIS(dmMesh, name, 1, &pointIS);CHECK_PETSC_ERROR(err);
     err = ISGetIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < numPoints; ++p) {
       CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[p]-offset);

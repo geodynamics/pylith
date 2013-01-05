@@ -228,7 +228,7 @@ pylith::friction::TestFrictionModel::testGetField(void)
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   PetscSection fieldSection = field.petscSection();
   Vec          fieldVec     = field.localVector();

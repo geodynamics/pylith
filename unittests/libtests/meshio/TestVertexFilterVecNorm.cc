@@ -87,7 +87,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   PetscSection section = field.petscSection();
   Vec          vec     = field.localVector();

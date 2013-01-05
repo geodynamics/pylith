@@ -313,7 +313,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coords;
-  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   assert(_dbImpulseAmp);

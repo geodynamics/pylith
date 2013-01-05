@@ -107,21 +107,21 @@ public :
    */
   ALE::Obj<SieveMesh>& sieveMesh(void);
   
-  /** Create DMComplex mesh.
+  /** Create DMPlex mesh.
    *
    * @param dim Dimension associated with mesh cells.
    */
   void createDMMesh(const int dim=3); 
 
-  /** Get DMComplex mesh.
+  /** Get DMPlex mesh.
    *
-   * @returns DMComplex mesh.
+   * @returns DMPlex mesh.
    */
   DM dmMesh(void) const;
 
-  /** Set DMComplex mesh.
+  /** Set DMPlex mesh.
    *
-   * @param DMComplex mesh.
+   * @param DMPlex mesh.
    */
   void setDMMesh(DM dm);
 
