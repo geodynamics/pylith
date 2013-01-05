@@ -146,7 +146,7 @@ pylith::faults::TestTractPerturbation::testCalculate(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   //traction.view("TRACTION"); // DEBUGGING
 
@@ -199,7 +199,7 @@ pylith::faults::TestTractPerturbation::testParameterFields(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   CPPUNIT_ASSERT(tract._parameters);
   PetscSection valueSection = tract._parameters->get("value").petscSection();
@@ -295,7 +295,7 @@ pylith::faults::TestTractPerturbation::testVertexField(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
   int iPoint = 0;
@@ -349,7 +349,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
 
   PetscInt       labelSize;
   PetscErrorCode err;
-  err = DMComplexGetStratumSize(mesh->dmMesh(), faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(mesh->dmMesh(), faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
 
   // Create fault mesh
   PetscInt firstFaultVertex    = 0;
@@ -382,9 +382,9 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   PetscInt        vStart, vEnd;
 
   CPPUNIT_ASSERT(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);

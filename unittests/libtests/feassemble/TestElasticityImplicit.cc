@@ -267,8 +267,8 @@ pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
   CPPUNIT_ASSERT_EQUAL(pylith::PYLITH_MAXSCALAR, stableTimeStep);
 } // testStableTimeStep
 
-extern PetscErrorCode DMComplexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
-extern PetscErrorCode DMComplexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
+extern PetscErrorCode DMPlexBuildFromCellList_Private(DM dm, PetscInt numCells, PetscInt numVertices, PetscInt numCorners, const int cells[]);
+extern PetscErrorCode DMPlexBuildCoordinates_Private(DM dm, PetscInt spaceDim, PetscInt numCells, PetscInt numVertices, const double vertexCoords[]);
 
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
@@ -318,8 +318,8 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
 						 _data->vertices);
   PetscErrorCode err;
 
-  err = DMComplexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
-  err = DMComplexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexBuildFromCellList_Private(dmMesh, _data->numCells, _data->numVertices, _data->numBasis, _data->cells);CHECK_PETSC_ERROR(err);
+  err = DMPlexBuildCoordinates_Private(dmMesh, _data->spaceDim, _data->numCells, _data->numVertices, _data->vertices);CHECK_PETSC_ERROR(err);
 
   // Material ids
   const ALE::Obj<SieveMesh::label_sequence>& cells = 
@@ -335,9 +335,9 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
     sieveMesh->setValue(labelMaterials, *e_iter, _data->matId);
   PetscInt cStart, cEnd;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    err = DMComplexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetLabelValue(dmMesh, "material-id", c, _data->matId);CHECK_PETSC_ERROR(err);
   }
 
   // Setup quadrature
@@ -388,8 +388,8 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   Vec          dispTIncrVec      = fields->get("dispIncr(t->t+dt)").localVector();
   CPPUNIT_ASSERT(dispTIncrSectionP);CPPUNIT_ASSERT(dispTIncrVec);
   for(int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    err = DMComplexVecSetClosure(dmMesh, dispTSectionP, dispTVec, iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
-    err = DMComplexVecSetClosure(dmMesh, dispTIncrSectionP, dispTIncrVec, iVertex+offset, &_data->fieldTIncr[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(dmMesh, dispTSectionP, dispTVec, iVertex+offset, &_data->fieldT[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(dmMesh, dispTIncrSectionP, dispTIncrVec, iVertex+offset, &_data->fieldTIncr[iVertex*_data->spaceDim], INSERT_ALL_VALUES);CHECK_PETSC_ERROR(err);
   } // for
 
 } // _initialize

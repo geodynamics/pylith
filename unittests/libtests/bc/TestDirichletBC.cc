@@ -162,8 +162,8 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   PetscInt       cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   const int spaceDim = mesh.dimension();
@@ -219,8 +219,8 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   PetscInt       cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int spaceDim = mesh.dimension();
   const int fiberDim = _data->numDOF;
@@ -281,8 +281,8 @@ pylith::bc::TestDirichletBC::testSetField(void)
   PetscInt       cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
@@ -383,8 +383,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   PetscInt       cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);

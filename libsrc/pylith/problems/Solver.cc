@@ -220,7 +220,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   const bool separateComponents = formulation->splitFieldComponents();
 
   assert(solutionSection);
-  err = DMComplexGetDimension(dmMesh, &spaceDim);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDimension(dmMesh, &spaceDim);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetNumFields(solutionSection, &numFields);CHECK_PETSC_ERROR(err);
 
   err = PCSetDM(*pc, dmMesh);CHECK_PETSC_ERROR(err);
@@ -293,8 +293,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     PetscInt     dim = spaceDim, vStart, vEnd;
     PetscVec     mode[6];
 
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCoordinateSection(dmMesh, &coordinateSection);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCoordinateSection(dmMesh, &coordinateSection);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
     assert(coordinateSection);assert(coordinateVec);
     if (dim > 1) {
@@ -309,7 +309,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
         values[d] = 1.0;
         err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
         for(PetscInt v = vStart; v < vEnd; ++v) {
-          err = DMComplexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
         } // for
         err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
         err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
@@ -322,14 +322,14 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
           PetscScalar values[3] = {0.0, 0.0, 0.0};
           const PetscScalar *coords;
 
-          err = DMComplexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
           for(int i = 0; i < dim; ++i) {
             for(int j = 0; j < dim; ++j) {
               values[j] += _epsilon(i, j, k)*coords[i];
             } // for
           } // for
-          err = DMComplexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
-          err = DMComplexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecRestoreClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
+          err = DMPlexVecSetClosure(dmMesh, solutionSection, solutionVec, v, values, INSERT_VALUES);CHECK_PETSC_ERROR(err);
         }
         err = DMLocalToGlobalBegin(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);
         err = DMLocalToGlobalEnd(dmMesh, solutionVec, INSERT_VALUES, mode[d]);CHECK_PETSC_ERROR(err);

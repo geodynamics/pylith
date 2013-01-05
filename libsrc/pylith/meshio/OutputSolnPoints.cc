@@ -53,15 +53,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void)
   OutputManager<topology::Mesh, topology::Field<topology::Mesh> >::deallocate();
 
   if (_interpolator) {
-    assert(_mesh);
-    const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-    DM dm;
-    PetscErrorCode err = 0;
-
-    err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
-    err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
-    err = DMMeshInterpolationDestroy(dm, &_interpolator);CHECK_PETSC_ERROR(err);
-    err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = err = DMInterpolationDestroy(&_interpolator);CHECK_PETSC_ERROR(err);
   } // if
 
   _mesh = 0; // :TODO: Use shared pointer
@@ -116,25 +108,22 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   assert(csMesh->spaceDim() == spaceDim);
 
   // Setup interpolator object
-  DM dm;
+  DM dm = _mesh->dmMesh();
   PetscErrorCode err = 0;
 
-  assert(!_mesh->sieveMesh().isNull());
-  err = DMMeshCreate(_mesh->sieveMesh()->comm(), &dm);CHECK_PETSC_ERROR(err);
-  err = DMMeshSetMesh(dm, _mesh->sieveMesh());CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationCreate(dm, &_interpolator);CHECK_PETSC_ERROR(err);
+  assert(dm);
+  err = DMInterpolationCreate(((PetscObject) dm)->comm, &_interpolator);CHECK_PETSC_ERROR(err);
   
-  err = DMMeshInterpolationSetDim(dm, spaceDim, _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationSetDim(_interpolator, spaceDim);CHECK_PETSC_ERROR(err);
 
-  err = DMMeshInterpolationAddPoints(dm, numPoints, (PetscReal*)&pointsNondim[0], _interpolator);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationAddPoints(_interpolator, numPoints, (PetscReal*) &pointsNondim[0]);CHECK_PETSC_ERROR(err);
   const PetscBool pointsAllProcs = PETSC_TRUE;
-  err = DMMeshInterpolationSetUp(dm, _interpolator, pointsAllProcs);CHECK_PETSC_ERROR(err);
-  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationSetUp(_interpolator, dm, pointsAllProcs);CHECK_PETSC_ERROR(err);
 
   // Create mesh corresponding to points.
   const int meshDim = 0;
   delete _pointsMesh; _pointsMesh = new topology::Mesh(meshDim);
-  _pointsMesh->createSieveMesh(meshDim);
+  _pointsMesh->createDMMesh(meshDim);
   assert(_pointsMesh);
 
   const int numPointsLocal = _interpolator->n;
@@ -160,17 +149,6 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
   // Set coordinate system and create nondimensionalized coordinates
   _pointsMesh->coordsys(_mesh->coordsys());
   _pointsMesh->nondimensionalize(normalizer);
-
-  // Create empty overlaps. MATT - IS THIS OKAY?
-  assert(!_pointsMesh->sieveMesh().isNull());
-  ALE::Obj<SieveSubMesh::send_overlap_type> sendOverlap = _pointsMesh->sieveMesh()->getSendOverlap();
-  assert(!sendOverlap.isNull());
-  ALE::Obj<SieveSubMesh::recv_overlap_type> recvOverlap = _pointsMesh->sieveMesh()->getRecvOverlap();
-  assert(!recvOverlap.isNull());
-  SieveMesh::renumbering_type emptyRenumbering;
-  ALE::SetFromMap<SieveMesh::renumbering_type> emptyPoints(emptyRenumbering);  
-  ALE::OverlapBuilder<>::constructOverlap(emptyPoints, emptyRenumbering, sendOverlap, recvOverlap);
-  _pointsMesh->sieveMesh()->setCalculatedOverlap(true);
 
 #if 0 // DEBUGGING
   _pointsMesh->view("POINTS MESH");
@@ -225,69 +203,56 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   assert(_mesh);
   assert(_fields);
 
-  const ALE::Obj<SieveMesh>& pointsSieveMesh = _pointsMesh->sieveMesh();
-  assert(!pointsSieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    pointsSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
+  DM             pointsDMMesh = _pointsMesh->dmMesh();
+  PetscInt       pvStart, pvEnd;
+  PetscErrorCode err;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  const std::string labelName = 
-    (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-  assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-  assert(!field.section().isNull());
-  int fiberDimLocal = 
-    (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) ? 
-    field.section()->getFiberDimension(*sieveMesh->getLabelStratum(labelName, 0)->begin()) : 0;
-  int fiberDim = 0;
-  MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
-		field.mesh().comm());
+  assert(pointsDMMesh);
+  err = DMPlexGetDepthStratum(pointsDMMesh, 0, &pvStart, &pvEnd);CHECK_PETSC_ERROR(err);
+
+  DM       dmMesh = field.dmMesh();
+  PetscInt vStart, vEnd;
+
+  assert(dmMesh);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscSection section = field.petscSection();
+  PetscInt fiberDimLocal = 0;
+  PetscInt fiberDim = 0;
+
+  if (vEnd > vStart) {err = PetscSectionGetDof(section, vStart, &fiberDimLocal);CHECK_PETSC_ERROR(err);}
+  MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPIU_INT, MPI_MAX, field.mesh().comm());
   assert(fiberDim > 0);
 
   // Create field if necessary for interpolated values or recreate
   // field if mismatch in size between buffer and field.
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
-  if (!_fields->hasField("buffer (interpolated)")) {
-    _fields->add("buffer (interpolated)", field.label());
-  } // if
+  ostringstream fieldName;
+  const char   *context = field.label();
+  fieldName << context << " (interpolated)" << std::endl;
 
-  topology::Field<topology::Mesh>& fieldInterp = 
-    _fields->get("buffer (interpolated)");
-  if (fieldInterp.section().isNull() || vertices->size()*fiberDim != fieldInterp.sectionSize()) {
-    fieldInterp.newSection(vertices, fiberDim);
-    fieldInterp.allocate();
+  if (_fields->hasField(fieldName.str().c_str())) {
+    ostringstream msg;
+    msg << "Field " << fieldName << "already present in manager" << std::endl;
+    throw std::logic_error(msg.str());
   } // if
-  logger.stagePop();
+  _fields->add(fieldName.str().c_str(), field.label());
 
+  topology::Field<topology::Mesh>& fieldInterp = _fields->get(fieldName.str().c_str());
+  fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+  fieldInterp.allocate();
   fieldInterp.zero();
   fieldInterp.label(field.label());
   fieldInterp.vectorFieldType(field.vectorFieldType());
   fieldInterp.scale(field.scale());
+  logger.stagePop();
 
-  const char* context = field.label();
   fieldInterp.createScatter(*_pointsMesh, context);
   PetscVec fieldInterpVec = fieldInterp.vector(context);
   assert(fieldInterpVec);
-
-  DM dm;
-  SectionReal section;
-  PetscErrorCode err = 0;
   
-  err = DMMeshCreate(sieveMesh->comm(), &dm);CHECK_PETSC_ERROR(err);
-  err = DMMeshSetMesh(dm, sieveMesh);CHECK_PETSC_ERROR(err);
-  err = DMMeshInterpolationSetDof(dm, fiberDim, 
-				  _interpolator);CHECK_PETSC_ERROR(err);
-
-  err = SectionRealCreate(sieveMesh->comm(), &section);CHECK_PETSC_ERROR(err);
-  err = SectionRealSetSection(section, field.section());CHECK_PETSC_ERROR(err);
-  err = SectionRealSetBundle(section, sieveMesh);CHECK_PETSC_ERROR(err);
-
-  err = DMMeshInterpolationEvaluate(dm, section, fieldInterpVec, 
-				    _interpolator);CHECK_PETSC_ERROR(err);
-  err = SectionRealDestroy(&section);CHECK_PETSC_ERROR(err);
-  err = DMDestroy(&dm);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationSetDof(_interpolator, fiberDim);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationEvaluate(_interpolator, dmMesh, field.localVector(), fieldInterpVec);CHECK_PETSC_ERROR(err);
 
   fieldInterp.scatterVectorToSection(context);
 

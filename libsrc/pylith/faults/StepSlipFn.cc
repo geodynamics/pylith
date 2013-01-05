@@ -92,7 +92,7 @@ pylith::faults::StepSlipFn::initialize(
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
@@ -156,7 +156,7 @@ pylith::faults::StepSlipFn::initialize(
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coordArray;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
@@ -233,7 +233,7 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Get sections
   const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");

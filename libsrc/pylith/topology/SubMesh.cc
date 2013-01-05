@@ -87,7 +87,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   PetscBool      hasLabel;
   PetscErrorCode err;
 
-  err = DMComplexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << label << "' in DM mesh.";
@@ -112,7 +112,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 			  meshSieveMesh->getRealSection("coordinates_dimensioned"));
 
   /* TODO: Add creation of pointSF for submesh */
-  err = DMComplexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
 
   // Create the parallel overlap
   const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();

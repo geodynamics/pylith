@@ -112,8 +112,8 @@ pylith::bc::Neumann::integrateResidual(
   PetscErrorCode err;
 
   assert(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(subMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(subMesh, &subpointMap);CHECK_PETSC_ERROR(err);
 
   // Get sections
   _calculateValue(t);
@@ -131,7 +131,7 @@ pylith::bc::Neumann::integrateResidual(
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -144,10 +144,10 @@ pylith::bc::Neumann::integrateResidual(
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Reset element vector to zero
@@ -177,7 +177,7 @@ pylith::bc::Neumann::integrateResidual(
         } // for
       } // for
     } // for
-    err = DMComplexVecSetClosure(subMesh, residualSubsection, residualVec, c, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(subMesh, residualSubsection, residualVec, c, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for
   err = VecRestoreArray(valueVec, &tractionsArray);CHECK_PETSC_ERROR(err);
@@ -403,7 +403,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
   PetscErrorCode err;
 
   assert(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
@@ -419,7 +419,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
@@ -449,10 +449,10 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
@@ -506,7 +506,7 @@ void
   PetscErrorCode err;
 
   assert(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -528,7 +528,7 @@ void
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
@@ -575,10 +575,10 @@ void
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMComplexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
     for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Compute Jacobian and determinant at quadrature point, then get orientation.
@@ -678,7 +678,7 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
   PetscErrorCode err;
 
   assert(subMesh);
-  err = DMComplexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();

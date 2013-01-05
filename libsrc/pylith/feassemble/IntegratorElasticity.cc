@@ -188,7 +188,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -203,7 +203,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -217,10 +217,10 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get physical properties and state variables for cell.
@@ -229,9 +229,9 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
     // Restrict input fields to cell
     const PetscScalar *dispTArray;
     PetscInt           dispTSize;
-    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
-    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
@@ -287,7 +287,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -295,7 +295,7 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
     const PetscInt cell = cells[c];
     PetscInt       cellNumCorners;
 
-    err = DMComplexGetConeSize(dmMesh, cell, &cellNumCorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);CHECK_PETSC_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"
@@ -474,7 +474,7 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   int_array cellsTmp(cells, numCells);
@@ -550,7 +550,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -565,7 +565,7 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 #endif
@@ -583,18 +583,18 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
 #else
     const PetscScalar *coords;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMComplexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Restrict input fields to cell
     const PetscScalar *dispTArray;
     PetscInt           dispTSize;
-    err = DMComplexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
-    err = DMComplexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
@@ -603,11 +603,11 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
     calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, numBasis, numQuadPts);
     
     if (!calcStress) {
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMPlexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      err = DMComplexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+      err = DMPlexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
     } // else
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
@@ -643,7 +643,7 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
@@ -658,13 +658,13 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
     PetscInt           fieldSize;
     const PetscScalar *fieldArray;
 
-    err = DMComplexVecGetClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < fieldSize; ++i) {strainCell[i] = fieldArray[i];}
-    err = DMComplexVecRestoreClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
 
     _material->retrievePropsAndVars(cell);
     stressCell = _material->calcStress(strainCell);
-    err = DMComplexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);

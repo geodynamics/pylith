@@ -100,7 +100,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -203,7 +203,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -275,7 +275,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -316,7 +316,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -360,7 +360,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -430,7 +430,7 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   PetscInt cell = cells[0];
@@ -850,7 +850,7 @@ pylith::materials::TestElasticMaterial::_initialize(
   PetscErrorCode  err;
 
   assert(dmMesh);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 

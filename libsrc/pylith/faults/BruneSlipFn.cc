@@ -92,7 +92,7 @@ pylith::faults::BruneSlipFn::initialize(
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fault");
@@ -173,7 +173,7 @@ pylith::faults::BruneSlipFn::initialize(
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coordArray;
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
 
@@ -267,7 +267,7 @@ pylith::faults::BruneSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Get sections
   const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");

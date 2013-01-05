@@ -245,10 +245,10 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
     }
 
     PetscInt cStart, cEnd;
-    err = DMComplexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
     assert(numCells == cEnd - cStart);
     for(PetscInt c = cStart; c < cEnd; ++c) {
-      err = DMComplexSetLabelValue(complexMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(complexMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
     }
   } // if
   logger.stagePop();
@@ -332,11 +332,11 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 
   if (CELL == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMComplexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
     }
   } else if (VERTEX == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMComplexSetLabelValue(complexMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(complexMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
     }
   }
   logger.stagePop();

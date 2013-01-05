@@ -160,8 +160,8 @@ pylith::faults::TestFaultCohesiveImpulses::testInitialize(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointMap);
   err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
@@ -255,7 +255,7 @@ pylith::faults::TestFaultCohesiveImpulses::testIntegrateResidual(void)
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   int iVertex = 0;
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
@@ -342,7 +342,7 @@ pylith::faults::TestFaultCohesiveImpulses::_initialize(
 
   PetscInt       labelSize;
   PetscErrorCode err;
-  err = DMComplexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
 
   PetscInt firstFaultVertex    = 0;
   PetscInt firstLagrangeVertex = labelSize;

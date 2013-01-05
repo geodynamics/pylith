@@ -71,7 +71,7 @@ pylith::problems::Implicit::calcRateFields(void)
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {

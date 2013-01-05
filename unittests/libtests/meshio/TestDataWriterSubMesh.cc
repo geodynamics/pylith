@@ -117,7 +117,7 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
     PetscErrorCode err;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
@@ -171,7 +171,7 @@ pylith::meshio::TestDataWriterSubMesh::_createCellFields(
     PetscErrorCode  err;
 
     CPPUNIT_ASSERT(dmMesh);
-    err = DMComplexGetHeightStratum(dmMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
     numCells = cEnd - cStart;
 
     // Set cell fields

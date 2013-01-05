@@ -46,7 +46,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh) :
     PetscSection   s;
     PetscErrorCode err;
 
-    err = DMComplexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
+    err = DMPlexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
     if (coordVec) {
       DM           coordDM, newCoordDM;
@@ -86,7 +86,7 @@ pylith::topology::Field<mesh_type, section_type>::Field(const mesh_type& mesh,
     PetscSection   s;
     PetscErrorCode err;
 
-    err = DMComplexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
+    err = DMPlexClone(dm, &_dm);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
     if (coordVec) {
       err = DMGetCoordinateDM(dm, &coordDM);CHECK_PETSC_ERROR(err);
@@ -256,7 +256,16 @@ template<typename mesh_type, typename section_type>
 int
 pylith::topology::Field<mesh_type, section_type>::sectionSize(void) const
 { // sectionSize
-  return _section.isNull() ? 0 : _section->size();
+  PetscInt       size = 0;
+  PetscErrorCode err;
+
+  if (_dm) {
+    PetscSection s;
+
+    err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetStorageSize(s, &size);CHECK_PETSC_ERROR(err);
+  }
+  return size;
 } // sectionSize
 
 // ----------------------------------------------------------------------
@@ -318,6 +327,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
 
       for(typename label_sequence::const_iterator p_iter = points->begin(); p_iter != points->end(); ++p_iter) {
@@ -329,6 +340,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
     }
   }
@@ -374,6 +387,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
 
       for (int i=0; i < npts; ++i) {
@@ -385,6 +400,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
     }
   }
@@ -408,22 +425,24 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const DomainEnum do
 
     switch(domain) {
     case VERTICES_FIELD:
-      err = DMComplexGetDepthStratum(_dm, stratum, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetDepthStratum(_dm, stratum, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
     case CELLS_FIELD:
-      err = DMComplexGetHeightStratum(_dm, stratum, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetHeightStratum(_dm, stratum, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
     case FACES_FIELD:
-      err = DMComplexGetHeightStratum(_dm, stratum+1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetHeightStratum(_dm, stratum+1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
     case POINTS_FIELD:
-      err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
       break;
     default:
       std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;
       throw std::logic_error("Bad domain enum in Field.");
     }
     err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+    err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
 
     for(PetscInt p = pStart; p < pEnd; ++p) {
@@ -494,6 +513,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
       PetscErrorCode err;
 
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+      err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
       for(PetscInt p = pStart; p < pEnd; ++p) {
         err = PetscSectionSetDof(s, p, fiberDim);CHECK_PETSC_ERROR(err);
@@ -506,6 +527,8 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 
     err = DMGetDefaultSection(src._dm, &srcs);CHECK_PETSC_ERROR(err);
     err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
+    err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetChart(srcs, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
     for(PetscInt p = pStart; p < pEnd; ++p) {
@@ -645,7 +668,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 } // cloneSection
 
 // ----------------------------------------------------------------------
-// Get DMComplex section.
+// Get DMPlex section.
 template<typename mesh_type, typename section_type>
 void
 pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec *v) const {
@@ -659,7 +682,7 @@ pylith::topology::Field<mesh_type, section_type>::dmSection(PetscSection *s, Vec
   if (numNormalCells+numCohesiveCells+numNormalVertices+numShadowVertices+numLagrangeVertices > 0) {
     PetscInt numFields, numComp, pMax, pStart, pEnd, qStart, qEnd;
 
-    err = DMComplexGetChart(_mesh.dmMesh(), PETSC_NULL, &pMax);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetChart(_mesh.dmMesh(), PETSC_NULL, &pMax);CHECK_PETSC_ERROR(err);
     err = PetscSectionCreate(_mesh.sieveMesh()->comm(), s);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
     if (numFields) {
@@ -851,7 +874,7 @@ pylith::topology::Field<mesh_type, section_type>::zero(void)
       err = PetscSectionGetDof(section, p, &dof);CHECK_PETSC_ERROR(err);
       if (dof > 0) {
         assert(dof <= maxDof);
-        err = DMComplexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+        err = DMPlexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
       } // if
     } // for
   }
@@ -1505,7 +1528,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   PetscSection section, newSection, gsection;
   PetscSF      sf;
 
-  err = DMComplexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = DMPlexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
@@ -1558,13 +1581,13 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   PetscSection section, newSection, gsection;
   PetscSF      sf;
   PetscInt     cEnd, cMax, vEnd, vMax;
-  err = DMComplexGetHeightStratum(_dm, 0, PETSC_NULL, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(_dm, 0, PETSC_NULL, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetVTKBounds(_dm, &cMax, &vMax);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(_dm, 0, PETSC_NULL, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(_dm, 0, PETSC_NULL, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetVTKBounds(_dm, &cMax, &vMax);CHECK_PETSC_ERROR(err);
   PetscInt     excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
   PetscInt     numExcludes      = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-  err = DMComplexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = DMPlexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
@@ -1574,7 +1597,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   } else {
     DMLabel label;
 
-    err = DMComplexGetLabel(sinfo.dm, labelName.c_str(), &label);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(sinfo.dm, labelName.c_str(), &label);CHECK_PETSC_ERROR(err);
     err = PetscSectionCreateGlobalSectionLabel(section, sf, PETSC_TRUE, label, labelValue, &gsection);CHECK_PETSC_ERROR(err);
   }
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
@@ -1853,7 +1876,7 @@ pylith::topology::Field<mesh_type, section_type>::setupFields()
   // Right now, we assume that the section covers the entire chart
   PetscInt pStart, pEnd;
 
-  err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(section, pStart, pEnd);CHECK_PETSC_ERROR(err);
 #endif
 }
@@ -1869,16 +1892,16 @@ pylith::topology::Field<mesh_type, section_type>::updateDof(const char *name, co
   assert(_dm);
   switch(domain) {
   case VERTICES_FIELD:
-    err = DMComplexGetDepthStratum(_dm, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(_dm, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     break;
   case CELLS_FIELD:
-    err = DMComplexGetHeightStratum(_dm, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(_dm, 0, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     break;
   case FACES_FIELD:
-    err = DMComplexGetHeightStratum(_dm, 1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(_dm, 1, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     break;
   case POINTS_FIELD:
-    err = DMComplexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     break;
   default:
     std::cerr << "Unknown value for DomainEnum: " << domain << std::endl;

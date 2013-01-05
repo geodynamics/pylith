@@ -97,7 +97,7 @@ pylith::bc::TestPointForce::testInitialize(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   const int numCells = cEnd-cStart;
   const int numForceDOF = _data->numForceDOF;
   const size_t numPoints = _data->numForcePts;
@@ -178,7 +178,7 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
   PetscErrorCode err;
 
   CPPUNIT_ASSERT(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar* valsE = _data->residual;
   const int totalNumVertices = vEnd-vStart;

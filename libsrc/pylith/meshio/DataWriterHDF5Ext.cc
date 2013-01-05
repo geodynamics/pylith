@@ -145,11 +145,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     PetscInt     vStart, vEnd, vMax, verticesSize, globalSize, dim, dimLocal = 0;
 
     /* TODO Get rid of this and use the createScatterWithBC(numbering) code */
-    err = DMComplexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
     if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}
     for(PetscInt vertex = vStart; vertex < vEnd; ++vertex) {
       err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
@@ -277,22 +277,22 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 #else
     PetscInt cStart, cEnd, cMax, dof, conesSize, numCells, numCorners, numCornersLocal = 0;
 
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     for(PetscInt cell = cStart; cell < cEnd; ++cell) {
       PetscInt *closure = PETSC_NULL;
       PetscInt  closureSize, v;
 
-      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       numCornersLocal = 0;
       for (v = 0; v < closureSize*2; v += 2) {
         if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
           ++numCornersLocal;
         }
       }
-      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       if (numCornersLocal) break;
     }
     err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
@@ -301,7 +301,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
         PetscInt value;
 
-        err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
         if (value == labelId) ++conesSize;
       }
       conesSize *= numCorners;
@@ -315,8 +315,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     PetscVec        cellVec, elemVec;
     PetscScalar    *vertices;
 
-    err = DMComplexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
     if (subpointMap) {err = ISGetIndices(subpointMap, &gpoints);CHECK_PETSC_ERROR(err);}
     err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
     err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
@@ -332,10 +332,10 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       if (label) {
         PetscInt value;
 
-        err = DMComplexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetLabelValue(dmMesh, label, cell, &value);CHECK_PETSC_ERROR(err);
         if (value != labelId) continue;
       }
-      err = DMComplexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
         if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
           //const PetscInt gv = gpoints ? gpoints[closure[p]] : gvertex[closure[p] - vStart];
@@ -343,7 +343,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
           vertices[v++] = gv < 0 ? -(gv+1) : gv;
         }
       }
-      err = DMComplexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+      err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       //assert(v == (cell-cStart+1)*numCorners);
     }
     CHKMEMA;
@@ -470,8 +470,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     IS           globalVertexNumbers;
 
     assert(section);
-    err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
     err = ISGetSize(globalVertexNumbers, &n);CHECK_PETSC_ERROR(err);
     if (n > 0) {
       const PetscInt *indices;
@@ -605,12 +605,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     IS           globalCellNumbers;
 
     assert(section);
-    err = DMComplexGetVTKCellHeight(dmMesh, &cellHeight);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
     if (label) {
       IS pointIS;
 
-      DMComplexGetStratumIS(dmMesh, label, labelId, &pointIS);CHECK_PETSC_ERROR(err);
+      DMPlexGetStratumIS(dmMesh, label, labelId, &pointIS);CHECK_PETSC_ERROR(err);
       err = ISGetLocalSize(pointIS, &n);CHECK_PETSC_ERROR(err);
       if (n > 0) {
         const PetscInt *indices;
@@ -624,7 +624,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
         err = ISRestoreIndices(pointIS, &indices);CHECK_PETSC_ERROR(err);
       }
     } else {
-      err = DMComplexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
       err = ISGetLocalSize(globalCellNumbers, &n);CHECK_PETSC_ERROR(err);
       if (n > 0) {
         const PetscInt *indices;

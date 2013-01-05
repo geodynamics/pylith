@@ -977,8 +977,8 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label() << " for boundary condition.";
@@ -1026,7 +1026,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   IS              cellIS;
   const PetscInt *cells;
   PetscInt        numCells;
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   assert(cellIS);
   err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
@@ -1034,7 +1034,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
     PetscInt *closure        = PETSC_NULL;
     PetscInt  cellNumCorners = 0, closureSize;
 
-    err = DMComplexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
@@ -1049,7 +1049,7 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
           << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    err = DMComplexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 } // verifyConfiguration
@@ -1110,8 +1110,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   PetscInt        numCells, vStart, vEnd;
   PetscErrorCode  err;
 
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   assert(cellIS);
   err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   const int numConstraintVert = _quadrature->numBasis();
@@ -1123,9 +1123,9 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   PetscInt        numPoints, fcStart, fcEnd, fvStart, fvEnd;
 
   assert(faultDMMesh);
-  err = DMComplexGetHeightStratum(faultDMMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(faultDMMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
   err = ISGetLocalSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
   assert(numCells == fcEnd-fcStart);
 
@@ -1144,7 +1144,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     PetscInt *closure = PETSC_NULL;
     PetscInt  closureSize, q = 0;
 
-    err = DMComplexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
@@ -1184,7 +1184,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
         ++index;
       } // if
     } // for
-    err = DMComplexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
@@ -1257,7 +1257,7 @@ pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::S
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
@@ -1320,7 +1320,7 @@ pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field<topology::S
   PetscErrorCode err;
 
   assert(dmMesh);
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
@@ -1371,8 +1371,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscErrorCode err;
 
   assert(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   // Containers for orientation information.
   const int cohesiveDim = _faultMesh->dimension();
@@ -1413,7 +1413,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   // Get section containing coordinates of vertices
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Set orientation function
@@ -1432,8 +1432,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     scalar_array       coordinatesCell(numBasis * spaceDim);
 
     // Get orientations at fault cell's vertices.
-    err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    err = DMComplexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
 
     // Filter out non-vertices
@@ -1461,8 +1461,8 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
         orientationArray[off+d] += orientationVertex[d];
       }
     } // for
-    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    err = DMComplexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(faultDMMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
   err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
@@ -1668,8 +1668,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   PetscErrorCode err;
 
   assert(faultDMMesh);
-  err = DMComplexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("FaultFields");
@@ -1694,7 +1694,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  err = DMComplexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Loop over cells in fault mesh, compute area
@@ -1707,10 +1707,10 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 #else
     const PetscScalar *coords = PETSC_NULL;
     PetscInt           coordsSize;
-    err = DMComplexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMComplexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 #endif
 
     // Get cell geometry information that depends on cell
@@ -1725,7 +1725,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
         areaCell[iBasis] += dArea;
       } // for
     } // for
-    err = DMComplexVecSetClosure(faultDMMesh, areaSection, areaVec, c, &areaCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    err = DMPlexVecSetClosure(faultDMMesh, areaSection, areaVec, c, &areaCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
     PetscLogFlops(numQuadPts*(1+numBasis*2));
   } // for
 
@@ -1982,7 +1982,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
     PetscErrorCode err;
 
     assert(faultDMMesh);
-    err = DMComplexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
     ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
     logger.stagePush("OutputFields");

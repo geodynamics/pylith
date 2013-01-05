@@ -170,7 +170,7 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
   field.label(label.c_str());
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   PetscSection section = field.petscSection();
@@ -205,7 +205,7 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
   field.label(label.c_str());
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const int npts = (vEnd-vStart) / 2;
   int_array pointsIn(npts);
   int_array pointsOut(vEnd-vStart - npts);
@@ -273,7 +273,7 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
   CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof;
     err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
@@ -312,7 +312,7 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   Vec          vec     = field.localVector();
   CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof;
     err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
@@ -344,7 +344,7 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Create field with atlas to use to create new field
   Field<Mesh> fieldSrc(mesh);
@@ -432,7 +432,7 @@ pylith::topology::TestFieldMesh::testAllocate(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -488,7 +488,7 @@ pylith::topology::TestFieldMesh::testZero(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -553,7 +553,7 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Create field and set constraint sizes
   Field<Mesh> field(mesh);
@@ -623,7 +623,7 @@ pylith::topology::TestFieldMesh::testComplete(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -682,7 +682,7 @@ pylith::topology::TestFieldMesh::testCopy(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> fieldSrc(mesh);
   { // Setup source field
@@ -756,7 +756,7 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> fieldSrc(mesh);
   { // Setup source field
@@ -839,7 +839,7 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -899,7 +899,7 @@ pylith::topology::TestFieldMesh::testView(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -937,7 +937,7 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   const std::string& label = "field A";
@@ -1002,7 +1002,7 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   const std::string& label = "field A";
@@ -1067,7 +1067,7 @@ pylith::topology::TestFieldMesh::testVector(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -1109,7 +1109,7 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -1168,7 +1168,7 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   Field<Mesh> field(mesh);
   field.newSection(Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -1229,7 +1229,7 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Create field with section to use to create new field
   Field<Mesh> fieldSrc(mesh);
@@ -1320,7 +1320,7 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
   CPPUNIT_ASSERT(dmMesh);
 
   PetscInt       vStart, vEnd;
-  err = DMComplexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Create field with atlas to use to create new field
   Field<Mesh> fieldSrc(mesh);
@@ -1430,9 +1430,9 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
 						       coordinates);
 
-  err = DMComplexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {
-    err = DMComplexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
   }
   err = DMSetUp(dmMesh);CHECK_PETSC_ERROR(err);
   PetscInt *cone = new PetscInt[ncorners];
@@ -1440,17 +1440,17 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
     for(PetscInt v = 0; v < ncorners; ++v) {
       cone[v] = cells[c*ncorners+v]+ncells;
     }
-    err = DMComplexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
   } // for
   delete [] cone; cone = 0;
-  err = DMComplexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
-  err = DMComplexStratify(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexStratify(dmMesh);CHECK_PETSC_ERROR(err);
   PetscSection coordSection;
   Vec          coordVec;
   PetscScalar *coords;
   PetscInt     coordSize;
 
-  err = DMComplexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = ncells; v < ncells+nvertices; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
