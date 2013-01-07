@@ -327,7 +327,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
 
@@ -340,7 +339,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
     }
@@ -387,7 +385,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pointMin, pointMax+1);CHECK_PETSC_ERROR(err);
 
@@ -400,7 +397,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const int_array& po
     if (_dm) {
       PetscSection s;
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
     }
@@ -441,7 +437,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const DomainEnum do
       throw std::logic_error("Bad domain enum in Field.");
     }
     err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-    err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
 
@@ -513,7 +508,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
       PetscErrorCode err;
 
       err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-      err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
       err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
       for(PetscInt p = pStart; p < pEnd; ++p) {
@@ -527,7 +521,6 @@ pylith::topology::Field<mesh_type, section_type>::newSection(const Field& src,
 
     err = DMGetDefaultSection(src._dm, &srcs);CHECK_PETSC_ERROR(err);
     err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-    err = PetscSectionReset(s);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultGlobalSection(_dm, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetChart(srcs, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
