@@ -95,9 +95,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubMesh::testWriteVertexField(void)
   CPPUNIT_ASSERT(0 != _mesh);
   CPPUNIT_ASSERT(0 != _data);
 
-  DataWriterHDF5Ext<topology::SubMesh, SubMeshField> writer;
+  DataWriterHDF5Ext<topology::SubMesh, MeshField> writer;
 
-  topology::Fields<SubMeshField> vertexFields(*_submesh);
+  topology::Fields<MeshField> vertexFields(*_mesh);
   _createVertexFields(&vertexFields);
 
   writer.filename(_data->vertexFilename);
@@ -118,7 +118,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubMesh::testWriteVertexField(void)
     writer.openTimeStep(t, *_submesh, label, id);
   } // else
   for (int i=0; i < nfields; ++i) {
-    SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
+    MeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_submesh);
   } // for
   writer.closeTimeStep();

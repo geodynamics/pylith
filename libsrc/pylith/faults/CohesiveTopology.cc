@@ -315,11 +315,11 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   err = PetscFree(newCone);CHECK_PETSC_ERROR(err);
   PetscInt cMax, vMax;
 
-  err = DMPlexGetVTKBounds(newMesh, &cMax, &vMax);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHybridBounds(newMesh, &cMax, PETSC_NULL, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
   if (cMax < 0) {
-    err = DMPlexSetVTKBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
+    err = DMPlexSetHybridBounds(newMesh, firstFaultCellDM, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   }
-  err = DMPlexSetVTKBounds(newMesh, PETSC_DETERMINE, firstLagrangeVertexDM);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetHybridBounds(newMesh, PETSC_DETERMINE, PETSC_DETERMINE, PETSC_DETERMINE, firstLagrangeVertexDM);CHECK_PETSC_ERROR(err);
 
   // Renumber labels
   std::set<std::string> names(groupNames->begin(), groupNames->end());

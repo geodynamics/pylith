@@ -44,7 +44,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshLine2::_time = 1.0;
 const char* pylith::meshio::DataWriterHDF5DataSubMeshLine2::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshLine2::_numVertices = 1;
+const int pylith::meshio::DataWriterHDF5DataSubMeshLine2::_numVertices = 5;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterHDF5DataSubMeshLine2::_vertexFields[4] = {
