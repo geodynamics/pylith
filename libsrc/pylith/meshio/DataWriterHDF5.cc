@@ -135,7 +135,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetVTKBounds(dmMesh, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHybridBounds(dmMesh, PETSC_NULL, PETSC_NULL, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
     if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}
     for(PetscInt vertex = vStart; vertex < vEnd; ++vertex) {
       err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
@@ -194,7 +194,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
 
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetVTKBounds(dmMesh, &cMax, PETSC_NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHybridBounds(dmMesh, &cMax, PETSC_NULL, PETSC_NULL, PETSC_NULL);CHECK_PETSC_ERROR(err);
     if (cMax >= 0) {cEnd = PetscMin(cEnd, cMax);}
     for(PetscInt cell = cStart; cell < cEnd; ++cell) {
       PetscInt *closure = PETSC_NULL;
@@ -400,7 +400,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   try {
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
-    field.createScatterWithBC(field.mesh(), "", 0, context);
+    field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
     assert(vector);

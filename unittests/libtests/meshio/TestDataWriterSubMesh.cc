@@ -103,7 +103,7 @@ pylith::meshio::TestDataWriterSubMesh::_initialize(void)
 // Create vertex fields.
 void
 pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
-	    topology::Fields<SubMeshField>* fields) const
+	    topology::Fields<MeshField>* fields) const
 { // _createVertexFields
   CPPUNIT_ASSERT(0 != fields);
   CPPUNIT_ASSERT(0 != _mesh);
@@ -112,19 +112,27 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
   try {
     const int nfields = _data->numVertexFields;
 
-    DM dmMesh = _submesh->dmMesh();
+    DM dmMesh    = _mesh->dmMesh();
     PetscInt       vStart, vEnd;
     PetscErrorCode err;
 
     CPPUNIT_ASSERT(dmMesh);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+#if 0
+    DM dmSubmesh = _submesh->dmMesh();
+    IS subpointMap;
+    err = DMPlexGetSubpointMap(dmSubmesh, &subpointMap);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
+#endif
 
     // Set vertex fields
     for (int i=0; i < nfields; ++i) {
+      const PetscInt *ind;
       const char* name = _data->vertexFieldsInfo[i].name;
       const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
       fields->add(name, name);
-      SubMeshField& field = fields->get(name);
+      MeshField& field = fields->get(name);
       field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
       field.allocate();
       field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
@@ -137,6 +145,7 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
       for(PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof, off;
 
+        err = 
         err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
         err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
         for(PetscInt d = 0; d < dof; ++d) {

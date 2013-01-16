@@ -1571,17 +1571,53 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("GlobalOrder");
 
-  PetscSection section, newSection, gsection;
+  DM           dm = mesh.dmMesh();
+  PetscSection section, newSection, gsection, subSection = PETSC_NULL;
   PetscSF      sf;
-  PetscInt     cEnd, cMax, vEnd, vMax;
+  IS           subpointMap, subpointMapF;
+  PetscInt     dim, dimF, pStart, pEnd, qStart, qEnd, cEnd, cMax, vEnd, vMax;
   err = DMPlexGetHeightStratum(_dm, 0, PETSC_NULL, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(_dm, 0, PETSC_NULL, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetVTKBounds(_dm, &cMax, &vMax);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHybridBounds(_dm, &cMax, PETSC_NULL, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
   PetscInt     excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
   PetscInt     numExcludes      = (cMax >= 0 ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-  err = DMPlexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDimension(dm,  &dim);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDimension(_dm, &dimF);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetChart(dm,  &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetChart(_dm, &qStart, &qEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(dm,  &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSubpointMap(_dm, &subpointMapF);CHECK_PETSC_ERROR(err);
+  if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
+    const PetscInt *ind;
+    PetscInt        n, q;
+
+    err = PetscPrintf(PETSC_COMM_SELF, "Making translation PetscSection\n");CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetChart(section, &qStart, &qEnd);CHECK_PETSC_ERROR(err);
+    err = ISGetLocalSize(subpointMap, &n);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
+    err = PetscSectionCreate(mesh.comm(), &subSection);CHECK_PETSC_ERROR(err);
+    err = PetscSectionSetChart(subSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
+    for(q = qStart; q < qEnd; ++q) {
+      PetscInt dof, off, p;
+
+      err = PetscSectionGetDof(section, q, &dof);CHECK_PETSC_ERROR(err);
+      if (dof) {
+        err = PetscFindInt(q, n, ind, &p);CHECK_PETSC_ERROR(err);
+        if (p >= pStart) {
+          err = PetscSectionSetDof(subSection, p, dof);CHECK_PETSC_ERROR(err);
+          err = PetscSectionGetOffset(section, q, &off);CHECK_PETSC_ERROR(err);
+          err = PetscSectionSetOffset(subSection, p, off);CHECK_PETSC_ERROR(err);
+        }
+      }
+    }
+    err = ISRestoreIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
+    /* No need to setup section */
+    section = subSection;
+  }
+
+  err = DMPlexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
@@ -1602,7 +1638,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   err = VecGetSize(sinfo.vector, &globalSize);CHECK_PETSC_ERROR(err);
   /* assert(order->getLocalSize()  == localSize); This does not work because the local vector includes the lagrange cell variables */
   /* assert(order->getGlobalSize() == globalSize); */
-
+  if (subSection) {err = PetscSectionDestroy(&subSection);CHECK_PETSC_ERROR(err);}
 #if 0
   std::cout << "["<<sieveMesh->commRank()<<"] CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel

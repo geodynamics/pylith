@@ -223,19 +223,13 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
 
     if (complexMesh) {
       /* DMPlex */
-      PetscContainer c;
-      PetscSection   s = field.petscSection();
-      Vec            v = field.localVector();
-      assert(s);assert(v);
+      Vec v = field.localVector(); /* Could check the field.petscSection() matches the default section from VecGetDM() */
+      assert(v);
 
       /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
       PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
       PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
       err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
-      err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
-      err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
-      err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
-      err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
 
       _wroteVertexHeader = true;
     } else {

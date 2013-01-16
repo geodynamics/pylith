@@ -44,7 +44,7 @@ const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_time = 1.0;
 const char* pylith::meshio::DataWriterHDF5DataSubMeshTri3::_timeFormat = 
   "%3.1f";
 
-const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_numVertices = 2;
+const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_numVertices = 8;
 
 const pylith::meshio::DataWriterData::FieldStruct
 pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFields[] = {
@@ -54,38 +54,37 @@ pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFields[] = {
   { "other", topology::FieldBase::OTHER, 2 },
 };
 const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldScalar[8*1] = {
-  // 2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
-  3.2, 5.4,
+  2.1, 3.2, 4.3, 5.4, 6.5, 7.6, 8.7, 9.8,
 };
 const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldVector[8*2] = {
-  //1.1, 2.2,
+  1.1, 2.2,
   3.3, 4.4,
-  //5.5, 6.6,
+  5.5, 6.6,
   7.7, 8.8,
-  //9.9, 10.0,
-  //11.1, 12.2,
-  //13.3, 14.4,
-  //15.5, 16.6,
+  9.9, 10.0,
+  11.1, 12.2,
+  13.3, 14.4,
+  15.5, 16.6,
 };
 const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldTensor[8*3] = {
-  //1.1, 1.2, 1.3,
+  1.1, 1.2, 1.3,
   2.1, 2.2, 2.3,
-  //3.1, 3.2, 3.3,
+  3.1, 3.2, 3.3,
   4.1, 4.2, 4.3,
-  //5.1, 5.2, 5.3,
-  //6.1, 6.2, 6.3,
-  //7.1, 7.2, 7.3,
-  //8.1, 8.2, 8.3,
+  5.1, 5.2, 5.3,
+  6.1, 6.2, 6.3,
+  7.1, 7.2, 7.3,
+  8.1, 8.2, 8.3,
 };
 const PylithScalar pylith::meshio::DataWriterHDF5DataSubMeshTri3::_vertexFieldOther[8*2] = {
-  //1.2, 2.3,
+  1.2, 2.3,
   3.4, 4.5,
-  //5.6, 6.7,
+  5.6, 6.7,
   7.8, 8.9,
-  //9.0, 10.1,
-  //11.2, 12.3,
-  //13.4, 14.5,
-  //15.6, 16.7,
+  9.0, 10.1,
+  11.2, 12.3,
+  13.4, 14.5,
+  15.6, 16.7,
 };
 
 const int pylith::meshio::DataWriterHDF5DataSubMeshTri3::_numCells = 1;
