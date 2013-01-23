@@ -143,7 +143,7 @@ public :
    *
    * @returns Properties field.
    */
-  const topology::FieldsNew<topology::SubMesh>& fieldsPropsStateVars() const;
+  const topology::Fields<topology::Field<topology::SubMesh> >& fieldsPropsStateVars() const;
 
   /** Retrieve properties and state variables for a point.
    *
@@ -317,7 +317,7 @@ private :
 
   /// Field containing physical properties and state variables of
   /// friction model.
-  topology::FieldsNew<topology::SubMesh>* _fieldsPropsStateVars;
+  topology::Fields<topology::Field<topology::SubMesh> >* _fieldsPropsStateVars;
 
   /// Buffer for properties and state variables at vertex.
   scalar_array _propsStateVarsVertex;

@@ -884,6 +884,42 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   mesh->setDMMesh(newMesh);
 } // create
 
+void
+pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
+                                         const topology::SubMesh& faultMesh,
+                                         const ALE::Obj<SieveFlexMesh>& faultBoundary,
+                                         const char groupLabel[],
+                                         const int materialId,
+                                         int& firstFaultVertex,
+                                         int& firstLagrangeVertex,
+                                         int& firstFaultCell,
+                                         const bool constraintCell)
+{ // createInterpolated
+  assert(0 != mesh);
+  assert(!faultBoundary.isNull());
+  assert(groupLabel);
+  PetscErrorCode err;
+
+  /* Recreate old mesh in new mesh
+     Should be able to use the insertion routines from DMPlex here
+  */
+  DM dm = mesh->dmMesh();
+  DM sdm;
+
+  err = DMPlexConstructCohesiveCells(dm, groupLabel, &sdm);CHECK_PETSC_ERROR(err);
+  // Renumber labels
+  // Add fault vertices to groups and construct renumberings
+  // Split the mesh along the fault sieve and create cohesive elements
+  // Completes the set of cells scheduled to be replaced
+  //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
+  err = DMPlexSymmetrize(sdm);CHECK_PETSC_ERROR(err);
+  err = DMPlexStratify(sdm);CHECK_PETSC_ERROR(err);
+  // Various checks for replaced cells
+  // Fix coordinates
+
+  mesh->setDMMesh(sdm);
+} // createInterpolated
+
 PetscInt convertSieveToDMPointNumbering(PetscInt sievePoint, PetscInt numNormalCells, PetscInt numCohesiveCells, PetscInt numNormalVertices, PetscInt numShadowVertices, PetscInt numLagrangeVertices)
 {
   PetscInt dmPoint = -1;
