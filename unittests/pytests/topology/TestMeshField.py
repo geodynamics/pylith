@@ -51,6 +51,7 @@ class TestMeshField(unittest.TestCase):
     self.mesh = importer.read(debug=False, interpolate=False)
     
     self.field = MeshField(self.mesh)
+    self.field.allocate()
     return
 
 
@@ -169,6 +170,7 @@ class TestMeshField(unittest.TestCase):
     Test newSection(field).
     """
     fieldB = MeshField(self.mesh)
+    fieldB.allocate()
     fieldB.copy(self.field)
 
     # No test of result
