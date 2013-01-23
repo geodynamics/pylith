@@ -99,6 +99,8 @@ class TestSolutionFields(unittest.TestCase):
     helper_fieldAdd(fields)
     fieldA = fields.get("field A")
     fieldB = fields.get("field B")
+    fieldA.allocate()
+    fieldB.allocate()
     fieldA.copy(fieldB)
     return
 
