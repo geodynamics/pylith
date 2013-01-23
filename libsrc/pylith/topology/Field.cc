@@ -1045,7 +1045,7 @@ pylith::topology::Field<mesh_type, section_type>::copy(PetscSection osection, Pe
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
   assert(section);assert(_localVec);
   assert(osection);assert(ovec);
-  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(osection, &numFields);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetChart(section, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetChart(osection, &qStart, &qEnd);CHECK_PETSC_ERROR(err);
   if ((pStart != qStart) || (pEnd != qEnd)) {
@@ -1068,7 +1068,7 @@ pylith::topology::Field<mesh_type, section_type>::copy(PetscSection osection, Pe
     throw std::runtime_error(msg.str());
   }
   if (field >= 0) {
-    err = PetscSectionGetFieldComponents(section, field, &numComp);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetFieldComponents(osection, field, &numComp);CHECK_PETSC_ERROR(err);
     if (component >= numComp) {
       std::ostringstream msg;
       msg << "Invalid field component "<<component<<" should be in [0, "<<numComp<<")";
