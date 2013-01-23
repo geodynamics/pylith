@@ -22,7 +22,6 @@
 
 #include "pylith/topology/SubMesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldsNew.hh" // USES FieldsNew
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES scalar_array, std::vector
 
@@ -43,7 +42,7 @@ typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 
 typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::FieldsNew<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
+typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -100,20 +99,15 @@ pylith::friction::FrictionModel::initialize(
 			feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
   assert(0 != _dbProperties);
-
+  PetscErrorCode err;
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   //logger.stagePush("Friction");
 
   // Get vertices associated with friction interface
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh.sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM       faultDMMesh = faultMesh.dmMesh();
+  PetscInt vStart, vEnd;
 
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
@@ -121,28 +115,19 @@ pylith::friction::FrictionModel::initialize(
   assert(0 != _normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
-  scalar_array coordsVertex(spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    faultSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
+  PetscSection coordSection;
+  Vec          coordVec;
+  PetscScalar *coords;
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Query database for properties
 
   // Create fields to hold physical properties and state variables.
   delete _fieldsPropsStateVars; 
-  _fieldsPropsStateVars = new topology::FieldsNew<topology::SubMesh>(faultMesh);
+  _fieldsPropsStateVars = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(_fieldsPropsStateVars);
   _setupPropsStateVars();
-
-  const int fieldsFiberDim = _fieldsPropsStateVars->fiberDim();
-  assert(fieldsFiberDim > 0);
-  _fieldsPropsStateVars->allocate(vertices);
-  
-  assert(_propsFiberDim + _varsFiberDim == fieldsFiberDim);
-  const ALE::Obj<SubRealUniformSection>& fieldsSection = 
-    _fieldsPropsStateVars->section();
-  assert(!fieldsSection.isNull());
-  scalar_array fieldsVertex(fieldsFiberDim);
 
   // Create arrays for querying.
   const int numDBProperties = _metadata.numDBProperties();
@@ -155,38 +140,51 @@ pylith::friction::FrictionModel::initialize(
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
-  fieldsSection->zero();
-  for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    coordinates->restrictPoint(*v_iter, &coordsVertex[0], coordsVertex.size());
-    _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
-				lengthScale);
+  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt coff;
+
+    err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
+    _normalizer->dimensionalize(&coords[coff], spaceDim, lengthScale);
 
 
     int err = _dbProperties->query(&propertiesDBQuery[0], 
 				   propertiesDBQuery.size(),
-				   &coordsVertex[0], coordsVertex.size(), cs);
+				   &coords[coff], spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find parameters for physical properties at \n" << "(";
       for (int i = 0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
+        msg << "  " << coords[coff+i];
       msg << ") in friction model " << _label << "\n"
-	  << "using spatial database '" << _dbProperties->label() << "'.";
+          << "using spatial database '" << _dbProperties->label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
     assert(propertiesVertex.size() == propertiesDBQuery.size());
     _dbToProperties(&propertiesVertex[0], propertiesDBQuery);
 
     _nondimProperties(&propertiesVertex[0], propertiesVertex.size());
+    PetscInt iOff = 0;
 
-    fieldsVertex = 0.0;
-    for (int iProp=0; iProp < _propsFiberDim; ++iProp)
-      fieldsVertex[iProp] = propertiesVertex[iProp];
-    assert(fieldsVertex.size() == fieldsSection->getFiberDimension(*v_iter));
-    fieldsSection->updateAddPoint(*v_iter, &fieldsVertex[0]);
+    for (int i=0; i < _metadata.numProperties(); ++i) {
+      const materials::Metadata::ParamDescription& property = 
+        _metadata.getProperty(i);
+      // TODO This needs to be an integer instead of a string
+      topology::Field<topology::SubMesh>& prop = _fieldsPropsStateVars->get(property.name.c_str());
+      PetscSection section = prop.petscSection();
+      Vec          vec     = prop.localVector();
+      PetscScalar *a;
+      PetscInt     dof, off;
+
+      err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+        a[off+d] += propertiesVertex[iOff];
+      }
+    }
   } // for
+  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   // Close properties database
   _dbProperties->close();
 
@@ -203,34 +201,46 @@ pylith::friction::FrictionModel::initialize(
     _dbInitialState->open();
     _dbInitialState->queryVals(_metadata.dbStateVars(),
 			       _metadata.numDBStateVars());
-    
-    for (SieveSubMesh::label_sequence::iterator v_iter=verticesBegin;
-        v_iter != verticesEnd;
-        ++v_iter) {
-      coordinates->restrictPoint(*v_iter, &coordsVertex[0], 
-				 coordsVertex.size());
-      _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(),
+
+    for(PetscInt v = vStart; v < vEnd; ++v) {
+      PetscInt coff;
+
+      err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
+      _normalizer->dimensionalize(&coords[coff], spaceDim,
 				  lengthScale);
       
       int err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
-				       &coordsVertex[0], spaceDim, cs);
+				       &coords[coff], spaceDim, cs);
       if (err) {
-	std::ostringstream msg;
-	msg << "Could not find initial state variables at \n" << "(";
-	for (int i = 0; i < spaceDim; ++i)
-	  msg << "  " << coordsVertex[i];
-	msg << ") in friction model " << _label << "\n"
-	    << "using spatial database '" << _dbInitialState->label() << "'.";
-	throw std::runtime_error(msg.str());
+        std::ostringstream msg;
+        msg << "Could not find initial state variables at \n" << "(";
+        for (int i = 0; i < spaceDim; ++i)
+          msg << "  " << coords[coff+i];
+        msg << ") in friction model " << _label << "\n"
+            << "using spatial database '" << _dbInitialState->label() << "'.";
+        throw std::runtime_error(msg.str());
       } // if
       _dbToStateVars(&stateVarsVertex[0], stateVarsDBQuery);
       _nondimStateVars(&stateVarsVertex[0], stateVarsVertex.size());
+      PetscInt iOff = 0;
 
-      fieldsVertex = 0.0;
-      for (int iVar=0; iVar < _varsFiberDim; ++iVar)
-	fieldsVertex[_propsFiberDim+iVar] = stateVarsVertex[iVar];
-      assert(fieldsVertex.size() == fieldsSection->getFiberDimension(*v_iter));
-      fieldsSection->updateAddPoint(*v_iter, &fieldsVertex[0]);
+      for (int i=0; i < _metadata.numStateVars(); ++i) {
+        const materials::Metadata::ParamDescription& stateVar = 
+          _metadata.getStateVar(i);
+        // TODO This needs to be an integer instead of a string
+        topology::Field<topology::SubMesh>& sv = _fieldsPropsStateVars->get(stateVar.name.c_str());
+        PetscSection section = sv.petscSection();
+        Vec          vec     = sv.localVector();
+        PetscScalar *a;
+        PetscInt     dof, off;
+        
+        err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
+        err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
+        err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+        for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+          a[off+d] += stateVarsVertex[iOff];
+        }
+      } // for
     } // for
     // Close database
     _dbInitialState->close();
@@ -239,14 +249,14 @@ pylith::friction::FrictionModel::initialize(
   } // if/else
 
   // Setup buffers for restrict/update of properties and state variables.
-  _propsStateVarsVertex.resize(fieldsFiberDim);
+  _propsStateVarsVertex.resize(_propsFiberDim+_varsFiberDim);
 
   //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get the field with all properties and state variables.
-const pylith::topology::FieldsNew<pylith::topology::SubMesh>&
+const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >&
 pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
 { // fieldsPropsStateVars
   assert(_fieldsPropsStateVars);
@@ -292,15 +302,44 @@ void
 pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
 { // retrievePropsStateVars
   assert(_fieldsPropsStateVars);
+  PetscErrorCode err;
+  PetscInt iOff = 0;
 
-  const ALE::Obj<SubRealUniformSection>& fieldsSection =
-    _fieldsPropsStateVars->section();
-  assert(!fieldsSection.isNull());
+  for (int i=0; i < _metadata.numProperties(); ++i) {
+    const materials::Metadata::ParamDescription& property = 
+      _metadata.getProperty(i);
+    // TODO This needs to be an integer instead of a string
+    topology::Field<topology::SubMesh>& prop = _fieldsPropsStateVars->get(property.name.c_str());
+    PetscSection section = prop.petscSection();
+    Vec          vec     = prop.localVector();
+    PetscScalar *a;
+    PetscInt     dof, off;
 
-  assert(_propsStateVarsVertex.size() ==
-	 fieldsSection->getFiberDimension(point));
-  fieldsSection->restrictPoint(point, &_propsStateVarsVertex[0],
-			       _propsStateVarsVertex.size());
+    err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, point, &off);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+      _propsStateVarsVertex[iOff] = a[off+d];
+    }
+  }
+  for (int i=0; i < _metadata.numStateVars(); ++i) {
+    const materials::Metadata::ParamDescription& stateVar = 
+      _metadata.getStateVar(i);
+    // TODO This needs to be an integer instead of a string
+    topology::Field<topology::SubMesh>& sv = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    PetscSection section = sv.petscSection();
+    Vec          vec     = sv.localVector();
+    PetscScalar *a;
+    PetscInt     dof, off;
+
+    err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, point, &off);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+      _propsStateVarsVertex[iOff] = a[off+d];
+    }
+  } // for
+  assert(_propsStateVarsVertex.size() == iOff);
 } // retrievePropsStateVars
 
 // ----------------------------------------------------------------------
@@ -336,13 +375,9 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
 						 const int vertex)
 { // updateStateVars
   assert(_fieldsPropsStateVars);
-
+  PetscErrorCode err;
   if (0 == _varsFiberDim)
     return;
-
-  const ALE::Obj<SubRealUniformSection>& fieldsSection =
-    _fieldsPropsStateVars->section();
-  assert(!fieldsSection.isNull());
 
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   PylithScalar* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
@@ -351,9 +386,43 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
 		   &stateVarsVertex[0], _varsFiberDim,
 		   &propertiesVertex[0], _propsFiberDim);
 
-  assert(_propsStateVarsVertex.size() == 
-	 fieldsSection->getFiberDimension(vertex));
-  fieldsSection->updatePoint(vertex, &_propsStateVarsVertex[0]);
+  PetscInt iOff = 0;
+
+  for (int i=0; i < _metadata.numProperties(); ++i) {
+    const materials::Metadata::ParamDescription& property = 
+      _metadata.getProperty(i);
+    // TODO This needs to be an integer instead of a string
+    topology::Field<topology::SubMesh>& prop = _fieldsPropsStateVars->get(property.name.c_str());
+    PetscSection section = prop.petscSection();
+    Vec          vec     = prop.localVector();
+    PetscScalar *a;
+    PetscInt     dof, off;
+
+    err = PetscSectionGetDof(section, vertex, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, vertex, &off);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+      a[off+d] = _propsStateVarsVertex[iOff];
+    }
+  }
+  for (int i=0; i < _metadata.numStateVars(); ++i) {
+    const materials::Metadata::ParamDescription& stateVar = 
+      _metadata.getStateVar(i);
+    // TODO This needs to be an integer instead of a string
+    topology::Field<topology::SubMesh>& sv = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    PetscSection section = sv.petscSection();
+    Vec          vec     = sv.localVector();
+    PetscScalar *a;
+    PetscInt     dof, off;
+
+    err = PetscSectionGetDof(section, vertex, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(section, vertex, &off);CHECK_PETSC_ERROR(err);
+    err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d, ++iOff) {
+      a[off+d] = _propsStateVarsVertex[iOff];
+    }
+  } // for
+  assert(_propsStateVarsVertex.size() == iOff);
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -408,18 +477,26 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
   for (int i=0, iScale=0; i < numProperties; ++i) {
     const materials::Metadata::ParamDescription& property = 
       _metadata.getProperty(i);
-    _fieldsPropsStateVars->add(property.name.c_str(), property.name.c_str(),
-			       property.fiberDim, property.fieldType,
-			       propertiesVertex[iScale]);
+    _fieldsPropsStateVars->add(property.name.c_str(), property.name.c_str());
+    topology::Field<topology::SubMesh>& prop = _fieldsPropsStateVars->get(property.name.c_str());
+    prop.newSection(topology::FieldBase::VERTICES_FIELD, property.fiberDim);
+    prop.allocate();
+    prop.vectorFieldType(property.fieldType);
+    prop.scale(propertiesVertex[iScale]);
+    prop.zero();
     iScale += property.fiberDim;
   } // for
   
   for (int i=0, iScale=0; i < numStateVars; ++i) {
     const materials::Metadata::ParamDescription& stateVar = 
       _metadata.getStateVar(i);
-    _fieldsPropsStateVars->add(stateVar.name.c_str(), stateVar.name.c_str(),
-			       stateVar.fiberDim, stateVar.fieldType,
-			       stateVarsVertex[iScale]);
+    _fieldsPropsStateVars->add(stateVar.name.c_str(), stateVar.name.c_str());
+    topology::Field<topology::SubMesh>& sv = _fieldsPropsStateVars->get(stateVar.name.c_str());
+    sv.newSection(topology::FieldBase::VERTICES_FIELD, stateVar.fiberDim);
+    sv.allocate();
+    sv.vectorFieldType(stateVar.fieldType);
+    sv.scale(stateVarsVertex[iScale]);
+    sv.zero();
     iScale += stateVar.fiberDim;
   } // for
   assert(_varsFiberDim >= 0);

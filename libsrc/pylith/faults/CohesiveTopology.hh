@@ -83,6 +83,31 @@ public :
               int& firstFaultCell,
               const bool constraintCell = false);
 
+  /** Create cohesive cells in an interpolated mesh.
+   *
+   * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
+   * not currently used in the mesh, and firstFaultCell is incremented with this
+   * point. These values are updated as new fault vertices and cells are added.
+   *
+   * @param fault Finite-element mesh of fault (output)
+   * @param mesh Finite-element mesh
+   * @param materialId Material id for cohesive elements.
+   * @param firstFaultVertex The first point eligible to become a new fault vertex
+   * @param firstFaultCell The first point eligible to become a new fault cell
+   * @param constraintCell True if creating cells constrained with 
+   *   Lagrange multipliers that require extra vertices, false otherwise
+   */
+  static
+  void createInterpolated(topology::Mesh* mesh,
+                          const topology::SubMesh& faultMesh,
+                          const ALE::Obj<SieveFlexMesh>& faultBoundary,
+                          const char groupLabel[],
+                          const int materialId,
+                          int& firstFaultVertex,
+                          int& firstLagrangeVertex,
+                          int& firstFaultCell,
+                          const bool constraintCell = false);
+
   /** Create (distributed) fault mesh from cohesive cells.
    *
    * @param faultMesh Finite-element mesh of fault (output).
