@@ -145,12 +145,12 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   PetscInt vStart, vEnd;
 
   assert(faultDMMesh);
-  ierr = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
 
   // Test fieldsPropsStateVars with mesh
-  const pylith::materials::Metadata& = friction.getMetadata();
+  const materials::Metadata& metadata = friction.getMetadata();
   const int numProperties = metadata.numProperties();
   int index = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -363,10 +363,12 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     const PylithScalar cohesion = 1000000;
     const PylithScalar dt = 0.01;
 
-    const int numStateVars = 2;
     const PylithScalar stateVars[2] = { 0.5, 0.1 };
     const PylithScalar stateVarsUpdatedE[2] = { 0.65, 0.25 };
     
+    const materials::Metadata& metadata = friction.getMetadata();
+    const int numStateVars = metadata.numStateVars();
+    CPPUNIT_ASSERT(2 == numStateVars);
 
     // Set state variables to given values
     friction._propsStateVarsVertex = 0.0;
@@ -379,18 +381,24 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     
     const PylithScalar tolerance = 1.0e-06;
     CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
-    const ALE::Obj<SubRealUniformSection>& fieldsSection = 
-      friction._fieldsPropsStateVars->section();
-    CPPUNIT_ASSERT_EQUAL(friction._fieldsPropsStateVars->fiberDim(),
-			 fieldsSection->getFiberDimension(vertex));
-    const PylithScalar* fieldsVertex = fieldsSection->restrictPoint(vertex);
-    CPPUNIT_ASSERT(fieldsVertex);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[0],
-				 fieldsVertex[friction._propsFiberDim+0], 
-				 tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[1],
-				 fieldsVertex[friction._propsFiberDim+1],
-				 tolerance);
+    for(PetscInt i = 0; i < numStateVars; ++i) {
+      const materials::Metadata::ParamDescription& stateVar = metadata.getStateVar(i);
+      topology::Field<topology::SubMesh>& sv = friction._fieldsPropsStateVars->get(stateVar.name.c_str());
+      PetscSection fieldsSection = sv.petscSection();
+      Vec          fieldsVec     = sv.localVector();
+      PetscScalar *fieldsArray;
+      PetscErrorCode err;
+
+      CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
+      err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(fieldsSection, vertex, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(fieldsSection, vertex, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT(dof == 1);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[i], fieldsArray[off], tolerance);
+      err = VecRestoreArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+    }
   } // Test with friction model with state variables (slip weakening)
 
 } // testUpdateStateVars
