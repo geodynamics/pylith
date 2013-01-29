@@ -146,18 +146,6 @@ class TestFaultCohesiveDyn(unittest.TestCase):
     return
 
   
-  def test_useSolnIncr(self):
-    """
-    Test useSolnIncr().
-    """
-    (mesh, fault, fields) = self._initialize()
-    fault.useSolnIncr(True)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-
-  
   def test_integrateResidual(self):
     """
     Test integrateResidual().
