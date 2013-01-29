@@ -130,6 +130,12 @@ public :
    * or state variable, false otherwise.
    */
   bool hasPropStateVar(const char* name);
+  
+  /** Return the property and state variable metadata.
+   *
+   * @returns Metadata for properties and state variables.
+   */
+  const pylith::materials::Metadata& getMetadata();
 
   /** Get physical property or state variable field. Data is returned
    * via the argument.

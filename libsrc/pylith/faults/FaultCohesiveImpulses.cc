@@ -212,7 +212,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, 0, orientationVec);
+    buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
     return buffer;
@@ -223,7 +223,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, 1, orientationVec);
+    buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
     return buffer;
@@ -232,10 +232,9 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();
     Vec          orientationVec     = _fields->get("orientation").localVector();
     assert(orientationSection);assert(orientationVec);
-    const int space = (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, space, orientationVec);
+    buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
     return buffer;

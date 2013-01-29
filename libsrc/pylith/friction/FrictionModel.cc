@@ -286,6 +286,14 @@ pylith::friction::FrictionModel::hasPropStateVar(const char* name)
 } // hasPropStateVar
 
 // ----------------------------------------------------------------------
+// Get metadta for physical properties or state variables.
+const pylith::materials::Metadata&
+pylith::friction::FrictionModel::getMetadata()
+{ // getMetadata
+  return _metadata;
+} // getMetadata
+  
+// ----------------------------------------------------------------------
 // Get physical property or state variable field.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::friction::FrictionModel::getField(const char* name)

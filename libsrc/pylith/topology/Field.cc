@@ -1067,7 +1067,7 @@ pylith::topology::Field<mesh_type, section_type>::copy(PetscSection osection, Pe
     msg << "Invalid field "<<field<<" should be in [0, "<<numFields<<")";
     throw std::runtime_error(msg.str());
   }
-  if (field >= 0) {
+  if ((field >= 0) && (component >= 0)) {
     err = PetscSectionGetFieldComponents(osection, field, &numComp);CHECK_PETSC_ERROR(err);
     if (component >= numComp) {
       std::ostringstream msg;
@@ -1086,9 +1086,11 @@ pylith::topology::Field<mesh_type, section_type>::copy(PetscSection osection, Pe
     if (field >= 0) {
       err = PetscSectionGetFieldDof(osection, p, field, &odof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetFieldOffset(osection, p, field, &ooff);CHECK_PETSC_ERROR(err);
-      assert(!(odof%numComp));
-      odof  = odof/numComp;
-      ooff += odof*component;
+      if (component >= 0) {
+        assert(!(odof%numComp));
+        odof  = odof/numComp;
+        ooff += odof*component;
+      }
     } else {
       err = PetscSectionGetDof(osection, p, &odof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(osection, p, &ooff);CHECK_PETSC_ERROR(err);

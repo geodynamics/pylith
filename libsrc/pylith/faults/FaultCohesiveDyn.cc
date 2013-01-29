@@ -264,6 +264,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(valuesVec, &tractionsArray);CHECK_PETSC_ERROR(err);
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
@@ -397,6 +398,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
   err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(valuesVec, &tractionsArray);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
@@ -1649,7 +1651,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, 0, orientationVec);
+    buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
     return buffer;
@@ -1660,7 +1662,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, 1, orientationVec);
+    buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
     return buffer;
@@ -1668,10 +1670,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     PetscSection orientationSection = _fields->get("orientation").petscSection();
     Vec          orientationVec     = _fields->get("orientation").localVector();
     assert(orientationSection);assert(orientationVec);
-    const int space = (0 == cohesiveDim) ? 0 : (1 == cohesiveDim) ? 1 : 2;
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-    buffer.copy(orientationSection, 0, space, orientationVec);
+    buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
     return buffer;
