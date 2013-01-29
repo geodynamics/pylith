@@ -132,74 +132,50 @@ void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
   const PylithScalar propertiesE[] = { 0.6, 1000000, 0.4, 1000000 };
-  const int numProperties = 2;
 
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
+  PetscErrorCode     err;
   _initialize(&mesh, &fault, &friction, &data);
+  CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
 
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = fault.faultMesh().sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-    faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveSubMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM       faultDMMesh = fault.faultMesh().dmMesh();
+  PetscInt vStart, vEnd;
+
+  assert(faultDMMesh);
+  ierr = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
 
   // Test fieldsPropsStateVars with mesh
-  const int fieldsFiberDim = numProperties;
+  const pylith::materials::Metadata& = friction.getMetadata();
+  const int numProperties = metadata.numProperties();
   int index = 0;
-  CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
-#if 1
-  const ALE::Obj<SubRealUniformSection>& fieldsSection =
-    friction._fieldsPropsStateVars->section();
-  CPPUNIT_ASSERT(!fieldsSection.isNull());
-  for (SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
-       v_iter != verticesEnd;
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fieldsFiberDim, 
-			 fieldsSection->getFiberDimension(*v_iter));
-    const PylithScalar* fieldsVertex = fieldsSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(fieldsVertex);
-    for (int i = 0; i < numProperties; ++i, ++index)
-      if (0 != propertiesE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[i]/propertiesE[index],
-				     tolerance);
-      else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsVertex[i],
-				     tolerance);
-  } // for
-#else
-  PetscSection fieldsSection = friction._fieldsPropsStateVars->petscSection();
-  Vec          fieldsVec     = friction._fieldsPropsStateVars->localVector();
-  PetscScalar *fieldsArray;
-  PetscErrorCode err;
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    for (int i = 0; i < numProperties; ++i, ++index) {
+      const materials::Metadata::ParamDescription& property = metadata.getProperty(i);
+      topology::Field<topology::SubMesh>& prop = friction._fieldsPropsStateVars->get(property.name.c_str());
+      PetscSection fieldsSection = prop.petscSection();
+      Vec          fieldsVec     = prop.localVector();
+      PetscScalar *fieldsArray;
 
-  CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
-  err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
-  for(SieveSubMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    PetscInt dof, off;
+      CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
+      err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+      PetscInt dof, off;
 
-    err = PetscSectionGetDof(fieldsSection, *v_iter, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldsSection, *v_iter, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fieldsFiberDim, dof);
-    for (int i = 0; i < numProperties; ++i, ++index)
-      if (0 != propertiesE[index])
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsArray[off+i]/propertiesE[index],
-				     tolerance);
-      else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsArray[off+i],
-				     tolerance);
+      err = PetscSectionGetDof(fieldsSection, v, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(fieldsSection, v, &off);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT(dof == 1);
+      if (0 != propertiesE[index]) {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsArray[off]/propertiesE[index], tolerance);
+      } else {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsArray[off], tolerance);
+      }
+      err = VecRestoreArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
+    } // for
   } // for
-  err = VecRestoreArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
-#endif
 
   // Test vertex array sizes.
   size_t size = data.numPropsVertex + data.numVarsVertex;

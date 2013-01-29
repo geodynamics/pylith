@@ -1395,11 +1395,15 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   _fields->add("orientation", "orientation");
   topology::Field<topology::SubMesh>& orientation   = _fields->get("orientation");
   const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
-  orientation.addField("orientation", cohesiveDim+1);
+  if (spaceDim > 1) orientation.addField("strike_dir", spaceDim);
+  if (spaceDim > 2) orientation.addField("dip_dir", spaceDim);
+  orientation.addField("normal_dir", spaceDim);
   orientation.setupFields();
   orientation.newSection(dispRel, orientationSize);
   // Create components for along-strike, up-dip, and normal directions
-  orientation.updateDof("orientation", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  if (spaceDim > 1) orientation.updateDof("strike_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  if (spaceDim > 2) orientation.updateDof("dip_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
+  orientation.updateDof("normal_dir", pylith::topology::FieldBase::VERTICES_FIELD, spaceDim);
   orientation.allocate();
   orientation.zero();
   PetscSection orientationSection = orientation.petscSection();
