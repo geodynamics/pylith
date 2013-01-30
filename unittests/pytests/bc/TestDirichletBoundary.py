@@ -98,15 +98,6 @@ class TestDirichletBoundary(unittest.TestCase):
     return
 
 
-  def test_useSolnIncr(self):
-    """
-    Test useSolnIncr().
-    """
-    (mesh, bc, field) = self._initialize()
-    bc.useSolnIncr(True)
-    return
-
-
   def test_setField(self):
     """
     Test setField().
@@ -135,6 +126,7 @@ class TestDirichletBoundary(unittest.TestCase):
     neither set the input fields or verify the results.
     """
     (mesh, bc, field) = self._initialize()
+    field.allocate()
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -204,8 +196,6 @@ class TestDirichletBoundary(unittest.TestCase):
     from pylith.topology.Field import MeshField
     field = MeshField(mesh)
     field.newSection(field.VERTICES_FIELD, cs.spaceDim())
-    field.allocate()
-    field.zero()
     
     return (mesh, bc, field)
 
