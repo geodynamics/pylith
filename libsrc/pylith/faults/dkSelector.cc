@@ -57,9 +57,7 @@ pylith::faults::dkSelector::~dkSelector(void)
 void 
 pylith::faults::dkSelector::deallocate(void)
 { // deallocate
-
   _dbdksel = 0;
-	
 } // deallocate
   
 // ----------------------------------------------------------------------
