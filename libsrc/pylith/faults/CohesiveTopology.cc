@@ -56,8 +56,15 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("SerialFaultCreation");
+  PetscErrorCode err;
 
   faultMesh->coordsys(mesh);
+  DM       dmMesh = mesh.dmMesh();
+  PetscInt dim, depth;
+
+  assert(dmMesh);
+  err = DMPlexGetDimension(dmMesh, &dim);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepth(dmMesh, &depth);CHECK_PETSC_ERROR(err);
 
   const ALE::Obj<SieveMesh>&             sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -119,7 +126,26 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   renumbering.clear();
 
   // Convert fault to a DM
-  {
+  if (depth == dim) {
+    DM             subdm;
+    DMLabel        label;
+    const char    *labelName = groupField->getName().c_str();
+
+    // Put fault vertices in a label
+    err = DMPlexCreateLabel(dmMesh, labelName);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(dmMesh, labelName, &label);CHECK_PETSC_ERROR(err);
+    const IntSection::chart_type& chart = groupField->getChart();
+    const IntSection::chart_type::const_iterator chartEnd = chart.end();
+    for(IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
+      if (groupField->getFiberDimension(*c_iter)) {
+        err = DMLabelSetValue(label, *c_iter, 0);CHECK_PETSC_ERROR(err);
+      }
+    }
+
+    err = DMPlexCreateSubmesh(dmMesh, labelName, "faultSurface", &subdm);CHECK_PETSC_ERROR(err);
+    faultMesh->setDMMesh(subdm);
+  } else {
+    // TODO: This leg will be unnecessary
     DM             dm;
     IS             subpointMap;
     PetscInt      *renum;
@@ -888,7 +914,7 @@ void
 pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
                                          const topology::SubMesh& faultMesh,
                                          const ALE::Obj<SieveFlexMesh>& faultBoundary,
-                                         const char groupLabel[],
+                                         const ALE::Obj<topology::Mesh::IntSection>& groupField,
                                          const int materialId,
                                          int& firstFaultVertex,
                                          int& firstLagrangeVertex,
@@ -897,26 +923,17 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
 { // createInterpolated
   assert(0 != mesh);
   assert(!faultBoundary.isNull());
-  assert(groupLabel);
+  assert(!groupField.isNull());
+  DM             dm = mesh->dmMesh(), sdm;
+  DMLabel        label;
+  const char    *labelName = "faultSurface";
   PetscErrorCode err;
 
-  /* Recreate old mesh in new mesh
-     Should be able to use the insertion routines from DMPlex here
-  */
-  DM dm = mesh->dmMesh();
-  DM sdm;
-
-  err = DMPlexConstructCohesiveCells(dm, groupLabel, &sdm);CHECK_PETSC_ERROR(err);
-  // Renumber labels
-  // Add fault vertices to groups and construct renumberings
-  // Split the mesh along the fault sieve and create cohesive elements
+  err = DMPlexGetLabel(dm, labelName, &label);CHECK_PETSC_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
-  err = DMPlexSymmetrize(sdm);CHECK_PETSC_ERROR(err);
-  err = DMPlexStratify(sdm);CHECK_PETSC_ERROR(err);
-  // Various checks for replaced cells
-  // Fix coordinates
-
+  err = DMLabelCohesiveComplete(dm, label);CHECK_PETSC_ERROR(err);
+  err = DMPlexConstructCohesiveCells(dm, labelName, &sdm);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(sdm);
 } // createInterpolated
 

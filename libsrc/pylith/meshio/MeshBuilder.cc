@@ -138,6 +138,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       delete [] cone2; cone2 = 0;
       err = DMPlexSymmetrize(complexMesh);CHECK_PETSC_ERROR(err);
       err = DMPlexStratify(complexMesh);CHECK_PETSC_ERROR(err);
+      /* TODO Interpolate mesh if necessary */
     } else {
       // Same old thing
       ALE::Obj<SieveFlexMesh::sieve_type> s =

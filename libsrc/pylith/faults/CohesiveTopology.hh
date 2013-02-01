@@ -101,7 +101,7 @@ public :
   void createInterpolated(topology::Mesh* mesh,
                           const topology::SubMesh& faultMesh,
                           const ALE::Obj<SieveFlexMesh>& faultBoundary,
-                          const char groupLabel[],
+                          const ALE::Obj<topology::Mesh::IntSection>& groupField,
                           const int materialId,
                           int& firstFaultVertex,
                           int& firstLagrangeVertex,

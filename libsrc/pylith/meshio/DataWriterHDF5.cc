@@ -398,7 +398,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
   assert(_viewer);
 
   try {
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
+    const char* context  = DataWriter<mesh_type, field_type>::_context.c_str();
 
     field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
@@ -415,6 +415,18 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     err = MPI_Comm_rank(mesh.comm(), &commRank);CHECK_PETSC_ERROR(err);
     if (_tstampIndex == istep)
       _writeTimeStamp(t, commRank);
+
+    const int spaceDim = mesh.coordsys()->spaceDim();
+    PetscInt  bs;
+    err = VecGetBlockSize(vector, &bs);CHECK_PETSC_ERROR(err);
+    switch (field.vectorFieldType()) {
+    case pylith::topology::FieldBase::VECTOR:
+      if (bs%spaceDim) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
+    case pylith::topology::FieldBase::TENSOR:
+      if (bs%spaceDim) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
+      //default:
+      //if (bs > 1) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
+    }
 
     PetscErrorCode err = 0;
     err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");CHECK_PETSC_ERROR(err);
