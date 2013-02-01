@@ -42,6 +42,8 @@ subpkginclude_HEADERS = \
 	FaultCohesiveTract.hh \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
+	FaultCohesiveDynKin.hh \
+	dkSelector.hh \
 	FaultCohesiveImpulses.hh \
 	faultsfwd.hh
 
