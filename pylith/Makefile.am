@@ -47,6 +47,8 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
 	faults/FaultCohesiveDyn.py \
+	faults/FaultCohesiveDynKin.py \
+	faults/dkSelector.py \
 	faults/FaultCohesiveImpulses.py \
 	faults/FaultCohesiveTract.py \
 	feassemble/__init__.py \
