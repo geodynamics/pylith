@@ -1118,7 +1118,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   const int numCorners = 3 * numConstraintVert; // cohesive cell
 
   DM              faultDMMesh = _faultMesh->dmMesh();
-  IS              subpointMap;
+  DMLabel         subpointMap;
+  IS              subvertexIS;
   const PetscInt *points;
   PetscInt        numPoints, fcStart, fcEnd, fvStart, fvEnd;
 
@@ -1126,7 +1127,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   err = DMPlexGetHeightStratum(faultDMMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
+  err = DMLabelGetStratumSize(subpointMap, 0, &numPoints);CHECK_PETSC_ERROR(err);
   assert(numCells == fcEnd-fcStart);
 
   _cohesiveToFault.clear();
@@ -1136,7 +1137,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   PetscInt index = 0;
 
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = DMLabelGetStratumIS(subpointMap, 0, &subvertexIS);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subvertexIS, &points);CHECK_PETSC_ERROR(err);
   for(PetscInt c = 0; c < numCells; ++c) {
     _cohesiveToFault[cells[c]] = c;
 
@@ -1187,7 +1189,8 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subvertexIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subvertexIS);CHECK_PETSC_ERROR(err);
 } // _initializeCohesiveInfo
 
 // ----------------------------------------------------------------------

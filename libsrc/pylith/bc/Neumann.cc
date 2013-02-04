@@ -107,13 +107,15 @@ pylith::bc::Neumann::integrateResidual(
 
   // Get cell information
   DM       subMesh = _boundaryMesh->dmMesh();
-  IS       subpointMap;
+  DMLabel  subpointMap;
+  IS       subpointIS;
   PetscInt cStart, cEnd;
   PetscErrorCode err;
 
   assert(subMesh);
   err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetSubpointMap(subMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMLabelGetStratumIS(subpointMap, 0, &subpointIS);CHECK_PETSC_ERROR(err);
 
   // Get sections
   _calculateValue(t);
@@ -125,7 +127,8 @@ pylith::bc::Neumann::integrateResidual(
   PetscSection residualSection = residual.petscSection(), residualSubsection;
   Vec          residualVec     = residual.localVector();
   assert(residualSection);assert(residualVec);
-  err = PetscSectionCreateSubmeshSection(residualSection, subpointMap, &residualSubsection);
+  err = PetscSectionCreateSubmeshSection(residualSection, subpointIS, &residualSubsection);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
