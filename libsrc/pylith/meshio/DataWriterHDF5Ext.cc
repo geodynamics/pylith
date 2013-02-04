@@ -310,14 +310,12 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     }
     CHKMEMA;
 
-    IS              subpointMap, globalVertexNumbers;
-    const PetscInt *gvertex = PETSC_NULL, *gpoints = PETSC_NULL;
+    IS              globalVertexNumbers;
+    const PetscInt *gvertex = PETSC_NULL;
     PetscVec        cellVec, elemVec;
     PetscScalar    *vertices;
 
-    err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
     err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
-    if (subpointMap) {err = ISGetIndices(subpointMap, &gpoints);CHECK_PETSC_ERROR(err);}
     err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
     err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
     err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
@@ -338,7 +336,6 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       for(p = 0; p < closureSize*2; p += 2) {
         if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-          //const PetscInt gv = gpoints ? gpoints[closure[p]] : gvertex[closure[p] - vStart];
           const PetscInt gv = gvertex[closure[p] - vStart];
           vertices[v++] = gv < 0 ? -(gv+1) : gv;
         }

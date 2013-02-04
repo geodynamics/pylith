@@ -142,12 +142,12 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
       }
     }
 
-    err = DMPlexCreateSubmesh(dmMesh, labelName, "faultSurface", &subdm);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, labelName, &subdm);CHECK_PETSC_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
     // TODO: This leg will be unnecessary
     DM             dm;
-    IS             subpointMap;
+    DMLabel        subpointMap;
     PetscInt      *renum;
     PetscInt       pStart, pEnd;
     PetscErrorCode err;
@@ -155,6 +155,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 
     ALE::ISieveConverter::convertMesh(*fault, &dm, renumbering, true);
     // Have to make subpointMap here: renumbering[original] = fault
+    err = DMLabelCreate("subpoint_map", &subpointMap);CHECK_PETSC_ERROR(err);
     err = DMPlexGetChart(dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
     assert(renumbering.size() == pEnd-pStart);
     err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
@@ -167,7 +168,10 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     for(PetscInt p = 1; p < pEnd-pStart; ++p) {
       assert(renum[p] > renum[p-1]);
     }
-    err = ISCreateGeneral(fault->comm(), pEnd-pStart, renum, PETSC_OWN_POINTER, &subpointMap);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = 0; p < pEnd-pStart; ++p) {
+      err = DMLabelSetValue(subpointMap, renum[p], 0);CHECK_PETSC_ERROR(err);
+    }
+    err = PetscFree(renum);CHECK_PETSC_ERROR(err);
     err = DMPlexSetSubpointMap(dm, subpointMap);CHECK_PETSC_ERROR(err);
     renumbering.clear();
     faultMesh->setDMMesh(dm);
@@ -933,7 +937,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
   err = DMLabelCohesiveComplete(dm, label);CHECK_PETSC_ERROR(err);
-  err = DMPlexConstructCohesiveCells(dm, labelName, &sdm);CHECK_PETSC_ERROR(err);
+  err = DMPlexConstructCohesiveCells(dm, label, &sdm);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(sdm);
 } // createInterpolated
 
@@ -1194,10 +1198,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
 
   // Have to make subpointMap here: renumbering[original] = fault
-  IS        subpointMap;
+  DMLabel   subpointMap;
   PetscInt *renum;
   PetscInt  pStart, pEnd;
 
+  err = DMLabelCreate("subpoint_map", &subpointMap);CHECK_PETSC_ERROR(err);
   err = DMPlexGetChart(dmFaultMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
   assert(convertRenumbering.size() == pEnd-pStart);
@@ -1220,7 +1225,10 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     if (renum[p-1] == -1) continue;
     assert(renum[p] > renum[p-1]);
   }
-  err = ISCreateGeneral(faultMesh->comm(), pEnd-pStart, renum, PETSC_OWN_POINTER, &subpointMap);CHECK_PETSC_ERROR(err);
+  for(PetscInt p = 0; p < pEnd-pStart; ++p) {
+    err = DMLabelSetValue(subpointMap, renum[p], 0);CHECK_PETSC_ERROR(err);
+  }
+  err = PetscFree(renum);CHECK_PETSC_ERROR(err);
   err = DMPlexSetSubpointMap(dmFaultMesh, subpointMap);CHECK_PETSC_ERROR(err);
 
   // Update dimensioned coordinates if they exist.
