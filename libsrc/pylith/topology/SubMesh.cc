@@ -112,7 +112,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 			  meshSieveMesh->getRealSection("coordinates_dimensioned"));
 
   /* TODO: Add creation of pointSF for submesh */
-  err = DMPlexCreateSubmesh(dmMesh, label, PETSC_NULL, &_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
 
   // Create the parallel overlap
   const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
