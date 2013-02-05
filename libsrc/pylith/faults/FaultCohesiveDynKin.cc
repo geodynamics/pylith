@@ -22,7 +22,8 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology
 #include "TractPerturbation.hh" // HOLDSA TractPerturbation
-#include "dkSelector.hh" // USES dkSelector
+#include "DKSelector.hh" // USES DKSelector
+#include "EqKinSrc.hh" // USES EqKinSrc
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
@@ -108,8 +109,8 @@ pylith::faults::FaultCohesiveDynKin::tractPerturbation(TractPerturbation* tract)
 // ----------------------------------------------------------------------
 // Sets the spatial database for the dynamic-kinematic selector
 void
-pylith::faults::FaultCohesiveDynKin::dkSelector(dkSelector* dksel)
-{ // dkSelector
+pylith::faults::FaultCohesiveDynKin::dkSelector(DKSelector* dksel)
+{ // DKSelector
   _dkSelector = dksel;
 } // dkSelector
 
@@ -184,7 +185,7 @@ pylith::faults::FaultCohesiveDynKin::initialize(const topology::Mesh& mesh,
 
   // Get the DynKin Selector using a spatial database.
   if (_dkSelector) {
-    _dkSelector->initialize(*_faultMesh, *_normalizer)
+    _dkSelector->initialize(*_faultMesh, *_normalizer);
   } // if
 
   // Setup fault constitutive model.
@@ -217,6 +218,11 @@ pylith::faults::FaultCohesiveDynKin::initialize(const topology::Mesh& mesh,
     src->initialize(*_faultMesh, *_normalizer);
   } // for
 
+  // Get the DynKin Selector using a spatial database. 
+  if (_dkSelector) {
+     _dkSelector->initialize(*_faultMesh, *_normalizer);
+  } // if should be useless
+     
   logger.stagePop();
 } // initialize
 
@@ -307,6 +313,19 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 					      residualSection);
   assert(!globalOrder.isNull());
 
+  // Get the dkSelector
+  if (_dkSelector) {
+    _fields->add("Dynamic Kinematic Selector","dynamic_kinematic_selector")
+    topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
+    _dkSelector->dk(&dk);
+    const ALE::Obj<RealSection>& dkSelSection = dk->section();
+    assert(!0 = dkSelSection);
+  } else { // should never be here
+    std::ostringstream msg;                                           
+    msg << "No Dynamic Kinematic Selector available.";         
+    throw std::runtime_error(msg.str());
+  } 
+
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventBegin(computeEvent);
@@ -327,16 +346,6 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
-
-    // Get the dkSelector
-    if (_dkSelector) {
-      const ALE::Obj<RealUniformSection}& dkSelSection = _dkSelector->dk();
-      assert(dkSelSection);
-    } else { // should never be here
-      std::ostringstream msg;
-      msg << "No Dynamic Kinematic Selector available.";
-      throw std::runtime_error(msg.str());
-    } 
 
     // Common needs
     
@@ -374,9 +383,8 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
       dispTIncrSection->restrictPoint(v_lagrange);
     assert(dispTIncrVertexL);
 
-    if (dkSelSection[iVertex] > 0.5) {
+    if (dkSelSection[iVertex] > 0.5) { // Kinematic Case
 
-      // Kinematic Case
       // Get relative dislplacement at fault vertex.
       assert(spaceDim == dispRelSection->getFiberDimension(v_fault));
       const PylithScalar* dispRelVertex = dispRelSection->restrictPoint(v_fault);
@@ -419,9 +427,8 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
       dispTpdtVertexL[iDim] = dispTVertexL[iDim] + dispTIncrVertexL[iDim];
     } // for
     
-    if (dkSelSection[iVertex]>0.5) {
+    if (dkSelSection[iVertex]>0.5) { // Kinematic Case
 
-      // Kinematic Case
       residualVertexN = areaVertex * dispTpdtVertexL;
       residualVertexP = -residualVertexN;
   
@@ -483,9 +490,8 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 	   residualSection->getFiberDimension(v_positive));
     residualSection->updateAddPoint(v_positive, &residualVertexP[0]);
 
-    if (dkSelSection[iVertex]) {
+    if (dkSelSection[iVertex]>0.5) { // Kinematic Case
 
-      // Kinematic Case
       assert(residualVertexL.size() == 
             residualSection->getFiberDimension(v_lagrange));
       residualSection->updateAddPoint(v_lagrange, &residualVertexL[0]);
@@ -663,9 +669,15 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
   scalar_array tractionTpdtVertex(spaceDim);
   scalar_array dDispRelVertex(spaceDim);
 
-  // Get sections
-  const ALE:Obj<RealSection>& dkSelSection = _dkSelector->dk();
-  assert(dkSelSection);
+  // Get the dkSelector
+  if (_dkSelector) {
+    const ALE::Obj<RealSection>& dkSelSection = _dkSelector->dk(_faultMesh);
+    assert(dkSelSection);
+  } else { // should never be here
+    std::ostringstream msg;
+    msg << "No Dynamic Kinematic Selector available.";
+    throw std::runtime_error(msg.str());
+  }
 
   scalar_array slipTpdtVertex(spaceDim);
   const ALE::Obj<RealSection>& dispRelSection = 
@@ -728,7 +740,7 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    if (dkSelSection[iVertex]<0.5)
+    if (dkSelSection[iVertex]<0.5) // Dynamic Case
       continue;
 
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;

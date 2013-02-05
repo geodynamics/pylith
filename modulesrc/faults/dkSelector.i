@@ -24,8 +24,8 @@
 namespace pylith {
   namespace faults {
 
-    class dkSelector
-    { // class dkSelector
+    class DKSelector
+    { // class DKSelector
 
       // PUBLIC METHODS /////////////////////////////////////////////////
     public :
@@ -62,7 +62,7 @@ namespace pylith {
        */
       void dk(pylith::topology::Field<pylith::topology::SubMesh>* const dkField);
   
-    }; // class dkSelector
+    }; // class DKSelector
 
   } // faults
 } // pylith

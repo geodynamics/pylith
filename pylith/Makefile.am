@@ -48,7 +48,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/FaultCohesiveKin.py \
 	faults/FaultCohesiveDyn.py \
 	faults/FaultCohesiveDynKin.py \
-	faults/dkSelector.py \
+	faults/DKSelector.py \
 	faults/FaultCohesiveImpulses.py \
 	faults/FaultCohesiveTract.py \
 	feassemble/__init__.py \
@@ -115,6 +115,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/OutputSoln.py \
 	meshio/OutputFaultKin.py \
 	meshio/OutputFaultDyn.py \
+	meshio/OutputFaultDynKin.py \
 	meshio/OutputFaultImpulses.py \
 	meshio/OutputMatElastic.py \
 	meshio/OutputNeumann.py \

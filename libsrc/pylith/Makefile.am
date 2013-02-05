@@ -60,6 +60,8 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveLagrange.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
+	faults/FaultCohesiveDynKin.cc \
+	faults/DKSelector.cc \
 	faults/FaultCohesiveImpulses.cc \
 	faults/FaultCohesiveTract.cc \
 	faults/EqKinSrc.cc \

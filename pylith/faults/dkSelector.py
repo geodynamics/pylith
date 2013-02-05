@@ -17,15 +17,15 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/dkSelector.py
+## @file pylith/faults/DKSelector.py
 ##
 ## @brief Python object for the dynamic-kinematic selector
 ##
 
-from faults import dkSelector as ModuledkSelector
+from faults import DKSelector as ModuleDKSelector
 
-# dkSelector class
-class dkSelector(ModuledkSelector):
+# DKSelector class
+class DKSelector(ModuleDKSelector):
   """
   Python object for a dynamic-kinematic selector
 
@@ -56,7 +56,7 @@ class dkSelector(ModuledkSelector):
     """
     Constructor.
     """
-    ModuledkSelector.__init__(self)
+    ModuleDKSelector.__init__(self)
     self._loggingPrefix = "DKsel "
     return
 
@@ -67,7 +67,7 @@ class dkSelector(ModuledkSelector):
     """
     Setup members using inventory.
     """
-    ModuledkSelector.dbDKSel(self, self.inventory.dbDKSel)
+    ModuleDKSelector.dbDKSel(self, self.inventory.dbDKSel)
     return
 
 # End of file 
