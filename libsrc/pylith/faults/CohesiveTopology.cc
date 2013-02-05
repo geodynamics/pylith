@@ -1007,10 +1007,13 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   faultMesh->coordsys(mesh);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
   DM dmMesh = mesh.dmMesh();
   assert(dmMesh);
+
+
+
+  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
+  assert(!sieveMesh.isNull());
   ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();

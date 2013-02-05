@@ -376,14 +376,14 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
   DM              faultDMMesh = faultMesh->dmMesh();
-  IS              subpointMap;
+  IS              subpointIS;
   const PetscInt *points;
   PetscSection    coordSection;
   PetscInt        vStart, vEnd;
 
   CPPUNIT_ASSERT(faultDMMesh);
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
   err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -398,7 +398,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt off;
@@ -409,7 +409,8 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
       coords[off+d] = oldCoords[d];
     }
   }
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(faultDMMesh, coordVec);CHECK_PETSC_ERROR(err);
 

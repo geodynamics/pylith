@@ -120,10 +120,11 @@ pylith::meshio::TestDataWriterSubMesh::_createVertexFields(
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 #if 0
     DM dmSubmesh = _submesh->dmMesh();
-    IS subpointMap;
-    err = DMPlexGetSubpointMap(dmSubmesh, &subpointMap);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
-    err = ISRestoreIndices(subpointMap, &ind);CHECK_PETSC_ERROR(err);
+    IS subpointIS;
+    err = DMPlexCreateSubpointIS(dmSubmesh, &subpointIS);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(subpointIS, &ind);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(subpointIS, &ind);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 #endif
 
     // Set vertex fields

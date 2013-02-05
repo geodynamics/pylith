@@ -138,17 +138,17 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   _initialize(&mesh, &fault, &fields);
 
   DM              dmMesh = fault._faultMesh->dmMesh();
-  IS              subpointMap;
+  IS              subpointIS;
   const PetscInt *points;
   PetscInt        vStart, vEnd, numPoints;
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT(subpointMap);
-  err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(subpointIS);
+  err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
 
@@ -156,7 +156,8 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
   } // for
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(_data->numConstraintVert, vEnd-vStart);
 
   // Check orientation
@@ -595,16 +596,16 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   fault._calcTractions(&tractions, fields.get("disp(t)"));
 
   DM              faultDMMesh = fault._faultMesh->dmMesh();
-  IS              subpointMap;
+  IS              subpointIS;
   const PetscInt *points;
   PetscInt        vStart, vEnd, numPoints;
   PetscErrorCode  err;
 
   CPPUNIT_ASSERT(faultDMMesh);
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(faultDMMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT(subpointMap);
-  err = ISGetSize(subpointMap, &numPoints);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(subpointIS);
+  err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
 
   PetscSection dispSection = fields.get("disp(t)").petscSection();
   Vec          dispVec     = fields.get("disp(t)").localVector();
@@ -613,7 +614,7 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
 
   int iVertex = 0;
   const PylithScalar tolerance = 1.0e-06;
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = VecGetArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
@@ -642,7 +643,8 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   } // for
   err = VecRestoreArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 } // testCalcTractions
 
 // ----------------------------------------------------------------------
