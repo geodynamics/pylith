@@ -37,6 +37,7 @@ namespace pylith {
     class FaultCohesiveLagrange;
     class FaultCohesiveKin;
     class FaultCohesiveDyn;
+    class FaultCohesiveDynKin;
     class FaultCohesiveImpulses;
     class FaultCohesiveTract;
 
@@ -50,6 +51,7 @@ namespace pylith {
 
     class Nucleator;
     class TractPerturbation;
+    class DKSelector;
     class StaticPerturbation;
     class SpaceTimePerturbation;
 

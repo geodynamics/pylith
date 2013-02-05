@@ -38,6 +38,8 @@ swig_sources = \
 	FaultCohesiveLagrange.i \
 	FaultCohesiveKin.i \
 	FaultCohesiveDyn.i \
+	FaultCohesiveDynKin.i \
+	DKSelector.i \
 	FaultCohesiveImpulses.i \
 	FaultCohesiveTract.i \
 	../topology/SubMesh.i \

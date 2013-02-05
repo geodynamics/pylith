@@ -34,6 +34,7 @@ subpkginclude_HEADERS = \
 	TimeHistorySlipFn.hh \
 	TimeHistorySlipFn.icc \
 	TractPerturbation.hh \
+	DKSelector.hh \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
@@ -43,7 +44,6 @@ subpkginclude_HEADERS = \
 	FaultCohesiveDyn.hh \
 	FaultCohesiveKin.hh \
 	FaultCohesiveDynKin.hh \
-	dkSelector.hh \
 	FaultCohesiveImpulses.hh \
 	faultsfwd.hh
 

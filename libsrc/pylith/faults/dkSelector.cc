@@ -19,7 +19,7 @@
 
 #include <portinfo>
 
-#include "dkSelector.hh" // implementation of object methods
+#include "DKSelector.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
@@ -37,17 +37,18 @@
 typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 typedef pylith::topology::SubMesh::SieveMesh::label_sequence label_sequence;
 typedef pylith::topology::SubMesh::RealSection RealSection;
+typedef pylith::topology::SubMesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::dkSelector::dkSelector(void) :
-  _dbdksel(0),
+pylith::faults::DKSelector::DKSelector(void) :
+  _dbdksel(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::dkSelector::~dkSelector(void)
+pylith::faults::DKSelector::~DKSelector(void)
 { // destructor
   deallocate();
 } // destructor
@@ -55,7 +56,7 @@ pylith::faults::dkSelector::~dkSelector(void)
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void 
-pylith::faults::dkSelector::deallocate(void)
+pylith::faults::DKSelector::deallocate(void)
 { // deallocate
   _dbdksel = 0;
 } // deallocate
@@ -63,7 +64,7 @@ pylith::faults::dkSelector::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize dkselector
 void
-pylith::faults::dkSelector::initialize(
+pylith::faults::DKSelector::initialize(
 			    const topology::SubMesh& faultMesh,
 			    const spatialdata::units::Nondimensional& normalizer)
 { // initialize
@@ -88,16 +89,16 @@ pylith::faults::dkSelector::initialize(
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Fault");
 
-  // Create a parameter to go fetch into the spatial data (DKsel is a par array between 0 and 1; >0.5 is kinematic, <=0.5 is dynamic)
-  delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
-  assert(0 != _parameters);
+  // Use parameter to go fetch into the spatial data (DKSel is a par array between 0 and 1; >0.5 is kinematic, <=0.5 is dynamic)
+  delete _parameters;
+  _parameters = new topology::FieldsNew<topology::SubMesh>(faultMesh);
   _parameters->add("Dynamic Kinematic Selector","dynamic_kinematic_selector");
   topology::Field<topology::SubMesh>& DKSel = _parameters->get("Dynamic Kinematic Selector");
   DKSel.newSection(vertices, spaceDim);
-  DKsel.allocate();
-  DKsel.vectorFieldType(topology::FieldBase::VECTOR);
-  const ALE::Obj<RealSection>& DKselSection = DKsel.section();
-  assert(!DKselSection.isNull());  
+  DKSel.allocate();
+  DKSel.vectorFieldType(topology::FieldBase::VECTOR);
+  const ALE::Obj<RealSection>& DKSelSection = DKSel.section();
+  assert(!DKSelSection.isNull());  
 
   logger.stagePop();
 
@@ -121,7 +122,7 @@ pylith::faults::dkSelector::initialize(
     normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(),
 			      lengthScale);
     
-    int err = _dbdksel->query(&_dkselVertex[0], _dkSelVertex.size(), 
+    int err = _dbdksel->query(&_dkselVertex[0], _dkselVertex.size(), 
 				 &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -132,7 +133,7 @@ pylith::faults::dkSelector::initialize(
       throw std::runtime_error(msg.str());
     } // if
 
-    DKselSection->updatePoint(*v_iter, &_dkselVertex[0]);
+    DKSelSection->updatePoint(*v_iter, &_dkselVertex[0]);
   } // for
 
   // Close databases
@@ -140,42 +141,53 @@ pylith::faults::dkSelector::initialize(
 } // initialize
 
 // ----------------------------------------------------------------------
-// Get dynamic kinematic selector field on fault surface
+// Get dynamic kinematic selector field on fault surface (time will be the argument in the future)
 void
-pylith::faults::dkSelector::dk(topology::Field<topology::SubMesh>* dk)
+pylith::faults::DKSelector::dk(const topology::Field<topology::SubMesh>& dk)
 { // dk
-  assert(0 != dk);
   assert(0 != _parameters);
 
-  // Get vertices in fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = dk->mesh().sieveMesh();
+  // Get fault mesh
+  const ALE::Obj<SieveMesh>& sieveMesh = dk.sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
-  // Get sections
-  const topology::Field<topology::SubMesh>& DKSel = 
-    _parameters->get("Dynamic Kinematic Selector");
-  const ALE::Obj<RealSection>& DKselSection = DKsel.section();
-  assert(!DKselSection.isNull());
+  // Get the spatial coordinate and the dimension of the problem
+  const spatialdata::geocoords::CoordSys* cs = dk.coordsys();
+  assert(0 != cs);
+  const int spaceDim = cs->spaceDim();
 
+  // Build the section
+  const topology::Field<topology::SubMesh>& DKSel = _parameters->get("Dynamic Kinematic Selector");
+  const ALE::Obj<RealSection>& DKSelSection = DKSel.section();
+  assert(!DKSelSection.isNull());
+  const ALE::Obj<RealSection>& dkSection = dk->section()
+
+  // Iterate over vertices
   for (label_sequence::iterator v_iter=verticesBegin;
        v_iter != verticesEnd;
        ++v_iter) {
-    DKselSection->restrictPoint(*v_iter, &_dkselVertex[0],
-				   _dkselVertex.size());
-    // if dkselVertex is under 0.5, the vertex is kinematically controled
-    if ( _dkselVertex < 0.5 ){
-	_dkselVertex = 0.0;
-    else {
-	_dkselVertex = 1.0;
+ 
+    // take the good vertex in DKSelSection, put it in _dkselvv
+    DKSelSection->restrictPoint(*v_iter, &_dkselvv,1); 
+    // if _dkselvv is under 0.5, the vertex is kinematically controled (put the time condition here)
+    if ( _dkselvv< 0.5 ){
+	_dkselvv = 0.0;
+    } else {
+	_dkselvv = 1.0;
     }
-    DKselSection->updateAddPoint(*v_iter, &_dkselVertex[0]);
+    // Put that thing in dkSection
+    dkSection->updatePoint(*v_iter, &_dkselvv);
+
   } // for
 
   PetscLogFlops(vertices->size());
-} // slip
+
+  return dkSection;
+
+} // dk
 
 // End of file 

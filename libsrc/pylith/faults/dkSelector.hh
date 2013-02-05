@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/dkSelector.hh
+/** @file libsrc/faults/DKSelector.hh
  *
  * @brief C++ implementation of the dynamic kinematic selector
  */
@@ -25,29 +25,39 @@
 #define pylith_faults_dkselector_hh
 
 // Include directives ---------------------------------------------------
-#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
+#include "faultsfwd.hh" // forward declaration
 
+
+#include "pylith/topology/topologyfwd.hh" // USES Fields<Field<SubMesh> >
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
+#include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
+
+#include "pylith/topology/SubMesh.hh" // USES Mesh
 
 #include "pylith/utils/array.hh" // HASA scalar_array
 
-// dkSelector -----------------------------------------------------------
+// DKSelector -----------------------------------------------------------
 /** @brief Dynamic-Kinematic Selector
  *
- * If value is under .5 the fault vertex has its slip value controlled by EQsrc
+ * If value is over .5 the fault vertex has its slip value controlled by EQsrc
  *
  */
-class pylith::faults::dkSelector 
-{ // class dkSelector
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::SubMesh::RealUniformSection RealUniformSection;
+
+// ----------------------------------------------------------------------
+class pylith::faults::DKSelector 
+{ // class DKSelector
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  dkSelector(void);
+  DKSelector(void);
 
   /// Destructor.
-  ~dkSelector(void);
+  ~DKSelector(void);
 
   /// Deallocate PETSc and local data structures.
   virtual
@@ -69,27 +79,31 @@ public :
 
   /** Get dk on fault surface (time will be implemented through this guy)
    *
-   * @param dk DK selector field over fault surface
-   *
-   * @returns dk for the time
+   * @params faultMesh Finite-element mesh of fault.
+   * 
+   * @returns a section for the given time (future)
    */
-  void dk(topology::Field<topology::SubMesh>* const dkField);
+  void dk(const topology::Field<topology::SubMesh>& dk);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  dkSelector(const dkSelector&); ///< Not implemented
-  const dkSelector& operator=(const dkSelector&); ///< Not implemented
+  DKSelector(const DKSelector&); ///< Not implemented
+  const DKSelector& operator=(const DKSelector&); ///< Not implemented
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  PylithScalar _dkselVertex; ///< Slip time at a vertex.
+  scalar_array _dkselVertex; ///< dk sel at vertex.
+  PylithScalar _dkselvv; ///< used to check 
 
-  /// Spatial database for slip rate.
+  /// Spatial database for dk selector.
   spatialdata::spatialdb::SpatialDB* _dbdksel;
 
-}; // class dkSelector
+  /// Parameters for perturbations.
+  topology::FieldsNew<topology::SubMesh>* _parameters;
+
+}; // class DKSelector
 
 #endif // pylith_faults_dkselector_hh
 

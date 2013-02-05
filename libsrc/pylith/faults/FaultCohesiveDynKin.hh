@@ -31,13 +31,13 @@
 #include "pylith/friction/frictionfwd.hh" // HOLDSA Friction model
 #include "pylith/utils/petscfwd.h" // HASA PetscKSP
 
-// FaultCohesiveDyn -----------------------------------------------------
+// FaultCohesiveDynKin --------------------------------------------------
 /**
  * @brief C++ implementation for a fault surface with spontaneous
  * (dynamic) slip implemented with cohesive cells.
  *
  */
-class pylith::faults::FaultCohesiveDynKin : public FaultCohesiveLagrange
+class pylith::faults::FaultCohesiveDynKin : public FaultCohesiveLagrange 
 { // class FaultCohesiveDynKin
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ public :
    *
    * @param dksel Spatial (and temporal, next version) variations of dk Selector
    */
-  void dkSelector(dkSelector* dksel);
+  void dkSelector(DKSelector* dksel);
 
   /** Set the friction (constitutive) model.
    *
@@ -285,8 +285,15 @@ private :
 			     const scalar_array& tractionTpdt,
 			     const bool iterating =true);
 
+  // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
+private :
+
+  typedef std::map<std::string, EqKinSrc*> srcs_type;
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  srcs_type _eqSrcs; ///< Array of kinematic earthquake sources.
 
   /// Flag to control whether to continue to impose initial tractions
   /// on the fault surface when it opens. If it is a frictional
@@ -300,7 +307,7 @@ private :
   TractPerturbation* _tractPerturbation;
 
   /// To get the dynamic kinematic selector.
-  dkSelector* _dkSelector;
+  DKSelector* _dkSelector;
 
   /// To identify constitutive model
   friction::FrictionModel* _friction;
@@ -314,14 +321,14 @@ private :
 private :
 
   /// Not implemented
-  FaultCohesiveDyn(const FaultCohesiveDyn&);
+  FaultCohesiveDynKin(const FaultCohesiveDynKin&);
 
   /// Not implemented
-  const FaultCohesiveDyn& operator=(const FaultCohesiveDyn&);
+  const FaultCohesiveDynKin& operator=(const FaultCohesiveDynKin&);
 
-}; // class FaultCohesiveDyn
+}; // class FaultCohesiveDynKin
 
-#endif // pylith_faults_faultcohesivedyn_hh
+#endif // pylith_faults_faultcohesivedynkin_hh
 
 
 // End of file 
