@@ -419,8 +419,8 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::writeVertexField(
     switch (field.vectorFieldType()) {
     case pylith::topology::FieldBase::VECTOR:
       if (bs%spaceDim) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
-    case pylith::topology::FieldBase::TENSOR:
-      if (bs%spaceDim) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
+      //case pylith::topology::FieldBase::TENSOR:
+      //if (bs%spaceDim) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
       //default:
       //if (bs > 1) CHECK_PETSC_ERROR(PETSC_ERR_ARG_WRONG); break;
     }
