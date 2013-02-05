@@ -149,7 +149,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     DM             dm;
     DMLabel        subpointMap;
     PetscInt      *renum;
-    PetscInt       pStart, pEnd;
+    PetscInt       pStart, pEnd, cStart, cEnd, vStart, vEnd;
     PetscErrorCode err;
     SieveSubMesh::renumbering_type renumbering;
 
@@ -168,7 +168,12 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     for(PetscInt p = 1; p < pEnd-pStart; ++p) {
       assert(renum[p] > renum[p-1]);
     }
-    for(PetscInt p = 0; p < pEnd-pStart; ++p) {
+    err = DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = cStart; p < cEnd; ++p) {
+      err = DMLabelSetValue(subpointMap, renum[p], mesh.dimension());CHECK_PETSC_ERROR(err);
+    }
+    err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = vStart; p < vEnd; ++p) {
       err = DMLabelSetValue(subpointMap, renum[p], 0);CHECK_PETSC_ERROR(err);
     }
     err = PetscFree(renum);CHECK_PETSC_ERROR(err);
@@ -1200,11 +1205,12 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   // Have to make subpointMap here: renumbering[original] = fault
   DMLabel   subpointMap;
   PetscInt *renum;
-  PetscInt  pStart, pEnd;
+  PetscInt  pStart, pEnd, fcStart, fcEnd;
 
   err = DMLabelCreate("subpoint_map", &subpointMap);CHECK_PETSC_ERROR(err);
   err = DMPlexGetChart(dmFaultMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmFaultMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
   assert(convertRenumbering.size() == pEnd-pStart);
   err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
   std::cout << std::endl;
@@ -1225,7 +1231,10 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     if (renum[p-1] == -1) continue;
     assert(renum[p] > renum[p-1]);
   }
-  for(PetscInt p = 0; p < pEnd-pStart; ++p) {
+  for(PetscInt p = fcStart; p < fcEnd; ++p) {
+    err = DMLabelSetValue(subpointMap, renum[p], mesh.dimension());CHECK_PETSC_ERROR(err);
+  }
+  for(PetscInt p = fvStart; p < fvEnd; ++p) {
     err = DMLabelSetValue(subpointMap, renum[p], 0);CHECK_PETSC_ERROR(err);
   }
   err = PetscFree(renum);CHECK_PETSC_ERROR(err);
