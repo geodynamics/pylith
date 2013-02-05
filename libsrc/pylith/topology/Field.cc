@@ -1593,14 +1593,14 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
   err = DMPlexGetSubpointMap(_dm, &subpointMapF);CHECK_PETSC_ERROR(err);
   if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
     const PetscInt *ind;
-    IS              subvertexIS;
+    IS              subpointIS;
     PetscInt        n, q;
 
     err = PetscPrintf(PETSC_COMM_SELF, "Making translation PetscSection\n");CHECK_PETSC_ERROR(err);
     err = PetscSectionGetChart(section, &qStart, &qEnd);CHECK_PETSC_ERROR(err);
-    err = DMLabelGetStratumSize(subpointMap, 0, &n);CHECK_PETSC_ERROR(err);
-    err = DMLabelGetStratumIS(subpointMap, 0, &subvertexIS);CHECK_PETSC_ERROR(err);
-    err = ISGetIndices(subvertexIS, &ind);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubpointIS(dm, &subpointIS);CHECK_PETSC_ERROR(err);
+    err = ISGetLocalSize(subpointIS, &n);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(subpointIS, &ind);CHECK_PETSC_ERROR(err);
     err = PetscSectionCreate(mesh.comm(), &subSection);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetChart(subSection, pStart, pEnd);CHECK_PETSC_ERROR(err);
     for(q = qStart; q < qEnd; ++q) {
@@ -1616,8 +1616,8 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
         }
       }
     }
-    err = ISRestoreIndices(subvertexIS, &ind);CHECK_PETSC_ERROR(err);
-    err = ISDestroy(&subvertexIS);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(subpointIS, &ind);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
     /* No need to setup section */
     section = subSection;
   }

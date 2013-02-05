@@ -107,15 +107,13 @@ pylith::bc::Neumann::integrateResidual(
 
   // Get cell information
   DM       subMesh = _boundaryMesh->dmMesh();
-  DMLabel  subpointMap;
   IS       subpointIS;
   PetscInt cStart, cEnd;
   PetscErrorCode err;
 
   assert(subMesh);
   err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(subMesh, &subpointMap);CHECK_PETSC_ERROR(err);
-  err = DMLabelGetStratumIS(subpointMap, 0, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(subMesh, &subpointIS);CHECK_PETSC_ERROR(err);
 
   // Get sections
   _calculateValue(t);
