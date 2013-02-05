@@ -83,7 +83,8 @@ public :
    * 
    * @returns a section for the given time (future)
    */
-  void dk(const topology::Field<topology::SubMesh>& dk);
+  void 
+  dk(topology::Field<topology::SubMesh>* dk);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
@@ -101,7 +102,7 @@ private :
   spatialdata::spatialdb::SpatialDB* _dbdksel;
 
   /// Parameters for perturbations.
-  topology::FieldsNew<topology::SubMesh>* _parameters;
+  topology::Fields<topology::Field<topology::SubMesh> >* _parameters;
 
 }; // class DKSelector
 

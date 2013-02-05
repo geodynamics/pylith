@@ -221,6 +221,7 @@ pylith::faults::FaultCohesiveDynKin::initialize(const topology::Mesh& mesh,
   // Get the DynKin Selector using a spatial database. 
   if (_dkSelector) {
      _dkSelector->initialize(*_faultMesh, *_normalizer);
+     _fields->add("Dynamic Kinematic Selector","dynamic_kinematic_selector");
   } // if should be useless
      
   logger.stagePop();
@@ -315,12 +316,12 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 
   // Get the dkSelector
   if (_dkSelector) {
-    _fields->add("Dynamic Kinematic Selector","dynamic_kinematic_selector")
     topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
     _dkSelector->dk(&dk);
-    const ALE::Obj<RealSection>& dkSelSection = dk->section();
-    assert(!0 = dkSelSection);
-  } else { // should never be here
+    const ALE::Obj<RealSection>& dkSelSection = dk.section();
+    assert(!dkSelSection.isNull());
+  }
+  else { // should never be here
     std::ostringstream msg;                                           
     msg << "No Dynamic Kinematic Selector available.";         
     throw std::runtime_error(msg.str());
@@ -671,8 +672,10 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
 
   // Get the dkSelector
   if (_dkSelector) {
-    const ALE::Obj<RealSection>& dkSelSection = _dkSelector->dk(_faultMesh);
-    assert(dkSelSection);
+    topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
+    _dkSelector->dk(&dk);
+    const ALE::Obj<RealSection>& dkSelSection = dk.section();
+    assert(!dkSelSection.isNull());
   } else { // should never be here
     std::ostringstream msg;
     msg << "No Dynamic Kinematic Selector available.";
