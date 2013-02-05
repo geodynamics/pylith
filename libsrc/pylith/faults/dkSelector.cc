@@ -91,7 +91,7 @@ pylith::faults::DKSelector::initialize(
 
   // Use parameter to go fetch into the spatial data (DKSel is a par array between 0 and 1; >0.5 is kinematic, <=0.5 is dynamic)
   delete _parameters;
-  _parameters = new topology::FieldsNew<topology::SubMesh>(faultMesh);
+  _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   _parameters->add("Dynamic Kinematic Selector","dynamic_kinematic_selector");
   topology::Field<topology::SubMesh>& DKSel = _parameters->get("Dynamic Kinematic Selector");
   DKSel.newSection(vertices, spaceDim);
@@ -143,28 +143,23 @@ pylith::faults::DKSelector::initialize(
 // ----------------------------------------------------------------------
 // Get dynamic kinematic selector field on fault surface (time will be the argument in the future)
 void
-pylith::faults::DKSelector::dk(const topology::Field<topology::SubMesh>& dk)
+pylith::faults::DKSelector::dk(topology::Field<topology::SubMesh>* dk)
 { // dk
   assert(0 != _parameters);
 
   // Get fault mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = dk.sieveMesh();
+  const ALE::Obj<SieveMesh>& sieveMesh = dk->mesh().sieveMesh();
   assert(!sieveMesh.isNull());
   const ALE::Obj<label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
   const label_sequence::iterator verticesBegin = vertices->begin();
   const label_sequence::iterator verticesEnd = vertices->end();
 
-  // Get the spatial coordinate and the dimension of the problem
-  const spatialdata::geocoords::CoordSys* cs = dk.coordsys();
-  assert(0 != cs);
-  const int spaceDim = cs->spaceDim();
-
   // Build the section
   const topology::Field<topology::SubMesh>& DKSel = _parameters->get("Dynamic Kinematic Selector");
   const ALE::Obj<RealSection>& DKSelSection = DKSel.section();
   assert(!DKSelSection.isNull());
-  const ALE::Obj<RealSection>& dkSection = dk->section()
+  const ALE::Obj<RealSection>& dkSection = dk->section();
 
   // Iterate over vertices
   for (label_sequence::iterator v_iter=verticesBegin;
@@ -185,9 +180,6 @@ pylith::faults::DKSelector::dk(const topology::Field<topology::SubMesh>& dk)
   } // for
 
   PetscLogFlops(vertices->size());
-
-  return dkSection;
-
 } // dk
 
 // End of file 
