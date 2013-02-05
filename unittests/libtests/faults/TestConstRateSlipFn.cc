@@ -297,7 +297,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
   DM              dmMesh = faultMesh->dmMesh();
-  IS              subpointMap;
+  IS              subpointIS;
   const PetscInt *points;
   PetscSection    coordSection;
   PetscInt        vStart, vEnd;
@@ -305,7 +305,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(dmMesh);
 
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -320,7 +320,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
   err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt off;
@@ -331,7 +331,8 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
       coords[off+d] = oldCoords[d];
     }
   }
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
@@ -401,7 +402,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
   DM              dmMesh = faultMesh.dmMesh();
-  IS              subpointMap;
+  IS              subpointIS;
   const PetscInt *points;
   PetscSection    coordSection;
   PetscInt        vStart, vEnd;
@@ -409,7 +410,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   CPPUNIT_ASSERT(dmMesh);
 
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetSubpointMap(dmMesh, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -424,7 +425,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt off;
@@ -435,7 +436,8 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
       coords[off+d] = oldCoords[d];
     }
   }
-  err = ISRestoreIndices(subpointMap, &points);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
