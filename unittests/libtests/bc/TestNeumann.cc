@@ -179,15 +179,21 @@ pylith::bc::TestNeumann::testInitialize(void)
 
   PetscInt dp = 0;
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt *cone;
-    PetscInt        numCorners;
+    PetscInt *closure = PETSC_NULL;
+    PetscInt  closureSize, numCorners = 0;
 
-    err = DMPlexGetConeSize(subMesh, c, &numCorners);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCone(subMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = 0; p < closureSize*2; p += 2) {
+      const PetscInt point = closure[p];
+      if ((point >= vStart) && (point < vEnd)) {
+        closure[numCorners++] = point;
+      }
+    }
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
-      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], cone[p]);
+      CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
     }
+    err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
 
   // Check traction values
