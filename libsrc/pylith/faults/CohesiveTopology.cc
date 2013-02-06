@@ -1004,27 +1004,69 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("FaultCreation");
+  PetscErrorCode err;
 
   faultMesh->coordsys(mesh);
 
   DM dmMesh = mesh.dmMesh();
   assert(dmMesh);
+#define OLD_PLEX
+#ifndef OLD_PLEX
+  DM              dmFaultMesh;
+  {
+    DMLabel         faultLabel;
+    IS              cohesiveIS;
+    const PetscInt *cohesiveCells;
+    PetscInt        numCohesiveCells = 0, c;
+    const char     *labelName = "_internal_fault";
 
+    err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cohesiveIS);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateLabel(dmMesh, labelName);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabel(dmMesh, labelName, &faultLabel);CHECK_PETSC_ERROR(err);
+    if (cohesiveIS) {
+      err = ISGetSize(cohesiveIS, &numCohesiveCells);CHECK_PETSC_ERROR(err);
+      err = ISGetIndices(cohesiveIS, &cohesiveCells);CHECK_PETSC_ERROR(err);
+    }
+    /* This is for uninterpolated meshes. For interpolated meshes, we just mark one face and its closure
+       I am using the negative side vertices all the time, and not the Lagrange vertices. Does this matter???
+    */
+    for (c = 0; c < numCohesiveCells; ++c) {
+      const PetscInt  point = cohesiveCells[c];
+      const PetscInt *cone;
+      PetscInt        coneSize, c, faceSize;
 
+      err = DMPlexGetConeSize(dmMesh, point, &coneSize);CHECK_PETSC_ERROR(err);
+      err = DMPlexGetCone(dmMesh, point, &cone);CHECK_PETSC_ERROR(err);
+      if (!constraintCell) {
+        faceSize = coneSize / 2;
+      } else {
+        faceSize = coneSize / 3;
+      }
+      for(c = 0; c < faceSize; ++c) {
+        err = DMLabelSetValue(faultLabel, cone[c], 1);CHECK_PETSC_ERROR(err);
+      }
+    }
+    if (cohesiveIS) {err = ISRestoreIndices(cohesiveIS, &cohesiveCells);CHECK_PETSC_ERROR(err);}
+    err = ISDestroy(&cohesiveIS);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, labelName, &dmFaultMesh);CHECK_PETSC_ERROR(err);
+    err = DMPlexRemoveLabel(dmMesh, labelName, &faultLabel);CHECK_PETSC_ERROR(err);
+    err = DMLabelDestroy(&faultLabel);CHECK_PETSC_ERROR(err);
+    faultMesh->setDMMesh(dmFaultMesh);
+  }
+#endif
 
+  const int debug = mesh.debug();
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
   ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
-
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  faultSieveMesh = 
-    new SieveSubMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+  faultSieveMesh = new SieveSubMesh(mesh.comm(), mesh.dimension()-1, debug);
   const ALE::Obj<SieveMesh::sieve_type> ifaultSieve =
     new SieveMesh::sieve_type(sieve->comm(), sieve->debug());
   assert(!ifaultSieve.isNull());
   ALE::Obj<SieveFlexMesh> fault = 
-    new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, mesh.debug());
+    new SieveFlexMesh(mesh.comm(), mesh.dimension()-1, debug);
   assert(!fault.isNull());
   ALE::Obj<SieveFlexMesh::sieve_type> faultSieve =
     new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
@@ -1105,11 +1147,13 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 					     fRenumbering,
 					     fault->getArrowSection("orientation").ptr());
   }
+#ifdef OLD_PLEX
   SieveMesh::renumbering_type convertRenumbering;
   DM dmFaultMesh;
 
   ALE::ISieveConverter::convertMesh(*fault, &dmFaultMesh, convertRenumbering, true);
   faultMesh->setDMMesh(dmFaultMesh);
+#endif
   fault      = NULL;
   faultSieve = NULL;
 
@@ -1158,6 +1202,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     fCoordinates->updatePoint(fRenumbering[*v_iter], 
 			      coordinates->restrictPoint(*v_iter));
   }
+#ifdef OLD_PLEX
   //faultSieveMesh->view("Parallel fault mesh");
   PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
   mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
@@ -1167,7 +1212,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   Vec            coordinateVec, faultCoordinateVec;
   PetscScalar   *a, *fa;
   PetscInt       pvStart, pvEnd, fvStart, fvEnd, n;
-  PetscErrorCode err;
 
   err = DMPlexGetDepthStratum(dmMesh, 0, &pvStart, &pvEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
@@ -1204,7 +1248,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   }
   err = VecRestoreArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
+#endif
 
+#ifdef OLD_PLEX
   // Have to make subpointMap here: renumbering[original] = fault
   DMLabel   subpointMap;
   PetscInt *renum;
@@ -1242,6 +1288,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   }
   err = PetscFree(renum);CHECK_PETSC_ERROR(err);
   err = DMPlexSetSubpointMap(dmFaultMesh, subpointMap);CHECK_PETSC_ERROR(err);
+#endif
 
   // Update dimensioned coordinates if they exist.
   if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
