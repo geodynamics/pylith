@@ -315,17 +315,17 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
   assert(!globalOrder.isNull());
 
   // Get the dkSelector
-  if (_dkSelector) {
-    topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
-    _dkSelector->dk(&dk);
-    const ALE::Obj<RealSection>& dkSelSection = dk.section();
-    assert(!dkSelSection.isNull());
-  }
-  else { // should never be here
-    std::ostringstream msg;                                           
-    msg << "No Dynamic Kinematic Selector available.";         
-    throw std::runtime_error(msg.str());
-  } 
+  //if (_dkSelector) {
+  topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
+  _dkSelector->dk(&dk);
+  const ALE::Obj<RealSection>& dkSelSection = dk.section();
+  assert(!dkSelSection.isNull());
+  //}
+  //else { // should never be here
+  //  std::ostringstream msg;                                           
+  //  msg << "No Dynamic Kinematic Selector available.";         
+  //  throw std::runtime_error(msg.str());
+  //} 
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -391,9 +391,8 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
       const PylithScalar* dispRelVertex = dispRelSection->restrictPoint(v_fault);
       assert(dispRelVertex);
 
-    } else {
+    } else { // Dynamic Case
 
-      // Dynamic Case
       // Get prescribed traction perturbation at fault vertex.
       if (_tractPerturbation) {
         assert(tractPerturbFiberDim == tractPerturbSection->getFiberDimension(v_fault));
@@ -409,8 +408,7 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 
       // Get orientation associated with fault vertex.
       assert(spaceDim*spaceDim == orientationSection->getFiberDimension(v_fault));
-      const PylithScalar* orientationVertex = 
-        orientationSection->restrictPoint(v_fault);
+      const PylithScalar* orientationVertex = orientationSection->restrictPoint(v_fault);
       assert(orientationVertex);
 
     } // if/else
@@ -428,7 +426,7 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
       dispTpdtVertexL[iDim] = dispTVertexL[iDim] + dispTIncrVertexL[iDim];
     } // for
     
-    if (dkSelSection[iVertex]>0.5) { // Kinematic Case
+    if (dkSelSection[iVertex] > 0.5) { // Kinematic Case
 
       residualVertexN = areaVertex * dispTpdtVertexL;
       residualVertexP = -residualVertexN;
@@ -439,9 +437,8 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
           (dispTpdtVertexP[iDim] - dispTpdtVertexN[iDim] - dispRelVertex[iDim]);
       } // for
 
-    } else {
+    } else { // Dynamic Case
 
-      // Dynamic Case
       // Compute slip (in fault coordinates system) from displacements.
       PylithScalar slipNormal = 0.0;
       PylithScalar tractionNormal = 0.0;
@@ -491,7 +488,7 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 	   residualSection->getFiberDimension(v_positive));
     residualSection->updateAddPoint(v_positive, &residualVertexP[0]);
 
-    if (dkSelSection[iVertex]>0.5) { // Kinematic Case
+    if (dkSelSection[iVertex] > 0.5) { // Kinematic Case
 
       assert(residualVertexL.size() == 
             residualSection->getFiberDimension(v_lagrange));
@@ -743,7 +740,7 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    if (dkSelSection[iVertex]<0.5) // Dynamic Case
+    if (dkSelSection[iVertex] < 0.5) // Dynamic Case
       continue;
 
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
@@ -1051,7 +1048,7 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
   assert(!globalOrder.isNull());
 
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    if (dkSelSelector[iVertex])
+    if (dkSelSection[iVertex] < 0.5 ) // Dynamic Case
       continue;
 
     const int v_fault = _cohesiveVertices[iVertex].fault;
