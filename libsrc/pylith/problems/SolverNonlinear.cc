@@ -140,7 +140,7 @@ pylith::problems::SolverNonlinear::solve(
   PetscErrorCode err = 0;
   const PetscVec solutionVec = solution->vector();
 
-  err = SNESSolve(_snes, PETSC_NULL, solutionVec); CHECK_PETSC_ERROR(err);
+  err = SNESSolve(_snes, NULL, solutionVec); CHECK_PETSC_ERROR(err);
   
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(scatterEvent);
@@ -235,13 +235,13 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   ierr = SNESLineSearchGetLambda(linesearch, &lambda);CHKERRQ(ierr);
   ierr = SNESLineSearchGetSNES(linesearch, &snes);CHKERRQ(ierr);
   ierr = SNESLineSearchGetMonitor(linesearch, &monitor);CHKERRQ(ierr);
-  ierr = SNESLineSearchGetTolerances(linesearch, &minlambda, &maxstep, PETSC_NULL, PETSC_NULL, PETSC_NULL, &max_its);CHKERRQ(ierr);
-  ierr = SNESGetTolerances(snes, PETSC_NULL, PETSC_NULL, &stol, PETSC_NULL, PETSC_NULL);CHKERRQ(ierr);
+  ierr = SNESLineSearchGetTolerances(linesearch, &minlambda, &maxstep, NULL, NULL, NULL, &max_its);CHKERRQ(ierr);
+  ierr = SNESGetTolerances(snes, NULL, NULL, &stol, NULL, NULL);CHKERRQ(ierr);
   bt = (PetscSNESLineSearch_BT *)linesearch->data;
 
   alpha = bt->alpha;
 
-  ierr = SNESGetJacobian(snes, &jac, PETSC_NULL, PETSC_NULL, PETSC_NULL);CHKERRQ(ierr);
+  ierr = SNESGetJacobian(snes, &jac, NULL, NULL, NULL);CHKERRQ(ierr);
   if (!jac) {
     SETERRQ(((PetscObject)linesearch)->comm, PETSC_ERR_USER, "SNESLineSearchBT requires a Jacobian matrix");
   }
