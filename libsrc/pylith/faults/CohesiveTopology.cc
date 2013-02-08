@@ -1262,7 +1262,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   err = DMPlexGetHeightStratum(dmFaultMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
   assert(convertRenumbering.size() == pEnd-pStart);
   err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
-  std::cout << std::endl;
 #if 0
   mesh.sieveMesh()->view("Sieve Mesh");
   err = PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);CHECK_PETSC_ERROR(err);
