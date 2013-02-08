@@ -84,7 +84,7 @@ public :
    * @returns a section for the given time (future)
    */
   void 
-  dk(topology::Field<topology::SubMesh>* dk);
+  dk(topology::Field<topology::SubMesh>* const dk);
   
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
