@@ -316,7 +316,7 @@ pylith::faults::FaultCohesiveDynKin::integrateResidual(
 
   // Get the dkSelector
   assert(0 != _dkSelector);
-  topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
+  const topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
   _dkSelector->dk(&dk);
   const ALE::Obj<RealSection>& dkSelSection = dk.section();
   assert(!dkSelSection.isNull());
@@ -674,7 +674,7 @@ pylith::faults::FaultCohesiveDynKin::constrainSolnSpace(
 
   // Get the dkSelector
   assert(0 != _dkSelector);
-  topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
+  const topology::Field<topology::SubMesh>& dk = _fields->get("Dynamic Kinematic Selector");
   _dkSelector->dk(&dk);
   const ALE::Obj<RealSection>& dkSelSection = dk.section();
   assert(!dkSelSection.isNull());
