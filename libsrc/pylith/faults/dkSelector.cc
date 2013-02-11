@@ -143,7 +143,7 @@ pylith::faults::DKSelector::initialize(
 // ----------------------------------------------------------------------
 // Get dynamic kinematic selector field on fault surface (time will be the argument in the future)
 void
-pylith::faults::DKSelector::dk(topology::Field<topology::SubMesh>* const dk)
+pylith::faults::DKSelector::dk(const topology::Field<topology::SubMesh>* dk)
 { // dk
   assert(0 != _parameters);
 
