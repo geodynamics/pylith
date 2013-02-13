@@ -389,8 +389,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
 
   // Gather number of points on each processor.
   const int numImpulsesLocal = pointOrder.size();
-  MPI_Comm    comm = ((PetscObject) faultDMMesh)->comm;
+  MPI_Comm    comm;
   PetscMPIInt commSize, commRank;
+  err = PetscObjectGetComm((PetscObject) faultDMMesh, &comm);CHECK_PETSC_ERROR(err);
   err = MPI_Comm_size(comm, &commSize);CHECK_PETSC_ERROR(err);
   err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
   int_array numImpulsesAll(commSize);

@@ -209,6 +209,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   assert(formulation);
 
   DM dmMesh = fields.mesh().dmMesh();
+  MPI_Comm comm;
   assert(dmMesh);
   PetscSection   solutionSection   = fields.solution().petscSection();
   Vec            solutionVec       = fields.solution().localVector();
@@ -220,6 +221,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   const bool separateComponents = formulation->splitFieldComponents();
 
   assert(solutionSection);
+  err = PetscObjectGetComm((PetscObject) dmMesh, &comm);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDimension(dmMesh, &spaceDim);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetNumFields(solutionSection, &numFields);CHECK_PETSC_ERROR(err);
 
@@ -244,7 +246,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = PetscSectionGetStorageSize(lagrangeSection, &nrows);CHECK_PETSC_ERROR(err);
     ncols = nrows;
 
-    err = MatCreate(((PetscObject) dmMesh)->comm, &_jacobianPCFault);CHECK_PETSC_ERROR(err);
+    err = MatCreate(comm, &_jacobianPCFault);CHECK_PETSC_ERROR(err);
     err = MatSetSizes(_jacobianPCFault, nrows, ncols, 
                       PETSC_DECIDE, PETSC_DECIDE);CHECK_PETSC_ERROR(err);
     err = MatSetType(_jacobianPCFault, MATAIJ);CHECK_PETSC_ERROR(err);
@@ -346,7 +348,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
         err = VecMAXPY(mode[i], i, dots, mode);CHECK_PETSC_ERROR(err);
         err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
       } // for
-      err = MatNullSpaceCreate(((PetscObject) dmMesh)->comm, PETSC_FALSE, m, mode, &nullsp);CHECK_PETSC_ERROR(err);
+      err = MatNullSpaceCreate(comm, PETSC_FALSE, m, mode, &nullsp);CHECK_PETSC_ERROR(err);
       for(int i = 0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}
     } // if
 

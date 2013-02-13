@@ -867,7 +867,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
 #ifdef USE_DMCOMPLEX_ON
   err = PetscSectionSetUp(newCoordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetStorageSize(newCoordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = VecCreate(((PetscObject) newMesh)->comm, &newCoordinatesVec);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh->comm(), &newCoordinatesVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(newCoordinatesVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(newCoordinatesVec);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordinatesVec, &coords);CHECK_PETSC_ERROR(err);
