@@ -464,11 +464,15 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     err = VecView(vector, binaryViewer);CHECK_PETSC_ERROR(err);
     ++_datasets[field.label()].numTimeSteps;
 
-    PetscSection section = field.petscSection();
+    DM           dm;
+    PetscSection section;// = field.petscSection();
     PetscInt     dof     = 0, n, numLocalVertices = 0, numVertices, vStart;
     IS           globalVertexNumbers;
 
+    err = VecGetDM(vector, &dm);CHECK_PETSC_ERROR(err);
+    err = DMGetDefaultSection(dm, &section);CHECK_PETSC_ERROR(err);
     assert(section);
+
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, PETSC_NULL);CHECK_PETSC_ERROR(err);
     err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
     err = ISGetSize(globalVertexNumbers, &n);CHECK_PETSC_ERROR(err);
