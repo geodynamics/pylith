@@ -1367,11 +1367,13 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     up[i] = upDir[i];
 
   // Get vertices in fault mesh.
+  MPI_Comm       comm;
   DM             faultDMMesh = _faultMesh->dmMesh();
   PetscInt       vStart, vEnd, cStart, cEnd;
   PetscErrorCode err;
 
   assert(faultDMMesh);
+  err = PetscObjectGetComm((PetscObject) faultDMMesh, &comm);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
@@ -1545,7 +1547,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
     } // if
     // Collect flip decisions across all processors
     int flipGlobal = 0;
-   MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, ((PetscObject) faultDMMesh)->comm);
+   MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, comm);
 
     const int ishear = 0;
     const int inormal = 2;
@@ -1616,7 +1618,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
     // Collect flip decisions across all processors
     int flipGlobal = 0;
-    MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, ((PetscObject) faultDMMesh)->comm);
+    MPI_Allreduce(&flipLocal, &flipGlobal, 1, MPI_INT, MPI_SUM, comm);
 
     const int istrike = 0;
     const int idip = 3;
@@ -2003,7 +2005,8 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
 
     MPI_Comm    comm;
     PetscMPIInt rank;
-    err = MPI_Comm_rank(((PetscObject) faultDMMesh)->comm, &rank);CHECK_PETSC_ERROR(err);
+    err = PetscObjectGetComm((PetscObject) faultDMMesh, &comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(comm, &rank);CHECK_PETSC_ERROR(err);
     // Loop over cells in fault mesh, set partition
     err = VecGetArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
     for(PetscInt c = cStart; c < cEnd; ++c) {

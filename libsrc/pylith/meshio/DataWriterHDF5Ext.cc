@@ -96,9 +96,11 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 
     DM dmMesh = mesh.dmMesh();
     assert(dmMesh);
+    MPI_Comm       comm;
     PetscMPIInt    commRank;
-    PetscErrorCode err = MPI_Comm_rank(((PetscObject) dmMesh)->comm, &commRank);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm);CHECK_PETSC_ERROR(err);
 
+    err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
     if (!commRank) {
       _h5->open(_hdf5Filename().c_str(), H5F_ACC_TRUNC);
 
@@ -155,13 +157,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
       if (dimLocal) break;
     }
-    err = MPI_Allreduce(&dimLocal, &dim, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&dimLocal, &dim, 1, MPIU_INT, MPI_MAX, comm);CHECK_PETSC_ERROR(err);
     verticesSize = vEnd - vStart;
 
     PetscVec     coordVec;
     PetscScalar *coords, *c;
 
-    err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
+    err = VecCreate(comm, &coordVec);CHECK_PETSC_ERROR(err);
     err = VecSetSizes(coordVec, verticesSize*dim, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(coordVec, dim);CHECK_PETSC_ERROR(err);
     err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
@@ -182,7 +184,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 #endif
 
     const std::string& filenameVertices = _datasetFilename("vertices");
-    err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, filenameVertices.c_str(),
+    err = PetscViewerBinaryOpen(comm, filenameVertices.c_str(),
 				FILE_MODE_WRITE,
 				&binaryViewer);
     CHECK_PETSC_ERROR(err);
@@ -212,8 +214,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 #if 0
     int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
     int cellDepth = 0;
-    err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, 
-			((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, comm);CHECK_PETSC_ERROR(err);
     const int depth = (0 == label) ? cellDepth : labelId;
     const std::string labelName = (0 == label) ?
       ((sieveMesh->hasLabel("censored depth")) ?
@@ -229,8 +230,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     if (cells->size() > 0)
       numCornersLocal = sieveMesh->getNumCellCorners(*cells->begin());
     int numCorners = numCornersLocal;
-    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX,
-		     ((PetscObject) dmMesh)->comm); CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPI_INT, MPI_MAX, comm); CHECK_PETSC_ERROR(err);
 
     PylithScalar* tmpVertices = 0;
     const int ncells = cNumbering->getLocalSize();
@@ -271,7 +271,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
     }
     PetscVec elemVec;
 
-    err = VecCreateMPIWithArray(((PetscObject) dmMesh)->comm, numCorners, conesSize, PETSC_DETERMINE,
+    err = VecCreateMPIWithArray(comm, numCorners, conesSize, PETSC_DETERMINE,
                                 tmpVertices, &elemVec); CHECK_PETSC_ERROR(err);
     err = PetscObjectSetName((PetscObject) elemVec, "cells");CHECK_PETSC_ERROR(err);
 #else
@@ -295,7 +295,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
       err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
       if (numCornersLocal) break;
     }
-    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, comm);CHECK_PETSC_ERROR(err);
     if (label) {
       conesSize = 0;
       for(PetscInt cell = cStart; cell < cEnd; ++cell) {
@@ -317,7 +317,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 
     err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
     err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
-    err = VecCreate(mesh.comm(), &cellVec);CHECK_PETSC_ERROR(err);
+    err = VecCreate(comm, &cellVec);CHECK_PETSC_ERROR(err);
     err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
     err = VecSetBlockSize(cellVec, numCorners);CHECK_PETSC_ERROR(err);
     err = VecSetFromOptions(cellVec);CHECK_PETSC_ERROR(err);
@@ -351,7 +351,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
 #endif
 
     const std::string& filenameCells = _datasetFilename("cells");
-    err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, filenameCells.c_str(),
+    err = PetscViewerBinaryOpen(comm, filenameCells.c_str(),
                                 FILE_MODE_WRITE, &binaryViewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);CHECK_PETSC_ERROR(err);
     err = VecView(elemVec, binaryViewer);CHECK_PETSC_ERROR(err);
@@ -425,11 +425,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
     DM             dmMesh = mesh.dmMesh();
+    MPI_Comm       comm;
     PetscMPIInt    commRank;
     PetscErrorCode err;
 
     assert(dmMesh);
-    err = MPI_Comm_rank(((PetscObject) dmMesh)->comm, &commRank);CHECK_PETSC_ERROR(err);
+    err = PetscObjectGetComm((PetscObject) dmMesh, &comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
     field.createScatterWithBC(mesh, "", 0, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
@@ -445,7 +447,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     if (_datasets.find(field.label()) != _datasets.end()) {
       binaryViewer = _datasets[field.label()].viewer;
     } else {
-      err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm, 
+      err = PetscViewerBinaryOpen(comm, 
                                   _datasetFilename(field.label()).c_str(),
                                   FILE_MODE_WRITE, &binaryViewer);
       CHECK_PETSC_ERROR(err);
@@ -481,8 +483,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeVertexField(
     }
     int fiberDimLocal = dof;
     int fiberDim = 0;
-    err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
-    err = MPI_Allreduce(&numLocalVertices, &numVertices, 1, MPI_INT, MPI_SUM, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Allreduce(&numLocalVertices, &numVertices, 1, MPI_INT, MPI_SUM, comm);CHECK_PETSC_ERROR(err);
     assert(fiberDim > 0);assert(numVertices > 0);
 
     if (!commRank) {
@@ -560,11 +562,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
 
     DM             dmMesh = field.mesh().dmMesh();
+    MPI_Comm       comm;
     PetscMPIInt    commRank;
     PetscErrorCode err;
 
     assert(dmMesh);
-    err = MPI_Comm_rank(((PetscObject) dmMesh)->comm, &commRank);CHECK_PETSC_ERROR(err);
+    err = PetscObjectGetComm((PetscObject) dmMesh, &comm);CHECK_PETSC_ERROR(err);
+    err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
     field.createScatterWithBC(field.mesh(), label ? label : "", labelId, context);
     field.scatterSectionToVector(context);
     PetscVec vector = field.vector(context);
@@ -580,7 +584,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     if (_datasets.find(field.label()) != _datasets.end()) {
       binaryViewer = _datasets[field.label()].viewer;
     } else {
-      err = PetscViewerBinaryOpen(((PetscObject) dmMesh)->comm,
+      err = PetscViewerBinaryOpen(comm,
                                   _datasetFilename(field.label()).c_str(),
                                   FILE_MODE_WRITE, &binaryViewer);
       CHECK_PETSC_ERROR(err);
@@ -635,8 +639,8 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
     }
     int fiberDimLocal = dof;
     int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, ((PetscObject) dmMesh)->comm);
-    err = MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, ((PetscObject) dmMesh)->comm);CHECK_PETSC_ERROR(err);
+    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);
+    err = MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm);CHECK_PETSC_ERROR(err);
     assert(fiberDim > 0);assert(numCells > 0);
 
     if (!commRank) {

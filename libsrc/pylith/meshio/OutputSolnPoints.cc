@@ -109,10 +109,12 @@ pylith::meshio::OutputSolnPoints::setupInterpolator(topology::Mesh* mesh,
 
   // Setup interpolator object
   DM dm = _mesh->dmMesh();
+  MPI_Comm       comm;
   PetscErrorCode err = 0;
 
   assert(dm);
-  err = DMInterpolationCreate(((PetscObject) dm)->comm, &_interpolator);CHECK_PETSC_ERROR(err);
+  err = PetscObjectGetComm((PetscObject) dm, &comm);CHECK_PETSC_ERROR(err);
+  err = DMInterpolationCreate(comm, &_interpolator);CHECK_PETSC_ERROR(err);
   
   err = DMInterpolationSetDim(_interpolator, spaceDim);CHECK_PETSC_ERROR(err);
 
