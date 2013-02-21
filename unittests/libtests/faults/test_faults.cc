@@ -38,8 +38,7 @@ main(int argc,
 
   try {
     // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, 
-					 PETSC_NULL, PETSC_NULL);
+    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);
     CHKERRQ(err);
 
     // Initialize Python (to eliminate need to initialize when

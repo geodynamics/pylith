@@ -443,10 +443,11 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
     const PylithScalar tolerance = 1.0e-06;
 
     for (int i=0; i < propertiesSize; ++i) {
-      if (fabs(propertiesE[i]) > tolerance)
+      if (fabs(propertiesE[i]) > tolerance) {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i], tolerance);
-      else
+      } else {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
+      } // if/else
     } // for
   } // for
 } // testDBToProperties
@@ -673,10 +674,11 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
     
     const PylithScalar tolerance = 1.0e-06;
 
-    if (0.0 != frictionE)
+    if (0.0 != frictionE) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, friction/frictionE, tolerance);
-    else
+    } else {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, friction, tolerance);
+    } // if/else
   } // for
 } // _testCalcFriction
 

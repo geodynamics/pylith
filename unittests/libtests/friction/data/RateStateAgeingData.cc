@@ -129,8 +129,8 @@ const PylithScalar pylith::friction::RateStateAgeingData::_stateVarsNondim[] = {
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_friction[] = {
-  1000001.285949009547604,
-  1000001.164378652801948,
+  11.285949009547604e+5,
+  11.164378652801948e+5,
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_slip[] = {
@@ -144,8 +144,8 @@ const PylithScalar pylith::friction::RateStateAgeingData::_slipRate[] = {
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_normalTraction[] = {
-  -2.2,
-  -2.3,
+  -2.2e+5,
+  -2.3e+5,
 };
 
 const PylithScalar pylith::friction::RateStateAgeingData::_stateVarsUpdated[] = {
