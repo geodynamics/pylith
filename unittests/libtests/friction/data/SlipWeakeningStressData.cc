@@ -136,8 +136,8 @@ const PylithScalar pylith::friction::SlipWeakeningStressData::_slipRate[] = {
 };
 
 const PylithScalar pylith::friction::SlipWeakeningStressData::_normalTraction[] = {
-  -2.2,
-  -2.3,
+  -2.2e+5,
+  -2.3e+5,
 };
 
 const PylithScalar pylith::friction::SlipWeakeningStressData::_stateVarsUpdated[] = {

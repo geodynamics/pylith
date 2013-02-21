@@ -40,8 +40,8 @@ ALE::MeshRefiner<cellrefiner_type>::MeshRefiner(void) :
 template<typename cellrefiner_type>
 ALE::MeshRefiner<cellrefiner_type>::~MeshRefiner(void)
 { // destructor
-  delete _orderOldMesh; _orderOldMesh = PETSC_NULL;
-  delete _orderNewMesh; _orderNewMesh = PETSC_NULL;
+  delete _orderOldMesh; _orderOldMesh = NULL;
+  delete _orderNewMesh; _orderNewMesh = NULL;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -792,10 +792,10 @@ ALE::MeshRefiner<cellrefiner_type>::_calcNewOverlap(const Obj<mesh_type>& newMes
   }
 #endif
   newMesh->setCalculatedOverlap(true);
-  delete [] oldVerticesStartNormalP; oldVerticesStartNormalP = PETSC_NULL;
-  delete [] oldVerticesStartFaultP;  oldVerticesStartFaultP  = PETSC_NULL;
-  delete [] newVerticesStartNormalP; newVerticesStartNormalP = PETSC_NULL;
-  delete [] newVerticesStartFaultP;  newVerticesStartFaultP  = PETSC_NULL;
+  delete [] oldVerticesStartNormalP; oldVerticesStartNormalP = NULL;
+  delete [] oldVerticesStartFaultP;  oldVerticesStartFaultP  = NULL;
+  delete [] newVerticesStartNormalP; newVerticesStartNormalP = NULL;
+  delete [] newVerticesStartFaultP;  newVerticesStartFaultP  = NULL;
 
   refiner.overlapAddNewVertices(newMesh, *_orderNewMesh, mesh, *_orderOldMesh);
   // We have to do flexible assembly since we add the new vertices separately

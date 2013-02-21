@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "SlipWeakeningTime.hh" // implementation of object methods
+#include "SlipWeakeningTimeStable.hh" // implementation of object methods
 
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
@@ -35,36 +35,38 @@
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace friction {
-    namespace _SlipWeakeningTime {
+    namespace _SlipWeakeningTimeStable {
 
       // Number of physical properties.
-      const int numProperties = 5;
+      const int numProperties = 6;
 
       // Physical properties.
-      const pylith::materials::Metadata::ParamDescription properties[5] = {
+      const pylith::materials::Metadata::ParamDescription properties[6] = {
 	{ "static_coefficient", 1, pylith::topology::FieldBase::SCALAR },
 	{ "dynamic_coefficient", 1, pylith::topology::FieldBase::SCALAR },
         { "slip_weakening_parameter", 1, pylith::topology::FieldBase::SCALAR },
 	{ "cohesion", 1, pylith::topology::FieldBase::SCALAR },
-	{ "weakening_time", 1, pylith::topology::FieldBase::SCALAR },
+	{ "time_weakening_time", 1, pylith::topology::FieldBase::SCALAR },
+	{ "time_weakening_parameter", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Number of State Variables.
       const int numStateVars = 2;
 
       // State Variables.
-      const pylith::materials::Metadata::ParamDescription stateVars[] = {
+      const pylith::materials::Metadata::ParamDescription stateVars[2] = {
 	{ "cumulative_slip", 1, pylith::topology::FieldBase::SCALAR },
 	{ "previous_slip", 1, pylith::topology::FieldBase::SCALAR },
       };
 
       // Values expected in spatial database
-      const int numDBProperties = 5;
-      const char* dbProperties[5] = { "static-coefficient",
+      const int numDBProperties = 6;
+      const char* dbProperties[6] = { "static-coefficient",
 				      "dynamic-coefficient",
 				      "slip-weakening-parameter",
 				      "cohesion",
-				      "weakening-time",
+				      "time-weakening-time",
+				      "time-weakening-parameter",
       };
 
       const int numDBStateVars = 2;
@@ -72,78 +74,83 @@ namespace pylith {
 				     "previous-slip",
       };      
       
-    } // _SlipWeakeningTime
+    } // _SlipWeakeningTimeStable
   } // friction
 } // pylith
 
 // Indices of physical properties
-const int pylith::friction::SlipWeakeningTime::p_coefS = 0;
-const int pylith::friction::SlipWeakeningTime::p_coefD = 
-  pylith::friction::SlipWeakeningTime::p_coefS + 1;
-const int pylith::friction::SlipWeakeningTime::p_d0 = 
-  pylith::friction::SlipWeakeningTime::p_coefD + 1;
-const int pylith::friction::SlipWeakeningTime::p_cohesion =
-  pylith::friction::SlipWeakeningTime::p_d0 + 1;
-const int pylith::friction::SlipWeakeningTime::p_weaktime =
-  pylith::friction::SlipWeakeningTime::p_cohesion + 1;
+const int pylith::friction::SlipWeakeningTimeStable::p_coefS = 0;
+const int pylith::friction::SlipWeakeningTimeStable::p_coefD = 
+  pylith::friction::SlipWeakeningTimeStable::p_coefS + 1;
+const int pylith::friction::SlipWeakeningTimeStable::p_d0 = 
+  pylith::friction::SlipWeakeningTimeStable::p_coefD + 1;
+const int pylith::friction::SlipWeakeningTimeStable::p_cohesion =
+  pylith::friction::SlipWeakeningTimeStable::p_d0 + 1;
+const int pylith::friction::SlipWeakeningTimeStable::p_weaktime =
+  pylith::friction::SlipWeakeningTimeStable::p_cohesion + 1;
+const int pylith::friction::SlipWeakeningTimeStable::p_t0 =
+  pylith::friction::SlipWeakeningTimeStable::p_weaktime + 1;
 
 // Indices of database values (order must match dbProperties)
-const int pylith::friction::SlipWeakeningTime::db_coefS = 0;
-const int pylith::friction::SlipWeakeningTime::db_coefD = 
-  pylith::friction::SlipWeakeningTime::db_coefS + 1;
-const int pylith::friction::SlipWeakeningTime::db_d0 = 
-  pylith::friction::SlipWeakeningTime::db_coefD + 1;
-const int pylith::friction::SlipWeakeningTime::db_cohesion =
-  pylith::friction::SlipWeakeningTime::db_d0 + 1;
-const int pylith::friction::SlipWeakeningTime::db_weaktime =
-  pylith::friction::SlipWeakeningTime::db_cohesion + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_coefS = 0;
+const int pylith::friction::SlipWeakeningTimeStable::db_coefD = 
+  pylith::friction::SlipWeakeningTimeStable::db_coefS + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_d0 = 
+  pylith::friction::SlipWeakeningTimeStable::db_coefD + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_cohesion =
+  pylith::friction::SlipWeakeningTimeStable::db_d0 + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_weaktime =
+  pylith::friction::SlipWeakeningTimeStable::db_cohesion + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_t0 =
+  pylith::friction::SlipWeakeningTimeStable::db_weaktime + 1;
 
 // Indices of state variables.
-const int pylith::friction::SlipWeakeningTime::s_slipCum = 0;
-const int pylith::friction::SlipWeakeningTime::s_slipPrev = 
-  pylith::friction::SlipWeakeningTime::s_slipCum + 1;
+const int pylith::friction::SlipWeakeningTimeStable::s_slipCum = 0;
+const int pylith::friction::SlipWeakeningTimeStable::s_slipPrev = 
+  pylith::friction::SlipWeakeningTimeStable::s_slipCum + 1;
 
 // Indices of database values (order must match dbProperties)
-const int pylith::friction::SlipWeakeningTime::db_slipCum = 0;
-const int pylith::friction::SlipWeakeningTime::db_slipPrev = 
-  pylith::friction::SlipWeakeningTime::db_slipCum + 1;
+const int pylith::friction::SlipWeakeningTimeStable::db_slipCum = 0;
+const int pylith::friction::SlipWeakeningTimeStable::db_slipPrev = 
+  pylith::friction::SlipWeakeningTimeStable::db_slipCum + 1;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::friction::SlipWeakeningTime::SlipWeakeningTime(void) :
-  FrictionModel(materials::Metadata(_SlipWeakeningTime::properties,
-				    _SlipWeakeningTime::numProperties,
-				    _SlipWeakeningTime::dbProperties,
-				    _SlipWeakeningTime::numDBProperties,
-				    _SlipWeakeningTime::stateVars,
-				    _SlipWeakeningTime::numStateVars,
-				    _SlipWeakeningTime::dbStateVars,
-				    _SlipWeakeningTime::numDBStateVars))
+pylith::friction::SlipWeakeningTimeStable::SlipWeakeningTimeStable(void) :
+  FrictionModel(materials::Metadata(_SlipWeakeningTimeStable::properties,
+				    _SlipWeakeningTimeStable::numProperties,
+				    _SlipWeakeningTimeStable::dbProperties,
+				    _SlipWeakeningTimeStable::numDBProperties,
+				    _SlipWeakeningTimeStable::stateVars,
+				    _SlipWeakeningTimeStable::numStateVars,
+				    _SlipWeakeningTimeStable::dbStateVars,
+				    _SlipWeakeningTimeStable::numDBStateVars))
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::friction::SlipWeakeningTime::~SlipWeakeningTime(void)
+pylith::friction::SlipWeakeningTimeStable::~SlipWeakeningTimeStable(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Compute properties from values in spatial database.
 void
-pylith::friction::SlipWeakeningTime::_dbToProperties(
+pylith::friction::SlipWeakeningTimeStable::_dbToProperties(
 					   PylithScalar* const propValues,
 					   const scalar_array& dbValues) const
 { // _dbToProperties
   assert(propValues);
   const int numDBValues = dbValues.size();
-  assert(_SlipWeakeningTime::numDBProperties == numDBValues);
+  assert(_SlipWeakeningTimeStable::numDBProperties == numDBValues);
 
   const PylithScalar db_static = dbValues[db_coefS];
   const PylithScalar db_dynamic = dbValues[db_coefD];
   const PylithScalar db_do = dbValues[db_d0];
   const PylithScalar db_c = dbValues[db_cohesion];
-  const PylithScalar db_t = dbValues[db_weaktime];
+  const PylithScalar db_tw = dbValues[db_weaktime];
+  const PylithScalar db_tp = dbValues[db_t0];
 
   if (db_static < 0.0) {
     std::ostringstream msg;
@@ -163,17 +170,22 @@ pylith::friction::SlipWeakeningTime::_dbToProperties(
 
   if (db_d0 <= 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned nonpositive value for slip weakening parameter "
-	<< "of friction.\n"
-	<< "slip weakening parameter of friction: " << db_d0 << "\n";
+    msg << "Spatial database returned nonpositive value for slip weakening parameter.\n"
+	<< "slip weakening parameter: " << db_d0 << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  if (db_t < 0.0) {
+  if (db_tw < 0.0) {
     std::ostringstream msg;
-    msg << "Spatial database returned negative value for weakening time "
-	<< "of friction.\n"
-	<< "weakening time of friction: " << db_t << "\n";
+    msg << "Spatial database returned negative value for time-weakening time.\n"
+	<< "weakening time: " << db_tw << "\n";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  if (db_t0 <= 0.0) {
+    std::ostringstream msg;
+    msg << "Spatial database returned nonpositive value for time-weakening paramter.\n"
+	<< "time-weakening parameter: " << db_t0 << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
@@ -181,19 +193,20 @@ pylith::friction::SlipWeakeningTime::_dbToProperties(
   propValues[p_coefD] = db_dynamic;
   propValues[p_d0] = db_do;
   propValues[p_cohesion] = db_c;
-  propValues[p_weaktime] = db_t;
+  propValues[p_weaktime] = db_tw;
+  propValues[p_t0] = db_tp;
 
 } // _dbToProperties
 
 // ----------------------------------------------------------------------
 // Nondimensionalize properties.
 void
-pylith::friction::SlipWeakeningTime::_nondimProperties(PylithScalar* const values,
+pylith::friction::SlipWeakeningTimeStable::_nondimProperties(PylithScalar* const values,
 						    const int nvalues) const
 { // _nondimProperties
   assert(_normalizer);
   assert(values);
-  assert(nvalues == _SlipWeakeningTime::numProperties);
+  assert(nvalues == _SlipWeakeningTimeStable::numProperties);
 
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar pressureScale = _normalizer->pressureScale();
@@ -202,17 +215,18 @@ pylith::friction::SlipWeakeningTime::_nondimProperties(PylithScalar* const value
   values[p_d0] /= lengthScale;
   values[p_cohesion] /= pressureScale;
   values[p_weaktime] /= timeScale;
+  values[p_t0] /= timeScale;
 } // _nondimProperties
 
 // ----------------------------------------------------------------------
 // Dimensionalize properties.
 void
-pylith::friction::SlipWeakeningTime::_dimProperties(PylithScalar* const values,
+pylith::friction::SlipWeakeningTimeStable::_dimProperties(PylithScalar* const values,
 						      const int nvalues) const
 { // _dimProperties
   assert(_normalizer);
   assert(values);
-  assert(nvalues == _SlipWeakeningTime::numProperties);
+  assert(nvalues == _SlipWeakeningTimeStable::numProperties);
 
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar pressureScale = _normalizer->pressureScale();
@@ -221,18 +235,19 @@ pylith::friction::SlipWeakeningTime::_dimProperties(PylithScalar* const values,
   values[p_d0] *= lengthScale;
   values[p_cohesion] *= pressureScale;
   values[p_weaktime] *= timeScale;
+  values[p_t0] *= timeScale;
 } // _dimProperties
 
 // ----------------------------------------------------------------------
 // Compute state variables from values in spatial database.
 void
-pylith::friction::SlipWeakeningTime::_dbToStateVars(
+pylith::friction::SlipWeakeningTimeStable::_dbToStateVars(
 					   PylithScalar* const stateValues,
 					   const scalar_array& dbValues) const
 { // _dbToStateVars
   assert(stateValues);
   const int numDBValues = dbValues.size();
-  assert(_SlipWeakeningTime::numDBStateVars == numDBValues);
+  assert(_SlipWeakeningTimeStable::numDBStateVars == numDBValues);
 
   const PylithScalar cumulativeSlip = dbValues[db_slipCum];
   const PylithScalar previousSlip = dbValues[db_slipPrev];
@@ -244,12 +259,12 @@ pylith::friction::SlipWeakeningTime::_dbToStateVars(
 // ----------------------------------------------------------------------
 // Nondimensionalize state variables.
 void
-pylith::friction::SlipWeakeningTime::_nondimStateVars(PylithScalar* const values,
+pylith::friction::SlipWeakeningTimeStable::_nondimStateVars(PylithScalar* const values,
 						  const int nvalues) const
 { // _nondimStateVars
   assert(_normalizer);
   assert(values);
-  assert(nvalues == _SlipWeakeningTime::numStateVars);
+  assert(nvalues == _SlipWeakeningTimeStable::numStateVars);
 
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
@@ -260,12 +275,12 @@ pylith::friction::SlipWeakeningTime::_nondimStateVars(PylithScalar* const values
 // ----------------------------------------------------------------------
 // Dimensionalize state variables.
 void
-pylith::friction::SlipWeakeningTime::_dimStateVars(PylithScalar* const values,
+pylith::friction::SlipWeakeningTimeStable::_dimStateVars(PylithScalar* const values,
 					       const int nvalues) const
 { // _dimStateVars
   assert(_normalizer);
   assert(values);
-  assert(nvalues == _SlipWeakeningTime::numStateVars);
+  assert(nvalues == _SlipWeakeningTimeStable::numStateVars);
 
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
@@ -276,7 +291,7 @@ pylith::friction::SlipWeakeningTime::_dimStateVars(PylithScalar* const values,
 // ----------------------------------------------------------------------
 // Compute friction from properties and state variables.
 PylithScalar
-pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
+pylith::friction::SlipWeakeningTimeStable::_calcFriction(const PylithScalar t,
 						   const PylithScalar slip,
 						   const PylithScalar slipRate,
 						   const PylithScalar normalTraction,
@@ -286,9 +301,9 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
 						   const int numStateVars)
 { // _calcFriction
   assert(properties);
-  assert(_SlipWeakeningTime::numProperties == numProperties);
+  assert(_SlipWeakeningTimeStable::numProperties == numProperties);
   assert(stateVars);
-  assert(_SlipWeakeningTime::numStateVars == numStateVars);
+  assert(_SlipWeakeningTimeStable::numStateVars == numStateVars);
 
   PylithScalar friction = 0.0;
   PylithScalar mu_f = 0.0;
@@ -297,13 +312,14 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
     const PylithScalar slipPrev = stateVars[s_slipPrev];
     const PylithScalar slipCum = stateVars[s_slipCum] + fabs(slip - slipPrev);
 
-    if (slipCum < properties[p_d0] && t < properties[p_weaktime]) {
-	// if/else linear slip-weakening form of mu_f 
-	mu_f = properties[p_coefS] - (properties[p_coefS] - properties[p_coefD]) * 
-	  slipCum / properties[p_d0];
-      } else {
-	mu_f = properties[p_coefD];
-      } // if/else
+    const PylithScalar slipWeak = (slipCum >= properties[p_d0]) ? 1.0 : slipCum / properties[p_d0];
+    PylithScalar timeWeak = 1.0;
+    if (t < properties[p_weaktime]) {
+      timeWeak = 0.0;
+    } else if (t < properties[p_weaktime] + properties[p_t0]) {
+      timeWeak = (t - properties[p_weaktime]) / properties[p_t0];
+    } // if/else
+    mu_f = properties[p_coefS] - (properties[p_coefS] - properties[p_coefD]) * std::max(slipWeak, timeWeak);
     friction = - mu_f * normalTraction + properties[p_cohesion];
   } // if
 
@@ -315,7 +331,7 @@ pylith::friction::SlipWeakeningTime::_calcFriction(const PylithScalar t,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::friction::SlipWeakeningTime::_updateStateVars(const PylithScalar t,
+pylith::friction::SlipWeakeningTimeStable::_updateStateVars(const PylithScalar t,
 						      const PylithScalar slip,
 						      const PylithScalar slipRate,
 						      const PylithScalar normalTraction,
@@ -325,9 +341,9 @@ pylith::friction::SlipWeakeningTime::_updateStateVars(const PylithScalar t,
 						      const int numProperties)
 { // _updateStateVars
   assert(properties);
-  assert(_SlipWeakeningTime::numProperties == numProperties);
+  assert(_SlipWeakeningTimeStable::numProperties == numProperties);
   assert(stateVars);
-  assert(_SlipWeakeningTime::numStateVars == numStateVars);
+  assert(_SlipWeakeningTimeStable::numStateVars == numStateVars);
 
   const PylithScalar tolerance = 1.0e-12;
   if (slipRate > tolerance) {
