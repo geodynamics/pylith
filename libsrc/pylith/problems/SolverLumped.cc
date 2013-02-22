@@ -89,47 +89,61 @@ pylith::problems::SolverLumped::solve(
   const int spaceDim = cs->spaceDim();
   
   // Get mesh vertices.
-  const ALE::Obj<SieveMesh>& sieveMesh = solution->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = 
-    vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  DM             dmMesh = solution->mesh().dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
+
+  assert(dmMesh);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   
   // Get sections.
-  scalar_array solutionVertex(spaceDim);
-  const ALE::Obj<RealSection>& solutionSection = solution->section();
-  assert(!solutionSection.isNull());
+  PetscSection solutionSection = solution->petscSection();
+  Vec          solutionVec     = solution->localVector();
+  PetscScalar *solutionArray;
+  assert(solutionSection);assert(solutionVec);
 	 
-  const ALE::Obj<RealSection>& jacobianSection = jacobian.section();
-  assert(!jacobianSection.isNull());
+  PetscSection jacobianSection = jacobian.petscSection();
+  Vec          jacobianVec     = jacobian.localVector();
+  PetscScalar *jacobianArray;
+  assert(jacobianSection);assert(jacobianVec);
 
-  const ALE::Obj<RealSection>& residualSection = residual.section();
-  assert(!residualSection.isNull());
+  PetscSection residualSection = residual.petscSection();
+  Vec          residualVec     = residual.localVector();
+  PetscScalar *residualArray;
+  assert(residualSection);assert(residualVec);
   
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(solveEvent);
 
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
-       v_iter != verticesEnd;
-       ++v_iter) {
-    assert(spaceDim == jacobianSection->getFiberDimension(*v_iter));
-    const PylithScalar* jacobianVertex = jacobianSection->restrictPoint(*v_iter);
+  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt jdof, joff;
 
-    assert(spaceDim == residualSection->getFiberDimension(*v_iter));
-    const PylithScalar* residualVertex = residualSection->restrictPoint(*v_iter);
+    err = PetscSectionGetDof(jacobianSection, v, &jdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(jacobianSection, v, &joff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == jdof);
+    PetscInt rdof, roff;
+
+    err = PetscSectionGetDof(residualSection, v, &rdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(residualSection, v, &roff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == rdof);
+    PetscInt sdof, soff;
+
+    err = PetscSectionGetDof(solutionSection, v, &sdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(solutionSection, v, &soff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == sdof);
 
     for (int i=0; i < spaceDim; ++i) {
-      assert(jacobianVertex[i] != 0.0);
-      solutionVertex[i] = residualVertex[i] / jacobianVertex[i];
+      assert(jacobianArray[joff+i] != 0.0);
+      solutionArray[soff+i] = residualArray[roff+i] / jacobianArray[joff+i];
     } // for
-    
-    assert(solutionSection->getFiberDimension(*v_iter) == spaceDim);
-    solutionSection->updatePoint(*v_iter, &solutionVertex[0]);
   } // for
-  PetscLogFlops(vertices->size() * spaceDim);
+  PetscLogFlops((vEnd - vStart) * spaceDim);
+  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(adjustEvent);
 

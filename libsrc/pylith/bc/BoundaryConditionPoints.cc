@@ -70,29 +70,30 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("BoundaryConditions");
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
+  DM              dmMesh = mesh.dmMesh();
+  DMLabel         label;
+  IS              pointIS;
+  const PetscInt *points;
+  PetscInt        numPoints;
+  PetscBool       has;
+  PetscErrorCode  err;
 
-  if (!sieveMesh->hasIntSection(_label)) {
+  assert(dmMesh);
+  err = DMPlexHasLabel(dmMesh, _label.c_str(), &has);CHECK_PETSC_ERROR(err);
+  if (!has) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << _label << "' in mesh.";
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<SieveMesh::int_section_type>& groupField = 
-    sieveMesh->getIntSection(_label);
-  assert(!groupField.isNull());
-  const chart_type& chart = groupField->getChart();
-  const chart_type::const_iterator& chartEnd = chart.end();
-  const int numPoints = groupField->size();
+  err = DMPlexGetLabel(dmMesh, _label.c_str(), &label);CHECK_PETSC_ERROR(err);
+  err = DMLabelGetStratumIS(label, 1, &pointIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(pointIS, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
   _points.resize(numPoints);
-  int i = 0;
-  for(chart_type::const_iterator c_iter = chart.begin();
-      c_iter != chartEnd;
-      ++c_iter)
-    if (groupField->getFiberDimension(*c_iter))
-      _points[i++] = *c_iter;
-
+  for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
+  err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
   logger.stagePop();
 } // _getPoints
 

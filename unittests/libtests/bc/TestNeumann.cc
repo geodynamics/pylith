@@ -46,11 +46,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumann );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
-
-typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
 
 // ----------------------------------------------------------------------
 namespace pylith {

@@ -238,13 +238,10 @@ pylith::topology::FieldsNew<mesh_type>::get(const char* name)
 
   if (!f_iter->second.field) {
     delete f_iter->second.field; f_iter->second.field = 0;
-    assert(!_section.isNull());
-    f_iter->second.field = 
-      new Field<mesh_type>(_mesh, _section->getFibration(fibration), 
-			   f_iter->second.metadata);
+    f_iter->second.field = new Field<mesh_type>(_mesh, f_iter->second.metadata);
+      //new Field<mesh_type>(_mesh, _section->getFibration(fibration), f_iter->second.metadata);
     assert(0 != f_iter->second.field);
   } // if
-
   return *f_iter->second.field;
 } // get
 

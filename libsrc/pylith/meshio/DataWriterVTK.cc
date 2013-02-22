@@ -219,60 +219,19 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
-    DM complexMesh = mesh.dmMesh();
+    DM dmMesh = mesh.dmMesh();
+    assert(dmMesh);
 
-    if (complexMesh) {
-      /* DMPlex */
-      Vec v = field.localVector(); /* Could check the field.petscSection() matches the default section from VecGetDM() */
-      assert(v);
+    /* DMPlex */
+    Vec v = field.localVector(); /* Could check the field.petscSection() matches the default section from VecGetDM() */
+    assert(v);
 
-      /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
-      PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+    /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
+    PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
 
-      _wroteVertexHeader = true;
-    } else {
-    int rank = 0;
-    MPI_Comm_rank(field.mesh().comm(), &rank);
-
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-
-    const std::string labelName = 
-      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-    const ALE::Obj<typename SieveMesh::numbering_type>& numbering =
-      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, 0);
-    assert(!numbering.isNull());
-
-    PetscSection sectionP = field.petscSection();
-    PetscInt     dof      = 0;
-
-    assert(sectionP);
-    assert(!sieveMesh->getLabelStratum(labelName, 0).isNull());
-    if (sieveMesh->getLabelStratum(labelName, 0)->size() > 0) {
-      PetscErrorCode err = PetscSectionGetDof(sectionP, *sieveMesh->getLabelStratum(labelName, 0)->begin(), &dof);CHECK_PETSC_ERROR(err);
-    }
-    int fiberDimLocal = dof;
-    int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
-		  field.mesh().comm());
-    assert(fiberDim > 0);
-    const int enforceDim =
-      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
-
-    PetscErrorCode err = 0;
-    if (!_wroteVertexHeader) {
-      err = PetscViewerASCIIPrintf(_viewer, "POINT_DATA %d\n", 
-				   numbering->getGlobalSize());
-      CHECK_PETSC_ERROR(err);
-      _wroteVertexHeader = true;
-    } // if
-
-    err = VTKViewer::writeField(field.section(), field.label(), fiberDim, numbering,
-				_viewer, enforceDim, _precision);
-    CHECK_PETSC_ERROR(err);
-    }
+    _wroteVertexHeader = true;
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 
@@ -300,69 +259,20 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
   typedef typename field_type::Mesh::RealSection RealSection;
 
   try {
-    DM complexMesh = field.mesh().dmMesh();
+    DM dmMesh = field.mesh().dmMesh();
+    assert(dmMesh);
 
-    if (complexMesh) {
-      /* DMPlex */
-      PetscContainer c;
-      PetscSection   s = field.petscSection();
-      Vec            v = field.localVector();
-      assert(s);assert(v);
+    /* DMPlex */
+    PetscSection   s = field.petscSection();
+    Vec            v = field.localVector();
+    assert(s);assert(v);
 
-      /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
-      PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-      PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) complexMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
-      err = PetscContainerCreate(((PetscObject) v)->comm, &c);CHECK_PETSC_ERROR(err);
-      err = PetscContainerSetPointer(c, s);CHECK_PETSC_ERROR(err);
-      err = PetscObjectCompose((PetscObject) v, "section", (PetscObject) c);CHECK_PETSC_ERROR(err);
-      err = PetscContainerDestroy(&c);CHECK_PETSC_ERROR(err);
+    /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
+    PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
+    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
 
-      _wroteCellHeader = true;
-    } else {
-    PetscErrorCode err = 0;
-
-    // Correctly handle boundary and fault meshes
-    //   Cannot just use mesh->depth() because boundaries report the wrong thing
-    const ALE::Obj<SieveMesh>& sieveMesh = field.mesh().sieveMesh();
-    assert(!sieveMesh.isNull());
-    int cellDepthLocal = (sieveMesh->depth() == -1) ? -1 : 1;
-    int cellDepth = 0;
-    err = MPI_Allreduce(&cellDepthLocal, &cellDepth, 1, MPI_INT, MPI_MAX, 
-			sieveMesh->comm());CHECK_PETSC_ERROR(err);
-    const int depth = (!label) ? cellDepth : labelId;
-    const std::string labelName = (!label) ?
-      ((sieveMesh->hasLabel("censored depth")) ?
-       "censored depth" : "depth") : label;
-    assert(!sieveMesh->getFactory().isNull());
-    const ALE::Obj<typename SieveMesh::numbering_type>& numbering = 
-      sieveMesh->getFactory()->getNumbering(sieveMesh, labelName, depth);
-    assert(!numbering.isNull());
-    const ALE::Obj<RealSection>& section = field.section();
-    assert(!section.isNull());
-
-    assert(!sieveMesh->getLabelStratum(labelName, depth).isNull());
-    int fiberDimLocal = 
-      (sieveMesh->getLabelStratum(labelName, depth)->size() > 0) ? 
-      section->getFiberDimension(*sieveMesh->getLabelStratum(labelName, depth)->begin()) : 0;
-    int fiberDim = 0;
-    MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX,
-		  field.mesh().comm());
-    assert(fiberDim > 0);
-
-    const int enforceDim =
-      (field.vectorFieldType() != topology::FieldBase::VECTOR) ? fiberDim : 3;
-
-    if (!_wroteCellHeader) {
-      err = PetscViewerASCIIPrintf(_viewer, "CELL_DATA %d\n", 
-				   numbering->getGlobalSize());
-      CHECK_PETSC_ERROR(err);
-      _wroteCellHeader = true;
-    } // if
-
-    VTKViewer::writeField(section, field.label(), fiberDim, numbering,
-			  _viewer, enforceDim, _precision);
-    }
+    _wroteCellHeader = true;
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << field.label() << "' at time " 

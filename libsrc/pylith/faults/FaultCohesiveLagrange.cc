@@ -50,11 +50,7 @@
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
-typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PylithInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -108,20 +104,17 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   logger.stagePush("FaultFields");
 
   // Allocate dispRel field
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices =
-      faultSieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
   _fields->add("relative disp", "relative_disp");
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
-  dispRel.newSection(vertices, cs->spaceDim());
+  dispRel.newSection(topology::FieldBase::VERTICES_FIELD, cs->spaceDim());
   dispRel.allocate();
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
 
   logger.stagePop();
 
+  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
+  assert(!faultSieveMesh.isNull());
   const ALE::Obj<SieveSubMesh::label_sequence>& cells =
       faultSieveMesh->heightStratum(0);
   assert(!cells.isNull());

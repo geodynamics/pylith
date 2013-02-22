@@ -29,8 +29,6 @@
 #include "faultsfwd.hh" // forward declarations
 #include "pylith/bc/TimeDependent.hh" // ISA TimeDependent
 
-#include "pylith/topology/topologyfwd.hh" // HOLSA FieldsNew
-
 #include "spatialdata/units/unitsfwd.hh" // USES Nondimensional
 
 // TractPerturbation -----------------------------------------------------------

@@ -263,6 +263,149 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
 } // computeGeometry
 
 // ----------------------------------------------------------------------
+// Compute geometric quantities for each cell.
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
+       const mesh_type& mesh,
+       PetscInt cStart, PetscInt cEnd)
+{ // computeGeometry
+  assert(0 != _engine);
+
+  const char* loggingStage = "Quadrature";
+  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
+  logger.stagePush(loggingStage);
+
+  delete _geometryFields;
+  _geometryFields = new topology::Fields<topology::Field<mesh_type> >;
+
+  // Allocate field and cell buffer for quadrature points
+  _geometryFields->add("quadrature points", "quadrature_points");
+  topology::Field<mesh_type>& quadPtsField = 
+    _geometryFields->get("quadrature points");
+  int fiberDim = _numQuadPts * _spaceDim;
+  quadPtsField.newSection(cStart, cEnd, fiberDim);
+  quadPtsField.allocate();
+
+  // Allocate field and cell buffer for Jacobian at quadrature points
+  std::cout << "Jacobian: cell dim: " << _cellDim << std::endl;
+  _geometryFields->add("jacobian", "jacobian");
+  topology::Field<mesh_type>& jacobianField = 
+    _geometryFields->get("jacobian");
+  fiberDim = (_cellDim > 0) ?
+    _numQuadPts * _cellDim * _spaceDim :
+    _numQuadPts * 1 * _spaceDim;
+  jacobianField->newSection(cStart, cEnd, fiberDim);
+  jacobianField->allocate();
+  
+  // Allocate field and cell buffer for determinant of Jacobian at quad pts
+  std::cout << "Jacobian det:" << std::endl;
+  _geometryFields->add("determinant(jacobian)", "determinant_jacobian");
+  topology::Field<mesh_type>& jacobianDetField = 
+    _geometryFields->get("determinant(jacobian)");
+  fiberDim = _numQuadPts;
+  jacobianDetField.newSection(cStart, cEnd, fiberDim);
+  jacobianDetField.allocate();
+  
+  // Allocate field for derivatives of basis functions at quad pts
+  std::cout << "Basis derivatives: num basis: " << _numBasis << std::endl;
+  _geometryFields->add("derivative basis functions",
+		       "derivative_basis_functions");
+  topology::Field<mesh_type>& basisDerivField = 
+    _geometryFields->get("jacobian");
+  fiberDim = _numQuadPts * _numBasis * _spaceDim;
+  basisDerivField.newSection(cStart, cEnd, fiberDim);
+  basisDerivField.allocate();
+
+  logger.stagePop();
+
+#if defined(ALE_MEM_LOGGING)
+  std::cout 
+    << loggingStage << ": " 
+    << logger.getNumAllocations(loggingStage)
+    << " allocations " << logger.getAllocationTotal(loggingStage)
+    << " bytes"
+    << std::endl
+    << loggingStage << ": "
+    << logger.getNumDeallocations(loggingStage)
+    << " deallocations " << logger.getDeallocationTotal(loggingStage)
+    << " bytes"
+    << std::endl;
+#endif
+
+  assert(0 != _geometry);
+  const int numBasis = _numBasis;
+  PetscErrorCode err;
+
+  DM           dm = mesh.dmMesh();
+  scalar_array coordinatesCell(numBasis*_spaceDim);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(dm, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dm, &coordVec);CHECK_PETSC_ERROR(err);
+
+  PetscSection quadPtsSection = quadPtsField->petscSection();
+  Vec          quadPtsVec = quadPtsField->localVector();
+  PetscScalar *quadPtsArray;
+  PetscSection jacobianSection = jacobianField->petscSection();
+  Vec          jacobianVec = jacobianField->localVector();
+  PetscScalar *jacobianArray;
+  PetscSection jacobianDetSection = jacobianDetField->petscSection();
+  Vec          jacobianDetVec = jacobianDetField->localVector();
+  PetscScalar *jacobianDetArray;
+  PetscSection basisDerivSection = basisDerivField->petscSection();
+  Vec          basisDerivVec = basisDerivField->localVector();
+  PetscScalar *basisDerivArray;
+
+  const scalar_array& quadPts = _engine->quadPts();
+  const scalar_array& jacobian = _engine->jacobian();
+  const scalar_array& jacobianDet = _engine->jacobianDet();
+  const scalar_array& basisDeriv = _engine->basisDeriv();
+
+  err = VecGetArray(quadPtsVec, &quadPtsArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
+  for (PetscInt c = cStart; c < cEnd; ++c) {
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+
+    err = DMPlexVecGetClosure(dm, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(dm, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+
+    _engine->computeGeometry(coordinatesCell, c);
+    // Update fields with cell data
+    PetscInt dof, off;
+
+    err = PetscSectionGetDof(quadPtsSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(quadPtsSection, c, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      quadPtsArray[off+d] = quadPts[d];
+    }
+    err = PetscSectionGetDof(jacobianSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(jacobianSection, c, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      jacobianArray[off+d] = jacobian[d];
+    }
+    err = PetscSectionGetDof(jacobianDetSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(jacobianDetSection, c, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      jacobianDetArray[off+d] = jacobianDet[d];
+    }
+    err = PetscSectionGetDof(basisDerivSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(basisDerivSection, c, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      basisDerivArray[off+d] = basisDeriv[d];
+    }
+  } // for
+  err = VecRestoreArray(quadPtsVec, &quadPtsArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
+} // computeGeometry
+
+// ----------------------------------------------------------------------
 template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell)

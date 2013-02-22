@@ -33,8 +33,6 @@
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 
-typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
-
 // ----------------------------------------------------------------------
 // Test copy constuctor.
 void
@@ -197,27 +195,15 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 
   // Create mesh with test cell
   topology::Mesh mesh(data.cellDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  ALE::Obj<SieveMesh::sieve_type> sieve = 
-    new SieveMesh::sieve_type(mesh.comm());
-  CPPUNIT_ASSERT(!sieve.isNull());
+  DM dmMesh;
+  PetscErrorCode err;
 
   // Cells and vertices
-  const bool interpolate = false;
-  ALE::Obj<SieveFlexMesh::sieve_type> s = 
-    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-  
-  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, numCells,
-                                              const_cast<int*>(data.cells), 
-					      data.numVertices,
-                                              interpolate, numBasis);
-  std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  sieveMesh->setSieve(sieve);
-  sieveMesh->stratify();
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 data.vertices);
+  PetscBool interpolate = PETSC_FALSE;
+
+  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(dmMesh);
+  mesh.setDMMesh(dmMesh);
 
   // Setup quadrature and compute geometry
   GeometryTri2D geometry;
@@ -230,34 +216,35 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 			data.quadWts, numQuadPts,
 			spaceDim);
 
-  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
+  PetscInt cStart, cEnd;
+
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   quadrature.initializeGeometry();
 #if defined(PRECOMPUTE_GEOMETRY)
   quadrature.computeGeometry(mesh, cells);
 #else
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<topology::Mesh::RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 #endif
 
   size_t size = 0;
 
   // Check values from computeGeometry()
   const PylithScalar tolerance = 1.0e-06;
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end(); 
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for (PetscInt c = cStart; c < cEnd; ++c) {
 #if defined(PRECOMPUTE_GEOMETRY)
-    quadrature.retrieveGeometry(*c_iter);
+    quadrature.retrieveGeometry(c);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    quadrature.computeGeometry(coordinatesCell, *c_iter);    
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    quadrature.computeGeometry(coordinatesCell, c);    
 #endif
 
     const scalar_array& quadPts = quadrature.quadPts();
