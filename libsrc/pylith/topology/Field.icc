@@ -22,29 +22,11 @@
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
-// Get Sieve section.
-template<typename mesh_type, typename section_type>
-inline
-const ALE::Obj<section_type>&
-pylith::topology::Field<mesh_type, section_type>::section(void) const {
-  std::ostringstream msg;
-
-  char name[1024];
-  PetscGetProgramName(name, 1024);
-  msg << "Sieve Sections are no longer supported: " << const_cast<Field*>(this)->_metadata["default"].label << "\n"
-	<< "  Destination section:\n"
-	<< "    space dim: " << spaceDim() << "\n"
-	<< "    vector field type: " << const_cast<Field*>(this)->_metadata["default"].vectorFieldType << "\n"
-    << "    scale: " << const_cast<Field*>(this)->_metadata["default"].scale;
-    throw std::runtime_error(msg.str());
-  return _section;
-}
-
 // Get PetscSection.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 PetscSection
-pylith::topology::Field<mesh_type, section_type>::petscSection(void) const {
+pylith::topology::Field<mesh_type>::petscSection(void) const {
   PetscSection s = PETSC_NULL;
   if (_dm) {
     PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
@@ -53,106 +35,106 @@ pylith::topology::Field<mesh_type, section_type>::petscSection(void) const {
 }
 
 // Get local vector.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 Vec
-pylith::topology::Field<mesh_type, section_type>::localVector(void) const {
+pylith::topology::Field<mesh_type>::localVector(void) const {
   return _localVec;
 }
 
 // Get global vector.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 Vec
-pylith::topology::Field<mesh_type, section_type>::globalVector(void) const {
+pylith::topology::Field<mesh_type>::globalVector(void) const {
   return _globalVec;
 }
 
 // Get mesh associated with field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 const
 mesh_type&
-pylith::topology::Field<mesh_type, section_type>::mesh(void) const {
+pylith::topology::Field<mesh_type>::mesh(void) const {
   return _mesh;
 }
 
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 DM
-pylith::topology::Field<mesh_type, section_type>::dmMesh(void) const {
+pylith::topology::Field<mesh_type>::dmMesh(void) const {
   return _dm;
 }
 
 // Get label for field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 const char*
-pylith::topology::Field<mesh_type, section_type>::label(void) const {
+pylith::topology::Field<mesh_type>::label(void) const {
   return const_cast<Field*>(this)->_metadata["default"].label.c_str();
 }
 
 // Set vector field type
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::vectorFieldType(const VectorFieldEnum value) {
+pylith::topology::Field<mesh_type>::vectorFieldType(const VectorFieldEnum value) {
   _metadata["default"].vectorFieldType = value;
 }
 
 // Set vector field type
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::vectorFieldType(const std::string& name, const VectorFieldEnum value) {
+pylith::topology::Field<mesh_type>::vectorFieldType(const std::string& name, const VectorFieldEnum value) {
   const_cast<Field *>(this)->_metadata[name].vectorFieldType = value;
 }
 
 // Get vector field type
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
-typename pylith::topology::Field<mesh_type, section_type>::VectorFieldEnum
-pylith::topology::Field<mesh_type, section_type>::vectorFieldType(void) const {
+typename pylith::topology::Field<mesh_type>::VectorFieldEnum
+pylith::topology::Field<mesh_type>::vectorFieldType(void) const {
   return const_cast<Field *>(this)->_metadata["default"].vectorFieldType;
 }
 
 // Set scale for dimensionalizing field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::scale(const PylithScalar value) {
+pylith::topology::Field<mesh_type>::scale(const PylithScalar value) {
   _metadata["default"].scale = value;
 }
 
 // Set scale for dimensionalizing field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::scale(const std::string& name, const PylithScalar value) {
+pylith::topology::Field<mesh_type>::scale(const std::string& name, const PylithScalar value) {
   _metadata[name].scale = value;
 }
 
 // Get scale for dimensionalizing field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 PylithScalar
-pylith::topology::Field<mesh_type, section_type>::scale(void) const {
+pylith::topology::Field<mesh_type>::scale(void) const {
   return const_cast<Field *>(this)->_metadata["default"].scale;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 void
-pylith::topology::Field<mesh_type, section_type>::addDimensionOkay(const bool value) {
+pylith::topology::Field<mesh_type>::addDimensionOkay(const bool value) {
   _metadata["default"].dimsOkay = value;
 }
 
 // Set flag indicating whether it is okay to dimensionalize field.
-template<typename mesh_type, typename section_type>
+template<typename mesh_type>
 inline
 bool
-pylith::topology::Field<mesh_type, section_type>::addDimensionOkay(void) const {
+pylith::topology::Field<mesh_type>::addDimensionOkay(void) const {
   return const_cast<Field*>(this)->_metadata["default"].dimsOkay;
 }
 

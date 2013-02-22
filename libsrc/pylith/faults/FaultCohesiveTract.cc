@@ -28,12 +28,6 @@
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 typedef pylith::topology::SubMesh::DomainSieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::RealSection SubRealSection;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
-typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveSubMesh::order_type,PylithInt> IndicesVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -206,13 +200,12 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const PylithScalar upDir[3]
     up[i] = upDir[i];
 
   // Get 'fault' cells.
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM       faultDMMesh = _faultMesh->dmMesh();
+  PetscInt cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(faultDMMesh);
+  err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
   // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -234,28 +227,31 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const PylithScalar upDir[3]
 
   // Get sections.
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates =
-    faultSieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // :TODO: Use spaces to create subsections like in FaultCohesiveKin.
   _fields->add("orientation", "orientation", 
 	       topology::FieldBase::CELLS_FIELD, fiberDim);
   topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
   orientation.allocate();
-  const ALE::Obj<RealSection>& orientationSection = orientation.section();
-  assert(!orientationSection.isNull());
+  PetscSection orientationSection = orientation.petscSection();
+  Vec          orientationVec     = orientation.localVector();
+  PetscScalar *orientationArray;
+  assert(orientationSection);assert(orientationVec);
 
   // Loop over cells in fault mesh and compute orientations.
-  for(SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-      c_iter != cellsEnd;
-      ++c_iter) {
-    // Compute geometry information for current cell
-    coordsVisitor.clear();
-    faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+
+    err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    _quadrature->computeGeometry(coordinatesCell, c);
 
     // Reset orientation to zero.
     orientationCell = 0.0;
@@ -279,9 +275,15 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const PylithScalar upDir[3]
       memcpy(&orientationCell[iQuad*orientationSize], 
 	     &orientationQuadPt[0], orientationSize*sizeof(PylithScalar));
     } // for
+    PetscInt dof, off;
 
-    orientationSection->updatePoint(*c_iter, &orientationCell[0]);
+    err = PetscSectionGetDof(orientationSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(orientationSection, c, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      orientationArray[off+d] = orientationCell[d];
+    }
   } // for
+  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
   // debugging
   orientation.view("FAULT ORIENTATION");
@@ -308,8 +310,10 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
     traction.allocate();
     traction.scale(pressureScale);
     traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    const ALE::Obj<RealSection>& tractionSection = traction.section();
-    assert(!tractionSection.isNull());
+    PetscSection tractionSection = traction.petscSection();
+    Vec          tractionVec     = traction.localVector();
+    PetscScalar *tractionArray;
+    assert(tractionSection);assert(tractionVec);
 
     _dbInitial->open();
     switch (spaceDim)
@@ -338,13 +342,12 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
       } // switch
 
     // Get 'fault' cells.
-    const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-    assert(!faultSieveMesh.isNull());
-    const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-      faultSieveMesh->heightStratum(0);
-    assert(!cells.isNull());
-    const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-    const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+    DM       faultDMMesh = _faultMesh->dmMesh();
+    PetscInt cStart, cEnd;
+    PetscErrorCode err;
+
+    assert(faultDMMesh);
+    err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
     const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
     const int numBasis = _quadrature->numBasis();
@@ -358,24 +361,25 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
     
     // Get sections.
     scalar_array coordinatesCell(numBasis*spaceDim);
-    const ALE::Obj<RealSection>& coordinates =
-      faultSieveMesh->getRealSection("coordinates");
-    assert(!coordinates.isNull());
-    RestrictVisitor coordsVisitor(*coordinates, 
-				  coordinatesCell.size(), &coordinatesCell[0]);
+    PetscSection coordSection;
+    Vec          coordVec;
+    err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
+    err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
     const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
     
     // Compute quadrature information
     
     // Loop over cells in boundary mesh and perform queries.
-    for (SieveSubMesh::label_sequence::iterator c_iter = cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      // Compute geometry information for current cell
-      coordsVisitor.clear();
-      faultSieveMesh->restrictClosure(*c_iter, coordsVisitor);
-      _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    err = VecGetArray(tractionVec, &tractionArray);CHECK_PETSC_ERROR(err);
+    for (PetscInt c = cStart; c < cEnd; ++c) {
+      const PetscScalar *coords = PETSC_NULL;
+      PetscInt           coordsSize;
+
+      err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+      for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+      err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+      _quadrature->computeGeometry(coordinatesCell, c);
       
       const scalar_array& quadPtsNondim = _quadrature->quadPts();
       quadPtsGlobal = quadPtsNondim;
@@ -383,29 +387,33 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
 				  lengthScale);
       
       tractionCell = 0.0;
-      for (int iQuad=0, iSpace=0; 
-	   iQuad < numQuadPts;
-	   ++iQuad, iSpace+=spaceDim) {
-	const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
-					  &quadPtsGlobal[iSpace], spaceDim, cs);
-	if (err) {
-	  std::ostringstream msg;
-	  msg << "Could not find initial tractions at (";
-	  for (int i=0; i < spaceDim; ++i)
-	    msg << " " << quadPtsGlobal[i+iSpace];
-	  msg << ") for dynamic fault interface " << label() << "\n"
-	      << "using spatial database " << _dbInitial->label() << ".";
-	  throw std::runtime_error(msg.str());
-	} // if
-	
+      for (int iQuad=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iSpace+=spaceDim) {
+        const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
+                                          &quadPtsGlobal[iSpace], spaceDim, cs);
+        if (err) {
+          std::ostringstream msg;
+          msg << "Could not find initial tractions at (";
+          for (int i=0; i < spaceDim; ++i)
+            msg << " " << quadPtsGlobal[i+iSpace];
+          msg << ") for dynamic fault interface " << label() << "\n"
+              << "using spatial database " << _dbInitial->label() << ".";
+          throw std::runtime_error(msg.str());
+        } // if
       } // for
       _normalizer->nondimensionalize(&tractionCell[0], tractionCell.size(),
-				     pressureScale);
+                                     pressureScale);
       
       // Update section
-      assert(tractionCell.size() == tractionSection->getFiberDimension(*c_iter));
-      tractionSection->updatePoint(*c_iter, &tractionCell[0]);
+      PetscInt dof, off;
+
+      err = PetscSectionGetDof(tractionSection, c, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(tractionSection, c, &off);CHECK_PETSC_ERROR(err);
+      assert(tractionCell.size() == dof);
+      for(PetscInt d = 0; d < dof; ++d) {
+        tractionArray[off+d] = tractionCell[d];
+      }
     } // for
+    err = VecRestoreArray(tractionVec, &tractionArray);CHECK_PETSC_ERROR(err);
     
     _dbInitial->close();
 

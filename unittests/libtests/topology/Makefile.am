@@ -35,7 +35,6 @@ testtopology_SOURCES = \
 	TestFieldSubMesh.cc \
 	TestFieldsMesh.cc \
 	TestFieldsSubMesh.cc \
-	TestFieldsNewMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
 	TestRefineUniform.cc \

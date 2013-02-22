@@ -122,7 +122,7 @@ namespace pylith {
        *
        * @returns Properties field.
        */
-      const pylith::topology::FieldsNew<pylith::topology::SubMesh>& fieldsPropsStateVars() const;
+      const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >& fieldsPropsStateVars() const;
 
       /** Retrieve parameters for physical properties and state variables
        * for vertex.

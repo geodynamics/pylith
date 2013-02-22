@@ -61,62 +61,85 @@ pylith::problems::Explicit::calcRateFields(void)
   const int spaceDim = cs->spaceDim();
   
   // Get sections.
-  const ALE::Obj<RealSection>& dispIncrSection = dispIncr.section();
-  assert(!dispIncrSection.isNull());
+  PetscSection dispIncrSection = dispIncr.petscSection();
+  Vec          dispIncrVec     = dispIncr.localVector();
+  PetscScalar *dispIncrArray;
+  assert(dispIncrSection);assert(dispIncrVec);
 	 
-  const ALE::Obj<RealSection>& dispTSection = _fields->get("disp(t)").section();
-  assert(!dispTSection.isNull());
+  PetscSection dispTSection = _fields->get("disp(t)").petscSection();
+  Vec          dispTVec     = _fields->get("disp(t)").localVector();
+  PetscScalar *dispTArray;
+  assert(dispTSection);assert(dispTVec);
 
-  const ALE::Obj<RealSection>& dispTmdtSection =
-    _fields->get("disp(t-dt)").section();
-  assert(!dispTmdtSection.isNull());
+  PetscSection dispTmdtSection = _fields->get("disp(t-dt)").petscSection();
+  Vec          dispTmdtVec     = _fields->get("disp(t-dt)").localVector();
+  PetscScalar *dispTmdtArray;
+  assert(dispTmdtSection);assert(dispTmdtVec);
 
-  scalar_array velVertex(spaceDim);
-  const ALE::Obj<RealSection>& velSection = 
-    _fields->get("velocity(t)").section();
-  assert(!velSection.isNull());
+  PetscSection velSection = _fields->get("velocity(t)").petscSection();
+  Vec          velVec     = _fields->get("velocity(t)").localVector();
+  PetscScalar *velArray;
+  assert(velSection);assert(velVec);
 
-  scalar_array accVertex(spaceDim);
-  const ALE::Obj<RealSection>&  accSection = 
-    _fields->get("acceleration(t)").section();
-  assert(!accSection.isNull());
+  PetscSection accSection = _fields->get("acceleration(t)").petscSection();
+  Vec          accVec     = _fields->get("acceleration(t)").localVector();
+  PetscScalar *accArray;
+  assert(accSection);assert(accVec);
 
   // Get mesh vertices.
-  const ALE::Obj<SieveMesh>& sieveMesh = dispIncr.mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  
-  for (SieveMesh::label_sequence::iterator v_iter=verticesBegin; 
-       v_iter != verticesEnd;
-       ++v_iter) {
-    assert(spaceDim == dispIncrSection->getFiberDimension(*v_iter));
-    const PylithScalar* dispIncrVertex = dispIncrSection->restrictPoint(*v_iter);
+  DM             dmMesh = dispIncr.mesh().dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
-    assert(spaceDim == dispTSection->getFiberDimension(*v_iter));
-    const PylithScalar* dispTVertex = dispTSection->restrictPoint(*v_iter);
+  assert(dmMesh);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-    assert(spaceDim == dispTmdtSection->getFiberDimension(*v_iter));
-    const PylithScalar* dispTmdtVertex = dispTmdtSection->restrictPoint(*v_iter);
+  err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispTmdtVec, &dispTmdtArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(accVec, &accArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt didof, dioff;
 
-    for (int i=0; i < spaceDim; ++i) {
-      velVertex[i] = 
-	(dispIncrVertex[i] + dispTVertex[i] - dispTmdtVertex[i]) / twodt;
-      accVertex[i] = 
-	(dispIncrVertex[i] - dispTVertex[i] + dispTmdtVertex[i]) / dt2;
+    err = PetscSectionGetDof(dispIncrSection, v, &didof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispIncrSection, v, &dioff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == didof);
+    PetscInt dtdof, dtoff;
+
+    err = PetscSectionGetDof(dispTSection, v, &dtdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTSection, v, &dtoff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == dtdof);
+    PetscInt dmdof, dmoff;
+
+    err = PetscSectionGetDof(dispTmdtSection, v, &dmdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTmdtSection, v, &dmoff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == dmdof);
+    PetscInt vdof, voff;
+
+    err = PetscSectionGetDof(velSection, v, &vdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(velSection, v, &voff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == vdof);
+    PetscInt adof, aoff;
+
+    err = PetscSectionGetDof(accSection, v, &adof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(accSection, v, &aoff);CHECK_PETSC_ERROR(err);
+    assert(spaceDim == adof);
+
+    // TODO: I am not sure why these were updateAll() before, but if BCs need to be changed, then
+    // the global update will probably need to be modified
+    for (PetscInt i = 0; i < spaceDim; ++i) {
+      velArray[voff+i] = (dispIncrArray[dioff+i] + dispTArray[dtoff+i] - dispTmdtArray[dmoff+i]) / twodt;
+      accArray[aoff+i] = (dispIncrArray[dioff+i] - dispTArray[dtoff+i] + dispTmdtArray[dmoff+i]) / dt2;
     } // for
-    
-    assert(velSection->getFiberDimension(*v_iter) == spaceDim);
-    velSection->updatePointAll(*v_iter, &velVertex[0]);
-
-    assert(accSection->getFiberDimension(*v_iter) == spaceDim);
-    accSection->updatePointAll(*v_iter, &accVertex[0]);
   } // for
+  err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispTmdtVec, &dispTmdtArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(accVec, &accArray);CHECK_PETSC_ERROR(err);
 
-  PetscLogFlops(vertices->size() * 6*spaceDim);
+  PetscLogFlops((vEnd - vStart) * 6*spaceDim);
 } // calcRateFields
 
 

@@ -776,7 +776,6 @@ pylith::faults::TestFaultCohesiveKin::testSplitField(void)
   splitField.addField("multipliers", spaceDim);
   splitField.setupFields();
   splitField.newSection(disp, spaceDim);
-  splitField.splitDefault();
   fault.splitField(&splitField);
   splitField.allocate();
   splitField.zero();

@@ -123,23 +123,25 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   partition.scale(1.0);
   partition.label("partition");
   partition.vectorFieldType(topology::FieldBase::SCALAR);
-  const ALE::Obj<RealSection>& partitionSection = partition.section();
-  assert(!partitionSection.isNull());
+  PetscSection partitionSection = partition.petscSection();
+  Vec          partitionVec     = partition.localVector();
+  PetscScalar *partitionArray;
+  assert(partitionSection);assert(partitionVec);
 
-  const ALE::Obj<SieveMesh> sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  PylithScalar rankReal = PylithScalar(commRank);
-  assert(sieveMesh->height() > 0);
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    partitionSection->updatePoint(*c_iter, &rankReal);
+  PylithScalar   rankReal = PylithScalar(commRank);
+  DM             dmMesh   = mesh.dmMesh();
+  PetscInt       cStart, cEnd;
+  PetscErrorCode err;
+
+  assert(dmMesh);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
+  for (PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt off;
+    err = PetscSectionGetOffset(partitionSection, c, &off);CHECK_PETSC_ERROR(err);
+    partitionArray[off] = rankReal;
   } // for
+  err = VecRestoreArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
 
   //partition->view("PARTITION");
   const PylithScalar t = 0.0;

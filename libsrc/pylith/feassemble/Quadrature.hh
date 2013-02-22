@@ -125,6 +125,13 @@ public :
   void computeGeometry(const mesh_type& mesh,
              const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells);
 
+  /** Compute geometric quantities for each cell.
+   *
+   * @param mesh Finite-element mesh
+   * @param cells Finite-element cells for geometry.
+   */
+  void computeGeometry(const mesh_type& mesh, PetscInt cStart, PetscInt cEnd);
+
   /** Retrieve precomputed geometric quantities for a cell.
    *
    * @param mesh Finite-element mesh

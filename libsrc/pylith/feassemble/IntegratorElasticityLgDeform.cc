@@ -106,58 +106,69 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
   strainCell = 0.0;
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = fields->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+  DM dmMesh = fields->mesh().dmMesh();
+  assert(!dmMesh);
   const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get fields
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispSection = disp.section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
+  PetscSection dispSection = disp.petscSection();
+  Vec          dispVec     = disp.localVector();
+  assert(dispSection);assert(dispVec);
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for (PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
+    _quadrature->retrieveGeometry(cell);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    _quadrature->computeGeometry(coordinatesCell, cell);
 #endif
 
     // Restrict input fields to cell
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    const PetscScalar *disp = PETSC_NULL;
+    PetscInt           dispSize;
+
+    err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute deformation tensor.
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-		     numBasis, numQuadPts, spaceDim);
+                     numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
 
     // Update material state
-    _material->updateStateVars(strainCell, *c_iter);
+    _material->updateStateVars(strainCell, cell);
   } // for
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -202,64 +213,82 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   scalar_array stressCell(numQuadPts*tensorSize);
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+  DM dmMesh = fields->mesh().dmMesh();
+  assert(!dmMesh);
   const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get field
   const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
-  const ALE::Obj<RealSection>& dispSection = disp.section();
-  assert(!dispSection.isNull());
-  RestrictVisitor dispVisitor(*dispSection, dispCell.size(), &dispCell[0]);
+  PetscSection dispSection = disp.petscSection();
+  Vec          dispVec     = disp.localVector();
+  assert(dispSection);assert(dispVec);
     
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  assert(!fieldSection.isNull());
+  PetscSection fieldSection = field->petscSection();
+  Vec          fieldVec     = field->localVector();
+  PetscScalar *fieldArray;
+  assert(fieldSection);assert(fieldVec);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
+  for (PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
-    _quadrature->computeGeometry(coordinatesCell, *c_iter);
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
+
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    _quadrature->computeGeometry(coordinatesCell, cell);
 #endif
 
     // Restrict input fields to cell
-    dispVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, dispVisitor);
+    const PetscScalar *disp = PETSC_NULL;
+    PetscInt           dispSize;
+
+    err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute deformation tensor.
     _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-		     numBasis, numQuadPts, spaceDim);
+                     numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
+    PetscInt dof, off;
 
-    if (!calcStress) 
-      fieldSection->updatePoint(*c_iter, &strainCell[0]);
-    else {
-      _material->retrievePropsAndVars(*c_iter);
+    err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+    if (!calcStress) {
+      for (PetscInt d = 0; d < dof; ++d) {
+        fieldArray[off+d] = strainCell[d];
+      }
+    } else {
+      _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      fieldSection->updatePoint(*c_iter, &stressCell[0]);
+      for (PetscInt d = 0; d < dof; ++d) {
+        fieldArray[off+d] = stressCell[d];
+      }
     } // else
   } // for
 } // _calcStrainStressField
@@ -286,28 +315,45 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStressFromStrain(
   stressCell = 0.0;
 
   // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = field->mesh().sieveMesh();
-  assert(!sieveMesh.isNull());
+  DM dmMesh = field->mesh().dmMesh();
+  assert(!dmMesh);
   const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Get field
-  const ALE::Obj<RealSection>& fieldSection = field->section();
-  assert(!fieldSection.isNull());
+  PetscSection fieldSection = field->petscSection();
+  Vec          fieldVec     = field->localVector();
+  PetscScalar *fieldArray;
+  assert(fieldSection);assert(fieldVec);
 
   // Loop over cells
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    fieldSection->restrictPoint(*c_iter, &strainCell[0], strainCell.size());
-    _material->retrievePropsAndVars(*c_iter);
+  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+  for (PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
+    PetscInt dof, off;
+
+    _material->retrievePropsAndVars(cell);
+    err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+    assert(strainCell.size() == dof);
+    for (PetscInt d = 0; d < dof; ++d) {
+      strainCell[d] = fieldArray[off+d];
+    }
     stressCell = _material->calcStress(strainCell);
-    fieldSection->updatePoint(*c_iter, &stressCell[0]);
+    for (PetscInt d = 0; d < dof; ++d) {
+      fieldArray[off+d] = stressCell[d];
+    }
   } // for
+  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 } // _calcStressFromStrain
 
 // ----------------------------------------------------------------------

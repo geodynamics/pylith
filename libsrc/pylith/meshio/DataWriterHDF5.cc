@@ -25,6 +25,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+#include <petscviewerhdf5.h>
+
 // ----------------------------------------------------------------------
 // Constructor
 template<typename mesh_type, typename field_type>

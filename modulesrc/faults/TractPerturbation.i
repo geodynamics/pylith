@@ -51,7 +51,7 @@ namespace pylith {
        *
        * @returns Parameter fields.
        */
-      const pylith::topology::FieldsNew<pylith::topology::SubMesh>* parameterFields(void) const;
+      const pylith::topology::Fields<topology::Field<pylith::topology::SubMesh> >* parameterFields(void) const;
       
       /** Initialize slip time function.
        *

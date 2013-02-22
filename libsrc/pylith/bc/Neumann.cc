@@ -41,9 +41,6 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
 typedef pylith::topology::Mesh::RealSection RealSection;
 
-typedef pylith::topology::Field<pylith::topology::SubMesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Field<pylith::topology::SubMesh>::UpdateAddVisitor UpdateAddVisitor;
-
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::Neumann::Neumann(void)

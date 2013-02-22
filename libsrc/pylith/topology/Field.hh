@@ -43,8 +43,7 @@
  *
  * Extends Sieve real general section by adding metadata.
  */
-template<typename mesh_type,
-	 typename section_type>
+template<typename mesh_type>
 class pylith::topology::Field : public FieldBase
 { // Field
   friend class TestFieldMesh; // unit testing
@@ -56,17 +55,8 @@ public:
   // Convenience typedefs
   typedef mesh_type Mesh;
 
-  typedef ALE::ISieveVisitor::RestrictVisitor<section_type> RestrictVisitor;
-  typedef ALE::ISieveVisitor::UpdateAddVisitor<section_type> UpdateAddVisitor;
-  typedef ALE::ISieveVisitor::UpdateAllVisitor<section_type> UpdateAllVisitor;
-
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
-
-  // Convenience typedefs
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename SieveMesh::label_sequence label_sequence;
-  typedef typename section_type::chart_type chart_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -87,9 +77,7 @@ public :
    *
    * @param mesh Finite-element mesh.
    */
-  Field(const mesh_type& mesh,
-	const ALE::Obj<section_type>& section,
-	const Metadata& metadata);
+  Field(const mesh_type& mesh, const Metadata& metadata);
 
 
   Field(const Field& src, const int fields[], int numFields);
@@ -99,18 +87,6 @@ public :
 
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
-  
-  /** Get Sieve section.
-   *
-   * @returns Sieve section.
-   */
-  const ALE::Obj<section_type>& section(void) const;
-  
-  /** Get DMPlex section.
-   *
-   * @returns DMPlex section.
-   */
-  void dmSection(PetscSection *s, Vec *v) const;
   
   /** Get PetscSection.
    *
@@ -228,16 +204,16 @@ public :
    */
   void newSection(void);
 
-  /** Create sieve section and set chart and fiber dimesion for
-   * sequence of points.
+  /** Create sieve section and set chart and fiber dimesion for a list
+   * of points.
    *
-   * @param points Points over which to define section.
+   * @param pStart First point
+   * @param pEnd Upper bound for points
    * @param dim Fiber dimension for section.
    *
    * @note Don't forget to call label(), especially if reusing a field.
    */
-  void newSection(const ALE::Obj<label_sequence>& points,
-		  const int fiberDim);
+  void newSection(const PetscInt pStart, const PetscInt pEnd, const int fiberDim);
 
   /** Create sieve section and set chart and fiber dimesion for a list
    * of points.
@@ -248,7 +224,20 @@ public :
    * @note Don't forget to call label(), especially if reusing a field.
    */
   void newSection(const int_array& points,
-		  const int fiberDim);
+                  const int fiberDim);
+
+  /** Create sieve section and set chart and fiber dimesion for a list
+   * of points.
+   *
+   * @param points Points over which to define section.
+   * @param num The number of points
+   * @param dim Fiber dimension for section.
+   *
+   * @note Don't forget to call label(), especially if reusing a field.
+   */
+  void newSection(const PetscInt *points,
+                  const PetscInt num,
+                  const int fiberDim);
 
   /** Create sieve section and set chart and fiber dimesion.
    *
@@ -309,12 +298,6 @@ public :
    * @param field Field to copy.
    */
   void copy(const Field& field);
-
-  /** Copy field values.
-   *
-   * @param field Field to copy.
-   */
-  void copy(const ALE::Obj<section_type>& field);
 
   /** Copy field values.
    *
@@ -440,9 +423,6 @@ public :
   void scatterVectorToSection(const PetscVec vector,
 			      const char* context ="") const;
 
-  /// Setup split field with all entries set to a default space of 0.
-  void splitDefault(void);
-
 // PRIVATE STRUCTS //////////////////////////////////////////////////////
 private :
 
@@ -499,7 +479,6 @@ private :
   map_type _metadata;
   /* Old construction */
   const mesh_type& _mesh; ///< Mesh associated with section.
-  ALE::Obj<section_type> _section; ///< Real section with data.
   scatter_map_type _scatters; ///< Collection of scatters.
   /* New construction */
   DM  _dm; /* Holds the PetscSection */

@@ -38,10 +38,6 @@
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-typedef pylith::topology::Field<pylith::topology::Mesh>::RestrictVisitor RestrictVisitor;
-typedef pylith::topology::Field<pylith::topology::Mesh>::UpdateAddVisitor UpdateAddVisitor;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -258,9 +254,20 @@ pylith::materials::ElasticMaterial::updateStateVars(
 		     &_initialStressCell[iQuad*_tensorSize], _tensorSize,
 		     &_initialStrainCell[iQuad*_tensorSize], _tensorSize);
   
-  const ALE::Obj<RealSection>& stateVarsSection = _stateVars->section();
-  assert(!stateVarsSection.isNull());  
-  stateVarsSection->updatePoint(cell, &_stateVarsCell[0]);
+  PetscSection stateVarsSection = _stateVars->petscSection();
+  Vec          stateVarsVec     = _stateVars->localVector();
+  PetscScalar *stateVarsArray;
+  PetscInt     dof, off;
+  PetscErrorCode err;
+  assert(stateVarsSection);assert(stateVarsVec);
+
+  err = PetscSectionGetDof(stateVarsSection, cell, &dof);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetOffset(stateVarsSection, cell, &off);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
+  for (PetscInt d = 0; d < dof; ++d) {
+    stateVarsArray[off+d] = _stateVarsCell[d];
+  }
+  err = VecRestoreArray(stateVarsVec, &stateVarsArray);CHECK_PETSC_ERROR(err);
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -385,39 +392,45 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
   // Get cells associated with material
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+  DM dmMesh = mesh.dmMesh();
+  assert(dmMesh);
+  IS              cellIS;
+  const PetscInt *cells;
+  PetscInt        numCells;
+  PetscErrorCode  err;
+
+  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Setup field if necessary.
-  ALE::Obj<RealSection> fieldSection;
+  PetscSection fieldSection;
+  Vec          fieldVec;
+  PetscScalar *fieldArray;
   if (field) {
     const int fiberDim = 1*numQuadPts;
-    fieldSection = field->section();
+    fieldSection = field->petscSection();
+    fieldVec     = field->localVector();
     bool useCurrentField = false;
-    if (!fieldSection.isNull()) {
+    if (fieldSection) {
       // check fiber dimension
-      const int fiberDimCurrentLocal = (cells->size() > 0) ? fieldSection->getFiberDimension(*cells->begin()) : 0;
-      int fiberDimCurrent = 0;
-      MPI_Allreduce((void *) &fiberDimCurrentLocal, 
-		    (void *) &fiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+      PetscInt fiberDimCurrentLocal = 0;
+      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &fiberDimCurrentLocal);CHECK_PETSC_ERROR(err);}
+      PetscInt fiberDimCurrent = 0;
+      MPI_Allreduce(&fiberDimCurrentLocal, &fiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(fiberDimCurrent > 0);
       useCurrentField = fiberDim == fiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("OutputFields");
-      field->newSection(cells, fiberDim);
+      field->newSection(cells, numCells, fiberDim);
       field->allocate();
-      fieldSection = field->section();
+      fieldSection = field->petscSection();
+      fieldVec     = field->localVector();
       logger.stagePop();
     } // if
-    assert(!fieldSection.isNull());
+    assert(fieldSection);assert(fieldVec);
     field->label("stable_dt_explicit");
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
@@ -427,20 +440,23 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
   scalar_array coordinatesCell(numBasis*spaceDim);
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  RestrictVisitor coordsVisitor(*coordinates, 
-				coordinatesCell.size(), &coordinatesCell[0]);
+  PetscSection coordSection;
+  Vec          coordVec;
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
   scalar_array dtStableCell(numQuadPts);
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    retrievePropsAndVars(*c_iter);
+  if (field) {err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);}
+  for (PetscInt c = 0; c < numCells; ++c) {
+    const PetscInt cell = cells[c];
+    retrievePropsAndVars(cell);
+    const PetscScalar *coords = PETSC_NULL;
+    PetscInt           coordsSize;
 
-    coordsVisitor.clear();
-    sieveMesh->restrictClosure(*c_iter, coordsVisitor);
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     const double minCellWidth = quadrature->minCellWidth(coordinatesCell);
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -452,16 +468,25 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 				minCellWidth);
       dtStableCell[iQuad] = dt;
       if (dt < dtStable) {
-	dtStable = dt;
+        dtStable = dt;
       } // if
     } // for
     if (field) {
-      assert(!fieldSection.isNull());
-      assert(numQuadPts == fieldSection->getFiberDimension(*c_iter));
-      fieldSection->updatePoint(*c_iter, &dtStableCell[0]);
+      PetscInt dof, off;
+
+      assert(fieldSection);
+      err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+      assert(numQuadPts == dof);
+      for (PetscInt d = 0; d < dof; ++d) {
+        fieldArray[off+d] = dtStableCell[d];
+      }
     } // if
   } // for
-  
+  if (field) {err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);}
+  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
   return dtStable;
 } // stableTimeStepExplicit
 
@@ -476,35 +501,42 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
   if (field) {
     const int numQuadPts = _numQuadPts;
 
-    const ALE::Obj<RealSection>& fieldSection = field->section();
+    PetscSection fieldSection = field->petscSection();
+    Vec          fieldVec     = field->localVector();
+    PetscScalar *fieldArray;
     // Get cells associated with material
-    const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-    const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->getLabelStratum("material-id", id());
-    assert(!cells.isNull());
-    const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-    const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
+    DM dmMesh = mesh.dmMesh();
+    assert(dmMesh);
+    IS              cellIS;
+    const PetscInt *cells;
+    PetscInt        numCells;
+    PetscErrorCode  err;
+
+    err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
+    err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
     
     const int fiberDim = 1*numQuadPts;
     bool useCurrentField = false;
-    if (!fieldSection.isNull()) {
+    if (fieldSection) {
       // check fiber dimension
-      const int fiberDimCurrentLocal = (cells->size() > 0) ? fieldSection->getFiberDimension(*cells->begin()) : 0;
-      int fiberDimCurrent = 0;
-      MPI_Allreduce((void *) &fiberDimCurrentLocal, 
-		    (void *) &fiberDimCurrent, 1, 
-		    MPI_INT, MPI_MAX, field->mesh().comm());
+      PetscInt fiberDimCurrentLocal = 0;
+      if (numCells > 0) {err = PetscSectionGetDof(fieldSection, cells[0], &fiberDimCurrentLocal);CHECK_PETSC_ERROR(err);}
+      PetscInt fiberDimCurrent = 0;
+      MPI_Allreduce(&fiberDimCurrentLocal, &fiberDimCurrent, 1, MPIU_INT, MPI_MAX, field->mesh().comm());
       assert(fiberDimCurrent > 0);
       useCurrentField = fiberDim == fiberDimCurrent;
     } // if
     if (!useCurrentField) {
       ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
       logger.stagePush("OutputFields");
-      field->newSection(cells, fiberDim);
+      field->newSection(cells, numCells, fiberDim);
       field->allocate();
+      fieldSection = field->petscSection();
+      fieldVec     = field->localVector();
       logger.stagePop();
     } // if
-    assert(!fieldSection.isNull());
+    assert(fieldSection);
     field->label("stable_dt_implicit");
     assert(_normalizer);
     field->scale(_normalizer->timeScale());
@@ -512,12 +544,22 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
 
     scalar_array dtStableCell(numQuadPts);
     dtStableCell = PYLITH_MAXSCALAR;
-    for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-	 c_iter != cellsEnd;
-	 ++c_iter) {
-      assert(numQuadPts == fieldSection->getFiberDimension(*c_iter));
-      fieldSection->updatePoint(*c_iter, &dtStableCell[0]);
+    err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+    for (PetscInt c = 0; c < numCells; ++c) {
+      const PetscInt cell = cells[c];
+      PetscInt dof, off;
+
+      assert(fieldSection);
+      err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+      assert(numQuadPts == dof);
+      for (PetscInt d = 0; d < dof; ++d) {
+        fieldArray[off+d] = dtStableCell[d];
+      }
     } // for
+    err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   } // if
   
   return dtStable;
