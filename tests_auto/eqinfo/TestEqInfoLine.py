@@ -92,4 +92,14 @@ class TestEqInfoLine(TestEqInfo):
     return
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestEqInfoLine import TestEqInfoLine as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 

@@ -93,4 +93,14 @@ class TestEqInfoTri3(TestEqInfo):
     return
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestEqInfoTri3 import TestEqInfoTri3 as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 
