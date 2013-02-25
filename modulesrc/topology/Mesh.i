@@ -50,11 +50,11 @@ namespace pylith {
       virtual
       void deallocate(void);
 
-      /** Create Sieve mesh.
+      /** Create DM mesh.
        *
        * @param dim Dimension associated with mesh cells.
        */
-      void createSieveMesh(const int dim=3); 
+      void createDMMesh(const int dim=3); 
       
       /** Set coordinate system.
        *

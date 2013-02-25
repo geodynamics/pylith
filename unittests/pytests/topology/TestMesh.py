@@ -63,17 +63,17 @@ class TestMesh(unittest.TestCase):
     return
 
 
-  def test_createSieveMesh(self):
+  def test_createDMMesh(self):
     """
-    Test createSeiveMesh().
+    Test createDMMesh().
     """
     mesh = Mesh()
 
-    mesh.createSieveMesh()
+    mesh.createDMMesh()
     self.assertEqual(3, mesh.dimension())
 
     dim = 2
-    mesh.createSieveMesh(dim)
+    mesh.createDMMesh(dim)
     self.assertEqual(dim, mesh.dimension())
     return
 

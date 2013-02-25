@@ -64,16 +64,6 @@ public :
    */
   void useFaultMesh(const bool flag);
 
-  /** Set filename of UCD file for fault mesh.
-   *
-   * This method is part of a KLUDGE to allow creation of cohesive
-   * cells in cases where domain cells have more than one face (edge
-   * for 2-D problems) on the fault.
-   *
-   * @param filename Filename for UCD file.
-   */
-  void faultMeshFilename(const char* filename);
-
   /** Get the number of vertices associated with the fault (before
    * fault mesh exists).
    *
@@ -133,8 +123,6 @@ private :
   /// If true, use fault mesh to define fault; otherwise, use group of
   /// vertices to define fault.
   bool _useFaultMesh;
-
-  std::string _faultMeshFilename; /// Filename for fault mesh UCD file.
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

@@ -75,21 +75,6 @@ class TestFaultCohesiveImpulses(unittest.TestCase):
     return
 
 
-  def test_faultMeshFilename(self):
-    """
-    Test faultMeshFilename().
-    """
-    fault = FaultCohesiveImpulses() 
-    fault.inventory.faultLabel = "fault group"
-    fault._configure()
-
-    filename = "SanAndreas.inp"
-    fault.faultMeshFilename(filename)
-
-    # No test of result
-    return
-
-
   def test_adjustTopology(self):
     """
     Test adjustTopology().

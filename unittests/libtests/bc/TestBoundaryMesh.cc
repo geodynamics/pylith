@@ -72,7 +72,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);
-  CPPUNIT_ASSERT(!submesh.sieveMesh().isNull());
+  CPPUNIT_ASSERT(submesh.dmMesh());
 
   // Check vertices
   const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 

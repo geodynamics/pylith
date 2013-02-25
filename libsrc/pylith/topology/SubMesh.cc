@@ -75,18 +75,73 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   _mesh.destroy();
 
   const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
-  assert(!meshSieveMesh.isNull());
-  DM dmMesh = mesh.dmMesh();
-  assert(dmMesh);
+  if (!meshSieveMesh.isNull()) {
+    if (!meshSieveMesh->hasIntSection(label)) {
+      std::ostringstream msg;
+      msg << "Could not find group of points '" << label << "' in mesh.";
+      throw std::runtime_error(msg.str());
+    } // if
 
-  if (!meshSieveMesh->hasIntSection(label)) {
-    std::ostringstream msg;
-    msg << "Could not find group of points '" << label << "' in mesh.";
-    throw std::runtime_error(msg.str());
-  } // if
+    const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
+    assert(!groupField.isNull());
+    _mesh = ALE::Selection<DomainSieveMesh>::submeshV<SieveMesh>(meshSieveMesh,
+                                                                 groupField);
+    _mesh->setDebug(mesh.debug());
+    std::string meshLabel = "subdomain_" + std::string(label);
+    _mesh->setName(meshLabel);
+    if (_mesh.isNull()) {
+      std::ostringstream msg;
+      msg << "Could not construct boundary mesh for boundary '"
+          << label << "'.";
+      throw std::runtime_error(msg.str());
+    } // if
+    _mesh->setRealSection("coordinates", 
+                          meshSieveMesh->getRealSection("coordinates"));
+    if (meshSieveMesh->hasRealSection("coordinates_dimensioned"))
+      _mesh->setRealSection("coordinates_dimensioned", 
+                            meshSieveMesh->getRealSection("coordinates_dimensioned"));
+
+    // Create the parallel overlap
+    const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
+    assert(!sieve.isNull());
+    ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap =
+      _mesh->getSendOverlap();
+    assert(!sendParallelMeshOverlap.isNull());
+    ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
+      _mesh->getRecvOverlap();
+    assert(!recvParallelMeshOverlap.isNull());
+
+    SieveMesh::renumbering_type& renumbering = _mesh->getRenumbering();
+
+    DomainSieveMesh::renumbering_type& oldRenumbering = 
+      meshSieveMesh->getRenumbering();
+    const SieveMesh::renumbering_type::const_iterator oldBegin = 
+      oldRenumbering.begin();
+    const SieveMesh::renumbering_type::const_iterator oldEnd = 
+      oldRenumbering.end();
+    for (SieveMesh::renumbering_type::const_iterator r_iter = oldBegin;
+         r_iter != oldEnd;
+         ++r_iter)
+      if (sieve->getChart().hasPoint(r_iter->second) && 
+          (sieve->getConeSize(r_iter->second) || 
+           sieve->getSupportSize(r_iter->second)))
+        renumbering[r_iter->first] = r_iter->second;
+  
+    //   Can I figure this out in a nicer way?
+    ALE::SetFromMap<std::map<DomainSieveMesh::point_type,
+                             DomainSieveMesh::point_type> > globalPoints(renumbering);
+
+    ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering,
+                                            sendParallelMeshOverlap,
+                                            recvParallelMeshOverlap);
+    _mesh->setCalculatedOverlap(true);
+  }
+
+  DM             dmMesh = mesh.dmMesh();
   PetscBool      hasLabel;
   PetscErrorCode err;
 
+  assert(dmMesh);
   err = DMPlexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
@@ -94,74 +149,20 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<IntSection>& groupField = meshSieveMesh->getIntSection(label);
-  assert(!groupField.isNull());
-  _mesh = 
-    ALE::Selection<DomainSieveMesh>::submeshV<SieveMesh>(meshSieveMesh,
-							 groupField);
-  if (_mesh.isNull()) {
-    std::ostringstream msg;
-    msg << "Could not construct boundary mesh for boundary '"
-	<< label << "'.";
-    throw std::runtime_error(msg.str());
-  } // if
-  _mesh->setRealSection("coordinates", 
-			meshSieveMesh->getRealSection("coordinates"));
-  if (meshSieveMesh->hasRealSection("coordinates_dimensioned"))
-    _mesh->setRealSection("coordinates_dimensioned", 
-			  meshSieveMesh->getRealSection("coordinates_dimensioned"));
-
   /* TODO: Add creation of pointSF for submesh */
   err = DMPlexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
 
-  // Create the parallel overlap
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = _mesh->getSieve();
-  assert(!sieve.isNull());
-  ALE::Obj<SieveMesh::send_overlap_type> sendParallelMeshOverlap =
-    _mesh->getSendOverlap();
-  assert(!sendParallelMeshOverlap.isNull());
-  ALE::Obj<SieveMesh::recv_overlap_type> recvParallelMeshOverlap =
-    _mesh->getRecvOverlap();
-  assert(!recvParallelMeshOverlap.isNull());
-
-  SieveMesh::renumbering_type& renumbering = _mesh->getRenumbering();
-
-  DomainSieveMesh::renumbering_type& oldRenumbering = 
-    meshSieveMesh->getRenumbering();
-  const SieveMesh::renumbering_type::const_iterator oldBegin = 
-    oldRenumbering.begin();
-  const SieveMesh::renumbering_type::const_iterator oldEnd = 
-    oldRenumbering.end();
-  for (SieveMesh::renumbering_type::const_iterator r_iter = oldBegin;
-       r_iter != oldEnd;
-       ++r_iter)
-    if (sieve->getChart().hasPoint(r_iter->second) && 
-	(sieve->getConeSize(r_iter->second) || 
-	 sieve->getSupportSize(r_iter->second)))
-      renumbering[r_iter->first] = r_iter->second;
-  
-  //   Can I figure this out in a nicer way?
-  ALE::SetFromMap<std::map<DomainSieveMesh::point_type,
-    DomainSieveMesh::point_type> > globalPoints(renumbering);
-
-  ALE::OverlapBuilder<>::constructOverlap(globalPoints, renumbering,
-					  sendParallelMeshOverlap,
-					  recvParallelMeshOverlap);
-  _mesh->setCalculatedOverlap(true);
-
   // Set data from mesh.
-  _mesh->setDebug(mesh.debug());
   coordsys(mesh);
 
   // Set name
   std::string meshLabel = "subdomain_" + std::string(label);
-  _mesh->setName(meshLabel);
   err = PetscObjectSetName((PetscObject) _newMesh, meshLabel.c_str());CHECK_PETSC_ERROR(err);
+  PetscInt maxConeSizeLocal, maxConeSize = 0;
 
-  int maxConeSizeLocal = sieve->getMaxConeSize();
-  int maxConeSize = 0;
+  err = DMPlexGetMaxSizes(dmMesh, &maxConeSizeLocal, NULL);CHECK_PETSC_ERROR(err);
   err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-                      sieve->comm()); CHECK_PETSC_ERROR(err);
+                      PetscObjectComm((PetscObject) dmMesh)); CHECK_PETSC_ERROR(err);
 
   if (maxConeSize <= 0) {
     std::ostringstream msg;

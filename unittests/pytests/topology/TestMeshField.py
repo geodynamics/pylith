@@ -159,6 +159,7 @@ class TestMeshField(unittest.TestCase):
     Test newSection(field).
     """
     fieldB = MeshField(self.mesh)
+    fieldB.allocate()
     self.field += fieldB
 
     # No test of result

@@ -102,30 +102,50 @@ pylith::topology::Mesh::debug(void) const {
 inline
 int
 pylith::topology::Mesh::dimension(void) const {
-  return (!_mesh.isNull()) ? _mesh->getDimension() : 0;
+  if (_newMesh) {
+    PetscInt dim;
+    PetscErrorCode err = DMPlexGetDimension(_newMesh, &dim);CHECK_PETSC_ERROR(err);
+    return dim;
+  }
+  return 0;
 }
 
 // Get representative cone size for mesh.
 inline
 int
 pylith::topology::Mesh::coneSize(void) const {
-  
-  return (!_mesh.isNull() && numCells() > 0) ? 
-    _mesh->getSieve()->getConeSize(*_mesh->heightStratum(0)->begin()) : 0;
+  if (_newMesh) {
+    PetscInt       cStart, coneSize;
+    PetscErrorCode err;
+    err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);CHECK_PETSC_ERROR(err);
+    return coneSize;
+  }
+  return 0;
 }
 
 // Get number of vertices in mesh.
 inline
 int
 pylith::topology::Mesh::numVertices(void) const {
-  return (!_mesh.isNull() && _mesh->depth() > 0) ? _mesh->depthStratum(0)->size() : 0;
+  if (_newMesh) {
+    PetscInt       vStart, vEnd;
+    PetscErrorCode err = DMPlexGetDepthStratum(_newMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    return vEnd-vStart;
+  }
+  return 0;
 }
 
 // Get number of cells in mesh.
 inline
 int
 pylith::topology::Mesh::numCells(void) const {
-  return (!_mesh.isNull() && _mesh->height() > 0) ? _mesh->heightStratum(0)->size() : 0;
+  if (_newMesh) {
+    PetscInt       cStart, cEnd;
+    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    return cEnd-cStart;
+  }
+  return 0;
 }
 
 // Set MPI communicator associated with mesh.
@@ -155,7 +175,8 @@ pylith::topology::Mesh::commRank(void) const {
 inline
 void
 pylith::topology::Mesh::view(const char* label) const {
-  _mesh->view(label);
+  assert(_newMesh);
+  PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
 }
 
 
