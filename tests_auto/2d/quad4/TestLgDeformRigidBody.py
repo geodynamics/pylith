@@ -91,4 +91,14 @@ class TestRigidBody(TestQuad4):
     return stateVar
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestLgDeformRigidBody import TestLgDeformRigidBody as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 

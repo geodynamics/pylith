@@ -86,4 +86,14 @@ class TestTraction(TestQuad4):
     return stateVar
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestLgDeformTraction import TestLgDeformTraction as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 

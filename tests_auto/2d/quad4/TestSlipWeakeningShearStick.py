@@ -185,4 +185,14 @@ class TestSlipWeakeningShearStick(TestQuad4):
     return field
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestSlipWeakeninShearStick import TestSlipWeakeningShearStick as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 
