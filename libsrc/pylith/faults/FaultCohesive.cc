@@ -138,22 +138,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());
-      
-      //meshio::UCDFaultFile::read(_faultMeshFilename.c_str(), &faultMesh, faultBoundary, *mesh);
-      
-      // Set coordinates in fault mesh
-      const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 
-	faultMesh.sieveMesh();
-      assert(!faultSieveMesh.isNull());
-      faultSieveMesh->setRealSection("coordinates", 
-				     sieveMesh->getRealSection("coordinates"));
-      
-      const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-	sieveMesh->getIntSection(label());
-      assert(!groupField.isNull());
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(),
-			       *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      
+      throw std::runtime_error("UCD fault files no longer supported"); 
     } // if/else
   } catch (const ALE::Exception& err) {
     std::ostringstream msg;
