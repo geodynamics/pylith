@@ -138,7 +138,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());
-      throw std::runtime_error("UCD fault files no longer supported"); 
+      throw std::logic_error("Support for UCD fault files no longer implemented."); 
     } // if/else
   } catch (const ALE::Exception& err) {
     std::ostringstream msg;
