@@ -48,7 +48,7 @@ def run_pylith():
   return
 
 
-class TestDislocation(TestQuad4):
+class TestDislocation2(TestQuad4):
   """
   Test suite for testing pylith with 2-D axial extension.
   """
@@ -194,6 +194,16 @@ class TestDislocation(TestQuad4):
       raise ValueError("Unknown fault field '%s'." % name)
 
     return field
+
+
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestDislocation2 import TestDislocation2 as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
 
 
 # End of file 

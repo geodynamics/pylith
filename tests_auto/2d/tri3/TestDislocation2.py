@@ -63,4 +63,14 @@ class TestDislocation2(unittest.TestCase):
     return
 
 
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+  import unittest
+  from TestDislocation2 import TestDislocation2 as Tester
+
+  suite = unittest.TestSuite()
+  suite.addTest(unittest.makeSuite(Tester))
+  unittest.TextTestRunner(verbosity=2).run(suite)
+
+
 # End of file 
