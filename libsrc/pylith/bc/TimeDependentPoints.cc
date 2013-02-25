@@ -235,11 +235,15 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   const PylithScalar lengthScale = _getNormalizer().lengthScale();
 
   scalar_array coordsVertex(spaceDim);
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<RealSection>& coordinates = 
-    sieveMesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
+  DM           dmMesh = mesh.dmMesh();
+  PetscSection coordSection;
+  Vec          coordVec;
+  PetscScalar *coordArray;
+  PetscErrorCode err;
+
+  assert(dmMesh);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
   PetscSection parametersSection = _parameters->get(name).petscSection();
   Vec          parametersVec     = _parameters->get(name).localVector();
@@ -256,21 +260,23 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 
   const int numPoints = _points.size();
   PetscScalar   *array;
-  PetscErrorCode err;
   err = VecGetArray(parametersVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    PetscInt cdof, coff;
+
     // Get dimensionalized coordinates of vertex
-    coordinates->restrictPoint(_points[iPoint], 
-			       &coordsVertex[0], coordsVertex.size());
-    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(),
-				lengthScale);
-    int err = db->query(&valueVertex[0], valueVertex.size(), 
-			&coordsVertex[0], coordsVertex.size(), cs);
+    err = PetscSectionGetDof(coordSection, _points[iPoint], &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, _points[iPoint], &coff);CHECK_PETSC_ERROR(err);
+    assert(cdof == spaceDim);
+    for (PetscInt d = 0; d < spaceDim; ++d) {coordsVertex[d] = coordArray[coff+d];}
+    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
+    int err = db->query(&valueVertex[0], valueVertex.size(), &coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
       msg << "Error querying for '" << name << "' at (";
       for (int i=0; i < spaceDim; ++i)
-	msg << "  " << coordsVertex[i];
+        msg << "  " << coordsVertex[i];
       msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
@@ -287,6 +293,7 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
       array[off+i] = valueVertex[i];
   } // for
   err = VecRestoreArray(parametersVec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 } // _queryDB
 
 // ----------------------------------------------------------------------

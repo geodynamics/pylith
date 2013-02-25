@@ -139,7 +139,6 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/OutputSolnSubset.cc \
 	meshio/OutputSolnPoints.cc \
-	meshio/UCDFaultFile.cc \
 	problems/Formulation.cc \
 	problems/Explicit.cc \
 	problems/Implicit.cc \

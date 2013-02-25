@@ -75,39 +75,6 @@ public :
 		 const int meshDim,
 		 const bool interpolate,
 		 const bool isParallel =false);
-
-  /** Build fault mesh topology.
-   *
-   * All mesh information must use zero based indices. In other words,
-   * the lowest index MUST be 0 not 1.
-   *
-   * @param fault PETSc mesh for fault.
-   * @param faultBd PETSc mesh for fault boundary.
-   * @param coordinates Array of coordinates of vertices.
-   * @param numVertices Number of vertices.
-   * @param spaceDim Dimension of vector space for vertex coordinates.
-   * @param cells Array of indices of vertices in cells (first index is 0).
-   * @param numCells Number of cells.
-   * @param numCorners Number of vertices per cell.
-   * @param firstCell Label of first cell.
-   * @param cells Array of indices of vertices for fault surface cells
-   * (first index is 0).
-   * @param meshDim Dimension of cells in mesh.
-   */
-  static
-  void buildFaultMesh(const ALE::Obj<topology::Mesh::SieveMesh>& fault,
-		      ALE::Obj<SieveFlexMesh>& faultBd,
-		      const scalar_array& coordinates,
-		      const int numVertices,
-		      const int spaceDim,
-		      const int_array& cells,
-		      const int numCells,
-		      const int numCorners,
-		      const int firstCell,
-		      const int_array& faceCells,
-		      const int meshDim);
-
-
 }; // MeshBuilder
 
 #endif // pylith_meshio_meshbuilder_hh

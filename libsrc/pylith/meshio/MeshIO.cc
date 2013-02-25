@@ -207,48 +207,46 @@ void
 pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 { // _setMaterials
   assert(0 != _mesh);
-
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  DM complexMesh = _mesh->dmMesh();
-  assert(complexMesh);
   PetscErrorCode err;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   ///logger.setDebug(2);
   logger.stagePush("MeshLabels");
-  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
-    sieveMesh->createLabel("material-id");
-  if (!sieveMesh->commRank()) {
-    const ALE::Obj<SieveMesh::label_sequence>& cells = 
-      sieveMesh->heightStratum(0);
-    assert(!cells.isNull());
-    const SieveMesh::label_sequence::iterator cellsBegin = 
-      cells->begin();
-    const SieveMesh::label_sequence::iterator cellsEnd = 
-      cells->end();
+  if (!_mesh->commRank()) {
+    const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+    if (!sieveMesh.isNull()) {
+      const ALE::Obj<SieveMesh::label_type>& labelMaterials = sieveMesh->createLabel("material-id");
+      const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
+      assert(!cells.isNull());
+      const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
+      const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
 
-    const int numCells = materialIds.size();
-    if (cells->size() != numCells) {
-      std::ostringstream msg;
-      msg << "Mismatch in size of materials identifier array ("
-          << numCells << ") and number of cells in mesh ("
-          << cells->size() << ").";
-      throw std::runtime_error(msg.str());
-    } // if
-    int i = 0;
-
-    for(SieveMesh::label_sequence::iterator e_iter = cellsBegin;
-	e_iter != cellsEnd;
-	++e_iter) {
-      sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
+      const int numCells = materialIds.size();
+      if (cells->size() != numCells) {
+        std::ostringstream msg;
+        msg << "Mismatch in size of materials identifier array ("
+            << numCells << ") and number of cells in mesh ("<< cells->size() << ").";
+        throw std::runtime_error(msg.str());
+      } // if
+      int i = 0;
+      for(SieveMesh::label_sequence::iterator e_iter = cellsBegin; e_iter != cellsEnd; ++e_iter) {
+        sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
+      }
     }
 
+    DM       dmMesh = _mesh->dmMesh();
     PetscInt cStart, cEnd;
-    err = DMPlexGetHeightStratum(complexMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    assert(numCells == cEnd - cStart);
+
+    assert(dmMesh);
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    if ((cEnd - cStart) != materialIds.size()) {
+      std::ostringstream msg;
+      msg << "Mismatch in size of materials identifier array ("
+          << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").";
+      throw std::runtime_error(msg.str());
+    } // if
     for(PetscInt c = cStart; c < cEnd; ++c) {
-      err = DMPlexSetLabelValue(complexMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(dmMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
     }
   } // if
   logger.stagePop();
@@ -296,47 +294,52 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 				  const int_array& points)
 { // _setGroup
   assert(0 != _mesh);
-
-  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  DM complexMesh = _mesh->dmMesh();
-  assert(complexMesh);
   PetscErrorCode err;
-
-  if (sieveMesh->hasIntSection(name)) {
-    std::ostringstream msg;
-    msg << "Could not setup group '" << name
-	<< "'. Group already exists in mesh.";
-    throw std::runtime_error(msg.str());
-  } // if
-
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("MeshIntSections");
-  const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
-  assert(!groupField.isNull());
 
-  const int numPoints   = points.size();
-  const int numVertices = sieveMesh->depthStratum(0)->size();
-  const int numCells    = sieveMesh->heightStratum(0)->size();
-  if (CELL == type) {
-    groupField->setChart(IntSection::chart_type(0,numCells));
-    for(int i=0; i < numPoints; ++i)
-      groupField->setFiberDimension(points[i], 1);
-  } else if (VERTEX == type) {
-    groupField->setChart(IntSection::chart_type(numCells, 
-						numCells+numVertices));
-    for(int i=0; i < numPoints; ++i)
-      groupField->setFiberDimension(numCells+points[i], 1);
-  } // if/else
-  sieveMesh->allocate(groupField);
+  const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
+  if (!sieveMesh.isNull()) {
+    if (sieveMesh->hasIntSection(name)) {
+      std::ostringstream msg;
+      msg << "Could not setup group '" << name
+          << "'. Group already exists in mesh.";
+      throw std::runtime_error(msg.str());
+    } // if
 
+    const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
+    assert(!groupField.isNull());
+
+    const int numPoints   = points.size();
+    const int numVertices = sieveMesh->depthStratum(0)->size();
+    const int numCells    = sieveMesh->heightStratum(0)->size();
+    if (CELL == type) {
+      groupField->setChart(IntSection::chart_type(0,numCells));
+      for(int i=0; i < numPoints; ++i)
+        groupField->setFiberDimension(points[i], 1);
+    } else if (VERTEX == type) {
+      groupField->setChart(IntSection::chart_type(numCells, numCells+numVertices));
+      for(int i=0; i < numPoints; ++i)
+        groupField->setFiberDimension(numCells+points[i], 1);
+    } // if/else
+    sieveMesh->allocate(groupField);
+  }
+
+  DM             dmMesh    = _mesh->dmMesh();
+  const PetscInt numPoints = points.size();
+
+  assert(dmMesh);
   if (CELL == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMPlexSetLabelValue(complexMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(dmMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
     }
   } else if (VERTEX == type) {
+    PetscInt cStart, cEnd, numCells;
+
+    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+    numCells = cEnd - cStart;
     for(PetscInt p = 0; p < numPoints; ++p) {
-      err = DMPlexSetLabelValue(complexMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexSetLabelValue(dmMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
     }
   }
   logger.stagePop();
@@ -348,48 +351,45 @@ void
 pylith::meshio::MeshIO::_distributeGroups()
 { // _distributeGroups
   assert(0 != _mesh);
+  /* dmMesh does not need to broadcast the label names. They come from proc 0 */
 
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
-  assert(!sieveMesh.isNull());
-  DM complexMesh = _mesh->dmMesh();
-  assert(complexMesh);
-  PetscErrorCode err;
+  if (!sieveMesh.isNull()) {
+    if (!sieveMesh->commRank()) {
+      const ALE::Obj<std::set<std::string> >& sectionNames = 
+        sieveMesh->getIntSections();
+      int numGroups = sectionNames->size();
 
-  if (!sieveMesh->commRank()) {
-    const ALE::Obj<std::set<std::string> >& sectionNames = 
-      sieveMesh->getIntSections();
-    int numGroups = sectionNames->size();
+      MPI_Bcast(&numGroups, 1, MPI_INT, 0, sieveMesh->comm());
 
-    MPI_Bcast(&numGroups, 1, MPI_INT, 0, sieveMesh->comm());
+      const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
+      for (std::set<std::string>::const_iterator name=sectionNames->begin();
+           name != namesEnd;
+           ++name) {
+        int len = name->size();
+        
+        MPI_Bcast(&len, 1, MPI_INT, 0, sieveMesh->comm());
+        MPI_Bcast((void *) name->c_str(), len, MPI_CHAR, 0, sieveMesh->comm());
+      }
+    } else {
+      int numGroups;
 
-    const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
-    for (std::set<std::string>::const_iterator name=sectionNames->begin();
-         name != namesEnd;
-	 ++name) {
-      int len = name->size();
-      
-      MPI_Bcast(&len, 1, MPI_INT, 0, sieveMesh->comm());
-      MPI_Bcast((void *) name->c_str(), len, MPI_CHAR, 0, sieveMesh->comm());
-    }
-  } else {
-    int numGroups;
+      MPI_Bcast(&numGroups, 1, MPI_INT, 0, sieveMesh->comm());
+      for(int g = 0; g < numGroups; ++g) {
+        char *name;
+        int   len;
 
-    MPI_Bcast(&numGroups, 1, MPI_INT, 0, sieveMesh->comm());
-    for(int g = 0; g < numGroups; ++g) {
-      char *name;
-      int   len;
-
-      MPI_Bcast(&len, 1, MPI_INT, 0, sieveMesh->comm());
-      name = new char[len+1];
-      MPI_Bcast(name, len, MPI_CHAR, 0, sieveMesh->comm());
-      name[len] = 0;
-      const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
-      assert(!groupField.isNull());
-      sieveMesh->allocate(groupField);
-      /* complexMesh does not need to broadcast the label names. They come from proc 0 */
-      delete [] name;
-    } // for
-  } // if/else
+        MPI_Bcast(&len, 1, MPI_INT, 0, sieveMesh->comm());
+        name = new char[len+1];
+        MPI_Bcast(name, len, MPI_CHAR, 0, sieveMesh->comm());
+        name[len] = 0;
+        const ALE::Obj<IntSection>& groupField = sieveMesh->getIntSection(name);
+        assert(!groupField.isNull());
+        sieveMesh->allocate(groupField);
+        delete [] name;
+      } // for
+    } // if/else
+  }
 } // _distributeGroups
 
 // ----------------------------------------------------------------------

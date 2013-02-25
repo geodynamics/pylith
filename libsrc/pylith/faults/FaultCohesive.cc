@@ -21,7 +21,6 @@
 #include "FaultCohesive.hh" // implementation of object methods
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology
-#include "pylith/meshio/UCDFaultFile.hh" // USES UCDFaultFile
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 
@@ -38,8 +37,7 @@ typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 // Default constructor.
 pylith::faults::FaultCohesive::FaultCohesive(void) :
   _fields(0),
-  _useFaultMesh(false),
-  _faultMeshFilename("fault.inp")
+  _useFaultMesh(false)
 { // constructor
 } // constructor
 
@@ -71,14 +69,6 @@ pylith::faults::FaultCohesive::useFaultMesh(const bool flag)
 } // useFaultMesh
 
 // ----------------------------------------------------------------------
-// Set filename of UCD file for fault mesh.
-void
-pylith::faults::FaultCohesive::faultMeshFilename(const char* filename)
-{ // faultMeshFilename
-  _faultMeshFilename = filename;
-} // faultMeshFilename
-
-// ----------------------------------------------------------------------
 // Get the number of vertices associated with the fault (before
 // fault mesh exists).
 int
@@ -103,7 +93,7 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     nvertices = groupField->size();
   } else {
     assert(3 == mesh.dimension());
-    nvertices = meshio::UCDFaultFile::numVertices(_faultMeshFilename.c_str());
+    nvertices = -1;
   } // else
 
   return nvertices;
@@ -149,8 +139,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       const int faultDim = 2;
       assert(3 == mesh->dimension());
       
-      meshio::UCDFaultFile::read(_faultMeshFilename.c_str(),
-				 &faultMesh, faultBoundary, *mesh);
+      //meshio::UCDFaultFile::read(_faultMeshFilename.c_str(), &faultMesh, faultBoundary, *mesh);
       
       // Set coordinates in fault mesh
       const ALE::Obj<topology::SubMesh::SieveMesh>& faultSieveMesh = 

@@ -59,8 +59,6 @@ namespace pylith {
     class OutputSolnSubset;
     class OutputSolnPoints;
 
-    class UCDFaultFile;
-
     class HDF5;
     class Xdmf;
 

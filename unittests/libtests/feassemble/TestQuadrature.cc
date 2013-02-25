@@ -201,7 +201,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
   // Cells and vertices
   PetscBool interpolate = PETSC_FALSE;
 
-  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateFromCellList(mesh.comm(), cellDim, numCells, data.numVertices, numBasis, interpolate, const_cast<int*>(data.cells), spaceDim, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(dmMesh);
   mesh.setDMMesh(dmMesh);
 

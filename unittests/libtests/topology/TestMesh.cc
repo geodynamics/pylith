@@ -54,34 +54,36 @@ pylith::topology::TestMesh::testConstructor(void)
 // ----------------------------------------------------------------------
 // Test createSieveMesh().
 void
-pylith::topology::TestMesh::testCreateSieveMesh(void)
-{ // testCreateSieveMesh
+pylith::topology::TestMesh::testCreateDMMesh(void)
+{ // testCreateDMMesh
   Mesh mesh;
   CPPUNIT_ASSERT(mesh._mesh.isNull());
 
   int dim = 2;
-  mesh.createSieveMesh(dim);
-  CPPUNIT_ASSERT(!mesh._mesh.isNull());
+  mesh.createDMMesh(dim);
+  CPPUNIT_ASSERT(mesh._newMesh);
   CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
 
   dim = 1;
-  mesh.createSieveMesh(dim);
-  CPPUNIT_ASSERT(!mesh._mesh.isNull());
+  mesh.createDMMesh(dim);
+  CPPUNIT_ASSERT(mesh._newMesh);
   CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
-} // testCreateMeshSieve
+} // testCreateDMMesh
 
 // ----------------------------------------------------------------------
-// Test sieveMesh().
+// Test dmMesh().
 void
-pylith::topology::TestMesh::testSieveMesh(void)
-{ // testSieveMesh
+pylith::topology::TestMesh::testDMMesh(void)
+{ // testDMMesh
   const int dim = 2;
+  PetscInt dmDim;
   Mesh mesh(dim);
   
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CPPUNIT_ASSERT_EQUAL(dim, sieveMesh->getDimension());
-} // testSieveMesh
+  DM dmMesh = mesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
+  PetscErrorCode err = DMPlexGetDimension(dmMesh, &dmDim);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(dim, dmDim);
+} // testDMMesh
 
 // ----------------------------------------------------------------------
 // Test coordsys().

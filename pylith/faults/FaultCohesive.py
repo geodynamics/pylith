@@ -89,9 +89,6 @@ class FaultCohesive(Fault, ModuleFaultCohesive):
     ModuleFaultCohesive.useFaultMesh(self, self.inventory.useMesh)
     #ModuleFaultCohesive.faultMeshImporter(self, 
     #                                      self.inventory.faultMeshImporter)
-    # TEMPORARY
-    ModuleFaultCohesive.faultMeshFilename(self, 
-                                          self.inventory.meshFilename)
 
     # Hardwire collocated quadrature
     self.faultQuadrature.inventory.cell._configure()

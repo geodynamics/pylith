@@ -50,11 +50,11 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 				       const bool isParallel)
 { // buildMesh
   assert(mesh);
-
   assert(coordinates);
-  MPI_Comm comm = mesh->comm();
-  int dim = meshDim;
-  const int commRank = mesh->commRank();
+  MPI_Comm       comm     = mesh->comm();
+  PetscInt       dim      = meshDim;
+  PetscMPIInt    commRank = mesh->commRank();
+  const bool     useSieve = true;
   PetscErrorCode err;
 
   { // Check to make sure every vertex is in at least one cell.
@@ -66,23 +66,21 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     int count = 0;
     for (int i=0; i < numVertices; ++i)
       if (!vertexInCell[i])
-	++count;
+        ++count;
     if (count > 0) {
       std::ostringstream msg;
       msg << "Mesh contains " << count
-	  << " vertices that are not in any cells.";
+          << " vertices that are not in any cells.";
       throw std::runtime_error(msg.str());
     } // if
   } // check
 
+  /* Sieve */
+  if (useSieve) {
   MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
   mesh->createSieveMesh(dim);
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   assert(!sieveMesh.isNull());
-  /* DMPlex */
-  mesh->createDMMesh(dim);
-  DM complexMesh = mesh->dmMesh();
-  assert(complexMesh);
 
   ALE::Obj<SieveMesh::sieve_type> sieve = 
     new SieveMesh::sieve_type(mesh->comm());
@@ -122,23 +120,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       delete[] coneO; coneO = 0;
       // Symmetrize to fill up supports
       sieve->symmetrize();
-      /* DMPlex */
-      err = DMPlexSetChart(complexMesh, 0, numCells+numVertices);CHECK_PETSC_ERROR(err);
-      for(PetscInt c = 0; c < numCells; ++c) {
-        err = DMPlexSetConeSize(complexMesh, c, numCorners);CHECK_PETSC_ERROR(err);
-      }
-      err = DMSetUp(complexMesh);CHECK_PETSC_ERROR(err);
-      PetscInt *cone2 = new PetscInt[numCorners];
-      for(PetscInt c = 0; c < numCells; ++c) {
-        for(PetscInt v = 0; v < numCorners; ++v) {
-          cone2[v] = cells[c*numCorners+v]+numCells;
-        }
-        err = DMPlexSetCone(complexMesh, c, cone2);CHECK_PETSC_ERROR(err);
-      } // for
-      delete [] cone2; cone2 = 0;
-      err = DMPlexSymmetrize(complexMesh);CHECK_PETSC_ERROR(err);
-      err = DMPlexStratify(complexMesh);CHECK_PETSC_ERROR(err);
-      /* TODO Interpolate mesh if necessary */
     } else {
       // Same old thing
       ALE::Obj<SieveFlexMesh::sieve_type> s =
@@ -190,141 +171,17 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
   } // if/else
 
   logger.stagePush("MeshCoordinates");
-  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						 &(*coordinates)[0]);
-  /* DMPlex */
-  PetscSection coordSection;
-  Vec          coordVec;
-  PetscScalar *coords;
-  PetscInt     coordSize;
-
-  err = DMPlexGetCoordinateSection(complexMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionSetChart(coordSection, numCells, numCells+numVertices);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = numCells; v < numCells+numVertices; ++v) {
-    err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
-  }
-  err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = VecCreate(comm, &coordVec);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = 0; v < numVertices; ++v) {
-    PetscInt off;
-
-    err = PetscSectionGetOffset(coordSection, v+numCells, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      coords[off+d] = (*coordinates)[v*spaceDim+d];
-    }
-  }
-  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(complexMesh, coordVec);CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
+  ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, &(*coordinates)[0]);
   logger.stagePop(); // Coordinates
-
   sieveMesh->getFactory()->clear();
+  }
+
+  /* DMPlex */
+  DM        dmMesh;
+  PetscBool pInterpolate = interpolate ? PETSC_TRUE : PETSC_FALSE;
+
+  err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);CHECK_PETSC_ERROR(err);
+  mesh->setDMMesh(dmMesh);
 } // buildMesh
-
-// ----------------------------------------------------------------------
-// Set vertices and cells for fault mesh.
-void
-pylith::meshio::MeshBuilder::buildFaultMesh(const ALE::Obj<SieveMesh>& fault,
-					    ALE::Obj<SieveFlexMesh>& faultBd,
-					    const scalar_array& coordinates,
-					    const int numVertices,
-					    const int spaceDim,
-					    const int_array& cells,
-					    const int numCells,
-					    const int numCorners,
-					    const int firstCell,
-					    const int_array& faceCells,
-					    const int meshDim)
-{ // buildFaultMesh
-  int dim  = meshDim;
-
-  assert(!fault.isNull());
-
-  ALE::Obj<SieveMesh::sieve_type> sieve = 
-    new SieveMesh::sieve_type(fault->comm());
-  fault->setDebug(fault->debug());
-  fault->setSieve(sieve);
-  
-  const int commRank = fault->commRank();
-
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(fault->debug()/2);
-  logger.stagePush("Creation");
-
-  if (0 == commRank) {
-    assert(coordinates.size() == numVertices*spaceDim);
-    assert(cells.size() == numCells*numCorners);
-    ALE::Obj<SieveFlexMesh::sieve_type> s = 
-      new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-    
-    ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, meshDim, 
-						numCells, 
-						const_cast<int*>(&cells[0]), 
-						numVertices, 
-						true,
-						numCorners,
-						0,
-						fault->getArrowSection("orientation"),
-						firstCell);
-
-    // Add in cells
-    for(int c = 0; c < numCells; ++c) {
-      s->addArrow(c+firstCell, faceCells[c*2+0]);
-      s->addArrow(c+firstCell, faceCells[c*2+1]);
-    } // for
-    
-    SieveFlexMesh::renumbering_type& renumbering = fault->getRenumbering();
-    ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering, false);
-    ALE::ISieveConverter::convertOrientation(*s, *sieve, renumbering,
-				fault->getArrowSection("orientation").ptr());
-    
-    Obj<SieveFlexMesh> tmpMesh = 
-      new SieveFlexMesh(fault->comm(), dim, fault->debug());
-    faultBd = ALE::Selection<SieveFlexMesh>::boundary(tmpMesh);
-
-    logger.stagePop();
-    logger.stagePush("Stratification");
-    fault->stratify();
-    logger.stagePop();
-  } else {
-    Obj<SieveFlexMesh> tmpMesh = 
-      new SieveFlexMesh(fault->comm(), dim, fault->debug());
-    faultBd = ALE::Selection<SieveFlexMesh>::boundary(tmpMesh);
-
-    logger.stagePop();
-    logger.stagePush("Stratification");
-    fault->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
-    fault->getSieve()->allocate();
-    fault->stratify();
-    logger.stagePop();
-  } // if/else
-
-#if defined(ALE_MEM_LOGGING)
-  std::cout
-    << std::endl
-    << "FaultCreation " << logger.getNumAllocations("Creation")
-    << " allocations " << logger.getAllocationTotal("Creation")
-    << " bytes" << std::endl
-    
-    << "FaultCreation " << logger.getNumDeallocations("Creation")
-    << " deallocations " << logger.getDeallocationTotal("Creation")
-    << " bytes" << std::endl
-    
-    << "FaultStratification " << logger.getNumAllocations("Stratification")
-    << " allocations " << logger.getAllocationTotal("Stratification")
-    << " bytes" << std::endl
-    
-    << "FaultStratification " << logger.getNumDeallocations("Stratification")
-    << " deallocations " << logger.getDeallocationTotal("Stratification")
-    << " bytes" << std::endl << std::endl;
-#endif
-
-} // buildFaultMesh
-
 
 // End of file 

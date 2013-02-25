@@ -82,7 +82,7 @@ pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
   PetscBool      interpolateMesh = interpolate ? PETSC_TRUE : PETSC_FALSE;
   PetscErrorCode err;
 
-  err = DMPlexCreateFromCellList(mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateFromCellList(mesh->comm(), data.cellDim, data.numCells, data.numVertices, data.numCorners, interpolateMesh, data.cells, data.spaceDim, data.vertices, &dmMesh);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(dmMesh);
 
   // Material ids
