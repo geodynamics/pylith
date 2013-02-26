@@ -375,7 +375,7 @@ pylith::topology::Field<mesh_type, section_type>::cloneSection(const Field& src)
 	  CHECK_PETSC_ERROR(err);
 	} else {
 	  err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				      blockSize, 0, PETSC_NULL,
+				      blockSize, 0, NULL,
 				      &sinfo.scatterVec);
 	  CHECK_PETSC_ERROR(err);
 	} // else
@@ -785,7 +785,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(const scatter_me
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } else {
     err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				blockSize, 0, PETSC_NULL,
+				blockSize, 0, NULL,
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } // else
 
@@ -864,7 +864,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatter(
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } else {
     err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				blockSize, 0, PETSC_NULL,
+				blockSize, 0, NULL,
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } // else
 
@@ -944,7 +944,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } else {
     err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				blockSize, 0, PETSC_NULL,
+				blockSize, 0, NULL,
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } // else
   
@@ -1020,7 +1020,7 @@ pylith::topology::Field<mesh_type, section_type>::createScatterWithBC(
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } else {
     err = VecCreateSeqWithArray(PETSC_COMM_SELF, 
-				blockSize, 0, PETSC_NULL,
+				blockSize, 0, NULL,
 				&sinfo.scatterVec);CHECK_PETSC_ERROR(err);
   } // else
 

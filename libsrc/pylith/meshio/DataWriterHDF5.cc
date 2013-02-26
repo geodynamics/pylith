@@ -21,6 +21,8 @@
 #include "HDF5.hh" // USES HDF5
 #include "Xdmf.hh" // USES Xdmf
 
+#include "petscviewerhdf5.h"
+
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error

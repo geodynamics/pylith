@@ -138,7 +138,7 @@ pylith::topology::Jacobian::assemble(const char* mode)
     for(PetscInt r = rStart; r < rEnd; ++r) {
       PetscInt c;
 
-      err = MatGetRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      err = MatGetRow(_matrix,r, &ncols, &cols, NULL);CHECK_PETSC_ERROR(err);
       if (!ncols) {
         std::ostringstream msg;
         msg << "ERROR: Empty row " << r << " in ["<<rStart<<","<<rEnd<<")" << std::endl;
@@ -152,7 +152,7 @@ pylith::topology::Jacobian::assemble(const char* mode)
         msg << "ERROR: Row " << r << " in ["<<rStart<<","<<rEnd<<") is missing diagonal element" << std::endl;
         throw std::runtime_error(msg.str().c_str());
       }
-      err = MatRestoreRow(_matrix,r, &ncols, &cols, PETSC_NULL);CHECK_PETSC_ERROR(err);
+      err = MatRestoreRow(_matrix,r, &ncols, &cols, NULL);CHECK_PETSC_ERROR(err);
     }
 #endif
 

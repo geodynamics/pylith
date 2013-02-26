@@ -1992,7 +1992,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
     for (int i=0; i < subnrows; ++i) {
       indicesLocal[iCohesiveCell*subnrows+indicesPerm[i]] = i;
     } // for
-    cellsIS[iCohesiveCell] = PETSC_NULL;
+    cellsIS[iCohesiveCell] = NULL;
     err = ISCreateGeneral(PETSC_COMM_SELF, indicesGlobal.size(), &indicesGlobal[0], PETSC_COPY_VALUES, &cellsIS[iCohesiveCell]);CHECK_PETSC_ERROR(err);
 
   } // for
