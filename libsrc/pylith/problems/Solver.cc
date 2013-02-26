@@ -190,9 +190,9 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     
     // Allocate just the diagonal.
     err = MatSeqAIJSetPreallocation(_jacobianPCFault, 1, 
-				    PETSC_NULL); CHECK_PETSC_ERROR(err);
-    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, PETSC_NULL, 
-				    0, PETSC_NULL); CHECK_PETSC_ERROR(err);
+				    NULL); CHECK_PETSC_ERROR(err);
+    err = MatMPIAIJSetPreallocation(_jacobianPCFault, 1, NULL, 
+				    0, NULL); CHECK_PETSC_ERROR(err);
     // Set preconditioning matrix in formulation
     formulation->customPCMatrix(_jacobianPCFault);
 
@@ -221,16 +221,16 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
   if (separateComponents) {
     PetscMat* precon = new PetscMat[numSpaces];
     for (int i=0; i < numSpaces; ++i) {
-      precon[i] = PETSC_NULL;
+      precon[i] = NULL;
     } // for
     precon[numSpaces-1] = _jacobianPCFault;
-    constructFieldSplit(solutionSection, PETSC_DETERMINE, PETSC_NULL, PETSC_NULL, 
-			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, PETSC_NULL, solution.vector(), *pc);
+    constructFieldSplit(solutionSection, PETSC_DETERMINE, NULL, NULL, 
+			sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default", solutionSection), precon, NULL, solution.vector(), *pc);
     delete[] precon; precon = 0;
   } else {
     int numFields[2] = {spaceDim, (numSpaces > spaceDim) ? 1 : 0};
-    MatNullSpace nullsp[2] = {PETSC_NULL, PETSC_NULL};
-    PetscMat precon[2] = {PETSC_NULL, _jacobianPCFault};
+    MatNullSpace nullsp[2] = {NULL, NULL};
+    PetscMat precon[2] = {NULL, _jacobianPCFault};
     int* fields = new int[numSpaces];
     
     // Create rigid body null space.
@@ -284,7 +284,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
         err = VecCopy(solution.vector(), mode[d]);CHECK_PETSC_ERROR(err);
       } // for
       for (int i=0; i < dim; ++i) {
-	err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
+	err = VecNormalize(mode[i], NULL);CHECK_PETSC_ERROR(err);
       } // for
       /* Orthonormalize system */
       for (int i = dim; i < m; ++i) {
@@ -293,7 +293,7 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
         err = VecMDot(mode[i], i, mode, dots);CHECK_PETSC_ERROR(err);
         for(int j=0; j < i; ++j) dots[j] *= -1.0;
         err = VecMAXPY(mode[i], i, dots, mode);CHECK_PETSC_ERROR(err);
-        err = VecNormalize(mode[i], PETSC_NULL);CHECK_PETSC_ERROR(err);
+        err = VecNormalize(mode[i], NULL);CHECK_PETSC_ERROR(err);
       } // for
       err = MatNullSpaceCreate(sieveMesh->comm(), PETSC_FALSE, m, mode, &nullsp[0]);CHECK_PETSC_ERROR(err);
       for(int i=0; i< m; ++i) {err = VecDestroy(&mode[i]);CHECK_PETSC_ERROR(err);}

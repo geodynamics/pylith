@@ -84,7 +84,7 @@ const PylithScalar pylith::friction::StaticFrictionData::_propertiesNondim[] = {
 const PylithScalar* pylith::friction::StaticFrictionData::_stateVarsNondim = 0;
 
 const PylithScalar pylith::friction::StaticFrictionData::_friction[] = {
-  1000001.32,
+  11.32e+5,
   1.0e+6,
 };
 
@@ -99,8 +99,8 @@ const PylithScalar pylith::friction::StaticFrictionData::_slipRate[] = {
 };
 
 const PylithScalar pylith::friction::StaticFrictionData::_normalTraction[] = {
-  -2.2,
-  0.8,
+  -2.2e+5,
+  0.8e+5,
 };
 
 const PylithScalar* pylith::friction::StaticFrictionData::_stateVarsUpdated = 0;

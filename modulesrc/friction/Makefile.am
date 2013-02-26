@@ -29,6 +29,7 @@ swig_sources = \
 	StaticFriction.i \
 	SlipWeakening.i \
 	SlipWeakeningTime.i \
+	SlipWeakeningTimeStable.i \
 	SlipWeakeningStress.i \
 	RateStateAgeing.i \
 	TimeWeakening.i
