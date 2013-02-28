@@ -85,6 +85,23 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh, DM dm, const Me
 } // constructor
 
 // ----------------------------------------------------------------------
+// Constructor with mesh, DM, local data, and metadata
+template<typename mesh_type>
+pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh, DM dm, Vec localVec, const Metadata& metadata) :
+  _mesh(mesh),
+  _dm(dm)
+{ // constructor
+  PetscErrorCode err;
+
+  _metadata["default"] = metadata;
+  err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
+  err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+  err = VecCopy(localVec, _localVec);CHECK_PETSC_ERROR(err);
+} // constructor
+
+// ----------------------------------------------------------------------
 // Constructor with field and subfields
 template<typename mesh_type>
 pylith::topology::Field<mesh_type>::Field(const Field& src, const int fields[], int numFields) :

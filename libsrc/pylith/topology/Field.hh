@@ -73,12 +73,11 @@ public :
    */
   Field(const mesh_type& mesh, DM dm, const Metadata& metadata);
 
-  /** Constructor with mesh, section, and metadata.
+  /** Constructor with mesh, DM, local data, and metadata
    *
    * @param mesh Finite-element mesh.
    */
-  Field(const mesh_type& mesh, const Metadata& metadata);
-
+  Field(const mesh_type& mesh, DM dm, Vec localVec, const Metadata& metadata);
 
   Field(const Field& src, const int fields[], int numFields);
 

@@ -36,15 +36,12 @@ int
 pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
 					    int materialId)
 { // numMaterialCells
-  int ncells = 0;
+  PetscInt ncells = 0;
 
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  if (!sieveMesh.isNull()) {
-    const ALE::Obj<Mesh::SieveMesh::label_sequence>& cells = 
-      sieveMesh->getLabelStratum("material-id", materialId);
-    if (!cells.isNull())
-      ncells = cells->size();
-  } // if
+  DM dmMesh = mesh.dmMesh();
+  assert(dmMesh);
+  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);CHECK_PETSC_ERROR(err);
+  return ncells;
 } // numMaterialCells
 
 
@@ -54,10 +51,8 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,
 					    const int numMaterials)
 { // checkMaterialIds
-  typedef Mesh::SieveMesh SieveMesh;
-
-  assert( (0 == numMaterials && 0 == materialIds) ||
-	  (0 < numMaterials && 0 != materialIds) );
+  assert((!numMaterials && !materialIds) || (numMaterials && materialIds));
+  PetscErrorCode err;
 
   // Create map with indices for each material
   std::map<int, int> materialIndex;
@@ -67,45 +62,42 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   int_array matCellCounts(numMaterials);
   matCellCounts = 0;
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveMesh::label_type>& materialsLabel = 
-    sieveMesh->getLabel("material-id");
+  DM       dmMesh = mesh.dmMesh();
+  PetscInt cStart, cEnd;
 
-  //mesh.view("===== MESH BEFORE CHECKING MATERIALS =====");
-  //materialsLabel->view("material-id");
+  assert(dmMesh);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  DMLabel materialsLabel;
+  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);CHECK_PETSC_ERROR(err);
+  assert(materialsLabel);
 
-  int* matBegin = materialIds;
-  int* matEnd = materialIds + numMaterials;
+  int *matBegin = materialIds;
+  int *matEnd   = materialIds + numMaterials;
   std::sort(matBegin, matEnd);
 
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellId = sieveMesh->getValue(materialsLabel, *c_iter);
-    const int* result = std::find(matBegin, matEnd, cellId);
+  for (PetscInt c = cStart; c < cEnd; ++c) {
+    PetscInt matId;
+
+    err = DMLabelGetValue(materialsLabel, c, &matId);CHECK_PETSC_ERROR(err);
+    const int *result = std::find(matBegin, matEnd, matId);
     if (result == matEnd) {
       std::ostringstream msg;
-      msg << "Material id '" << cellId << "' for cell '" << *c_iter
-	  << "' does not match the id of any available materials or interfaces.";
+      msg << "Material id '" << matId << "' for cell '" << c
+          << "' does not match the id of any available materials or interfaces.";
       throw std::runtime_error(msg.str());
     } // if
 
-    const int matIndex = materialIndex[cellId];
+    const int matIndex = materialIndex[matId];
     assert(0 <= matIndex && matIndex < numMaterials);
     ++matCellCounts[matIndex];
   } // for
 
   // Make sure each material has 
   int_array matCellCountsAll(matCellCounts.size());
-  MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-		matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());
+  err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
+                      matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());CHECK_PETSC_ERROR(err);
   for (int i=0; i < numMaterials; ++i) {
-    const int matId = materialIds[i];
+    const int matId    = materialIds[i];
     const int matIndex = materialIndex[matId];
     assert(0 <= matIndex && matIndex < numMaterials);
     if (matCellCountsAll[matIndex] <= 0) {
