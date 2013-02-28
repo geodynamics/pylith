@@ -126,47 +126,22 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
 #else
-    PetscSection coordSection;
-    Vec          coordinates;
-    PetscReal    lengthScale;
-    PetscInt     vStart, vEnd, vMax, verticesSize, dim, dimLocal = 0;
-
-    /* TODO Get rid of this and use the createScatterWithBC(numbering) code */
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+    DM  dmCoord;
+    Vec coordinates; 
+    topology::FieldBase::Metadata metadata;
+    metadata.label = "vertices";
+    metadata.vectorFieldType = topology::FieldBase::VECTOR;
+    err = DMGetCoordinateDM(dmMesh, &dmCoord);CHECK_PETSC_ERROR(err);
+    err = PetscObjectReference((PetscObject) dmCoord);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    err = DMPlexGetHybridBounds(dmMesh, PETSC_NULL, PETSC_NULL, PETSC_NULL, &vMax);CHECK_PETSC_ERROR(err);
-    if (vMax >= 0) {vEnd = PetscMin(vEnd, vMax);}
-    for(PetscInt vertex = vStart; vertex < vEnd; ++vertex) {
-      err = PetscSectionGetDof(coordSection, vertex, &dimLocal);CHECK_PETSC_ERROR(err);
-      if (dimLocal) break;
-    }
-    err = MPI_Allreduce(&dimLocal, &dim, 1, MPIU_INT, MPI_MAX, mesh.comm());CHECK_PETSC_ERROR(err);
-    verticesSize = vEnd - vStart;
-
-    PetscVec     coordVec;
-    PetscScalar *coords, *c;
-
-    err = VecCreate(mesh.comm(), &coordVec);CHECK_PETSC_ERROR(err);
-    err = VecSetSizes(coordVec, verticesSize*dim, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-    err = VecSetBlockSize(coordVec, dim);CHECK_PETSC_ERROR(err);
-    err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(coordinates, &c);CHECK_PETSC_ERROR(err);
-    for(PetscInt v = 0; v < vEnd - vStart; ++v) {
-      for(PetscInt d = 0; d < dim; ++d) {
-          coords[v*dim+d] = c[v*dim+d];
-      }
-    }
-    err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(coordinates, &c);CHECK_PETSC_ERROR(err);
-    err = VecScale(coordVec, lengthScale);CHECK_PETSC_ERROR(err);
-    err = PetscObjectSetName((PetscObject) coordVec, "vertices");CHECK_PETSC_ERROR(err);
+    topology::Field<mesh_type> field(mesh, dmCoord, coordinates, metadata);
+    field.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
+    field.scatterSectionToVector(metadata.label.c_str());
+    PetscVec vector = field.vector(metadata.label.c_str());
+    assert(vector);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
-    err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
+    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-    err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
 #endif
 #if 0
     const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
@@ -191,7 +166,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
 #endif
-    PetscInt cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
+    PetscInt vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
     err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
