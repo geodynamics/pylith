@@ -108,64 +108,28 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
     assert(cs);
 
-#if 0
     const char *context = DataWriter<mesh_type, field_type>::_context.c_str();
     DM          dmCoord;
+    Vec         coordinates; 
     PetscReal   lengthScale;
-
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinateDM(dmMesh, &dmCoord);CHECK_PETSC_ERROR(err);
-    topology::Field<mesh_type> coordinates(mesh, dmCoord, topology::FieldBase::Metadata());
-    coordinates.label("vertices");
-    coordinates.createScatterWithBC(mesh, PETSC_NULL, context);
-    coordinates.scatterSectionToVector(context);
-    PetscVec coordVec = coordinates.vector(context);
-    assert(coordVec);
-    err = VecScale(coordVec, lengthScale);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
-    err = VecView(coordVec, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-#else
-    DM  dmCoord;
-    Vec coordinates; 
     topology::FieldBase::Metadata metadata;
+
     metadata.label = "vertices";
     metadata.vectorFieldType = topology::FieldBase::VECTOR;
+    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinateDM(dmMesh, &dmCoord);CHECK_PETSC_ERROR(err);
     err = PetscObjectReference((PetscObject) dmCoord);CHECK_PETSC_ERROR(err);
     err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
     topology::Field<mesh_type> field(mesh, dmCoord, coordinates, metadata);
     field.createScatterWithBC(mesh, "", 0, metadata.label.c_str());
     field.scatterSectionToVector(metadata.label.c_str());
-    PetscVec vector = field.vector(metadata.label.c_str());
-    assert(vector);
+    PetscVec coordVector = field.vector(metadata.label.c_str());
+    assert(coordVector);
+    err = VecScale(coordVector, lengthScale);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
-    err = VecView(vector, _viewer);CHECK_PETSC_ERROR(err);
+    err = VecView(coordVector, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-#endif
-#if 0
-    const ALE::Obj<typename mesh_type::RealSection>& coordinatesSection = 
-      sieveMesh->hasRealSection("coordinates_dimensioned") ?
-      sieveMesh->getRealSection("coordinates_dimensioned") :
-      sieveMesh->getRealSection("coordinates");
-    assert(!coordinatesSection.isNull());
-    topology::FieldBase::Metadata metadata;
-    // :KLUDGE: We would like to use field_type for the coordinates
-    // field. However, the mesh coordinates are Field<mesh_type> and
-    // field_type can be Field<Mesh> (e.g., displacement field over a
-    // SubMesh).
-    const char* context = DataWriter<mesh_type, field_type>::_context.c_str();
-    topology::Field<mesh_type> coordinates(mesh, coordinatesSection, metadata);
-    coordinates.label("vertices");
 
-    coordinates.createScatterWithBC(mesh, vNumbering, context);
-    coordinates.scatterSectionToVector(context);
-    PetscVec coordinatesVector = coordinates.vector(context);
-    assert(coordinatesVector);
-    err = PetscViewerHDF5PushGroup(_viewer, "/geometry");CHECK_PETSC_ERROR(err);
-    err = VecView(coordinatesVector, _viewer);CHECK_PETSC_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer); CHECK_PETSC_ERROR(err);
-#endif
     PetscInt vStart, vEnd, cStart, cEnd, cMax, dof, conesSize, numCorners, numCornersLocal = 0;
 
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
