@@ -57,6 +57,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
   CPPUNIT_ASSERT(0 != _data);
 
   topology::Mesh mesh;
+  PetscErrorCode err;
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->filename);
@@ -72,45 +73,42 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void)
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);
-  CPPUNIT_ASSERT(submesh.dmMesh());
+  DM                dmMesh = submesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
 
   // Check vertices
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    submesh.sieveMesh()->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, int(vertices->size()));
+  IS              subpointIS;
+  const PetscInt *subpointMap;
+  PetscInt        vStart, vEnd;
 
-  int ipt = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt)
-    CPPUNIT_ASSERT_EQUAL(_data->verticesNoFault[ipt], *v_iter);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(_data->numVerticesNoFault, vEnd-vStart);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &subpointMap);CHECK_PETSC_ERROR(err);
+  for (PetscInt v = vStart; v < vEnd; ++v)
+    CPPUNIT_ASSERT_EQUAL(_data->verticesNoFault[v-vStart], subpointMap[v]);
 
   // Check cells
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh.sieveMesh()->heightStratum(1);
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = 
-    submesh.sieveMesh()->getSieve();
-  assert(!sieve.isNull());
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
+  PetscInt cStart, cEnd;
 
-  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), submesh.sieveMesh()->depth()));
+  err = DMPlexGetHeightStratum(dmMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, cEnd-cStart);
 
-  int icell = 0;
-  int index = 0;
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter, ++icell) {
-    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int coneSize = ncV.getSize();
-    const SieveSubMesh::point_type *cone = ncV.getPoints();
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
+  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    PetscInt *closure = NULL;
+    PetscInt  closureSize, numVertices = 0;
 
-    for(int v = 0; v < coneSize; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], cone[v]);
-    ncV.clear();
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    for (PetscInt p = 0; p < closureSize*2; p += 2) {
+      if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
+    }
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
+    for (PetscInt v = 0; v < numVertices; ++v, ++index)
+      CPPUNIT_ASSERT_EQUAL(_data->cellsNoFault[index], subpointMap[closure[v]]);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
+  err = ISRestoreIndices(subpointIS, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 } // testSubmesh
 
 // ----------------------------------------------------------------------
@@ -119,6 +117,7 @@ void
 pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 { // testSubmeshFault
   CPPUNIT_ASSERT(0 != _data);
+  PetscErrorCode err;
 
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
@@ -135,54 +134,52 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void)
 
   // Adjust topology
   faults::FaultCohesiveKin fault;
-  int firstFaultVertex    = 0;
-  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection(_data->faultLabel)->size();
-  int firstFaultCell      = mesh.sieveMesh()->getIntSection(_data->faultLabel)->size();
+  PetscInt firstFaultVertex = 0;
+  PetscInt firstLagrangeVertex, firstFaultCell;
+
+  err = DMPlexGetStratumSize(mesh.dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  firstFaultCell = firstLagrangeVertex;
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
   fault.adjustTopology(&mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
 
   // Create submesh
   topology::SubMesh submesh(mesh, _data->bcLabel);
-  CPPUNIT_ASSERT(!submesh.sieveMesh().isNull());
+  DM                dmMesh = submesh.dmMesh();
+  CPPUNIT_ASSERT(dmMesh);
 
   // Check vertices
-  const ALE::Obj<SieveSubMesh::label_sequence>& vertices = 
-    submesh.sieveMesh()->depthStratum(0);
-  const SieveSubMesh::label_sequence::iterator verticesEnd = vertices->end();
-  CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, int(vertices->size()));
+  IS              subpointIS;
+  const PetscInt *subpointMap;
+  PetscInt        vStart, vEnd;
 
-  int ipt = 0;
-  for (SieveSubMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt)
-    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[ipt], *v_iter);
-
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(_data->numVerticesFault, vEnd-vStart);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &subpointMap);CHECK_PETSC_ERROR(err);
+  for (PetscInt v = vStart; v < vEnd; ++v)
+    CPPUNIT_ASSERT_EQUAL(_data->verticesFault[v-vStart], subpointMap[v]);
   // Check cells
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    submesh.sieveMesh()->heightStratum(1);
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveSubMesh::sieve_type>& sieve = 
-    submesh.sieveMesh()->getSieve();
-  assert(!sieve.isNull());
-  CPPUNIT_ASSERT_EQUAL(_data->numCells, int(cells->size()));
+  PetscInt cStart, cEnd;
 
-  ALE::ISieveVisitor::NConeRetriever<SieveSubMesh::sieve_type> ncV(*sieve, (int) pow(sieve->getMaxConeSize(), submesh.sieveMesh()->depth()));
+  err = DMPlexGetHeightStratum(dmMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, cEnd-cStart);
 
-  int icell = 0;
-  int index = 0;
-  for (SieveSubMesh::label_sequence::iterator c_iter=cells->begin();
-       c_iter != cellsEnd;
-       ++c_iter, ++icell) {
-    ALE::ISieveTraversal<SieveSubMesh::sieve_type>::orientedClosure(*sieve, *c_iter, ncV);
-    const int coneSize = ncV.getSize();
-    const SieveSubMesh::point_type *cone = ncV.getPoints();
-    CPPUNIT_ASSERT_EQUAL(_data->numCorners, coneSize);
+  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    PetscInt *closure = NULL;
+    PetscInt  closureSize, numVertices = 0;
 
-    for(int v = 0; v < coneSize; ++v, ++index)
-      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], cone[v]);
-    ncV.clear();
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    for (PetscInt p = 0; p < closureSize*2; p += 2) {
+      if ((closure[p] >= vStart) && (closure[p] < vEnd)) closure[numVertices++] = closure[p];
+    }
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
+    for (PetscInt v = 0; v < numVertices; ++v, ++index)
+      CPPUNIT_ASSERT_EQUAL(_data->cellsFault[index], subpointMap[closure[v]]);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
+  err = ISRestoreIndices(subpointIS, &subpointMap);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 } // testSubmeshFault
 
 

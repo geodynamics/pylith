@@ -16,6 +16,15 @@
 //    \ | /
 //      3
 //
+// Sieve mesh with fault
+//      8---5
+//    / |   | \
+//   /  |   |  \
+//  3 0 | 2 | 1 6
+//   \  |   |  /
+//    \ |   | /
+//      7---4
+//
 mesh = {
   dimension = 2
   use-index-zero = true

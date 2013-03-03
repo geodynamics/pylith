@@ -39,11 +39,11 @@ const int pylith::bc::BoundaryMeshDataHex8::_cellsNoFault[] = {
 
 const int pylith::bc::BoundaryMeshDataHex8::_numVerticesFault = 8;
 const int pylith::bc::BoundaryMeshDataHex8::_verticesFault[] = {
-  2, 4, 6, 8, 10, 12, 14, 16
+  3, 5, 7, 9, 11, 13, 15, 17
 };
 const int pylith::bc::BoundaryMeshDataHex8::_cellsFault[] = {
-  2, 14, 16, 8,
-  4, 6, 12, 10,
+  3, 15, 17, 9,
+  5, 7, 13, 11,
 };
 
 pylith::bc::BoundaryMeshDataHex8::BoundaryMeshDataHex8(void)
