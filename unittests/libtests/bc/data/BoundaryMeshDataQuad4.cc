@@ -39,11 +39,11 @@ const int pylith::bc::BoundaryMeshDataQuad4::_cellsNoFault[] = {
 
 const int pylith::bc::BoundaryMeshDataQuad4::_numVerticesFault = 4;
 const int pylith::bc::BoundaryMeshDataQuad4::_verticesFault[] = {
-  2, 4, 6, 8,
+  3, 5, 7, 9,
 };
 const int pylith::bc::BoundaryMeshDataQuad4::_cellsFault[] = {
-  2, 8,
-  4, 6,
+  3, 9,
+  5, 7,
 };
 
 pylith::bc::BoundaryMeshDataQuad4::BoundaryMeshDataQuad4(void)
