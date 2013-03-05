@@ -47,11 +47,11 @@ void
 pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
                                               ALE::Obj<SieveFlexMesh>& faultBoundary,
                                               const topology::Mesh& mesh,
-                                              const ALE::Obj<topology::Mesh::IntSection>& groupField,
+                                              DMLabel groupField,
                                               const bool flipFault)
 { // createFault
   assert(0 != faultMesh);
-  assert(!groupField.isNull());
+  assert(groupField);
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -81,16 +81,24 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   const int debug = mesh.debug();
 
   // Create set with vertices on fault
-  const IntSection::chart_type& chart = groupField->getChart();
+  IS              pointIS;
+  const PetscInt *points;
+  PetscInt        numPoints, vStart, vEnd;
   TopologyOps::PointSet faultVertices; // Vertices on fault
 
-  const IntSection::chart_type::const_iterator chartEnd = chart.end();
-  for(IntSection::chart_type::const_iterator c_iter = chart.begin();
-      c_iter != chartEnd;
-      ++c_iter) {
-    assert(!sieveMesh->depth(*c_iter));
-    if (groupField->getFiberDimension(*c_iter))
-      faultVertices.insert(*c_iter);
+  err = DMLabelGetStratumIS(groupField, 1, &pointIS);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(pointIS, &numPoints);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  // Figure out offset between numberings
+  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
+  mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
+  for (PetscInt p = 0; p < numPoints; ++p) {
+    const PetscInt point    = points[p];
+    const PetscInt oldPoint = point-numCohesiveCells; // Convert to Sieve numbering
+
+    assert(point >= vStart);assert(point < vEnd);
+    faultVertices.insert(oldPoint);
   } // for
 
   // Create a sieve which captures the fault
@@ -127,22 +135,24 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
 
   // Convert fault to a DM
   if (depth == dim) {
-    DM             subdm;
-    DMLabel        label;
-    const char    *labelName = groupField->getName().c_str();
+    DM                 subdm;
+    DMLabel            label;
+    const char        *groupName, *labelName;
+    std::ostringstream tmp;
 
+    err = DMLabelGetName(groupField, &groupName);CHECK_PETSC_ERROR(err);
+#if 0
+    tmp << groupName << "_label";
+    labelName = tmp.str().c_str();
     // Put fault vertices in a label
     err = DMPlexCreateLabel(dmMesh, labelName);CHECK_PETSC_ERROR(err);
     err = DMPlexGetLabel(dmMesh, labelName, &label);CHECK_PETSC_ERROR(err);
-    const IntSection::chart_type& chart = groupField->getChart();
-    const IntSection::chart_type::const_iterator chartEnd = chart.end();
-    for(IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chartEnd; ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) {
-        err = DMLabelSetValue(label, *c_iter, 0);CHECK_PETSC_ERROR(err);
-      }
+    for(PetscInt p = 0; p < numPoints; ++p) {
+      err = DMLabelSetValue(label, points[p], 0);CHECK_PETSC_ERROR(err);
     }
+#endif
 
-    err = DMPlexCreateSubmesh(dmMesh, labelName, &subdm);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupName, &subdm);CHECK_PETSC_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
     // TODO: This leg will be unnecessary
@@ -181,6 +191,8 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     renumbering.clear();
     faultMesh->setDMMesh(dm);
   }
+  err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
 
   logger.stagePop();
 } // createFault
@@ -442,7 +454,7 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
       PetscInt value;
       //assert(extraCells == faultVertexOffsetDM);
       err = DMPlexGetLabelValue(complexMesh, (*name).c_str(), vertexDM, &value);CHECK_PETSC_ERROR(err);
-      if (value) {
+      if (value != -1) {
         err = DMPlexSetLabelValue(newMesh, (*name).c_str(), vertexRenumberDM[vertexDM], value);CHECK_PETSC_ERROR(err);
       }
     } // for

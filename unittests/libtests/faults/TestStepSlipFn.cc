@@ -248,6 +248,7 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != faultMesh);
   CPPUNIT_ASSERT(0 != slipfn);
+  PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -269,18 +270,24 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
-  int firstFaultVertex    = 0;
-  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(faultLabel)->size();
-  int firstFaultCell      = mesh->sieveMesh()->getIntSection(faultLabel)->size();
+  DM       dmMesh = mesh->dmMesh();
+  PetscInt firstFaultVertex = 0;
+  PetscInt firstLagrangeVertex, firstFaultCell;
+  DMLabel  groupField;
   const bool useLagrangeConstraints = true;
+
+  err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  firstFaultCell = firstLagrangeVertex;
   if (useLagrangeConstraints) {
-    firstFaultCell += mesh->sieveMesh()->getIntSection(faultLabel)->size();
+    firstFaultCell += firstLagrangeVertex;
   }
+  err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(groupField);
   ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  CPPUNIT_ASSERT(!sieveMesh.isNull());CPPUNIT_ASSERT(dmMesh);
   CohesiveTopology::createFault(faultMesh, faultBoundary,
-                                *mesh, sieveMesh->getIntSection(faultLabel));
+                                *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(faultLabel),
                            faultId,
@@ -292,17 +299,16 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
-  DM              dmMesh = faultMesh->dmMesh();
+  DM              faultDMMesh = faultMesh->dmMesh();
   IS              subpointIS;
   const PetscInt *points;
   PetscSection    coordSection;
   PetscInt        vStart, vEnd;
-  PetscErrorCode  err;
-  CPPUNIT_ASSERT(dmMesh);
+  CPPUNIT_ASSERT(faultDMMesh);
 
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
@@ -330,7 +336,7 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(faultDMMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
@@ -357,6 +363,7 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
 void
 pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruct& data)
 { // _testInitialize
+  PetscErrorCode err;
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii meshIO;
@@ -383,9 +390,14 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
   }
   ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
+  DM      dmMesh = mesh.dmMesh();
+  DMLabel groupField;
+
+  CPPUNIT_ASSERT(!sieveMesh.isNull());CPPUNIT_ASSERT(dmMesh);
+  err = DMPlexGetLabel(dmMesh, data.faultLabel, &groupField);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(groupField);
   CohesiveTopology::createFault(&faultMesh, faultBoundary,
-                                mesh, sieveMesh->getIntSection(data.faultLabel));
+                                mesh, groupField);
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(data.faultLabel),
                            data.faultId,
@@ -397,17 +409,16 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
-  DM              dmMesh = faultMesh.dmMesh();
+  DM              faultDMMesh = faultMesh.dmMesh();
   IS              subpointIS;
   const PetscInt *points;
   PetscSection    coordSection;
   PetscInt        vStart, vEnd;
-  PetscErrorCode  err;
-  CPPUNIT_ASSERT(dmMesh);
+  CPPUNIT_ASSERT(faultDMMesh);
 
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, vStart, vEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
@@ -435,7 +446,7 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
   err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
+  err = DMSetCoordinatesLocal(faultDMMesh, coordVec);CHECK_PETSC_ERROR(err);
 
   // Setup databases
   spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");

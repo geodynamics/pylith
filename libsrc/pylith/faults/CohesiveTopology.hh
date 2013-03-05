@@ -55,7 +55,7 @@ public :
   void createFault(topology::SubMesh* faultMesh,
 		   ALE::Obj<SieveFlexMesh>& faultBoundary,
 		   const topology::Mesh& mesh,
-		   const ALE::Obj<topology::Mesh::IntSection>& groupField,
+		   DMLabel groupField,
 		   const bool flipFault =false);
 
   /** Create cohesive cells.
