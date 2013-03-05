@@ -116,24 +116,30 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     ALE::Obj<SieveFlexMesh> faultBoundary;
   
     // Get group of vertices associated with fault
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
-    assert(!sieveMesh.isNull());
+    DM dmMesh = mesh->dmMesh();
+    assert(dmMesh);
     
     if (!_useFaultMesh) {
-      if (!sieveMesh->hasIntSection(label())) {
-	std::ostringstream msg;
-	msg << "Mesh missing group of vertices '" << label()
-	    << "' for fault interface condition.";
-	throw std::runtime_error(msg.str());
+      DMLabel        groupField;
+      PetscBool      has;
+      PetscErrorCode err;
+
+      err = DMPlexHasLabel(dmMesh, label(), &has);CHECK_PETSC_ERROR(err);
+      if (!has) {
+        std::ostringstream msg;
+        msg << "Mesh missing group of vertices '" << label()
+            << "' for fault interface condition.";
+        throw std::runtime_error(msg.str());
       } // if  
-      const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-	sieveMesh->getIntSection(label());
-      assert(!groupField.isNull());
+      err = DMPlexGetLabel(dmMesh, label(), &groupField);CHECK_PETSC_ERROR(err);
       CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
-				    flipFault);
+                                    flipFault);
       
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
-			       *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
+      const ALE::Obj<topology::Mesh::IntSection>& oldGroupField = 
+        mesh->sieveMesh()->getIntSection(label());
+      assert(!oldGroupField.isNull());
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, oldGroupField, id(), 
+                               *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       
     } else {
       const int faultDim = 2;

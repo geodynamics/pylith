@@ -324,6 +324,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(faultMesh);
   CPPUNIT_ASSERT(tract);
+  PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
@@ -347,15 +348,19 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
   const int spaceDim = cs.spaceDim();
 
-  PetscInt       labelSize;
-  PetscErrorCode err;
-  err = DMPlexGetStratumSize(mesh->dmMesh(), faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
+  DM       dmMesh = mesh->dmMesh();
+  PetscInt labelSize;
+  err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &labelSize);CHECK_PETSC_ERROR(err);
 
   // Create fault mesh
   PetscInt firstFaultVertex    = 0;
   PetscInt firstLagrangeVertex = labelSize;
   PetscInt firstFaultCell      = labelSize;
+  DMLabel  groupField;
   const bool useLagrangeConstraints = true;
+
+  err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(groupField);
   if (useLagrangeConstraints) {
     firstFaultCell += labelSize;
   } // if
@@ -363,7 +368,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
   CohesiveTopology::createFault(faultMesh, faultBoundary,
-                                *mesh, sieveMesh->getIntSection(faultLabel));
+                                *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
                            sieveMesh->getIntSection(faultLabel),
                            faultId,
