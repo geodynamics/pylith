@@ -113,7 +113,7 @@ class PowerLawPlaneStrainTimeDep(ElasticMaterialApp):
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
     self.timeScale = 1.0
-    self.densityScale = 1.0e+3
+    self.densityScale = muA / (self.lengthScale / self.timeScale)**2
     self.strainRateScale = 1.0/self.timeScale
 
     self.dbProperties = numpy.array([ [densityA, vsA, vpA, \

@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_timeScale 
 
 const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_dtStableImplicit =   8.88888889e+06;
 
@@ -148,11 +148,11 @@ const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_stateVars[
 };
 
 const PylithScalar pylith::materials::MaxwellIsotropic3DTimeDepData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.00000000e+00,
   4.44444444e+07,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   1.28000000e-01,
   3.47222222e+09,

@@ -178,7 +178,7 @@ class GenMaxwellQpQsIsotropic3DTimeDep(ElasticMaterialApp):
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
     self.timeScale = 1.0
-    self.densityScale = 1.0e+3
+    self.densityScale = muA / (self.lengthScale / self.timeScale)**2
 
     propA = [densityA, vsA, vpA] + shearRatioA + shearViscosityA + bulkRatioA + bulkViscosityA
     propB = [densityB, vsB, vpB] + shearRatioB + shearViscosityB + bulkRatioB + bulkViscosityB

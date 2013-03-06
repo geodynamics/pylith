@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_tim
 
 const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_dtStableImplicit =   8.88888889e+05;
 
@@ -326,7 +326,7 @@ const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_sta
 };
 
 const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.66666667e+00,
   5.00000000e-01,
@@ -341,7 +341,7 @@ const PylithScalar pylith::materials::GenMaxwellQpQsIsotropic3DTimeDepData::_pro
   1.33333333e+08,
   1.77777778e+07,
   5.33333333e+09,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   2.13333333e-01,
   2.00000000e-01,

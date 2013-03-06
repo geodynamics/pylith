@@ -123,7 +123,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   CPPUNIT_ASSERT(0 != initialStressE);
   err = VecGetArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
   for(int i = 0; i < fiberDim; ++i) {
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[off+i]/initialStressE[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[off+i]/initialStressE[i]*data.pressureScale, tolerance);
   }
   err = VecRestoreArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
 
@@ -218,7 +218,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   const int numVarsQuadPt = data.numVarsQuadPt;
 
   // Test cell arrays
-  const PylithScalar* propertiesE = data.properties;
+  const PylithScalar* propertiesE = data.propertiesNondim;
   CPPUNIT_ASSERT(0 != propertiesE);
   const scalar_array& properties = material._propertiesCell;
   size_t size = data.numLocs*data.numPropsQuadPt;
@@ -227,7 +227,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i],
 				 tolerance);
 
-  const PylithScalar* stateVarsE = data.stateVars;
+  const PylithScalar* stateVarsE = data.stateVarsNondim;
   CPPUNIT_ASSERT( (0 < numVarsQuadPt && 0 != stateVarsE) ||
 		  (0 == numVarsQuadPt && 0 == stateVarsE) );
   const scalar_array& stateVars = material._stateVarsCell;
@@ -243,7 +243,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   size = data.numLocs*tensorSize;
   CPPUNIT_ASSERT_EQUAL(size, initialStress.size());
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i],
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[i]/initialStressE[i]*data.pressureScale,
 				 tolerance);
 
   const PylithScalar* initialStrainE = data.initialStrain;
@@ -294,7 +294,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   CPPUNIT_ASSERT_EQUAL(size, density.size());
   const PylithScalar tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i]*data.densityScale, tolerance);
 } // testCalcDensity
     
 // ----------------------------------------------------------------------
@@ -338,7 +338,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   CPPUNIT_ASSERT_EQUAL(size, stress.size());
   const PylithScalar tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i]*data.pressureScale, tolerance);
 } // testCalcStress
     
 // ----------------------------------------------------------------------
@@ -398,7 +398,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   CPPUNIT_ASSERT_EQUAL(size, elasticConsts.size());
   const PylithScalar tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i],
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i]*data.pressureScale,
 				 tolerance);
 } // testCalcDerivElastic
     
@@ -492,7 +492,7 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
   const PylithScalar dt = material.stableTimeStepExplicit(mesh, &quadrature);
 
   const PylithScalar tolerance = 1.0e-06;
-  const PylithScalar dtE = data.dtStableExplicit / 1000.0 * 2.0;
+  const PylithScalar dtE = 2.0 / 5196.15242;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
 } // testStableTimeStepExplicit
 
@@ -810,6 +810,10 @@ pylith::materials::TestElasticMaterial::_initialize(
   // Set up coordinates
   spatialdata::geocoords::CSCart cs;
   spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(data->lengthScale);
+  normalizer.pressureScale(data->pressureScale);
+  normalizer.timeScale(data->timeScale);
+  normalizer.densityScale(data->densityScale);
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);

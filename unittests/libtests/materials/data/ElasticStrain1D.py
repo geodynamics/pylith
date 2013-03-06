@@ -75,7 +75,7 @@ class ElasticStrain1D(ElasticMaterialApp):
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
     self.timeScale = 1.0
-    self.densityScale = 1.0e+3
+    self.densityScale = muA / (self.lengthScale / self.timeScale)**2
     
     self.dbProperties = numpy.array([ [densityA, vsA, vpA],
                                       [densityB, vsB, vpB] ], 
@@ -119,7 +119,7 @@ class ElasticStrain1D(ElasticMaterialApp):
     self.stress = stress
     self.elasticConsts = elasticConsts
 
-    self.dtStableExplicit = 1000.0 / vpA
+    self.dtStableExplicit = (1000.0 / vpA) / self.timeScale
 
     return
 

@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::ElasticIsotropic3DData::_timeScale =   1.0
 
 const PylithScalar pylith::materials::ElasticIsotropic3DData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::ElasticIsotropic3DData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::ElasticIsotropic3DData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::ElasticIsotropic3DData::_dtStableImplicit =   1.00000000e+99;
 
@@ -88,10 +88,10 @@ const PylithScalar pylith::materials::ElasticIsotropic3DData::_properties[] = {
 const PylithScalar* pylith::materials::ElasticIsotropic3DData::_stateVars = 0;
 
 const PylithScalar pylith::materials::ElasticIsotropic3DData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.00000000e+00,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   1.28000000e-01,
 };
