@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_timeScale
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_dtStableImplicit =   4.44444444e+06;
 
@@ -146,13 +146,13 @@ const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_stateVars
 };
 
 const PylithScalar pylith::materials::PowerLawPlaneStrainTimeDepData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.00000000e+00,
   1.00000000e-06,
   8.88888889e+01,
   1.00000000e+00,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   1.28000000e-01,
   1.00000000e-06,

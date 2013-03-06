@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::ElasticPlaneStressData::_timeScale =   1.0
 
 const PylithScalar pylith::materials::ElasticPlaneStressData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::ElasticPlaneStressData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::ElasticPlaneStressData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::ElasticPlaneStressData::_dtStableImplicit =   1.00000000e+99;
 
@@ -88,10 +88,10 @@ const PylithScalar pylith::materials::ElasticPlaneStressData::_properties[] = {
 const PylithScalar* pylith::materials::ElasticPlaneStressData::_stateVars = 0;
 
 const PylithScalar pylith::materials::ElasticPlaneStressData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.00000000e+00,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   1.28000000e-01,
 };

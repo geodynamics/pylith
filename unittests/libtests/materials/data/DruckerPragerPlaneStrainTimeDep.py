@@ -112,8 +112,8 @@ class DruckerPragerPlaneStrainTimeDep(ElasticMaterialApp):
 
     self.lengthScale = 1.0e+3
     self.pressureScale = muA
-    self.densityScale = 1.0e+3
     self.timeScale = 1.0
+    self.densityScale = muA / (self.lengthScale / self.timeScale)**2
 
     self.dbProperties = numpy.array([ [densityA, vsA, vpA, \
                                        frictionAngleA, cohesionA, \

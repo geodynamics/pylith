@@ -43,7 +43,7 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_time
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_pressureScale =   2.25000000e+10;
 
-const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_densityScale =   1.00000000e+03;
+const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_densityScale =   2.25000000e+04;
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_dtStableImplicit =   1.00000000e+10;
 
@@ -137,13 +137,13 @@ const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_stat
 };
 
 const PylithScalar pylith::materials::DruckerPragerPlaneStrainElasticData::_propertiesNondim[] = {
-  2.50000000e+00,
+  1.11111111e-01,
   1.00000000e+00,
   1.00000000e+00,
   2.30940108e-01,
   1.60000000e-05,
   1.48583084e-01,
-  2.00000000e+00,
+  8.88888889e-02,
   1.28000000e-01,
   1.28000000e-01,
   1.89338478e-01,
