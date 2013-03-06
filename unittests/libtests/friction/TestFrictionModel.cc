@@ -130,8 +130,6 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
-  const PylithScalar propertiesE[] = { 0.6, 1000000, 0.4, 1000000 };
-
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
@@ -139,6 +137,11 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   PetscErrorCode     err;
   _initialize(&mesh, &fault, &friction, &data);
   CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
+
+  const PylithScalar propertiesE[2*2] = {
+    0.6, 1000000/data.pressureScale,
+    0.4, 1000000/data.pressureScale,
+  };
 
   DM       faultDMMesh = fault.faultMesh().dmMesh();
   PetscInt vStart, vEnd;
@@ -233,17 +236,19 @@ pylith::friction::TestFrictionModel::testGetField(void)
 void
 pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 { // testRetrievePropsStateVars
-  const PylithScalar propertiesE[] = { 0.4, 1000000 };
-  const size_t numProperties = 2;
-  const PylithScalar* stateVarsE = 0;
-  const size_t numStateVars = 0;
-  const int vertex = 2;
-
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
+
+  const size_t numProperties = 2;
+  const PylithScalar propertiesE[numProperties] = {
+    0.4, 1000000/data.pressureScale,
+  };
+  const PylithScalar* stateVarsE = 0;
+  const size_t numStateVars = 0;
+  const int vertex = 2;
 
   friction.retrievePropsStateVars(vertex);
 
@@ -280,31 +285,34 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
-  const PylithScalar t = 1.5;
-  const PylithScalar slip = 1.2;
-  const PylithScalar slipRate = -2.3;
-  const PylithScalar normalTraction = -2.4;
-  const PylithScalar frictionCoef = 0.45;
-  const PylithScalar cohesion = 1000000;
-  const PylithScalar frictionE = -normalTraction*frictionCoef + cohesion;
-  const int vertex = 2;
-
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
+  const PylithScalar t = 1.5;
+  const PylithScalar slip = 1.2;
+  const PylithScalar slipRate = -2.3;
+  const PylithScalar normalTraction = -2.4e-3;
+  const PylithScalar frictionCoef = 0.4;
+  const PylithScalar cohesion = 1.0e+6/data.pressureScale;
+  const PylithScalar frictionE = -normalTraction*frictionCoef + cohesion;
+  const int vertex = 2;
+
   friction.timeStep(data.dt);
   friction.retrievePropsStateVars(vertex);
-  const PylithScalar frictionV = 
-    friction.calcFriction(t, slip, slipRate, normalTraction);
+  const PylithScalar frictionV = friction.calcFriction(t, slip, slipRate, normalTraction);
 
   const PylithScalar tolerance = 1.0e-6;
-  if (0.0 != frictionE)
+  if (0.0 != frictionE) {
+    std::cout << "frictionE: " << frictionE
+	      << ", frictionV: " << frictionV
+	      << std::endl;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, frictionV/frictionE, tolerance);
-  else
+  } else {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, frictionV, tolerance);
+  } // if/else
 } // testCalcFriction
     
 // ----------------------------------------------------------------------
@@ -782,6 +790,10 @@ pylith::friction::TestFrictionModel::_initialize(
   // Set up coordinates
   spatialdata::geocoords::CSCart cs;
   spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(data->lengthScale);
+  normalizer.pressureScale(data->pressureScale);
+  normalizer.timeScale(data->timeScale);
+  normalizer.densityScale(data->densityScale);
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
@@ -817,6 +829,7 @@ pylith::friction::TestFrictionModel::_initialize(
   fault->quadrature(&quadrature);
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
       &firstFaultCell, flipFault);
+  fault->normalizer(normalizer);
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
