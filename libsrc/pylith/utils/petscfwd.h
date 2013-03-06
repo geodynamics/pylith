@@ -49,6 +49,12 @@ typedef struct _p_LineSearch* PetscSNESLineSearch;
 /// forward declaration for PETSc PC
 typedef struct _p_PC* PetscPC;
 
+/// forward declaration for PETSc Mat
+typedef struct _p_DM* PetscDM;
+
+/// forward declaration for PETSc Mat
+typedef struct _p_IS* PetscIS;
+
 /// forward declaration for PETSc ISLocalToGlobalMapping
 typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 
