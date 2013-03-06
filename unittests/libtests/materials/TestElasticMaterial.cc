@@ -61,7 +61,7 @@ pylith::materials::TestElasticMaterial::testDBInitialStress(void)
   ElasticIsotropic3D material;
   material.dbInitialStress(&db);
   
-  CPPUNIT_ASSERT(0 != material._dbInitialStress);
+  CPPUNIT_ASSERT(material._dbInitialStress);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStress->label()));
 } // testDBInitialStress
 
@@ -77,7 +77,7 @@ pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
   ElasticIsotropic3D material;
   material.dbInitialStrain(&db);
   
-  CPPUNIT_ASSERT(0 != material._dbInitialStrain);
+  CPPUNIT_ASSERT(material._dbInitialStrain);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStrain->label()));
 } // testDBInitialStrain
 
@@ -93,11 +93,11 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh     = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
@@ -110,7 +110,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   const int numQuadPts = data.numLocs;
 
   // Test initialStress field
-  CPPUNIT_ASSERT(0 != material._initialFields);
+  CPPUNIT_ASSERT(material._initialFields);
   PetscSection stressSection = material._initialFields->get("initial stress").petscSection();
   Vec          stressVec     = material._initialFields->get("initial stress").localVector();
   CPPUNIT_ASSERT(stressSection);CPPUNIT_ASSERT(stressVec);
@@ -120,7 +120,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
   const PylithScalar *initialStressE = data.initialStress;
   PetscScalar        *initialStress;
-  CPPUNIT_ASSERT(0 != initialStressE);
+  CPPUNIT_ASSERT(initialStressE);
   err = VecGetArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
   for(int i = 0; i < fiberDim; ++i) {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStress[off+i]/initialStressE[i]*data.pressureScale, tolerance);
@@ -128,7 +128,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   err = VecRestoreArray(stressVec, &initialStress);CHECK_PETSC_ERROR(err);
 
   // Test initialStrain field
-  CPPUNIT_ASSERT(0 != material._initialFields);
+  CPPUNIT_ASSERT(material._initialFields);
   PetscSection strainSection = material._initialFields->get("initial strain").petscSection();
   Vec          strainVec     = material._initialFields->get("initial strain").localVector();
   fiberDim = numQuadPts * tensorSize;
@@ -137,7 +137,7 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
   const PylithScalar *initialStrainE = data.initialStrain;
   PetscScalar        *initialStrain;
-  CPPUNIT_ASSERT(0 != initialStrainE);
+  CPPUNIT_ASSERT(initialStrainE);
   err = VecGetArray(strainVec, &initialStrain);CHECK_PETSC_ERROR(err);
   for(int i = 0; i < fiberDim; ++i) {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[off+i]/initialStrainE[i], tolerance);
@@ -196,11 +196,11 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh     = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
@@ -219,7 +219,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 
   // Test cell arrays
   const PylithScalar* propertiesE = data.propertiesNondim;
-  CPPUNIT_ASSERT(0 != propertiesE);
+  CPPUNIT_ASSERT(propertiesE);
   const scalar_array& properties = material._propertiesCell;
   size_t size = data.numLocs*data.numPropsQuadPt;
   CPPUNIT_ASSERT_EQUAL(size, properties.size());
@@ -238,7 +238,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 				 tolerance);
 
   const PylithScalar* initialStressE = data.initialStress;
-  CPPUNIT_ASSERT(0 != initialStressE);
+  CPPUNIT_ASSERT(initialStressE);
   const scalar_array& initialStress = material._initialStressCell;
   size = data.numLocs*tensorSize;
   CPPUNIT_ASSERT_EQUAL(size, initialStress.size());
@@ -247,7 +247,7 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 				 tolerance);
 
   const PylithScalar* initialStrainE = data.initialStrain;
-  CPPUNIT_ASSERT(0 != initialStrainE);
+  CPPUNIT_ASSERT(initialStrainE);
   const scalar_array& initialStrain = material._initialStrainCell;
   size = data.numLocs*tensorSize;
   CPPUNIT_ASSERT_EQUAL(size, initialStrain.size());
@@ -268,11 +268,11 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
@@ -289,7 +289,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   const int numQuadPts = data.numLocs;
 
   const PylithScalar* densityE = data.density;
-  CPPUNIT_ASSERT(0 != densityE);
+  CPPUNIT_ASSERT(densityE);
   const size_t size = numQuadPts;
   CPPUNIT_ASSERT_EQUAL(size, density.size());
   const PylithScalar tolerance = 1.0e-06;
@@ -309,11 +309,11 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
@@ -333,7 +333,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   const scalar_array& stress = material.calcStress(strain);
 
   const PylithScalar* stressE = data.stress;
-  CPPUNIT_ASSERT(0 != stressE);
+  CPPUNIT_ASSERT(stressE);
   const size_t size = numQuadPts * tensorSize;
   CPPUNIT_ASSERT_EQUAL(size, stress.size());
   const PylithScalar tolerance = 1.0e-06;
@@ -353,10 +353,10 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
+  PetscInt numCells;
   PetscErrorCode  err;
 
   assert(dmMesh);
@@ -393,7 +393,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
     } // switch
 
   const PylithScalar* elasticConstsE = data.elasticConsts;
-  CPPUNIT_ASSERT(0 != elasticConstsE);
+  CPPUNIT_ASSERT(elasticConstsE);
   const size_t size = numQuadPts * numElasticConsts;
   CPPUNIT_ASSERT_EQUAL(size, elasticConsts.size());
   const PylithScalar tolerance = 1.0e-06;
@@ -423,11 +423,11 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh     = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
@@ -521,8 +521,8 @@ pylith::materials::TestElasticMaterial::tearDown(void)
 void
 pylith::materials::TestElasticMaterial::test_calcDensity(void)
 { // _testCalcDensity
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   const int numLocs = data->numLocs;
@@ -555,8 +555,8 @@ pylith::materials::TestElasticMaterial::test_calcDensity(void)
 void
 pylith::materials::TestElasticMaterial::test_calcStress(void)
 { // _testCalcStress
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   const bool computeStateVars = true;
@@ -594,7 +594,7 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 			     computeStateVars);
 
     const PylithScalar* stressE = &data->stress[iLoc*tensorSize];
-    CPPUNIT_ASSERT(0 != stressE);
+    CPPUNIT_ASSERT(stressE);
 
     const PylithScalar tolerance = (8 == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-04;
     for (int i=0; i < tensorSize; ++i)
@@ -612,8 +612,8 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 void
 pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 { // _testCalcElasticConsts
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   int numConsts = 0;
@@ -664,7 +664,7 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 				    &initialStrain[0], initialStrain.size());
 
     const PylithScalar* elasticConstsE = &data->elasticConsts[iLoc*numConsts];
-    CPPUNIT_ASSERT(0 != elasticConstsE);
+    CPPUNIT_ASSERT(elasticConstsE);
     
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
     for (int i=0; i < numConsts; ++i)
@@ -684,8 +684,8 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 void
 pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 { // test_updateStateVars
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   const bool computeStateVars = true;
@@ -740,8 +740,8 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 void
 pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 { // test_stableTimeStepImplicit
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   const PylithScalar dt =
@@ -759,8 +759,8 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 void
 pylith::materials::TestElasticMaterial::test_stableTimeStepExplicit(void)
 { // test_stableTimeStepExplicit
-  CPPUNIT_ASSERT(0 != _matElastic);
-  CPPUNIT_ASSERT(0 != _dataElastic);
+  CPPUNIT_ASSERT(_matElastic);
+  CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
 
   const PylithScalar minCellWidth = 1000.0;
@@ -799,9 +799,9 @@ pylith::materials::TestElasticMaterial::_initialize(
 					  ElasticStrain1D* material,
 					  const ElasticStrain1DData* data)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != material);
-  CPPUNIT_ASSERT(0 != data);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(material);
+  CPPUNIT_ASSERT(data);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/line3.mesh");
@@ -847,11 +847,11 @@ pylith::materials::TestElasticMaterial::_initialize(
 
   // Get cells associated with material
   const int materialId = 24;
-  DM              dmMesh = mesh->dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh->dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);

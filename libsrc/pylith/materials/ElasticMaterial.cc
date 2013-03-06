@@ -104,11 +104,11 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   assert(0 != _properties);
   assert(0 != _stateVars);
 
-  PetscSection   propertiesSection = _properties->petscSection();
-  Vec            propertiesVec     = _properties->localVector();
-  PetscScalar   *propertiesArray;
-  PetscInt       dof, off;
-  PetscErrorCode err;
+  PetscSection propertiesSection = _properties->petscSection();
+  PetscVec propertiesVec = _properties->localVector();
+  PetscScalar *propertiesArray;
+  PetscInt dof, off;
+  PetscErrorCode err = 0;
 
   assert(propertiesSection);assert(propertiesVec);
   err = PetscSectionGetDof(propertiesSection, cell, &dof);CHECK_PETSC_ERROR(err);
@@ -119,11 +119,11 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
 
   if (hasStateVars()) {
-    PetscSection   stateVarsSection = _stateVars->petscSection();
-    Vec            stateVarsVec     = _stateVars->localVector();
-    PetscScalar   *stateVarsArray;
-    PetscInt       dof, off;
-    PetscErrorCode err;
+    PetscSection stateVarsSection = _stateVars->petscSection();
+    PetscVec stateVarsVec = _stateVars->localVector();
+    PetscScalar *stateVarsArray;
+    PetscInt dof, off;
+    PetscErrorCode err = 0;
 
     assert(stateVarsSection);assert(stateVarsVec);
     err = PetscSectionGetDof(stateVarsSection, cell, &dof);CHECK_PETSC_ERROR(err);
@@ -138,11 +138,11 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
   _initialStrainCell = 0.0;
   if (0 != _initialFields) {
     if (_initialFields->hasField("initial stress")) {
-      PetscSection   stressSection = _initialFields->get("initial stress").petscSection();
-      Vec            stressVec     = _initialFields->get("initial stress").localVector();
-      PetscScalar   *stressArray;
-      PetscInt       dof, off;
-      PetscErrorCode err;
+      PetscSection stressSection = _initialFields->get("initial stress").petscSection();
+      PetscVec stressVec     = _initialFields->get("initial stress").localVector();
+      PetscScalar *stressArray;
+      PetscInt dof, off;
+      PetscErrorCode err = 0;
 
       assert(stressSection);assert(stressVec);
       err = PetscSectionGetDof(stressSection, cell, &dof);CHECK_PETSC_ERROR(err);
@@ -153,11 +153,11 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
       err = VecRestoreArray(stressVec, &stressArray);CHECK_PETSC_ERROR(err);
     } // if
     if (_initialFields->hasField("initial strain")) {
-      PetscSection   strainSection = _initialFields->get("initial strain").petscSection();
-      Vec            strainVec     = _initialFields->get("initial strain").localVector();
-      PetscScalar   *strainArray;
-      PetscInt       dof, off;
-      PetscErrorCode err;
+      PetscSection strainSection = _initialFields->get("initial strain").petscSection();
+      PetscVec strainVec = _initialFields->get("initial strain").localVector();
+      PetscScalar *strainArray;
+      PetscInt dof, off;
+      PetscErrorCode err = 0;
 
       assert(strainSection);assert(strainVec);
       err = PetscSectionGetDof(strainSection, cell, &dof);CHECK_PETSC_ERROR(err);
@@ -255,10 +255,10 @@ pylith::materials::ElasticMaterial::updateStateVars(
 		     &_initialStrainCell[iQuad*_tensorSize], _tensorSize);
   
   PetscSection stateVarsSection = _stateVars->petscSection();
-  Vec          stateVarsVec     = _stateVars->localVector();
+  PetscVec stateVarsVec = _stateVars->localVector();
   PetscScalar *stateVarsArray;
-  PetscInt     dof, off;
-  PetscErrorCode err;
+  PetscInt dof, off;
+  PetscErrorCode err = 0;
   assert(stateVarsSection);assert(stateVarsVec);
 
   err = PetscSectionGetDof(stateVarsSection, cell, &dof);CHECK_PETSC_ERROR(err);
@@ -287,11 +287,11 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
   // Get cells associated with material
-  DM              dmMesh = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
@@ -299,9 +299,9 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 
   // Setup field if necessary.
-  PetscSection fieldSection = PETSC_NULL;
-  PetscVec fieldVec = PETSC_NULL;
-  PetscScalar* fieldArray = PETSC_NULL;
+  PetscSection fieldSection = NULL;
+  PetscVec fieldVec = NULL;
+  PetscScalar* fieldArray = NULL;
   PetscInt dof, off;
   if (field) {
     const int fiberDim = 1*numQuadPts;
@@ -392,12 +392,12 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   assert(_initialStrainCell.size() == numQuadPts*_tensorSize);
 
   // Get cells associated with material
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   assert(dmMesh);
-  IS              cellIS;
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
   err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
@@ -405,7 +405,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 
   // Setup field if necessary.
   PetscSection fieldSection;
-  Vec          fieldVec;
+  PetscVec fieldVec;
   PetscScalar *fieldArray;
   if (field) {
     const int fiberDim = 1*numQuadPts;
@@ -441,7 +441,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   const int numBasis = quadrature->numBasis();
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
-  Vec          coordVec;
+  PetscVec coordVec;
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
@@ -451,8 +451,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     retrievePropsAndVars(cell);
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    const PetscScalar *coords = NULL;
+    PetscInt coordsSize;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -502,15 +502,15 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
     const int numQuadPts = _numQuadPts;
 
     PetscSection fieldSection = field->petscSection();
-    Vec          fieldVec     = field->localVector();
+    PetscVec fieldVec = field->localVector();
     PetscScalar *fieldArray;
     // Get cells associated with material
-    DM dmMesh = mesh.dmMesh();
+    PetscDM dmMesh = mesh.dmMesh();
     assert(dmMesh);
-    IS              cellIS;
+    PetscIS cellIS;
     const PetscInt *cells;
-    PetscInt        numCells;
-    PetscErrorCode  err;
+    PetscInt numCells;
+    PetscErrorCode err = 0;
 
     err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
     err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
@@ -613,11 +613,11 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 
   // Get cells associated with material
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  DM              dmMesh = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
@@ -627,7 +627,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
-  Vec          coordVec;
+  PetscVec coordVec;
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
@@ -646,7 +646,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
   initialStress.allocate();
   initialStress.zero();
   PetscSection initialStressSection = initialStress.petscSection();
-  Vec          initialStressVec     = initialStress.localVector();
+  PetscVec initialStressVec = initialStress.localVector();
 
   // Setup databases for querying
   _dbInitialStress->open();
@@ -695,7 +695,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
     quadrature->retrieveGeometry(*c_iter);
 #else
     const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscInt coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
@@ -766,11 +766,11 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 
   // Get cells associated with material
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  DM              dmMesh = mesh.dmMesh();
-  IS              cellIS;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscIS cellIS;
   const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscInt numCells;
+  PetscErrorCode err = 0;
 
   assert(dmMesh);
   err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
@@ -780,7 +780,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
-  Vec          coordVec;
+  PetscVec coordVec;
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   assert(coordSection);assert(coordVec);
@@ -799,7 +799,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   initialStrain.allocate();
   initialStrain.zero();
   PetscSection initialStrainSection = initialStrain.petscSection();
-  Vec          initialStrainVec     = initialStrain.localVector();
+  PetscVec initialStrainVec = initialStrain.localVector();
 
   // Setup databases for querying
   _dbInitialStrain->open();
@@ -848,7 +848,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
     quadrature->retrieveGeometry(*c_iter);
 #else
     const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscInt coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
