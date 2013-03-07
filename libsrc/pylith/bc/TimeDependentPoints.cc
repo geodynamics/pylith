@@ -34,11 +34,6 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::TimeDependentPoints::TimeDependentPoints(void)
 { // constructor
@@ -83,8 +78,7 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 { // _queryDatabases
   const PylithScalar timeScale = _getNormalizer().timeScale();
   const PylithScalar rateScale = valueScale / timeScale;
-  Vec v;
-  PetscErrorCode err;
+  PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
@@ -124,52 +118,58 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
 
   _parameters->add("value", "value", topology::FieldBase::VERTICES_FIELD, numBCDOF);
-  _parameters->get("value").vectorFieldType(topology::FieldBase::OTHER);
-  _parameters->get("value").scale(valueScale);
-  _parameters->get("value").allocate();
-  v = _parameters->get("value").localVector();assert(v);
-  err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::Mesh>& value = _parameters->get("value");
+  value.vectorFieldType(topology::FieldBase::OTHER);
+  value.scale(valueScale);
+  value.allocate();
+  PetscVec valueVec = value.localVector();assert(valueVec);
+  err = VecSet(valueVec, 0.0);CHECK_PETSC_ERROR(err);
   
   if (_dbInitial) {
     const std::string& fieldLabel = std::string("initial_") + std::string(fieldName);
     _parameters->add("initial", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    _parameters->get("initial").vectorFieldType(topology::FieldBase::OTHER);
-    _parameters->get("initial").scale(valueScale);
-    _parameters->get("initial").allocate();
-    v = _parameters->get("initial").localVector();assert(v);
-    err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+    topology::Field<topology::Mesh>& initial = _parameters->get("initial");
+    initial.vectorFieldType(topology::FieldBase::OTHER);
+    initial.scale(valueScale);
+    initial.allocate();
+    PetscVec initialVec = initial.localVector();assert(initialVec);
+    err = VecSet(initialVec, 0.0);CHECK_PETSC_ERROR(err);
   } // if
   if (_dbRate) {
     const std::string& fieldLabel = std::string("rate_") + std::string(fieldName);
     _parameters->add("rate", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    _parameters->get("rate").vectorFieldType(topology::FieldBase::OTHER);
-    _parameters->get("rate").scale(rateScale);
-    _parameters->get("rate").allocate();
-    v = _parameters->get("rate").localVector();assert(v);
-    err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+    topology::Field<topology::Mesh>& rate = _parameters->get("rate");
+    rate.vectorFieldType(topology::FieldBase::OTHER);
+    rate.scale(rateScale);
+    rate.allocate();
+    PetscVec rateVec = rate.localVector();assert(rateVec);
+    err = VecSet(rateVec, 0.0);CHECK_PETSC_ERROR(err);
     const std::string& timeLabel = std::string("rate_time_") + std::string(fieldName);    
     _parameters->add("rate time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
-    _parameters->get("rate time").vectorFieldType(topology::FieldBase::SCALAR);
-    _parameters->get("rate time").scale(timeScale);
-    _parameters->get("rate time").allocate();
-    v = _parameters->get("rate time").localVector();assert(v);
-    err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+    topology::Field<topology::Mesh>& rateTime = _parameters->get("rate time");
+    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
+    rateTime.scale(timeScale);
+    rateTime.allocate();
+    PetscVec rateTimeVec = rateTime.localVector();assert(rateTimeVec);
+    err = VecSet(rateTimeVec, 0.0);CHECK_PETSC_ERROR(err);
   } // if
   if (_dbChange) {
     const std::string& fieldLabel = std::string("change_") + std::string(fieldName);
     _parameters->add("change", fieldLabel.c_str(), topology::FieldBase::VERTICES_FIELD, numBCDOF);
-    _parameters->get("change").vectorFieldType(topology::FieldBase::OTHER);
-    _parameters->get("change").scale(valueScale);
-    _parameters->get("change").allocate();
-    v = _parameters->get("change").localVector();assert(v);
-    err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+    topology::Field<topology::Mesh>& change = _parameters->get("change");
+    change.vectorFieldType(topology::FieldBase::OTHER);
+    change.scale(valueScale);
+    change.allocate();
+    PetscVec changeVec = change.localVector();assert(changeVec);
+    err = VecSet(changeVec, 0.0);CHECK_PETSC_ERROR(err);
     const std::string& timeLabel = std::string("change_time_") + std::string(fieldName);
     _parameters->add("change time", timeLabel.c_str(), topology::FieldBase::VERTICES_FIELD, 1);
-    _parameters->get("change time").vectorFieldType(topology::FieldBase::SCALAR);
-    _parameters->get("change time").scale(timeScale);
-    _parameters->get("change time").allocate();
-    v = _parameters->get("change time").localVector();assert(v);
-    err = VecSet(v, 0.0);CHECK_PETSC_ERROR(err);
+    topology::Field<topology::Mesh>& changeTime = _parameters->get("change time");
+    changeTime.vectorFieldType(topology::FieldBase::SCALAR);
+    changeTime.scale(timeScale);
+    changeTime.allocate();
+    PetscVec changeTimeVec = _parameters->get("change time").localVector();assert(changeTimeVec);
+    err = VecSet(changeTimeVec, 0.0);CHECK_PETSC_ERROR(err);
   } // if
   
   if (_dbInitial) { // Setup initial values, if provided.
@@ -280,8 +280,7 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
       msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(),
-				   scale);
+    _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
 
     // Update section
     PetscInt dof, off;

@@ -38,11 +38,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBC );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::bc::TestDirichletBC::setUp(void)
@@ -95,40 +90,43 @@ pylith::bc::TestDirichletBC::testInitialize(void)
     // Check values
     CPPUNIT_ASSERT(0 != bc._parameters);
     PetscSection initialSection = bc._parameters->get("initial").petscSection();
-    Vec          initialVec     = bc._parameters->get("initial").localVector();
-    PetscScalar *initialArray;
-    PetscErrorCode err;
+    PetscVec initialVec = bc._parameters->get("initial").localVector();
+    PetscScalar* initialArray;
+    PetscErrorCode err = 0;
     CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
 
     const PylithScalar tolerance = 1.0e-06;
+    const PylithScalar dispScale = _data->lengthScale;
+    const PylithScalar velocityScale = _data->lengthScale / _data->timeScale;
     err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
     for (int i=0; i < numPoints; ++i) {
       const PetscInt p_value = _data->constrainedPoints[i]+offset;
-      PetscInt       dof, off;
+      PetscInt dof, off;
 
       err = PetscSectionGetDof(initialSection, p_value, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(initialSection, p_value, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(numFixedDOF, dof);
-      for(int iDOF = 0; iDOF < numFixedDOF; ++iDOF) 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i*numFixedDOF+iDOF], initialArray[off+iDOF], tolerance);
+      for(int iDOF = 0; iDOF < numFixedDOF; ++iDOF) {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valuesInitial[i*numFixedDOF+iDOF]/dispScale, initialArray[off+iDOF], tolerance);
+      } // for
     } // for
     err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
     
     // Check rate of change
     PetscSection rateSection = bc._parameters->get("rate").petscSection();
-    Vec          rateVec     = bc._parameters->get("rate").localVector();
+    PetscVec rateVec = bc._parameters->get("rate").localVector();
     PetscScalar *rateArray;
     
     err = VecGetArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
     for (int i=0; i < numPoints; ++i) {
       const PetscInt p_value = _data->constrainedPoints[i]+offset;
-      PetscInt       dof, off;
+      PetscInt dof, off;
 
       err = PetscSectionGetDof(rateSection, p_value, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(rateSection, p_value, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(numFixedDOF, dof);
       for(int iDOF = 0; iDOF < numFixedDOF; ++iDOF) 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate, rateArray[off+iDOF], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->valueRate/velocityScale, rateArray[off+iDOF], tolerance);
     } // for
     err = VecRestoreArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
   } // if
@@ -157,10 +155,10 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   _initialize(&mesh, &bc);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -176,7 +174,7 @@ pylith::bc::TestDirichletBC::testSetConstraintSizes(void)
   field.allocate();
 
   PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
+  PetscVec fieldVec     = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
 
   const PetscInt numCells = cEnd - cStart;
@@ -214,9 +212,9 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   _initialize(&mesh, &bc);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
+  PetscInt cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
@@ -234,7 +232,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   bc.setConstraints(field);
 
   PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
+  PetscVec fieldVec     = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
 
   const PetscInt numCells = cEnd - cStart;
@@ -242,7 +240,7 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     const PetscInt *cInd, *fcInd;
-    PetscInt        dof, cdof, fdof, fcdof;
+    PetscInt dof, cdof, fdof, fcdof;
 
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
@@ -276,10 +274,10 @@ pylith::bc::TestDirichletBC::testSetField(void)
   _initialize(&mesh, &bc);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -295,9 +293,12 @@ pylith::bc::TestDirichletBC::testSetField(void)
   bc.setConstraints(field);
 
   PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
+  PetscVec fieldVec = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar dispScale = _data->lengthScale;
+  const PylithScalar velocityScale = _data->lengthScale / _data->timeScale;
+  const PylithScalar timeScale = _data->timeScale;
 
   // All values should be zero.
   PetscScalar *values;
@@ -331,8 +332,8 @@ pylith::bc::TestDirichletBC::testSetField(void)
   } // for
   assert(index == numFreeDOF);
 
-  const PetscInt numCells    = cEnd - cStart;
-  const PetscInt offset      = numCells;
+  const PetscInt numCells = cEnd - cStart;
+  const PetscInt offset = numCells;
   const PetscInt numFixedDOF = _data->numFixedDOF;
   int iConstraint = 0;
 
@@ -357,9 +358,9 @@ pylith::bc::TestDirichletBC::testSetField(void)
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
         const int index = iConstraint * numFixedDOF + iDOF;
-        const PylithScalar valueE = (t > _data->tRef) ?
-          _data->valuesInitial[index] + (t-_data->tRef)*_data->valueRate :
-          _data->valuesInitial[index];
+        const PylithScalar valueE = (t > _data->tRef/timeScale) ?
+          _data->valuesInitial[index]/dispScale + (t-_data->tRef/timeScale)*_data->valueRate/velocityScale :
+          _data->valuesInitial[index]/dispScale;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[off+_data->fixedDOF[iDOF]], tolerance);
       } // for
       ++iConstraint;
@@ -378,10 +379,10 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   _initialize(&mesh, &bc);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -397,9 +398,12 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   bc.setConstraints(field);
 
   PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
+  PetscVec fieldVec = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar dispScale = _data->lengthScale;
+  const PylithScalar velocityScale = _data->lengthScale / _data->timeScale;
+  const PylithScalar timeScale = _data->timeScale;
 
   // All values should be zero.
   PetscScalar *values;
@@ -435,8 +439,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   } // for
   assert(index == numFreeDOF);
 
-  const PetscInt numCells    = cEnd - cStart;
-  const PetscInt offset      = numCells;
+  const PetscInt numCells = cEnd - cStart;
+  const PetscInt offset = numCells;
   const PetscInt numFixedDOF = _data->numFixedDOF;
   int iConstraint = 0;
 
@@ -460,8 +464,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
 
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
-        const PylithScalar valueE = (t0 > _data->tRef) ? (t1-t0)*_data->valueRate :
-          (t1 > _data->tRef) ? (t1-_data->tRef)*_data->valueRate : 0.0;
+        const PylithScalar valueE = (t0 > _data->tRef/timeScale) ? (t1-t0)*_data->valueRate/velocityScale :
+          (t1 > _data->tRef/timeScale) ? (t1-_data->tRef/timeScale)*_data->valueRate/velocityScale : 0.0;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[off+_data->fixedDOF[iDOF]], tolerance);
       } // for
       ++iConstraint;
@@ -483,6 +487,10 @@ pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
 
   spatialdata::geocoords::CSCart cs;
   spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
@@ -520,6 +528,7 @@ pylith::bc::TestDirichletBC::_initialize(topology::Mesh* mesh,
   bc->dbInitial(&db);
   bc->dbRate(&dbRate);
   bc->bcDOF(_data->fixedDOF, _data->numFixedDOF);
+  bc->normalizer(normalizer);
   bc->initialize(*mesh, upDir);
 } // _initialize
 

@@ -124,7 +124,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   PetscInt dp = 0;
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt  closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
@@ -146,26 +146,28 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   const int fiberDim = numQuadPts * spaceDim;
   PetscInt index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
-  PetscSection dampersSection = bc._parameters->get("damping constants").petscSection();
-  Vec          dampersVec     = bc._parameters->get("damping constants").localVector();
-  CPPUNIT_ASSERT(dampersSection);CPPUNIT_ASSERT(dampersVec);
+  PetscSection dampingConstsSection = bc._parameters->get("damping constants").petscSection();
+  PetscVec dampingConstsVec = bc._parameters->get("damping constants").localVector();
+  CPPUNIT_ASSERT(dampingConstsSection);CPPUNIT_ASSERT(dampingConstsVec);
 
   const PylithScalar tolerance = 1.0e-06;
-  PetscScalar       *dampersValues;
-  err = VecGetArray(dampersVec, &dampersValues);CHECK_PETSC_ERROR(err);
+  const PylithScalar* dampingConstsE = _data->dampingConsts;
+  const PylithScalar dampingConstsScale = _data->densityScale * _data->lengthScale / _data->timeScale;
+  PetscScalar* dampingConstsArray;
+  err = VecGetArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt dof, off;
 
-    err = PetscSectionGetDof(dampersSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dampersSection, c, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(dampingConstsSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dampingConstsSection, c, &off);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
     for(PetscInt iQuad=0; iQuad < numQuadPts; ++iQuad)
       for(PetscInt iDim =0; iDim < spaceDim; ++iDim) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dampersValues[off+iQuad*spaceDim+iDim]/_data->dampingConsts[index], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dampingConstsArray[off+iQuad*spaceDim+iDim]/dampingConstsE[index]*dampingConstsScale, tolerance);
         ++index;
       } // for
   } // for
-  err = VecRestoreArray(dampersVec, &dampersValues);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -191,6 +193,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   DM             dmMesh = mesh.dmMesh();
   PetscInt       vStart, vEnd;
   const PylithScalar* valsE = _data->valsResidual;
+  const PylithScalar dampingConstsScale = _data->densityScale * _data->lengthScale / _data->timeScale;
+  const PylithScalar velocityScale = 1.0; // Input velocity is nondimensional.
+  const PylithScalar residualScale = dampingConstsScale*velocityScale*pow(_data->lengthScale, _data->spaceDim-1);
 
   CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -198,7 +203,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const int sizeE = _data->spaceDim * totalNumVertices;
 
   PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
+  PetscVec residualVec = residual.localVector();
   PetscScalar *vals;
   PetscInt     size;
 
@@ -212,9 +217,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   for(int i = 0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*residualScale, tolerance);
     else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i]/residualScale, vals[i], tolerance);
   err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
@@ -248,10 +253,12 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const PylithScalar* valsE = _data->valsJacobian;
+  const PylithScalar dampingConstsScale = _data->densityScale * _data->lengthScale / _data->timeScale;
+  const PylithScalar jacobianScale = dampingConstsScale*pow(_data->lengthScale, _data->spaceDim-1);
+
   const int totalNumVertices = vEnd - vStart;
   const int nrowsE = totalNumVertices * _data->spaceDim;
   const int ncolsE = totalNumVertices * _data->spaceDim;
-
   const PetscMat jacobianMat = jacobian.matrix();
   int nrows = 0;
   int ncols = 0;
@@ -283,9 +290,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
       if (fabs(valsE[index]) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index]*jacobianScale, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index]/jacobianScale, vals[index], tolerance);
     } // for
   err = MatDestroy(&jDense);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobian
@@ -327,6 +334,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   const int totalNumVertices = vEnd - vStart;
   const int sizeE = totalNumVertices * _data->spaceDim;
   scalar_array valsE(sizeE);
+  const PylithScalar dampingConstsScale = _data->densityScale * _data->lengthScale / _data->timeScale;
+  const PylithScalar jacobianScale = dampingConstsScale*pow(_data->lengthScale, _data->spaceDim-1);
+
   const int spaceDim = _data->spaceDim;
   for (int iVertex=0; iVertex < totalNumVertices; ++iVertex)
     for (int iDim=0; iDim < spaceDim; ++iDim) {
@@ -349,7 +359,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
 #endif // DEBUGGING
 
   PetscSection jacobianSection = jacobian.petscSection();
-  Vec          jacobianVec     = jacobian.localVector();
+  PetscVec jacobianVec = jacobian.localVector();
   PetscScalar *vals;
   PetscInt     size;
 
@@ -360,9 +370,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   err = VecGetArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
   for(int i = 0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*jacobianScale, tolerance);
     else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i]/jacobianScale, vals[i], tolerance);
   err = VecRestoreArray(jacobianVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateJacobianLumped
 
@@ -387,6 +397,10 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     // Set coordinate system
     spatialdata::geocoords::CSCart cs;
     spatialdata::units::Nondimensional normalizer;
+    normalizer.lengthScale(_data->lengthScale);
+    normalizer.pressureScale(_data->pressureScale);
+    normalizer.densityScale(_data->densityScale);
+    normalizer.timeScale(_data->timeScale);
     cs.setSpaceDim(mesh->dimension());
     cs.initialize();
     mesh->coordsys(&cs);
@@ -413,6 +427,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     bc->timeStep(_data->dt);
     bc->label(_data->label);
     bc->db(&db);
+    bc->normalizer(normalizer);
     bc->createSubMesh(*mesh);
     bc->initialize(*mesh, upDir);
 
@@ -437,18 +452,19 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     residual.newSection(pylith::topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
     residual.allocate();
     residual.zero();
+    residual.scale(normalizer.lengthScale());
     fields->copyLayout("residual");
 
     const int totalNumVertices = vEnd - vStart;
     const int fieldSize = _data->spaceDim * totalNumVertices;
     PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();
-    Vec          dispTIncrVec     = fields->get("dispIncr(t->t+dt)").localVector();
-    PetscSection dispTSection     = fields->get("disp(t)").petscSection();
-    Vec          dispTVec         = fields->get("disp(t)").localVector();
+    PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();
+    PetscSection dispTSection = fields->get("disp(t)").petscSection();
+    PetscVec dispTVec = fields->get("disp(t)").localVector();
     PetscSection dispTmdtSection  = fields->get("disp(t-dt)").petscSection();
-    Vec          dispTmdtVec      = fields->get("disp(t-dt)").localVector();
-    PetscSection velSection       = fields->get("velocity(t)").petscSection();
-    Vec          velVec           = fields->get("velocity(t)").localVector();
+    PetscVec dispTmdtVec = fields->get("disp(t-dt)").localVector();
+    PetscSection velSection = fields->get("velocity(t)").petscSection();
+    PetscVec velVec = fields->get("velocity(t)").localVector();
     PetscScalar *dispTIncrArray, *dispTArray, *dispTmdtArray, *velArray;
     const int spaceDim = _data->spaceDim;
     const PylithScalar dt = _data->dt;
