@@ -355,7 +355,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   PetscSection jacobianSection = jacobian.petscSection();
   PetscVec jacobianVec = jacobian.localVector();
   PetscScalar *vals;
-  PetscInt     size;
+  PetscInt size;
 
   CPPUNIT_ASSERT(jacobianSection);CPPUNIT_ASSERT(jacobianVec);
   err = PetscSectionGetStorageSize(jacobianSection, &size);CHECK_PETSC_ERROR(err);
