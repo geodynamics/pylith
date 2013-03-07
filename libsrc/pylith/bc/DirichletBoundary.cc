@@ -67,7 +67,7 @@ pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
   DirichletBC::initialize(mesh, upDir);
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(0 != _boundaryMesh);
+  assert(_boundaryMesh);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -83,7 +83,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
   assert(_boundaryMesh);
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-  assert(0 != cs);
+  assert(cs);
   const int spaceDim = cs->spaceDim();
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -91,7 +91,7 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
 
   if (0 == _outputFields)
     _outputFields = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
-  assert(0 != _outputFields);
+  assert(_outputFields);
   _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::CELLS_FIELD, spaceDim);
   _outputFields->get("buffer (vector)").vectorFieldType(topology::FieldBase::VECTOR);
   _outputFields->get("buffer (vector)").scale(lengthScale);
@@ -149,36 +149,35 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   } // if
   
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
-  assert(0 != cs);
+  assert(cs);
   const int spaceDim = cs->spaceDim();
 
   const int numPoints = _points.size();
   const int numFixedDOF = _bcDOF.size();
+  PetscErrorCode err = 0;
 
   assert(_outputFields->hasField("buffer (vector)"));
-  PetscSection outputSection = _outputFields->get("buffer (vector)").petscSection();
-  Vec          outputVec     = _outputFields->get("buffer (vector)").localVector();
-  PetscScalar *outputArray;
-  PetscErrorCode err;
-  assert(outputSection);assert(outputVec);
-
-  PetscSection fieldSection = _parameters->get(name).petscSection();
-  Vec          fieldVec     = _parameters->get(name).localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
-  
+  PetscSection outputSection = _outputFields->get("buffer (vector)").petscSection();assert(outputSection);
+  PetscVec outputVec = _outputFields->get("buffer (vector)").localVector();assert(outputVec);
+  PetscScalar *outputArray = NULL;
   err = VecGetArray(outputVec, &outputArray);CHECK_PETSC_ERROR(err);
+
+  PetscSection fieldSection = _parameters->get(name).petscSection();assert(fieldSection);
+  PetscVec fieldVec = _parameters->get(name).localVector();assert(fieldVec);
+  PetscScalar *fieldArray = NULL;
   err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type point = _points[iPoint];
-    PetscInt odof, ooff, fdof, foff;
 
+    PetscInt odof, ooff, fdof, foff;
     err = PetscSectionGetDof(outputSection, point, &odof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(outputSection, point, &ooff);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetDof(fieldSection, point, &fdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, point, &foff);CHECK_PETSC_ERROR(err);
     assert(spaceDim == odof);
     assert(fdof == numFixedDOF);
+
     for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF)
       outputArray[ooff+_bcDOF[iDOF]] = fieldArray[foff+iDOF];
   } // for
@@ -216,31 +215,30 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   } // if
   
   const int numPoints = _points.size();
+  PetscErrorCode err = 0;
 
   assert(_outputFields->hasField("buffer (scalar)"));
-  PetscSection outputSection = _outputFields->get("buffer (scalar)").petscSection();
-  Vec          outputVec     = _outputFields->get("buffer (scalar)").localVector();
-  PetscScalar *outputArray;
-  PetscErrorCode err;
-  assert(outputSection);assert(outputVec);
-  
-  PetscSection fieldSection = _parameters->get(name).petscSection();
-  Vec          fieldVec     = _parameters->get(name).localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
-  
+  PetscSection outputSection = _outputFields->get("buffer (scalar)").petscSection();assert(outputSection);
+  PetscVec outputVec = _outputFields->get("buffer (scalar)").localVector();assert(outputVec);
+  PetscScalar *outputArray = NULL;
   err = VecGetArray(outputVec, &outputArray);CHECK_PETSC_ERROR(err);
+  
+  PetscSection fieldSection = _parameters->get(name).petscSection();assert(fieldSection);
+  PetscVec fieldVec = _parameters->get(name).localVector();assert(fieldVec);
+  PetscScalar *fieldArray = NULL;
   err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const SieveMesh::point_type point = _points[iPoint];
-    PetscInt odof, ooff, fdof, foff;
 
+    PetscInt odof, ooff, fdof, foff;
     err = PetscSectionGetDof(outputSection, point, &odof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(outputSection, point, &ooff);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetDof(fieldSection, point, &fdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, point, &foff);CHECK_PETSC_ERROR(err);
     assert(1 == odof);
     assert(fdof == 1);
+
     outputArray[ooff] = fieldArray[foff];
   } // for
   

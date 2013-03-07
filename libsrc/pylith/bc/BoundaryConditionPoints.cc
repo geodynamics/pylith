@@ -70,17 +70,15 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("BoundaryConditions");
 
-  DM              dmMesh = mesh.dmMesh();
-  DMLabel         label;
-  IS              pointIS;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscDMLabel label = NULL;
+  PetscIS pointIS = NULL;
   const PetscInt *points;
-  PetscInt        numPoints;
-  PetscBool       has;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexHasLabel(dmMesh, _label.c_str(), &has);CHECK_PETSC_ERROR(err);
-  if (!has) {
+  PetscInt numPoints;
+  PetscBool hasLabel;
+  PetscErrorCode err;
+  err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
     std::ostringstream msg;
     msg << "Could not find group of points '" << _label << "' in mesh.";
     throw std::runtime_error(msg.str());
@@ -94,6 +92,7 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
   err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
+
   logger.stagePop();
 } // _getPoints
 

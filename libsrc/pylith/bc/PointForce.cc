@@ -32,11 +32,6 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::PointForce::PointForce(void)
 { // constructor
@@ -69,7 +64,7 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 
   _getPoints(mesh);
 
-  assert(0 != _normalizer);
+  assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar pressureScale = _normalizer->pressureScale();
   const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
@@ -80,10 +75,9 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::PointForce::integrateResidual(
-			   const topology::Field<topology::Mesh>& residual,
-			   const PylithScalar t,
-			   topology::SolutionFields* const fields)
+pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>& residual,
+					  const PylithScalar t,
+					  topology::SolutionFields* const fields)
 { // integrateResidualAssembled
   assert(_parameters);
   assert(_normalizer);
@@ -96,29 +90,25 @@ pylith::bc::PointForce::integrateResidual(
 
   const topology::Mesh& mesh = residual.mesh();
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  assert(0 != cs);
+  assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
+  PetscSection residualSection = residual.petscSection();assert(residualSection);
+  PetscVec residualVec = residual.localVector();assert(residualVec);
   PetscScalar *residualArray;
-  assert(residualSection);assert(residualVec);
-
+  
   // Get global order
-  DM             dmMesh = residual.dmMesh();
-  PetscSection   globalSection;
+  PetscDM dmMesh = residual.dmMesh();assert(dmMesh);
+  PetscSection globalSection = NULL;
   PetscErrorCode err;
-
-  assert(dmMesh);
   err = DMGetDefaultGlobalSection(dmMesh, &globalSection);CHECK_PETSC_ERROR(err);
 
-  PetscSection valueSection = _parameters->get("value").petscSection();
-  Vec          valueVec     = _parameters->get("value").localVector();
-  PetscScalar *valueArray;
-  assert(valueSection);assert(valueVec);
-
+  PetscSection valueSection = _parameters->get("value").petscSection();assert(valueSection);
+  PetscVec valueVec = _parameters->get("value").localVector();assert(valueVec);
+  PetscScalar* valueArray = NULL;
   err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt p_bc = _points[iPoint]; // Get point label.
     PetscInt       goff;

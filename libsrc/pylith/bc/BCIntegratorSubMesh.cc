@@ -61,7 +61,7 @@ pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
   delete _parameters; _parameters = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
-  assert(0 != _boundaryMesh);
+  assert(_boundaryMesh);
 } // createSubMesh
 
 // ----------------------------------------------------------------------
@@ -69,8 +69,8 @@ pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
 void
 pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh) const 
 { // verifyConfiguration
-  assert(0 != _quadrature);
-  assert(0 != _boundaryMesh);
+  assert(_quadrature);
+  assert(_boundaryMesh);
 
   BoundaryCondition::verifyConfiguration(mesh);
 

@@ -315,7 +315,7 @@ pylith::bc::TestDirichletBC::testSetField(void)
   err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 
   // Only unconstrained values should be zero.
-  const PylithScalar t = 1.0;
+  const PylithScalar t = 1.0 / timeScale;
   bc.setField(t, field);
 
   // Create list of unconstrained DOF at constrained DOF
@@ -337,6 +337,8 @@ pylith::bc::TestDirichletBC::testSetField(void)
   const PetscInt numFixedDOF = _data->numFixedDOF;
   int iConstraint = 0;
 
+  const PylithScalar tRef = _data->tRef / timeScale;
+  
   err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, cdof, off;
@@ -358,8 +360,8 @@ pylith::bc::TestDirichletBC::testSetField(void)
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
         const int index = iConstraint * numFixedDOF + iDOF;
-        const PylithScalar valueE = (t > _data->tRef/timeScale) ?
-          _data->valuesInitial[index]/dispScale + (t-_data->tRef/timeScale)*_data->valueRate/velocityScale :
+        const PylithScalar valueE = (t > tRef) ?
+          _data->valuesInitial[index]/dispScale + (t-tRef)*_data->valueRate/velocityScale :
           _data->valuesInitial[index]/dispScale;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[off+_data->fixedDOF[iDOF]], tolerance);
       } // for
@@ -421,8 +423,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 
   // Only unconstrained values should be zero.
-  const PylithScalar t0 = 1.0;
-  const PylithScalar t1 = 2.0;
+  const PylithScalar t0 = 1.0 / timeScale;
+  const PylithScalar t1 = 2.0 / timeScale;
   bc.setFieldIncr(t0, t1, field);
 
   // Create list of unconstrained DOF at constrained DOF
@@ -444,6 +446,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
   const PetscInt numFixedDOF = _data->numFixedDOF;
   int iConstraint = 0;
 
+  const PylithScalar tRef = _data->tRef / timeScale;
+
   err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, cdof, off;
@@ -464,8 +468,8 @@ pylith::bc::TestDirichletBC::testSetFieldIncr(void)
 
       // check constrained DOF
       for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
-        const PylithScalar valueE = (t0 > _data->tRef/timeScale) ? (t1-t0)*_data->valueRate/velocityScale :
-          (t1 > _data->tRef/timeScale) ? (t1-_data->tRef/timeScale)*_data->valueRate/velocityScale : 0.0;
+        const PylithScalar valueE = (t0 > tRef) ? (t1-t0)*_data->valueRate/velocityScale :
+          (t1 > tRef) ? (t1-tRef)*_data->valueRate/velocityScale : 0.0;
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valueE, values[off+_data->fixedDOF[iDOF]], tolerance);
       } // for
       ++iConstraint;

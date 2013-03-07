@@ -119,11 +119,9 @@ private :
    *
    * @param mesh Finite-element mesh to initialize
    * @param bc Neumann boundary condition to initialize.
-   * @param useScales Use scales provided by local constants.
    */
   void _preinitialize(topology::Mesh* mesh,
-		      Neumann* const bc,
-		      const bool useScales =false) const;
+		      Neumann* const bc) const;
 
   /** Initialize Neumann boundary condition.
    *

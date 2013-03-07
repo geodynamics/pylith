@@ -45,16 +45,9 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestNeumann );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 namespace pylith {
   namespace bc {
     namespace _TestNeumann {
-      const PylithScalar pressureScale = 4.0;
-      const PylithScalar lengthScale = 1.0; // Mesh coordinates have scale=1.0
-      const PylithScalar timeScale = 0.5;
       const int ncells = 2;
       const int numQuadPts = 2;
       const int spaceDim = 2;
@@ -152,14 +145,12 @@ pylith::bc::TestNeumann::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  DM       subMesh = boundaryMesh.dmMesh();
+  PetscDM subMesh = boundaryMesh.dmMesh();assert(subMesh);
   PetscInt cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
-
-  assert(subMesh);
+  PetscErrorCode err = 0;
   err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(subMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
@@ -174,7 +165,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
   PetscInt dp = 0;
-  for(PetscInt c = cStart; c < cEnd; ++c) {
+  for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt *closure = PETSC_NULL;
     PetscInt  closureSize, numCorners = 0;
 
@@ -183,12 +174,12 @@ pylith::bc::TestNeumann::testInitialize(void)
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
         closure[numCorners++] = point;
-      }
-    }
+      } // if
+    } // for
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
-    }
+    } // for
     err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
 
@@ -199,13 +190,14 @@ pylith::bc::TestNeumann::testInitialize(void)
   PetscInt index = 0;
   CPPUNIT_ASSERT(0 != bc._parameters);
   PetscSection initialSection = bc._parameters->get("initial").petscSection();
-  Vec          initialVec     = bc._parameters->get("initial").localVector();
+  PetscVec initialVec = bc._parameters->get("initial").localVector();
   PetscScalar *initialArray;
   CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
 
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar pressureScale = _data->pressureScale;
   err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c) {
+  for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt dof, off;
 
     err = PetscSectionGetDof(initialSection, c, &dof);CHECK_PETSC_ERROR(err);
@@ -213,8 +205,8 @@ pylith::bc::TestNeumann::testInitialize(void)
     CPPUNIT_ASSERT(dof == numQuadPts*spaceDim);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
       for (int iDim =0; iDim < spaceDim; ++iDim) {
-        const PylithScalar tractionsCellData = _data->tractionsCell[index];
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionsCellData, initialArray[off+iQuad*spaceDim+iDim], tolerance);
+        const PylithScalar tractionE = _data->tractionsCell[index];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, initialArray[off+iQuad*spaceDim+iDim]*pressureScale, tolerance);
         ++index;
       } // for
   } // for
@@ -237,34 +229,35 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
-  DM             dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt vStart, vEnd;
+  PetscErrorCode err = 0;
   const PylithScalar* valsE = _data->valsResidual;
 
-  CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   const int totalNumVertices = vEnd - vStart;
   const int sizeE = _data->spaceDim * totalNumVertices;
 
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
+  PetscSection residualSection = residual.petscSection();CPPUNIT_ASSERT(residualSection);
+  PetscVec residualVec = residual.localVector();CPPUNIT_ASSERT(residualVec);
   PetscScalar *vals;
-  PetscInt     size;
+  PetscInt size;
 
-  CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
   err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
   //residual.view("RESIDUAL");
 
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar residualScale = _data->pressureScale * pow(_data->lengthScale, _data->spaceDim-1);
+
   err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
   for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
-    else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+    if (fabs(valsE[i]) > 1.0) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*residualScale, tolerance);
+    } else {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i]*residualScale, tolerance);
+    } // if/else
   err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
 } // testIntegrateResidual
 
@@ -280,7 +273,7 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -308,8 +301,8 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const PylithScalar pressureScale = _TestNeumann::pressureScale;
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar pressureScale = _data->pressureScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
 
   const PylithScalar tolerance = 1.0e-06;
@@ -320,31 +313,23 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   // bc._parameters->view("PARAMETERS"); // DEBUGGING
 
   // Check initial values.
-  const topology::Field<topology::SubMesh>& initial = 
-    bc._parameters->get("initial");
-  _TestNeumann::_checkValues(_TestNeumann::initial, 
-			     numQuadPts*spaceDim, initial);
+  const topology::Field<topology::SubMesh>& initial = bc._parameters->get("initial");
+  _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, initial);
 
   // Check rate values.
   const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
-  _TestNeumann::_checkValues(_TestNeumann::rate, 
-			     numQuadPts*spaceDim, rate);
+  _TestNeumann::_checkValues(_TestNeumann::rate, numQuadPts*spaceDim, rate);
 
   // Check rate start time.
-  const topology::Field<topology::SubMesh>& rateTime = 
-    bc._parameters->get("rate time");
-  _TestNeumann::_checkValues(_TestNeumann::rateTime, 
-			     numQuadPts, rateTime);
+  const topology::Field<topology::SubMesh>& rateTime = bc._parameters->get("rate time");
+  _TestNeumann::_checkValues(_TestNeumann::rateTime, numQuadPts, rateTime);
 
   // Check change values.
-  const topology::Field<topology::SubMesh>& change = 
-    bc._parameters->get("change");
-  _TestNeumann::_checkValues(_TestNeumann::change, 
-			     numQuadPts*spaceDim, change);
+  const topology::Field<topology::SubMesh>& change = bc._parameters->get("change");
+  _TestNeumann::_checkValues(_TestNeumann::change, numQuadPts*spaceDim, change);
 
   // Check change start time.
-  const topology::Field<topology::SubMesh>& changeTime = 
-    bc._parameters->get("change time");
+  const topology::Field<topology::SubMesh>& changeTime = bc._parameters->get("change time");
   _TestNeumann::_checkValues(_TestNeumann::changeTime, 
 			     numQuadPts, changeTime);
   th.close();
@@ -357,12 +342,12 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
 { // test_paramsLocalToGlobal
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -386,8 +371,8 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   bc.dbRate(&dbRate);
   bc.dbChange(&dbChange);
 
-  const PylithScalar pressureScale = _TestNeumann::pressureScale;
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar pressureScale = _data->pressureScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   bc._paramsLocalToGlobal(upDir);
@@ -407,10 +392,8 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+0] = _TestNeumann::initial[i+0]; // x
     valuesE[i+1] = -_TestNeumann::initial[i+1]; // y
   } // for
-  const topology::Field<topology::SubMesh>& initial = 
-    bc._parameters->get("initial");
-  _TestNeumann::_checkValues(&valuesE[0], 
-			     numQuadPts*spaceDim, initial);
+  const topology::Field<topology::SubMesh>& initial = bc._parameters->get("initial");
+  _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, initial);
 
   // Check rate values.
   for (int i=0; i < valuesE.size(); i+=spaceDim) {
@@ -418,18 +401,15 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
     valuesE[i+1] = -_TestNeumann::rate[i+1]; // y
   } // for
   const topology::Field<topology::SubMesh>& rate = bc._parameters->get("rate");
-  _TestNeumann::_checkValues(&valuesE[0], 
-			     numQuadPts*spaceDim, rate);
+  _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, rate);
 
   // Check change values.
   for (int i=0; i < valuesE.size(); i+=spaceDim) {
     valuesE[i+0] = _TestNeumann::change[i+0]; // x
     valuesE[i+1] = -_TestNeumann::change[i+1]; // y
   } // for
-  const topology::Field<topology::SubMesh>& change = 
-    bc._parameters->get("change");
-  _TestNeumann::_checkValues(&valuesE[0], 
-			     numQuadPts*spaceDim, change);
+  const topology::Field<topology::SubMesh>& change = bc._parameters->get("change");
+  _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, change);
 } // test_paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -444,7 +424,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -454,7 +434,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
 
   bc.dbInitial(&dbInitial);
 
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
@@ -464,10 +444,8 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   CPPUNIT_ASSERT(0 != bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = 
-    bc._parameters->get("value");
-  _TestNeumann::_checkValues(_TestNeumann::initial, 
-			     numQuadPts*spaceDim, value);
+  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, value);
 } // test_calculateValueInitial
 
 // ----------------------------------------------------------------------
@@ -482,7 +460,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbRate("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbRateIO;
@@ -492,7 +470,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
 
   bc.dbRate(&dbRate);
 
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
@@ -502,10 +480,8 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
   CPPUNIT_ASSERT(0 != bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = 
-    bc._parameters->get("value");
-  _TestNeumann::_checkValues(_TestNeumann::valuesRate,
-			     numQuadPts*spaceDim, value);
+  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  _TestNeumann::_checkValues(_TestNeumann::valuesRate, numQuadPts*spaceDim, value);
 } // test_calculateValueRate
 
 // ----------------------------------------------------------------------
@@ -520,7 +496,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -530,7 +506,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
 
   bc.dbChange(&dbChange);
 
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
@@ -540,10 +516,8 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
   CPPUNIT_ASSERT(0 != bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = 
-    bc._parameters->get("value");
-  _TestNeumann::_checkValues(_TestNeumann::valuesChange,
-			     numQuadPts*spaceDim, value);
+  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  _TestNeumann::_checkValues(_TestNeumann::valuesChange, numQuadPts*spaceDim, value);
 } // test_calculateValueChange
 
 // ----------------------------------------------------------------------
@@ -558,8 +532,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
-
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbChangeIO;
@@ -573,7 +546,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
@@ -583,10 +556,8 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   CPPUNIT_ASSERT(0 != bc._parameters);
   
   // Check values.
-  const topology::Field<topology::SubMesh>& value = 
-    bc._parameters->get("value");
-  _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH,
-			     numQuadPts*spaceDim, value);
+  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
+  _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH, numQuadPts*spaceDim, value);
 } // test_calculateValueChangeTH
 
 // ----------------------------------------------------------------------
@@ -601,8 +572,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
 
   topology::Mesh mesh;
   Neumann bc;
-  _preinitialize(&mesh, &bc, true);
-
+  _preinitialize(&mesh, &bc);
 
   spatialdata::spatialdb::SimpleDB dbInitial("_TestNeumann _queryDatabases");
   spatialdata::spatialdb::SimpleIOAscii dbInitialIO;
@@ -630,7 +600,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
   bc.dbChange(&dbChange);
   bc.dbTimeHistory(&th);
 
-  const PylithScalar timeScale = _TestNeumann::timeScale;
+  const PylithScalar timeScale = _data->timeScale;
   bc._queryDatabases();
   bc._calculateValue(_TestNeumann::tValue/timeScale);
 
@@ -648,21 +618,19 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
       _TestNeumann::valuesRate[i] +
       _TestNeumann::valuesChangeTH[i];
   
-  const topology::Field<topology::SubMesh>& value = 
-    bc._parameters->get("value");
+  const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, value);
 } // test_calculateValueAll
 
 // ----------------------------------------------------------------------
 void
 pylith::bc::TestNeumann::_preinitialize(topology::Mesh* mesh,
-					    Neumann* const bc,
-					    const bool useScales) const
+					Neumann* const bc) const
 { // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != _quadrature);
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != bc);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_quadrature);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(bc);
 
   try {
     // Set up mesh
@@ -674,15 +642,13 @@ pylith::bc::TestNeumann::_preinitialize(topology::Mesh* mesh,
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(mesh->dimension());
     cs.initialize();
+    mesh->coordsys(&cs);
 
     spatialdata::units::Nondimensional normalizer;
-    if (useScales) {
-      normalizer.lengthScale(_TestNeumann::lengthScale);
-      normalizer.pressureScale(_TestNeumann::pressureScale);
-      normalizer.timeScale(_TestNeumann::timeScale);
-    } // if
-
-    mesh->coordsys(&cs);
+    normalizer.lengthScale(_data->lengthScale);
+    normalizer.pressureScale(_data->pressureScale);
+    normalizer.densityScale(_data->densityScale);
+    normalizer.timeScale(_data->timeScale);
     mesh->nondimensionalize(normalizer);
 
     // Set up quadrature
@@ -708,11 +674,11 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 				     Neumann* const bc,
 				     topology::SolutionFields* fields) const
 { // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != bc);
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(bc);
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(_quadrature);
 
   try {
     _preinitialize(mesh, bc);
@@ -738,6 +704,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
     topology::Field<topology::Mesh>& residual = fields->get("residual");
     residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
     residual.allocate();
+    residual.scale(_data->lengthScale);
     residual.zero();
 
     fields->copyLayout("residual");
@@ -753,21 +720,18 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
 					   const int fiberDimE,
 					   const topology::Field<topology::SubMesh>& field)
 { // _checkValues
-  assert(0 != valuesE);
+  CPPUNIT_ASSERT(valuesE);
 
   const topology::SubMesh& boundaryMesh = field.mesh();
-  DM             subMesh = boundaryMesh.dmMesh();
+  PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
   PetscInt       cStart, cEnd;
-  PetscErrorCode err;
-
-  CPPUNIT_ASSERT(subMesh);
+  PetscErrorCode err = 0;
   err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
-  const PylithScalar scale   = field.scale();
-  PetscSection       section = field.petscSection();
-  Vec                vec     = field.localVector();
-  PetscScalar       *array;
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
+  const PylithScalar scale = field.scale();
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscVec fieldVec = field.localVector();assert(fieldVec);
+  PetscScalar *fieldArray;
 
   const PetscInt ncells = _TestNeumann::ncells;
   CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
@@ -775,17 +739,17 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
   // Check values associated with BC.
   int icell = 0;
   const PylithScalar tolerance = 1.0e-06;
-  err = VecGetArray(vec, &array);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c, ++icell) {
+  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+  for (PetscInt c = cStart; c < cEnd; ++c, ++icell) {
     PetscInt dof, off;
 
-    err = PetscSectionGetDof(section, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, c, &off);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetDof(fieldSection, c, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(fieldSection, c, &off);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
     for (int iDim=0; iDim < fiberDimE; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[icell*fiberDimE+iDim]/scale, array[off+iDim], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[icell*fiberDimE+iDim]/scale, fieldArray[off+iDim], tolerance);
   } // for
-  err = VecRestoreArray(vec, &array);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 } // _checkValues
 
 

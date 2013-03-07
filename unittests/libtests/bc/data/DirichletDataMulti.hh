@@ -86,6 +86,14 @@ public:
   int* constrainedDOF; ///< Indices of constrained DOF at each constrained vertex
 
   char* meshFilename; ///< Filename for input mesh.
+
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}
 };
 
 #endif // pylith_bc_dirichletdatamulti_hh
