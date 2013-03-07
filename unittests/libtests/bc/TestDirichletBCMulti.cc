@@ -65,10 +65,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
-  CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -84,12 +83,11 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   bcC.setConstraintSizes(field);
   field.allocate();
 
-  PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
-  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscVec fieldVec = field.localVector();CPPUNIT_ASSERT(fieldVec);
 
   const PetscInt numCells = cEnd - cStart;
-  const PetscInt offset   = numCells;
+  const PetscInt offset = numCells;
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, cdof;
@@ -113,10 +111,9 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
-  CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -135,18 +132,17 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
-  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscVec fieldVec     = field.localVector();CPPUNIT_ASSERT(fieldVec);
 
   const PetscInt numCells = cEnd - cStart;
-  const PetscInt offset   = numCells;
+  const PetscInt offset = numCells;
   int index = 0;
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     const int numConstrainedDOF = _data->constraintSizes[v-offset];
     const PetscInt *cInd;
-    PetscInt        dof, cdof;
+    PetscInt dof, cdof;
 
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
@@ -171,10 +167,9 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
-  CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -193,10 +188,11 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
-  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscVec fieldVec = field.localVector();CPPUNIT_ASSERT(fieldVec);
+
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar valueScale = _data->lengthScale;
 
   // All values should be zero.
   PetscScalar *values;
@@ -214,7 +210,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
-  const PylithScalar t = 10.0;
+  const PylithScalar t = 10.0/_data->timeScale;
   bcA.setField(t, field);
   bcB.setField(t, field);
   bcC.setField(t, field);
@@ -227,7 +223,7 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
     for(int iDOF = 0; iDOF < dof; ++iDOF)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[off+iDOF], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[off+iDOF]*valueScale, tolerance);
   } // for
   err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 } // testSetField
@@ -244,7 +240,7 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   _initialize(&mesh, &bcA, &bcB, &bcC);
   CPPUNIT_ASSERT(0 != _data);
 
-  DM dmMesh = mesh.dmMesh();
+  PetscDM dmMesh = mesh.dmMesh();
   CPPUNIT_ASSERT(dmMesh);
   PetscInt       cStart, cEnd, vStart, vEnd;
   PetscErrorCode err;
@@ -267,9 +263,11 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcC.setConstraints(field);
 
   PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
+  PetscVec          fieldVec     = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
+
   const PylithScalar tolerance = 1.0e-06;
+  const PylithScalar valueScale = _data->lengthScale;
 
   // All values should be zero.
   PetscScalar *values;
@@ -287,8 +285,8 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
-  const PylithScalar t0 = 10.0;
-  const PylithScalar t1 = 14.0;
+  const PylithScalar t0 = 10.0/_data->timeScale;
+  const PylithScalar t1 = 14.0/_data->timeScale;
   bcA.setFieldIncr(t0, t1, field);
   bcB.setFieldIncr(t0, t1, field);
   bcC.setFieldIncr(t0, t1, field);
@@ -300,8 +298,9 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    for(int iDOF = 0; iDOF < dof; ++iDOF)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], values[off+iDOF], tolerance);
+    for(int iDOF = 0; iDOF < dof; ++iDOF) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], values[off+iDOF]*valueScale, tolerance);
+    } // for
   } // for
   err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
 } // testSetFieldIncr
@@ -323,10 +322,15 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   iohandler.read(mesh);
 
   spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
   cs.setSpaceDim(mesh->dimension());
   cs.initialize();
   mesh->coordsys(&cs);
+
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
   mesh->nondimensionalize(normalizer);
 
   // Setup boundary condition A
@@ -346,6 +350,7 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   bcA->dbInitial(&db);
   bcA->dbRate(&dbRate);
   bcA->bcDOF(_data->fixedDOFA, _data->numFixedDOFA);
+  bcA->normalizer(normalizer);
   bcA->initialize(*mesh, upDir);
 
   // Setup boundary condition B
@@ -359,6 +364,7 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
   bcB->dbInitial(&db);
   bcB->dbRate(&dbRate);
   bcB->bcDOF(_data->fixedDOFB, _data->numFixedDOFB);
+  bcB->normalizer(normalizer);
   bcB->initialize(*mesh, upDir);
 
   // Setup boundary condition C
@@ -373,6 +379,7 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
     bcC->dbInitial(&db);
     bcC->dbRate(&dbRate);
     bcC->bcDOF(_data->fixedDOFC, _data->numFixedDOFC);
+    bcC->normalizer(normalizer);
     bcC->initialize(*mesh, upDir);
   } // if
 } // _initialize

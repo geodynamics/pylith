@@ -53,8 +53,14 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   fieldIncr(0), // General
   constraintSizes(0),
   constrainedDOF(0),
-  meshFilename(0)
+  meshFilename(0),
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------

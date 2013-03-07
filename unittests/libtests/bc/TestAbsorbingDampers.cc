@@ -390,14 +390,15 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 
     // Set coordinate system
     spatialdata::geocoords::CSCart cs;
+    cs.setSpaceDim(mesh->dimension());
+    cs.initialize();
+    mesh->coordsys(&cs);
+
     spatialdata::units::Nondimensional normalizer;
     normalizer.lengthScale(_data->lengthScale);
     normalizer.pressureScale(_data->pressureScale);
     normalizer.densityScale(_data->densityScale);
     normalizer.timeScale(_data->timeScale);
-    cs.setSpaceDim(mesh->dimension());
-    cs.initialize();
-    mesh->coordsys(&cs);
     mesh->nondimensionalize(normalizer);
 
     // Set up quadrature

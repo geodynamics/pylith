@@ -33,7 +33,7 @@ pylith::bc::BCIntegratorSubMesh::parameterFields(void) const {
 inline
 const pylith::topology::SubMesh&
 pylith::bc::BCIntegratorSubMesh::boundaryMesh(void) const {
-  assert(0 != _boundaryMesh);
+  assert(_boundaryMesh);
   return *_boundaryMesh;
 }
 
