@@ -44,6 +44,14 @@ public:
 
   char* meshFilename; ///< Name of file with input mesh
 
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}
+
   /// @name Quadrature information
   //@{
   int numBasis; ///< Number of basis functions for cell

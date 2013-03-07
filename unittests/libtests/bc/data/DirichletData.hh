@@ -58,6 +58,15 @@ public:
 
   char* meshFilename; ///< Filename for input mesh.
   char* dbFilename; ///< Filename of simple spatial database.
+
+  /// @name Scales information for nondimensionalization.
+  //@{
+  PylithScalar lengthScale; ///< Length scale.
+  PylithScalar pressureScale; ///< Pressure scale.
+  PylithScalar timeScale; ///< Time scale.
+  PylithScalar densityScale; ///< Density scale.
+  //@}
+
 };
 
 #endif // pylith_bc_dirichletdata_hh

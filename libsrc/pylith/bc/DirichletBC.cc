@@ -83,8 +83,8 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     return;
 
   PetscSection   sectionP = field.petscSection();
-  PetscInt       numFields;
-  PetscErrorCode err;
+  PetscInt numFields;
+  PetscErrorCode err = 0;
   assert(sectionP);
 
   // Set constraints in field
@@ -93,7 +93,7 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   err = PetscSectionGetNumFields(sectionP, &numFields);CHECK_PETSC_ERROR(err);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt point = _points[iPoint];
-    PetscInt       dof, cdof;
+    PetscInt dof, cdof;
 
     err = PetscSectionGetDof(sectionP, point, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetConstraintDof(sectionP, point, &cdof);CHECK_PETSC_ERROR(err);
@@ -122,9 +122,9 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
   if (0 == numFixedDOF)
     return;
 
-  PetscSection   sectionP = field.petscSection();
-  PetscInt       numFields;
-  PetscErrorCode err;
+  PetscSection sectionP = field.petscSection();
+  PetscInt numFields;
+  PetscErrorCode err = 0;
   assert(sectionP);
 
   const int numPoints = _points.size();
@@ -194,14 +194,14 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
 
   assert(_parameters);
   PetscSection valueSection = _parameters->get("value").petscSection();
-  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscVec valueVec     = _parameters->get("value").localVector();
   PetscScalar *valueArray;
   assert(valueSection);assert(valueVec);
 
-  PetscSection   fieldSection = field.petscSection();
-  Vec            localVec     = field.localVector();
-  PetscScalar   *array;
-  PetscErrorCode err;
+  PetscSection fieldSection = field.petscSection();
+  PetscVec localVec     = field.localVector();
+  PetscScalar *array;
+  PetscErrorCode err = 0;
   assert(fieldSection);assert(localVec);
   
   err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
@@ -240,14 +240,14 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 
   assert(_parameters);
   PetscSection valueSection = _parameters->get("value").petscSection();
-  Vec          valueVec     = _parameters->get("value").localVector();
+  PetscVec valueVec = _parameters->get("value").localVector();
   PetscScalar *valueArray;
   assert(valueSection);assert(valueVec);
 
-  PetscSection   fieldSection = field.petscSection();
-  Vec            localVec     = field.localVector();
-  PetscScalar   *array;
-  PetscErrorCode err;
+  PetscSection fieldSection = field.petscSection();
+  PetscVec localVec = field.localVector();
+  PetscScalar *array;
+  PetscErrorCode err = 0;
   assert(fieldSection);assert(localVec);
   
   err = VecGetArray(localVec, &array);CHECK_PETSC_ERROR(err);
