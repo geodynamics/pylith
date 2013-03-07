@@ -107,12 +107,13 @@ pylith::friction::FrictionModel::initialize(
   assert(0 != cs);
   const int spaceDim = cs->spaceDim();
 
-  assert(0 != _normalizer);
+  assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
+  scalar_array coordsVertexGlobal(spaceDim);
   PetscSection coordSection;
   Vec          coordVec;
-  PetscScalar *coords;
+  PetscScalar* coordArray;
   err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
 
@@ -135,22 +136,27 @@ pylith::friction::FrictionModel::initialize(
   _dbProperties->queryVals(_metadata.dbProperties(),
 			   _metadata.numDBProperties());
 
-  err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt coff;
+    PetscInt cdof;
 
+    err = PetscSectionGetDof(coordSection, v, &cdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
-    _normalizer->dimensionalize(&coords[coff], spaceDim, lengthScale);
-
+    assert(spaceDim == cdof);
+    for (PetscInt d = 0; d < cdof; ++d) {
+      coordsVertexGlobal[d] = coordArray[coff+d];
+    } // for
+    _normalizer->dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
 
     int err = _dbProperties->query(&propertiesDBQuery[0], 
 				   propertiesDBQuery.size(),
-				   &coords[coff], spaceDim, cs);
+				   &coordsVertexGlobal[0], spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find parameters for physical properties at \n" << "(";
       for (int i = 0; i < spaceDim; ++i)
-        msg << "  " << coords[coff+i];
+        msg << "  " << coordsVertexGlobal[i];
       msg << ") in friction model " << _label << "\n"
           << "using spatial database '" << _dbProperties->label() << "'.";
       throw std::runtime_error(msg.str());
@@ -176,10 +182,9 @@ pylith::friction::FrictionModel::initialize(
       err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
       for(PetscInt d = 0; d < dof; ++d, ++iOff) {
         a[off+d] += propertiesVertex[iOff];
-      }
-    }
+      } // for
+    } // for
   } // for
-  err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   // Close properties database
   _dbProperties->close();
 
@@ -196,21 +201,26 @@ pylith::friction::FrictionModel::initialize(
     _dbInitialState->open();
     _dbInitialState->queryVals(_metadata.dbStateVars(),
 			       _metadata.numDBStateVars());
-
+    
     for(PetscInt v = vStart; v < vEnd; ++v) {
       PetscInt coff;
+      PetscInt cdof;
 
+      err = PetscSectionGetDof(coordSection, v, &cdof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
-      _normalizer->dimensionalize(&coords[coff], spaceDim,
-				  lengthScale);
+      assert(spaceDim == cdof);
+      for (PetscInt d = 0; d < cdof; ++d) {
+	coordsVertexGlobal[d] = coordArray[coff+d];
+      } // for
+      _normalizer->dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
       
       int err = _dbInitialState->query(&stateVarsDBQuery[0], numDBStateVars,
-				       &coords[coff], spaceDim, cs);
+				       &coordsVertexGlobal[0], spaceDim, cs);
       if (err) {
         std::ostringstream msg;
         msg << "Could not find initial state variables at \n" << "(";
         for (int i = 0; i < spaceDim; ++i)
-          msg << "  " << coords[coff+i];
+          msg << "  " << coordsVertexGlobal[i];
         msg << ") in friction model " << _label << "\n"
             << "using spatial database '" << _dbInitialState->label() << "'.";
         throw std::runtime_error(msg.str());
@@ -242,6 +252,8 @@ pylith::friction::FrictionModel::initialize(
   } else if (_metadata.numDBStateVars()) {
     std::cerr << "WARNING: No initial state given for friction model '" << label() << "'. Using default value of zero." << std::endl;
   } // if/else
+
+  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 
   // Setup buffers for restrict/update of properties and state variables.
   _propsStateVarsVertex.resize(_propsFiberDim+_varsFiberDim);
