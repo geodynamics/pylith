@@ -42,19 +42,13 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::bc::TestAbsorbingDampers::setUp(void)
 { // setUp
   _data = 0;
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -84,7 +78,7 @@ pylith::bc::TestAbsorbingDampers::testDB(void)
   AbsorbingDampers bc;
   bc.db(&db);
   
-  CPPUNIT_ASSERT(0 != bc._db);
+  CPPUNIT_ASSERT(bc._db);
   CPPUNIT_ASSERT_EQUAL(label, std::string(bc._db->label()));
 } // testDB
     
@@ -98,12 +92,12 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  DM             subMesh = boundaryMesh.dmMesh();
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM subMesh = boundaryMesh.dmMesh();
+  PetscInt cStart, cEnd, vStart, vEnd;
+  PetscErrorCode err = 0;
 
   // Check boundary mesh
   CPPUNIT_ASSERT(subMesh);
@@ -125,7 +119,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   PetscInt dp = 0;
   for(PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt *closure = NULL;
-    PetscInt  closureSize, numCorners = 0;
+    PetscInt closureSize, numCorners = 0;
 
     err = DMPlexGetTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
@@ -137,7 +131,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
     CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
     for(PetscInt p = 0; p < numCorners; ++p, ++dp) {
       CPPUNIT_ASSERT_EQUAL(_data->cells[dp], closure[p]);
-    }
+    } // for
     err = DMPlexRestoreTransitiveClosure(subMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
 
@@ -145,7 +139,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
   PetscInt index = 0;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   PetscSection dampingConstsSection = bc._parameters->get("damping constants").petscSection();
   PetscVec dampingConstsVec = bc._parameters->get("damping constants").localVector();
   CPPUNIT_ASSERT(dampingConstsSection);CPPUNIT_ASSERT(dampingConstsVec);
@@ -175,7 +169,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 void
 pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
 { // testIntegrateResidual
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   AbsorbingDampers bc;
@@ -183,15 +177,15 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   _initialize(&mesh, &bc, &fields);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  DM             subMesh = boundaryMesh.dmMesh();
+  PetscDM             subMesh = boundaryMesh.dmMesh();
   PetscErrorCode err;
 
   topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PylithScalar t = 0.0;
   bc.integrateResidual(residual, t, &fields);
 
-  DM             dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscInt vStart, vEnd;
   const PylithScalar* valsE = _data->valsResidual;
   const PylithScalar dampingConstsScale = _data->densityScale * _data->lengthScale / _data->timeScale;
   const PylithScalar velocityScale = 1.0; // Input velocity is nondimensional.
@@ -205,7 +199,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   PetscSection residualSection = residual.petscSection();
   PetscVec residualVec = residual.localVector();
   PetscScalar *vals;
-  PetscInt     size;
+  PetscInt size;
 
   CPPUNIT_ASSERT(residualSection);CPPUNIT_ASSERT(residualVec);
   err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
@@ -228,7 +222,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
 void
 pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   AbsorbingDampers bc;
@@ -236,7 +230,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   _initialize(&mesh, &bc, &fields);
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  DM subMesh = boundaryMesh.dmMesh();
+  PetscDM subMesh = boundaryMesh.dmMesh();
 
   topology::Field<topology::Mesh>& solution = fields.solution();
   topology::Jacobian jacobian(solution);
@@ -246,9 +240,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.assemble("final_assembly");
 
-  DM             dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscInt vStart, vEnd;
+  PetscErrorCode err = 0;
 
   CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -278,7 +272,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
     cols[iCol] = iCol;
   err = MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);CHECK_PETSC_ERROR(err);
 
-#if 0
+#if 0 // DEBUGGING
   std::cout << "JACOBIAN\n";
   for (int iRow=0, i=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol, ++i)
@@ -302,7 +296,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
 void
 pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
 { // testIntegrateJacobianLumped
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   AbsorbingDampers bc;
@@ -316,7 +310,7 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   jacobian.allocate();
 
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
-  DM subMesh = boundaryMesh.dmMesh();
+  PetscDM subMesh = boundaryMesh.dmMesh();
   CPPUNIT_ASSERT(subMesh);
 
   const PylithScalar t = 1.0;
@@ -324,9 +318,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobianLumped(void)
   CPPUNIT_ASSERT_EQUAL(false, bc.needNewJacobian());
   jacobian.complete();
 
-  DM             dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();
+  PetscInt vStart, vEnd;
+  PetscErrorCode err = 0;
 
   CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
@@ -382,11 +376,11 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
 					      AbsorbingDampers* const bc,
 					      topology::SolutionFields* fields) const
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != bc);
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(bc);
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_quadrature);
 
   try {
     // Setup mesh
@@ -434,7 +428,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     //bc->_boundaryMesh->view("BOUNDARY MESH");
 
     // Setup fields
-    CPPUNIT_ASSERT(0 != fields);
+    CPPUNIT_ASSERT(fields);
     fields->add("residual", "residual");
     fields->add("dispIncr(t->t+dt)", "displacement_increment");
     fields->add("disp(t)", "displacement");
@@ -443,7 +437,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
     fields->solutionName("dispIncr(t->t+dt)");
 
     topology::Field<topology::Mesh>& residual = fields->get("residual");
-    DM             dmMesh = mesh->dmMesh();
+    PetscDM             dmMesh = mesh->dmMesh();
     PetscInt       vStart, vEnd;
     PetscErrorCode err;
 
