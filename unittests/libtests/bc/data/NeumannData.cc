@@ -22,6 +22,10 @@
 // Constructor
 pylith::bc::NeumannData::NeumannData(void) :
   meshFilename(0),
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0),
   numBasis(0),
   numQuadPts(0),
   quadPts(0),
@@ -40,6 +44,8 @@ pylith::bc::NeumannData::NeumannData(void) :
   tractionsCell(0),
   valsResidual(0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------
