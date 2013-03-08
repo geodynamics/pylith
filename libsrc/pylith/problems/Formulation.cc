@@ -142,8 +142,8 @@ void
 pylith::problems::Formulation::meshIntegrators(IntegratorMesh** integrators,
 					       const int numIntegrators)
 { // meshIntegrators
-  assert( (0 == integrators && 0 == numIntegrators) ||
-	  (0 != integrators && 0 < numIntegrators) );
+  assert( (!integrators && 0 == numIntegrators) ||
+	  (integrators && 0 < numIntegrators) );
   _meshIntegrators.resize(numIntegrators);
   for (int i=0; i < numIntegrators; ++i)
     _meshIntegrators[i] = integrators[i];
@@ -155,8 +155,8 @@ void
 pylith::problems::Formulation::submeshIntegrators(IntegratorSubMesh** integrators,
 						  const int numIntegrators)
 { // submeshIntegrators
-  assert( (0 == integrators && 0 == numIntegrators) ||
-	  (0 != integrators && 0 < numIntegrators) );
+  assert( (!integrators && 0 == numIntegrators) ||
+	  (integrators && 0 < numIntegrators) );
   _submeshIntegrators.resize(numIntegrators);
   for (int i=0; i < numIntegrators; ++i)
     _submeshIntegrators[i] = integrators[i];
@@ -184,8 +184,8 @@ pylith::problems::Formulation::updateSettings(topology::Jacobian* jacobian,
 					      const PylithScalar t,
 					      const PylithScalar dt)
 { // updateSettings
-  assert(0 != jacobian);
-  assert(0 != fields);
+  assert(jacobian);
+  assert(fields);
   assert(dt > 0.0);
 
   _jacobian = jacobian;
@@ -203,8 +203,8 @@ pylith::problems::Formulation::updateSettings(topology::Field<topology::Mesh>* j
 					      const PylithScalar t,
 					      const PylithScalar dt)
 { // updateSettings
-  assert(0 != jacobian);
-  assert(0 != fields);
+  assert(jacobian);
+  assert(fields);
   assert(dt > 0.0);
 
   _jacobianLumped = jacobian;
@@ -219,10 +219,10 @@ void
 pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 					      const PetscVec* tmpSolutionVec)
 { // reformResidual
-  assert(0 != _fields);
+  assert(_fields);
 
   // Update section view of field.
-  if (0 != tmpSolutionVec) {
+  if (tmpSolutionVec) {
     topology::Field<topology::Mesh>& solution = _fields->solution();
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
@@ -251,13 +251,13 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   residual.complete();
 
   // Update PETSc view of residual
-  if (0 != tmpResidualVec)
+  if (tmpResidualVec)
     residual.scatterSectionToVector(*tmpResidualVec);
   else
     residual.scatterSectionToVector();
 
   // TODO: Move this to SolverLinear 
-  if (0 != tmpResidualVec)
+  if (tmpResidualVec)
     VecScale(*tmpResidualVec, -1.0);
 } // reformResidual
 
@@ -270,7 +270,7 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
   assert(0 != _fields);
 
   // Update section view of field.
-  if (0 != tmpSolutionVec) {
+  if (tmpSolutionVec) {
     topology::Field<topology::Mesh>& solution = _fields->solution();
     solution.scatterVectorToSection(*tmpSolutionVec);
   } // if
@@ -315,8 +315,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 void
 pylith::problems::Formulation::reformJacobianLumped(void)
 { // reformJacobianLumped
-  assert(0 != _jacobianLumped);
-  assert(0 != _fields);
+  assert(_jacobianLumped);
+  assert(_fields);
 
   // Set jacobian to zero.
   _jacobianLumped->zero();
@@ -426,7 +426,6 @@ pylith::problems::Formulation::printState(PetscVec* solutionVec,
   const int numTimeSteps = 1;
   writer.open(mesh, numTimeSteps);
    
-
   topology::Field<topology::Mesh>& solution = _fields->solution();
   solution.scatterVectorToSection(*solutionVec);
   writer.writeVertexField(0.0, solution, mesh);

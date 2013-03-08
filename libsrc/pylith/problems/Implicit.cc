@@ -51,43 +51,42 @@ pylith::problems::Implicit::calcRateFields(void)
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
   const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();
-  assert(0 != cs);
+  assert(cs);
   const int spaceDim = cs->spaceDim();
+
+  PetscErrorCode err = 0;
   
   // Get sections.
-  PetscSection dispIncrSection = dispIncr.petscSection();
-  Vec          dispIncrVec     = dispIncr.localVector();
-  PetscScalar *dispIncrArray;
-  assert(dispIncrSection);assert(dispIncrVec);
-	 
-  PetscSection velSection = _fields->get("velocity(t)").petscSection();
-  Vec          velVec     = _fields->get("velocity(t)").localVector();
-  PetscScalar *velArray;
-  assert(velSection);assert(velVec);
+  PetscSection dispIncrSection = dispIncr.petscSection();assert(dispIncrSection);
+  PetscVec dispIncrVec = dispIncr.localVector();assert(dispIncrVec);
+  PetscScalar *dispIncrArray = NULL;
+  err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+  
+  PetscSection velSection = _fields->get("velocity(t)").petscSection();assert(velSection);
+  PetscVec velVec = _fields->get("velocity(t)").localVector();assert(velVec);
+  PetscScalar *velArray = NULL;
+  err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
 
   // Get mesh vertices.
-  DM             dmMesh = dispIncr.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
-
-  assert(dmMesh);
+  PetscDM dmMesh = dispIncr.dmMesh();assert(dmMesh);
+  PetscInt vStart, vEnd;
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, off, vdof, voff;
-
     err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetDof(velSection, v, &vdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(velSection, v, &voff);CHECK_PETSC_ERROR(err);
     assert(dof == spaceDim);assert(vdof == spaceDim);
+
     for(PetscInt d = 0; d < dof; ++d) {
       velArray[voff+d] = dispIncrArray[off+d] / dt;
     }
   } // for
   err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+
   PetscLogFlops((vEnd - vStart) * spaceDim);
 } // calcRateFields
 
