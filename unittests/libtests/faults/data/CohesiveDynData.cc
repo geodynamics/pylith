@@ -22,6 +22,10 @@
 // Constructor
 pylith::faults::CohesiveDynData::CohesiveDynData(void) :
   meshFilename(0),
+  lengthScale(1.0e+3),
+  pressureScale(2.25e+10),
+  densityScale(1.0),
+  timeScale(2.0),
   spaceDim(0),
   cellDim(0),
   numBasis(0),
@@ -50,6 +54,8 @@ pylith::faults::CohesiveDynData::CohesiveDynData(void) :
   constraintVertices(0),
   numConstraintVert(0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------
