@@ -94,6 +94,7 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _faultMesh = new topology::SubMesh();
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(),
 					_useLagrangeConstraints);
+  //_faultMesh->nondimensionalize(*_normalizer);
   _initializeCohesiveInfo(mesh);
 
   delete _fields;

@@ -29,11 +29,6 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesive::FaultCohesive(void) :
   _fields(0),
@@ -76,6 +71,7 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
 { // numVerticesNoMesh
   int nvertices = 0;
 
+  assert(false); // :TODO: Update this for DM mesh
   if (!_useFaultMesh) {
     // Get group of vertices associated with fault
     const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -108,7 +104,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
                                               int *firstFaultCell,
                                               const bool flipFault)
 { // adjustTopology
-  assert(0 != mesh);
+  assert(mesh);
   assert(std::string("") != label());
   
   try {
@@ -120,12 +116,11 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     assert(dmMesh);
     
     if (!_useFaultMesh) {
-      DMLabel        groupField;
-      PetscBool      has;
+      PetscDMLabel groupField;
+      PetscBool hasLabel;
       PetscErrorCode err;
-
-      err = DMPlexHasLabel(dmMesh, label(), &has);CHECK_PETSC_ERROR(err);
-      if (!has) {
+      err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+      if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << label()
             << "' for fault interface condition.";
