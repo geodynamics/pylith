@@ -211,12 +211,6 @@ public :
    */
   int commRank(void) const;
     
-  /** Initialize the finite-element mesh.
-   *
-   * @param normalizer Nondimensionalizer.
-   */
-  void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
-
   /** Print mesh to stdout.
    *
    * @param label Label for mesh.
@@ -236,6 +230,12 @@ public :
    * @returns the number of vertices in the group
    */
   int groupSize(const char *name);
+
+  /** Nondimensionalize the finite-element mesh.
+   *
+   * @param normalizer Nondimensionalizer.
+   */
+  void nondimensionalize(const spatialdata::units::Nondimensional& normalizer);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
