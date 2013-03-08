@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/petscfwd.h" // USES PetscVec
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include <stdexcept> // USES std::runtime_error
@@ -112,66 +113,6 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 } // coordsys
 
 // ----------------------------------------------------------------------
-// Nondimensionalizer the finite-element mesh.
-void 
-pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
-{ // initialize
-  Vec coordVec, coordDimVec;
-  const PylithScalar lengthScale = normalizer.lengthScale();
-  PetscErrorCode err;
-
-  // Get coordinates (currently dimensioned).
-  if (!_mesh.isNull()) {
-    const ALE::Obj<RealSection>& coordsSection = _mesh->getRealSection("coordinates");
-    assert(!coordsSection.isNull());
-
-    // Get field for dimensioned coordinates.
-    const ALE::Obj<RealSection>& coordsDimSection =
-      _mesh->getRealSection("coordinates_dimensioned");
-    assert(!coordsDimSection.isNull());
-    coordsDimSection->setAtlas(coordsSection->getAtlas());
-    coordsDimSection->allocateStorage();
-    coordsDimSection->setBC(coordsSection->getBC());
-
-    const ALE::Obj<SieveMesh::label_sequence>& vertices = _mesh->depthStratum(0);
-    assert(!vertices.isNull());
-    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
-    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-
-    PylithScalar coordsVertex[3];
-    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
-         v_iter != verticesEnd;
-         ++v_iter) {
-      const int spaceDim = coordsSection->getFiberDimension(*v_iter);
-      assert(spaceDim <= 3);
-      const PylithScalar* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
-    
-      // Update section with dimensioned coordinates
-      assert(spaceDim == coordsDimSection->getFiberDimension(*v_iter));
-      coordsDimSection->updatePoint(*v_iter, coordsDimVertex);
-
-      // Copy coordinates to array for nondimensionalization.
-      for (int i=0; i < spaceDim; ++i)
-        coordsVertex[i] = coordsDimVertex[i];
-
-      // Nondimensionalize original coordinates.
-      normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
-    
-      // Update section with nondimensional coordinates
-      assert(spaceDim == coordsSection->getFiberDimension(*v_iter));
-      coordsSection->updatePoint(*v_iter, coordsVertex);
-    } // for
-  }
-
-  assert(_newMesh);
-  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordVec);
-  // There does not seem to be an advantage to calling nondimensionalize()
-  err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
-  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
-} // nondimensionalize
-
-// ----------------------------------------------------------------------
 // Return the names of all vertex groups.
 void
 pylith::topology::Mesh::groups(int* numNames, 
@@ -236,6 +177,67 @@ pylith::topology::Mesh::groupSize(const char *name)
 
   return size;
 } // groupSize
+
+
+// ----------------------------------------------------------------------
+// Nondimensionalize the finite-element mesh.
+void 
+pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
+{ // initialize
+  PetscVec coordVec, coordDimVec;
+  const PylithScalar lengthScale = normalizer.lengthScale();
+  PetscErrorCode err;
+
+  // Get coordinates (currently dimensioned).
+  if (!_mesh.isNull()) {
+    const ALE::Obj<RealSection>& coordsSection = _mesh->getRealSection("coordinates");
+    assert(!coordsSection.isNull());
+
+    // Get field for dimensioned coordinates.
+    const ALE::Obj<RealSection>& coordsDimSection =
+      _mesh->getRealSection("coordinates_dimensioned");
+    assert(!coordsDimSection.isNull());
+    coordsDimSection->setAtlas(coordsSection->getAtlas());
+    coordsDimSection->allocateStorage();
+    coordsDimSection->setBC(coordsSection->getBC());
+
+    const ALE::Obj<SieveMesh::label_sequence>& vertices = _mesh->depthStratum(0);
+    assert(!vertices.isNull());
+    const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+    const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+
+    PylithScalar coordsVertex[3];
+    for (SieveMesh::label_sequence::iterator v_iter=verticesBegin;
+         v_iter != verticesEnd;
+         ++v_iter) {
+      const int spaceDim = coordsSection->getFiberDimension(*v_iter);
+      assert(spaceDim <= 3);
+      const PylithScalar* coordsDimVertex = coordsSection->restrictPoint(*v_iter);
+    
+      // Update section with dimensioned coordinates
+      assert(spaceDim == coordsDimSection->getFiberDimension(*v_iter));
+      coordsDimSection->updatePoint(*v_iter, coordsDimVertex);
+
+      // Copy coordinates to array for nondimensionalization.
+      for (int i=0; i < spaceDim; ++i)
+        coordsVertex[i] = coordsDimVertex[i];
+
+      // Nondimensionalize original coordinates.
+      normalizer.nondimensionalize(&coordsVertex[0], spaceDim, lengthScale);
+    
+      // Update section with nondimensional coordinates
+      assert(spaceDim == coordsSection->getFiberDimension(*v_iter));
+      coordsSection->updatePoint(*v_iter, coordsVertex);
+    } // for
+  }
+
+  assert(_newMesh);
+  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  assert(coordVec);
+  // There does not seem to be an advantage to calling nondimensionalize()
+  err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
+  err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
+} // nondimensionalize
 
 
 // End of file 
