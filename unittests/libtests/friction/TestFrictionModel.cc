@@ -48,12 +48,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
-
-// ----------------------------------------------------------------------
 // Test label()
 void
 pylith::friction::TestFrictionModel::testLabel(void)
@@ -89,7 +83,7 @@ pylith::friction::TestFrictionModel::testDBProperties(void)
   StaticFriction friction;
   friction.dbProperties(&db);
   
-  CPPUNIT_ASSERT(0 != friction._dbProperties);
+  CPPUNIT_ASSERT(friction._dbProperties);
   CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbProperties->label()));
 } // testDBProperties
 
@@ -105,7 +99,7 @@ pylith::friction::TestFrictionModel::testDBStateVars(void)
   StaticFriction friction;
   friction.dbInitialState(&db);
   
-  CPPUNIT_ASSERT(0 != friction._dbInitialState);
+  CPPUNIT_ASSERT(friction._dbInitialState);
   CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbInitialState->label()));
 } // testDBStateVars
 
@@ -121,7 +115,7 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
   StaticFriction friction;
   friction.normalizer(normalizer);
   
-  CPPUNIT_ASSERT(0 != friction._normalizer);
+  CPPUNIT_ASSERT(friction._normalizer);
   CPPUNIT_ASSERT_EQUAL(lengthScale, friction._normalizer->lengthScale());
 } // testNormalizer
 
@@ -134,19 +128,17 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
   StaticFrictionData data;
-  PetscErrorCode     err;
   _initialize(&mesh, &fault, &friction, &data);
-  CPPUNIT_ASSERT(0 != friction._fieldsPropsStateVars);
+  CPPUNIT_ASSERT(friction._fieldsPropsStateVars);
 
   const PylithScalar propertiesE[2*2] = {
     0.6, 1000000/data.pressureScale,
     0.4, 1000000/data.pressureScale,
   };
 
-  DM       faultDMMesh = fault.faultMesh().dmMesh();
+  PetscDM faultDMMesh = fault.faultMesh().dmMesh();assert(faultDMMesh);
   PetscInt vStart, vEnd;
-
-  assert(faultDMMesh);
+  PetscErrorCode err;
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const PylithScalar tolerance = 1.0e-06;
@@ -159,18 +151,16 @@ pylith::friction::TestFrictionModel::testInitialize(void)
     for (int i = 0; i < numProperties; ++i, ++index) {
       const materials::Metadata::ParamDescription& property = metadata.getProperty(i);
       topology::Field<topology::SubMesh>& prop = friction._fieldsPropsStateVars->get(property.name.c_str());
-      PetscSection fieldsSection = prop.petscSection();
-      Vec          fieldsVec     = prop.localVector();
-      PetscScalar *fieldsArray;
-
-      CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
+      PetscSection fieldsSection = prop.petscSection();CPPUNIT_ASSERT(fieldsSection);
+      PetscVec fieldsVec = prop.localVector();CPPUNIT_ASSERT(fieldsVec);
+      PetscScalar *fieldsArray = NULL;
       err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
-      PetscInt dof, off;
 
+      PetscInt dof, off;
       err = PetscSectionGetDof(fieldsSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(fieldsSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT(dof == 1);
-      if (0 != propertiesE[index]) {
+      if (0.0 != propertiesE[index]) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsArray[off]/propertiesE[index], tolerance);
       } else {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[index], fieldsArray[off], tolerance);
@@ -198,30 +188,27 @@ pylith::friction::TestFrictionModel::testGetField(void)
   StaticFrictionData data;
   _initialize(&mesh, &fault, &friction, &data);
 
-  const topology::Field<topology::SubMesh>& field = 
-    friction.getField("friction_coefficient");
+  const topology::Field<topology::SubMesh>& field = friction.getField("friction_coefficient");
 
-  DM             dmMesh = field.mesh().dmMesh();
-  PetscInt       vStart, vEnd;
+  PetscDM dmMesh = field.mesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt vStart, vEnd;
   PetscErrorCode err;
-
-  assert(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  PetscSection fieldSection = field.petscSection();
-  Vec          fieldVec     = field.localVector();
-  PetscScalar *fieldArray;
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
+  PetscVec fieldVec = field.localVector();CPPUNIT_ASSERT(fieldVec);
+  PetscScalar *fieldArray = NULL;
+  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+
   const PylithScalar tolerance = 1.0e-06;
   int index = 0;
 
-  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt dof, off;
-
     err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
+
     for(int i = 0; i < fiberDim; ++i, ++index)
       if (0 != fieldE[index])
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldArray[off+i]/fieldE[index], tolerance);
@@ -306,9 +293,6 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 
   const PylithScalar tolerance = 1.0e-6;
   if (0.0 != frictionE) {
-    std::cout << "frictionE: " << frictionE
-	      << ", frictionV: " << frictionV
-	      << std::endl;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, frictionV/frictionE, tolerance);
   } else {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, frictionV, tolerance);
@@ -391,17 +375,16 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     for(PetscInt i = 0; i < numStateVars; ++i) {
       const materials::Metadata::ParamDescription& stateVar = metadata.getStateVar(i);
       topology::Field<topology::SubMesh>& sv = friction._fieldsPropsStateVars->get(stateVar.name.c_str());
-      PetscSection fieldsSection = sv.petscSection();
-      Vec          fieldsVec     = sv.localVector();
-      PetscScalar *fieldsArray;
+      PetscSection fieldsSection = sv.petscSection();CPPUNIT_ASSERT(fieldsSection);
+      PetscVec fieldsVec     = sv.localVector();CPPUNIT_ASSERT(fieldsVec);
+      PetscScalar *fieldsArray = NULL;
       PetscErrorCode err;
-
-      CPPUNIT_ASSERT(fieldsSection);CPPUNIT_ASSERT(fieldsVec);
       err = VecGetArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
-      PetscInt dof, off;
 
+      PetscInt dof, off;
       err = PetscSectionGetDof(fieldsSection, vertex, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(fieldsSection, vertex, &off);CHECK_PETSC_ERROR(err);
+
       CPPUNIT_ASSERT(dof == 1);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[i], fieldsArray[off], tolerance);
       err = VecRestoreArray(fieldsVec, &fieldsArray);CHECK_PETSC_ERROR(err);
@@ -433,8 +416,8 @@ pylith::friction::TestFrictionModel::tearDown(void)
 void
 pylith::friction::TestFrictionModel::testDBToProperties(void)
 { // testDBToProperties
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   // Check to make sure names of Metadata values match names of test
   // data values (consistency check).
@@ -478,8 +461,8 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
 void
 pylith::friction::TestFrictionModel::testNonDimProperties(void)
 { // testNonDimProperties
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsVertex;
@@ -513,8 +496,8 @@ pylith::friction::TestFrictionModel::testNonDimProperties(void)
 void
 pylith::friction::TestFrictionModel::testDimProperties(void)
 { // testDimProperties
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsVertex;
@@ -547,8 +530,8 @@ pylith::friction::TestFrictionModel::testDimProperties(void)
 void
 pylith::friction::TestFrictionModel::testDBToStateVars(void)
 { // testDBToStateVars
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   // Check to make sure names of Metadata values match names of test
   // data values (consistency check).
@@ -595,8 +578,8 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
 void
 pylith::friction::TestFrictionModel::testNonDimStateVars(void)
 { // testNonDimStateVars
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsVertex;
@@ -630,8 +613,8 @@ pylith::friction::TestFrictionModel::testNonDimStateVars(void)
 void
 pylith::friction::TestFrictionModel::testDimStateVars(void)
 { // testDimStateVars
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsVertex;
@@ -665,8 +648,8 @@ pylith::friction::TestFrictionModel::testDimStateVars(void)
 void
 pylith::friction::TestFrictionModel::test_calcFriction(void)
 { // _testCalcFriction
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
 
   const int numLocs = _data->numLocs;
   const int numPropsVertex = _data->numPropsVertex;
@@ -707,8 +690,8 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
 void
 pylith::friction::TestFrictionModel::test_updateStateVars(void)
 { // test_updateStateVars
-  CPPUNIT_ASSERT(0 != _friction);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_friction);
+  CPPUNIT_ASSERT(_data);
 
   const bool computeStateVars = true;
 
@@ -772,16 +755,15 @@ pylith::friction::TestFrictionModel::setupNormalizer(void)
 // ----------------------------------------------------------------------
 // Setup mesh and material.
 void
-pylith::friction::TestFrictionModel::_initialize(
-					  topology::Mesh* mesh,
-					  faults::FaultCohesiveDyn* fault,
-					  StaticFriction* friction,
-					  const StaticFrictionData* data)
+pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
+						 faults::FaultCohesiveDyn* fault,
+						 StaticFriction* friction,
+						 const StaticFrictionData* data)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != fault);
-  CPPUNIT_ASSERT(0 != friction);
-  CPPUNIT_ASSERT(0 != data);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(fault);
+  CPPUNIT_ASSERT(friction);
+  CPPUNIT_ASSERT(data);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");
@@ -819,11 +801,16 @@ pylith::friction::TestFrictionModel::_initialize(
 
   const bool flipFault = false;
   const char* label = "fault";
-  int firstFaultVertex = 0;
-  int firstLagrangeVertex = mesh->sieveMesh()->getIntSection(label)->size();
-  int firstFaultCell = mesh->sieveMesh()->getIntSection(label)->size();
+
+  PetscInt labelSize;
+  PetscErrorCode err;
+  err = DMPlexGetStratumSize(mesh->dmMesh(), label, 1, &labelSize);CHECK_PETSC_ERROR(err);
+
+  PetscInt firstFaultVertex    = 0;
+  PetscInt firstLagrangeVertex = labelSize;
+  PetscInt firstFaultCell      = labelSize;
   if (fault->useLagrangeConstraints())
-    firstFaultCell += mesh->sieveMesh()->getIntSection(label)->size();
+    firstFaultCell += labelSize;
   fault->id(100);
   fault->label(label);
   fault->quadrature(&quadrature);
