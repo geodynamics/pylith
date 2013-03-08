@@ -82,7 +82,7 @@ pylith::faults::EqKinSrc::initialize(
 { // initialize
   // :TODO: Normalize slip time in Python?
   normalizer.nondimensionalize(&_originTime, 1, normalizer.timeScale());
-  assert(0 != _slipfn);
+  assert(_slipfn);
   _slipfn->initialize(faultMesh, normalizer, _originTime);
 } // initialize
 
@@ -93,7 +93,7 @@ pylith::faults::EqKinSrc::slip(
 			   topology::Field<topology::SubMesh>* const slipField,
 			   const PylithScalar t)
 { // slip
-  assert(0 != _slipfn);
+  assert(_slipfn);
   _slipfn->slip(slipField, t);
 } // slip
 
@@ -102,7 +102,7 @@ pylith::faults::EqKinSrc::slip(
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::EqKinSrc::finalSlip(void) const
 { // finalSlip
-  assert(0 != _slipfn);
+  assert(_slipfn);
   return _slipfn->finalSlip();
 } // finalSlip
 
@@ -111,7 +111,7 @@ pylith::faults::EqKinSrc::finalSlip(void) const
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::EqKinSrc::slipTime(void) const
 { // slipTime
-  assert(0 != _slipfn);
+  assert(_slipfn);
   return _slipfn->slipTime();
 } // slipTime
 

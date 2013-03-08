@@ -60,6 +60,7 @@ pylith::faults::Fault::faultMesh(void) const
 int
 pylith::faults::Fault::dimension(void) const
 { // dimension
+  assert(false); // :TODO: Update for PetscDM
   return (_faultMesh) ? _faultMesh->dimension() : 0;
 } // dimension
 
@@ -69,6 +70,7 @@ pylith::faults::Fault::dimension(void) const
 int
 pylith::faults::Fault::coneSize(void) const
 { // coneSize
+  assert(false); // :TODO: Update for PetscDM
   
   return (_faultMesh && numCells() > 0) ? 
     _faultMesh->sieveMesh()->getSieve()->getConeSize(*_faultMesh->sieveMesh()->heightStratum(1)->begin()) : 0;
@@ -80,6 +82,7 @@ pylith::faults::Fault::coneSize(void) const
 int
 pylith::faults::Fault::numVertices(void) const
 { // numVertices
+  assert(false); // :TODO: Update for PetscDM
   return (_faultMesh) ? _faultMesh->numVertices() : 0;
 } // numVertices
 
@@ -89,6 +92,7 @@ pylith::faults::Fault::numVertices(void) const
 int
 pylith::faults::Fault::numCells(void) const
 { // numCells
+  assert(false); // :TODO: Update for PetscDM
   return (_faultMesh && !_faultMesh->sieveMesh().isNull() && _faultMesh->sieveMesh()->height() > 0) ? 
     _faultMesh->sieveMesh()->heightStratum(1)->size() : 0;
 } // numCells
