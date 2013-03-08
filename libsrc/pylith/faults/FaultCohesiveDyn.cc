@@ -613,11 +613,6 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   } // switch
 
 
-#if 1 // DEBUGGING
-   _fields->get("relative disp").view("BEFORE RELATIVE DISPLACEMENT");
-   fields->get("dispIncr(t->t+dt)").view("BEFORE DISP INCR (t->t+dt)");
-#endif
-
   err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(dispTIncrAdjVec, &dispTIncrAdjArray);CHECK_PETSC_ERROR(err);
@@ -853,7 +848,7 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
       // if residual is very small, we prefer the full step
       break;
 
-#if 0
+#if 0 // DEBUGGING
     const int rank = _faultMesh->sieveMesh()->commRank();
     std::cout << "["<<rank<<"] alphaL: " << pow(10.0, logAlphaL)
 	      << ", residuaL: " << residualL
@@ -2089,13 +2084,6 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   PetscVec residualVec = residual.localVector();assert(residualVec);
   residual.zero();
 
-#if 0
-  std::cout << "dLagrangeVec" << std::endl;
-  VecView(dLagrangeVec, PETSC_VIEWER_STDOUT_WORLD);
-  std::cout << "SENSITIVITY mesh: " << faultDMMesh << ", coordinates: " << coordVec << std::endl;
-  VecView(coordVec, PETSC_VIEWER_STDOUT_WORLD);
-#endif
-
   // Loop over cells
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry
@@ -2178,7 +2166,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   // Update section view of field.
   solution.scatterVectorToSection();
 
-#if 1 // DEBUGGING
+#if 0 // DEBUGGING
   residual.view("SENSITIVITY RESIDUAL");
   solution.view("SENSITIVITY SOLUTION");
 #endif
