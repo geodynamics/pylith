@@ -38,9 +38,8 @@ main(int argc,
 
   try {
     // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, 
-					 PETSC_NULL, PETSC_NULL);
-    CHKERRQ(err);
+    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
+    //err = PetscMallocDebug(PETSC_TRUE);CHKERRQ(err);
 
     // Initialize Python (to eliminate need to initialize when
     // parsing units in spatial databases).
@@ -69,7 +68,7 @@ main(int argc,
     Py_Finalize();
 
     // Finalize PETSc
-    err = PetscFinalize(); CHKERRQ(err);
+    err = PetscFinalize();CHKERRQ(err);
   } catch (const std::exception& err) {
     std::cerr << "Error: " << err.what() << std::endl;
     abort();
