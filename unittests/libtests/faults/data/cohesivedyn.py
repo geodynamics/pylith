@@ -1,5 +1,5 @@
-cell = "tri3d"
-dim = "2d"
+cell = "hex8"
+dim = "3d"
 testCase = "open"
 
 import numpy
@@ -8,6 +8,8 @@ from numpy import *
 from numpy.linalg import inv
 
 numpy.set_printoptions(precision=12)
+
+lengthScale = 1.0e+3
 
 # ----------------------------------------------------------------------
 def printdata(data):
@@ -265,6 +267,8 @@ if dim == "2d":
 
 
     # ------------------------------------------------------------------
+    lagrangeScale = lengthScale**1
+
     fieldTpdt = fieldT + fieldIncr
 
     fieldTpdt = globalToFault(fieldTpdt, C)
@@ -280,7 +284,7 @@ if dim == "2d":
     print "friction",friction
 
     dlagrange0 = (friction - tractionShear) * fieldTpdt[:,0] / tractionShear
-                           
+  
     print "dlagrange0",dlagrange0
 
     if testCase == "slip": 
@@ -293,6 +297,7 @@ if dim == "2d":
 
     print "dLagrange \n", dLagrange
 
+    L /= lengthScale**1
     RHS = numpy.dot(numpy.transpose(L),dLagrange)
     print "RHS",RHS
     duN = numpy.dot(inv(jacobianN),RHS)
@@ -333,6 +338,8 @@ if dim == "2d":
 
 # ----------------------------------------------------------------------
 elif dim == "3d":
+    lagrangeScale = lengthScale**2
+
     if cell == "tet4":
 
         dlagrange2 = numpy.zeros(3)
@@ -595,6 +602,7 @@ elif dim == "3d":
 
     print "dLagrange \n", dLagrange
 
+    L /= lengthScale**2
     RHS = numpy.dot(numpy.transpose(L),dLagrange)
     print "RHS",RHS
     duN = numpy.dot(inv(jacobianN),RHS)
