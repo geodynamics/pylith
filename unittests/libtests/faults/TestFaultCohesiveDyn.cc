@@ -43,11 +43,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveDyn );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::faults::TestFaultCohesiveDyn::setUp(void)
@@ -137,21 +132,17 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  DM              dmMesh = fault._faultMesh->dmMesh();
-  IS              subpointIS;
-  const PetscInt *points;
-  PetscInt        vStart, vEnd, numPoints;
+  PetscDM dmMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscIS subpointIS = NULL;
+  const PetscInt *points = NULL;
+  PetscInt vStart, vEnd, numPoints;
   PetscErrorCode  err;
-
-  CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT(subpointIS);
+  err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(subpointIS);
   err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
-
     err = PetscFindInt(_data->constraintVertices[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
@@ -162,17 +153,16 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 
   // Check orientation
   //fault._fields->get("orientation").view("ORIENTATION"); // DEBUGGING
-  PetscSection orientationSection = fault._fields->get("orientation").petscSection();
-  Vec          orientationVec     = fault._fields->get("orientation").localVector();
-  PetscScalar *orientationArray;
-  CPPUNIT_ASSERT(orientationSection);CPPUNIT_ASSERT(orientationVec);
+  PetscSection orientationSection = fault._fields->get("orientation").petscSection();CPPUNIT_ASSERT(orientationSection);
+  PetscVec orientationVec = fault._fields->get("orientation").localVector();CPPUNIT_ASSERT(orientationVec);
+  PetscScalar *orientationArray = NULL;
+  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+
   const int spaceDim = _data->spaceDim;
   const int orientationSize = spaceDim*spaceDim;
   int iVertex = 0;
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt dof, off;
-
     err = PetscSectionGetDof(orientationSection, v, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(orientationSection, v, &off);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(orientationSize, dof);
@@ -187,22 +177,23 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   // Prescribed traction perturbation
   if (fault._tractPerturbation) {
     // :KLUDGE: Only check initial value
-    PetscSection initialTractionsSection = fault.vertexField("traction_initial_value").petscSection();
-    Vec          initialTractionsVec     = fault.vertexField("traction_initial_value").localVector();
-    PetscScalar *initialTractionsArray;
-    CPPUNIT_ASSERT(initialTractionsSection);CPPUNIT_ASSERT(initialTractionsVec);
-    iVertex = 0;
+    PetscSection initialTractionsSection = fault.vertexField("traction_initial_value").petscSection();CPPUNIT_ASSERT(initialTractionsSection);
+    PetscVec initialTractionsVec = fault.vertexField("traction_initial_value").localVector();CPPUNIT_ASSERT(initialTractionsVec);
+    PetscScalar *initialTractionsArray = NULL;
     err = VecGetArray(initialTractionsVec, &initialTractionsArray);CHECK_PETSC_ERROR(err);
+
+    const PylithScalar pressureScale = _data->pressureScale;
+
+    iVertex = 0;
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(initialTractionsSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(initialTractionsSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
 
       const PylithScalar tolerance = 1.0e-06;
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], initialTractionsArray[off+d], tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->initialTractions[iVertex * spaceDim + d], initialTractionsArray[off+d]*pressureScale, tolerance);
       } // for
     } // for
     err = VecRestoreArray(initialTractionsVec, &initialTractionsArray);CHECK_PETSC_ERROR(err);
@@ -214,7 +205,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 { // testConstrainSolnSpaceStick
-  assert(0 != _data);
+  assert(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -225,7 +216,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 
   const int spaceDim = _data->spaceDim;
 
-  const PylithScalar t = 2.134;
+  const PylithScalar t = 2.134 / _data->timeScale;
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
@@ -238,28 +229,24 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 
   { // Check solution values
     // No change to Lagrange multipliers for stick case.
-    DM              dmMesh = mesh.dmMesh();
-    PetscInt        vStart, vEnd;
-    PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscInt vStart, vEnd;
+    PetscErrorCode err;
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
-    PetscSection dispTIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
-    Vec          dispTIncrVec     = fields.get("dispIncr(t->t+dt)").localVector();
-    PetscScalar *dispTIncrArray;
-    assert(dispTIncrSection);assert(dispTIncrVec);
+    PetscSection dispTIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();CPPUNIT_ASSERT(dispTIncrSection);
+    PetscVec dispTIncrVec = fields.get("dispIncr(t->t+dt)").localVector();CPPUNIT_ASSERT(dispTIncrVec);
+    PetscScalar *dispTIncrArray = NULL;
+    err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     const PylithScalar* valsE = _data->fieldIncrStick; // No change in dispIncr
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = 1.0e-06;
-    err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(dispTIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(dispTIncrSection, v, &off);CHECK_PETSC_ERROR(err);
       assert(fiberDimE == dof);
@@ -267,6 +254,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       // Check values at point
       for(PetscInt d = 0; d < fiberDimE; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
+
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dispTIncrArray[off+d]/valE, tolerance);
         else
@@ -280,18 +268,16 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
     // Slip should be zero for the stick case.
 
     // Get fault vertex info
-    DM              faultDMMesh = fault._faultMesh->dmMesh();
-    PetscInt        vStart, vEnd;
-    PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(faultDMMesh);
+    PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+    PetscInt vStart, vEnd;
+    PetscErrorCode err;
     err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
-    PetscSection slipSection = fault.vertexField("slip").petscSection();
-    Vec          slipVec     = fault.vertexField("slip").localVector();
-    PetscScalar *slipArray;
-    CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
+    PetscSection slipSection = fault.vertexField("slip").petscSection();CPPUNIT_ASSERT(slipSection);
+    PetscVec slipVec = fault.vertexField("slip").localVector();CPPUNIT_ASSERT(slipVec);
+    PetscScalar *slipArray = NULL;
+    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     CPPUNIT_ASSERT(_data->slipStickE);
@@ -299,10 +285,8 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = 1.0e-06;
-    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
@@ -310,6 +294,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
       // Check values at point
       for(PetscInt d = 0; d < dof; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
+
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, slipArray[off+d]/valE, tolerance);
         else
@@ -326,7 +311,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceStick(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 { // testConstrainSolnSpaceSlip
-  assert(0 != _data);
+  assert(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -337,7 +322,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 
   const int spaceDim = _data->spaceDim;
 
-  const PylithScalar t = 2.134;
+  const PylithScalar t = 2.134 / _data->timeScale;
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
@@ -351,38 +336,35 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
   { // Check solution values
     // Lagrange multipliers should be adjusted according to friction
     // as reflected in the fieldIncrSlipE data member.
-    DM              dmMesh = mesh.dmMesh();
-    PetscInt        vStart, vEnd;
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscInt vStart, vEnd;
     PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(dmMesh);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
-    PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
-    Vec          dispIncrVec     = fields.get("dispIncr(t->t+dt)").localVector();
-    PetscScalar *dispIncrArray;
-    CPPUNIT_ASSERT(dispIncrSection);CPPUNIT_ASSERT(dispIncrVec);
+    PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();CPPUNIT_ASSERT(dispIncrSection);
+    PetscVec dispIncrVec = fields.get("dispIncr(t->t+dt)").localVector();CPPUNIT_ASSERT(dispIncrVec);
+    PetscScalar *dispIncrArray = NULL;
+    err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     const PylithScalar* valsE = _data->fieldIncrSlipE; // Expected values for dispIncr
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = 1.0e-06;
-    err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+
       for(PetscInt d = 0; d < dof; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dispIncrArray[off+d]/valE, tolerance);
         else
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, dispIncrArray[off+d], tolerance);
-      }
+      } // for
     } // for
     err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
   } // Check solution values
@@ -392,38 +374,35 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
     // Lagrange multipliers as reflected in the slipSlipE data member.
 
     // Get fault vertex info
-    DM              faultDMMesh = fault._faultMesh->dmMesh();
-    PetscInt        vStart, vEnd;
-    PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(faultDMMesh);
+    PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+    PetscInt vStart, vEnd;
+    PetscErrorCode err;
     err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
-    PetscSection slipSection = fault.vertexField("slip").petscSection();
-    Vec          slipVec     = fault.vertexField("slip").localVector();
-    PetscScalar *slipArray;
-    CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
+    PetscSection slipSection = fault.vertexField("slip").petscSection();CPPUNIT_ASSERT(slipSection);
+    PetscVec slipVec = fault.vertexField("slip").localVector();CPPUNIT_ASSERT(slipVec);
+    PetscScalar *slipArray = NULL;
+    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     const PylithScalar* valsE = _data->slipSlipE;
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-5;
-    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+
       for(PetscInt d = 0; d < dof; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, slipArray[off+d]/valE, tolerance);
         else
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, slipArray[off+d], tolerance);
-      }
+      } // for
     } // for
     err = VecRestoreArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
   } // Check slip values
@@ -435,7 +414,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 { // testConstrainSolnSpaceOpen
-  assert(0 != _data);
+  assert(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -446,7 +425,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
   const int spaceDim = _data->spaceDim;
 
-  const PylithScalar t = 2.134;
+  const PylithScalar t = 2.134 / _data->timeScale;
   const PylithScalar dt = 0.01;
   fault.timeStep(dt);
   fault.constrainSolnSpace(&fields, t, jacobian);
@@ -462,38 +441,35 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
   { // Check solution values
     // Lagrange multipliers should be set to zero as reflected in the
     // fieldIncrOpenE data member.
-    DM              dmMesh = mesh.dmMesh();
-    PetscInt        vStart, vEnd;
+    PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+    PetscInt vStart, vEnd;
     PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(dmMesh);
     err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing solution (disp + Lagrange multipliers)
-    PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();
-    Vec          dispIncrVec     = fields.get("dispIncr(t->t+dt)").localVector();
-    PetscScalar *dispIncrArray;
-    CPPUNIT_ASSERT(dispIncrSection);CPPUNIT_ASSERT(dispIncrVec);
+    PetscSection dispIncrSection = fields.get("dispIncr(t->t+dt)").petscSection();CPPUNIT_ASSERT(dispIncrSection);
+    PetscVec dispIncrVec = fields.get("dispIncr(t->t+dt)").localVector();CPPUNIT_ASSERT(dispIncrVec);
+    PetscScalar *dispIncrArray = NULL;
+    err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     const PylithScalar* valsE = _data->fieldIncrOpenE; // Expected values for dispIncr
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+
       for(PetscInt d = 0; d < dof; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dispIncrArray[off+d]/valE, tolerance);
         else
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, dispIncrArray[off+d], tolerance);
-      }
+      } // for
     } // for
     err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
   } // Check solution values
@@ -503,38 +479,35 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     // Lagrange multipliers as reflected in the slipOpenE data member.
 
     // Get fault vertex info
-    DM              faultDMMesh = fault._faultMesh->dmMesh();
-    PetscInt        vStart, vEnd;
-    PetscErrorCode  err;
-
-    CPPUNIT_ASSERT(faultDMMesh);
+    PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+    PetscInt vStart, vEnd;
+    PetscErrorCode err;
     err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
     // Get section containing slip
-    PetscSection slipSection = fault.vertexField("slip").petscSection();
-    Vec          slipVec     = fault.vertexField("slip").localVector();
-    PetscScalar *slipArray;
-    CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
+    PetscSection slipSection = fault.vertexField("slip").petscSection();CPPUNIT_ASSERT(slipSection);
+    PetscVec slipVec = fault.vertexField("slip").localVector();CPPUNIT_ASSERT(slipVec);
+    PetscScalar *slipArray = NULL;
+    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
 
     // Get expected values
     const PylithScalar* valsE = _data->slipOpenE;
     int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
     for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
-
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+
       for(PetscInt d = 0; d < dof; ++d) {
         const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, slipArray[off+d]/valE, tolerance);
         else
           CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, slipArray[off+d], tolerance);
-      }
+      } // for
     } // for
     err = VecRestoreArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
   } // Check slip values
@@ -546,7 +519,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
 { // testUpdateStateVars
-  assert(0 != _data);
+  assert(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -571,7 +544,7 @@ pylith::faults::TestFaultCohesiveDyn::testUpdateStateVars(void)
 void
 pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
 { // testCalcTractions
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   FaultCohesiveDyn fault;
@@ -580,46 +553,42 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   topology::Jacobian jacobian(fields.solution());
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
   
-  CPPUNIT_ASSERT(0 != fault._faultMesh);
+  CPPUNIT_ASSERT(fault._faultMesh);
   const int spaceDim = _data->spaceDim;
   topology::Field<topology::SubMesh> tractions(*fault._faultMesh);
   tractions.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   tractions.allocate();
   tractions.zero();
-  PetscSection tractionsSection = tractions.petscSection();
-  Vec          tractionsVec     = tractions.localVector();
-  PetscScalar *tractionsArray;
-  CPPUNIT_ASSERT(tractionsSection);CPPUNIT_ASSERT(tractionsVec);
+
+  PetscSection tractionsSection = tractions.petscSection();CPPUNIT_ASSERT(tractionsSection);
+  PetscVec tractionsVec = tractions.localVector();CPPUNIT_ASSERT(tractionsVec);
+  PetscScalar *tractionsArray = NULL;
 
   const PylithScalar t = 0;
   fault.updateStateVars(t, &fields);
   fault._calcTractions(&tractions, fields.get("disp(t)"));
 
-  DM              faultDMMesh = fault._faultMesh->dmMesh();
-  IS              subpointIS;
-  const PetscInt *points;
-  PetscInt        vStart, vEnd, numPoints;
-  PetscErrorCode  err;
-
-  CPPUNIT_ASSERT(faultDMMesh);
+  PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+  PetscIS subpointIS = NULL;
+  const PetscInt *points = NULL;
+  PetscInt vStart, vEnd, numPoints;
+  PetscErrorCode err;
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT(subpointIS);
+  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(subpointIS);
   err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
 
-  PetscSection dispSection = fields.get("disp(t)").petscSection();
-  Vec          dispVec     = fields.get("disp(t)").localVector();
-  PetscScalar *dispArray;
-  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
+  PetscSection dispSection = fields.get("disp(t)").petscSection();CPPUNIT_ASSERT(dispSection);
+  PetscVec dispVec = fields.get("disp(t)").localVector();CPPUNIT_ASSERT(dispVec);
+  PetscScalar *dispArray = NULL;
+
+  err = VecGetArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
 
   int iVertex = 0;
   const PylithScalar tolerance = 1.0e-06;
-  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt tdof, toff, ddof, doff;
-
     err = PetscSectionGetDof(tractionsSection, v, &tdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(tractionsSection, v, &toff);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(spaceDim, tdof);
@@ -664,7 +633,20 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
 
-  //mesh->debug(true); // DEBUGGING
+  // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
+
+  // Set scales
+  // Most test data is insensitive to the scales because we set the fields directly.
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
+  mesh->nondimensionalize(normalizer);
   
   _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
 			  _data->basisDeriv,
@@ -688,7 +670,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   // Setup friction
   spatialdata::spatialdb::SimpleDB* dbFriction =
       new spatialdata::spatialdb::SimpleDB("static friction");
-  CPPUNIT_ASSERT(0 != dbFriction);
+  CPPUNIT_ASSERT(dbFriction);
   spatialdata::spatialdb::SimpleIOAscii ioFriction;
   if (2 == _data->spaceDim)
     ioFriction.filename("data/static_friction_2d.spatialdb");
@@ -697,19 +679,20 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   dbFriction->ioHandler(&ioFriction);
   delete _dbFriction; _dbFriction = dbFriction;
   friction::StaticFriction* friction = new pylith::friction::StaticFriction();
-  CPPUNIT_ASSERT(0 != friction);
+  CPPUNIT_ASSERT(friction);
   friction->label("static friction");
   friction->dbProperties(dbFriction);
+  friction->normalizer(normalizer);
   _friction = friction;
   fault->frictionModel(friction);
 
-  PetscInt       labelSize;
+  PetscInt labelSize;
   PetscErrorCode err;
   err = DMPlexGetStratumSize(mesh->dmMesh(), _data->label, 1, &labelSize);CHECK_PETSC_ERROR(err);
 
-  PetscInt firstFaultVertex    = 0;
+  PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex = labelSize;
-  PetscInt firstFaultCell      = labelSize;
+  PetscInt firstFaultCell = labelSize;
   if (fault->useLagrangeConstraints())
     firstFaultCell += labelSize;
   fault->id(_data->id);
@@ -719,15 +702,9 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   fault->adjustTopology(mesh, &firstFaultVertex, &firstLagrangeVertex,
 			&firstFaultCell, _flipFault);
   
-  spatialdata::geocoords::CSCart cs;
-  spatialdata::units::Nondimensional normalizer;
-  cs.setSpaceDim(mesh->dimension());
-  cs.initialize();
-  mesh->coordsys(&cs);
-  mesh->nondimensionalize(normalizer);
-  
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   
+  fault->normalizer(normalizer);
   fault->initialize(*mesh, upDir);
   
   // Setup fields
@@ -741,6 +718,7 @@ pylith::faults::TestFaultCohesiveDyn::_initialize(topology::Mesh* const mesh,
   topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
   disp.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   disp.allocate();
+  disp.scale(_data->lengthScale);
   fields->copyLayout("disp(t)");
 
   fault->verifyConfiguration(*mesh);
@@ -756,30 +734,28 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
           topology::Jacobian* const jacobian,
           const PylithScalar* const fieldIncr)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != fault);
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != jacobian);
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != fieldIncr);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(fault);
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(jacobian);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(fieldIncr);
 
   const int spaceDim = _data->spaceDim;
 
   // Get vertices in mesh
-  DM              dmMesh = mesh->dmMesh();
-  PetscInt        vStart, vEnd;
-  PetscErrorCode  err;
-
-  CPPUNIT_ASSERT(dmMesh);
+  PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscInt vStart, vEnd;
+  PetscErrorCode err;
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   // Set displacement values
-  PetscSection dispSection = fields->get("disp(t)").petscSection();
-  Vec          dispVec     = fields->get("disp(t)").localVector();
-  PetscScalar *dispArray;
-  CPPUNIT_ASSERT(dispSection);CPPUNIT_ASSERT(dispVec);
-  int iVertex = 0;
+  PetscSection dispSection = fields->get("disp(t)").petscSection();CPPUNIT_ASSERT(dispSection);
+  PetscVec dispVec = fields->get("disp(t)").localVector();CPPUNIT_ASSERT(dispVec);
+  PetscScalar *dispArray = NULL;
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
+
+  int iVertex = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt off;
     err = PetscSectionGetOffset(dispSection, v, &off);CHECK_PETSC_ERROR(err);
@@ -788,12 +764,12 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
   err = VecRestoreArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
 
   // Set increment values
-  PetscSection dispIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();
-  Vec          dispIncrVec     = fields->get("dispIncr(t->t+dt)").localVector();
-  PetscScalar *dispIncrArray;
-  CPPUNIT_ASSERT(dispIncrSection);CPPUNIT_ASSERT(dispIncrVec);
-  iVertex = 0;
+  PetscSection dispIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();CPPUNIT_ASSERT(dispIncrSection);
+  PetscVec dispIncrVec = fields->get("dispIncr(t->t+dt)").localVector();CPPUNIT_ASSERT(dispIncrVec);
+  PetscScalar *dispIncrArray = NULL;
   err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
+
+  iVertex = 0;
   for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
     PetscInt off;
     err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
@@ -830,7 +806,7 @@ pylith::faults::TestFaultCohesiveDyn::_setFieldsJacobian(
 bool
 pylith::faults::TestFaultCohesiveDyn::_isConstraintVertex(const int vertex) const
 { // _isConstraintVertex
-  assert(0 != _data);
+  assert(_data);
 
   const int numConstraintVert = _data->numConstraintVert;
   bool isFound = false;
