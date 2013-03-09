@@ -87,24 +87,6 @@ public :
   /// Deallocate PETSc and local data structures.
   void deallocate(void);
   
-  /** Get PetscSection.
-   *
-   * @returns PetscSection.
-   */
-  PetscSection petscSection() const;
-
-  /** Get local Vec.
-   *
-   * @returns local Vec.
-   */
-  Vec localVector() const;
-
-  /** Get global Vec.
-   *
-   * @returns global Vec.
-   */
-  Vec globalVector() const;
-
   /** Get mesh associated with field.
    *
    * @returns Finite-element mesh.
@@ -115,7 +97,7 @@ public :
    *
    * @returns DM
    */
-  DM dmMesh(void) const;
+  PetscDM dmMesh(void) const;
 
   /** Set label for field.
    *
@@ -184,6 +166,54 @@ public :
    * @returns Spatial dimension of domain.
    */
   int spaceDim(void) const;
+
+  /** Get PetscSection.
+   *
+   * @returns PETSc section.
+   */
+  PetscSection petscSection(void) const;
+
+  /** Get the local PETSc Vec.
+   *
+   * @returns PETSc Vec object.
+   */
+  PetscVec localVector(void) const;
+
+  /** Get the global PETSc Vec.
+   *
+   * @returns PETSc Vec object.
+   */
+  PetscVec globalVector(void) const;
+
+  /** Get the local array associated with the local PETSc Vec.
+   *
+   * Must call restoryArray() afterwards.
+   * 
+   * @returns Local array.
+   */
+  PetscScalar* getLocalArray(void) const;
+
+  /** Restore local array associated with the local PETSc Vec.
+   *
+   * @preq Must be preceded by call to getLocalArray().
+   *
+   * @param a Local array.
+   */
+  void restoreLocalArray(PetscScalar** a) const;
+
+  /** Get fiber dimension for point.
+   *
+   * @param point Point in mesh.
+   * @returns Fiber dimension.
+   */
+  PetscInt sectionDof(const PetscInt point) const;
+
+  /** Get offset into array for point.
+   *
+   * @param point Point in mesh.
+   * @returns Offset.
+   */
+  PetscInt sectionOffset(const PetscInt point) const;
 
   /** Get the number of sieve points in the chart.
    *
