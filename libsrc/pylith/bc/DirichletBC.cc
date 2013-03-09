@@ -32,11 +32,6 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::bc::DirichletBC::DirichletBC(void)
 { // constructor
@@ -82,21 +77,21 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
   if (0 == numFixedDOF)
     return;
 
-  PetscSection sectionP = field.petscSection();assert(sectionP);
+  PetscSection section = field.petscSection();assert(section);
   PetscInt numFields;
   PetscErrorCode err = 0;
 
   // Set constraints in field
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
-  err = PetscSectionGetNumFields(sectionP, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
 
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const PetscInt point = _points[iPoint];
-    PetscInt dof, cdof;
 
-    err = PetscSectionGetDof(sectionP, point, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(sectionP, point, &cdof);CHECK_PETSC_ERROR(err);
+    PetscInt dof, cdof;
+    err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintDof(section, point, &cdof);CHECK_PETSC_ERROR(err);
     if (cdof + numFixedDOF > dof) {
       std::ostringstream msg;
       msg
@@ -107,9 +102,9 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
       throw std::runtime_error(msg.str());
     } // if
     _offsetLocal[iPoint] = cdof;
-    err = PetscSectionAddConstraintDof(sectionP, point, numFixedDOF);CHECK_PETSC_ERROR(err);
+    err = PetscSectionAddConstraintDof(section, point, numFixedDOF);CHECK_PETSC_ERROR(err);
     // We should be specifying what field the BC is for
-    if (numFields) {err = PetscSectionAddFieldConstraintDof(sectionP, point, 0, numFixedDOF);CHECK_PETSC_ERROR(err);}
+    if (numFields) {err = PetscSectionAddFieldConstraintDof(section, point, 0, numFixedDOF);CHECK_PETSC_ERROR(err);}
   } // for
 } // setConstraintSizes
 
@@ -122,21 +117,21 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
   if (0 == numFixedDOF)
     return;
 
-  PetscSection sectionP = field.petscSection();assert(sectionP);
+  PetscSection section = field.petscSection();assert(section);
   PetscInt numFields;
   PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
-  err = PetscSectionGetNumFields(sectionP, &numFields);CHECK_PETSC_ERROR(err);
+  err = PetscSectionGetNumFields(section, &numFields);CHECK_PETSC_ERROR(err);
 
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const SieveMesh::point_type point = _points[iPoint];
+    const PetscInt point = _points[iPoint];
 
     // Get list of currently constrained DOF
     PetscInt cdof;
     const PetscInt *cInd;
-    err = PetscSectionGetConstraintDof(sectionP, point, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintIndices(sectionP, point, &cInd);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintDof(section, point, &cdof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetConstraintIndices(section, point, &cInd);CHECK_PETSC_ERROR(err);
 
     // Create array holding all constrained DOF
     int_array allCInd(cInd, cdof);
@@ -171,8 +166,8 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     std::sort(&allCInd[0], &allCInd[cdof]);
 
     // Update list of constrained DOF
-    err = PetscSectionSetConstraintIndices(sectionP, point, &allCInd[0]);CHECK_PETSC_ERROR(err);
-    if (numFields) {err = PetscSectionSetFieldConstraintIndices(sectionP, point, 0, &allCInd[0]);CHECK_PETSC_ERROR(err);}
+    err = PetscSectionSetConstraintIndices(section, point, &allCInd[0]);CHECK_PETSC_ERROR(err);
+    if (numFields) {err = PetscSectionSetFieldConstraintIndices(section, point, 0, &allCInd[0]);CHECK_PETSC_ERROR(err);}
   } // for
 } // setConstraints
 
@@ -189,35 +184,28 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
   // Calculate spatial and temporal variation of value for BC.
   _calculateValue(t);
 
-  const int numPoints = _points.size();
-  PetscErrorCode err = 0;
-
   assert(_parameters);
-  PetscSection valueSection = _parameters->get("value").petscSection();assert(valueSection);
-  PetscVec valueVec = _parameters->get("value").localVector();assert(valueVec);
-  PetscScalar *valueArray = NULL;
-  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
-  
+  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
   PetscSection fieldSection = field.petscSection();assert(fieldSection);
-  PetscVec fieldVec = field.localVector();assert(fieldVec);
-  PetscScalar *fieldArray = NULL;
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 
+  PetscScalar* valueArray = valueField.getLocalArray();
+  PetscScalar* fieldArray = field.getLocalArray();
+
+  const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
 
-    PetscInt dof, off, vdof, voff;
-    err = PetscSectionGetDof(fieldSection, p_bc, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, p_bc, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(valueSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
-    assert(vdof == numFixedDOF);
+    const PetscInt off = field.sectionOffset(p_bc);
+    const PetscInt voff = valueField.sectionOffset(p_bc);
+    assert(numFixedDOF == valueField.sectionDof(p_bc));
 
-    for(PetscInt iDOF = 0; iDOF < numFixedDOF; ++iDOF)
+    for(PetscInt iDOF = 0; iDOF < numFixedDOF; ++iDOF) {
+      assert(_bcDOF[iDOF] < field.sectionDof(p_bc));
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
+    } // for
   } // for
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  valueField.restoreLocalArray(&valueArray);
+  field.restoreLocalArray(&fieldArray);
 } // setField
 
 // ----------------------------------------------------------------------
@@ -234,35 +222,27 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
   // Calculate spatial and temporal variation of value for BC.
   _calculateValueIncr(t0, t1);
 
-  const int numPoints = _points.size();
-  PetscErrorCode err = 0;
-
   assert(_parameters);
-  PetscSection valueSection = _parameters->get("value").petscSection();assert(valueSection);
-  PetscVec valueVec = _parameters->get("value").localVector();assert(valueVec);
-  PetscScalar *valueArray = NULL;
-  err = VecGetArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
-  
+  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
   PetscSection fieldSection = field.petscSection();assert(fieldSection);
-  PetscVec fieldVec = field.localVector();assert(fieldVec);
-  PetscScalar *fieldArray = NULL;
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-    
+
+  PetscScalar* valueArray = valueField.getLocalArray();
+  PetscScalar* fieldArray = field.getLocalArray();
+
+  const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
-    PetscInt dof, off, vdof, voff;
 
-    err = PetscSectionGetDof(fieldSection, p_bc, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, p_bc, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(valueSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
-
-    assert(vdof == numFixedDOF);
-    for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF)
+    const PetscInt off = field.sectionOffset(p_bc);
+    const PetscInt voff = valueField.sectionOffset(p_bc);
+    assert(numFixedDOF == valueField.sectionDof(p_bc));
+    for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+      assert(_bcDOF[iDOF] < field.sectionDof(p_bc));
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
+    } // for
   } // for
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(valueVec, &valueArray);CHECK_PETSC_ERROR(err);
+  valueField.restoreLocalArray(&valueArray);
+  field.restoreLocalArray(&fieldArray);
 } // setFieldIncr
 
 // ----------------------------------------------------------------------
