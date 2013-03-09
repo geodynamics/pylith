@@ -134,6 +134,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Container for damping constants for current cell
   scalar_array dampingConstsLocal(spaceDim);
+  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
 
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection = NULL;
@@ -148,17 +149,12 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   assert(_normalizer->timeScale() > 0);
   const PylithScalar velocityScale = _normalizer->lengthScale() / _normalizer->timeScale();
 
-  PetscSection valueSection = _parameters->get("damping constants").petscSection();
-  PetscVec valueVec = _parameters->get("damping constants").localVector();
-  PetscScalar *dampingConstsArray = NULL;
-  assert(valueSection);assert(valueVec);
-
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
 
   // Compute quadrature information
   _quadrature->initializeGeometry();
 
-  err = VecGetArray(valueVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
     const PetscScalar *coords;
@@ -169,11 +165,9 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
     } // for
     _quadrature->computeGeometry(coordinatesCell, c);
     err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    PetscInt ddof, doff;
 
-    err = PetscSectionGetDof(valueSection, c, &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, c, &doff);CHECK_PETSC_ERROR(err);
-    assert(ddof == fiberDim);
+    const PetscInt doff = dampingConsts.sectionOffset(c);
+    assert(fiberDim == dampingConsts.sectionDof(c));
 
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
@@ -182,8 +176,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
     for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       // Compute damping constants in normal/tangential coordinates
-      const int err = _db->query(&queryData[0], numValues, 
-                                 &quadPtsGlobal[iQuad*spaceDim], spaceDim, cs);
+      const int err = _db->query(&queryData[0], numValues, &quadPtsGlobal[iQuad*spaceDim], spaceDim, cs);
       if (err) {
         std::ostringstream msg;
         msg << "Could not find parameters for physical properties at \n"
@@ -224,7 +217,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
       } // for
     } // for
   } // for
-  err = VecRestoreArray(valueVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  dampingConsts.restoreLocalArray(&dampingConstsArray);
 
   _db->close();
 } // initialize
@@ -270,19 +263,17 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   err = DMPlexCreateSubpointIS(subMesh, &subpointIS);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  PetscSection dampingConstsSection = _parameters->get("damping constants").petscSection();
-  PetscVec dampingConstsVec = _parameters->get("damping constants").localVector();
-  PetscScalar *dampingConstsArray = NULL;
-  assert(dampingConstsSection);assert(dampingConstsVec);
+  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
 
   // Use _cellVector for cell residual.
-  PetscSection residualSection = residual.petscSection();assert(residualSection);
   PetscVec residualVec = residual.localVector();assert(residualVec);
+  PetscSection residualSection = residual.petscSection();assert(residualSection);
   PetscSection residualSubsection = NULL;  
   err = PetscSectionCreateSubmeshSection(residualSection, subpointIS, &residualSubsection);
-  
-  PetscSection velSection = fields->get("velocity(t)").petscSection();assert(velSection);
-  PetscVec velVec = fields->get("velocity(t)").localVector();assert(velVec);
+
+  topology::Field<topology::Mesh>& velocity = fields->get("velocity(t)");
+  PetscSection velSection = velocity.petscSection();assert(velSection);
+  PetscVec velVec = velocity.localVector();assert(velVec);
   PetscSection velSubsection = NULL;
   err = PetscSectionCreateSubmeshSection(velSection, subpointIS, &velSubsection);
   err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
@@ -291,9 +282,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection = NULL;
   PetscVec coordVec = NULL;
-  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);assert(coordSection);
+  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);assert(coordVec);
 #endif
 
   _logger->eventEnd(setupEvent);
@@ -301,7 +291,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   _logger->eventBegin(computeEvent);
 #endif
 
-  err = VecGetArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
+
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Get geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
@@ -331,13 +322,11 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
     // Restrict input fields to cell
     const PetscScalar *velArray = NULL;
     PetscInt velSize;
-    PetscInt ddof, doff;
-
-    err = PetscSectionGetDof(dampingConstsSection, c, &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dampingConstsSection, c, &doff);CHECK_PETSC_ERROR(err);
-    assert(ddof == numQuadPts*spaceDim);
     err = DMPlexVecGetClosure(subMesh, velSubsection, velVec, c, &velSize, &velArray);CHECK_PETSC_ERROR(err);
     assert(velSize == numBasis*spaceDim);
+
+    const PetscInt doff = dampingConsts.sectionOffset(c);
+    assert(numQuadPts*spaceDim == dampingConsts.sectionDof(c));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -376,7 +365,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = VecRestoreArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  dampingConsts.restoreLocalArray(&dampingConstsArray);
   err = PetscSectionDestroy(&residualSubsection);CHECK_PETSC_ERROR(err);
   err = PetscSectionDestroy(&velSubsection);CHECK_PETSC_ERROR(err);
 
@@ -426,10 +415,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   err = DMPlexCreateSubpointIS(subMesh, &subpointIS);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  PetscSection dampingConstsSection = _parameters->get("damping constants").petscSection();
-  PetscVec dampingConstsVec = _parameters->get("damping constants").localVector();
-  PetscScalar *dampingConstsArray = NULL;
-  assert(dampingConstsSection);assert(dampingConstsVec);
+  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
 
   // Use _cellVector for cell values.
   PetscSection residualSection = residual.petscSection();assert(residualSection);
@@ -457,7 +443,8 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   _logger->eventBegin(computeEvent);
 #endif
 
-  err = VecGetArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
+
   for (PetscInt c=cStart; c < cEnd; ++c) {
     // Get geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
@@ -487,12 +474,11 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
     // Restrict input fields to cell
     const PetscScalar *velArray = NULL;
     PetscInt velSize;
-    PetscInt ddof, doff;
-    err = PetscSectionGetDof(dampingConstsSection, c, &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dampingConstsSection, c, &doff);CHECK_PETSC_ERROR(err);
-    assert(ddof == numQuadPts*spaceDim);
     err = DMPlexVecGetClosure(subMesh, velSubsection, velVec, c, &velSize, &velArray);CHECK_PETSC_ERROR(err);
     assert(velSize == numBasis*spaceDim);
+
+    const PetscInt doff = dampingConsts.sectionOffset(c);
+    assert(numQuadPts*spaceDim == dampingConsts.sectionDof(c));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -531,7 +517,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = VecRestoreArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  dampingConsts.restoreLocalArray(&dampingConstsArray);
   err = PetscSectionDestroy(&residualSubsection);CHECK_PETSC_ERROR(err);
   err = PetscSectionDestroy(&velSubsection);CHECK_PETSC_ERROR(err);
 
@@ -579,9 +565,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   err = DMPlexCreateSubpointIS(subMesh, &subpointIS);CHECK_PETSC_ERROR(err);
 
   // Get sections
-  PetscSection dampingConstsSection = _parameters->get("damping constants").petscSection();assert(dampingConstsSection);
-  PetscVec dampingConstsVec = _parameters->get("damping constants").localVector();assert(dampingConstsVec);
-  PetscScalar *dampingConstsArray = NULL;
+  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
 
   const topology::Field<topology::Mesh>& solution = fields->solution();
   PetscSection solutionSection = solution.petscSection();assert(solutionSection);
@@ -619,7 +603,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   _logger->eventBegin(computeEvent);
 #endif
 
-  err = VecGetArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
+
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
@@ -643,11 +628,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #endif
 
     // Get damping constants
-    PetscInt ddof, doff;
-
-    err = PetscSectionGetDof(dampingConstsSection, c, &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dampingConstsSection, c, &doff);CHECK_PETSC_ERROR(err);
-    assert(ddof == numQuadPts*spaceDim);
+    const PetscInt doff = dampingConsts.sectionOffset(c);
+    assert(numQuadPts*spaceDim == dampingConsts.sectionDof(c));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -691,7 +673,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = VecRestoreArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  dampingConsts.restoreLocalArray(&dampingConstsArray);
   err = PetscSectionDestroy(&solutionSubsection);CHECK_PETSC_ERROR(err);
   err = PetscSectionDestroy(&solutionGlobalSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionDestroy(&solutionGlobalSubsection);CHECK_PETSC_ERROR(err);
@@ -749,14 +731,11 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
   _initCellVector();
 
   // Get sections
-  PetscSection dampingConstsSection = _parameters->get("damping constants").petscSection();assert(dampingConstsSection);
-  PetscVec dampingConstsVec = _parameters->get("damping constants").localVector();assert(dampingConstsVec);
-  PetscScalar *dampingConstsArray;
+  topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
   
   PetscSection jacobianSection = jacobian->petscSection();assert(jacobianSection);
   PetscVec jacobianVec = jacobian->localVector();assert(jacobianVec);
   PetscSection jacobianSubsection;
-  
   err = PetscSectionCreateSubmeshSection(jacobianSection, subpointIS, &jacobianSubsection);
   err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 
@@ -774,7 +753,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
   _logger->eventBegin(computeEvent);
 #endif
 
-  err = VecGetArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
+
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
 #if defined(DETAILED_EVENT_LOGGING)
@@ -798,10 +778,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #endif
 
     // Get damping constants
-    PetscInt ddof, doff;
-    err = PetscSectionGetDof(dampingConstsSection, c, &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dampingConstsSection, c, &doff);CHECK_PETSC_ERROR(err);
-    assert(ddof == numQuadPts*spaceDim);
+    const PetscInt doff = dampingConsts.sectionOffset(c);
+    assert(numQuadPts*spaceDim == dampingConsts.sectionDof(c));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -840,7 +818,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = VecRestoreArray(dampingConstsVec, &dampingConstsArray);CHECK_PETSC_ERROR(err);
+  dampingConsts.restoreLocalArray(&dampingConstsArray);
   err = PetscSectionDestroy(&jacobianSubsection);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
