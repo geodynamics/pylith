@@ -169,18 +169,13 @@ pylith::friction::FrictionModel::initialize(
         _metadata.getProperty(i);
       // TODO This needs to be an integer instead of a string
       topology::Field<topology::SubMesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
-      PetscSection propertySection = propertyField.petscSection();assert(propertySection);
-      PetscVec propertyVec = propertyField.localVector();assert(propertyVec);
-      PetscScalar *propertyArray = NULL;
-      PetscInt dof, off;
-      err = PetscSectionGetDof(propertySection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(propertySection, v, &off);CHECK_PETSC_ERROR(err);
-      err = VecGetArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
-      assert(dof <= propertiesVertex.size());
+      PetscScalar* propertyArray = propertyField.getLocalArray();
+      const PetscInt off = propertyField.sectionOffset(v);
+      const PetscInt dof = propertyField.sectionDof(v);
       for(PetscInt d = 0; d < dof; ++d, ++iOff) {
         propertyArray[off+d] += propertiesVertex[iOff];
       } // for
-      err = VecRestoreArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
+      propertyField.restoreLocalArray(&propertyArray);
     } // for
   } // for
   // Close properties database
@@ -228,22 +223,18 @@ pylith::friction::FrictionModel::initialize(
       PetscInt iOff = 0;
 
       for (int i=0; i < _metadata.numStateVars(); ++i) {
-        const materials::Metadata::ParamDescription& stateVar = 
-          _metadata.getStateVar(i);
+        const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
         // TODO This needs to be an integer instead of a string
         topology::Field<topology::SubMesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
-        PetscSection stateVarSection = stateVarField.petscSection();assert(stateVarSection);
-	PetscVec stateVarVec = stateVarField.localVector();assert(stateVarVec);
-        PetscScalar *stateVarArray = NULL;
-        PetscInt dof, off;
-        err = PetscSectionGetDof(stateVarSection, v, &dof);CHECK_PETSC_ERROR(err);
-        err = PetscSectionGetOffset(stateVarSection, v, &off);CHECK_PETSC_ERROR(err);
-        err = VecGetArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
-	assert(dof == stateVarsVertex.size());
+
+	PetscScalar* stateVarArray = stateVarField.getLocalArray();
+	const PetscInt off = stateVarField.sectionOffset(v);
+	const PetscInt dof = stateVarField.sectionDof(v);
+	assert(stateVarsVertex.size() == dof);
         for(PetscInt d = 0; d < dof; ++d, ++iOff) {
           stateVarArray[off+d] += stateVarsVertex[iOff];
         } // for
-        err = VecRestoreArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
+	stateVarField.restoreLocalArray(&stateVarArray);
       } // for
     } // for
     // Close database
@@ -323,33 +314,27 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
     const materials::Metadata::ParamDescription& property = _metadata.getProperty(i);
     // TODO This needs to be an integer instead of a string
     topology::Field<topology::SubMesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
-    PetscSection propertySection = propertyField.petscSection();assert(propertySection);
-    PetscVec propertyVec = propertyField.localVector();assert(propertyVec);
-    PetscScalar *propertyArray = NULL;
-    PetscInt dof, off;
-    err = PetscSectionGetDof(propertySection, point, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(propertySection, point, &off);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
+
+    PetscScalar* propertyArray = propertyField.getLocalArray();
+    const PetscInt off = propertyField.sectionOffset(point);
+    const PetscInt dof = propertyField.sectionDof(point);
     for(PetscInt d = 0; d < dof; ++d, ++iOff) {
       _propsStateVarsVertex[iOff] = propertyArray[off+d];
     } // for
-    err = VecRestoreArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
+    propertyField.restoreLocalArray(&propertyArray);
   } // for
   for (int i=0; i < _metadata.numStateVars(); ++i) {
     const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
     // TODO This needs to be an integer instead of a string
     topology::Field<topology::SubMesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
-    PetscSection stateVarSection = stateVarField.petscSection();assert(stateVarSection);
-    PetscVec stateVarVec = stateVarField.localVector();assert(stateVarVec);
-    PetscScalar *stateVarArray = NULL;
-    PetscInt dof, off;
-    err = PetscSectionGetDof(stateVarSection, point, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(stateVarSection, point, &off);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
+
+    PetscScalar* stateVarArray = stateVarField.getLocalArray();
+    const PetscInt off = stateVarField.sectionOffset(point);
+    const PetscInt dof = stateVarField.sectionDof(point);
     for(PetscInt d = 0; d < dof; ++d, ++iOff) {
       _propsStateVarsVertex[iOff] = stateVarArray[off+d];
     } // for
-    err = VecRestoreArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
+    stateVarField.restoreLocalArray(&stateVarArray);
   } // for
   assert(_propsStateVarsVertex.size() == iOff);
 } // retrievePropsStateVars
@@ -403,33 +388,27 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
     const materials::Metadata::ParamDescription& property = _metadata.getProperty(i);
     // TODO This needs to be an integer instead of a string
     topology::Field<topology::SubMesh>& propertyField = _fieldsPropsStateVars->get(property.name.c_str());
-    PetscSection propertySection = propertyField.petscSection();assert(propertySection);
-    PetscVec propertyVec = propertyField.localVector();assert(propertyVec);
-    PetscScalar *propertyArray = NULL;
-    PetscInt dof, off;
-    err = PetscSectionGetDof(propertySection, vertex, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(propertySection, vertex, &off);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
+
+    PetscScalar* propertyArray = propertyField.getLocalArray();
+    const PetscInt off = propertyField.sectionOffset(vertex);
+    const PetscInt dof = propertyField.sectionDof(vertex);
     for(PetscInt d = 0; d < dof; ++d, ++iOff) {
       propertyArray[off+d] = _propsStateVarsVertex[iOff];
     } // for
-    err = VecRestoreArray(propertyVec, &propertyArray);CHECK_PETSC_ERROR(err);
+    propertyField.restoreLocalArray(&propertyArray);
   } // for
   for (int i=0; i < _metadata.numStateVars(); ++i) {
     const materials::Metadata::ParamDescription& stateVar = _metadata.getStateVar(i);
     // TODO This needs to be an integer instead of a string
     topology::Field<topology::SubMesh>& stateVarField = _fieldsPropsStateVars->get(stateVar.name.c_str());
-    PetscSection stateVarSection = stateVarField.petscSection();assert(stateVarSection);
-    PetscVec stateVarVec = stateVarField.localVector();assert(stateVarVec);
-    PetscScalar *stateVarArray = NULL;
-    PetscInt dof, off;
-    err = PetscSectionGetDof(stateVarSection, vertex, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(stateVarSection, vertex, &off);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
+
+    PetscScalar* stateVarArray = stateVarField.getLocalArray();
+    const PetscInt off = stateVarField.sectionOffset(vertex);
+    const PetscInt dof = stateVarField.sectionDof(vertex);
     for(PetscInt d = 0; d < dof; ++d, ++iOff) {
       stateVarArray[off+d] = _propsStateVarsVertex[iOff];
     } // for
-    err = VecRestoreArray(stateVarVec, &stateVarArray);CHECK_PETSC_ERROR(err);
+    stateVarField.restoreLocalArray(&stateVarArray);
   } // for
   assert(_propsStateVarsVertex.size() == iOff);
 } // updateStateVars
