@@ -47,11 +47,6 @@
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void)
 { // constructor
@@ -99,16 +94,16 @@ void
 pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 					     const PylithScalar upDir[3])
 { // initialize
-  assert(0 != upDir);
-  assert(0 != _quadrature);
-  assert(0 != _normalizer);
+  assert(upDir);
+  assert(_quadrature);
+  assert(_normalizer);
 
   FaultCohesiveLagrange::initialize(mesh, upDir);
 
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
     EqKinSrc* src = s_iter->second;
-    assert(0 != src);
+    assert(src);
     src->initialize(*_faultMesh, *_normalizer);
   } // for
 } // initialize
@@ -122,9 +117,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
-  assert(0 != fields);
-  assert(0 != _fields);
-  assert(0 != _logger);
+  assert(fields);
+  assert(_fields);
+  assert(_logger);
 
   const int setupEvent = _logger->eventId("FaIR setup");
   _logger->eventBegin(setupEvent);
@@ -135,7 +130,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const srcs_type::const_iterator srcsEnd = _eqSrcs.end();
   for (srcs_type::iterator s_iter = _eqSrcs.begin(); s_iter != srcsEnd; ++s_iter) {
     EqKinSrc* src = s_iter->second;
-    assert(0 != src);
+    assert(src);
     if (t >= src->originTime())
       src->slip(&dispRel, t);
   } // for
@@ -157,10 +152,10 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::vertexField(const char* name,
                                               const topology::SolutionFields* fields)
 { // vertexField
-  assert(0 != _faultMesh);
-  assert(0 != _quadrature);
-  assert(0 != _normalizer);
-  assert(0 != _fields);
+  assert(_faultMesh);
+  assert(_quadrature);
+  assert(_normalizer);
+  assert(_fields);
 
   const int cohesiveDim = _faultMesh->dimension();
   const int spaceDim = _quadrature->spaceDim();
@@ -181,9 +176,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
     return buffer;
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();
-    Vec          orientationVec     = _fields->get("orientation").localVector();
-    assert(orientationSection);assert(orientationVec);
+    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
+    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
@@ -191,8 +185,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.scale(1.0);
     return buffer;
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();
-    Vec          orientationVec     = _fields->get("orientation").localVector();
+    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
+    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
@@ -201,8 +195,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.scale(1.0);
     return buffer;
   } else if (0 == strcasecmp("normal_dir", name)) {
-    PetscSection orientationSection = _fields->get("orientation").petscSection();
-    Vec          orientationVec     = _fields->get("orientation").localVector();
+    PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
+    PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
     assert(orientationSection);assert(orientationVec);
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
@@ -245,7 +239,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
 
     return buffer;
   } else if (0 == strcasecmp("traction_change", name)) {
-    assert(0 != fields);
+    assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
@@ -263,7 +257,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   throw std::logic_error("Unknown field in FaultCohesiveKin::vertexField().");
 
   // Satisfy return values
-  assert(0 != _fields);
+  assert(_fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
   return buffer;
 } // vertexField
