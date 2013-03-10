@@ -321,8 +321,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 	
         err = VecSet(solutionVec, 0.0);CHECK_PETSC_ERROR(err);
         for(PetscInt v = vStart; v < vEnd; ++v) {
-          PetscScalar values[3] = {0.0, 0.0, 0.0};
-          const PetscScalar *coords;
+          PetscScalar  values[3] = {0.0, 0.0, 0.0};
+          PetscScalar *coords;
 
           err = DMPlexVecGetClosure(dmMesh, coordinateSection, coordinateVec, v, PETSC_NULL, &coords);CHECK_PETSC_ERROR(err);
           for(int i = 0; i < dim; ++i) {

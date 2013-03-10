@@ -209,8 +209,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);
@@ -224,8 +224,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const PetscScalar *dispTArray, *dispTIncrArray;
-    PetscInt           dispTSize,   dispTIncrSize;
+    PetscScalar *dispTArray, *dispTIncrArray;
+    PetscInt     dispTSize,   dispTIncrSize;
     err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, dispTIncrSection, dispTIncrVec, cell, &dispTIncrSize, &dispTIncrArray);CHECK_PETSC_ERROR(err);
     assert(dispTSize == dispTIncrSize);
@@ -404,8 +404,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);
@@ -419,8 +419,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    const PetscScalar *dispTArray, *dispTIncrArray;
-    PetscInt           dispTSize,   dispTIncrSize;
+    PetscScalar *dispTArray, *dispTIncrArray;
+    PetscInt     dispTSize,   dispTIncrSize;
     err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, dispTIncrSection, dispTIncrVec, cell, &dispTIncrSize, &dispTIncrArray);CHECK_PETSC_ERROR(err);
     assert(dispTSize == dispTIncrSize);

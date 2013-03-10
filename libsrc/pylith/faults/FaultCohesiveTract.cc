@@ -245,8 +245,8 @@ pylith::faults::FaultCohesiveTract::_calcOrientation(const PylithScalar upDir[3]
   // Loop over cells in fault mesh and compute orientations.
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -373,8 +373,8 @@ pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
     // Loop over cells in boundary mesh and perform queries.
     err = VecGetArray(tractionVec, &tractionArray);CHECK_PETSC_ERROR(err);
     for (PetscInt c = cStart; c < cEnd; ++c) {
-      const PetscScalar *coords = PETSC_NULL;
-      PetscInt           coordsSize;
+      PetscScalar *coords = PETSC_NULL;
+      PetscInt     coordsSize;
 
       err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
       for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}

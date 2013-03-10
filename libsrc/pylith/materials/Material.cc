@@ -215,8 +215,8 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);

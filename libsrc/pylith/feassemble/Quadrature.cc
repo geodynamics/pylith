@@ -367,8 +367,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   err = VecGetArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
   err = VecGetArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
   for (PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(dm, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}

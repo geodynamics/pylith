@@ -1412,11 +1412,11 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
 
   err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt          *closure = PETSC_NULL;
-    PetscInt           closureSize, q = 0;
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
-    scalar_array       coordinatesCell(numBasis * spaceDim);
+    PetscInt    *closure = PETSC_NULL;
+    PetscInt     closureSize, q = 0;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
+    scalar_array coordinatesCell(numBasis * spaceDim);
 
     // Get orientations at fault cell's vertices.
     err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
@@ -1692,8 +1692,8 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(c);
 #else
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, c);

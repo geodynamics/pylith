@@ -231,8 +231,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Restrict input fields to cell
-    const PetscScalar *accArray, *velArray, *dispTArray;
-    PetscInt           accSize,   velSize,   dispTSize;
+    PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt     accSize,   velSize,   dispTSize;
     err = DMPlexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
@@ -245,8 +245,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Compute geometry information for current cell
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar area = _area(coordinatesCell);
@@ -468,8 +468,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar area = _area(coordinatesCell);

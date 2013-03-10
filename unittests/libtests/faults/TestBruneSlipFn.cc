@@ -362,7 +362,7 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
   CohesiveTopology::createFault(faultMesh, faultBoundary,
                                 *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(faultLabel),
+                           groupField,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
@@ -479,7 +479,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   CohesiveTopology::createFault(&faultMesh, faultBoundary,
                                 mesh, groupField);
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(data.faultLabel),
+                           groupField,
                            data.faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);

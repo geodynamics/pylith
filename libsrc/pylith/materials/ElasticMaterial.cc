@@ -451,8 +451,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     retrievePropsAndVars(cell);
-    const PetscScalar *coords = NULL;
-    PetscInt coordsSize;
+    PetscScalar *coords = NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -694,8 +694,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    const PetscScalar *coords;
-    PetscInt coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);
@@ -847,8 +847,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    const PetscScalar *coords;
-    PetscInt coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     quadrature->computeGeometry(coordinatesCell, cell);

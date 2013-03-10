@@ -2087,7 +2087,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
   // Loop over cells
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry
-    const PetscScalar *coords = NULL;
+    PetscScalar *coords = NULL;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -2095,7 +2095,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
     err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
 
     // Restrict input fields to cell
-    const PetscScalar *dLagrangeArray = NULL;
+    PetscScalar *dLagrangeArray = NULL;
     PetscInt dLagrangeSize;
     err = DMPlexVecGetClosure(faultDMMesh, dLagrangeSection, dLagrangeVec, c, &dLagrangeSize, &dLagrangeArray);CHECK_PETSC_ERROR(err);
 

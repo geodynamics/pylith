@@ -293,7 +293,7 @@ pylith::faults::TestConstRateSlipFn::_initialize(topology::Mesh* mesh,
   CohesiveTopology::createFault(faultMesh, faultBoundary,
                                 *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(faultLabel),
+                           groupField,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
@@ -404,7 +404,7 @@ pylith::faults::TestConstRateSlipFn::_testInitialize(const _TestConstRateSlipFn:
   CohesiveTopology::createFault(&faultMesh, faultBoundary,
                                 mesh, groupField);
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(data.faultLabel),
+                           groupField,
                            data.faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);

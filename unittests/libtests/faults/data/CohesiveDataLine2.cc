@@ -23,7 +23,7 @@
  *   2 -------- 3 -------- 4
  *
  * After adding cohesive elements
- *   2 -------- 5 -- 3 -------- 4
+ *   3 -------- 6 -- 4 -------- 5
  */
 
 #include "CohesiveDataLine2.hh"
@@ -50,9 +50,9 @@ const int pylith::faults::CohesiveDataLine2::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataLine2::_cells[] = {
-       2,  5,
-       3,  4,
-       3,  5,
+       3,  6,
+       4,  5,
+       4,  6,
 };
 
 const int pylith::faults::CohesiveDataLine2::_materialIds[] = {
@@ -63,15 +63,15 @@ const int pylith::faults::CohesiveDataLine2::_materialIds[] = {
 const int pylith::faults::CohesiveDataLine2::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataLine2::_groupSizes[] = 
-  { 2, 3 };
+  { 3, 2 };
 
 const int pylith::faults::CohesiveDataLine2::_groups[] = {
-  3, 5,
-  2, 3, 5
+  3, 4, 6,
+  4, 6
 };
 
 const char* pylith::faults::CohesiveDataLine2::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataLine2::_groupTypes[] = {

@@ -238,8 +238,8 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature.retrieveGeometry(c);
 #else
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}

@@ -33,18 +33,18 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10 vertices are 2-9.
+ * Cells are 0-1,2 vertices are 3-10.
  *
+ *       4 --------10 -- 6 -------- 8
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
+ *       |          |    |          |
  *       3 -------- 9 -- 5 -------- 7
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       |          |    |          |
- *       2 -------- 8 -- 4 -------- 6
  */
 
 #include "CohesiveDataQuad4d.hh"
@@ -75,9 +75,9 @@ const int pylith::faults::CohesiveDataQuad4d::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataQuad4d::_cells[] = {
-  3,  2,  8,  9,
-  4,  6,  7,  5,
-  5,  4,  9,  8,
+  4,  3,  9, 10,
+  5,  7,  8,  6,
+  6,  5, 10,  9,
 };
 
 const int pylith::faults::CohesiveDataQuad4d::_materialIds[] = {
@@ -91,12 +91,12 @@ const int pylith::faults::CohesiveDataQuad4d::_groupSizes[] =
   { 4, 4 };
 
 const int pylith::faults::CohesiveDataQuad4d::_groups[] = {
-  4, 5, 8, 9,
-  3, 5, 7, 9
+  4, 6, 8, 10,
+  5, 6, 9, 10
 };
 
 const char* pylith::faults::CohesiveDataQuad4d::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataQuad4d::_groupTypes[] = {
