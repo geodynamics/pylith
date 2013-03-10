@@ -289,7 +289,7 @@ pylith::faults::TestStepSlipFn::_initialize(topology::Mesh* mesh,
   CohesiveTopology::createFault(faultMesh, faultBoundary,
                                 *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(faultLabel),
+                           groupField,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
@@ -399,7 +399,7 @@ pylith::faults::TestStepSlipFn::_testInitialize(const _TestStepSlipFn::DataStruc
   CohesiveTopology::createFault(&faultMesh, faultBoundary,
                                 mesh, groupField);
   CohesiveTopology::create(&mesh, faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(data.faultLabel),
+                           groupField,
                            data.faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);

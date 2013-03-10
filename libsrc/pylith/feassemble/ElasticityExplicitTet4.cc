@@ -232,8 +232,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Restrict input fields to cell
-    const PetscScalar *accArray, *velArray, *dispTArray;
-    PetscInt           accSize,   velSize,   dispTSize;
+    PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt     accSize,   velSize,   dispTSize;
     err = DMPlexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
@@ -246,8 +246,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateResidual(
 #endif
 
     // Compute geometry information for current cell
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);
@@ -519,8 +519,8 @@ pylith::feassemble::ElasticityExplicitTet4::integrateJacobian(topology::Field<to
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     const PylithScalar volume = _volume(coordinatesCell);

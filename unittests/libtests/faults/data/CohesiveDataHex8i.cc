@@ -83,15 +83,15 @@ const int pylith::faults::CohesiveDataHex8i::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataHex8i::_cells[] = {
-    8,  7, 20, 21, 13, 12, 23, 24,
-   14,  9, 10, 15, 13,  8, 21, 24,
-   15, 10, 11, 16, 24, 21, 22, 25,
-   30, 38, 28, 29, 35, 41, 33, 34,
-   41, 35, 30, 38, 42, 36, 31, 39,
-   27, 28, 38, 37, 32, 33, 41, 40,
-   15, 14, 13, 24, 19, 18, 17, 26,
-   20, 21, 24, 23, 37, 38, 41, 40,
-   24, 21, 22, 25, 41, 38, 39, 42,
+   10,  9, 22, 23, 15, 14, 25, 26,
+   16, 11, 12, 17, 15, 10, 23, 26,
+   17, 12, 13, 18, 26, 23, 24, 27,
+   32, 40, 30, 31, 37, 43, 35, 36,
+   43, 37, 32, 40, 44, 38, 33, 41,
+   29, 30, 40, 39, 34, 35, 43, 42,
+   17, 16, 15, 26, 21, 20, 19, 28,
+   22, 23, 26, 25, 39, 40, 43, 42,
+   26, 23, 24, 27, 43, 40, 41, 44,
 };
 
 const int pylith::faults::CohesiveDataHex8i::_materialIds[] = {
@@ -102,15 +102,15 @@ const int pylith::faults::CohesiveDataHex8i::_materialIds[] = {
 const int pylith::faults::CohesiveDataHex8i::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataHex8i::_groupSizes[] = 
-  { 12, 10 };
+  { 10, 12 };
 
 const int pylith::faults::CohesiveDataHex8i::_groups[] = {
-  20, 21, 22, 23, 24, 25, 37, 38, 39, 40, 41, 42,
-  27, 28, 29, 30, 31, 32, 33, 34, 35, 36
+  29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+  22, 23, 24, 25, 26, 27, 39, 40, 41, 42, 43, 44
 };
 
 const char* pylith::faults::CohesiveDataHex8i::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataHex8i::_groupTypes[] = {

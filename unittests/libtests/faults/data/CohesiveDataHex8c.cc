@@ -26,9 +26,9 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,16 and vertices are 4-15.
+ * Cells are 0-1,2 and vertices are 3-18.
  *
- *       2,3,4,5 -------- 6,7,8,9 -- 14,15,16,17 -------- 10,11,12,13
+ *       3,4,5,6 -------- 7,8,9,10 -- 15,16,17,18 -------- 11,12,13,14
  *
  *                        ^^^^^^^^^^^^^^^^^^^^^^ Cohesive element
  *
@@ -70,9 +70,9 @@ const int pylith::faults::CohesiveDataHex8c::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataHex8c::_cells[] = {
-  6,  8,  9,  7,  2,  4,  5,  3,
- 10, 12, 13, 11, 14, 16, 17, 15,
-  7,  9,  8,  6, 15, 17, 16, 14,
+  7,  9, 10,  8,  3,  5,  6,  4,
+ 11, 13, 14, 12, 15, 17, 18, 16,
+  8, 10,  9,  7, 16, 18, 17, 15,
 };
 
 const int pylith::faults::CohesiveDataHex8c::_materialIds[] = {
@@ -86,12 +86,12 @@ const int pylith::faults::CohesiveDataHex8c::_groupSizes[] =
   { 8, 8 };
 
 const int pylith::faults::CohesiveDataHex8c::_groups[] = {
-  6, 7, 8, 9, 14, 15, 16, 17,
-  4, 5, 8, 9, 12, 13, 16, 17
+  5, 6, 9, 10, 13, 14, 17, 18,
+  7, 8, 9, 10, 15, 16, 17, 18
 };
 
 const char* pylith::faults::CohesiveDataHex8c::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataHex8c::_groupTypes[] = {

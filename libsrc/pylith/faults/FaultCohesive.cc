@@ -69,24 +69,24 @@ pylith::faults::FaultCohesive::useFaultMesh(const bool flag)
 int
 pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) const
 { // numVerticesNoMesh
-  int nvertices = 0;
+  PetscInt nvertices = 0;
 
-  assert(false); // :TODO: Update this for DM mesh
   if (!_useFaultMesh) {
     // Get group of vertices associated with fault
-    const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-    assert(!sieveMesh.isNull());
-    if (!sieveMesh->hasIntSection(label())) {
+    DM             dmMesh = mesh.dmMesh();
+    PetscBool      has;
+    PetscErrorCode err;
+
+    assert(dmMesh);
+    assert(std::string("") != label());
+    err = DMPlexHasLabel(dmMesh, label(), &has);CHECK_PETSC_ERROR(err);
+    if (!has) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << "' for fault interface condition.";
       throw std::runtime_error(msg.str());
     } // if  
-
-    assert(std::string("") != label());
-    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-      mesh.sieveMesh()->getIntSection(label());
-    nvertices = groupField->size();
+    err = DMPlexGetStratumSize(dmMesh, label(), 1, &nvertices);CHECK_PETSC_ERROR(err);
   } else {
     assert(3 == mesh.dimension());
     nvertices = -1;
@@ -130,10 +130,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
                                     flipFault);
       
-      const ALE::Obj<topology::Mesh::IntSection>& oldGroupField = 
-        mesh->sieveMesh()->getIntSection(label());
-      assert(!oldGroupField.isNull());
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, oldGroupField, id(), 
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
                                *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       
     } else {

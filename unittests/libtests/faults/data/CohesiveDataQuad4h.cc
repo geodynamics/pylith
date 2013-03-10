@@ -39,26 +39,26 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-8,16-17 vertices are 9-24.
+ * Cells are 0-8,9-11 vertices are 12-32.
  *
- * 9 ----10 ----25-11 ----12
+ *12 ----13 ----28-14 ----15
  * |      |      |  |      |
- * |  0   |  1   |30|  2   |
- * |      |      |  |      |
- * |      |      |  |      |
- *13 ----14 ----26-15 ----16
- * |      |      |  |      |
- * |  3   |  4   |31|  5   |
+ * |  0   |  1   | 9|  2   |
  * |      |      |  |      |
  * |      |      |  |      |
- *28 ----29-----27-19 ----20
- * |  32  |      |         |
- *17 ----18      |         |
+ *16 ----17 ----29-18 ----19
+ * |      |      |  |      |
+ * |  3   |  4   |10|  5   |
+ * |      |      |  |      |
+ * |      |      |  |      |
+ *31 ----32-----30-22 ----23
+ * |  11  |      |         |
+ *20 ----21      |         |
  * |      |   7  |     8   |
  * |  6   |      |         |
  * |      |      |         |
  * |      |      |         |
- *21 ----22 ----23--------24
+ *24 ----25 ----26--------27
  *
  */
 
@@ -112,18 +112,18 @@ const int pylith::faults::CohesiveDataQuad4h::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataQuad4h::_cells[] = {
-   9, 13, 14, 10,
-  10, 14, 26, 25,
-  11, 15, 16, 12,
-  13, 28, 29, 14,
-  14, 29, 27, 26,
-  15, 19, 20, 16,
-  17, 21, 22, 18,
-  29, 22, 23, 27,
-  27, 23, 24, 20,
-  11, 15, 25, 26,
-  15, 19, 26, 27,
-  18, 17, 29, 28,
+  12, 16, 17, 13,
+  13, 17, 29, 28,
+  14, 18, 19, 15,
+  16, 31, 32, 17,
+  17, 32, 30, 29,
+  18, 22, 23, 19,
+  20, 24, 25, 21,
+  32, 25, 26, 30,
+  30, 26, 27, 23,
+  14, 18, 28, 29,
+  18, 22, 29, 30,
+  21, 20, 32, 31,
 };
 
 const int pylith::faults::CohesiveDataQuad4h::_materialIds[] = {
@@ -134,15 +134,15 @@ const int pylith::faults::CohesiveDataQuad4h::_materialIds[] = {
 const int pylith::faults::CohesiveDataQuad4h::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataQuad4h::_groupSizes[] = 
-  { 6, 4 };
+  { 4, 6 };
 
 const int pylith::faults::CohesiveDataQuad4h::_groups[] = {
-  11, 15, 19, 25, 26, 27,
-  17, 18, 28, 29,
+  20, 21, 31, 32,
+  14, 18, 22, 28, 29, 30
 };
 
 const char* pylith::faults::CohesiveDataQuad4h::_groupNames[] = {
-  "faultA", "faultB"
+  "faultB", "faultA"
 };
 
 const char* pylith::faults::CohesiveDataQuad4h::_groupTypes[] = {

@@ -18,7 +18,7 @@
 
 /* Original mesh
  *
- * Cells are 0-5, vertices are 6-17.
+ * Cells are 0-5,6 vertices are 7-18.
  */
 
 #include "CohesiveDataTet4j.hh"
@@ -57,13 +57,13 @@ const int pylith::faults::CohesiveDataTet4j::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTet4j::_cells[] = {
-   7,  9,  8,  6,
-  17, 15, 13, 14,
-  16, 13, 17, 15,
-  10,  9, 11,  7,
-  15, 13, 14, 12,
-   7, 11,  8,  9,
-   9, 10, 11, 15, 16, 17
+   8, 10,  9,  7,
+  18, 16, 14, 15,
+  17, 14, 18, 16,
+  11, 10, 12,  8,
+  16, 14, 15, 13,
+   8, 12,  9, 10,
+  10, 11, 12, 16, 17, 18
 };
 
 const int pylith::faults::CohesiveDataTet4j::_materialIds[] = {
@@ -74,15 +74,15 @@ const int pylith::faults::CohesiveDataTet4j::_materialIds[] = {
 const int pylith::faults::CohesiveDataTet4j::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTet4j::_groupSizes[] = 
-  { 6, 8 };
+  { 8, 6 };
 
 const int pylith::faults::CohesiveDataTet4j::_groups[] = {
-  9, 10, 11, 15, 16, 17,
-  6, 8, 9, 11, 12, 14, 15, 17
+  7,  9, 10, 12, 13, 15, 16, 18,
+ 10, 11, 12, 16, 17, 18
 };
 
 const char* pylith::faults::CohesiveDataTet4j::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataTet4j::_groupTypes[] = {

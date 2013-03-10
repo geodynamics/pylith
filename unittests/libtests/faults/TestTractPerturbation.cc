@@ -370,7 +370,7 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
   CohesiveTopology::createFault(faultMesh, faultBoundary,
                                 *mesh, groupField);
   CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
-                           sieveMesh->getIntSection(faultLabel),
+                           groupField,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);

@@ -42,9 +42,9 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-4,19-20 vertices are 5-18.
+ * Cells are 0-4,5-6 vertices are 7-20.
  *
- *       7 --------12 -- 18 --------15
+ *       9 --------14 -- 20 --------17
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
@@ -53,16 +53,16 @@
  *       |          |     |          |
  *       |          |     |          |
  *       |          |     |          |
- *       6 --------11 -- 17 --------14
+ *       8 --------13 -- 19 --------16
  *       |        / |     |          |
  *       |       /  |     |          |
  *       |      /   |     |          |
- *       5-----9    |     |          |
+ *       7-----11   |     |          |
  *             |    |     |          |
  *             |    |     |          |
  *             |    |     |          |
  *             |    |     |          |
- *             8---10 -- 16 --------13
+ *            10---12 -- 18 --------15
  */
 
 #include "CohesiveDataQuad4g.hh"
@@ -103,13 +103,13 @@ const int pylith::faults::CohesiveDataQuad4g::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_cells[] = {
-  6, 11, 12,  7,
- 17, 16, 13, 14,
- 15, 18, 17, 14,
-  6,  5,  9, 11,
-  9,  8, 10, 11,
- 10, 11, 16, 17,
- 11, 12, 17, 18,
+  8, 13, 14,  9,
+ 19, 18, 15, 16,
+ 17, 20, 19, 16,
+  8,  7, 11, 13,
+ 11, 10, 12, 13,
+ 12, 13, 18, 19,
+ 13, 14, 19, 20,
 };
 
 const int pylith::faults::CohesiveDataQuad4g::_materialIds[] = {
@@ -120,15 +120,15 @@ const int pylith::faults::CohesiveDataQuad4g::_materialIds[] = {
 const int pylith::faults::CohesiveDataQuad4g::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataQuad4g::_groupSizes[] = 
-  { 6, 3 };
+  { 3, 6 };
 
 const int pylith::faults::CohesiveDataQuad4g::_groups[] = {
-  10, 11, 12, 16, 17, 18,
-  13, 14, 15
+  15, 16, 17,
+  12, 13, 14, 18, 19, 20
 };
 
 const char* pylith::faults::CohesiveDataQuad4g::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataQuad4g::_groupTypes[] = {

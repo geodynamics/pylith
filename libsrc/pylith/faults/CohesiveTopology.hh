@@ -76,7 +76,7 @@ public :
   void create(topology::Mesh* mesh,
 	      const topology::SubMesh& faultMesh,
               const ALE::Obj<SieveFlexMesh>& faultBoundary,
-              const ALE::Obj<topology::Mesh::IntSection>& groupField,
+              DMLabel groupField,
               const int materialId,
               int& firstFaultVertex,
               int& firstLagrangeVertex,

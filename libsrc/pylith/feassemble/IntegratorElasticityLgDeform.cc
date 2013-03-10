@@ -137,8 +137,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -147,8 +147,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
 #endif
 
     // Restrict input fields to cell
-    const PetscScalar *disp = PETSC_NULL;
-    PetscInt           dispSize;
+    PetscScalar *disp = PETSC_NULL;
+    PetscInt     dispSize;
 
     err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}
@@ -249,8 +249,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(*c_iter);
 #else
-    const PetscScalar *coords = PETSC_NULL;
-    PetscInt           coordsSize;
+    PetscScalar *coords = PETSC_NULL;
+    PetscInt     coordsSize;
 
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
@@ -259,8 +259,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
 #endif
 
     // Restrict input fields to cell
-    const PetscScalar *disp = PETSC_NULL;
-    PetscInt           dispSize;
+    PetscScalar *disp = PETSC_NULL;
+    PetscInt     dispSize;
 
     err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}

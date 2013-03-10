@@ -130,7 +130,7 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    const PetscScalar *coords;
+    PetscScalar *coords;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for (PetscInt i=0; i < coordsSize; ++i) {
@@ -435,7 +435,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    const PetscScalar *coords;
+    PetscScalar *coords;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for (PetscInt i = 0; i < coordsSize; ++i) {
@@ -542,7 +542,7 @@ void
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    const PetscScalar *coords;
+    PetscScalar *coords;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for (PetscInt i=0; i < coordsSize; ++i) {

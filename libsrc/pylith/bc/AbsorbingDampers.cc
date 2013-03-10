@@ -157,7 +157,7 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   PetscScalar* dampingConstsArray = dampingConsts.getLocalArray();
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
-    const PetscScalar *coords;
+    PetscScalar *coords;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for (PetscInt i=0; i < coordsSize; ++i) {
@@ -301,7 +301,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    const PetscScalar *coordsArray;
+    PetscScalar *coordsArray;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
     for (PetscInt i=0; i < coordsSize; ++i) {
@@ -320,7 +320,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
     _resetCellVector();
 
     // Restrict input fields to cell
-    const PetscScalar *velArray = NULL;
+    PetscScalar *velArray = NULL;
     PetscInt velSize;
     err = DMPlexVecGetClosure(subMesh, velSubsection, velVec, c, &velSize, &velArray);CHECK_PETSC_ERROR(err);
     assert(velSize == numBasis*spaceDim);
@@ -453,7 +453,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    const PetscScalar *coordsArray;
+    PetscScalar *coordsArray;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
     for (PetscInt i=0; i < coordsSize; ++i) {
@@ -472,7 +472,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
     _resetCellVector();
 
     // Restrict input fields to cell
-    const PetscScalar *velArray = NULL;
+    PetscScalar *velArray = NULL;
     PetscInt velSize;
     err = DMPlexVecGetClosure(subMesh, velSubsection, velVec, c, &velSize, &velArray);CHECK_PETSC_ERROR(err);
     assert(velSize == numBasis*spaceDim);
@@ -613,7 +613,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented")
 #else
-    const PetscScalar *coordsArray;
+    PetscScalar *coordsArray;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
     for (PetscInt i = 0; i < coordsSize; ++i) {
@@ -763,7 +763,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented");
 #else
-    const PetscScalar *coordsArray;
+    PetscScalar *coordsArray;
     PetscInt coordsSize;
     err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
     for (PetscInt i = 0; i < coordsSize; ++i) {

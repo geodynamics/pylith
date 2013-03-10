@@ -26,9 +26,9 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1,10, vertices are 2-9.
+ * Cells are 0-1,2, vertices are 3-10.
  *
- * 2   3,4,5  7,8,9   6
+ * 3   4,5,6  8,9,10   7
  *
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
@@ -61,9 +61,9 @@ const int pylith::faults::CohesiveDataTet4g::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTet4g::_cells[] = {
-  3,  5,  4,  6,
-  7,  9,  2,  8,
-  5,  3,  4,  9,  7,  8
+  4,  6,  5,  7,
+  8, 10,  3,  9,
+  6,  4,  5, 10,  8,  9
 };
 
 const int pylith::faults::CohesiveDataTet4g::_materialIds[] = {
@@ -74,15 +74,15 @@ const int pylith::faults::CohesiveDataTet4g::_materialIds[] = {
 const int pylith::faults::CohesiveDataTet4g::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTet4g::_groupSizes[] = 
-  { 6, 5 };
+  { 5, 6 };
 
 const int pylith::faults::CohesiveDataTet4g::_groups[] = {
-  3, 4, 5, 7, 8, 9,
-  2, 4, 5, 8, 9
+  3, 5, 6, 9, 10,
+  4, 5, 6, 8,  9, 10
 };
 
 const char* pylith::faults::CohesiveDataTet4g::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataTet4g::_groupTypes[] = {

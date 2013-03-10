@@ -240,8 +240,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);
@@ -255,8 +255,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const PetscScalar *accArray, *velArray, *dispTArray;
-    PetscInt           accSize,   velSize,   dispTSize;
+    PetscScalar *accArray, *velArray, *dispTArray;
+    PetscInt     accSize,   velSize,   dispTSize;
     err = DMPlexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
     err = DMPlexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
     assert(velSize   == accSize);
@@ -431,8 +431,8 @@ pylith::feassemble::ElasticityExplicitLgDeform::integrateJacobian(
 #if defined(PRECOMPUTE_GEOMETRY)
     _quadrature->retrieveGeometry(cell);
 #else
-    const PetscScalar *coords;
-    PetscInt           coordsSize;
+    PetscScalar *coords;
+    PetscInt     coordsSize;
     err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
     for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
     _quadrature->computeGeometry(coordinatesCell, cell);

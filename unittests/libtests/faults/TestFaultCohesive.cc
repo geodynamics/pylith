@@ -497,6 +497,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 { // _testAdjustTopology
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
+  PetscErrorCode err;
   iohandler.filename(data.filename);
   iohandler.debug(false);
   iohandler.interpolate(false);
@@ -510,11 +511,14 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   mesh.nondimensionalize(normalizer);
   
   CPPUNIT_ASSERT(0 != fault);
-  int firstFaultVertex    = 0;
-  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection("fault")->size();
-  int firstFaultCell      = mesh.sieveMesh()->getIntSection("fault")->size();
+  DM       dmMesh = mesh.dmMesh();
+  PetscInt firstFaultVertex = 0;
+  PetscInt firstLagrangeVertex, firstFaultCell;
+
+  err = DMPlexGetStratumSize(dmMesh, "fault", 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  firstFaultCell = firstLagrangeVertex;
   if (dynamic_cast<FaultCohesive*>(fault)->useLagrangeConstraints()) {
-    firstFaultCell += mesh.sieveMesh()->getIntSection("fault")->size();
+    firstFaultCell += firstLagrangeVertex;
   }
   fault->id(1);
   fault->label("fault");
@@ -524,109 +528,100 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
 
   // Check vertices
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const ALE::Obj<topology::Mesh::RealSection>& coordsSection =
-    sieveMesh->getRealSection("coordinates");
-  CPPUNIT_ASSERT(!coordsSection.isNull());
-  const int numVertices = vertices->size();
+  PetscSection coordSection;
+  Vec          coordinates;
+  PetscScalar *coords;
+  PetscInt     vStart, vEnd;
+
+  dmMesh = mesh.dmMesh();
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+  const PetscInt numVertices = vEnd-vStart;
+  const PetscInt spaceDim    = data.spaceDim;
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
-  CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
-		       coordsSection->getFiberDimension(*vertices->begin()));
-  int i = 0;
-  const int spaceDim = data.spaceDim;
-  for (SieveMesh::label_sequence::iterator v_iter = 
-	vertices->begin();
-      v_iter != vertices->end();
-      ++v_iter) {
-    const PylithScalar* vertexCoords = coordsSection->restrictPoint(*v_iter);
+  err = VecGetArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
     const PylithScalar tolerance = 1.0e-06;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
+    PetscInt           dof, off;
+
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+    for (PetscInt d = 0; d < spaceDim; ++d, ++i)
       if (data.vertices[i] < 1.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
-				   tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i], coords[off+d], tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
-				   tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coords[off+d]/data.vertices[i], tolerance);
   } // for
+  err = VecRestoreArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
 
   //mesh.view("MESH");
 
   // check cells
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  CPPUNIT_ASSERT(!sieve.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
+  PetscInt cStart, cEnd;
 
-  const int numCells = cells->size();
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  const PetscInt numCells = cEnd-cStart;
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
+  for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
+    const PetscInt *cone;
+    PetscInt        coneSize;
 
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  int iCell = 0;
-  i = 0;
-  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter) {
-    const int numCorners = sieveMesh->getNumCellCorners(*c_iter);
-    CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
-    sieve->cone(*c_iter, pV);
-    const SieveMesh::point_type *cone = pV.getPoints();
-    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], coneSize);
+    for (PetscInt p = 0; p < coneSize; ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
     }
-    pV.clear();
   } // for
 
   // check materials
-  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
-    sieveMesh->getLabel("material-id");
-  CPPUNIT_ASSERT(!labelMaterials.isNull());
-  const int idDefault = -999;
-  const int size = numCells;
-  int_array materialIds(size);
-  i = 0;
-  for (SieveMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter)
-    materialIds[i++] = sieveMesh->getValue(labelMaterials, *c_iter, idDefault);
-  
-  for (int iCell=0; iCell < numCells; ++iCell)
-    CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
+  DMLabel labelMaterials;
+
+  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(labelMaterials);
+  const PetscInt idDefault = -999;
+  for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
+    PetscInt value;
+
+    err = DMLabelGetValue(labelMaterials, c, &value);CHECK_PETSC_ERROR(err);
+    if (value == -1) value = idDefault;
+    CPPUNIT_ASSERT_EQUAL(data.materialIds[cell], value);
+  }  
 
   // Check groups
-  const ALE::Obj<std::set<std::string> >& groupNames = 
-    sieveMesh->getIntSections();
-  CPPUNIT_ASSERT(!groupNames.isNull());
-  int iGroup = 0;
-  int index = 0;
-  for (std::set<std::string>::const_iterator name=groupNames->begin();
-       name != groupNames->end();
-       ++name, ++iGroup) {
-    const ALE::Obj<topology::Mesh::IntSection>& groupField =
-      sieveMesh->getIntSection(*name);
-    CPPUNIT_ASSERT(!groupField.isNull());
-    const topology::Mesh::IntSection::chart_type& chart = groupField->getChart();
-    SieveMesh::point_type firstPoint;
-    for (topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
-    }
-    std::string groupType = 
-      (sieveMesh->height(firstPoint) == 0) ? "cell" : "vertex";
-    const int numPoints = groupField->size();
-    int_array points(numPoints);
-    int i = 0;
-    for (topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter;
-    }
+  PetscInt numLabels;
 
-    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
-    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
-    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
-    for (int i=0; i < numPoints; ++i)
-      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
+  err = DMPlexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
+  for (PetscInt l = 0, i = 0, index = 0; l < numLabels; ++l) {
+    DMLabel         label;
+    IS              is;
+    const PetscInt *points;
+    PetscInt        numPoints, depth;
+    const char     *name;
+    std::string     skipA = "depth";
+    std::string     skipB = "material-id";
+
+    err = DMPlexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
+    if (std::string(name) == skipA) continue;
+    if (std::string(name) == skipB) continue;
+    err = DMPlexGetLabel(dmMesh, name, &label);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT(label);
+    err = DMLabelGetStratumIS(label, 1, &is);CHECK_PETSC_ERROR(err);
+    err = ISGetLocalSize(is, &numPoints);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(is, &points);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);CHECK_PETSC_ERROR(err);
+    std::string groupType = depth ? "cell" : "vertex";
+
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[i]), std::string(name));
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[i]), groupType);
+    CPPUNIT_ASSERT_EQUAL(data.groupSizes[i], numPoints);
+    for (PetscInt p = 0; p < numPoints; ++p, ++index)
+      CPPUNIT_ASSERT_EQUAL(data.groups[index], points[p]);
+    err = ISRestoreIndices(is, &points);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&is);CHECK_PETSC_ERROR(err);
+    ++i;
   } // for
 } // _testAdjustTopology
 
@@ -641,6 +636,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 { // _testAdjustTopology
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
+  PetscErrorCode err;
   iohandler.filename(data.filename);
   iohandler.debug(false);
   iohandler.interpolate(false);
@@ -648,14 +644,19 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
 
   CPPUNIT_ASSERT(0 != faultA);
   CPPUNIT_ASSERT(0 != faultB);
-  int firstFaultVertex    = 0;
-  int firstLagrangeVertex = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
-  int firstFaultCell      = mesh.sieveMesh()->getIntSection("faultA")->size() + mesh.sieveMesh()->getIntSection("faultB")->size();
+  DM       dmMesh = mesh.dmMesh();
+  PetscInt firstFaultVertex = 0;
+  PetscInt sizeA, sizeB;
+
+  err = DMPlexGetStratumSize(dmMesh, "faultA", 1, &sizeA);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetStratumSize(dmMesh, "faultB", 1, &sizeB);CHECK_PETSC_ERROR(err);
+  PetscInt firstLagrangeVertex = sizeA + sizeB;
+  PetscInt firstFaultCell      = sizeA + sizeB;
   if (dynamic_cast<FaultCohesive*>(faultA)->useLagrangeConstraints()) {
-    firstFaultCell += mesh.sieveMesh()->getIntSection("faultA")->size();
+    firstFaultCell += sizeA;
   }
   if (dynamic_cast<FaultCohesive*>(faultB)->useLagrangeConstraints()) {
-    firstFaultCell += mesh.sieveMesh()->getIntSection("faultB")->size();
+    firstFaultCell += sizeB;
   }
 
   faultA->id(1);
@@ -670,109 +671,98 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh.dimension());
 
   // Check vertices
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const ALE::Obj<topology::Mesh::RealSection>& coordsSection =
-    sieveMesh->getRealSection("coordinates");
-  CPPUNIT_ASSERT(!coordsSection.isNull());
-  const int numVertices = vertices->size();
+  PetscSection coordSection;
+  Vec          coordinates;
+  PetscScalar *coords;
+  PetscInt     vStart, vEnd;
+
+  dmMesh = mesh.dmMesh();
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
+  err = DMGetCoordinatesLocal(dmMesh, &coordinates);CHECK_PETSC_ERROR(err);
+  const PetscInt numVertices = vEnd-vStart;
+  const PetscInt spaceDim    = data.spaceDim;
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
-  CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
-		       coordsSection->getFiberDimension(*vertices->begin()));
-  int i = 0;
-  const int spaceDim = data.spaceDim;
-  for(SieveMesh::label_sequence::iterator v_iter = 
-	vertices->begin();
-      v_iter != vertices->end();
-      ++v_iter) {
-    const PylithScalar* coordsVertex = coordsSection->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != coordsVertex);
+  err = VecGetArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
+  for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
     const PylithScalar tolerance = 1.0e-06;
-    for (int iDim=0; iDim < spaceDim; ++iDim)
+    PetscInt           dof, off;
+
+    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+    for (PetscInt d = 0; d < spaceDim; ++d, ++i)
       if (data.vertices[i] < 1.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], coordsVertex[iDim],
-				   tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i], coords[off+d], tolerance);
       else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/data.vertices[i++],
-				   tolerance);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coords[off+d]/data.vertices[i], tolerance);
   } // for
+  err = VecRestoreArray(coordinates, &coords);CHECK_PETSC_ERROR(err);
 
   // check cells
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
-  CPPUNIT_ASSERT(!sieve.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& cells = sieveMesh->heightStratum(0);
-  CPPUNIT_ASSERT(!cells.isNull());
+  PetscInt cStart, cEnd;
 
-  const int numCells = cells->size();
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  const PetscInt numCells = cEnd-cStart;
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
+  for (PetscInt c = cStart, cell = 0, i = 0; c < cEnd; ++c, ++cell) {
+    const PetscInt *cone;
+    PetscInt        coneSize;
 
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  int iCell = 0;
-  i = 0;
-  //sieveMesh->view(data.filename);
-  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter) {
-    const int numCorners = sieveMesh->getNumCellCorners(*c_iter);
-    CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
-    sieve->cone(*c_iter, pV);
-    const SieveMesh::point_type *cone = pV.getPoints();
-    for(int p = 0; p < pV.getSize(); ++p, ++i) {
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(data.numCorners[cell], coneSize);
+    for (PetscInt p = 0; p < coneSize; ++p, ++i) {
       CPPUNIT_ASSERT_EQUAL(data.cells[i], cone[p]);
     }
-    pV.clear();
   } // for
 
   // check materials
-  const ALE::Obj<SieveMesh::label_type>& labelMaterials = 
-    sieveMesh->getLabel("material-id");
-  CPPUNIT_ASSERT(!labelMaterials.isNull());
-  const int idDefault = -999;
-  const int size = numCells;
-  int_array materialIds(size);
-  i = 0;
-  for(SieveMesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
-      ++c_iter)
-    materialIds[i++] = sieveMesh->getValue(labelMaterials, *c_iter, idDefault);
-  
-  for (int iCell=0; iCell < numCells; ++iCell)
-    CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
+  DMLabel labelMaterials;
+
+  err = DMPlexGetLabel(dmMesh, "material-id", &labelMaterials);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(labelMaterials);
+  const PetscInt idDefault = -999;
+  for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
+    PetscInt value;
+
+    err = DMLabelGetValue(labelMaterials, c, &value);CHECK_PETSC_ERROR(err);
+    if (value == -1) value = idDefault;
+    CPPUNIT_ASSERT_EQUAL(data.materialIds[cell], value);
+  }  
 
   // Check groups
-  const ALE::Obj<std::set<std::string> >& groupNames = 
-    sieveMesh->getIntSections();
-  CPPUNIT_ASSERT(!groupNames.isNull());
-  int iGroup = 0;
-  int index = 0;
-  for (std::set<std::string>::const_iterator name=groupNames->begin();
-       name != groupNames->end();
-       ++name, ++iGroup) {
-    const ALE::Obj<topology::Mesh::IntSection>& groupField = 
-      sieveMesh->getIntSection(*name);
-    CPPUNIT_ASSERT(!groupField.isNull());
-    const topology::Mesh::IntSection::chart_type& chart = groupField->getChart();
-    SieveMesh::point_type firstPoint;
-    for(topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) {firstPoint = *c_iter; break;}
-    }
-    std::string groupType = 
-      (sieveMesh->height(firstPoint) == 0) ? "cell" : "vertex";
-    const int numPoints = groupField->size();
-    int_array points(numPoints);
-    int i = 0;
-    for(topology::Mesh::IntSection::chart_type::const_iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
-      if (groupField->getFiberDimension(*c_iter)) points[i++] = *c_iter;
-    }
+  PetscInt numLabels;
 
-    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
-    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
-    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
-    for (int i=0; i < numPoints; ++i)
-      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
+  err = DMPlexGetNumLabels(dmMesh, &numLabels);CHECK_PETSC_ERROR(err);
+  for (PetscInt l = 0, i = 0, index = 0; l < numLabels; ++l) {
+    DMLabel         label;
+    IS              is;
+    const PetscInt *points;
+    PetscInt        numPoints, depth;
+    const char     *name;
+    std::string     skipA = "depth";
+    std::string     skipB = "material-id";
+
+    err = DMPlexGetLabelName(dmMesh, l, &name);CHECK_PETSC_ERROR(err);
+    if (std::string(name) == skipA) continue;
+    if (std::string(name) == skipB) continue;
+    err = DMPlexGetLabel(dmMesh, name, &label);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT(label);
+    err = DMLabelGetStratumIS(label, 1, &is);CHECK_PETSC_ERROR(err);
+    err = ISGetLocalSize(is, &numPoints);CHECK_PETSC_ERROR(err);
+    err = ISGetIndices(is, &points);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetLabelValue(dmMesh, "depth", points[0], &depth);CHECK_PETSC_ERROR(err);
+    std::string groupType = depth ? "cell" : "vertex";
+
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[i]), std::string(name));
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[i]), groupType);
+    CPPUNIT_ASSERT_EQUAL(data.groupSizes[i], numPoints);
+    for (PetscInt p = 0; p < numPoints; ++p, ++index)
+      CPPUNIT_ASSERT_EQUAL(data.groups[index], points[p]);
+    err = ISRestoreIndices(is, &points);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&is);CHECK_PETSC_ERROR(err);
+    ++i;
   } // for
 } // _testAdjustTopology
 

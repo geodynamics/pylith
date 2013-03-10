@@ -35,19 +35,19 @@
  *
  * After adding cohesive elements
  *
- * Cells are 0-1, 8, vertices are 2-7.
+ * Cells are 0-1, 2, vertices are 3-8,9-10.
  *
- *              6 -8- 3
+ *              7 -9- 4
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
  *          /   |     |   \
- *         2    |     |    5
+ *         3    |     |    6
  *          \   |     |   /
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              7 -9- 4
+ *              8-10- 5
  */
 
 #include "CohesiveDataTri3Lagrange.hh"
@@ -78,9 +78,9 @@ const int pylith::faults::CohesiveDataTri3Lagrange::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_cells[] = {
-  2,  7,  6,
-  3,  4,  5,
-  3,  4,  6,  7,  8,  9
+  3,  8,  7,
+  4,  5,  6,
+  4,  5,  7,  8,  9,  10
 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_materialIds[] = {
@@ -91,15 +91,15 @@ const int pylith::faults::CohesiveDataTri3Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataTri3Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_groupSizes[] = 
-  { 6, 5 };
+  { 5, 6 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_groups[] = {
-  3, 4, 6, 7, 8, 9,
-  3, 4, 5, 6, 7
+  4, 5, 6, 7, 8,
+  4, 5, 7, 8, 9, 10
 };
 
 const char* pylith::faults::CohesiveDataTri3Lagrange::_groupNames[] = {
-  "fault", "output"
+  "output", "fault"
 };
 
 const char* pylith::faults::CohesiveDataTri3Lagrange::_groupTypes[] = {
