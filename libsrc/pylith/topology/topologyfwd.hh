@@ -55,6 +55,7 @@ namespace pylith {
     class Mesh;
     class SubMesh;
     class MeshOps;
+    template<typename mesh_type> class Coordinates;
 
     class FieldBase;
     template<typename mesh_type> class Field;

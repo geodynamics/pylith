@@ -20,6 +20,8 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	Coordinates.hh \
+	Coordinates.icc \
 	Distributor.hh \
 	FieldBase.hh \
 	Field.hh \
