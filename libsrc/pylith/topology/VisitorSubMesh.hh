@@ -17,22 +17,22 @@
 //
 
 /**
- * @file libsrc/topology/SubMeshVisitor.hh
+ * @file libsrc/topology/VisitorSubMesh.hh
  *
- * @brief C++ helper class for accessing field values at points in a
- * submesh within a finite-element mesh.
+ * @brief C++ helper class for accessing field and matrix values at
+ * points in a submesh within a finite-element mesh.
  *
  * This visitor is used to access values associated with a submesh
- * when the field is defined over the entire mesh. This is why a
- * submesh and index set are passed to the constructor.
+ * when the field or matrix is defined over the entire mesh. This is
+ * why a submesh and index set are passed to the constructor.
  *
- * Use the PointVisitorMesh object when the field and mesh/submesh are
- * defined over the same set of points (i.e., field over a submesh or field
- * of a mesh).
+ * Use the Vec/MatVisitorMesh objects when the field and mesh/submesh
+ * are defined over the same set of points (i.e., field over a submesh
+ * or field of a mesh).
  */
 
-#if !defined(pylith_topology_submeshvisitor_hh)
-#define pylith_topology_submeshvisitor_hh
+#if !defined(pylith_topology_visitorsubmesh_hh)
+#define pylith_topology_visitorsubmesh_hh
 
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
@@ -41,13 +41,13 @@
 
 #include <petscdmmesh.hh>
 
-// SubMeshVisitor -------------------------------------------------------
+// VecVisitorSubMesh -------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-class pylith::topology::SubMeshVisitor
-{ // SubMeshVisitor
-  friend class TestSubMeshVisitor; // unit testing
+class pylith::topology::VecVisitorSubMesh
+{ // VecVisitorSubMesh
+  friend class TestVecVisitorSubMesh; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -57,11 +57,11 @@ public :
    * @param field Field associated with visitor.
    * @param submeshIS Submesh index set associated with visitor.
    */
-  SubMeshVisitor(const Field<Mesh>& field,
-		 const SubMeshIS& submeshIS);
+  VecVisitorSubMesh(const Field<Mesh>& field,
+		    const SubMeshIS& submeshIS);
 
   /// Default destructor
-  ~SubMeshVisitor(void);
+  ~VecVisitorSubMesh(void);
 
   /* Initialize cached data.
    *
@@ -141,7 +141,7 @@ private :
 
   const Field<Mesh>& _field;
 
-  PetscDM _dm; ///< Cached PETSc dm for mesh.
+  PetscDM _dm; ///< Cached PETSc dm for submesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc subsection.
   PetscScalar* _localArray; ///< Cached local array
@@ -149,11 +149,90 @@ private :
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  SubMeshVisitor(const SubMeshVisitor&); ///< Not implemented
-  const SubMeshVisitor& operator=(const SubMeshVisitor&); ///< Not implemented
+  VecVisitorSubMesh(const VecVisitorSubMesh&); ///< Not implemented
+  const VecVisitorSubMesh& operator=(const VecVisitorSubMesh&); ///< Not implemented
 
-}; // SubMeshVisitor
+}; // VecVisitorSubMesh
 
+
+// MatVisitorSubMesh -------------------------------------------------------
+/** @brief Helper class for accessing field values at points in a
+ *  finite-element mesh.
+ */
+class pylith::topology::MatVisitorSubMesh
+{ // MatVisitorSubMesh
+  friend class TestMatVisitorSubMesh; // unit testing
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
+public :
+
+  /** Default constructor.
+   *
+   * @param mat PETSc matrix.
+   * @param field Field associated with visitor.
+   * @param submeshIS Submesh index set associated with visitor.
+   */
+  MatVisitorSubMesh(const PetscMat mat,
+		    const Field<Mesh>& field,
+		    const SubMeshIS& submeshIS);
+
+  /// Default destructor
+  ~MatVisitorSubMesh(void);
+
+  // Initialize.
+  void initialize(void);
+
+  /// Clear cached data.
+  void clear(void);
+  
+  /** Get array of values associated with closure.
+   *
+   * @param valuesCell Array of values for cell.
+   * @param valuesSize Size of values array.
+   * @param cell Finite-element cell.
+   */
+  void getClosure(PetscScalar** valuesCell,
+		  PetscInt* valuesSize,
+		  const PetscInt cell) const;
+
+  /** Restore array of values associated with closure.
+   *
+   * @param valuesCell Array of values for cell.
+   * @param valuesSize Size of values array.
+   * @param cell Finite-element cell.
+   */
+  void restoreClosure(PetscScalar** valuesCell,
+		      PetscInt* valuesSize,
+		      const PetscInt cell) const;
+
+  /** Set values associated with closure.
+   *
+   * @param valuesCell Array of values for cell.
+   * @param valuesSize Size of values array.
+   * @param cell Finite-element cell.
+   * @param mode Mode for inserting values.
+   */
+  void setClosure(const PetscScalar* valuesCell,
+		  const PetscInt valuesSize,
+		  const PetscInt cell,
+		  const InsertMode mode) const;
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  const PetscMat _mat; ///< Cached PETSc matrix.
+  PetscDM _dm; ///< Cached PETSc dm for mesh.
+  PetscSection _subsection; ///< Cached PETSc section for submesh.
+  PetscSection _globalSection; ///< Cached PETSc global section.
+  PetscSection _globalSubsection; ///< Cached PETSc subsection.
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
+private :
+
+  MatVisitorSubMesh(const MatVisitorSubMesh&); ///< Not implemented
+  const MatVisitorSubMesh& operator=(const MatVisitorSubMesh&); ///< Not implemented
+
+}; // MatVisitorSubMesh
 
 // SubMeshIS ------------------------------------------------------------
 /// Index set associated with submesh.
@@ -197,9 +276,9 @@ private :
 }; // SubMeshIS
 
 
-#include "SubMeshVisitor.icc"
+#include "VisitorSubMesh.icc"
 
-#endif // pylith_topology_submeshvisitor_hh
+#endif // pylith_topology_visitorsubmesh_hh
 
 
 // End of file

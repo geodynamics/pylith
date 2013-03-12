@@ -16,8 +16,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_submeshvisitor_hh)
-#error "SubMeshVisitor.icc must be included only from SubMeshVisitor.hh"
+#if !defined(pylith_topology_vecvisitorsubmesh_hh)
+#error "VecVisitorSubMesh.icc must be included only from VecVisitorSubMesh.hh"
 #else
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
@@ -25,8 +25,8 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 inline
-pylith::topology::SubMeshVisitor::SubMeshVisitor(const Field<Mesh>& field,
-						 const SubMeshIS& submeshIS) :
+pylith::topology::VecVisitorSubMesh::VecVisitorSubMesh(const Field<Mesh>& field,
+						       const SubMeshIS& submeshIS) :
   _field(field),
   _dm(NULL),
   _section(NULL),
@@ -39,7 +39,7 @@ pylith::topology::SubMeshVisitor::SubMeshVisitor(const Field<Mesh>& field,
 // ----------------------------------------------------------------------
 // Default destructor
 inline
-pylith::topology::SubMeshVisitor::~SubMeshVisitor(void)
+pylith::topology::VecVisitorSubMesh::~VecVisitorSubMesh(void)
 { // destructor
   clear();
 } // destructor
@@ -48,7 +48,7 @@ pylith::topology::SubMeshVisitor::~SubMeshVisitor(void)
 // Initialized cached data members.
 inline
 void
-pylith::topology::SubMeshVisitor::initialize(const SubMeshIS& submeshIS)
+pylith::topology::VecVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
 { // initialize
   _dm = submeshIS.submesh().dmMesh();assert(_dm);
 
@@ -62,10 +62,10 @@ pylith::topology::SubMeshVisitor::initialize(const SubMeshIS& submeshIS)
 } // initialize
 
 // ----------------------------------------------------------------------
-// Default destructor
+// Clear cached data members.
 inline
 void
-pylith::topology::SubMeshVisitor::clear(void)
+pylith::topology::VecVisitorSubMesh::clear(void)
 { // clear
   assert(_localVec);
   PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
@@ -80,7 +80,7 @@ pylith::topology::SubMeshVisitor::clear(void)
 // Get the local coordinates array associated with the local PETSc Vec.
 inline
 PetscScalar*
-pylith::topology::SubMeshVisitor::localArray(void) const
+pylith::topology::VecVisitorSubMesh::localArray(void) const
 { // localArray
   return _localArray;
 } // localArray
@@ -89,7 +89,7 @@ pylith::topology::SubMeshVisitor::localArray(void) const
 // Get fiber dimension of coordinates for point.
 inline
 PetscInt
-pylith::topology::SubMeshVisitor::sectionDof(const PetscInt point) const
+pylith::topology::VecVisitorSubMesh::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
@@ -101,7 +101,7 @@ pylith::topology::SubMeshVisitor::sectionDof(const PetscInt point) const
 // Get offset into coordinates array for point.
 inline
 PetscInt
-pylith::topology::SubMeshVisitor::sectionOffset(const PetscInt point) const
+pylith::topology::VecVisitorSubMesh::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
@@ -111,10 +111,11 @@ pylith::topology::SubMeshVisitor::sectionOffset(const PetscInt point) const
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
+inline
 void
-pylith::topology::SubMeshVisitor::getClosure(PetscScalar** valuesCell,
-					     PetscInt* valuesSize,
-					     const PetscInt cell) const
+pylith::topology::VecVisitorSubMesh::getClosure(PetscScalar** valuesCell,
+						PetscInt* valuesSize,
+						const PetscInt cell) const
 { // getClosure
   assert(_dm);
   assert(_section);
@@ -124,10 +125,11 @@ pylith::topology::SubMeshVisitor::getClosure(PetscScalar** valuesCell,
 
 // ----------------------------------------------------------------------
 // Restore coordinates array associated with closure.
+inline
 void
-pylith::topology::SubMeshVisitor::restoreClosure(PetscScalar** valuesCell,
-						 PetscInt* valuesSize,
-						 const PetscInt cell) const
+pylith::topology::VecVisitorSubMesh::restoreClosure(PetscScalar** valuesCell,
+						    PetscInt* valuesSize,
+						    const PetscInt cell) const
 { // restoreClosure
   assert(_dm);
   assert(_section);
@@ -137,11 +139,12 @@ pylith::topology::SubMeshVisitor::restoreClosure(PetscScalar** valuesCell,
 
 // ----------------------------------------------------------------------
 // Set values associated with closure.
+inline
 void
-pylith::topology::SubMeshVisitor::setClosure(const PetscScalar* valuesCell,
-					     const PetscInt valuesSize,
-					     const PetscInt cell,
-					     const InsertMode mode) const
+pylith::topology::VecVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
+						const PetscInt valuesSize,
+						const PetscInt cell,
+						const InsertMode mode) const
 { // setClosure
   assert(_dm);
   assert(_section);
@@ -151,6 +154,112 @@ pylith::topology::SubMeshVisitor::setClosure(const PetscScalar* valuesCell,
 
 // ----------------------------------------------------------------------
 // Default constructor.
+inline
+pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
+						       const Field<Mesh>& field,
+						       const SubMeshIS& submeshIS) :
+  _mat(mat),
+  _dm(NULL),
+  _section(NULL),
+  _globalSection(NULL),
+  _globalSubsection(NULL)
+{ // constructor
+  _dm = submeshIS.submesh().dmMesh();assert(_dm);
+  _section = field.petscSection();assert(_section);
+
+  PetscIS subpointIS = submeshIS.indexSet();
+  PetscSF sf = NULL;
+  PetscSection section = NULL;
+
+  PetscErrorCode err;
+  err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);CHECK_PETSC_ERROR(err);assert(_subsection);
+  err = DMGetPointSF(_dm, &sf);CHECK_PETSC_ERROR(err);assert(sf);
+  err = PetscSectionCreateGlobalSection(section, sf, PETSC_FALSE, &_globalSection);CHECK_PETSC_ERROR(err);assert(_globalSection);
+  err = PetscSectionCreateSubmeshSection(_globalSection, subpointIS, &_globalSubsection);CHECK_PETSC_ERROR(err);assert(_globalSubsection);
+
+  initialize();
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default destructor
+inline
+pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
+{ // destructor
+  clear();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Initialized cached data members.
+inline
+void
+pylith::topology::MatVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
+{ // initialize
+} // initialize
+
+// ----------------------------------------------------------------------
+// Default destructor
+inline
+void
+pylith::topology::MatVisitorSubMesh::clear(void)
+{ // clear
+} // clear
+
+// ----------------------------------------------------------------------
+// Get coordinates array associated with closure.
+inline
+void
+pylith::topology::MatVisitorSubMesh::getClosure(PetscScalar** valuesCell,
+					     PetscInt* valuesSize,
+					     const PetscInt cell) const
+{ // getClosure
+  assert(_dm);
+  assert(_subsection);
+  assert(_globalSection);
+  assert(_globalSubsection);
+#if 0 // NOT IMPLEMENTED
+  PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
+#else
+  assert(false);
+#endif
+} // getClosure
+
+// ----------------------------------------------------------------------
+// Restore coordinates array associated with closure.
+inline
+void
+pylith::topology::MatVisitorSubMesh::restoreClosure(PetscScalar** valuesCell,
+						    PetscInt* valuesSize,
+						    const PetscInt cell) const
+{ // restoreClosure
+  assert(_dm);
+  assert(_subsection);
+  assert(_globalSection);
+  assert(_globalSubsection);
+#if 0 // NOT IMPLEMENTED
+  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
+#else
+  assert(false);
+#endif
+} // restoreClosure
+
+// ----------------------------------------------------------------------
+// Set values associated with closure.
+inline
+void
+pylith::topology::MatVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
+						const PetscInt valuesSize,
+						const PetscInt cell,
+						const InsertMode mode) const
+{ // setClosure
+  assert(_dm);
+  assert(_section);
+  assert(_localVec);
+  err = DMPlexMatSetClosure(_dm, _subsection, _globalSubsection, _mat, cell, valuesCell, ADD_VALUES);CHECK_PETSC_ERROR(err);
+} // setClosure
+
+// ----------------------------------------------------------------------
+// Default constructor.
+inline
 pylith::topology::SubMeshIS::SubMeshIS(const SubMesh& submesh) :
   _submesh(submesh),
   _indexSet(NULL)
@@ -161,6 +270,7 @@ pylith::topology::SubMeshIS::SubMeshIS(const SubMesh& submesh) :
 
 // ----------------------------------------------------------------------
 // Default destructor.
+inline
 pylith::topology::SubMeshIS::~SubMeshIS(void)
 { // destructor
   deallocate();
@@ -168,6 +278,7 @@ pylith::topology::SubMeshIS::~SubMeshIS(void)
 
 // ----------------------------------------------------------------------
 // Deallocate.
+inline
 void
 pylith::topology::SubMeshIS::deallocate(void)
 { // deallocate
@@ -176,6 +287,7 @@ pylith::topology::SubMeshIS::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Get the submesh.
+inline
 const pylith::topology::SubMesh&
 pylith::topology::SubMeshIS::submesh(void) const
 { // submesh
@@ -184,6 +296,7 @@ pylith::topology::SubMeshIS::submesh(void) const
 
 // ----------------------------------------------------------------------
 // Get PETSc index set.
+inline
 PetscIS
 pylith::topology::SubMeshIS::indexSet(void) const
 { // indexSet

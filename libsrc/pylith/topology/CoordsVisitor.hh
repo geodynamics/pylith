@@ -42,7 +42,10 @@ class pylith::topology::CoordsVisitor
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
-  /// Default constructor (includes initialization).
+  /** Default constructor (includes initialization).
+   *
+   * @param dmMesh PETSc DM for finite-element mesh.
+   */
   CoordsVisitor(const PetscDM& dmMesh);
 
   /// Default destructor

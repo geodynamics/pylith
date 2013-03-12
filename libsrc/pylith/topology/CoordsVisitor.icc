@@ -32,10 +32,7 @@ pylith::topology::CoordsVisitor::CoordsVisitor(const PetscDM& dmMesh) :
   _localArray(NULL)
 { // constructor
   assert(_dm);
-  PetscErrorCode err;
-  err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);assert(_section);
-  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);assert(_localVec);
-  err = VecGetArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(_localArray);
+  initialize();
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -43,6 +40,27 @@ pylith::topology::CoordsVisitor::CoordsVisitor(const PetscDM& dmMesh) :
 inline
 pylith::topology::CoordsVisitor::~CoordsVisitor(void)
 { // destructor
+  clear();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Initialize cached data.
+inline
+void
+pylith::topology::CoordsVisitor::initialize(void)
+{ // initialize
+  assert(_dm);
+  PetscErrorCode err;
+  err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);assert(_section);
+  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);assert(_localVec);
+  err = VecGetArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(_localArray);
+} // initialize
+
+// ----------------------------------------------------------------------
+// Clear cached data.
+void
+pylith::topology::CoordsVisitor::clear(void)
+{ // clear
   if (_localArray) {
     assert(_localVec);
     PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
@@ -50,7 +68,7 @@ pylith::topology::CoordsVisitor::~CoordsVisitor(void)
 
   _localVec = NULL;
   _section = NULL;
-} // destructor
+} // clear
 
 // ----------------------------------------------------------------------
 // Get the local coordinates array associated with the local PETSc Vec.
@@ -87,6 +105,7 @@ pylith::topology::CoordsVisitor::sectionOffset(const PetscInt point) const
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
+inline
 void
 pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
 					    PetscInt* coordsSize,
@@ -100,6 +119,7 @@ pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
 
 // ----------------------------------------------------------------------
 // Restore coordinates array associated with closure.
+inline
 void
 pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
 						PetscInt* coordsSize,
