@@ -37,7 +37,6 @@
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-template<typename field_type>
 class pylith::topology::MeshVisitor
 { // MeshVisitor
   friend class TestMeshVisitor; // unit testing
@@ -45,14 +44,27 @@ class pylith::topology::MeshVisitor
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  MeshVisitor(const field_type& field);
+  /** Constructor with field over a mesh.
+   *
+   * @param field Field over a mesh.
+   */
+  MeshVisitor(const Field<Mesh>& field);
+
+  /** Constructor with field over a submesh.
+   *
+   * @param field Field over a submesh.
+   */
+  MeshVisitor(const Field<SubMesh>& field);
 
   /// Default destructor
   ~MeshVisitor(void);
 
-  /// Initialize cached data.
-  void initialize(void);
+  /** Initialize using field over a mesh or submesh.
+   *
+   * @param field Field over a mesh/submesh.
+   */
+  template<typename field_type>
+  void initialize(const field_type& field);
 
   /// Clear cached data.
   void clear(void);
@@ -127,8 +139,6 @@ public :
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
-
-  const field_type& _field;
 
   PetscDM _dm; ///< Cached PETSc dm for mesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.

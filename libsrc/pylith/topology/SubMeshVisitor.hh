@@ -45,7 +45,6 @@
 /** @brief Helper class for accessing field values at points in a
  *  finite-element mesh.
  */
-template<typename field_type>
 class pylith::topology::SubMeshVisitor
 { // SubMeshVisitor
   friend class TestSubMeshVisitor; // unit testing
@@ -58,7 +57,7 @@ public :
    * @param field Field associated with visitor.
    * @param submeshIS Submesh index set associated with visitor.
    */
-  SubMeshVisitor(const field_type& field,
+  SubMeshVisitor(const Field<Mesh>& field,
 		 const SubMeshIS& submeshIS);
 
   /// Default destructor
@@ -140,7 +139,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  const field_type& _field;
+  const Field<Mesh>& _field;
 
   PetscDM _dm; ///< Cached PETSc dm for mesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
