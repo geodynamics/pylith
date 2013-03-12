@@ -35,7 +35,6 @@
 // CoordsVisitor ----------------------------------------------------------
 /** @brief Helper class for accessing coordinates in a finite-element mesh.
  */
-template<typename mesh_type>
 class pylith::topology::CoordsVisitor
 { // CoordsVisitor
   friend class TestCoordsVisitor; // unit testing
@@ -44,7 +43,7 @@ class pylith::topology::CoordsVisitor
 public :
 
   /// Default constructor (includes initialization).
-  CoordsVisitor(const mesh_type& mesh);
+  CoordsVisitor(const PetscDM& dmMesh);
 
   /// Default destructor
   ~CoordsVisitor(void);
@@ -98,9 +97,7 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  const mesh_type& _mesh;
-
-  PetscDM _dm; ///< Cached PETSc dm for mesh.
+  const PetscDM _dm; ///< Cached PETSc dm for mesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc section.
   PetscScalar* _localArray; ///< Cached local array.

@@ -24,15 +24,14 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename mesh_type>
 inline
-pylith::topology::CoordsVisitor<mesh_type>::CoordsVisitor(const mesh_type& mesh) :
-  _mesh(mesh),
+pylith::topology::CoordsVisitor::CoordsVisitor(const PetscDM& dmMesh) :
+  _dm(dmMesh),
   _section(NULL),
   _localVec(NULL),
   _localArray(NULL)
 { // constructor
-  _dm = mesh.dmMesh();assert(_dm);
+  assert(_dm);
   PetscErrorCode err;
   err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);assert(_section);
   err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);assert(_localVec);
@@ -41,9 +40,8 @@ pylith::topology::CoordsVisitor<mesh_type>::CoordsVisitor(const mesh_type& mesh)
 
 // ----------------------------------------------------------------------
 // Default destructor
-template<typename mesh_type>
 inline
-pylith::topology::CoordsVisitor<mesh_type>::~CoordsVisitor(void)
+pylith::topology::CoordsVisitor::~CoordsVisitor(void)
 { // destructor
   if (_localArray) {
     assert(_localVec);
@@ -56,20 +54,18 @@ pylith::topology::CoordsVisitor<mesh_type>::~CoordsVisitor(void)
 
 // ----------------------------------------------------------------------
 // Get the local coordinates array associated with the local PETSc Vec.
-template<typename mesh_type>
 inline
 PetscScalar*
-pylith::topology::CoordsVisitor<mesh_type>::localArray(void) const
+pylith::topology::CoordsVisitor::localArray(void) const
 { // localArray
   return _localArray;
 } // localArray
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of coordinates for point.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::CoordsVisitor<mesh_type>::sectionDof(const PetscInt point) const
+pylith::topology::CoordsVisitor::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
@@ -79,10 +75,9 @@ pylith::topology::CoordsVisitor<mesh_type>::sectionDof(const PetscInt point) con
 
 // ----------------------------------------------------------------------
 // Get offset into coordinates array for point.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::CoordsVisitor<mesh_type>::sectionOffset(const PetscInt point) const
+pylith::topology::CoordsVisitor::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
@@ -92,11 +87,10 @@ pylith::topology::CoordsVisitor<mesh_type>::sectionOffset(const PetscInt point) 
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
-template<typename mesh_type>
 void
-pylith::topology::CoordsVisitor<mesh_type>::getClosure(PetscScalar** coordsCell,
-						       PetscInt* coordsSize,
-						       const PetscInt cell) const
+pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
+					    PetscInt* coordsSize,
+					    const PetscInt cell) const
 { // getClosure
   assert(_dm);
   assert(_section);
@@ -105,17 +99,11 @@ pylith::topology::CoordsVisitor<mesh_type>::getClosure(PetscScalar** coordsCell,
 } // getClosure
 
 // ----------------------------------------------------------------------
-  /** Restore coordinates array associated with closure.
-   *
-   * @param coordsCell Array of coordinates for cell.
-   * @param coordsSize Size of coordinates array.
-   * @param cell Finite-element cell.
-   */
-template<typename mesh_type>
+// Restore coordinates array associated with closure.
 void
-pylith::topology::CoordsVisitor<mesh_type>::restoreClosure(PetscScalar** coordsCell,
-							   PetscInt* coordsSize,
-							   const PetscInt cell) const
+pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
+						PetscInt* coordsSize,
+						const PetscInt cell) const
 { // restoreClosure
   assert(_dm);
   assert(_section);

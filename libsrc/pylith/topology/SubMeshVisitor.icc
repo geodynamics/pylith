@@ -24,10 +24,9 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename field_type>
 inline
-pylith::topology::SubMeshVisitor<field_type>::SubMeshVisitor(const field_type& field,
-							     const SubMeshIS& submeshIS) :
+pylith::topology::SubMeshVisitor::SubMeshVisitor(const Field<Mesh>& field,
+						 const SubMeshIS& submeshIS) :
   _field(field),
   _dm(NULL),
   _section(NULL),
@@ -39,19 +38,17 @@ pylith::topology::SubMeshVisitor<field_type>::SubMeshVisitor(const field_type& f
 
 // ----------------------------------------------------------------------
 // Default destructor
-template<typename field_type>
 inline
-pylith::topology::SubMeshVisitor<field_type>::~SubMeshVisitor(void)
+pylith::topology::SubMeshVisitor::~SubMeshVisitor(void)
 { // destructor
   clear();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Initialized cached data members.
-template<typename field_type>
 inline
 void
-pylith::topology::SubMeshVisitor<field_type>::initialize(const SubMeshIS& submeshIS)
+pylith::topology::SubMeshVisitor::initialize(const SubMeshIS& submeshIS)
 { // initialize
   _dm = submeshIS.submesh().dmMesh();assert(_dm);
 
@@ -66,10 +63,9 @@ pylith::topology::SubMeshVisitor<field_type>::initialize(const SubMeshIS& submes
 
 // ----------------------------------------------------------------------
 // Default destructor
-template<typename field_type>
 inline
 void
-pylith::topology::SubMeshVisitor<field_type>::clear(void)
+pylith::topology::SubMeshVisitor::clear(void)
 { // clear
   assert(_localVec);
   PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
@@ -82,20 +78,18 @@ pylith::topology::SubMeshVisitor<field_type>::clear(void)
 
 // ----------------------------------------------------------------------
 // Get the local coordinates array associated with the local PETSc Vec.
-template<typename field_type>
 inline
 PetscScalar*
-pylith::topology::SubMeshVisitor<field_type>::localArray(void) const
+pylith::topology::SubMeshVisitor::localArray(void) const
 { // localArray
   return _localArray;
 } // localArray
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of coordinates for point.
-template<typename field_type>
 inline
 PetscInt
-pylith::topology::SubMeshVisitor<field_type>::sectionDof(const PetscInt point) const
+pylith::topology::SubMeshVisitor::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
@@ -105,10 +99,9 @@ pylith::topology::SubMeshVisitor<field_type>::sectionDof(const PetscInt point) c
 
 // ----------------------------------------------------------------------
 // Get offset into coordinates array for point.
-template<typename field_type>
 inline
 PetscInt
-pylith::topology::SubMeshVisitor<field_type>::sectionOffset(const PetscInt point) const
+pylith::topology::SubMeshVisitor::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
@@ -118,11 +111,10 @@ pylith::topology::SubMeshVisitor<field_type>::sectionOffset(const PetscInt point
 
 // ----------------------------------------------------------------------
 // Get coordinates array associated with closure.
-template<typename field_type>
 void
-pylith::topology::SubMeshVisitor<field_type>::getClosure(PetscScalar** valuesCell,
-							      PetscInt* valuesSize,
-							      const PetscInt cell) const
+pylith::topology::SubMeshVisitor::getClosure(PetscScalar** valuesCell,
+					     PetscInt* valuesSize,
+					     const PetscInt cell) const
 { // getClosure
   assert(_dm);
   assert(_section);
@@ -132,11 +124,10 @@ pylith::topology::SubMeshVisitor<field_type>::getClosure(PetscScalar** valuesCel
 
 // ----------------------------------------------------------------------
 // Restore coordinates array associated with closure.
-template<typename field_type>
 void
-pylith::topology::SubMeshVisitor<field_type>::restoreClosure(PetscScalar** valuesCell,
-								  PetscInt* valuesSize,
-								  const PetscInt cell) const
+pylith::topology::SubMeshVisitor::restoreClosure(PetscScalar** valuesCell,
+						 PetscInt* valuesSize,
+						 const PetscInt cell) const
 { // restoreClosure
   assert(_dm);
   assert(_section);
@@ -146,12 +137,11 @@ pylith::topology::SubMeshVisitor<field_type>::restoreClosure(PetscScalar** value
 
 // ----------------------------------------------------------------------
 // Set values associated with closure.
-template<typename field_type>
 void
-pylith::topology::SubMeshVisitor<field_type>::setClosure(const PetscScalar* valuesCell,
-							      const PetscInt valuesSize,
-							      const PetscInt cell,
-							      const InsertMode mode) const
+pylith::topology::SubMeshVisitor::setClosure(const PetscScalar* valuesCell,
+					     const PetscInt valuesSize,
+					     const PetscInt cell,
+					     const InsertMode mode) const
 { // setClosure
   assert(_dm);
   assert(_section);

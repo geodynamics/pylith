@@ -24,13 +24,12 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename mesh_type>
 inline
-pylith::topology::Stratum<mesh_type>::Stratum(const mesh_type& mesh,
-					      const StratumEnum stype,
-					      const int level)
+pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
+				   const StratumEnum stype,
+				   const int level)
 { // constructor
-  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  assert(dmMesh);
   PetscErrorCode err = 0;
   switch(stype) {
   case HEIGHT:
@@ -48,9 +47,8 @@ pylith::topology::Stratum<mesh_type>::Stratum(const mesh_type& mesh,
 
 // ----------------------------------------------------------------------
 // Default destructor
-template<typename mesh_type>
 inline
-pylith::topology::Stratum<mesh_type>::~Stratum(void)
+pylith::topology::Stratum::~Stratum(void)
 { // destructor
   _begin = 0;
   _end = 0;
@@ -58,30 +56,27 @@ pylith::topology::Stratum<mesh_type>::~Stratum(void)
 
 // ----------------------------------------------------------------------
 // Get starting point.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::Stratum<mesh_type>::begin(void) const
+pylith::topology::Stratum::begin(void) const
 { // begin
   return _begin;
 } // begin
 
 // ----------------------------------------------------------------------
 // Get ending point.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::Stratum<mesh_type>::end(void) const
+pylith::topology::Stratum::end(void) const
 { // end
   return _end;
 } // end
 
 // ----------------------------------------------------------------------
 // Get number of points in stratum.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::Stratum<mesh_type>::size(void) const
+pylith::topology::Stratum::size(void) const
 { // size
   return _end-_begin;
 } // size
@@ -89,34 +84,31 @@ pylith::topology::Stratum<mesh_type>::size(void) const
 
 // ----------------------------------------------------------------------
 // Default constructor.
-template<typename mesh_type>
 inline
-pylith::topology::StratumIS<mesh_type>::StratumIS(const mesh_type& mesh,
-						  const char* label,
-						  const int id)
+pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
+				       const char* label,
+				       const int id)
 { // constructor
-  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  assert(dmMesh);
   PetscErrorCode err;
   err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);CHECK_PETSC_ERROR(err);assert(_indexSet);
-  err = ISGetSize(_indexSet, &_size);CHECK_PETSC_ERROR(err);assert(size >= 0);
-  err = ISGetIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(points);
+  err = ISGetSize(_indexSet, &_size);CHECK_PETSC_ERROR(err);assert(_size >= 0);
+  err = ISGetIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(_points);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor.
-template<typename mesh_type>
 inline
-pylith::topology::StratumIS<mesh_type>::~StratumIS(void)
+pylith::topology::StratumIS::~StratumIS(void)
 { // destructor
   deallocate();
 } // destructor
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc data structures.
-template<typename mesh_type>
 inline
 void
-pylith::topology::StratumIS<mesh_type>::deallocate(void)
+pylith::topology::StratumIS::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
   err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(!_points);
@@ -125,24 +117,21 @@ pylith::topology::StratumIS<mesh_type>::deallocate(void)
 
 // ----------------------------------------------------------------------
 // Get array of points.
-template<typename mesh_type>
 inline
 const PetscInt*
-pylith::topology::StratumIS<mesh_type>::points(void) const
+pylith::topology::StratumIS::points(void) const
 { // points
   return _points;
 } // points
 
 // ----------------------------------------------------------------------
 // Get number of points in index set.
-template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::StratumIS<mesh_type>::size(void) const
+pylith::topology::StratumIS::size(void) const
 { // size
   return _size;
 } // size
-
 
 
 #endif

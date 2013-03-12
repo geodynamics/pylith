@@ -35,7 +35,6 @@
 
 // Stratum --------------------------------------------------------
 /// Height or depth stratum.
-template<typename mesh_type>
 class pylith::topology::Stratum
 { // Stratum
   friend class TestStratum; // unit testing
@@ -54,11 +53,11 @@ public :
 
   /** Default constructor.
    *
-   * @param mesh Finite-element mesh.
+   * @param dmMesh PETSc DM for finite-element mesh.
    * @param stype Type of stratum [HEIGHT, DEPTH].
    * @param level Height of depth of stratum.
    */
-  Stratum(const mesh_type& mesh,
+  Stratum(const PetscDM dmMesh,
 	  const StratumEnum stype,
 	  const int level);
 
@@ -94,7 +93,6 @@ private :
 
 // StratumIS ------------------------------------------------------------
 /// Index set associated with stratum (usually over label of points).
-template<typename mesh_type>
 class pylith::topology::StratumIS
 { // StratumIS
   friend class TestStratumIS; // unit testing
@@ -104,11 +102,11 @@ public :
 
   /** Default constructor.
    *
-   * @param mesh Finite-element mesh.
+   * @param dmMesh PETSc DM for finite-element mesh.
    * @param label Label for stratum.
    * @param id Value of label defining stratum.
    */
-  StratumIS(const mesh_type& mesh,
+  StratumIS(const PetscDM dmMesh,
 	    const char* label,
 	    const int id);
 

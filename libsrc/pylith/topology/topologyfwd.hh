@@ -55,12 +55,12 @@ namespace pylith {
     class Mesh;
     class SubMesh;
     class MeshOps;
-    template<typename mesh_type> class CoordsVisitor;
-    template<typename mesh_type> class MeshVisitor;
-    template<typename mesh_type> class SubMeshVisitor;
+    class CoordsVisitor;
+    class MeshVisitor;
+    class SubMeshVisitor;
     class SubMeshIS;
-    template<typename mesh_type> class Stratum;
-    template<typename mesh_type> class StratumIS;
+    class Stratum;
+    class StratumIS;
     
     class FieldBase;
     template<typename mesh_type> class Field;
