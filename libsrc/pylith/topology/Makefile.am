@@ -20,8 +20,8 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Coordinates.hh \
-	Coordinates.icc \
+	CoordsVisitor.hh \
+	CoordsVisitor.icc \
 	Distributor.hh \
 	FieldBase.hh \
 	Field.hh \
@@ -36,12 +36,18 @@ subpkginclude_HEADERS = \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
+	MeshVisitor.hh \
+	MeshVisitor.icc \
 	RefineUniform.hh \
 	ReverseCuthillMcKee.hh \
 	SolutionFields.hh \
+	Stratum.hh \
+	Stratum.icc \
 	SubMesh.hh \
 	SubMesh.icc \
 	SubMesh.cc \
+	SubMeshVisitor.hh \
+	SubMeshVisitor.icc \
 	ISectionSpaces.hh \
 	ISectionSpaces.cc \
 	topologyfwd.hh

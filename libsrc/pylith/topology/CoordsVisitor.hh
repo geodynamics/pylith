@@ -17,13 +17,13 @@
 //
 
 /**
- * @file libsrc/topology/MeshCoords.hh
+ * @file libsrc/topology/CoordsVisitor.hh
  *
  * @brief C++ helper class for accessing coordinates in a finite-element mesh.
  */
 
-#if !defined(pylith_topology_coordinates_hh)
-#define pylith_topology_coordinates_hh
+#if !defined(pylith_topology_coordsvisitor_hh)
+#define pylith_topology_coordsvisitor_hh
 
 // Include directives ---------------------------------------------------
 #include "topologyfwd.hh" // forward declarations
@@ -32,42 +32,36 @@
 
 #include <petscdmmesh.hh>
 
-// Coordinates ----------------------------------------------------------
+// CoordsVisitor ----------------------------------------------------------
 /** @brief Helper class for accessing coordinates in a finite-element mesh.
  */
 template<typename mesh_type>
-class pylith::topology::Coordinates
-{ // MeshCoords
-  friend class TestCoordinates; // unit testing
+class pylith::topology::CoordsVisitor
+{ // CoordsVisitor
+  friend class TestCoordsVisitor; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  Coordinates(const mesh_type& mesh);
+  /// Default constructor (includes initialization).
+  CoordsVisitor(const mesh_type& mesh);
 
   /// Default destructor
-  ~Coordinates(void);
+  ~CoordsVisitor(void);
+
+  /// Initialize cached data.
+  void initialize(void);
+
+  /// Clear cached data.
+  void clear(void);
 
   /** Get the local coordinates array associated with the local PETSc Vec.
    *
-   * Must call restoreLocalArray() afterwards.
-   * 
    * @returns Local array.
    */
-  PetscScalar* getLocalArray(void) const;
-
-  /** Restore local coordinates array associated with the local PETSc Vec.
-   *
-   * @preq Must be preceded by call to getLocalArray().
-   *
-   * @param a Local array.
-   */
-  void restoreLocalArray(PetscScalar** a) const;
+  PetscScalar* localArray(void) const;
 
   /** Get fiber dimension of coordinates for point.
-   *
-   * @preq Must call cacheSection().
    *
    * @param point Point in mesh.
    * @returns Fiber dimension.
@@ -75,8 +69,6 @@ public :
   PetscInt sectionDof(const PetscInt point) const;
 
   /** Get offset into coordinates array for point.
-   *
-   * @preq Must call cacheSection().
    *
    * @param point Point in mesh.
    * @returns Offset.
@@ -111,18 +103,19 @@ private :
   PetscDM _dm; ///< Cached PETSc dm for mesh.
   PetscVec _localVec; ///< Cached local PETSc Vec.
   PetscSection _section; ///< Cached PETSc section.
+  PetscScalar* _localArray; ///< Cached local array.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
-  Coordinates(const Coordinates&); ///< Not implemented
-  const Coordinates& operator=(const Coordinates&); ///< Not implemented
+  CoordsVisitor(const CoordsVisitor&); ///< Not implemented
+  const CoordsVisitor& operator=(const CoordsVisitor&); ///< Not implemented
 
-}; // Coordinates
+}; // CoordsVisitor
 
-#include "Coordinates.icc"
+#include "CoordsVisitor.icc"
 
-#endif // pylith_topology_coordinates_hh
+#endif // pylith_topology_coordsvisitor_hh
 
 
 // End of file
