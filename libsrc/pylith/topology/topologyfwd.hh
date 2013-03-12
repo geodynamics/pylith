@@ -56,8 +56,6 @@ namespace pylith {
     class SubMesh;
     class MeshOps;
     class CoordsVisitor;
-    class MeshVisitor;
-    class SubMeshVisitor;
     class SubMeshIS;
     class Stratum;
     class StratumIS;
@@ -65,10 +63,14 @@ namespace pylith {
     class FieldBase;
     template<typename mesh_type> class Field;
     template<typename field_type> class Fields;
+    class VecVisitorMesh;
+    class VecVisitorSubMesh;
 
     class SolutionFields;
 
     class Jacobian;
+    class MatVisitorMesh;
+    class MatVisitorSubMesh;
 
     class Distributor;
 
