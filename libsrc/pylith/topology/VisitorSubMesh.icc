@@ -16,8 +16,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_vecvisitorsubmesh_hh)
-#error "VecVisitorSubMesh.icc must be included only from VecVisitorSubMesh.hh"
+#if !defined(pylith_topology_visitorsubmesh_hh)
+#error "VisitorSubMesh.icc must be included only from VisitorSubMesh.hh"
 #else
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
