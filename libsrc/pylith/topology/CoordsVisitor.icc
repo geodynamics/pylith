@@ -16,8 +16,8 @@
 // ======================================================================
 //
 
-#if !defined(pylith_topology_coordinates_hh)
-#error "Mesh.icc must be included only from Coordinates.hh"
+#if !defined(pylith_topology_coordsvisitor_hh)
+#error "CoordsVisitor.icc must be included only from CoordsVisitor.hh"
 #else
 
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
@@ -26,21 +26,30 @@
 // Default constructor.
 template<typename mesh_type>
 inline
-pylith::topology::Coordinates<mesh_type>::Coordinates(const mesh_type& mesh) :
-  _mesh(mesh)
+pylith::topology::CoordsVisitor<mesh_type>::CoordsVisitor(const mesh_type& mesh) :
+  _mesh(mesh),
+  _section(NULL),
+  _localVec(NULL),
+  _localArray(NULL)
 { // constructor
   _dm = mesh.dmMesh();assert(_dm);
   PetscErrorCode err;
-  err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetCoordinateSection(_dm, &_section);CHECK_PETSC_ERROR(err);assert(_section);
+  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);assert(_localVec);
+  err = VecGetArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(_localArray);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor
 template<typename mesh_type>
 inline
-pylith::topology::Coordinates<mesh_type>::~Coordinates(void)
+pylith::topology::CoordsVisitor<mesh_type>::~CoordsVisitor(void)
 { // destructor
+  if (_localArray) {
+    assert(_localVec);
+    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
+  } // if
+
   _localVec = NULL;
   _section = NULL;
 } // destructor
@@ -50,34 +59,17 @@ pylith::topology::Coordinates<mesh_type>::~Coordinates(void)
 template<typename mesh_type>
 inline
 PetscScalar*
-pylith::topology::Coordinates<mesh_type>::getLocalArray(void) const
-{ // getLocalArray
-  assert(_dm);
-  assert(_localVec);
-
-  PetscScalar* coordsArray = NULL;
-  PetscErrorCode err;
-  err = DMGetCoordinatesLocal(_dm, &_localVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(_localVec, &coordsArray);CHECK_PETSC_ERROR(err);
-  return coordsArray;
-} // getLocalArray
-
-// ----------------------------------------------------------------------
-// Restore local coordinates array associated with the local PETSc Vec.
-template<typename mesh_type>
-inline
-void
-pylith::topology::Coordinates<mesh_type>::restoreLocalArray(PetscScalar** a) const
-{ // restoreLocalArray
-  PetscErrorCode err = VecRestoreArray(_localVec, a);CHECK_PETSC_ERROR(err);
-} // restoreLocalArray
+pylith::topology::CoordsVisitor<mesh_type>::localArray(void) const
+{ // localArray
+  return _localArray;
+} // localArray
 
 // ----------------------------------------------------------------------
 // Get fiber dimension of coordinates for point.
 template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::Coordinates<mesh_type>::sectionDof(const PetscInt point) const
+pylith::topology::CoordsVisitor<mesh_type>::sectionDof(const PetscInt point) const
 { // sectionDof
   assert(_section);
   PetscInt dof;
@@ -90,7 +82,7 @@ pylith::topology::Coordinates<mesh_type>::sectionDof(const PetscInt point) const
 template<typename mesh_type>
 inline
 PetscInt
-pylith::topology::Coordinates<mesh_type>::sectionOffset(const PetscInt point) const
+pylith::topology::CoordsVisitor<mesh_type>::sectionOffset(const PetscInt point) const
 { // sectionOffset
   assert(_section);
   PetscInt offset;
@@ -102,9 +94,9 @@ pylith::topology::Coordinates<mesh_type>::sectionOffset(const PetscInt point) co
 // Get coordinates array associated with closure.
 template<typename mesh_type>
 void
-pylith::topology::Coordinates<mesh_type>::getClosure(PetscScalar** coordsCell,
-						     PetscInt* coordsSize,
-						     const PetscInt cell) const
+pylith::topology::CoordsVisitor<mesh_type>::getClosure(PetscScalar** coordsCell,
+						       PetscInt* coordsSize,
+						       const PetscInt cell) const
 { // getClosure
   assert(_dm);
   assert(_section);
@@ -121,9 +113,9 @@ pylith::topology::Coordinates<mesh_type>::getClosure(PetscScalar** coordsCell,
    */
 template<typename mesh_type>
 void
-pylith::topology::Coordinates<mesh_type>::restoreClosure(PetscScalar** coordsCell,
-							 PetscInt* coordsSize,
-							 const PetscInt cell) const
+pylith::topology::CoordsVisitor<mesh_type>::restoreClosure(PetscScalar** coordsCell,
+							   PetscInt* coordsSize,
+							   const PetscInt cell) const
 { // restoreClosure
   assert(_dm);
   assert(_section);

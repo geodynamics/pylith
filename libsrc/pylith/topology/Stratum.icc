@@ -1,0 +1,151 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2011 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_stratum_hh)
+#error "Stratum.icc must be included only from Stratum.hh"
+#else
+
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
+
+// ----------------------------------------------------------------------
+// Default constructor.
+template<typename mesh_type>
+inline
+pylith::topology::Stratum<mesh_type>::Stratum(const mesh_type& mesh,
+					      const StratumEnum stype,
+					      const int level)
+{ // constructor
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscErrorCode err = 0;
+  switch(stype) {
+  case HEIGHT:
+    err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);CHECK_PETSC_ERROR(err);
+    break;
+  case DEPTH:
+    err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);CHECK_PETSC_ERROR(err);
+    break;
+  default:
+    assert(false);
+    throw std::logic_error("Unknown case in Stratum constructor.");
+  } // switch
+  assert(_end >= _begin);
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default destructor
+template<typename mesh_type>
+inline
+pylith::topology::Stratum<mesh_type>::~Stratum(void)
+{ // destructor
+  _begin = 0;
+  _end = 0;
+} // destructor
+
+// ----------------------------------------------------------------------
+// Get starting point.
+template<typename mesh_type>
+inline
+PetscInt
+pylith::topology::Stratum<mesh_type>::begin(void) const
+{ // begin
+  return _begin;
+} // begin
+
+// ----------------------------------------------------------------------
+// Get ending point.
+template<typename mesh_type>
+inline
+PetscInt
+pylith::topology::Stratum<mesh_type>::end(void) const
+{ // end
+  return _end;
+} // end
+
+// ----------------------------------------------------------------------
+// Get number of points in stratum.
+template<typename mesh_type>
+inline
+PetscInt
+pylith::topology::Stratum<mesh_type>::size(void) const
+{ // size
+  return _end-_begin;
+} // size
+
+
+// ----------------------------------------------------------------------
+// Default constructor.
+template<typename mesh_type>
+inline
+pylith::topology::StratumIS<mesh_type>::StratumIS(const mesh_type& mesh,
+						  const char* label,
+						  const int id)
+{ // constructor
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscErrorCode err;
+  err = DMPlexGetStratumIS(dmMesh, label, id, &_indexSet);CHECK_PETSC_ERROR(err);assert(_indexSet);
+  err = ISGetSize(_indexSet, &_size);CHECK_PETSC_ERROR(err);assert(size >= 0);
+  err = ISGetIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(points);
+} // constructor
+
+// ----------------------------------------------------------------------
+// Default destructor.
+template<typename mesh_type>
+inline
+pylith::topology::StratumIS<mesh_type>::~StratumIS(void)
+{ // destructor
+  deallocate();
+} // destructor
+
+// ----------------------------------------------------------------------
+// Deallocate PETSc data structures.
+template<typename mesh_type>
+inline
+void
+pylith::topology::StratumIS<mesh_type>::deallocate(void)
+{ // deallocate
+  PetscErrorCode err = 0;
+  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(!_points);
+  err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
+} // deallocate
+
+// ----------------------------------------------------------------------
+// Get array of points.
+template<typename mesh_type>
+inline
+const PetscInt*
+pylith::topology::StratumIS<mesh_type>::points(void) const
+{ // points
+  return _points;
+} // points
+
+// ----------------------------------------------------------------------
+// Get number of points in index set.
+template<typename mesh_type>
+inline
+PetscInt
+pylith::topology::StratumIS<mesh_type>::size(void) const
+{ // size
+  return _size;
+} // size
+
+
+
+#endif
+
+
+// End of file
