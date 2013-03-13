@@ -160,17 +160,15 @@ pylith::topology::MatVisitorSubMesh::MatVisitorSubMesh(const PetscMat mat,
 						       const SubMeshIS& submeshIS) :
   _mat(mat),
   _dm(NULL),
-  _section(NULL),
+  _subsection(NULL),
   _globalSection(NULL),
   _globalSubsection(NULL)
 { // constructor
   _dm = submeshIS.submesh().dmMesh();assert(_dm);
-  _section = field.petscSection();assert(_section);
 
   PetscIS subpointIS = submeshIS.indexSet();
+  PetscSection section = field.petscSection();assert(section);
   PetscSF sf = NULL;
-  PetscSection section = NULL;
-
   PetscErrorCode err;
   err = PetscSectionCreateSubmeshSection(section, subpointIS, &_subsection);CHECK_PETSC_ERROR(err);assert(_subsection);
   err = DMGetPointSF(_dm, &sf);CHECK_PETSC_ERROR(err);assert(sf);
@@ -192,7 +190,7 @@ pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
 // Initialized cached data members.
 inline
 void
-pylith::topology::MatVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
+pylith::topology::MatVisitorSubMesh::initialize(void)
 { // initialize
 } // initialize
 
@@ -252,9 +250,9 @@ pylith::topology::MatVisitorSubMesh::setClosure(const PetscScalar* valuesCell,
 						const InsertMode mode) const
 { // setClosure
   assert(_dm);
-  assert(_section);
-  assert(_localVec);
-  err = DMPlexMatSetClosure(_dm, _subsection, _globalSubsection, _mat, cell, valuesCell, ADD_VALUES);CHECK_PETSC_ERROR(err);
+  assert(_subsection);
+  assert(_globalSubsection);
+  PetscErrorCode err = DMPlexMatSetClosure(_dm, _subsection, _globalSubsection, _mat, cell, valuesCell, ADD_VALUES);CHECK_PETSC_ERROR(err);
 } // setClosure
 
 // ----------------------------------------------------------------------

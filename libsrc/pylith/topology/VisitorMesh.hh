@@ -170,7 +170,7 @@ public :
    * @param mat PETSc matrix.
    * @param field Field associated with matrix layout.
    */
-  MatVisitorMesh(const PetscMat& mat,
+  MatVisitorMesh(const PetscMat mat,
 		 const Field<Mesh>& field);
 
   /// Default destructor
