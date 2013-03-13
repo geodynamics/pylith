@@ -88,7 +88,7 @@ private :
   PetscInt _begin; ///< Starting point.
   PetscInt _end; ///< End point.
 
-}; // HeightStratum
+}; // Stratum
 
 
 // StratumIS ------------------------------------------------------------

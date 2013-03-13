@@ -232,11 +232,11 @@ pylith::bc::TestDirichletBC::testSetConstraints(void)
   bc.setConstraints(field);
 
   PetscSection fieldSection = field.petscSection();
-  PetscVec fieldVec     = field.localVector();
+  PetscVec fieldVec = field.localVector();
   CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
 
   const PetscInt numCells = cEnd - cStart;
-  const PetscInt offset   = numCells;
+  const PetscInt offset = numCells;
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
     const PetscInt *cInd, *fcInd;

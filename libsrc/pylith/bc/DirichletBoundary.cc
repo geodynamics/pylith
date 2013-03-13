@@ -24,6 +24,7 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -89,17 +90,21 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("BoundaryConditions");
 
-  if (0 == _outputFields)
+  if (!_outputFields) {
     _outputFields = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
+  } // if
   assert(_outputFields);
   _outputFields->add("buffer (vector)", "buffer_vector", topology::FieldBase::CELLS_FIELD, spaceDim);
-  _outputFields->get("buffer (vector)").vectorFieldType(topology::FieldBase::VECTOR);
-  _outputFields->get("buffer (vector)").scale(lengthScale);
-  _outputFields->get("buffer (vector)").allocate();
+  topology::Field<topology::SubMesh>& bufferVector = _outputFields->get("buffer (vector)");
+  bufferVector.vectorFieldType(topology::FieldBase::VECTOR);
+  bufferVector.scale(lengthScale);
+  bufferVector.allocate();
+
   _outputFields->add("buffer (scalar)", "buffer_scalar", topology::FieldBase::CELLS_FIELD, 1);
-  _outputFields->get("buffer (scalar)").vectorFieldType(topology::FieldBase::SCALAR);
-  _outputFields->get("buffer (scalar)").scale(timeScale);
-  _outputFields->get("buffer (scalar)").allocate();
+  topology::Field<topology::SubMesh>& bufferScalar = _outputFields->get("buffer (scalar)");
+  bufferScalar.vectorFieldType(topology::FieldBase::SCALAR);
+  bufferScalar.scale(timeScale);
+  bufferScalar.allocate();
 
   logger.stagePop();
 
@@ -132,11 +137,6 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
 { // _bufferVector
-  typedef topology::SubMesh::SieveMesh SieveMesh;
-  typedef topology::Mesh::RealUniformSection RealUniformSection;
-  typedef topology::SubMesh::RealSection SubRealSection;
-  typedef topology::SubMesh::RealUniformSection SubRealUniformSection;
-
   assert(_boundaryMesh);
   assert(_parameters);
   assert(_outputFields);
@@ -148,43 +148,33 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
     throw std::runtime_error(msg.str());
   } // if
   
+  assert(_outputFields->hasField("buffer (vector)"));
+  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (vector)");
+  topology::VecVisitorMesh bufferVisitor(buffer);
+  PetscScalar* bufferArray = bufferVisitor.localArray();
+
+  topology::Field<topology::Mesh>& field = _parameters->get(name);
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(cs);
   const int spaceDim = cs->spaceDim();
 
   const int numPoints = _points.size();
   const int numFixedDOF = _bcDOF.size();
-  PetscErrorCode err = 0;
-
-  assert(_outputFields->hasField("buffer (vector)"));
-  PetscSection outputSection = _outputFields->get("buffer (vector)").petscSection();assert(outputSection);
-  PetscVec outputVec = _outputFields->get("buffer (vector)").localVector();assert(outputVec);
-  PetscScalar *outputArray = NULL;
-  err = VecGetArray(outputVec, &outputArray);CHECK_PETSC_ERROR(err);
-
-  PetscSection fieldSection = _parameters->get(name).petscSection();assert(fieldSection);
-  PetscVec fieldVec = _parameters->get(name).localVector();assert(fieldVec);
-  PetscScalar *fieldArray = NULL;
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const SieveMesh::point_type point = _points[iPoint];
+    const PetscInt point = _points[iPoint];
 
-    PetscInt odof, ooff, fdof, foff;
-    err = PetscSectionGetDof(outputSection, point, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(outputSection, point, &ooff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(fieldSection, point, &fdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, point, &foff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == odof);
-    assert(fdof == numFixedDOF);
+    const PetscInt boff = bufferVisitor.sectionOffset(point);
+    const PetscInt foff = fieldVisitor.sectionOffset(point);
+    assert(spaceDim == bufferVisitor.sectionDof(point));
+    assert(numFixedDOF == fieldVisitor.sectionDof(point));
 
     for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF)
-      outputArray[ooff+_bcDOF[iDOF]] = fieldArray[foff+iDOF];
+      bufferArray[boff+_bcDOF[iDOF]] = fieldArray[foff+iDOF];
   } // for
-  err = VecRestoreArray(outputVec, &outputArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 
-  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (vector)");  
   buffer.label(label);
   buffer.scale(scale);
 
@@ -198,11 +188,6 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
 { // _bufferScalar
-  typedef topology::SubMesh::SieveMesh SieveMesh;
-  typedef topology::Mesh::RealUniformSection RealUniformSection;
-  typedef topology::SubMesh::RealSection SubRealSection;
-  typedef topology::SubMesh::RealUniformSection SubRealUniformSection;
-
   assert(_boundaryMesh);
   assert(_parameters);
   assert(_outputFields);
@@ -214,35 +199,27 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
     throw std::runtime_error(msg.str());
   } // if
   
-  const int numPoints = _points.size();
-  PetscErrorCode err = 0;
-
   assert(_outputFields->hasField("buffer (scalar)"));
-  PetscSection outputSection = _outputFields->get("buffer (scalar)").petscSection();assert(outputSection);
-  PetscVec outputVec = _outputFields->get("buffer (scalar)").localVector();assert(outputVec);
-  PetscScalar *outputArray = NULL;
-  err = VecGetArray(outputVec, &outputArray);CHECK_PETSC_ERROR(err);
-  
-  PetscSection fieldSection = _parameters->get(name).petscSection();assert(fieldSection);
-  PetscVec fieldVec = _parameters->get(name).localVector();assert(fieldVec);
-  PetscScalar *fieldArray = NULL;
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (scalar)");
+  topology::VecVisitorMesh bufferVisitor(buffer);
+  PetscScalar* bufferArray = bufferVisitor.localArray();
 
+  topology::Field<topology::Mesh>& field = _parameters->get(name);
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+
+  const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    const SieveMesh::point_type point = _points[iPoint];
+    const PetscInt point = _points[iPoint];
 
-    PetscInt odof, ooff, fdof, foff;
-    err = PetscSectionGetDof(outputSection, point, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(outputSection, point, &ooff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(fieldSection, point, &fdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, point, &foff);CHECK_PETSC_ERROR(err);
-    assert(1 == odof);
-    assert(fdof == 1);
+    const PetscInt boff = bufferVisitor.sectionOffset(point);
+    const PetscInt foff = fieldVisitor.sectionOffset(point);
+    assert(1 == bufferVisitor.sectionDof(point));
+    assert(1 == fieldVisitor.sectionDof(point));
 
-    outputArray[ooff] = fieldArray[foff];
+    bufferArray[boff] = fieldArray[foff];
   } // for
   
-  topology::Field<topology::SubMesh>& buffer = _outputFields->get("buffer (scalar)");  
   buffer.label(label);
   buffer.scale(scale);
 

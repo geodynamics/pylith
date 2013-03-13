@@ -20,6 +20,10 @@
 #error "VisitorMesh.icc must be included only from VisitorMesh.hh"
 #else
 
+#include "Mesh.hh" // USES Mesh
+#include "SubMesh.hh" // USES SubMesh
+#include "Field.hh" // USES Field
+
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------

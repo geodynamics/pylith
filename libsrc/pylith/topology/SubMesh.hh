@@ -100,7 +100,7 @@ public :
    *
    * @returns DMPlex mesh.
    */
-  DM dmMesh(void) const;
+  PetscDM dmMesh(void) const;
 
   /** Set DMPlex mesh.
    *

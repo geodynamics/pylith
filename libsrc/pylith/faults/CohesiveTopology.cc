@@ -990,7 +990,7 @@ pylith::faults::CohesiveTopology::createInterpolated(topology::Mesh* mesh,
   err = DMPlexGetLabel(dm, labelName, &label);CHECK_PETSC_ERROR(err);
   // Completes the set of cells scheduled to be replaced
   //   Have to do internal fault vertices before fault boundary vertices, and this is the only thing I use faultBoundary for
-  err = DMLabelCohesiveComplete(dm, label);CHECK_PETSC_ERROR(err);
+  err = DMPlexLabelCohesiveComplete(dm, label);CHECK_PETSC_ERROR(err);
   err = DMPlexConstructCohesiveCells(dm, label, &sdm);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(sdm);
 } // createInterpolated

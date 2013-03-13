@@ -219,9 +219,9 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 // Query database for values.
 void
 pylith::bc::TimeDependentPoints::_queryDB(const char* name,
-				 spatialdata::spatialdb::SpatialDB* const db,
-				 const int querySize,
-				 const PylithScalar scale)
+					  spatialdata::spatialdb::SpatialDB* const db,
+					  const int querySize,
+					  const PylithScalar scale)
 { // _queryDB
   assert(name);
   assert(db);
@@ -244,17 +244,14 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 
-  PetscSection parametersSection = _parameters->get(name).petscSection();assert(parametersSection);
-  PetscVec parametersVec = _parameters->get(name).localVector();assert(parametersVec);
-  PetscScalar *parametersArray = NULL;
-  err = VecGetArray(parametersVec, &parametersArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::Mesh>& parametersField = _parameters->get(name);
+  PetscScalar* parametersArray = parametersField.getLocalArray();
 
   scalar_array valueVertex(querySize);
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    PetscInt cdof, coff;
-
     // Get dimensionalized coordinates of vertex
+    PetscInt cdof, coff;
     err = PetscSectionGetDof(coordSection, _points[iPoint], &cdof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(coordSection, _points[iPoint], &coff);CHECK_PETSC_ERROR(err);
     assert(cdof == spaceDim);
@@ -274,15 +271,12 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
     _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
 
     // Update section
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(parametersSection, _points[iPoint], &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(parametersSection, _points[iPoint], &off);CHECK_PETSC_ERROR(err);
-    //assert(parametersFiberDim == dof);
+    const PetscInt off = parametersField.sectionOffset(_points[iPoint]);
+    const PetscInt dof = parametersField.sectionDof(_points[iPoint]);
     for(int i = 0; i < dof; ++i)
       parametersArray[off+i] = valueVertex[i];
   } // for
-  err = VecRestoreArray(parametersVec, &parametersArray);CHECK_PETSC_ERROR(err);
+  parametersField.restoreLocalArray(&parametersArray);
   err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 } // _queryDB
 

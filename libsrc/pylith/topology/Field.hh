@@ -203,12 +203,16 @@ public :
 
   /** Get fiber dimension for point.
    *
+   * @preq Must call cachePetscSection().
+   *
    * @param point Point in mesh.
    * @returns Fiber dimension.
    */
   PetscInt sectionDof(const PetscInt point) const;
 
   /** Get offset into array for point.
+   *
+   * @preq Must call cachePetscSection().
    *
    * @param point Point in mesh.
    * @returns Offset.
@@ -457,7 +461,7 @@ private :
 
   /// Data structures used in scattering to/from PETSc Vecs.
   struct ScatterInfo {
-    DM dm; ///< PETSc DM defining the communication pattern
+    PetscDM dm; ///< PETSc DM defining the communication pattern
     PetscVec vector; ///< PETSc vector associated with field.
     // Deprecated
     PetscVecScatter scatter; ///< PETSc scatter associated with field.
@@ -506,14 +510,16 @@ protected :
 private :
 
   map_type _metadata;
+
   /* Old construction */
   const mesh_type& _mesh; ///< Mesh associated with section.
   scatter_map_type _scatters; ///< Collection of scatters.
+
   /* New construction */
-  DM  _dm; /* Holds the PetscSection */
-  Vec _globalVec;
-  Vec _localVec;
-  std::map<std::string, int> _tmpFields;
+  PetscDM _dm; ///< Manages the PetscSection
+  PetscVec _globalVec; ///< Global PETSc vector
+  PetscVec _localVec; ///< Local PETSc vector
+  std::map<std::string, int> _tmpFields; ///< Map of fields to bundle together.
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

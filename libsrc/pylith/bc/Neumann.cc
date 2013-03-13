@@ -23,6 +23,11 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/VisitorSubMesh.hh" // USES VecVisitorSubMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -97,55 +102,48 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   scalar_array tractionsCell(numQuadPts*spaceDim);
 
   // Get cell information
-  PetscDM subMesh = _boundaryMesh->dmMesh();assert(subMesh);
-  PetscIS subpointIS;
-  PetscInt cStart, cEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(subMesh, &subpointIS);CHECK_PETSC_ERROR(err);
+  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
 
   // Get sections
   _calculateValue(t);
   topology::Field<topology::SubMesh>& valueField = _parameters->get("value");
-  
-  PetscSection residualSection = residual.petscSection();assert(residualSection);
-  PetscVec residualVec = residual.localVector();assert(residualVec);
-  PetscSection residualSubsection = NULL;
-  err = PetscSectionCreateSubmeshSection(residualSection, subpointIS, &residualSubsection);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+
+  // Get subsections
+  topology::SubMeshIS submeshIS(*_boundaryMesh);
+  topology::VecVisitorSubMesh residualVisitor(residual, submeshIS);
+  submeshIS.deallocate();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
   scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
+  topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #endif
-
-  PetscScalar* valueArray = valueField.getLocalArray();
 
   // Loop over faces and integrate contribution from each face
   for(PetscInt c = cStart; c < cEnd; ++c) {
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    PetscScalar *coords;
-    PetscInt coordsSize;
-    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for (PetscInt i=0; i < coordsSize; ++i) {
-      coordinatesCell[i] = coords[i];
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
+      coordinatesCell[i] = coordsCell[i];
     } // for
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict tractions to cell
-    const PetscInt voff = valueField.sectionOffset(c);
-    assert(numQuadPts*spaceDim == valueField.sectionDof(c));
+    const PetscInt voff = valueVisitor.sectionOffset(c);
+    assert(numQuadPts*spaceDim == valueVisitor.sectionDof(c));
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
@@ -163,10 +161,11 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
         } // for
       } // for
     } // for
-    err = DMPlexVecSetClosure(subMesh, residualSubsection, residualVec, c, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+
+    residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), c, ADD_VALUES);
+
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for
-  valueField.restoreLocalArray(&valueArray);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -390,10 +389,10 @@ pylith::bc::Neumann::_queryDB(const char* name,
   assert(_parameters);
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM subMesh = _boundaryMesh->dmMesh();assert(subMesh);
-  PetscInt cStart, cEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
 
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
@@ -406,14 +405,15 @@ pylith::bc::Neumann::_queryDB(const char* name,
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get sections.
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
-
   topology::Field<topology::SubMesh>& valueField = _parameters->get(name);
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+
+  // Get coordinates
+  scalar_array coordinatesCell(numBasis*spaceDim);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
+  topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
   const spatialdata::geocoords::CoordSys* cs = _boundaryMesh->coordsys();
   assert(cs);
@@ -426,8 +426,6 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #if defined(PRECOMPUTE_GEOMETRY)
   _quadrature->computeGeometry(*_boundaryMesh, cells);
 #endif
-  
-  PetscScalar* valueArray = valueField.getLocalArray();
 
   // Loop over cells in boundary mesh and perform queries.
   for(PetscInt c = cStart; c < cEnd; ++c) {
@@ -435,14 +433,12 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    PetscScalar *coords;
-    PetscInt coordsSize;
-    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for (PetscInt i = 0; i < coordsSize; ++i) {
-      coordinatesCell[i] = coords[i];
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    for (PetscInt i = 0; i < coordsSize; ++i) { // :TODO: Remove copy.
+      coordinatesCell[i] = coordsCell[i];
     } // for
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
     quadPtsGlobal = quadPtsNondim;
@@ -472,7 +468,6 @@ pylith::bc::Neumann::_queryDB(const char* name,
     for(PetscInt d = 0; d < vdof; ++d)
       valueArray[voff+d] = valuesCell[d];
   } // for
-  valueField.restoreLocalArray(&valueArray);
 } // _queryDB
 
 // ----------------------------------------------------------------------
@@ -490,10 +485,10 @@ void
     up[i] = upDir[i];
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM subMesh = _boundaryMesh->dmMesh();assert(subMesh);
-  PetscInt cStart, cEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
 
   // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -511,29 +506,26 @@ void
   PylithScalar jacobianDet = 0;
   scalar_array orientation(orientationSize);
 
-  // Get sections.
+  // Get coordinates.
   scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  err = DMPlexGetCoordinateSection(subMesh, &coordSection);CHECK_PETSC_ERROR(err);assert(coordSection);
-  err = DMGetCoordinatesLocal(subMesh, &coordVec);CHECK_PETSC_ERROR(err);assert(coordVec);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
+  topology::CoordsVisitor coordsVisitor(dmSubMesh);
 
-  scalar_array parametersCellLocal(spaceDim);
-
-  topology::Field<topology::SubMesh>& valueField = _parameters->get("value");
-  PetscScalar* valueArray = valueField.getLocalArray();
-
+  // Get sections
+  scalar_array tmpLocal(spaceDim);
+  
   topology::Field<topology::SubMesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
-  topology::Field<topology::SubMesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
-  topology::Field<topology::SubMesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
-  topology::Field<topology::SubMesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
-  topology::Field<topology::SubMesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
+  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  PetscScalar* initialArray = (_dbInitial) ? initialField->getLocalArray() : NULL;
-  PetscScalar* rateArray = (_dbRate) ? rateField->getLocalArray() : NULL;
-  PetscScalar* rateTimeArray = (_dbRate) ? rateTimeField->getLocalArray() : NULL;
-  PetscScalar* changeArray = (_dbChange) ? changeField->getLocalArray() : NULL;
-  PetscScalar* changeTimeArray = (_dbChange) ? changeTimeField->getLocalArray() : NULL;
+  topology::Field<topology::SubMesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
+  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
+  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
 
   // Loop over cells in boundary mesh, compute orientations, and then
   // rotate corresponding traction vector from local to global coordinates.
@@ -542,14 +534,12 @@ void
 #if defined(PRECOMPUTE_GEOMETRY)
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
-    PetscScalar *coords;
-    PetscInt coordsSize;
-    err = DMPlexVecGetClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for (PetscInt i=0; i < coordsSize; ++i) {
-      coordinatesCell[i] = coords[i];
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
+    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
+      coordinatesCell[i] = coordsCell[i];
     } // for
     _quadrature->computeGeometry(coordinatesCell, c);
-    err = DMPlexVecRestoreClosure(subMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
     for(int iQuad=0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Compute Jacobian and determinant at quadrature point, then get orientation.
@@ -564,75 +554,57 @@ void
 
       if (_dbInitial) {
         // Rotate traction vector from local coordinate system to global coordinate system
-        PylithScalar *initialLocal = &parametersCellLocal[0];
-	assert(initialField);
-	const PetscInt ioff = initialField->sectionOffset(c);
-	assert(numQuadPts*spaceDim == initialField->sectionDof(c));
+	assert(initialVisitor);
+	const PetscInt ioff = initialVisitor->sectionOffset(c);
+	assert(numQuadPts*spaceDim == initialVisitor->sectionDof(c));
         for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          initialLocal[iDim] = initialArray[ioff+iSpace+iDim];
+          tmpLocal[iDim] = initialArray[ioff+iSpace+iDim];
         } // for
         for(int iDim = 0; iDim < spaceDim; ++iDim) {
           initialArray[ioff+iSpace+iDim] = 0.0;
           for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            initialArray[ioff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * initialLocal[jDim];
+            initialArray[ioff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
 	  } // for
         } // for
       } // if
 
       if (_dbRate) {
         // Rotate traction vector from local coordinate system to global coordinate system
-        PylithScalar *rateLocal = &parametersCellLocal[0];
-	assert(rateField);
-	const PetscInt roff = rateField->sectionOffset(c);
-	assert(numQuadPts*spaceDim == rateField->sectionDof(c));
+	assert(rateVisitor);
+	const PetscInt roff = rateVisitor->sectionOffset(c);
+	assert(numQuadPts*spaceDim == rateVisitor->sectionDof(c));
         for(int iDim = 0; iDim < spaceDim; ++iDim) {
-          rateLocal[iDim] = rateArray[roff+iSpace+iDim];
+          tmpLocal[iDim] = rateArray[roff+iSpace+iDim];
         } // for
         for(int iDim = 0; iDim < spaceDim; ++iDim) {
           rateArray[roff+iSpace+iDim] = 0.0;
           for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            rateArray[roff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * rateLocal[jDim];
+            rateArray[roff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
 	  } // for
         } // for
       } // if
 
       if (_dbChange) {
         // Rotate traction vector from local coordinate system to global coordinate system
-        PylithScalar *changeLocal = &parametersCellLocal[0];
-	assert(changeField);
-	const PetscInt coff = changeField->sectionOffset(c);
-	assert(numQuadPts*spaceDim == changeField->sectionDof(c));
+	assert(changeVisitor);
+	const PetscInt coff = changeVisitor->sectionOffset(c);
+	assert(numQuadPts*spaceDim == changeVisitor->sectionDof(c));
         for (int iDim = 0; iDim < spaceDim; ++iDim) {
-          changeLocal[iDim] = changeArray[coff+iSpace+iDim];
+          tmpLocal[iDim] = changeArray[coff+iSpace+iDim];
         } // for
         for(int iDim = 0; iDim < spaceDim; ++iDim) {
           changeArray[coff+iSpace+iDim] = 0.0;
           for(int jDim = 0; jDim < spaceDim; ++jDim) {
-            changeArray[coff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * changeLocal[jDim];
+            changeArray[coff+iSpace+iDim] += orientation[jDim*spaceDim+iDim] * tmpLocal[jDim];
 	  } // for
         } // for
       } // if
     } // for
   } // for
 
-  valueField.restoreLocalArray(&valueArray);
-  if (_dbInitial) {
-    assert(initialField);
-    initialField->restoreLocalArray(&initialArray);
-  } // if
-  if (_dbRate) {
-    assert(rateField);
-    rateField->restoreLocalArray(&rateArray);
-    assert(rateTimeField);
-    rateTimeField->restoreLocalArray(&rateTimeArray);
-  } // if
-  if (_dbChange) {
-    assert(changeField);
-    changeField->restoreLocalArray(&changeArray);
-    assert(changeTimeField);
-    changeTimeField->restoreLocalArray(&changeTimeArray);
-  } // if
-
+  delete initialVisitor; initialVisitor = 0;
+  delete rateVisitor; rateVisitor = 0;
+  delete changeVisitor; changeVisitor = 0;
 } // paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -647,33 +619,42 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
   const PylithScalar timeScale = _getNormalizer().timeScale();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  PetscDM subMesh = _boundaryMesh->dmMesh();assert(subMesh);
-  PetscInt cStart, cEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
 
-
+  // Get sections
   topology::Field<topology::SubMesh>& valueField = _parameters->get("value");
-  PetscScalar* valueArray = valueField.getLocalArray();
-
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+  
   topology::Field<topology::SubMesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
-  topology::Field<topology::SubMesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
-  topology::Field<topology::SubMesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
-  topology::Field<topology::SubMesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
-  topology::Field<topology::SubMesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
+  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  PetscScalar* initialArray = (_dbInitial) ? initialField->getLocalArray() : NULL;
-  PetscScalar* rateArray = (_dbRate) ? rateField->getLocalArray() : NULL;
-  PetscScalar* rateTimeArray = (_dbRate) ? rateTimeField->getLocalArray() : NULL;
-  PetscScalar* changeArray = (_dbChange) ? changeField->getLocalArray() : NULL;
-  PetscScalar* changeTimeArray = (_dbChange) ? changeTimeField->getLocalArray() : NULL;
+  topology::Field<topology::SubMesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
+  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
+  PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
+  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
+  PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 
   for(PetscInt c = cStart; c < cEnd; ++c) {
-    const PetscInt voff = valueField.sectionOffset(c);
-    const PetscInt vdof = valueField.sectionDof(c);
+    const PetscInt voff = valueVisitor.sectionOffset(c);
+    const PetscInt vdof = valueVisitor.sectionDof(c);
     assert(numQuadPts*spaceDim == vdof);
     for (PetscInt d = 0; d < vdof; ++d) {
       valueArray[voff+d] = 0.0;
@@ -681,9 +662,9 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
 
     // Contribution from initial value
     if (_dbInitial) {
-      assert(initialField);
-      const PetscInt ioff = initialField->sectionOffset(c);
-      const PetscInt idof = initialField->sectionDof(c);
+      assert(initialVisitor);
+      const PetscInt ioff = initialVisitor->sectionOffset(c);
+      const PetscInt idof = initialVisitor->sectionDof(c);
       assert(numQuadPts*spaceDim == idof);
       for (PetscInt d = 0; d < idof; ++d) {
         valueArray[voff+d] += initialArray[ioff+d];
@@ -692,13 +673,13 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
     
     // Contribution from rate of change of value
     if (_dbRate) {
-      assert(rateField);
-      const PetscInt roff = rateField->sectionOffset(c);
-      const PetscInt rdof = rateField->sectionDof(c);
+      assert(rateVisitor);
+      const PetscInt roff = rateVisitor->sectionOffset(c);
+      const PetscInt rdof = rateVisitor->sectionDof(c);
       assert(numQuadPts*spaceDim == rdof);
-      assert(rateTimeField);
-      const PetscInt rtoff = rateTimeField->sectionOffset(c);
-      assert(numQuadPts == rateTimeField->sectionDof(c));
+      assert(rateTimeVisitor);
+      const PetscInt rtoff = rateTimeVisitor->sectionOffset(c);
+      assert(numQuadPts == rateTimeVisitor->sectionDof(c));
 
       for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const PylithScalar tRel = t - rateTimeArray[rtoff+iQuad];
@@ -711,13 +692,12 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
     
     // Contribution from change of value
     if (_dbChange) {
-      assert(changeField);
-      const PetscInt coff = changeField->sectionOffset(c);
-      const PetscInt cdof = changeField->sectionDof(c);
-      assert(numQuadPts*spaceDim == cdof);
+      assert(changeVisitor);
+      const PetscInt coff = changeVisitor->sectionOffset(c);
+      const PetscInt cdof = changeVisitor->sectionDof(c);
       assert(changeTimeField);
-      const PetscInt ctoff = changeTimeField->sectionOffset(c);
-      assert(numQuadPts == changeTimeField->sectionDof(c));
+      const PetscInt ctoff = changeTimeVisitor->sectionOffset(c);
+      assert(numQuadPts == changeTimeVisitor->sectionDof(c));
 
       for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
         const PylithScalar tRel = t - changeTimeArray[ctoff+iQuad];
@@ -736,29 +716,18 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
             } // if
           } // if
           for (int iDim = 0; iDim < spaceDim; ++iDim) {
-            valueArray[voff+iQuad*spaceDim+iDim] += changeArray[coff+iQuad*spaceDim+iDim] * scale;
+            valueArray[voff+iQuad*spaceDim+iDim] += changeArray[coff+iQuad*spaceDim+iDim]*scale;
 	  } // for
         } // if
       } // for
     } // if
   } // for
-  valueField.restoreLocalArray(&valueArray);
-  if (_dbInitial) {
-    assert(initialField);
-    initialField->restoreLocalArray(&initialArray);
-  } // if
-  if (_dbRate) {
-    assert(rateField);
-    rateField->restoreLocalArray(&rateArray);
-    assert(rateTimeField);
-    rateTimeField->restoreLocalArray(&rateTimeArray);
-  } // if
-  if (_dbChange) {
-    assert(changeField);
-    changeField->restoreLocalArray(&changeArray);
-    assert(changeTimeField);
-    changeTimeField->restoreLocalArray(&changeTimeArray);
-  } // if
+
+  delete initialVisitor; initialVisitor = 0;
+  delete rateVisitor; rateVisitor = 0;
+  delete rateTimeVisitor; rateTimeVisitor = 0;
+  delete changeVisitor; changeVisitor = 0;
+  delete changeTimeVisitor; changeTimeVisitor = 0;
 }  // _calculateValue
 
 

@@ -23,6 +23,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -184,28 +185,28 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
   // Calculate spatial and temporal variation of value for BC.
   _calculateValue(t);
 
+  // Get sections
   assert(_parameters);
   topology::Field<topology::Mesh>& valueField = _parameters->get("value");
-  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
 
-  PetscScalar* valueArray = valueField.getLocalArray();
-  PetscScalar* fieldArray = field.getLocalArray();
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
 
-    const PetscInt off = field.sectionOffset(p_bc);
-    const PetscInt voff = valueField.sectionOffset(p_bc);
-    assert(numFixedDOF == valueField.sectionDof(p_bc));
+    const PetscInt off = fieldVisitor.sectionOffset(p_bc);
+    const PetscInt voff = valueVisitor.sectionOffset(p_bc);
+    assert(numFixedDOF == valueVisitor.sectionDof(p_bc));
 
     for(PetscInt iDOF = 0; iDOF < numFixedDOF; ++iDOF) {
-      assert(_bcDOF[iDOF] < field.sectionDof(p_bc));
+      assert(_bcDOF[iDOF] < fieldVisitor.sectionDof(p_bc));
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
     } // for
   } // for
-  valueField.restoreLocalArray(&valueArray);
-  field.restoreLocalArray(&fieldArray);
 } // setField
 
 // ----------------------------------------------------------------------
@@ -222,27 +223,27 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
   // Calculate spatial and temporal variation of value for BC.
   _calculateValueIncr(t0, t1);
 
+  // Get sections
   assert(_parameters);
   topology::Field<topology::Mesh>& valueField = _parameters->get("value");
-  PetscSection fieldSection = field.petscSection();assert(fieldSection);
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
 
-  PetscScalar* valueArray = valueField.getLocalArray();
-  PetscScalar* fieldArray = field.getLocalArray();
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     PetscInt p_bc = _points[iPoint];
 
-    const PetscInt off = field.sectionOffset(p_bc);
-    const PetscInt voff = valueField.sectionOffset(p_bc);
-    assert(numFixedDOF == valueField.sectionDof(p_bc));
+    const PetscInt off = fieldVisitor.sectionOffset(p_bc);
+    const PetscInt voff = valueVisitor.sectionOffset(p_bc);
+    assert(numFixedDOF == valueVisitor.sectionDof(p_bc));
     for(PetscInt iDOF=0; iDOF < numFixedDOF; ++iDOF) {
-      assert(_bcDOF[iDOF] < field.sectionDof(p_bc));
+      assert(_bcDOF[iDOF] < fieldVisitor.sectionDof(p_bc));
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
     } // for
   } // for
-  valueField.restoreLocalArray(&valueArray);
-  field.restoreLocalArray(&fieldArray);
 } // setFieldIncr
 
 // ----------------------------------------------------------------------

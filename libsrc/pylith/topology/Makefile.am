@@ -36,8 +36,6 @@ subpkginclude_HEADERS = \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
-	MeshVisitor.hh \
-	MeshVisitor.icc \
 	RefineUniform.hh \
 	ReverseCuthillMcKee.hh \
 	SolutionFields.hh \
@@ -46,8 +44,10 @@ subpkginclude_HEADERS = \
 	SubMesh.hh \
 	SubMesh.icc \
 	SubMesh.cc \
-	SubMeshVisitor.hh \
-	SubMeshVisitor.icc \
+	VisitorMesh.hh \
+	VisitorMesh.icc \
+	VisitorSubMesh.hh \
+	VisitorSubMesh.icc \
 	ISectionSpaces.hh \
 	ISectionSpaces.cc \
 	topologyfwd.hh

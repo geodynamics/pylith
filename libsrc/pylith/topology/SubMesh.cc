@@ -20,11 +20,12 @@
 
 #include "SubMesh.hh" // implementation of class methods
 
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "pylith/utils/petscfwd.h" // USES PetscVec
+#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include <Selection.hh> // USES ALE::Selection
-
-#include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -195,6 +196,5 @@ pylith::topology::SubMesh::initialize(void)
   if (0 != _coordsys)
     _coordsys->initialize();
 } // initialize
-
 
 // End of file 
