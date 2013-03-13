@@ -32,6 +32,7 @@
 
 #include "ISectionSpaces.hh" // USES ISectionSpaces
 
+#include "pylith/utils/petscfwd.h" // HASA PetscDM
 #include "pylith/utils/sievetypes.hh" // HASA pylith::SieveMesh
 
 // Mesh -----------------------------------------------------------------
@@ -117,13 +118,13 @@ public :
    *
    * @returns DMPlex mesh.
    */
-  DM dmMesh(void) const;
+  PetscDM dmMesh(void) const;
 
   /** Set DMPlex mesh.
    *
    * @param DMPlex mesh.
    */
-  void setDMMesh(DM dm);
+  void setDMMesh(PetscDM dm);
 
   /** Get sizes for all point types.
    *
@@ -211,6 +212,8 @@ public :
    */
   int commRank(void) const;
     
+  /** Get 
+
   /** Print mesh to stdout.
    *
    * @param label Label for mesh.
@@ -241,11 +244,13 @@ public :
 private :
 
   ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
-  DM _newMesh;
+  PetscDM _newMesh;
+
   /* The old-style point numbering: [normalCells, normalVertices, shadowVertices, lagrangeVertices, cohesiveCells]
      The new-style point numbering: [normalCells, cohesiveCells, normalVertices, shadowVertices, lagrangeVertices]
   */
   PetscInt _numNormalCells, _numCohesiveCells, _numNormalVertices, _numShadowVertices, _numLagrangeVertices;
+
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   MPI_Comm _comm; ///< MPI communicator for mesh.
   bool _debug; ///< Debugging flag for mesh.

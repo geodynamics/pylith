@@ -179,7 +179,6 @@ pylith::topology::Mesh::view(const char* label) const {
   PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
 }
 
-
 #endif
 
 

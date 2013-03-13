@@ -330,8 +330,7 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
 
   // Check change start time.
   const topology::Field<topology::SubMesh>& changeTime = bc._parameters->get("change time");
-  _TestNeumann::_checkValues(_TestNeumann::changeTime, 
-			     numQuadPts, changeTime);
+  _TestNeumann::_checkValues(_TestNeumann::changeTime, numQuadPts, changeTime);
   th.close();
 } // test_queryDatabases
 
@@ -441,7 +440,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
@@ -717,8 +716,8 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 // Check values in section against expected values.
 void
 pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
-					   const int fiberDimE,
-					   const topology::Field<topology::SubMesh>& field)
+				       const int fiberDimE,
+				       const topology::Field<topology::SubMesh>& field)
 { // _checkValues
   CPPUNIT_ASSERT(valuesE);
 
@@ -746,8 +745,13 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
     err = PetscSectionGetDof(fieldSection, c, &dof);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetOffset(fieldSection, c, &off);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
-    for (int iDim=0; iDim < fiberDimE; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[icell*fiberDimE+iDim]/scale, fieldArray[off+iDim], tolerance);
+    for (int iDim=0; iDim < fiberDimE; ++iDim) {
+      if (valuesE[icell*fiberDimE+iDim] != 0.0) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldArray[off+iDim]/valuesE[icell*fiberDimE+iDim]*scale, tolerance);
+      } else {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[icell*fiberDimE+iDim], fieldArray[off+iDim]*scale, tolerance);
+      } // if/else
+    } // for
   } // for
   err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 } // _checkValues

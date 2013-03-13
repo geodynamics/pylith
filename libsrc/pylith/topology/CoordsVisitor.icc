@@ -58,6 +58,7 @@ pylith::topology::CoordsVisitor::initialize(void)
 
 // ----------------------------------------------------------------------
 // Clear cached data.
+inline
 void
 pylith::topology::CoordsVisitor::clear(void)
 { // clear

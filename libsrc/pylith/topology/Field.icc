@@ -79,7 +79,7 @@ inline
 PetscInt
 pylith::topology::Field<mesh_type>::sectionDof(const PetscInt point) const
 { // sectionDof
-  const PetscSection& section = petscSection();assert(section);
+  PetscSection section = petscSection();assert(section);
   PetscInt dof;
   PetscErrorCode err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
   return dof;
@@ -91,7 +91,7 @@ inline
 PetscInt
 pylith::topology::Field<mesh_type>::sectionOffset(const PetscInt point) const
 { // sectionOffset
-  const PetscSection& section = petscSection();assert(section);
+  PetscSection section = petscSection();assert(section);
   PetscInt offset;
   PetscErrorCode err = PetscSectionGetOffset(section, point, &offset);CHECK_PETSC_ERROR(err);
   return offset;

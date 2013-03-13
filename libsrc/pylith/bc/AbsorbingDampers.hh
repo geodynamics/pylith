@@ -109,8 +109,8 @@ public :
    * @param fields Solution fields
    */
   void integrateResidualLumped(const topology::Field<topology::Mesh>& residual,
-       const PylithScalar t,
-       topology::SolutionFields* const fields);
+			       const PylithScalar t,
+			       topology::SolutionFields* const fields);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
