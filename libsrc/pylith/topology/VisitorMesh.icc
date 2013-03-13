@@ -174,7 +174,6 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void)
   clear();
 
   _dm = NULL;
-  _mat = NULL;
   _section = NULL;
 } // destructor
 
