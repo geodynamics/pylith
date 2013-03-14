@@ -161,10 +161,10 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   for(PetscInt c = cStart; c < cEnd; ++c) {
     // Compute geometry information for current cell
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
+    for (int i=0; i < coordsSize; ++i) { // :TODO: Remove copy
       coordinatesCell[i] = coordsCell[i];
     } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 
     const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
@@ -272,7 +272,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
   submeshIS.deallocate();
   
 #if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
 topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -297,10 +296,7 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 
@@ -420,7 +416,6 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 #if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #endif
 
@@ -438,10 +433,7 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 
@@ -562,7 +554,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 #if !defined(PRECOMPUTE_GEOMETRY)
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
-  scalar_array coordinatesCell(numBasis*spaceDim);
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #endif
 
@@ -580,10 +571,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 #error("Code for PRECOMPUTE_GEOMETRY not implemented")
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i = 0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 #if defined(DETAILED_EVENT_LOGGING)
@@ -698,7 +686,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
   submeshIS.deallocate();
   
 #if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -718,10 +705,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #error("Code for PRECOMPUTE_GEOMETRY not implemented");
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i = 0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 #if defined(DETAILED_EVENT_LOGGING)
