@@ -89,9 +89,22 @@ inline
 void
 pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const scalar_array& coordinatesCell,
 							   const int cell) {
-  assert(0 != _engine);
+  assert(_engine);
   _engine->computeGeometry(coordinatesCell, cell);  
 }
+
+// Compute geometric quantities for a cell at quadrature points.
+template<typename mesh_type>
+void
+pylith::feassemble::Quadrature<mesh_type>::computeGeometry(const PylithScalar* coordinatesCell,
+							   const int coordinatesSize,
+							   const int cell)
+{ // computeGeometry
+  assert(_engine);
+  _engine->computeGeometry(coordinatesCell, coordinatesSize, cell);  
+} // computeGeometry
+
+
 
 #endif
 

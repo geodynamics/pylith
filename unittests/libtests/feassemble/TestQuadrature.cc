@@ -238,13 +238,12 @@ pylith::feassemble::TestQuadrature::testComputeGeometry(void)
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature.retrieveGeometry(c);
 #else
-    PetscScalar *coords = PETSC_NULL;
-    PetscInt     coordsSize;
+    PetscScalar *coordsArray = NULL;
+    PetscInt coordsSize = 0;
 
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    quadrature.computeGeometry(coordinatesCell, c);    
+    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
+    quadrature.computeGeometry(coordsArray, coordsSize, c);
+    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, c, &coordsSize, &coordsArray);CHECK_PETSC_ERROR(err);
 #endif
 
     const scalar_array& quadPts = quadrature.quadPts();
@@ -296,7 +295,8 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
   const int spaceDim = data.spaceDim;
 
   const int numCells = data.numCells;
-  scalar_array vertCoords(data.vertices, numBasis*spaceDim);
+  const PylithScalar* vertCoords = data.vertices;
+  const int vertCoordsSize = numBasis*spaceDim;
   const PylithScalar* quadPtsE = data.quadPts;
   const PylithScalar* jacobianE = data.jacobian;
   const PylithScalar* jacobianDetE = data.jacobianDet;
@@ -347,7 +347,7 @@ pylith::feassemble::TestQuadrature::testComputeGeometryCell(void)
 #endif
 
   quadrature.initializeGeometry();
-  quadrature.computeGeometry(vertCoords, 0);
+  quadrature.computeGeometry(vertCoords, vertCoordsSize, 0);
   
   size_t size = 0;
 
