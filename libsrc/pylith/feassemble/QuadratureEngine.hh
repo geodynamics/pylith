@@ -99,6 +99,17 @@ public :
   void computeGeometry(const scalar_array& coordinatesCell,
 		       const int cell) = 0;
 
+  /** Compute geometric quantities for a cell at quadrature points.
+   *
+   * @param coordinatesCell Array of coordinates of cell's vertices.
+   * @param coordinatesSize Size of coordinates array.
+   * @param cell Finite-element cell
+   */
+  virtual
+  void computeGeometry(const PylithScalar* coordinatesCell,
+		       const int coordinatesSize,
+		       const int cell) = 0;
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
