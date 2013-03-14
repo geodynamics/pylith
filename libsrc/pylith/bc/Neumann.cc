@@ -119,7 +119,6 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
   submeshIS.deallocate();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -131,10 +130,7 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i=0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
 
@@ -410,7 +406,6 @@ pylith::bc::Neumann::_queryDB(const char* name,
   PetscScalar* valueArray = valueVisitor.localArray();
 
   // Get coordinates
-  scalar_array coordinatesCell(numBasis*spaceDim);
   PetscScalar* coordsCell = NULL;
   PetscInt coordsSize = 0;
   topology::CoordsVisitor coordsVisitor(dmSubMesh);
@@ -434,10 +429,7 @@ pylith::bc::Neumann::_queryDB(const char* name,
 #error("Code for PRECOMPUTE_GEOMETRY not implemented.")
 #else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
-    for (PetscInt i = 0; i < coordsSize; ++i) { // :TODO: Remove copy.
-      coordinatesCell[i] = coordsCell[i];
-    } // for
-    _quadrature->computeGeometry(coordinatesCell, c);
+    _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
 #endif
     const scalar_array& quadPtsNondim = _quadrature->quadPts();
