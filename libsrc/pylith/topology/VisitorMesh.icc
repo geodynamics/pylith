@@ -80,6 +80,24 @@ pylith::topology::VecVisitorMesh::clear(void)
 } // clear
 
 // ----------------------------------------------------------------------
+// Get the PETSc section.
+inline
+PetscSection
+pylith::topology::VecVisitorMesh::petscSection(void) const
+{ // petscSection
+  return _section;
+} // petscSection
+
+// ----------------------------------------------------------------------
+// Get the local PETSc Vec.
+inline
+PetscVec
+pylith::topology::VecVisitorMesh::localVec(void) const
+{ // localVec
+  return _localVec;
+} // localVec
+
+// ----------------------------------------------------------------------
 // Get the local coordinates array associated with the local PETSc Vec.
 inline
 PetscScalar*
