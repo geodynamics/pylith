@@ -111,7 +111,7 @@ void
 pylith::topology::StratumIS::deallocate(void)
 { // deallocate
   PetscErrorCode err = 0;
-  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(!_points);
+  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);_points=NULL;
   err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
 } // deallocate
 
