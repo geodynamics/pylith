@@ -544,7 +544,7 @@ void
 pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mesh& mesh,
 							     feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStress
-  if (0 == _dbInitialStress)
+  if (!_dbInitialStress)
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -552,8 +552,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   assert(_initialFields);
   _initialFields->add("initial stress", "initial_stress");
-  topology::Field<topology::Mesh>& initialStress = 
-    _initialFields->get("initial stress");
+  topology::Field<topology::Mesh>& initialStress = _initialFields->get("initial stress");
 
   assert(_dbInitialStress);
   assert(quadrature);
@@ -563,26 +562,18 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
 
-  // Get cells associated with material
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  PetscDM dmMesh = mesh.dmMesh();
-  PetscIS cellIS;
-  const PetscInt *cells;
-  PetscInt numCells;
-  PetscErrorCode err = 0;
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  // Get cells associated with material
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  PetscVec coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordsArray = NULL;
+  PetscInt coordsSize = 0;
 #endif
 
   // Create arrays for querying
@@ -597,8 +588,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
   initialStress.newSection(cellsTmp, fiberDim);
   initialStress.allocate();
   initialStress.zero();
-  PetscSection initialStressSection = initialStress.petscSection();
-  PetscVec initialStressVec = initialStress.localVector();
+  topology::VecVisitorMesh stressVisitor(initialStress);
 
   // Setup databases for querying
   _dbInitialStress->open();
@@ -646,12 +636,9 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
+    quadrature->computeGeometry(coordsArray, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
 #endif
 
     // Dimensionalize coordinates for querying
@@ -681,7 +668,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
     _normalizer->nondimensionalize(&stressCell[0], stressCell.size(), 
 				   pressureScale);
 
-    err = DMPlexVecSetClosure(dmMesh, initialStressSection, initialStressVec, cell, &stressCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    stressVisitor.setClosure(&stressCell[0], stressCell.size(), cell, ADD_VALUES);
   } // for
 
   // Close databases
@@ -693,11 +680,10 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 // ----------------------------------------------------------------------
 // Initialize initial strain field.
 void
-pylith::materials::ElasticMaterial::_initializeInitialStrain(
-			 const topology::Mesh& mesh,
-			 feassemble::Quadrature<topology::Mesh>* quadrature)
+pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mesh& mesh,
+							     feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStrain
-  if (0 == _dbInitialStrain)
+  if (!_dbInitialStrain)
     return;
 
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -705,8 +691,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 
   assert(_initialFields);
   _initialFields->add("initial strain", "initial_strain");
-  topology::Field<topology::Mesh>& initialStrain = 
-    _initialFields->get("initial strain");
+  topology::Field<topology::Mesh>& initialStrain = _initialFields->get("initial strain");
 
   assert(_dbInitialStrain);
   assert(quadrature);
@@ -716,26 +701,18 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   const int spaceDim = quadrature->spaceDim();
   const int numBasis = quadrature->numBasis();
 
-  // Get cells associated with material
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  PetscDM dmMesh = mesh.dmMesh();
-  PetscIS cellIS;
-  const PetscInt *cells;
-  PetscInt numCells;
-  PetscErrorCode err = 0;
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  // Get cells associated with material
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
 #if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  PetscVec coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar* coordsArray = NULL;
+  PetscInt coordsSize = 0;
 #endif
 
   // Create arrays for querying
@@ -750,8 +727,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
   initialStrain.newSection(cellsTmp, fiberDim);
   initialStrain.allocate();
   initialStrain.zero();
-  PetscSection initialStrainSection = initialStrain.petscSection();
-  PetscVec initialStrainVec = initialStrain.localVector();
+  topology::VecVisitorMesh strainVisitor(initialStrain);
 
   // Setup databases for querying
   _dbInitialStrain->open();
@@ -799,19 +775,15 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 #if defined(PRECOMPUTE_GEOMETRY)
     quadrature->retrieveGeometry(*c_iter);
 #else
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.getClosure(&coordsArray, &coordsSize, cell);
+    quadrature->computeGeometry(coordsArray, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsArray, &coordsSize, cell);
 #endif
 
     // Dimensionalize coordinates for querying
     const scalar_array& quadPtsNonDim = quadrature->quadPts();
     quadPtsGlobal = quadPtsNonDim;
-    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				lengthScale);
+    _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
     
     // Loop over quadrature points in cell and query database
     for (int iQuadPt=0, iCoord=0, iStrain=0; 
@@ -830,7 +802,7 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
       } // if
     } // for
 
-    err = DMPlexVecSetClosure(dmMesh, initialStrainSection, initialStrainVec, cell, &strainCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    strainVisitor.setClosure(&strainCell[0], strainCell.size(), cell, ADD_VALUES);
   } // for
 
   // Close databases
@@ -842,17 +814,16 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(
 // ----------------------------------------------------------------------
 // Update stateVars (for next time step).
 void
-pylith::materials::ElasticMaterial::_updateStateVars(
-					    PylithScalar* const stateVars,
-					    const int numStateVars,
-					    const PylithScalar* properties,
-					    const int numProperties,
-					    const PylithScalar* totalStrain,
-					    const int strainSize,
-					    const PylithScalar* initialStress,
-					    const int initialStressSize,
-					    const PylithScalar* initialStrain,
-					    const int initialStrainSize)
+pylith::materials::ElasticMaterial::_updateStateVars(PylithScalar* const stateVars,
+						     const int numStateVars,
+						     const PylithScalar* properties,
+						     const int numProperties,
+						     const PylithScalar* totalStrain,
+						     const int strainSize,
+						     const PylithScalar* initialStress,
+						     const int initialStressSize,
+						     const PylithScalar* initialStrain,
+						     const int initialStrainSize)
 { // _updateStateVars
 } // _updateStateVars
 
