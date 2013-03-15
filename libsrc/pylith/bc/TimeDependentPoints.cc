@@ -23,6 +23,9 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -78,7 +81,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 { // _queryDatabases
   const PylithScalar timeScale = _getNormalizer().timeScale();
   const PylithScalar rateScale = valueScale / timeScale;
-  PetscErrorCode err = 0;
 
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
@@ -116,6 +118,8 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 
   delete _parameters;
   _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
+
+  PetscErrorCode err = 0;
 
   _parameters->add("value", "value", topology::FieldBase::VERTICES_FIELD, numBCDOF);
   topology::Field<topology::Mesh>& value = _parameters->get("value");
@@ -237,24 +241,19 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 
   scalar_array coordsVertex(spaceDim);
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  PetscScalar *coordArray = NULL;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordArray = coordsVisitor.localArray();
 
   topology::Field<topology::Mesh>& parametersField = _parameters->get(name);
-  PetscScalar* parametersArray = parametersField.getLocalArray();
+  topology::VecVisitorMesh parametersVisitor(parametersField);
+  PetscScalar* parametersArray = parametersVisitor.localArray();
 
   scalar_array valueVertex(querySize);
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     // Get dimensionalized coordinates of vertex
-    PetscInt cdof, coff;
-    err = PetscSectionGetDof(coordSection, _points[iPoint], &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, _points[iPoint], &coff);CHECK_PETSC_ERROR(err);
-    assert(cdof == spaceDim);
+    const int coff = coordsVisitor.sectionOffset(_points[iPoint]);
+    assert(spaceDim == coordsVisitor.sectionDof(_points[iPoint]));
     for (PetscInt d = 0; d < spaceDim; ++d) {
       coordsVertex[d] = coordArray[coff+d];
     } // for
@@ -271,13 +270,12 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
     _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
 
     // Update section
-    const PetscInt off = parametersField.sectionOffset(_points[iPoint]);
-    const PetscInt dof = parametersField.sectionDof(_points[iPoint]);
-    for(int i = 0; i < dof; ++i)
+    const PetscInt off = parametersVisitor.sectionOffset(_points[iPoint]);
+    const PetscInt dof = parametersVisitor.sectionDof(_points[iPoint]);
+    for(int i = 0; i < dof; ++i) {
       parametersArray[off+i] = valueVertex[i];
+    } // for
   } // for
-  parametersField.restoreLocalArray(&parametersArray);
-  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 } // _queryDB
 
 // ----------------------------------------------------------------------
@@ -287,117 +285,104 @@ pylith::bc::TimeDependentPoints::_calculateValue(const PylithScalar t)
 { // _calculateValue
   assert(_parameters);
 
+  const PylithScalar timeScale = _getNormalizer().timeScale();
+
+  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+  
+  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
+  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
+  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
+  PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
+  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
+  PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
+
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
-  const PylithScalar timeScale = _getNormalizer().timeScale();
-  PetscSection initialSection=NULL, rateSection=NULL, rateTimeSection=NULL, changeSection=NULL, changeTimeSection=NULL;
-  PetscVec initialVec=NULL, rateVec=NULL, rateTimeVec=NULL, changeVec=NULL, changeTimeVec=NULL;
-  PetscScalar *valuesArray=NULL, *initialArray=NULL, *rateArray=NULL, *rateTimeArray=NULL, *changeArray=NULL, *changeTimeArray=NULL;
-  PetscErrorCode err = 0;
-
-  PetscSection valuesSection = _parameters->get("value").petscSection();assert(valuesSection);
-  PetscVec valuesVec     = _parameters->get("value").localVector();assert(valuesVec);
-  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
-
-  if (_dbInitial) {
-    initialSection = _parameters->get("initial").petscSection();assert(initialSection);
-    initialVec = _parameters->get("initial").localVector();assert(initialVec);
-    err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbRate) {
-    rateSection = _parameters->get("rate").petscSection();assert(rateSection);
-    rateVec = _parameters->get("rate").localVector();assert(rateVec);
-    err = VecGetArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
-
-    rateTimeSection  = _parameters->get("rate time").petscSection();assert(rateTimeSection);
-    rateTimeVec = _parameters->get("rate time").localVector();assert(rateTimeVec);
-    err = VecGetArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbChange) {
-    changeSection = _parameters->get("change").petscSection();assert(changeSection);
-    changeVec = _parameters->get("change").localVector();assert(changeVec);
-    err = VecGetArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
-
-    changeTimeSection = _parameters->get("change time").petscSection();assert(changeTimeSection);
-    changeTimeVec = _parameters->get("change time").localVector();assert(changeTimeVec);
-    err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
-
   for(int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label
-    PetscInt vdof, voff;
 
-    err = PetscSectionGetDof(valuesSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valuesSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
+    const PetscInt voff = valueVisitor.sectionOffset(p_bc);
+    assert(numBCDOF == valueVisitor.sectionDof(p_bc));
+    for (PetscInt d = 0; d < numBCDOF; ++d) {
+      valueArray[voff+d] = 0.0;
+    } // for
+
     // Contribution from initial value
     if (_dbInitial) {
-      PetscInt idof, ioff;
-
-      err = PetscSectionGetDof(initialSection, p_bc, &idof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(initialSection, p_bc, &ioff);CHECK_PETSC_ERROR(err);
-      assert(idof == vdof);
-      for(PetscInt d = 0; d < vdof; ++d)
-        valuesArray[voff+d] += initialArray[ioff+d];
+      assert(initialVisitor);
+      const PetscInt ioff = initialVisitor->sectionOffset(p_bc);
+      assert(numBCDOF == initialVisitor->sectionDof(p_bc));
+      for (PetscInt d = 0; d < numBCDOF; ++d) {
+        valueArray[voff+d] += initialArray[ioff+d];
+      } // for
     } // if
     
     // Contribution from rate of change of value
     if (_dbRate) {
-      PetscInt rdof, roff, rtdof, rtoff;
+      assert(rateVisitor);
+      const PetscInt roff = rateVisitor->sectionOffset(p_bc);
+      assert(numBCDOF == rateVisitor->sectionDof(p_bc));
+      assert(rateTimeVisitor);
+      const PetscInt rtoff = rateTimeVisitor->sectionOffset(p_bc);
+      assert(1 == rateTimeVisitor->sectionDof(p_bc));
 
-      err = PetscSectionGetDof(rateSection, p_bc, &rdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateSection, p_bc, &roff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(rateTimeSection, p_bc, &rtdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateTimeSection, p_bc, &rtoff);CHECK_PETSC_ERROR(err);
-      assert(rdof == vdof);
-      assert(rtdof == 1);
       const PylithScalar tRel = t - rateTimeArray[rtoff];
       if (tRel > 0.0)  // rate of change integrated over time
-        for(PetscInt d = 0; d < vdof; ++d)
-          valuesArray[voff+d] += rateArray[roff+d] * tRel;
+	for(int iDim = 0; iDim < numBCDOF; ++iDim) {
+	  valueArray[voff+iDim] += rateArray[roff+iDim] * tRel;
+	} // for
     } // if
 
     // Contribution from change of value
     if (_dbChange) {
-      PetscInt cdof, coff, ctdof, ctoff;
+      assert(changeVisitor);
+      const PetscInt coff = changeVisitor->sectionOffset(p_bc);
+      assert(numBCDOF == changeVisitor->sectionDof(p_bc));
+      const PetscInt ctoff = changeTimeVisitor->sectionOffset(p_bc);
+      assert(1 == changeTimeVisitor->sectionDof(p_bc));
 
-      err = PetscSectionGetDof(changeSection, p_bc, &cdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeSection, p_bc, &coff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(changeTimeSection, p_bc, &ctdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeTimeSection, p_bc, &ctoff);CHECK_PETSC_ERROR(err);
-      assert(cdof == vdof);
-      assert(ctdof == 1);
       const PylithScalar tRel = t - changeTimeArray[ctoff];
       if (tRel >= 0) { // change in value over time
-        PylithScalar scale = 1.0;
-        if (_dbTimeHistory) {
-          PylithScalar tDim = tRel;
-          _getNormalizer().dimensionalize(&tDim, 1, timeScale);
-          const int err = _dbTimeHistory->query(&scale, tDim);
-          if (err) {
-            std::ostringstream msg;
-            msg << "Error querying for time '" << tDim 
-                << "' in time history database "
-                << _dbTimeHistory->label() << ".";
-            throw std::runtime_error(msg.str());
-          } // if
-        } // if
-        for(PetscInt d = 0; d < vdof; ++d)
-          valuesArray[voff+d] += changeArray[coff+d] * scale;
+	PylithScalar scale = 1.0;
+	if (_dbTimeHistory) {
+	  PylithScalar tDim = tRel;
+	  _getNormalizer().dimensionalize(&tDim, 1, timeScale);
+	  const int err = _dbTimeHistory->query(&scale, tDim);
+	  if (err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	for (int iDim = 0; iDim < numBCDOF; ++iDim) {
+	  valueArray[voff+iDim] += changeArray[coff+iDim]*scale;
+	} // for
       } // if
     } // if
   } // for
-  err = VecRestoreArray(valuesVec,     &valuesArray);CHECK_PETSC_ERROR(err);
-  if (_dbInitial) {
-    err = VecRestoreArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbRate) {
-    err = VecRestoreArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbChange) {
-    err = VecRestoreArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  }
+
+  delete initialVisitor; initialVisitor = 0;
+  delete rateVisitor; rateVisitor = 0;
+  delete rateTimeVisitor; rateTimeVisitor = 0;
+  delete changeVisitor; changeVisitor = 0;
+  delete changeTimeVisitor; changeTimeVisitor = 0;
 }  // _calculateValue
 
 // ----------------------------------------------------------------------
@@ -409,60 +394,53 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
 { // _calculateValueIncr
   assert(_parameters);
 
+  const PylithScalar timeScale = _getNormalizer().timeScale();
+
+  topology::Field<topology::Mesh>& valueField = _parameters->get("value");
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+  
+  topology::Field<topology::Mesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
+  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
+  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
+  PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
+  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
+
+  topology::Field<topology::Mesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
+  PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
+
   const int numPoints = _points.size();
   const int numBCDOF = _bcDOF.size();
-  const PylithScalar timeScale = _getNormalizer().timeScale();
-  PetscSection initialSection=NULL, rateSection=NULL, rateTimeSection=NULL, changeSection=NULL, changeTimeSection=NULL;
-  PetscVec initialVec=NULL, rateVec=NULL, rateTimeVec=NULL, changeVec=NULL, changeTimeVec=NULL;
-  PetscScalar *valuesArray=NULL, *initialArray=NULL, *rateArray=NULL, *rateTimeArray=NULL, *changeArray=NULL, *changeTimeArray=NULL;
-  PetscErrorCode err = 0;
-
-  PetscSection valuesSection = _parameters->get("value").petscSection();assert(valuesSection);
-  PetscVec valuesVec     = _parameters->get("value").localVector();assert(valuesVec);
-  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
-
-  if (_dbInitial) {
-    initialSection = _parameters->get("initial").petscSection();assert(initialSection);
-    initialVec = _parameters->get("initial").localVector();assert(initialVec);
-    err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbRate) {
-    rateSection = _parameters->get("rate").petscSection();assert(rateSection);
-    rateVec = _parameters->get("rate").localVector();assert(rateVec);
-    err = VecGetArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
-
-    rateTimeSection  = _parameters->get("rate time").petscSection();assert(rateTimeSection);
-    rateTimeVec = _parameters->get("rate time").localVector();assert(rateTimeVec);
-    err = VecGetArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbChange) {
-    changeSection = _parameters->get("change").petscSection();assert(changeSection);
-    changeVec = _parameters->get("change").localVector();assert(changeVec);
-    err = VecGetArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
-
-    changeTimeSection = _parameters->get("change time").petscSection();assert(changeTimeSection);
-    changeTimeVec = _parameters->get("change time").localVector();assert(changeTimeVec);
-    err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
-
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const int p_bc = _points[iPoint]; // Get point label
-    PetscInt vdof, voff;
 
-    err = PetscSectionGetDof(valuesSection, p_bc, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valuesSection, p_bc, &voff);CHECK_PETSC_ERROR(err);
+    const PetscInt voff = valueVisitor.sectionOffset(p_bc);
+    assert(numBCDOF == valueVisitor.sectionDof(p_bc));
+    for (PetscInt d = 0; d < numBCDOF; ++d) {
+      valueArray[voff+d] = 0.0;
+    } // for
+
     // No contribution from initial value
     
     // Contribution from rate of change of value
     if (_dbRate) {
-      PetscInt rdof, roff, rtdof, rtoff;
+      const PetscInt roff = rateVisitor->sectionOffset(p_bc);
+      assert(numBCDOF == rateVisitor->sectionDof(p_bc));
+      assert(rateTimeVisitor);
+      const PetscInt rtoff = rateTimeVisitor->sectionOffset(p_bc);
+      assert(1 == rateTimeVisitor->sectionDof(p_bc));
 
-      err = PetscSectionGetDof(rateSection, p_bc, &rdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateSection, p_bc, &roff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(rateTimeSection, p_bc, &rtdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateTimeSection, p_bc, &rtoff);CHECK_PETSC_ERROR(err);
-      assert(rdof == vdof);
-      assert(rtdof == 1);
       // Account for when rate dependence begins.
       const PylithScalar tRate = rateTimeArray[rtoff];
       PylithScalar tIncr = 0.0;
@@ -472,22 +450,20 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
         tIncr = t1 - tRate;
       else
         tIncr = 0.0; // no rate dependence for t0 to t1
-
+      
       if (tIncr > 0.0)  // rate of change integrated over time
-        for(PetscInt d = 0; d < vdof; ++d)
-          valuesArray[voff+d] += rateArray[roff+d] * tIncr;
+        for(PetscInt d = 0; d < numBCDOF; ++d)
+          valueArray[voff+d] += rateArray[roff+d] * tIncr;
     } // if
     
     // Contribution from change of value
     if (_dbChange) {
-      PetscInt cdof, coff, ctdof, ctoff;
+      assert(changeVisitor);
+      const PetscInt coff = changeVisitor->sectionOffset(p_bc);
+      assert(numBCDOF == changeVisitor->sectionDof(p_bc));
+      const PetscInt ctoff = changeTimeVisitor->sectionOffset(p_bc);
+      assert(1 == changeTimeVisitor->sectionDof(p_bc));
 
-      err = PetscSectionGetDof(changeSection, p_bc, &cdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeSection, p_bc, &coff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(changeTimeSection, p_bc, &ctdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeTimeSection, p_bc, &ctoff);CHECK_PETSC_ERROR(err);
-      assert(cdof == vdof);
-      assert(ctdof == 1);
       const PylithScalar tChange = changeTimeArray[ctoff];
       if (t0 >= tChange) { // increment is after change starts
         PylithScalar scale0 = 1.0;
@@ -514,8 +490,8 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
             throw std::runtime_error(msg.str());
           } // if
         } // if
-        for(PetscInt d = 0; d < vdof; ++d)
-          valuesArray[voff+d] += changeArray[coff+d] * (scale1 - scale0);
+        for(PetscInt d = 0; d < numBCDOF; ++d)
+          valueArray[voff+d] += changeArray[coff+d] * (scale1 - scale0);
       } else if (t1 >= tChange) { // increment spans when change starts
         PylithScalar scale1 = 1.0;
         if (_dbTimeHistory) {
@@ -530,23 +506,17 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
             throw std::runtime_error(msg.str());
           } // if
         } // if
-        for(PetscInt d = 0; d < vdof; ++d)
-          valuesArray[voff+d] += changeArray[coff+d] * scale1;
+        for(PetscInt d = 0; d < numBCDOF; ++d)
+          valueArray[voff+d] += changeArray[coff+d] * scale1;
       } // if/else
     } // if
   } // for
-  err = VecRestoreArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
-  if (_dbInitial) {
-    err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbRate) {
-    err = VecRestoreArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(rateTimeVec, &rateTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
-  if (_dbChange) {
-    err = VecRestoreArray(changeVec, &changeArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  } // if
+
+  delete initialVisitor; initialVisitor = 0;
+  delete rateVisitor; rateVisitor = 0;
+  delete rateTimeVisitor; rateTimeVisitor = 0;
+  delete changeVisitor; changeVisitor = 0;
+  delete changeTimeVisitor; changeTimeVisitor = 0;
 }  // _calculateValueIncr
 
 
