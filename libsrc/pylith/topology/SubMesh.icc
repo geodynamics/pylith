@@ -128,7 +128,8 @@ pylith::topology::SubMesh::comm(void) const {
 inline
 void
 pylith::topology::SubMesh::view(const char* label) const {
-  _mesh->view(label);
+  assert(_newMesh);
+  PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
 }
 
 
