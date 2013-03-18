@@ -26,6 +26,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Stratum.hh" // USES StratumIS
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/materials/ElasticStrain1D.hh" // USES ElasticStrain1D
@@ -45,10 +47,6 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Test id()
@@ -98,7 +96,7 @@ pylith::materials::TestMaterial::testDBProperties(void)
   ElasticIsotropic3D material;
   material.dbProperties(&db);
   
-  CPPUNIT_ASSERT(0 != material._dbProperties);
+  CPPUNIT_ASSERT(material._dbProperties);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbProperties->label()));
 } // testDBProperties
 
@@ -114,7 +112,7 @@ pylith::materials::TestMaterial::testDBStateVars(void)
   ElasticIsotropic3D material;
   material.dbInitialState(&db);
   
-  CPPUNIT_ASSERT(0 != material._dbInitialState);
+  CPPUNIT_ASSERT(material._dbInitialState);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialState->label()));
 } // testDBStateVars
 
@@ -130,7 +128,7 @@ pylith::materials::TestMaterial::testNormalizer(void)
   ElasticIsotropic3D material;
   material.normalizer(normalizer);
   
-  CPPUNIT_ASSERT(0 != material._normalizer);
+  CPPUNIT_ASSERT(material._normalizer);
   CPPUNIT_ASSERT_EQUAL(lengthScale, material._normalizer->lengthScale());
 } // testNormalizer
 
@@ -181,6 +179,18 @@ pylith::materials::TestMaterial::testInitialize(void)
   cs.initialize();
   mesh.coordsys(&cs);
 
+  spatialdata::units::Nondimensional normalizer;
+  const PylithScalar lengthScale = 1.0e+3;
+  const PylithScalar pressureScale = 2.25e+10;
+  const PylithScalar timeScale = 2.0;
+  const PylithScalar velocityScale = lengthScale / timeScale;
+  const PylithScalar densityScale = pressureScale / (velocityScale*velocityScale);
+  normalizer.lengthScale(lengthScale);
+  normalizer.pressureScale(pressureScale);
+  normalizer.timeScale(timeScale);
+  normalizer.densityScale(densityScale);
+  mesh.nondimensionalize(normalizer);
+
   // Setup quadrature
   feassemble::Quadrature<topology::Mesh> quadrature;
   feassemble::GeometryLine1D geometry;
@@ -209,16 +219,10 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   // Get cells associated with material
   const PetscInt  materialId = 24;
-  DM              dmMesh     = mesh.dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", materialId);
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
@@ -233,8 +237,6 @@ pylith::materials::TestMaterial::testInitialize(void)
   db.ioHandler(&dbIO);
   db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
   
-  spatialdata::units::Nondimensional normalizer;
-
   ElasticStrain1D material;
   material.dbProperties(&db);
   material.id(materialId);
@@ -256,44 +258,37 @@ pylith::materials::TestMaterial::testInitialize(void)
   const PylithScalar muE[] = { muA, muB };
   const PylithScalar lambdaE[] = { lambdaA, lambdaB };
 
-  SieveMesh::point_type cell = cells[0];
+  PetscInt cell = cells[0];
   const PylithScalar tolerance = 1.0e-06;
 
-  CPPUNIT_ASSERT(0 != material._properties);
-  PetscSection propertiesSection = material._properties->petscSection();
-  Vec          propertiesVec     = material._properties->localVector();
-  CPPUNIT_ASSERT(propertiesSection);CPPUNIT_ASSERT(propertiesVec);
+  CPPUNIT_ASSERT(material._properties);
+  topology::VecVisitorMesh propertiesVisitor(*material._properties);
+  const PetscScalar* propertiesArray = propertiesVisitor.localArray();
+  const PetscInt off = propertiesVisitor.sectionOffset(cell);
 
   const int p_density = 0;
   const int p_mu = 1;
   const int p_lambda = 2;
-  PetscScalar *propertiesArray;
-  PetscInt     off;
 
-  err = VecGetArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetOffset(propertiesSection, cell, &off);CHECK_PETSC_ERROR(err);
   // density
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_density;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/densityE[i],
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/densityE[i]*densityScale,
 				 tolerance);
   } // for
   
   // mu
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_mu;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/muE[i], tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/muE[i]*pressureScale, tolerance);
   } // for
   
   // lambda
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_lambda;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/lambdaE[i], 
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/lambdaE[i]*pressureScale, 
 				 tolerance);
   } // for
-  err = VecRestoreArray(propertiesVec, &propertiesArray);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -353,8 +348,8 @@ pylith::materials::TestMaterial::testTensorSize(void)
 void
 pylith::materials::TestMaterial::testDBToProperties(void)
 { // testDBToProperties
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   // Check to make sure names of Metadata values match names of test
   // data values (consistency check).
@@ -398,8 +393,8 @@ pylith::materials::TestMaterial::testDBToProperties(void)
 void
 pylith::materials::TestMaterial::testNonDimProperties(void)
 { // testNonDimProperties
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsQuadPt;
@@ -414,7 +409,7 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
     
     const PylithScalar* const propertiesNondimE =
       &_data->propertiesNondim[iLoc*propertiesSize];
-    CPPUNIT_ASSERT(0 != propertiesNondimE);
+    CPPUNIT_ASSERT(propertiesNondimE);
 
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
@@ -434,8 +429,8 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
 void
 pylith::materials::TestMaterial::testDimProperties(void)
 { // testDimProperties
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int propertiesSize = _data->numPropsQuadPt;
@@ -449,7 +444,7 @@ pylith::materials::TestMaterial::testDimProperties(void)
     
     const PylithScalar* const propertiesE =
       &_data->properties[iLoc*propertiesSize];
-    CPPUNIT_ASSERT(0 != propertiesE);
+    CPPUNIT_ASSERT(propertiesE);
 
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
@@ -469,8 +464,8 @@ pylith::materials::TestMaterial::testDimProperties(void)
 void
 pylith::materials::TestMaterial::testDBToStateVars(void)
 { // testDBToStateVars
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   // Check to make sure names of Metadata values match names of test
   // data values (consistency check).
@@ -497,7 +492,7 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
     
     const PylithScalar* const stateVarsE = 
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
-    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+    CPPUNIT_ASSERT( (0 < stateVarsSize && stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
@@ -517,8 +512,8 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
 void
 pylith::materials::TestMaterial::testNonDimStateVars(void)
 { // testNonDimStateVars
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsQuadPt;
@@ -532,7 +527,7 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
     
     const PylithScalar* const stateVarsNondimE =
       (stateVarsSize > 0) ? &_data->stateVarsNondim[iLoc*stateVarsSize] : 0;
-    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsNondimE) ||
+    CPPUNIT_ASSERT( (0 < stateVarsSize && stateVarsNondimE) ||
 		    (0 == stateVarsSize && 0 == stateVarsNondimE) );
 
     const PylithScalar tolerance = 1.0e-06;
@@ -553,8 +548,8 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
 void
 pylith::materials::TestMaterial::testDimStateVars(void)
 { // testDimStateVars
-  CPPUNIT_ASSERT(0 != _material);
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_material);
+  CPPUNIT_ASSERT(_data);
   
   const int numLocs = _data->numLocs;
   const int stateVarsSize = _data->numVarsQuadPt;
@@ -568,7 +563,7 @@ pylith::materials::TestMaterial::testDimStateVars(void)
     
     const PylithScalar* const stateVarsE =
       (stateVarsSize > 0) ? &_data->stateVars[iLoc*stateVarsSize] : 0;
-    CPPUNIT_ASSERT( (0 < stateVarsSize && 0 != stateVarsE) ||
+    CPPUNIT_ASSERT( (0 < stateVarsSize && stateVarsE) ||
 		    (0 == stateVarsSize && 0 == stateVarsE) );
 
     const PylithScalar tolerance = 1.0e-06;
