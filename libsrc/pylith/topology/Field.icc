@@ -30,7 +30,7 @@ pylith::topology::Field<mesh_type>::petscSection(void) const {
   PetscSection s = PETSC_NULL;
   if (_dm) {
     PetscErrorCode err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
-  }
+  } // if
   return s;
 }
 
@@ -49,53 +49,6 @@ PetscVec
 pylith::topology::Field<mesh_type>::globalVector(void) const {
   return _globalVec;
 }
-
-// Get the local array associated with the local PETSc Vec.
-template<typename mesh_type>
-inline
-PetscScalar*
-pylith::topology::Field<mesh_type>::getLocalArray(void) const
-{ // getLocalArray
-  PetscScalar* localArray = NULL;
-  PetscErrorCode err = VecGetArray(_localVec, &localArray);CHECK_PETSC_ERROR(err);
-  assert((_localVec && localArray) || (!_localVec && !localArray));
-
-  return localArray;
-} // getLocalArray
-
-// Restore local array associated with the local PETSc Vec.
-template<typename mesh_type>
-inline
-void
-pylith::topology::Field<mesh_type>::restoreLocalArray(PetscScalar** localArray) const
-{ // restoreLocalArray
-  PetscErrorCode err = VecRestoreArray(_localVec, localArray);CHECK_PETSC_ERROR(err);
-  assert(!(*localArray));
-} // restoreLocalArray
-
-// Get fiber dimension for point.
-template<typename mesh_type>
-inline
-PetscInt
-pylith::topology::Field<mesh_type>::sectionDof(const PetscInt point) const
-{ // sectionDof
-  PetscSection section = petscSection();assert(section);
-  PetscInt dof;
-  PetscErrorCode err = PetscSectionGetDof(section, point, &dof);CHECK_PETSC_ERROR(err);
-  return dof;
-} // sectionDof
-
-// Get offset into array for point.
-template<typename mesh_type>
-inline
-PetscInt
-pylith::topology::Field<mesh_type>::sectionOffset(const PetscInt point) const
-{ // sectionOffset
-  PetscSection section = petscSection();assert(section);
-  PetscInt offset;
-  PetscErrorCode err = PetscSectionGetOffset(section, point, &offset);CHECK_PETSC_ERROR(err);
-  return offset;
-} // sectionOffset
 
 // Get mesh associated with field.
 template<typename mesh_type>
