@@ -37,9 +37,6 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(const int dimension,
 				      const int tensorSize,
@@ -110,9 +107,6 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
 { // initialize
   assert(0 != _dbProperties);
   assert(0 != quadrature);
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("MaterialsFields");
 
   // Get quadrature information
   const int numQuadPts = quadrature->numQuadPts();
@@ -296,8 +290,6 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   _dbProperties->close();
   if (0 != _dbInitialState)
     _dbInitialState->close();
-
-  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -419,13 +411,9 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("OutputFields");
       int_array cellsTmp(cells, numCells);
-
       field->newSection(cellsTmp, totalFiberDim);
       field->allocate();
-      logger.stagePop();
     } // if
     assert(fieldSection);
     field->label(name);
@@ -498,13 +486,9 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       useCurrentField = totalFiberDim == totalFiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("OutputFields");
       int_array cellsTmp(cells, numCells);
-
       field->newSection(cellsTmp, totalFiberDim);
       field->allocate();
-      logger.stagePop();
     } // if
     assert(fieldSection);
     fieldType = _metadata.getStateVar(stateVarIndex).fieldType;
