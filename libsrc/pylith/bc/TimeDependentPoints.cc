@@ -113,9 +113,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
     strcpy(rateNames[i], name.c_str());
   } // for
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("BoundaryConditions");
-
   delete _parameters;
   _parameters = new topology::Fields<topology::Field<topology::Mesh> >(mesh);
 
@@ -215,8 +212,6 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   } // for
   delete[] valueNames; valueNames = 0;
   delete[] rateNames; rateNames = 0;
-
-  logger.stagePop();
 } // _queryDatabases
 
 // ----------------------------------------------------------------------

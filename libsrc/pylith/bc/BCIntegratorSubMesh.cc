@@ -21,6 +21,7 @@
 #include "BCIntegratorSubMesh.hh" // implementation of object methods
 
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
@@ -87,32 +88,29 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<SieveSubMesh>& sieveSubMesh = _boundaryMesh->sieveMesh();
-  assert(!sieveSubMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells = 
-    sieveSubMesh->heightStratum(1);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
+  const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
+  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
+
+  throw std::logic_error("BCIntegratorSubMesh::verifyConfiguration(mesh) not implemented for PETSc dm.");
+#if 0 // :MATT: Update this for PETSc dm
 
   // Make sure surface cells are compatible with quadrature.
-  const int boundaryDepth = sieveSubMesh->depth()-1; // depth of bndry cells
-  for (SieveSubMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellNumCorners = 
-      sieveSubMesh->getNumCellCorners(*c_iter, boundaryDepth);
+  const int boundaryDepth = sieveSubMesh->depth()-1; // depth of bndry cells // UPDATE THIS
+  for (PetscInt c = cStart; c < cEnd; ++c) {
+    const int cellNumCorners = sieveSubMesh->getNumCellCorners(c, boundaryDepth); // UPDATE THIS
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for boundary condition '"
 	  << _label << "'.\n"
-	  << "Cell " << *c_iter << " has " << cellNumCorners
+	  << "Cell " << c << " has " << cellNumCorners
 	  << " vertices but quadrature reference cell has "
 	  << numCorners << " vertices.";
       throw std::runtime_error(msg.str());
     } // if
   } // for
-
+#endif
 } // verifyConfiguration
 
 

@@ -36,8 +36,6 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
-#include <stdexcept> // USES std::runtime_erro
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
 
@@ -382,129 +380,125 @@ pylith::bc::TestAbsorbingDampers::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(_quadrature);
 
-  try {
-    // Setup mesh
-    meshio::MeshIOAscii iohandler;
-    iohandler.filename(_data->meshFilename);
-    iohandler.read(mesh);
+  // Setup mesh
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(_data->meshFilename);
+  iohandler.read(mesh);
 
-    // Set coordinate system
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(mesh->dimension());
-    cs.initialize();
-    mesh->coordsys(&cs);
+  // Set coordinate system
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(_data->lengthScale);
-    normalizer.pressureScale(_data->pressureScale);
-    normalizer.densityScale(_data->densityScale);
-    normalizer.timeScale(_data->timeScale);
-    mesh->nondimensionalize(normalizer);
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
+  mesh->nondimensionalize(normalizer);
 
-    // Set up quadrature
-    _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
-			    _data->basisDerivRef, _data->numQuadPts, 
-			    _data->numBasis, _data->cellDim,
-			    _data->quadPts, _data->numQuadPts, _data->cellDim,
-			    _data->quadWts, _data->numQuadPts,
-			    _data->spaceDim);
+  // Set up quadrature
+  _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
+  			    _data->basisDerivRef, _data->numQuadPts, 
+  			    _data->numBasis, _data->cellDim,
+  			    _data->quadPts, _data->numQuadPts, _data->cellDim,
+  			    _data->quadWts, _data->numQuadPts,
+  			    _data->spaceDim);
 
-    // Set up database
-    spatialdata::spatialdb::SimpleDB db("TestAbsorbingDampers");
-    spatialdata::spatialdb::SimpleIOAscii dbIO;
-    dbIO.filename(_data->spatialDBFilename);
-    db.ioHandler(&dbIO);
-    db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  // Set up database
+  spatialdata::spatialdb::SimpleDB db("TestAbsorbingDampers");
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename(_data->spatialDBFilename);
+  db.ioHandler(&dbIO);
+  db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
-    bc->quadrature(_quadrature);
-    bc->timeStep(_data->dt);
-    bc->label(_data->label);
-    bc->db(&db);
-    bc->normalizer(normalizer);
-    bc->createSubMesh(*mesh);
-    bc->initialize(*mesh, upDir);
+  bc->quadrature(_quadrature);
+  bc->timeStep(_data->dt);
+  bc->label(_data->label);
+  bc->db(&db);
+  bc->normalizer(normalizer);
+  bc->createSubMesh(*mesh);
+  bc->initialize(*mesh, upDir);
 
-    //bc->_boundaryMesh->view("BOUNDARY MESH");
+  //bc->_boundaryMesh->view("BOUNDARY MESH");
 
-    // Setup fields
-    CPPUNIT_ASSERT(fields);
-    fields->add("residual", "residual");
-    fields->add("dispIncr(t->t+dt)", "displacement_increment");
-    fields->add("disp(t)", "displacement");
-    fields->add("disp(t-dt)", "displacement");
-    fields->add("velocity(t)", "velocity");
-    fields->solutionName("dispIncr(t->t+dt)");
+  // Setup fields
+  CPPUNIT_ASSERT(fields);
+  fields->add("residual", "residual");
+  fields->add("dispIncr(t->t+dt)", "displacement_increment");
+  fields->add("disp(t)", "displacement");
+  fields->add("disp(t-dt)", "displacement");
+  fields->add("velocity(t)", "velocity");
+  fields->solutionName("dispIncr(t->t+dt)");
 
-    topology::Field<topology::Mesh>& residual = fields->get("residual");
-    PetscDM             dmMesh = mesh->dmMesh();
-    PetscInt       vStart, vEnd;
-    PetscErrorCode err;
+  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  PetscDM             dmMesh = mesh->dmMesh();
+  PetscInt       vStart, vEnd;
+  PetscErrorCode err;
 
-    CPPUNIT_ASSERT(dmMesh);
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-    residual.newSection(pylith::topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
-    residual.allocate();
-    residual.zero();
-    residual.scale(normalizer.lengthScale());
-    fields->copyLayout("residual");
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  residual.newSection(pylith::topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  residual.allocate();
+  residual.zero();
+  residual.scale(normalizer.lengthScale());
+  fields->copyLayout("residual");
 
-    const int totalNumVertices = vEnd - vStart;
-    const int fieldSize = _data->spaceDim * totalNumVertices;
-    PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();
-    PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();
-    PetscSection dispTSection = fields->get("disp(t)").petscSection();
-    PetscVec dispTVec = fields->get("disp(t)").localVector();
-    PetscSection dispTmdtSection  = fields->get("disp(t-dt)").petscSection();
-    PetscVec dispTmdtVec = fields->get("disp(t-dt)").localVector();
-    PetscSection velSection = fields->get("velocity(t)").petscSection();
-    PetscVec velVec = fields->get("velocity(t)").localVector();
-    PetscScalar *dispTIncrArray, *dispTArray, *dispTmdtArray, *velArray;
-    const int spaceDim = _data->spaceDim;
-    const PylithScalar dt = _data->dt;
+  const int totalNumVertices = vEnd - vStart;
+  const int fieldSize = _data->spaceDim * totalNumVertices;
+  PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();
+  PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();
+  PetscSection dispTSection = fields->get("disp(t)").petscSection();
+  PetscVec dispTVec = fields->get("disp(t)").localVector();
+  PetscSection dispTmdtSection  = fields->get("disp(t-dt)").petscSection();
+  PetscVec dispTmdtVec = fields->get("disp(t-dt)").localVector();
+  PetscSection velSection = fields->get("velocity(t)").petscSection();
+  PetscVec velVec = fields->get("velocity(t)").localVector();
+  PetscScalar *dispTIncrArray, *dispTArray, *dispTmdtArray, *velArray;
+  const int spaceDim = _data->spaceDim;
+  const PylithScalar dt = _data->dt;
 
-    CPPUNIT_ASSERT(dispTIncrSection);CPPUNIT_ASSERT(dispTIncrVec);
-    CPPUNIT_ASSERT(dispTSection);CPPUNIT_ASSERT(dispTVec);
-    CPPUNIT_ASSERT(dispTmdtSection);CPPUNIT_ASSERT(dispTmdtVec);
-    CPPUNIT_ASSERT(velSection);CPPUNIT_ASSERT(velVec);
-    err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
-    for(PetscInt v = vStart; v < vEnd; ++v) {
-      PetscInt dof, off;
+  CPPUNIT_ASSERT(dispTIncrSection);CPPUNIT_ASSERT(dispTIncrVec);
+  CPPUNIT_ASSERT(dispTSection);CPPUNIT_ASSERT(dispTVec);
+  CPPUNIT_ASSERT(dispTmdtSection);CPPUNIT_ASSERT(dispTmdtVec);
+  CPPUNIT_ASSERT(velSection);CPPUNIT_ASSERT(velVec);
+  err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    PetscInt dof, off;
 
-      err = PetscSectionGetDof(dispTIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(dispTIncrSection, v, &off);CHECK_PETSC_ERROR(err);
-      for(PetscInt d = 0; d < dof; ++d) {
-        dispTIncrArray[off+d] = _data->fieldTIncr[(v - vStart)*spaceDim+d];
-      }
-      err = PetscSectionGetDof(dispTSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(dispTSection, v, &off);CHECK_PETSC_ERROR(err);
-      for(PetscInt d = 0; d < dof; ++d) {
-        dispTIncrArray[off+d] = _data->fieldT[(v - vStart)*spaceDim+d];
-      }
-      err = PetscSectionGetDof(dispTmdtSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(dispTmdtSection, v, &off);CHECK_PETSC_ERROR(err);
-      for(PetscInt d = 0; d < dof; ++d) {
-        dispTIncrArray[off+d] = _data->fieldTmdt[(v - vStart)*spaceDim+d];
-      }
-      err = PetscSectionGetDof(velSection, v, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(velSection, v, &off);CHECK_PETSC_ERROR(err);
-      for(PetscInt d = 0; d < dof; ++d) {
-        velArray[off+d] = (_data->fieldTIncr[(v - vStart)*spaceDim+d] +
-                           _data->fieldT[(v - vStart)*spaceDim+d] -
-                           _data->fieldTmdt[(v - vStart)*spaceDim+d]) / (2*dt);
-      }
-    } // for
-    err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
+    err = PetscSectionGetDof(dispTIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTIncrSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      dispTIncrArray[off+d] = _data->fieldTIncr[(v - vStart)*spaceDim+d];
+    }
+    err = PetscSectionGetDof(dispTSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      dispTIncrArray[off+d] = _data->fieldT[(v - vStart)*spaceDim+d];
+    }
+    err = PetscSectionGetDof(dispTmdtSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(dispTmdtSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      dispTIncrArray[off+d] = _data->fieldTmdt[(v - vStart)*spaceDim+d];
+    }
+    err = PetscSectionGetDof(velSection, v, &dof);CHECK_PETSC_ERROR(err);
+    err = PetscSectionGetOffset(velSection, v, &off);CHECK_PETSC_ERROR(err);
+    for(PetscInt d = 0; d < dof; ++d) {
+      velArray[off+d] = (_data->fieldTIncr[(v - vStart)*spaceDim+d] +
+                         _data->fieldT[(v - vStart)*spaceDim+d] -
+                         _data->fieldTmdt[(v - vStart)*spaceDim+d]) / (2*dt);
+    }
+  } // for
+  err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispTVec,     &dispTArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(dispTmdtVec,  &dispTmdtArray);CHECK_PETSC_ERROR(err);
+  err = VecRestoreArray(velVec,       &velArray);CHECK_PETSC_ERROR(err);
 } // _initialize
 
 

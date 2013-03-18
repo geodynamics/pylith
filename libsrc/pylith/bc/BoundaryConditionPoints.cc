@@ -67,9 +67,6 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
 { // _getPoints
   typedef topology::Mesh::IntSection::chart_type chart_type;
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("BoundaryConditions");
-
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscDMLabel label = NULL;
   PetscIS pointIS = NULL;
@@ -92,8 +89,6 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
   err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
-
-  logger.stagePop();
 } // _getPoints
 
 

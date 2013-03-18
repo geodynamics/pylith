@@ -631,40 +631,36 @@ pylith::bc::TestNeumann::_preinitialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(bc);
 
-  try {
-    // Set up mesh
-    meshio::MeshIOAscii iohandler;
-    iohandler.filename(_data->meshFilename);
-    iohandler.read(mesh);
+  // Set up mesh
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(_data->meshFilename);
+  iohandler.read(mesh);
 
-    // Set up coordinates
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(mesh->dimension());
-    cs.initialize();
-    mesh->coordsys(&cs);
+  // Set up coordinates
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(mesh->dimension());
+  cs.initialize();
+  mesh->coordsys(&cs);
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.lengthScale(_data->lengthScale);
-    normalizer.pressureScale(_data->pressureScale);
-    normalizer.densityScale(_data->densityScale);
-    normalizer.timeScale(_data->timeScale);
-    mesh->nondimensionalize(normalizer);
+  spatialdata::units::Nondimensional normalizer;
+  normalizer.lengthScale(_data->lengthScale);
+  normalizer.pressureScale(_data->pressureScale);
+  normalizer.densityScale(_data->densityScale);
+  normalizer.timeScale(_data->timeScale);
+  mesh->nondimensionalize(normalizer);
 
-    // Set up quadrature
-    _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
-			    _data->basisDerivRef, _data->numQuadPts, 
-			    _data->numBasis, _data->cellDim,
-			    _data->quadPts, _data->numQuadPts, _data->cellDim,
-			    _data->quadWts, _data->numQuadPts,
-			    _data->spaceDim);
+  // Set up quadrature
+  _quadrature->initialize(_data->basis, _data->numQuadPts, _data->numBasis,
+  			    _data->basisDerivRef, _data->numQuadPts, 
+  			    _data->numBasis, _data->cellDim,
+  			    _data->quadPts, _data->numQuadPts, _data->cellDim,
+  			    _data->quadWts, _data->numQuadPts,
+  			    _data->spaceDim);
 
-    bc->quadrature(_quadrature);
-    bc->label(_data->label);
-    bc->normalizer(normalizer);
-    bc->createSubMesh(*mesh);
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
+  bc->quadrature(_quadrature);
+  bc->label(_data->label);
+  bc->normalizer(normalizer);
+  bc->createSubMesh(*mesh);
 } // _preinitialize
 
 // ----------------------------------------------------------------------
@@ -679,37 +675,33 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
   CPPUNIT_ASSERT(fields);
   CPPUNIT_ASSERT(_quadrature);
 
-  try {
-    _preinitialize(mesh, bc);
+  _preinitialize(mesh, bc);
 
-    // Set up database
-    spatialdata::spatialdb::SimpleDB db("TestNeumann");
-    spatialdata::spatialdb::SimpleIOAscii dbIO;
-    dbIO.filename(_data->spatialDBFilename);
-    db.ioHandler(&dbIO);
-    db.queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
+  // Set up database
+  spatialdata::spatialdb::SimpleDB db("TestNeumann");
+  spatialdata::spatialdb::SimpleIOAscii dbIO;
+  dbIO.filename(_data->spatialDBFilename);
+  db.ioHandler(&dbIO);
+  db.queryType(spatialdata::spatialdb::SimpleDB::LINEAR);
 
-    const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
+  const PylithScalar upDir[] = { 0.0, 0.0, 1.0 };
 
-    bc->dbInitial(&db);
-    bc->initialize(*mesh, upDir);
+  bc->dbInitial(&db);
+  bc->initialize(*mesh, upDir);
 
-    // Set up fields
-    CPPUNIT_ASSERT(0 != fields);
-    fields->add("residual", "residual");
-    fields->add("disp(t), bc(t+dt)", "displacement");
-    fields->solutionName("disp(t), bc(t+dt)");
+  // Set up fields
+  CPPUNIT_ASSERT(0 != fields);
+  fields->add("residual", "residual");
+  fields->add("disp(t), bc(t+dt)", "displacement");
+  fields->solutionName("disp(t), bc(t+dt)");
 
-    topology::Field<topology::Mesh>& residual = fields->get("residual");
-    residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
-    residual.allocate();
-    residual.scale(_data->lengthScale);
-    residual.zero();
+  topology::Field<topology::Mesh>& residual = fields->get("residual");
+  residual.newSection(topology::FieldBase::VERTICES_FIELD, _data->spaceDim);
+  residual.allocate();
+  residual.scale(_data->lengthScale);
+  residual.zero();
 
-    fields->copyLayout("residual");
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
+  fields->copyLayout("residual");
 } // _initialize
 
 // ----------------------------------------------------------------------

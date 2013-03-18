@@ -26,6 +26,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -36,9 +37,6 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBoundary );
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -73,30 +71,19 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
   DirichletBoundary bc;
   _initialize(&mesh, &bc);
 
-  CPPUNIT_ASSERT(0 != _data);
+  CPPUNIT_ASSERT(_data);
 
-  const int numCells = mesh.sieveMesh()->heightStratum(0)->size();
+  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numBoundary = _data->numConstrainedPts;
 
-  // Check vertices in boundary mesh
-  const ALE::Obj<SieveMesh>& sieveMesh = bc._boundaryMesh->sieveMesh();
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
+  // Check vertices in boundary mesh.
+  const PetscDM dmSubMesh = bc._boundaryMesh->dmMesh();CPPUNIT_ASSERT(dmSubMesh);
+  topology::Stratum depthStratum(dmSubMesh, topology::Stratum::DEPTH, 0);
+  CPPUNIT_ASSERT_EQUAL(PetscInt(numBoundary), depthStratum.size());
 
-  // Check cells
-  const int offset = numCells;
-  if (numFixedDOF > 0) {
-    int i = 0;
-    for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-	 v_iter != verticesEnd;
-	 ++v_iter, ++i) {
-      CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, *v_iter);
-    } // for
-    CPPUNIT_ASSERT_EQUAL(int(numBoundary), i);
-  } // if
+  // :TODO: Check cells in boundary mesh.
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -104,8 +91,8 @@ void
 pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
 					       DirichletBoundary* const bc) const
 { // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != bc);
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(bc);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);

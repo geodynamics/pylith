@@ -50,6 +50,8 @@ pylith::bc::BoundaryCondition::deallocate(void)
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  throw std::logic_error("BoundaryCondition::verifyConfiguration(mesh) not implemented for PETSc dm.");
+#if 0 // :MATT: Update this for PETSc dm.
   const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -59,6 +61,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) c
 	<< "' for boundary condition.";
     throw std::runtime_error(msg.str());
   } // if
+#endif
 } // verifyConfiguration
 
 
