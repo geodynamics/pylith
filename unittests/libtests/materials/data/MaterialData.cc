@@ -39,11 +39,13 @@ pylith::materials::MaterialData::MaterialData(void) :
   stateVars(0),
   propertiesNondim(0),
   stateVarsNondim(0),
-  lengthScale(0),
-  timeScale(0),
-  pressureScale(0),
+  lengthScale(1.0e+3),
+  timeScale(2.0),
+  pressureScale(2.25e+10),
   densityScale(0)
 { // constructor
+  const PylithScalar velScale = lengthScale / timeScale;
+  densityScale = pressureScale / (velScale*velScale);
 } // constructor
 
 // ----------------------------------------------------------------------
