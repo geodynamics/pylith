@@ -70,16 +70,34 @@ public :
   /** Constructor with mesh, DM, and metadata
    *
    * @param mesh Finite-element mesh.
+   * @param dm PETSc dm for field.
+   * @param meteadata Field metadata.
    */
-  Field(const mesh_type& mesh, DM dm, const Metadata& metadata);
+  Field(const mesh_type& mesh, 
+	PetscDM dm,
+	const Metadata& metadata);
 
-  /** Constructor with mesh, DM, local data, and metadata
+  /** Constructor with mesh, PETSc DM, local data, and metadata.
    *
    * @param mesh Finite-element mesh.
+   * @param dm PETSc DM for field.
+   * @param localVec PETSc Vec with local data for field.
+   * @param meteadata Field metadata.
    */
-  Field(const mesh_type& mesh, DM dm, Vec localVec, const Metadata& metadata);
+  Field(const mesh_type& mesh, 
+	PetscDM dm,
+	PetscVec localVec,
+	const Metadata& metadata);
 
-  Field(const Field& src, const int fields[], int numFields);
+  /** Constructor with field and subfield information.
+   *
+   * @param mesh Finite-element mesh.
+   * @param fields Array of indices for fields to extract.
+   * @param numFields Size of array.
+   */
+  Field(const Field& src,
+	const int fields[],
+	int numFields);
 
   /// Destructor.
   ~Field(void);
@@ -93,9 +111,9 @@ public :
    */
   const mesh_type& mesh(void) const;
 
-  /** Get DM associated with field.
+  /** Get PETSc DM associated with field.
    *
-   * @returns DM
+   * @returns PETSc DM
    */
   PetscDM dmMesh(void) const;
 
@@ -122,7 +140,8 @@ public :
    * @param name Field name
    * @param value Type of vector field.
    */
-  void vectorFieldType(const std::string& name, const VectorFieldEnum value);
+  void vectorFieldType(const std::string& name,
+		       const VectorFieldEnum value);
 
   /** Get vector field type
    *
@@ -185,40 +204,6 @@ public :
    */
   PetscVec globalVector(void) const;
 
-  /** Get the local array associated with the local PETSc Vec.
-   *
-   * Must call restoryArray() afterwards.
-   * 
-   * @returns Local array.
-   */
-  PetscScalar* getLocalArray(void) const;
-
-  /** Restore local array associated with the local PETSc Vec.
-   *
-   * @preq Must be preceded by call to getLocalArray().
-   *
-   * @param a Local array.
-   */
-  void restoreLocalArray(PetscScalar** a) const;
-
-  /** Get fiber dimension for point.
-   *
-   * @preq Must call cachePetscSection().
-   *
-   * @param point Point in mesh.
-   * @returns Fiber dimension.
-   */
-  PetscInt sectionDof(const PetscInt point) const;
-
-  /** Get offset into array for point.
-   *
-   * @preq Must call cachePetscSection().
-   *
-   * @param point Point in mesh.
-   * @returns Offset.
-   */
-  PetscInt sectionOffset(const PetscInt point) const;
-
   /** Get the number of sieve points in the chart.
    *
    * @returns the chart size.
@@ -246,7 +231,9 @@ public :
    *
    * @note Don't forget to call label(), especially if reusing a field.
    */
-  void newSection(const PetscInt pStart, const PetscInt pEnd, const int fiberDim);
+  void newSection(const PetscInt pStart,
+		  const PetscInt pEnd,
+		  const int fiberDim);
 
   /** Create sieve section and set chart and fiber dimesion for a list
    * of points.
@@ -305,11 +292,20 @@ public :
    */
   void cloneSection(const Field& src);
 
-  void addField(const char *name, int numComponents);
+  /** :MATT: ADD DOCUMENTATION
+   */
+  void addField(const char *name,
+		int numComponents);
 
-  void setupFields();
+  /** :MATT: ADD DOCUMENTATION
+   */
+  void setupFields(void);
 
-  void updateDof(const char *name, const DomainEnum domain, const int fiberDim);
+  /** :MATT: ADD DOCUMENTATION
+   */
+  void updateDof(const char *name,
+		 const DomainEnum domain,
+		 const int fiberDim);
 
   /// Clear variables associated with section.
   void clear(void);
@@ -339,7 +335,10 @@ public :
    * @param component Section field component or -1
    * @param ovec Values to copy.
    */
-  void copy(PetscSection osection, PetscInt field, PetscInt component, Vec ovec);
+  void copy(PetscSection osection,
+	    PetscInt field,
+	    PetscInt component,
+	    PetscVec ovec);
 
   /** Add two fields, storing the result in one of the fields.
    *
