@@ -93,8 +93,6 @@ pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 					    feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
   assert(_dbProperties);
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.stagePush("Friction");
 
   // Get vertices associated with friction interface
   PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
@@ -233,8 +231,6 @@ pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 
   // Setup buffers for restrict/update of properties and state variables.
   _propsStateVarsVertex.resize(_propsFiberDim+_varsFiberDim);
-
-  //logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------

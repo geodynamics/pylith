@@ -41,9 +41,6 @@
 //#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int dimension,
 						    const int tensorSize,
@@ -294,12 +291,9 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
       useCurrentField = fiberDim == fiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("OutputFields");
       int_array cellsTmp(cells, numCells);
       field->newSection(cellsTmp, fiberDim);
       field->allocate();
-      logger.stagePop();
     } // if
     field->label("stable_dt_implicit");
     assert(_normalizer);
@@ -382,11 +376,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
       useCurrentField = fiberDim == fiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("OutputFields");
       field->newSection(cells, numCells, fiberDim);
       field->allocate();
-      logger.stagePop();
     } // if
     field->label("stable_dt_explicit");
     assert(_normalizer);
@@ -481,13 +472,10 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
       useCurrentField = fiberDim == fiberDimCurrent;
     } // if
     if (!useCurrentField) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("OutputFields");
       field->newSection(cells, numCells, fiberDim);
       field->allocate();
       fieldSection = field->petscSection();
       fieldVec     = field->localVector();
-      logger.stagePop();
     } // if
     assert(fieldSection);
     field->label("stable_dt_implicit");
@@ -546,9 +534,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 { // _initializeInitialStress
   if (!_dbInitialStress)
     return;
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("MaterialsFields");
 
   assert(_initialFields);
   _initialFields->add("initial stress", "initial_stress");
@@ -673,8 +658,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   // Close databases
   _dbInitialStress->close();
-
-  logger.stagePop();
 } // _initializeInitialStress
 
 // ----------------------------------------------------------------------
@@ -685,9 +668,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 { // _initializeInitialStrain
   if (!_dbInitialStrain)
     return;
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("MaterialsFields");
 
   assert(_initialFields);
   _initialFields->add("initial strain", "initial_strain");
@@ -807,8 +787,6 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 
   // Close databases
   _dbInitialStrain->close();
-
-  logger.stagePop();
 } // _initializeInitialStrain
 
 // ----------------------------------------------------------------------
