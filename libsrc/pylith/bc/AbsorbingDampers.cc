@@ -99,16 +99,12 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cellGeometry.spaceDim();
   const int fiberDim = numQuadPts * spaceDim;
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("BoundaryConditions");
 
   delete _parameters;
   _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
   assert(_parameters);
   _parameters->add("damping constants", "damping_constants", topology::FieldBase::FACES_FIELD, fiberDim);
   _parameters->get("damping constants").allocate();
-
-  logger.stagePop();
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -449,8 +445,8 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
     velocityVisitor.getClosure(&velocityArray, &velocitySize, c);
     assert(velocitySize == numBasis*spaceDim);
 
-    const PetscInt doff = dampingConsts.sectionOffset(c);
-    assert(numQuadPts*spaceDim == dampingConsts.sectionDof(c));
+    const PetscInt doff = dampingConstsVisitor.sectionOffset(c);
+    assert(numQuadPts*spaceDim == dampingConstsVisitor.sectionDof(c));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);

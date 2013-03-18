@@ -30,10 +30,6 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-
-// ----------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::bc::TestBoundaryMesh::setUp(void)

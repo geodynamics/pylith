@@ -87,9 +87,6 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("BoundaryConditions");
-
   if (!_outputFields) {
     _outputFields = new topology::Fields<topology::Field<topology::SubMesh> >(*_boundaryMesh);
   } // if
@@ -105,8 +102,6 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   bufferScalar.vectorFieldType(topology::FieldBase::SCALAR);
   bufferScalar.scale(timeScale);
   bufferScalar.allocate();
-
-  logger.stagePop();
 
   if (0 == strcasecmp(name, "initial_value"))
     return _bufferVector("initial", "initial_displacement", lengthScale);

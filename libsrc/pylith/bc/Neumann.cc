@@ -70,13 +70,8 @@ void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				const PylithScalar upDir[3])
 { // initialize
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("BoundaryConditions");
-
   _queryDatabases();
   _paramsLocalToGlobal(upDir);
-
-  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -454,8 +449,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
     _normalizer->nondimensionalize(&valuesCell[0], valuesCell.size(), scale);
 
     // Update section
-    const PetscInt voff = valueField.sectionOffset(c);
-    const PetscInt vdof = valueField.sectionDof(c);
+    const PetscInt voff = valueVisitor.sectionOffset(c);
+    const PetscInt vdof = valueVisitor.sectionDof(c);
     assert(numQuadPts*querySize == vdof);
     for(PetscInt d = 0; d < vdof; ++d)
       valueArray[voff+d] = valuesCell[d];

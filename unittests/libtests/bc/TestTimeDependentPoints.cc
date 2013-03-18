@@ -36,10 +36,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestTimeDependentPoints );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 namespace pylith {
   namespace bc {
     namespace _TestTimeDependentPoints {

@@ -25,15 +25,13 @@
 #include "data/PointForceDataTri3.hh" // USES PointForceDataTri3
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryConditionPoints );
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 // Test _getPoints().
@@ -58,10 +56,9 @@ pylith::bc::TestBoundaryConditionPoints::testGetPoints(void)
   bc.label(data.label);
   bc.BoundaryConditionPoints::_getPoints(mesh);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  
-  const int numCells = sieveMesh->heightStratum(0)->size();
+  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum heightStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = heightStratum.size();
   const size_t numPoints = data.numForcePts;
 
   // Check points

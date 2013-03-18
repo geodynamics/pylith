@@ -27,6 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -66,15 +67,16 @@ pylith::bc::TestDirichletBC::testConstructor(void)
 void
 pylith::bc::TestDirichletBC::testInitialize(void)
 { // testInitialize
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   DirichletBC bc;
   _initialize(&mesh, &bc);
-  CPPUNIT_ASSERT(0 != _data);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  
-  const int numCells = sieveMesh->heightStratum(0)->size();
+  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum heightStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = heightStratum.size();
+
   const int numFixedDOF = _data->numFixedDOF;
   const size_t numPoints = _data->numConstrainedPts;
 
