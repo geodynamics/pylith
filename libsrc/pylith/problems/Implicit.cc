@@ -21,10 +21,8 @@
 #include "Implicit.hh" // implementation of class methods
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -50,42 +48,34 @@ pylith::problems::Implicit::calcRateFields(void)
   const PylithScalar dt = _dt;
 
   topology::Field<topology::Mesh>& dispIncr = _fields->get("dispIncr(t->t+dt)");
-  const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = dispIncr.mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  PetscErrorCode err = 0;
-  
   // Get sections.
-  PetscSection dispIncrSection = dispIncr.petscSection();assert(dispIncrSection);
-  PetscVec dispIncrVec = dispIncr.localVector();assert(dispIncrVec);
-  PetscScalar *dispIncrArray = NULL;
-  err = VecGetArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
-  
-  PetscSection velSection = _fields->get("velocity(t)").petscSection();assert(velSection);
-  PetscVec velVec = _fields->get("velocity(t)").localVector();assert(velVec);
-  PetscScalar *velArray = NULL;
-  err = VecGetArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh dispIncrVisitor(dispIncr);
+  PetscScalar* dispIncrArray = dispIncrVisitor.localArray();
+
+  topology::Field<topology::Mesh>& velocity = _fields->get("velocity(t)");
+  topology::VecVisitorMesh velVisitor(velocity);
+  PetscScalar* velArray = velVisitor.localArray();
 
   // Get mesh vertices.
-  PetscDM dmMesh = dispIncr.dmMesh();assert(dmMesh);
-  PetscInt vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = dispIncr.mesh().dmMesh();assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off, vdof, voff;
-    err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(velSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(velSection, v, &voff);CHECK_PETSC_ERROR(err);
-    assert(dof == spaceDim);assert(vdof == spaceDim);
+    const PetscInt dioff = dispIncrVisitor.sectionOffset(v);
+    assert(spaceDim == dispIncrVisitor.sectionDof(v));
 
-    for(PetscInt d = 0; d < dof; ++d) {
-      velArray[voff+d] = dispIncrArray[off+d] / dt;
+    const PetscInt voff = velVisitor.sectionOffset(v);
+    assert(spaceDim == velVisitor.sectionDof(v));
+
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      velArray[voff+d] = dispIncrArray[dioff+d] / dt;
     }
   } // for
-  err = VecRestoreArray(dispIncrVec, &dispIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(velVec, &velArray);CHECK_PETSC_ERROR(err);
 
   PetscLogFlops((vEnd - vStart) * spaceDim);
 } // calcRateFields
