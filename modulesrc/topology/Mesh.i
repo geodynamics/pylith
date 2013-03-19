@@ -134,7 +134,7 @@ namespace pylith {
        * @param values Values of field values [output].
        */
       void groups(int* numValues, 
-		  char*** values) const;
+		  const char*** values) const;
 
       /** Return the size of a group.
        *

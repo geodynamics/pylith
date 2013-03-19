@@ -50,9 +50,16 @@ public :
 			int* const materialIds,
 			const int numMaterials);
 
+  /** Get number of cells associated with material.
+   *
+   * @param mesh Finite-element mesh.
+   * @param materialId Id of material.
+   * @returns Number of cells.
+   */
   static
-  int numMaterialCells(const Mesh& mesh, int materialId);
-
+  int numMaterialCells(const Mesh& mesh,
+		       int materialId);
+  
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

@@ -21,6 +21,7 @@
 #include "MeshOps.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES int_array
 
 #include <stdexcept> // USES std::runtime_error
@@ -29,20 +30,6 @@
 
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map
-
-
-// ----------------------------------------------------------------------
-int
-pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
-					    int materialId)
-{ // numMaterialCells
-  PetscInt ncells = 0;
-
-  DM dmMesh = mesh.dmMesh();
-  assert(dmMesh);
-  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);CHECK_PETSC_ERROR(err);
-  return ncells;
-} // numMaterialCells
 
 
 // ----------------------------------------------------------------------
@@ -56,23 +43,23 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 
   // Create map with indices for each material
   std::map<int, int> materialIndex;
-  for (int i=0; i < numMaterials; ++i)
+  for (int i=0; i < numMaterials; ++i) {
     materialIndex[materialIds[i]] = i;
+  } // for
 
   int_array matCellCounts(numMaterials);
   matCellCounts = 0;
 
-  DM       dmMesh = mesh.dmMesh();
-  PetscInt cStart, cEnd;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  DMLabel materialsLabel;
-  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);CHECK_PETSC_ERROR(err);
-  assert(materialsLabel);
+  PetscDMLabel materialsLabel = NULL;
+  err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);CHECK_PETSC_ERROR(err);assert(materialsLabel);
 
   int *matBegin = materialIds;
-  int *matEnd   = materialIds + numMaterials;
+  int *matEnd = materialIds + numMaterials;
   std::sort(matBegin, matEnd);
 
   for (PetscInt c = cStart; c < cEnd; ++c) {
@@ -92,12 +79,12 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
     ++matCellCounts[matIndex];
   } // for
 
-  // Make sure each material has 
+  // Make sure each material has cells.
   int_array matCellCountsAll(matCellCounts.size());
   err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
                       matCellCounts.size(), MPI_INT, MPI_SUM, mesh.comm());CHECK_PETSC_ERROR(err);
   for (int i=0; i < numMaterials; ++i) {
-    const int matId    = materialIds[i];
+    const int matId = materialIds[i];
     const int matIndex = materialIndex[matId];
     assert(0 <= matIndex && matIndex < numMaterials);
     if (matCellCountsAll[matIndex] <= 0) {
@@ -109,6 +96,19 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   } // for
   
 } // checkMaterialIds
+
+
+// ----------------------------------------------------------------------
+int
+pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
+					    int materialId)
+{ // numMaterialCells
+  PetscInt ncells = 0;
+
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);CHECK_PETSC_ERROR(err);
+  return ncells;
+} // numMaterialCells
 
 
 // End of file 
