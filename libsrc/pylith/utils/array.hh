@@ -28,17 +28,7 @@
 #if !defined(pylith_utils_array_hh)
 #define pylith_utils_array_hh
 
-#include "types.hh"
 #include "arrayfwd.hh"
-
-#include "sievetypes.hh" // ensure we include petscsys.h BEFORE valarray to prevent clash over isinf() and isnan().
-
-#include <vector>
-#include <valarray>
-
-namespace pylith {
-  typedef std::valarray<PylithScalar> scalar_array;
-} // namespace pylith
 
 #endif // pylith_utils_array_hh
 

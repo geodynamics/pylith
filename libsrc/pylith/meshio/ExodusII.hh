@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // Forward declarations
 
-#include "pylith/utils/array.hh" // USES string_vector
+#include "pylith/utils/arrayfwd.hh" // USES string_vector
 
 #include <string> // HASA std::string
 

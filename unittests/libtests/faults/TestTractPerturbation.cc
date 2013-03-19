@@ -41,7 +41,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestTractPerturbation );
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
 typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::RealUniformSection RealUniformSection;
 
 // ----------------------------------------------------------------------
 // Test constructor.

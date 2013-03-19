@@ -37,11 +37,6 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::RealUniformSection SubRealUniformSection;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::TractPerturbation::TractPerturbation(void) :
   _parameters(0),

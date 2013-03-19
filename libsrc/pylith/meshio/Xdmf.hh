@@ -38,7 +38,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/utils/array.hh" // USES scalar_array, std::vector
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array, std::vector
 
 #include <vector> // USES std::vector
 #include <fstream> // HASA std::ofstream

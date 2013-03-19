@@ -28,7 +28,7 @@
 // Include directives ---------------------------------------------------
 #include "GMVFile.hh" // ISA GMVFile
 
-#include "pylith/utils/array.hh" // USES int_array, scalar_array
+#include "pylith/utils/arrayfwd.hh" // USES int_array, scalar_array
 #include <iosfwd>
 
 // GMVFileBinary --------------------------------------------------------

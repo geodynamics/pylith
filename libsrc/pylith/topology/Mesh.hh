@@ -30,8 +30,6 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 
-#include "ISectionSpaces.hh" // USES ISectionSpaces
-
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 #include "pylith/utils/sievetypes.hh" // HASA pylith::SieveMesh
 
@@ -63,7 +61,6 @@ public :
   typedef pylith::SieveSubMesh SieveSubMesh;
 
   typedef SieveMesh::real_section_type RealSection;
-  typedef ISectionSpaces<SieveMesh::point_type, PylithScalar> RealUniformSection;
   typedef SieveMesh::int_section_type IntSection;
 
   typedef ALE::ISieveVisitor::IndicesVisitor<RealSection,SieveMesh::order_type,PylithInt> IndicesVisitor;

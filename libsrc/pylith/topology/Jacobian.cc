@@ -34,18 +34,14 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
-  DM dmMesh = field.dmMesh();
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Jacobian");
+  PetscDM dmMesh = field.dmMesh();assert(dmMesh);
 
   // Set blockFlag to -1 if okay to set block size equal to fiber
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);
-  CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
-			"associated with system Jacobian.");
-  logger.stagePop();
+  const char* msg = "Could not create PETSc sparse matrix associated with system Jacobian.";
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
 
   _type = matrixType;
 } // constructor
@@ -58,18 +54,14 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
-  DM dmMesh = field.dmMesh();
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Jacobian");
+  PetscDM dmMesh = field.dmMesh();assert(dmMesh);
 
   // Set blockFlag to -1 if okay to set block size equal to fiber
   // dimension, otherwise use a block size of 1.
   const int blockFlag = (blockOkay) ? -1 : 1;
 
-  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);
-  CHECK_PETSC_ERROR_MSG(err, "Could not create PETSc sparse matrix "
-      "associated with subsystem Jacobian.");
-  logger.stagePop();
+  const char* msg = "Could not create PETSc sparse matrix associated with subsystem Jacobian.";
+  PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
 
   _type = matrixType;
 } // constructor
@@ -120,10 +112,8 @@ pylith::topology::Jacobian::assemble(const char* mode)
 { // assemble
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
-    err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY); 
-    CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);
-    CHECK_PETSC_ERROR(err);
+    err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY);CHECK_PETSC_ERROR(err);
+    err = MatAssemblyEnd(_matrix, MAT_FINAL_ASSEMBLY);CHECK_PETSC_ERROR(err);
 
 #if 0 // DEBUGGING
     // Check for empty row
@@ -153,10 +143,8 @@ pylith::topology::Jacobian::assemble(const char* mode)
 #endif
 
   } else if (0 == strcmp(mode, "flush_assembly")) {
-    err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);
-    CHECK_PETSC_ERROR(err);
-    err = MatAssemblyEnd(_matrix, MAT_FLUSH_ASSEMBLY);
-    CHECK_PETSC_ERROR(err);
+    err = MatAssemblyBegin(_matrix, MAT_FLUSH_ASSEMBLY);CHECK_PETSC_ERROR(err);
+    err = MatAssemblyEnd(_matrix, MAT_FLUSH_ASSEMBLY);CHECK_PETSC_ERROR(err);
   } else
     throw std::runtime_error("Unknown mode for assembly of sparse matrix "
 			     "associated with system Jacobian.");
@@ -169,8 +157,7 @@ pylith::topology::Jacobian::assemble(const char* mode)
 void
 pylith::topology::Jacobian::zero(void)
 { // zero
-  PetscErrorCode err = MatZeroEntries(_matrix);
-  CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = MatZeroEntries(_matrix);CHECK_PETSC_ERROR(err);
   _valuesChanged = true;
 } // zero
 
@@ -179,8 +166,7 @@ pylith::topology::Jacobian::zero(void)
 void
 pylith::topology::Jacobian::view(void) const
 { // view
-  PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);
-  CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
 } // view
 
 // ----------------------------------------------------------------------
@@ -190,10 +176,7 @@ pylith::topology::Jacobian::write(const char* filename,
                                   const MPI_Comm comm)
 { // write
   PetscViewer viewer;
-
-  PetscErrorCode err = 
-    PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);
-  CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);CHECK_PETSC_ERROR(err);
 
   err = MatView(_matrix, viewer); CHECK_PETSC_ERROR(err);
   err = PetscViewerDestroy(&viewer); CHECK_PETSC_ERROR(err);
