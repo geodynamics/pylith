@@ -31,7 +31,6 @@ swig_sources = \
 	FieldBase.i \
 	Field.i \
 	Fields.i \
-	FieldsNew.i \
 	SolutionFields.i \
 	Jacobian.i \
 	Distributor.i \

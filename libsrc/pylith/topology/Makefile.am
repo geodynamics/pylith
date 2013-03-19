@@ -29,9 +29,6 @@ subpkginclude_HEADERS = \
 	Field.cc \
 	Fields.hh \
 	Fields.icc \
-	FieldsNew.hh \
-	FieldsNew.icc \
-	FieldsNew.cc \
 	Jacobian.hh \
 	Mesh.hh \
 	Mesh.icc \
@@ -48,8 +45,6 @@ subpkginclude_HEADERS = \
 	VisitorMesh.icc \
 	VisitorSubMesh.hh \
 	VisitorSubMesh.icc \
-	ISectionSpaces.hh \
-	ISectionSpaces.cc \
 	topologyfwd.hh
 
 noinst_HEADERS =

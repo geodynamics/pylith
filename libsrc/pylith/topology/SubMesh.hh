@@ -54,7 +54,6 @@ public:
 
   typedef Mesh::IntSection IntSection;
   typedef Mesh::RealSection RealSection;
-  typedef Mesh::RealUniformSection  RealUniformSection;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

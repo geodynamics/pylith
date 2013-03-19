@@ -256,16 +256,11 @@ pylith::meshio::OutputManager<mesh_type, field_type>::_dimension(field_type& fie
       _fields = new topology::Fields<field_type>(fieldIn.mesh());
     
     if (!_fields->hasField(fieldName.c_str())) {
-      ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-      logger.stagePush("Output");
-
       _fields->add(fieldName.c_str(), fieldIn.label());
       field_type& fieldOut = _fields->get(fieldName.c_str());
       fieldOut.cloneSection(fieldIn);
       fieldOut.vectorFieldType(fieldIn.vectorFieldType());
       fieldOut.scale(fieldIn.scale());
-
-      logger.stagePop();
     } // if
     field_type& fieldOut = _fields->get(fieldName.c_str());
     fieldOut.copy(fieldIn);

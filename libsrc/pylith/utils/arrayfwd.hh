@@ -31,6 +31,8 @@
 #if !defined(pylith_utils_arrayfwd_hh)
 #define pylith_utils_arrayfwd_hh
 
+#include "types.hh" // USES PylithScalar
+
 #include <string> // USES std::string
 
 /// Forward declaration of STL vector
@@ -48,20 +50,23 @@ namespace pylith {
   /// Alias for std::vector<int>
   typedef std::vector<int, std::allocator<int> > int_vector;
 
-  /// Alias for std::vector<PylithScalar>
+  /// Alias for std::vector<double>
   typedef std::vector<double, std::allocator<double> > double_vector;
 
   /// Alias for std::vector<std::string>
   typedef std::vector<std::string, std::allocator<std::string> > string_vector;
-
-  /// Alias for std::valarray<int>
-  typedef std::valarray<int> int_array;
 
   /// Alias for std::valarray<float>
   typedef std::valarray<float> float_array;
 
   /// Alias for std::valarray<double>
   typedef std::valarray<double> double_array;
+
+  /// Alias for std::valarray<PylithInt>
+  typedef std::valarray<PylithInt> int_array;
+
+  /// Alias for std::valarray<PylithScalar>
+  typedef std::valarray<PylithScalar> scalar_array;
 
 } // pylith
 

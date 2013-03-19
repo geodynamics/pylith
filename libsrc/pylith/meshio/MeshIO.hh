@@ -30,8 +30,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
-
-#include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
+#include "pylith/utils/arrayfwd.hh" // USES scalar_array, int_array, string_vector
 
 // MeshIO ---------------------------------------------------------------
 /// C++ abstract base class for managing mesh input/output.

@@ -78,9 +78,6 @@ namespace pylith {
 
     class ReverseCuthillMcKee;
 
-  template<typename point_type, 
-	   typename value_type,
-	   typename allocator> class ISectionSpaces;
   } // topology
 } // pylith
 

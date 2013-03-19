@@ -91,8 +91,6 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
   err = PetscSectionGetDof(sectionIn, vStart, &fiberDimIn);CHECK_PETSC_ERROR(err);
 
   // Allocation field if necessary
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("OutputFields");
   if (0 == _fieldVecNorm) {
     _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");
@@ -120,7 +118,6 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
 	throw std::logic_error("Bad vector field type in VertexFilterVecNorm.");
       } // switch
   } // if
-  logger.stagePop();
 
   PetscSection sectionNorm = _fieldVecNorm->petscSection();
   Vec          vecNorm     = _fieldVecNorm->localVector();

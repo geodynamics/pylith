@@ -27,7 +27,7 @@
 
 // Include directives ---------------------------------------------------
 #include "feassemblefwd.hh" // forward declaration
-#include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/array.hh" // HASA scalar_array
 
 // Quadrature0D ---------------------------------------------------------
 /// Abstract base class for quadrature computation engine.

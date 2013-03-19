@@ -261,14 +261,14 @@ pylith::topology::Field<mesh_type>::newSection(void)
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion for a list of
+// Create PETSc section and set chart and fiber dimesion for a list of
 // points.
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(const int_array& points,
                                                const int fiberDim)
 { // newSection
-  typedef typename mesh_type::SieveMesh::point_type point_type;
+  typedef PetscInt point_type;
   PetscErrorCode err;
 
   // Clear memory
@@ -281,8 +281,6 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
     throw std::runtime_error(msg.str());
   } // if
   
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   const PetscInt npts = points.size();
   if (npts > 0) {
     PetscSection s = NULL;
@@ -306,11 +304,10 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
     err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
   } // if/else
 
-  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion for a list of
+// Create PETSc section and set chart and fiber dimesion for a list of
 // points.
 template<typename mesh_type>
 void
@@ -329,8 +326,6 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt *points, const Pet
     throw std::runtime_error(msg.str());
   } // if
   
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   if (num > 0) {
     PetscSection s = NULL;
     PetscInt pointMin = 0, pointMax = 0;
@@ -353,11 +348,10 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt *points, const Pet
     err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
   } // if/else
 
-  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion.
+// Create PETSc section and set chart and fiber dimesion.
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
@@ -391,7 +385,7 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
 } // newSection
 
 // ----------------------------------------------------------------------
-// Create sieve section and set chart and fiber dimesion.
+// Create PETSc section and set chart and fiber dimesion.
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::newSection(const PetscInt pStart, const PetscInt pEnd,
@@ -422,9 +416,6 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
   clear();
   assert(_dm);assert(src._dm);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
   if (fiberDim < 0) {
     std::ostringstream msg;
     msg << "Fiber dimension (" << fiberDim << ") for field '" << _metadata["default"].label
@@ -445,7 +436,6 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
     err = PetscSectionSetDof(s, p, fiberDim);CHECK_PETSC_ERROR(err);
   }
 
-  logger.stagePop();
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -458,9 +448,6 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
 
   // Clear memory
   clear();
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
 
   _metadata["default"] = const_cast<Field&>(src)._metadata["default"];
   label(origLabel.c_str());
@@ -528,7 +515,6 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
       _scatters[s_iter->first] = sinfo;
     } // for
   } // if
-  logger.stagePop();
 } // cloneSection
 
 // ----------------------------------------------------------------------
@@ -537,25 +523,18 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::clear(void)
 { // clear
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
-
   deallocate();
   _metadata["default"].scale = 1.0;
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].dimsOkay = false;
-
-  logger.stagePop();
 } // clear
 
 // ----------------------------------------------------------------------
-// Allocate Sieve section.
+// Allocate PETSc section.
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::allocate(void)
 { // allocate
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Field");
   PetscSection   s = NULL;
   PetscErrorCode err;
 
@@ -570,7 +549,6 @@ pylith::topology::Field<mesh_type>::allocate(void)
   err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
 
-  logger.stagePop();
 } // allocate
 
 // ----------------------------------------------------------------------
@@ -618,8 +596,6 @@ void
 pylith::topology::Field<mesh_type>::complete(void)
 { // complete
   assert(_dm);
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Completion");
   // Not sure if DMLocalToLocal() would work
   PetscErrorCode err;
 
@@ -628,7 +604,6 @@ pylith::topology::Field<mesh_type>::complete(void)
   err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
   err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
   err = DMGlobalToLocalEnd(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
-  logger.stagePop();
 } // complete
 
 // ----------------------------------------------------------------------
@@ -692,7 +667,7 @@ pylith::topology::Field<mesh_type>::copy(PetscSection osection,
   if ((pStart != qStart) || (pEnd != qEnd)) {
     std::ostringstream msg;
 
-    msg << "Cannot copy values from Sieve section "
+    msg << "Cannot copy values from PETSc section "
 	<< _metadata["default"].label << "'. Sections are incompatible.\n"
 	<< "  Source section:\n"
     << "    chart: ["<<pStart<<","<<pEnd<<")\n"
@@ -875,7 +850,7 @@ pylith::topology::Field<mesh_type>::view(const char* label) const
 // ----------------------------------------------------------------------
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
-// Sieve section view.
+// PETSc section view.
 template<typename mesh_type>
 template<typename scatter_mesh_type>
 void
@@ -893,8 +868,6 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
     return;
   } // if
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("GlobalOrder");
   PetscInt localSize, globalSize;
 
   err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
@@ -907,13 +880,12 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   sinfo.vector = _globalVec;
   sinfo.dm     = _dm;
   
-  logger.stagePop();
 } // createScatter
 
 // ----------------------------------------------------------------------
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
-// Sieve section view. The PETSc vector does not contain constrained
+// PETSc section view. The PETSc vector does not contain constrained
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type>
@@ -937,8 +909,6 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
     return;
   } // if
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("GlobalOrder");
   PetscInt localSize, globalSize;
 
   err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
@@ -961,13 +931,12 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 	    << std::endl;
 #endif
   
-  logger.stagePop();
 } // createScatter
 
 // ----------------------------------------------------------------------
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
-// Sieve section view. The PETSc vector does not contain constrained
+// PETSc section view. The PETSc vector does not contain constrained
 // DOF. Use createScatterWithBC() to include the constrained DOF in
 // the PETSc vector.
 template<typename mesh_type>
@@ -986,9 +955,6 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
     assert(sinfo.vector);
     return;
   } // if
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("GlobalOrder");
 
   PetscSection section, newSection, gsection;
   PetscSF      sf;
@@ -1009,13 +975,12 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   //assert(order->getLocalSize()  == localSize);
   //assert(order->getGlobalSize() == globalSize);
 
-  logger.stagePop();
 } // createScatterWithBC
 
 // ----------------------------------------------------------------------
 // Create PETSc vector scatter for field. This is used to transfer
 // information from the "global" PETSc vector view to the "local"
-// Sieve section view. The PETSc vector includes constrained DOF. Use
+// PETSc section view. The PETSc vector includes constrained DOF. Use
 // createScatter() if constrained DOF should be omitted from the PETSc
 // vector.
 template<typename mesh_type>
@@ -1117,7 +1082,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   /* assert(order->getGlobalSize() == globalSize); */
   if (subSection) {err = PetscSectionDestroy(&subSection);CHECK_PETSC_ERROR(err);}
 #if 0
-  std::cout << "["<<sieveMesh->commRank()<<"] CONTEXT: " << context 
+  std::cout << "["<<mesh.commRank()<<"] CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
 	    << ", section size w/BC: " << _section->sizeWithBC()
 	    << ", section size: " << _section->size()

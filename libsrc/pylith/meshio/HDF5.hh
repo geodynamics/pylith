@@ -22,7 +22,7 @@
 // Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
-#include "pylith/utils/array.hh" // USES string_vector
+#include "pylith/utils/arrayfwd.hh" // USES string_vector
 
 #include <hdf5.h> // USES hid_t
 
