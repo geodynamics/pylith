@@ -50,18 +50,15 @@ pylith::bc::BoundaryCondition::deallocate(void)
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  throw std::logic_error(":MATT: TODO - BoundaryCondition::verifyConfiguration(mesh) needs to be updated for PETSc dm.");
-#if 0 // :MATT: Update this for PETSc dm.
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  if (!sieveMesh->hasIntSection(_label)) {
+  const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscBool hasLabel = PETSC_FALSE;
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
 	<< "' for boundary condition.";
     throw std::runtime_error(msg.str());
   } // if
-#endif
 } // verifyConfiguration
 
 

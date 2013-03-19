@@ -93,13 +93,12 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
   const PetscInt cStart = heightStratum.begin();
   const PetscInt cEnd = heightStratum.end();
 
-  throw std::logic_error("BCIntegratorSubMesh::verifyConfiguration(mesh) not implemented for PETSc dm.");
-#if 0 // :MATT: Update this for PETSc dm
-
   // Make sure surface cells are compatible with quadrature.
-  const int boundaryDepth = sieveSubMesh->depth()-1; // depth of bndry cells // UPDATE THIS
+  PetscInt depth = 0;
+  PetscErrorCode err = DMPlexGetDepth(dmSubMesh, &depth);CHECK_PETSC_ERROR(err);
   for (PetscInt c = cStart; c < cEnd; ++c) {
-    const int cellNumCorners = sieveSubMesh->getNumCellCorners(c, boundaryDepth); // UPDATE THIS
+    PetscInt cellNumCorners = 0;
+    err = DMPlexGetConeSize(dmSubMesh, c, &cellNumCorners);CHECK_PETSC_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for boundary condition '"
@@ -110,7 +109,6 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
       throw std::runtime_error(msg.str());
     } // if
   } // for
-#endif
 } // verifyConfiguration
 
 
