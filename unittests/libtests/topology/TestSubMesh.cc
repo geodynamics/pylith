@@ -22,6 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -48,11 +49,16 @@ namespace pylith {
       };
       const char* label = "bc";
       const int groupSize = 3;
-      const int groupVertices[] = {
-	1, 2, 3
+      const int groupVertices[groupSize] = {
+	1, 2, 3,
       };
-      const int submeshVertices[] = {
-	3, 4, 5
+      const int submeshNumVertices = groupSize;
+      const int submeshVertices[submeshNumVertices] = {
+	2, 3, 4,
+      };
+      const int submeshNumCells = 2;
+      const int submeshCells[submeshNumCells] = {
+	0, 1,
       };
     } // _TestSubMesh
   } // topology
@@ -64,7 +70,6 @@ void
 pylith::topology::TestSubMesh::testConstructor(void)
 { // testConstructor
   SubMesh mesh;
-  CPPUNIT_ASSERT(mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 } // testConstructor
@@ -78,37 +83,42 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
   _buildMesh(&mesh2D);
   
   SubMesh mesh(mesh2D, _TestSubMesh::label);
-  CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
+  MPI_Comm commA, commB;
+  PetscObjectGetComm((PetscObject)mesh2D.dmMesh(), &commA);
+  PetscObjectGetComm((PetscObject)mesh.dmMesh(), &commB);
+  std::cout << "mesh2D comm: " << mesh2D.comm()
+	    << ", dm comm: " << commA
+	    << ", PETSC_COMM_WORLD: " << PETSC_COMM_WORLD
+	    << ", PETSC_COMM_SELF: " << PETSC_COMM_SELF
+	    << ", submesh comm: " << mesh.comm()
+	    << ", dm comm: " << commB
+	    << std::endl;
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const int nvertices = _TestSubMesh::groupSize;
-  CPPUNIT_ASSERT_EQUAL(size_t(nvertices), vertices->size());
-  int iV = 0;
-  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter)
-    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV++], *v_iter);
-} // testConstructorMesh
-
-// ----------------------------------------------------------------------
-// Test sieveMesh().
-void
-pylith::topology::TestSubMesh::testSieveMesh(void)
-{ // testSieveMesh
-  Mesh mesh2D;
-  _buildMesh(&mesh2D);
-
-  SubMesh mesh(mesh2D, _TestSubMesh::label);
+  // Check vertices
+  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
   
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
-} // testSieveMesh
+  const PetscInt nvertices = _TestSubMesh::submeshNumVertices;
+  CPPUNIT_ASSERT_EQUAL(nvertices, depthStratum.size());
+  for (PetscInt v = vStart, iV=0; v < vEnd; ++v, ++iV) {
+    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV], v);
+  } // for
+
+  // Check cells
+  Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
+  
+  const PetscInt ncells = _TestSubMesh::submeshNumCells;
+  CPPUNIT_ASSERT_EQUAL(ncells, heightStratum.size());
+  for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
+    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshCells[iC], c);
+  } // for
+} // testConstructorMesh
 
 // ----------------------------------------------------------------------
 // Test createSubMesh().
@@ -120,21 +130,31 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
   
   SubMesh mesh;
   mesh.createSubMesh(mesh2D, _TestSubMesh::label);
-  CPPUNIT_ASSERT(!mesh._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const int nvertices = _TestSubMesh::groupSize;
-  CPPUNIT_ASSERT_EQUAL(size_t(nvertices), vertices->size());
-  int iV = 0;
-  for (Mesh::SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter)
-    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV++], *v_iter);
+  // Check vertices
+  const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
+  
+  const PetscInt nvertices = _TestSubMesh::submeshNumVertices;
+  CPPUNIT_ASSERT_EQUAL(nvertices, depthStratum.size());
+  for (PetscInt v = vStart, iV=0; v < vEnd; ++v, ++iV) {
+    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshVertices[iV], v);
+  } // for
+
+  // Check cells
+  Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
+  const PetscInt cStart = heightStratum.begin();
+  const PetscInt cEnd = heightStratum.end();
+  
+  const PetscInt ncells = _TestSubMesh::submeshNumCells;
+  CPPUNIT_ASSERT_EQUAL(ncells, heightStratum.size());
+  for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
+    CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshCells[iC], c);
+  } // for
 } // testCreateSubMesh
 
 // ----------------------------------------------------------------------
@@ -206,22 +226,8 @@ pylith::topology::TestSubMesh::testInitialize(void)
 void
 pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
-  assert(0 != mesh);
+  assert(mesh);
 
-  mesh->createSieveMesh(_TestSubMesh::cellDim);
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh->sieveMesh();
-
-  ALE::Obj<Mesh::SieveMesh::sieve_type> sieve = 
-    new Mesh::SieveMesh::sieve_type(sieveMesh->comm());
-  CPPUNIT_ASSERT(!sieve.isNull());
-
-  ALE::Obj<SieveFlexMesh::sieve_type> s = 
-    new SieveFlexMesh::sieve_type(sieve->comm(), sieve->debug());
-
-  mesh->createDMMesh(_TestSubMesh::cellDim);
-  DM dmMesh = mesh->dmMesh();
-  PetscErrorCode err;
-  
   const int cellDim = _TestSubMesh::cellDim;
   const int ncells = _TestSubMesh::ncells;
   const int* cells = _TestSubMesh::cells;
@@ -230,44 +236,39 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   const int spaceDim = _TestSubMesh::cellDim;
   const PylithScalar* coordinates = _TestSubMesh::coordinates;
   const bool interpolate = false;
-  ALE::SieveBuilder<SieveFlexMesh>::buildTopology(s, cellDim, ncells, (int*) cells,
-					      nvertices, interpolate, 
-					      ncorners);
-  std::map<Mesh::SieveMesh::point_type,Mesh::SieveMesh::point_type> renumbering;
-  ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
-  sieveMesh->setSieve(sieve);
-  sieveMesh->stratify();
-  ALE::SieveBuilder<Mesh::SieveMesh>::buildCoordinates(sieveMesh, spaceDim, 
-						       coordinates);
 
+  mesh->createDMMesh(_TestSubMesh::cellDim);
+  PetscDM dmMesh = mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscErrorCode err;
+  
   err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt c = 0; c < ncells; ++c) {
     err = DMPlexSetConeSize(dmMesh, c, ncorners);CHECK_PETSC_ERROR(err);
-  }
+  } // for
   err = DMSetUp(dmMesh);CHECK_PETSC_ERROR(err);
   PetscInt *cone = new PetscInt[ncorners];
   for(PetscInt c = 0; c < ncells; ++c) {
     for(PetscInt v = 0; v < ncorners; ++v) {
       cone[v] = cells[c*ncorners+v]+ncells;
-    }
+    } // for
     err = DMPlexSetCone(dmMesh, c, cone);CHECK_PETSC_ERROR(err);
   } // for
-  delete [] cone; cone = 0;
+  delete[] cone; cone = 0;
   err = DMPlexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
   err = DMPlexStratify(dmMesh);CHECK_PETSC_ERROR(err);
   PetscSection coordSection;
-  Vec          coordVec;
-  PetscScalar *coords;
-  PetscInt     coordSize;
+  PetscVec coordVec;
+  PetscScalar *coords = NULL;
+  PetscInt coordSize;
 
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
   for(PetscInt v = ncells; v < ncells+nvertices; ++v) {
     err = PetscSectionSetDof(coordSection, v, spaceDim);CHECK_PETSC_ERROR(err);
-  }
+  } // for
   err = PetscSectionSetUp(coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetStorageSize(coordSection, &coordSize);CHECK_PETSC_ERROR(err);
-  err = VecCreate(sieveMesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecCreate(mesh->comm(), &coordVec);CHECK_PETSC_ERROR(err);
   err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
   err = VecSetFromOptions(coordVec);CHECK_PETSC_ERROR(err);
   err = VecGetArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
@@ -277,8 +278,8 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
     err = PetscSectionGetOffset(coordSection, v+ncells, &off);CHECK_PETSC_ERROR(err);
     for(PetscInt d = 0; d < spaceDim; ++d) {
       coords[off+d] = coordinates[v*spaceDim+d];
-    }
-  }
+    } // for
+  } // for
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
 
@@ -287,22 +288,10 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   cs.initialize();
   mesh->coordsys(&cs);
 
-  typedef Mesh::IntSection::chart_type chart_type;
-  const ALE::Obj<Mesh::IntSection>& groupField = 
-    sieveMesh->getIntSection(_TestSubMesh::label);
-  assert(!groupField.isNull());
-
   const int numPoints = _TestSubMesh::groupSize;
-  const int numVertices = sieveMesh->depthStratum(0)->size();
-  const int numCells = sieveMesh->heightStratum(0)->size();
-  groupField->setChart(chart_type(numCells, numCells+numVertices));
-  for(int i=0; i < numPoints; ++i)
-    groupField->setFiberDimension(numCells+_TestSubMesh::groupVertices[i], 1);
-  sieveMesh->allocate(groupField);
-
   for(PetscInt i = 0; i < numPoints; ++i) {
     err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
-  }
+  } // for
 } // _buildMesh
 
 
