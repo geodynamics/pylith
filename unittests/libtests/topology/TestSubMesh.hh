@@ -66,9 +66,6 @@ public :
   /// Test constructor w/mesh.
   void testConstructorMesh(void);
 
-  /// Test sieveMesh().
-  void testSieveMesh(void);
-
   /// Test createSubMesh.
   void testCreateSubMesh(void);
 
