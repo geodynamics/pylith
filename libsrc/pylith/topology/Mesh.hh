@@ -226,7 +226,7 @@ public :
    * @param names Names of fields.
    */
   void groups(int* numNames, 
-	      char*** names) const;
+	      const char*** names) const;
 
   /** Return the size of a group.
    *

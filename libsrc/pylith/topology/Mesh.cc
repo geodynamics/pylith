@@ -116,39 +116,25 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 // Return the names of all vertex groups.
 void
 pylith::topology::Mesh::groups(int* numNames, 
-			       char*** names) const
+			       const char*** names) const
 { // groups
-  if (!_mesh.isNull()) {
-    assert(!_mesh.isNull());
-    const ALE::Obj<std::set<std::string> >& sectionNames =  
-      _mesh->getIntSections();
-    assert(!sectionNames.isNull());
-    
-    *numNames = sectionNames->size();
-    *names = new char*[sectionNames->size()];
-    assert(*names);
-    
-    const std::set<std::string>::const_iterator namesEnd = sectionNames->end();
-    int i = 0;
-    for (std::set<std::string>::const_iterator n_iter=sectionNames->begin(); 
-	 n_iter != namesEnd;
-	 ++n_iter) {
-      const char len = n_iter->length();
-      char* newName = 0;
-      if (len > 0) {
-	newName = new char[len+1];
-	strncpy(newName, n_iter->c_str(), len+1);
-      } else {
-	newName = new char[1];
-	newName[0] ='\0';
-      } // if/else
-      (*names)[i++] = newName;
-    } // for
+  assert(numNames);
+  assert(names);
+  *numNames = 0;
+  *names = 0;
 
-  } else {
-    *numNames = 0;
-    *names = 0;
-  } // if/else
+  if (_newMesh) {
+    PetscErrorCode err = 0;
+
+    PetscInt numLabels = 0;
+    err = DMPlexGetNumLabels(_newMesh, &numLabels);CHECK_PETSC_ERROR(err);
+
+    *numNames = numLabels;
+    *names = new const char*[numLabels];
+    for (int iLabel=0; iLabel < numLabels; ++iLabel) {
+      err = DMPlexGetLabelName(_newMesh, iLabel, &(*names)[iLabel]);CHECK_PETSC_ERROR(err);
+    } // for
+  } // if
 } // groups
 
 // ----------------------------------------------------------------------
@@ -156,24 +142,21 @@ pylith::topology::Mesh::groups(int* numNames,
 int
 pylith::topology::Mesh::groupSize(const char *name)
 { // groupSize
-  if (!_mesh->hasIntSection(name)) {
+  assert(_newMesh);
+
+  PetscErrorCode err = 0;
+
+  PetscBool hasLabel = PETSC_FALSE;
+  err = DMPlexHasLabel(_newMesh, name, &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
     std::ostringstream msg;
     msg << "Cannot get size of group '" << name
 	<< "'. Group missing from mesh.";
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<IntSection>&            group    = _mesh->getIntSection(name);
-  const IntSection::chart_type&          chart    = group->getChart();
-  IntSection::chart_type::const_iterator chartEnd = chart.end();
-  int                                    size     = 0;
-
-  for(IntSection::chart_type::const_iterator c_iter = chart.begin();
-      c_iter != chartEnd;
-      ++c_iter) {
-    if (group->getFiberDimension(*c_iter))
-      size++;
-  } // for
+  PetscInt size = 0;
+  err = DMPlexGetLabelSize(_newMesh, name, &size);CHECK_PETSC_ERROR(err);
 
   return size;
 } // groupSize
@@ -188,6 +171,7 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   const PylithScalar lengthScale = normalizer.lengthScale();
   PetscErrorCode err;
 
+#if 1 // :TODO: REMOVE SIEVE STUFF
   // Get coordinates (currently dimensioned).
   if (!_mesh.isNull()) {
     const ALE::Obj<RealSection>& coordsSection = _mesh->getRealSection("coordinates");
@@ -230,10 +214,10 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
       coordsSection->updatePoint(*v_iter, coordsVertex);
     } // for
   }
+#endif
 
   assert(_newMesh);
-  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordVec);
+  err = DMGetCoordinatesLocal(_newMesh, &coordVec);CHECK_PETSC_ERROR(err);assert(coordVec);
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
   err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
