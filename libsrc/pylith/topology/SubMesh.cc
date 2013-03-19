@@ -31,10 +31,12 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
+#define ALLOW_SIEVE_MESH
+
 // ----------------------------------------------------------------------
 // Default constructor
 pylith::topology::SubMesh::SubMesh(void) :
-  _newMesh(PETSC_NULL),
+  _newMesh(NULL),
   _coordsys(0),
   _debug(false)
 { // constructor
@@ -44,7 +46,7 @@ pylith::topology::SubMesh::SubMesh(void) :
 // Constructor with mesh and label for vertices marking boundary.
 pylith::topology::SubMesh::SubMesh(const Mesh& mesh,
 				   const char* label) :
-  _newMesh(PETSC_NULL),
+  _newMesh(NULL),
   _coordsys(0),
   _debug(false)
 { // constructor
@@ -73,6 +75,7 @@ void
 pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 					 const char* label)
 { // createSieveMesh
+#if defined(ALLOW_SIEVE_MESH) // :TODO: REMOVE SIEVE STUFF
   _mesh.destroy();
 
   const ALE::Obj<DomainSieveMesh>& meshSieveMesh = mesh.sieveMesh();
@@ -137,12 +140,12 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
                                             recvParallelMeshOverlap);
     _mesh->setCalculatedOverlap(true);
   }
+#endif
 
-  DM             dmMesh = mesh.dmMesh();
-  PetscBool      hasLabel;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscBool hasLabel;
   PetscErrorCode err;
 
-  assert(dmMesh);
   err = DMPlexHasLabel(dmMesh, label, &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
@@ -181,9 +184,8 @@ pylith::topology::SubMesh::coordsys(const Mesh& mesh)
 { // coordsys
   delete _coordsys; _coordsys = 0;
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  if (0 != cs) {
-    _coordsys = cs->clone();
-    assert(0 != _coordsys);
+  if (cs) {
+    _coordsys = cs->clone();assert(_coordsys);
     _coordsys->initialize();
   } // if
 } // coordsys
@@ -193,7 +195,7 @@ pylith::topology::SubMesh::coordsys(const Mesh& mesh)
 void 
 pylith::topology::SubMesh::initialize(void)
 { // initialize
-  if (0 != _coordsys)
+  if (_coordsys)
     _coordsys->initialize();
 } // initialize
 

@@ -106,7 +106,7 @@ public :
    *
    * @param DMPlex mesh.
    */
-  void setDMMesh(DM dm);
+  void setDMMesh(PetscDM dm);
 
   /** Get sizes for all point types.
    *
@@ -116,7 +116,11 @@ public :
    * @param numShadowVertices
    * @param numLagrangeVertices.
    */
-  void getPointTypeSizes(PetscInt *numNormalCells, PetscInt *numCohesiveCells, PetscInt *numNormalVertices, PetscInt *numShadowVertices, PetscInt *numLagrangeVertices) const;
+  void getPointTypeSizes(PetscInt *numNormalCells,
+			 PetscInt *numCohesiveCells,
+			 PetscInt *numNormalVertices,
+			 PetscInt *numShadowVertices,
+			 PetscInt *numLagrangeVertices) const;
 
   /** Set coordinate system using mesh.
    *
@@ -185,7 +189,7 @@ public :
 private :
 
   ALE::Obj<SieveMesh> _mesh; ///< Sieve mesh.
-  DM _newMesh;
+  PetscDM _newMesh;
   spatialdata::geocoords::CoordSys* _coordsys; ///< Coordinate system.
   bool _debug; ///< Debugging flag for mesh.
   
