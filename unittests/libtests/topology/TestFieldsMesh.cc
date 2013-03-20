@@ -23,6 +23,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -31,8 +33,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsMesh );
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh> > FieldsMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 
 // ----------------------------------------------------------------------
 void
@@ -56,7 +56,7 @@ pylith::topology::TestFieldsMesh::tearDown(void)
 void
 pylith::topology::TestFieldsMesh::testConstructor(void)
 { // testConstructor
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 } // testConstructor
  
@@ -65,7 +65,7 @@ pylith::topology::TestFieldsMesh::testConstructor(void)
 void
 pylith::topology::TestFieldsMesh::testAdd(void)
 { // testAdd
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
   
   const char* label = "field";
@@ -81,15 +81,9 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
 { // testAddDomain
   const int fiberDim = 3;
 
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
-  DM dmMesh = _mesh->dmMesh();
-  PetscErrorCode err;
-  CPPUNIT_ASSERT(dmMesh);
 
-  PetscInt       vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  
   const char* label = "field";
   fields.add(label, "velocity", Field<Mesh>::VERTICES_FIELD, fiberDim);
   const size_t size = 1;
@@ -97,13 +91,16 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
 
   Field<Mesh>& field = fields.get(label);
   field.allocate();
-  PetscSection section = field.petscSection();
-  CPPUNIT_ASSERT(section);
+
+  PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
+  
+  VecVisitorMesh fieldVisitor(field);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof;
-    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
-  }
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+  } // for
 } // testAddDomain
 
 // ----------------------------------------------------------------------
@@ -111,7 +108,7 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
 void
 pylith::topology::TestFieldsMesh::testDelete(void)
 { // testDelete
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
   const char* labelA = "field A";
@@ -134,7 +131,7 @@ pylith::topology::TestFieldsMesh::testDelete(void)
 void
 pylith::topology::TestFieldsMesh::testGet(void)
 { // testGet
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
   const char* label = "field";
@@ -147,14 +144,14 @@ pylith::topology::TestFieldsMesh::testGet(void)
 void
 pylith::topology::TestFieldsMesh::testGetConst(void)
 { // testGetConst
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
   const char* label = "field";
   fields.add(label, "velocity");
 
   const FieldsMesh* fieldsPtr = &fields;
-  CPPUNIT_ASSERT(0 != fieldsPtr);
+  CPPUNIT_ASSERT(fieldsPtr);
   const Field<Mesh>& field = fieldsPtr->get(label);
 } // testGetConst
 
@@ -163,7 +160,7 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
 void
 pylith::topology::TestFieldsMesh::testHasField(void)
 { // testHasField
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
   fields.add("field A", "velocity");
@@ -187,14 +184,8 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
 { // testCopyLayout
   const int fiberDim = 3;
 
-  CPPUNIT_ASSERT(0 != _mesh);
+  CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
-  DM dmMesh = _mesh->dmMesh();
-  PetscErrorCode err;
-  CPPUNIT_ASSERT(dmMesh);
-
-  PetscInt       vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const char* labelA = "field A";
   fields.add(labelA, "displacement", Field<Mesh>::VERTICES_FIELD, fiberDim);
@@ -208,14 +199,17 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
 
   const size_t size = 2;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+  PetscDM dmMesh = _mesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
+  
   const Field<Mesh>& field = fields.get(labelB);
-  PetscSection section = field.petscSection();
-  CPPUNIT_ASSERT(section);
+  VecVisitorMesh fieldVisitor(field);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof;
-    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
-  }
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+  } // for
 } // testCopyLayout
 
 

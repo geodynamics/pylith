@@ -50,7 +50,6 @@ noinst_HEADERS = \
 	TestFieldSubMesh.hh \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
-	TestFieldsNewMesh.hh \
 	TestSolutionFields.hh \
 	TestJacobian.hh \
 	TestRefineUniform.hh
