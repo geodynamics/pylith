@@ -20,6 +20,8 @@
 
 #include "TestMesh.hh" // Implementation of class methods
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -164,64 +166,30 @@ pylith::topology::TestMesh::testNondimensionalize(void)
   normalizer.lengthScale(lengthScale);
   mesh.nondimensionalize(normalizer);
 
-  const ALE::Obj<Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  CPPUNIT_ASSERT(!sieveMesh.isNull());
-  const ALE::Obj<Mesh::SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const Mesh::SieveMesh::label_sequence::iterator verticesBegin =
-    vertices->begin();
-  const Mesh::SieveMesh::label_sequence::iterator verticesEnd =
-    vertices->end();
-  CPPUNIT_ASSERT_EQUAL(numVertices, int(vertices->size()));
+  // Get vertices
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
   // Check nondimensional coordinates
-  const ALE::Obj<Mesh::RealSection>& coordsField =
-    sieveMesh->getRealSection("coordinates");
-  CPPUNIT_ASSERT(!coordsField.isNull());
-  CPPUNIT_ASSERT_EQUAL(spaceDim, 
-		       coordsField->getFiberDimension(*verticesBegin));
-  int i = 0;
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const PylithScalar* coordsVertex = coordsField->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != coordsVertex);
-    const PylithScalar tolerance = 1.0e-06;
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const PylithScalar coordE = coordinates[i++] / lengthScale;
-      if (coordE < 1.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
-				     tolerance);
-      else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/coordE,
-				     tolerance);
+  CoordsVisitor coordsVisitor(dmMesh);
+  const PetscScalar* coordsArray = coordsVisitor.localArray();
+
+  const PylithScalar tolerance = 1.0e-06;
+  for(PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+    CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
+    const PetscInt off = coordsVisitor.sectionOffset(v);
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++i) {
+      const PylithScalar coordE = coordinates[i] / lengthScale;
+      if (fabs(coordE) < 1.0) {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsArray[off+iDim], tolerance);
+      } else {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsArray[off+iDim]/coordE, tolerance);
+      } // if/else
     } // for
   } // for
   
-  // Check dimensioned coordinates
-  const ALE::Obj<Mesh::RealSection>& coordsDimField =
-    sieveMesh->getRealSection("coordinates_dimensioned");
-  CPPUNIT_ASSERT(!coordsDimField.isNull());
-  CPPUNIT_ASSERT_EQUAL(spaceDim, 
-		       coordsDimField->getFiberDimension(*verticesBegin));
-  i = 0;
-  for(Mesh::SieveMesh::label_sequence::iterator v_iter = verticesBegin;
-      v_iter != verticesEnd;
-      ++v_iter) {
-    const PylithScalar* coordsVertex = coordsDimField->restrictPoint(*v_iter);
-    CPPUNIT_ASSERT(0 != coordsVertex);
-    const PylithScalar tolerance = 1.0e-06;
-    for (int iDim=0; iDim < spaceDim; ++iDim) {
-      const PylithScalar coordE = coordinates[i++];
-      if (coordE < 1.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsVertex[iDim],
-				     tolerance);
-      else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsVertex[iDim]/coordE,
-				     tolerance);
-    } // for
-  } // for
 } // testNondimensionalize
 
 
