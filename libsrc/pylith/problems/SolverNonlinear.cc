@@ -47,10 +47,6 @@ struct PetscSNESLineSearch_BT {
 #define PYLITH_CUSTOM_LINESEARCH 1
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverNonlinear::SolverNonlinear(void) :
   _snes(0)
@@ -77,18 +73,17 @@ pylith::problems::SolverNonlinear::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
-pylith::problems::SolverNonlinear::initialize(
-			             const topology::SolutionFields& fields,
-				     const topology::Jacobian& jacobian,
-				     Formulation* formulation)
+pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fields,
+					      const topology::Jacobian& jacobian,
+					      Formulation* formulation)
 { // initialize
-  assert(0 != formulation);
+  assert(formulation);
 
   _initializeLogger();
   Solver::initialize(fields, jacobian, formulation);
 
   PetscErrorCode err = 0;
-  if (0 != _snes) {
+  if (_snes) {
     err = SNESDestroy(&_snes); _snes = 0;
     CHECK_PETSC_ERROR(err);
   } // if    
@@ -96,12 +91,10 @@ pylith::problems::SolverNonlinear::initialize(
 
   const topology::Field<topology::Mesh>& residual = fields.get("residual");
   const PetscVec residualVec = residual.globalVector();
-  err = SNESSetFunction(_snes, residualVec, reformResidual,
-			(void*) formulation);
+  err = SNESSetFunction(_snes, residualVec, reformResidual, (void*) formulation);
   CHECK_PETSC_ERROR(err);
 
-  err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);
-  CHECK_PETSC_ERROR(err);
+  err = SNESSetJacobian(_snes, jacobian.matrix(), _jacobianPC, reformJacobian, (void*) formulation);CHECK_PETSC_ERROR(err);
 
   // Set default line search type to SNESSHELL and use our custom line search
   PetscSNESLineSearch ls;
@@ -126,12 +119,11 @@ pylith::problems::SolverNonlinear::initialize(
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverNonlinear::solve(
-			      topology::Field<topology::Mesh>* solution,
-			      topology::Jacobian* jacobian,
-			      const topology::Field<topology::Mesh>& residual)
+pylith::problems::SolverNonlinear::solve(topology::Field<topology::Mesh>* solution,
+					 topology::Jacobian* jacobian,
+					 const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solution);
+  assert(solution);
 
   const int solveEvent = _logger->eventId("SoNl solve");
   const int scatterEvent = _logger->eventId("SoNl scatter");
@@ -163,9 +155,9 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
 						  PetscVec tmpResidualVec,
 						  void* context)
 { // reformResidual
-  assert(0 != context);
+  assert(context);
   Formulation* formulation = (Formulation*) context;
-  assert(0 != formulation);
+  assert(formulation);
 
   // Make sure we have an admissible Lagrange multiplier (\lambda)
   formulation->constrainSolnSpace(&tmpSolutionVec);
@@ -187,9 +179,9 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 						  MatStructure* preconditionerLayout,
 						  void* context)
 { // reformJacobian
-  assert(0 != context);
+  assert(context);
   Formulation* formulation = (Formulation*) context;
-  assert(0 != formulation);
+  assert(formulation);
 
   formulation->reformJacobian(&tmpSolutionVec);
 
@@ -213,8 +205,8 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
 
   PetscBool      changed_y =PETSC_FALSE, changed_w =PETSC_FALSE;
   PetscErrorCode ierr;
-  Vec            X, F, Y, W, G;
-  SNES           snes;
+  PetscVec       X, F, Y, W, G;
+  PetscSNES      snes;
   PetscReal      fnorm, xnorm, ynorm, gnorm, gnormprev;
   PetscReal      lambda, lambdatemp, lambdaprev, minlambda, maxstep, initslope, alpha, stol;
   PetscReal      t1, t2, a, b, d;
@@ -225,7 +217,7 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   PetscViewer    monitor;
   PetscInt       max_its, count;
   PetscSNESLineSearch_BT  *bt;
-  Mat            jac;
+  PetscMat       jac;
 
 
   PetscFunctionBegin;
@@ -512,7 +504,7 @@ pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
 						PetscVec initialGuessVec,
 						void *lsctx)
 { // initialGuess
-  VecSet(initialGuessVec, 0.0);
+  PetscErrorCode err = VecSet(initialGuessVec, 0.0);CHECK_PETSC_ERROR(err);
 } // initialGuess
 
 // ----------------------------------------------------------------------
@@ -521,7 +513,7 @@ void
 pylith::problems::SolverNonlinear::_initializeLogger(void)
 { // initializeLogger
   delete _logger; _logger = new utils::EventLogger;
-  assert(0 != _logger);
+  assert(_logger);
   _logger->className("SolverNonlinear");
   _logger->initialize();
   _logger->registerEvent("SoNl setup");

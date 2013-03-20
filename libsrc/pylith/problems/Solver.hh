@@ -34,10 +34,10 @@
 #include "pylith/utils/petscfwd.h" // USES PetscMat
 
 typedef struct {
-  PetscPC     pc;
-  PetscMat    A;
+  PetscPC pc;
+  PetscMat A;
   const char *faultFieldName;
-  PetscMat    faultA;
+  PetscMat faultA;
 } FaultPreconCtx;
 
 
@@ -91,11 +91,10 @@ protected :
 		   const topology::Jacobian& jacobian,
 		   const topology::SolutionFields& fields);
 
-  /**
+  /** :MATT: :TODO: DOCUMENT THIS.
    */
   static
-  int
-  _epsilon(int i,
+  int _epsilon(int i,
 	   int j,
 	   int k);
 

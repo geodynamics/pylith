@@ -30,10 +30,6 @@
 #include "pylith/utils/petscerror.h" // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::problems::SolverLinear::SolverLinear(void) :
   _ksp(0)
@@ -60,10 +56,9 @@ pylith::problems::SolverLinear::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
-pylith::problems::SolverLinear::initialize(
-				   const topology::SolutionFields& fields,
-				   const topology::Jacobian& jacobian,
-				   Formulation* formulation)
+pylith::problems::SolverLinear::initialize(const topology::SolutionFields& fields,
+					   const topology::Jacobian& jacobian,
+					   Formulation* formulation)
 { // initialize
   assert(formulation);
 
@@ -86,10 +81,9 @@ pylith::problems::SolverLinear::initialize(
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverLinear::solve(
-			      topology::Field<topology::Mesh>* solution,
-			      topology::Jacobian* jacobian,
-			      const topology::Field<topology::Mesh>& residual)
+pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
+				      topology::Jacobian* jacobian,
+				      const topology::Field<topology::Mesh>& residual)
 { // solve
   assert(solution);
   assert(jacobian);
@@ -108,15 +102,12 @@ pylith::problems::SolverLinear::solve(
   _logger->eventEnd(scatterEvent);
   _logger->eventBegin(setupEvent);
 
-
   PetscErrorCode err = 0;
   const PetscMat jacobianMat = jacobian->matrix();
   if (!jacobian->valuesChanged()) {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			  SAME_PRECONDITIONER);CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, SAME_PRECONDITIONER);CHECK_PETSC_ERROR(err);
   } else {
-    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, 
-			  DIFFERENT_NONZERO_PATTERN);CHECK_PETSC_ERROR(err);
+    err = KSPSetOperators(_ksp, jacobianMat, jacobianMat, DIFFERENT_NONZERO_PATTERN);CHECK_PETSC_ERROR(err);
   } // else
   jacobian->resetValuesChanged();
 
