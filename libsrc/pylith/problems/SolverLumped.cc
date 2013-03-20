@@ -22,13 +22,11 @@
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/problems/Formulation.hh" // USES Formulation
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -54,12 +52,11 @@ pylith::problems::SolverLumped::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize solver.
 void
-pylith::problems::SolverLumped::initialize(
-				   const topology::SolutionFields& fields,
-				   const topology::Field<topology::Mesh>& jacobian,
-				   Formulation* formulation)
+pylith::problems::SolverLumped::initialize(const topology::SolutionFields& fields,
+					   const topology::Field<topology::Mesh>& jacobian,
+					   Formulation* formulation)
 { // initialize
-  assert(0 != formulation);
+  assert(formulation);
 
   _initializeLogger();
 
@@ -69,13 +66,12 @@ pylith::problems::SolverLumped::initialize(
 // ----------------------------------------------------------------------
 // Solve the system.
 void
-pylith::problems::SolverLumped::solve(
-			      topology::Field<topology::Mesh>* solution,
-			      const topology::Field<topology::Mesh>& jacobian,
-			      const topology::Field<topology::Mesh>& residual)
+pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
+				      const topology::Field<topology::Mesh>& jacobian,
+				      const topology::Field<topology::Mesh>& residual)
 { // solve
-  assert(0 != solution);
-  assert(0 != _formulation);
+  assert(solution);
+  assert(_formulation);
   
   // solution = residual / jacobian
   
@@ -84,56 +80,37 @@ pylith::problems::SolverLumped::solve(
   const int adjustEvent = _logger->eventId("SoLu adjust");
   _logger->eventBegin(setupEvent);
 
-  const spatialdata::geocoords::CoordSys* cs = solution->mesh().coordsys();
-  assert(0 != cs);
+  const spatialdata::geocoords::CoordSys* cs = solution->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
   
   // Get mesh vertices.
-  DM             dmMesh = solution->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
-
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = solution->mesh().dmMesh(); assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
   
   // Get sections.
-  PetscSection solutionSection = solution->petscSection();
-  Vec          solutionVec     = solution->localVector();
-  PetscScalar *solutionArray;
-  assert(solutionSection);assert(solutionVec);
-	 
-  PetscSection jacobianSection = jacobian.petscSection();
-  Vec          jacobianVec     = jacobian.localVector();
-  PetscScalar *jacobianArray;
-  assert(jacobianSection);assert(jacobianVec);
+  topology::VecVisitorMesh solutionVisitor(*solution);
+  PetscScalar* solutionArray = solutionVisitor.localArray();
 
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
-  PetscScalar *residualArray;
-  assert(residualSection);assert(residualVec);
-  
+  topology::VecVisitorMesh jacobianVisitor(jacobian);
+  PetscScalar* jacobianArray = jacobianVisitor.localArray();
+
+  topology::VecVisitorMesh residualVisitor(residual);
+  PetscScalar* residualArray = residualVisitor.localArray();
+
   _logger->eventEnd(setupEvent);
   _logger->eventBegin(solveEvent);
 
-  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt jdof, joff;
+    const PetscInt joff = jacobianVisitor.sectionOffset(v);
+    assert(spaceDim == jacobianVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(jacobianSection, v, &jdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(jacobianSection, v, &joff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == jdof);
-    PetscInt rdof, roff;
+    const PetscInt roff = residualVisitor.sectionOffset(v);
+    assert(spaceDim == residualVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(residualSection, v, &rdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(residualSection, v, &roff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == rdof);
-    PetscInt sdof, soff;
-
-    err = PetscSectionGetDof(solutionSection, v, &sdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(solutionSection, v, &soff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == sdof);
+    const PetscInt soff = solutionVisitor.sectionOffset(v);
+    assert(spaceDim == solutionVisitor.sectionDof(v));
 
     for (int i=0; i < spaceDim; ++i) {
       assert(jacobianArray[joff+i] != 0.0);
@@ -141,9 +118,6 @@ pylith::problems::SolverLumped::solve(
     } // for
   } // for
   PetscLogFlops((vEnd - vStart) * spaceDim);
-  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
   _logger->eventEnd(solveEvent);
   _logger->eventBegin(adjustEvent);
 
@@ -165,7 +139,7 @@ void
 pylith::problems::SolverLumped::_initializeLogger(void)
 { // initializeLogger
   delete _logger; _logger = new utils::EventLogger;
-  assert(0 != _logger);
+  assert(_logger);
   _logger->className("SolverLumped");
   _logger->initialize();
   _logger->registerEvent("SoLu setup");
