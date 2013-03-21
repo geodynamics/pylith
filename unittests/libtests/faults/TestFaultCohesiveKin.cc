@@ -139,13 +139,18 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &fault, &fields);
 
-  DM              dmMesh = fault._faultMesh->dmMesh();
-  IS              subpointIS;
+  // Check fault mesh sizes
+  CPPUNIT_ASSERT_EQUAL(_data->cellDim, fault.dimension());
+  CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.coneSize());
+  CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
+  CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
+
+  PetscDM dmMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  PetscIS subpointIS;
   const PetscInt *points;
-  PetscInt        vStart, vEnd, numPoints;
+  PetscInt vStart, vEnd, numPoints;
   PetscErrorCode  err;
 
-  CPPUNIT_ASSERT(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexCreateSubpointIS(dmMesh, &subpointIS);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(subpointIS);
