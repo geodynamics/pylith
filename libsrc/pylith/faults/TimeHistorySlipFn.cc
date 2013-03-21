@@ -88,10 +88,6 @@ pylith::faults::TimeHistorySlipFn::initialize(
   const PylithScalar lengthScale = normalizer.lengthScale();
   const PylithScalar timeScale = normalizer.timeScale();
 
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   // Get vertices in fault mesh
   DM             dmMesh = faultMesh.dmMesh();
   PetscInt       vStart, vEnd;
@@ -124,8 +120,6 @@ pylith::faults::TimeHistorySlipFn::initialize(
   Vec          slipTimeVec      = slipTime.localVector();
   PetscScalar *slipTimeArray;
   assert(slipTimeSection);assert(slipTimeVec);
-
-  logger.stagePop();
 
   // Open databases and set query values
   _dbAmplitude->open();

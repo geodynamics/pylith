@@ -151,9 +151,6 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   assert(cs);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultFields");
-
   // Create field for relative velocity associated with Lagrange vertex k
   _fields->add("relative velocity", "relative_velocity");
   topology::Field<topology::SubMesh>& velRel = _fields->get("relative velocity");
@@ -162,7 +159,6 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   velRel.vectorFieldType(topology::FieldBase::VECTOR);
   velRel.scale(_normalizer->lengthScale() / _normalizer->timeScale());
 
-  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -1665,13 +1661,8 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::SubMe
   // Allocate buffer for tractions field (if necessary).
   PetscSection tractionsSection = tractions->petscSection();
   if (!tractionsSection) {
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("FaultFields");
-
     const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
-
-    logger.stagePop();
   } // if
   const PylithScalar pressureScale = _normalizer->pressureScale();
   tractions->label("traction");

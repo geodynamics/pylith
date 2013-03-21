@@ -87,9 +87,6 @@ pylith::faults::BruneSlipFn::initialize(
   PetscErrorCode err;
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(_parameters);
   _parameters->add("final slip", "final_slip");
@@ -121,8 +118,6 @@ pylith::faults::BruneSlipFn::initialize(
   PetscSection riseTimeSection  = riseTime.petscSection();assert(riseTimeSection);
   PetscVec riseTimeVec = riseTime.localVector();assert(riseTimeVec);
   PetscScalar *riseTimeArray = NULL;
-
-  logger.stagePop();
 
   // Open databases and set query values
   _dbFinalSlip->open();
