@@ -661,7 +661,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatter(void)
   CPPUNIT_ASSERT_EQUAL(size_t(0), field._scatters.size());
   field.createScatter(submesh);
 
-  DM dmMesh = submesh.dmMesh();
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -719,7 +719,7 @@ pylith::topology::TestFieldSubMesh::testCreateScatterWithBC(void)
   field.createScatterWithBC(submesh);
   CPPUNIT_ASSERT_EQUAL(size_t(1), field._scatters.size());
 
-  DM dmMesh = submesh.dmMesh();
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -779,7 +779,7 @@ pylith::topology::TestFieldSubMesh::testVector(void)
   CPPUNIT_ASSERT(sinfo.dm);
   CPPUNIT_ASSERT(sinfo.vector);
 
-  DM dmMesh = submesh.dmMesh();
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -808,7 +808,7 @@ pylith::topology::TestFieldSubMesh::testScatterSectionToVector(void)
   SubMesh submesh;
   _buildMesh(&mesh, &submesh);
 
-  DM dmMesh = submesh.dmMesh();
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -862,7 +862,7 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
   SubMesh submesh;
   _buildMesh(&mesh, &submesh);
 
-  DM dmMesh = submesh.dmMesh();
+  PetscDM dmMesh = submesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
@@ -871,18 +871,31 @@ pylith::topology::TestFieldSubMesh::testScatterVectorToSection(void)
   field.newSection(Field<SubMesh>::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.createScatter(submesh, context);
+
   const PetscVec vec = field.vector(context);CPPUNIT_ASSERT(vec);
   PetscInt size = 0;
   PetscErrorCode err = VecGetSize(vec, &size);CHECK_PETSC_ERROR(err);
   PetscScalar* valuesVec = NULL;
   err = VecGetArray(vec, &valuesVec);CHECK_PETSC_ERROR(err);
-
-  const PylithScalar tolerance = 1.0e-06;
   const int sizeE = (vEnd-vStart) * fiberDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
   for (int i=0; i < sizeE; ++i)
     valuesVec[i] = valuesE[i];
   err = VecRestoreArray(vec, &valuesVec);CHECK_PETSC_ERROR(err);
+
+  field.scatterVectorToSection(context);
+
+  const PylithScalar tolerance = 1.0e-06;
+  VecVisitorMesh fieldVisitor(field);
+  const PetscScalar* fieldArray = fieldVisitor.localArray();
+  for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+    for (int iDim=0; iDim < fiberDim; ++iDim) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i++], fieldArray[off+iDim], tolerance);
+    } // for
+  } // for
+
 } // testScatterVectorToSection
 
 // ----------------------------------------------------------------------
