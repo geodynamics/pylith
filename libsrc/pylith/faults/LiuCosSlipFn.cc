@@ -94,9 +94,6 @@ pylith::faults::LiuCosSlipFn::initialize(
   assert(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(0 != _parameters);
   _parameters->add("final slip", "final_slip");
@@ -131,8 +128,6 @@ pylith::faults::LiuCosSlipFn::initialize(
   Vec          riseTimeVec      = riseTime.localVector();
   PetscScalar *riseTimeArray;
   assert(riseTimeSection);assert(riseTimeVec);
-
-  logger.stagePop();
 
   // Open databases and set query values
   _dbFinalSlip->open();

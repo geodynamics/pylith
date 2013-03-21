@@ -84,16 +84,12 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 					      const topology::Field<topology::SubMesh>& faultOrientation, 
 					      const spatialdata::units::Nondimensional& normalizer)
 { // initialize
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   const PylithScalar pressureScale = normalizer.pressureScale();
   const PylithScalar timeScale = normalizer.timeScale();
   const PylithScalar rateScale = pressureScale / timeScale;
   _timeScale = timeScale;
 
-  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
   delete _parameters; 
@@ -101,34 +97,40 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 
   // Create section to hold time dependent values
   _parameters->add("value", "traction", topology::FieldBase::VERTICES_FIELD, spaceDim);
-  _parameters->get("value").vectorFieldType(topology::FieldBase::VECTOR);
-  _parameters->get("value").scale(pressureScale);
-  _parameters->get("value").allocate();
+  topology::Field<topology::SubMesh>& value = _parameters->get("value");
+  value.vectorFieldType(topology::FieldBase::VECTOR);
+  value.scale(pressureScale);
+  value.allocate();
   if (_dbInitial) {
     _parameters->add("initial", "traction_initial", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    _parameters->get("initial").vectorFieldType(topology::FieldBase::VECTOR);
-    _parameters->get("initial").scale(pressureScale);
-    _parameters->get("initial").allocate();
+    topology::Field<topology::SubMesh>& initial = _parameters->get("initial");
+    initial.vectorFieldType(topology::FieldBase::VECTOR);
+    initial.scale(pressureScale);
+    initial.allocate();
   }
   if (_dbRate) {
     _parameters->add("rate", "traction_rate", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    _parameters->get("rate").vectorFieldType(topology::FieldBase::VECTOR);
-    _parameters->get("rate").scale(rateScale);
-    _parameters->get("rate").allocate();
+    topology::Field<topology::SubMesh>& rate = _parameters->get("rate");
+    rate.vectorFieldType(topology::FieldBase::VECTOR);
+    rate.scale(rateScale);
+    rate.allocate();
     _parameters->add("rate time", "rate_start_time", topology::FieldBase::VERTICES_FIELD, 1);
-    _parameters->get("rate time").vectorFieldType(topology::FieldBase::SCALAR);
-    _parameters->get("rate time").scale(timeScale);
-    _parameters->get("rate time").allocate();
+    topology::Field<topology::SubMesh>& rateTime = _parameters->get("rate time");
+    rateTime.vectorFieldType(topology::FieldBase::SCALAR);
+    rateTime.scale(timeScale);
+    rateTime.allocate();
   } // if
   if (_dbChange) {
     _parameters->add("change", "traction_change", topology::FieldBase::VERTICES_FIELD, spaceDim);
-    _parameters->get("change").vectorFieldType(topology::FieldBase::VECTOR);
-    _parameters->get("change").scale(pressureScale);
-    _parameters->get("change").allocate();
+    topology::Field<topology::SubMesh>& change = _parameters->get("change");
+    change.vectorFieldType(topology::FieldBase::VECTOR);
+    change.scale(pressureScale);
+    change.allocate();
     _parameters->add("change time", "change_start_time", topology::FieldBase::VERTICES_FIELD, 1);
-    _parameters->get("change time").vectorFieldType(topology::FieldBase::SCALAR);
-    _parameters->get("change time").scale(timeScale);
-    _parameters->get("change time").allocate();
+    topology::Field<topology::SubMesh>& changeTime = _parameters->get("change time");
+    changeTime.vectorFieldType(topology::FieldBase::SCALAR);
+    changeTime.scale(timeScale);
+    changeTime.allocate();
   } // if
 
   if (_dbInitial) { // Setup initial values, if provided.
@@ -238,8 +240,6 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
     if (_dbTimeHistory)
       _dbTimeHistory->open();
   } // if
-  
-  logger.stagePop();
 } // initialize
 
 // ----------------------------------------------------------------------

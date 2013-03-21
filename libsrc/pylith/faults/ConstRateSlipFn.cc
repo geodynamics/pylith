@@ -85,9 +85,6 @@ pylith::faults::ConstRateSlipFn::initialize(
   PetscErrorCode err;
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(_parameters);
   _parameters->add("slip rate", "slip_rate");
@@ -109,8 +106,6 @@ pylith::faults::ConstRateSlipFn::initialize(
   PetscSection slipTimeSection = slipTime.petscSection();assert(slipTimeSection);
   PetscVec slipTimeVec = slipTime.localVector();assert(slipTimeVec);
   PetscScalar *slipTimeArray = NULL;
-
-  logger.stagePop();
 
   // Open databases and set query values
   _dbSlipRate->open();

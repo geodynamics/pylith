@@ -85,10 +85,6 @@ pylith::faults::StaticPerturbation::initialize(
   const PylithScalar timeScale = normalizer.timeScale();
   const PylithScalar pressureScale = normalizer.pressureScale();
 
-  // Memory logging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("Fault");
-
   // Get vertices in fault mesh
   const ALE::Obj<SieveMesh>& sieveMesh = faultMesh.sieveMesh();
   assert(!sieveMesh.isNull());
@@ -108,8 +104,6 @@ pylith::faults::StaticPerturbation::initialize(
   amplitude.vectorFieldType(topology::FieldBase::VECTOR);
   const ALE::Obj<RealSection>& amplitudeSection = amplitude.section();
   assert(!amplitudeSection.isNull());  
-
-  logger.stagePop();
 
   // Open databases and set query values
   _dbAmplitude->open();

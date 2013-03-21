@@ -101,9 +101,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   _fields = new topology::Fields<topology::Field<topology::SubMesh> >(
     *_faultMesh);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultFields");
-
   // Allocate dispRel field
   _fields->add("relative disp", "relative_disp");
   topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
@@ -111,8 +108,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   dispRel.allocate();
   dispRel.vectorFieldType(topology::FieldBase::VECTOR);
   dispRel.scale(_normalizer->lengthScale());
-
-  logger.stagePop();
 
   _quadrature->initializeGeometry();
 
@@ -1370,9 +1365,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PylithScalar jacobianDet = 0;
   scalar_array refCoordsVertex(cohesiveDim);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultFields");
-
   // Allocate orientation field.
   scalar_array orientationVertex(orientationSize);
   _fields->add("orientation", "orientation");
@@ -1392,8 +1384,6 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   PetscSection orientationSection = orientation.petscSection();
   PetscVec          orientationVec     = orientation.localVector();
   PetscScalar *orientationArray;
-
-  logger.stagePop();
 
   // Compute orientation of fault at constraint vertices
 
@@ -1658,9 +1648,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("FaultFields");
-
   // Allocate area field.
   _fields->add("area", "area");
   topology::Field<topology::SubMesh>&       area    = _fields->get("area");
@@ -1675,8 +1662,6 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   PetscVec          areaVec     = area.localVector();
   PetscScalar *areaArray;
   assert(areaSection);assert(areaVec);
-
-  logger.stagePop();
 
   scalar_array coordinatesCell(numBasis*spaceDim);
   PetscSection coordSection;
@@ -1759,13 +1744,9 @@ pylith::faults::FaultCohesiveLagrange::_calcTractionsChange(
   // Allocate buffer for tractions field (if necessary).
   PetscSection tractionsSection = tractions->petscSection();
   if (!tractionsSection) {
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("FaultFields");
-
     const topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
     tractions->cloneSection(dispRel);
     tractionsSection = tractions->petscSection();
-    logger.stagePop();
   } // if
   PetscVec          tractionsVec = tractions->localVector();
   PetscScalar *tractionsArray;
@@ -1819,9 +1800,6 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   if (_fields->hasField("buffer (vector)"))
     return;
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("OutputFields");
-
   // Create vector field; use same shape/chart as relative
   // displacement field.
   assert(_faultMesh);
@@ -1832,8 +1810,6 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
   buffer.cloneSection(dispRel);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::VECTOR);
-
-  logger.stagePop();
 } // _allocateBufferVectorField
 
 // ----------------------------------------------------------------------
@@ -1845,9 +1821,6 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   if (_fields->hasField("buffer (scalar)"))
     return;
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("OutputFields");
-
   // Create vector field; use same shape/chart as area field.
   assert(_faultMesh);
   _fields->add("buffer (scalar)", "buffer");
@@ -1858,8 +1831,6 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
   buffer.scale(1.0);
   buffer.zero();
   assert(buffer.vectorFieldType() == topology::FieldBase::SCALAR);
-
-  logger.stagePop();
 } // _allocateBufferScalarField
 
 // ----------------------------------------------------------------------
@@ -1971,9 +1942,6 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
     assert(faultDMMesh);
     err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
 
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("OutputFields");
-
     const int fiberDim = 1;
     _fields->add("partition", "partition", pylith::topology::FieldBase::CELLS_FIELD, fiberDim);
     topology::Field<topology::SubMesh>& partition = _fields->get("partition");
@@ -1998,8 +1966,6 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
       partitionArray[off] = rank;
     } // for
     err = VecRestoreArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
-
-    logger.stagePop();
 
     return partition;    
 
