@@ -26,6 +26,7 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -227,12 +228,11 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
   assert(_parameters);
 
   const topology::Mesh& mesh = _parameters->mesh();
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  const PylithScalar lengthScale = _getNormalizer().lengthScale();
-  PetscErrorCode err = 0;
+  const spatialdata::units::Nondimensional& normalizer = _getNormalizer();
+  const PylithScalar lengthScale = normalizer.lengthScale();
 
   scalar_array coordsVertex(spaceDim);
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -252,7 +252,8 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
     for (PetscInt d = 0; d < spaceDim; ++d) {
       coordsVertex[d] = coordArray[coff+d];
     } // for
-    _getNormalizer().dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
+    normalizer.dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
+
     int err = db->query(&valueVertex[0], valueVertex.size(), &coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -262,12 +263,12 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
       msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-    _getNormalizer().nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
+    normalizer.nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
 
     // Update section
     const PetscInt off = parametersVisitor.sectionOffset(_points[iPoint]);
-    const PetscInt dof = parametersVisitor.sectionDof(_points[iPoint]);
-    for(int i = 0; i < dof; ++i) {
+    assert(querySize == parametersVisitor.sectionDof(_points[iPoint]));
+    for(int i = 0; i < querySize; ++i) {
       parametersArray[off+i] = valueVertex[i];
     } // for
   } // for

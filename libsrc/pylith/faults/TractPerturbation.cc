@@ -25,6 +25,9 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // HOLDSA Fields
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
@@ -252,130 +255,105 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
   const PylithScalar timeScale = _timeScale;
 
   // Get vertices.
-  DM             dmMesh = _parameters->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-
-  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  PetscSection   initialSection, rateSection, rateTimeSection, changeSection, changeTimeSection;
-  Vec            initialVec, rateVec, rateTimeVec, changeVec, changeTimeVec;
-  PetscScalar   *valuesArray, *initialArray, *rateArray, *rateTimeArray, *changeArray, *changeTimeArray;
+  topology::Field<topology::SubMesh>& valueField = _parameters->get("value");
+  topology::VecVisitorMesh valueVisitor(valueField);
+  PetscScalar* valueArray = valueVisitor.localArray();
+  
+  topology::Field<topology::SubMesh>* initialField = (_dbInitial) ? &_parameters->get("initial") : 0;
+  topology::VecVisitorMesh* initialVisitor = (initialField) ? new topology::VecVisitorMesh(*initialField) : 0;
+  PetscScalar* initialArray = (initialVisitor) ? initialVisitor->localArray() : NULL;
 
-  PetscSection valuesSection     = _parameters->get("value").petscSection();
-  Vec          valuesVec         = _parameters->get("value").localVector();
-  assert(valuesSection);assert(valuesVec);
-  err = VecGetArray(valuesVec, &valuesArray);CHECK_PETSC_ERROR(err);
-  if (_dbInitial) {
-    initialSection    = _parameters->get("initial").petscSection();
-    initialVec        = _parameters->get("initial").localVector();
-    assert(initialSection);assert(initialVec);
-    err = VecGetArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbRate) {
-    rateSection       = _parameters->get("rate").petscSection();
-    rateTimeSection   = _parameters->get("rate time").petscSection();
-    rateVec           = _parameters->get("rate").localVector();
-    rateTimeVec       = _parameters->get("rate time").localVector();
-    assert(rateSection);assert(rateTimeSection);assert(rateVec);assert(rateTimeVec);
-    err = VecGetArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbChange) {
-    changeSection     = _parameters->get("change").petscSection();
-    changeTimeSection = _parameters->get("change time").petscSection();
-    changeVec         = _parameters->get("change").localVector();
-    changeTimeVec     = _parameters->get("change time").localVector();
-    assert(changeSection);assert(changeTimeSection);assert(changeVec);assert(changeTimeVec);
-    err = VecGetArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
-    err = VecGetArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  }
+  topology::Field<topology::SubMesh>* rateField = (_dbRate) ? &_parameters->get("rate") : 0;
+  topology::VecVisitorMesh* rateVisitor = (rateField) ? new topology::VecVisitorMesh(*rateField) : 0;
+  PetscScalar* rateArray = (rateVisitor) ? rateVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* rateTimeField = (_dbRate) ? &_parameters->get("rate time") : 0;
+  topology::VecVisitorMesh* rateTimeVisitor = (rateTimeField) ? new topology::VecVisitorMesh(*rateTimeField) : 0;
+  PetscScalar* rateTimeArray = (rateTimeVisitor) ? rateTimeVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* changeField = (_dbChange) ? &_parameters->get("change") : 0;
+  topology::VecVisitorMesh* changeVisitor = (changeField) ? new topology::VecVisitorMesh(*changeField) : 0;
+  PetscScalar* changeArray = (changeVisitor) ? changeVisitor->localArray() : NULL;
+
+  topology::Field<topology::SubMesh>* changeTimeField = (_dbChange) ? &_parameters->get("change time") : 0;
+  topology::VecVisitorMesh* changeTimeVisitor = (changeTimeField) ? new topology::VecVisitorMesh(*changeTimeField) : 0;
+  PetscScalar* changeTimeArray = (changeTimeVisitor) ? changeTimeVisitor->localArray() : NULL;
 
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt vdof, voff;
-
-    err = PetscSectionGetDof(valuesSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valuesSection, v, &voff);CHECK_PETSC_ERROR(err);
-    assert(vdof == spaceDim);
-    for(PetscInt d = 0; d < vdof; ++d)
-      valuesArray[voff+d] = 0.0;
+    const PetscInt voff = valueVisitor.sectionOffset(v);
+    assert(spaceDim == valueVisitor.sectionDof(v));
+    for (PetscInt d = 0; d < spaceDim; ++d) {
+      valueArray[voff+d] = 0.0;
+    } // for
 
     // Contribution from initial value
     if (_dbInitial) {
-      PetscInt idof, ioff;
-
-      err = PetscSectionGetDof(initialSection, v, &idof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(initialSection, v, &ioff);CHECK_PETSC_ERROR(err);
-      assert(idof == vdof);
-      for(PetscInt d = 0; d < idof; ++d)
-        valuesArray[voff+d] += initialArray[ioff+d];
+      assert(initialVisitor);
+      const PetscInt ioff = initialVisitor->sectionOffset(v);
+      assert(spaceDim == initialVisitor->sectionDof(v));
+      for (PetscInt d = 0; d < spaceDim; ++d) {
+        valueArray[voff+d] += initialArray[ioff+d];
+      } // for
     } // if
     
     // Contribution from rate of change of value
     if (_dbRate) {
-      PetscInt rdof, roff, rtdof, rtoff;
-
-      err = PetscSectionGetDof(rateSection, v, &rdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateSection, v, &roff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(rateTimeSection, v, &rtdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(rateTimeSection, v, &rtoff);CHECK_PETSC_ERROR(err);
-      assert(rdof == vdof);
-      assert(rtdof == 1);
+      assert(rateVisitor);
+      const PetscInt roff = rateVisitor->sectionOffset(v);
+      assert(spaceDim == rateVisitor->sectionDof(v));
+      assert(rateTimeVisitor);
+      const PetscInt rtoff = rateTimeVisitor->sectionOffset(v);
+      assert(1 == rateTimeVisitor->sectionDof(v));
 
       const PylithScalar tRel = t - rateTimeArray[rtoff];
       if (tRel > 0.0)  // rate of change integrated over time
-        for(PetscInt d = 0; d < spaceDim; ++d)
-          valuesArray[voff+d] += rateArray[roff+d] * tRel;
+	for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	  valueArray[voff+iDim] += rateArray[roff+iDim] * tRel;
+	} // for
     } // if
-    
+
     // Contribution from change of value
     if (_dbChange) {
-      PetscInt cdof, coff, ctdof, ctoff;
-
-      err = PetscSectionGetDof(changeSection, v, &cdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeSection, v, &coff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(changeTimeSection, v, &ctdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(changeTimeSection, v, &ctoff);CHECK_PETSC_ERROR(err);
-      assert(cdof == vdof);
-      assert(ctdof == 1);
+      assert(changeVisitor);
+      const PetscInt coff = changeVisitor->sectionOffset(v);
+      assert(spaceDim == changeVisitor->sectionDof(v));
+      const PetscInt ctoff = changeTimeVisitor->sectionOffset(v);
+      assert(1 == changeTimeVisitor->sectionDof(v));
 
       const PylithScalar tRel = t - changeTimeArray[ctoff];
       if (tRel >= 0) { // change in value over time
-        PylithScalar scale = 1.0;
-        if (0 != _dbTimeHistory) {
-          PylithScalar tDim = tRel * timeScale;
-          /* _getNormalizer().dimensionalize(&tDim, 1, timeScale);*/
-          const int err = _dbTimeHistory->query(&scale, tDim);
-          if (0 != err) {
-            std::ostringstream msg;
-            msg << "Error querying for time '" << tDim 
-                << "' in time history database "
-                << _dbTimeHistory->label() << ".";
-            throw std::runtime_error(msg.str());
-          } // if
-        } // if
-        for(PetscInt d = 0; d < spaceDim; ++d)
-          valuesArray[voff+d] += changeArray[coff+d] * scale;
+	PylithScalar scale = 1.0;
+	if (_dbTimeHistory) {
+	  PylithScalar tDim = tRel*_timeScale;
+	  const int err = _dbTimeHistory->query(&scale, tDim);
+	  if (err) {
+	    std::ostringstream msg;
+	    msg << "Error querying for time '" << tDim 
+		<< "' in time history database "
+		<< _dbTimeHistory->label() << ".";
+	    throw std::runtime_error(msg.str());
+	  } // if
+	} // if
+	for (int iDim = 0; iDim < spaceDim; ++iDim) {
+	  valueArray[voff+iDim] += changeArray[coff+iDim]*scale;
+	} // for
       } // if
     } // if
   } // for
-  err = VecRestoreArray(valuesVec,     &valuesArray);CHECK_PETSC_ERROR(err);
-  if (_dbInitial) {
-    err = VecRestoreArray(initialVec,    &initialArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbRate) {
-    err = VecRestoreArray(rateVec,       &rateArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(rateTimeVec,   &rateTimeArray);CHECK_PETSC_ERROR(err);
-  }
-  if (_dbChange) {
-    err = VecRestoreArray(changeVec,     &changeArray);CHECK_PETSC_ERROR(err);
-    err = VecRestoreArray(changeTimeVec, &changeTimeArray);CHECK_PETSC_ERROR(err);
-  }
+
+  delete initialVisitor; initialVisitor = 0;
+  delete rateVisitor; rateVisitor = 0;
+  delete rateTimeVisitor; rateTimeVisitor = 0;
+  delete changeVisitor; changeVisitor = 0;
+  delete changeTimeVisitor; changeTimeVisitor = 0;
 }  // calculate
 
 
@@ -454,75 +432,55 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
   assert(_parameters);
 
   // Get vertices.
-  DM             dmMesh = _parameters->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-
-  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
   const PylithScalar lengthScale = normalizer.lengthScale();
 
+  scalar_array coordsVertex(spaceDim);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordArray = coordsVisitor.localArray();
+
+  topology::Field<topology::SubMesh>& parametersField = _parameters->get(name);
+  topology::VecVisitorMesh parametersVisitor(parametersField);
+  PetscScalar* parametersArray = parametersVisitor.localArray();
+
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
-  scalar_array valuesVertex(querySize);
-
-  // Get sections.
-  scalar_array coordsVertexGlobal(spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  PetscScalar *coordArray;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
-
-  PetscSection valueSection = _parameters->get(name).petscSection();
-  Vec          valueVec     = _parameters->get(name).localVector();
-  PetscScalar *tractionsArray;
-  assert(valueSection);assert(valueVec);
-
-  // Loop over cells in boundary mesh and perform queries.
-  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(valueVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  scalar_array valueVertex(querySize);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt cdof, coff;
+    // Get dimensionalized coordinates of vertex
+    const int coff = coordsVisitor.sectionOffset(v);
+    assert(spaceDim == coordsVisitor.sectionDof(v));
+    for (PetscInt d = 0; d < spaceDim; ++d) {
+      coordsVertex[d] = coordArray[coff+d];
+    } // for
+    normalizer.dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
 
-    err = PetscSectionGetDof(coordSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == cdof);
-    for(PetscInt d = 0; d < cdof; ++d) {
-      coordsVertexGlobal[d] = coordArray[coff+d];
-    }
-    normalizer.dimensionalize(&coordsVertexGlobal[0], coordsVertexGlobal.size(), lengthScale);
-    
-    valuesVertex = 0.0;
-    err = db->query(&valuesVertex[0], querySize, &coordsVertexGlobal[0], spaceDim, cs);
+    valueVertex = 0.0;
+    int err = db->query(&valueVertex[0], valueVertex.size(), &coordsVertex[0], coordsVertex.size(), cs);
     if (err) {
       std::ostringstream msg;
-      msg << "Could not find values at (";
+      msg << "Error querying for '" << name << "' at (";
       for (int i=0; i < spaceDim; ++i)
-        msg << " " << coordsVertexGlobal[i];
-      msg << ") for traction boundary condition " << _label << "\n"
-	  << "using spatial database " << db->label() << ".";
+        msg << "  " << coordsVertex[i];
+      msg << ") using spatial database " << db->label() << ".";
       throw std::runtime_error(msg.str());
     } // if
-
-    normalizer.nondimensionalize(&valuesVertex[0], valuesVertex.size(), scale);
+    normalizer.nondimensionalize(&valueVertex[0], valueVertex.size(), scale);
 
     // Update section
-    PetscInt vdof, voff;
-
-    err = PetscSectionGetDof(valueSection, v, &vdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(valueSection, v, &voff);CHECK_PETSC_ERROR(err);
-    assert(vdof == querySize);
-    for(PetscInt d = 0; d < vdof; ++d)
-      tractionsArray[voff+d] = valuesVertex[d];
+    const PetscInt off = parametersVisitor.sectionOffset(v);
+    assert(querySize == parametersVisitor.sectionDof(v));
+    for(int i = 0; i < querySize; ++i) {
+      parametersArray[off+i] = valueVertex[i];
+    } // for
   } // for
-  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 } // _queryDB
 
 // End of file
