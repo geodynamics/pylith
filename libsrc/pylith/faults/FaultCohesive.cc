@@ -74,10 +74,9 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
   if (!_useFaultMesh) {
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-    PetscBool hasLabel;
+    PetscBool hasLabel = PETSC_FALSE;
     PetscErrorCode err;
 
-    assert(dmMesh);
     assert(std::string("") != label());
     err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
     if (!hasLabel) {

@@ -30,6 +30,8 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -81,19 +83,14 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
 
   _initializeLogger();
 
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();assert(cs);
 
-  delete _faultMesh;
-  _faultMesh = new topology::SubMesh();
-  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(),
-					_useLagrangeConstraints);
-  //_faultMesh->nondimensionalize(*_normalizer);
+  delete _faultMesh; _faultMesh = new topology::SubMesh();assert(_faultMesh);
+  CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(), _useLagrangeConstraints);
   _initializeCohesiveInfo(mesh);
 
   delete _fields;
-  _fields = new topology::Fields<topology::Field<topology::SubMesh> >(
-    *_faultMesh);
+  _fields = new topology::Fields<topology::Field<topology::SubMesh> >(*_faultMesh);
 
   // Allocate dispRel field
   _fields->add("relative disp", "relative_disp");
@@ -199,27 +196,27 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field<t
   // Get sections associated with cohesive cells
   PetscDM residualDM = residual.dmMesh();assert(residualDM);
   PetscSection residualSection = residual.petscSection();assert(residualSection);
-  PetscVec residualVec = residual.localVector();assert(residualVec);
   PetscSection residualGlobalSection = NULL;
-  PetscScalar *residualArray = NULL;
-  PetscErrorCode err;
-  err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);CHECK_PETSC_ERROR(err);
 
-  PetscSection dispTSection = fields->get("disp(t)").petscSection();assert(dispTSection);
-  PetscVec dispTVec = fields->get("disp(t)").localVector();assert(dispTVec);
-  PetscScalar *dispTArray = NULL;
+  topology::VecVisitorMesh residualVisitor(residual);
+  PetscScalar* residualArray = residualVisitor.localArray();
 
-  PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();assert(dispTIncrSection);
-  PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();assert(dispTIncrVec);
-  PetscScalar *dispTIncrArray = NULL;
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::VecVisitorMesh dispTVisitor(dispT);
+  PetscScalar* dispTArray = dispTVisitor.localArray();
 
-  PetscSection dispRelSection = _fields->get("relative disp").petscSection();assert(dispRelSection);
-  PetscVec dispRelVec = _fields->get("relative disp").localVector();assert(dispRelVec);
-  PetscScalar *dispRelArray = NULL;
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
+  PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
-  PetscSection areaSection = _fields->get("area").petscSection();assert(areaSection);
-  PetscVec areaVec = _fields->get("area").localVector();assert(areaVec);
-  PetscScalar *areaArray = NULL;
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::VecVisitorMesh dispRelVisitor(dispRel);
+  PetscScalar* dispRelArray = dispRelVisitor.localArray();
+
+  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::VecVisitorMesh areaVisitor(area);
+  PetscScalar* areaArray = areaVisitor.localArray();
 
   // Get fault information
   PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
@@ -229,12 +226,6 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field<t
   _logger->eventBegin(computeEvent);
 #endif
 
-  err = VecGetArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
-
   // Loop over fault vertices
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -242,93 +233,73 @@ pylith::faults::FaultCohesiveLagrange::integrateResidual(const topology::Field<t
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
-    PetscInt goff;
 
     // Compute contribution only if Lagrange constraint is local.
+    PetscInt goff  = 0;
     err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
-    if (goff < 0) continue;
+    if (goff < 0)
+      continue;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
 #endif
 
     // Get relative dislplacement at fault vertex.
-    PetscInt drdof, droff;
-    err = PetscSectionGetDof(dispRelSection, v_fault, &drdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispRelSection, v_fault, &droff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == drdof);
+    const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
+    assert(spaceDim == dispRelVisitor.sectionDof(v_fault));
 
     // Get area associated with fault vertex.
-    PetscInt adof, aoff;
-    err = PetscSectionGetDof(areaSection, v_fault, &adof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(areaSection, v_fault, &aoff);CHECK_PETSC_ERROR(err);
-    assert(1 == adof);
+    const PetscInt aoff = areaVisitor.sectionOffset(v_fault);
+    assert(1 == areaVisitor.sectionDof(v_fault));
     const PylithScalar area = areaArray[aoff];
 
     // Get disp(t) at conventional vertices and Lagrange vertex.
-    PetscInt dtndof, dtnoff;
-    err = PetscSectionGetDof(dispTSection, v_negative, &dtndof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_negative, &dtnoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtndof);
+    const PetscInt dtnoff = dispTVisitor.sectionOffset(v_negative);
+    assert(spaceDim == dispTVisitor.sectionDof(v_negative));
 
-    PetscInt dtpdof, dtpoff;
-    err = PetscSectionGetDof(dispTSection, v_positive, &dtpdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_positive, &dtpoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtpdof);
+    const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
+    assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    PetscInt dtldof, dtloff;
-    err = PetscSectionGetDof(dispTSection, v_lagrange, &dtldof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_lagrange, &dtloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtldof);
+    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
-    PetscInt dindof, dinoff;
-    err = PetscSectionGetDof(dispTIncrSection, v_negative, &dindof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_negative, &dinoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dindof);
+    const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_negative));
 
-    PetscInt dipdof, dipoff;
-    err = PetscSectionGetDof(dispTIncrSection, v_positive, &dipdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_positive, &dipoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dipdof);
+    const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    PetscInt dildof, diloff;
-    err = PetscSectionGetDof(dispTIncrSection, v_lagrange, &dildof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_lagrange, &diloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dildof);
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
 
     // Assemble contributions into field
-    PetscInt rndof, rnoff, rpdof, rpoff, rldof, rloff;
-    err = PetscSectionGetDof(residualSection, v_negative, &rndof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(residualSection, v_negative, &rnoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(residualSection, v_positive, &rpdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(residualSection, v_positive, &rpoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(residualSection, v_lagrange, &rldof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(residualSection, v_lagrange, &rloff);CHECK_PETSC_ERROR(err);
+    const PetscInt rnoff = residualVisitor.sectionOffset(v_negative);
+    assert(spaceDim == residualVisitor.sectionDof(v_negative));
+
+    const PetscInt rpoff = residualVisitor.sectionOffset(v_positive);
+    assert(spaceDim == residualVisitor.sectionDof(v_positive));
+
+    const PetscInt rloff = residualVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == residualVisitor.sectionDof(v_lagrange));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
     _logger->eventBegin(updateEvent);
 #endif
 
-    assert(spaceDim == rndof);assert(spaceDim == rpdof);assert(spaceDim == rldof);
     for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar residualN = area * (dispTArray[dtloff+d] + dispTIncrArray[diloff+d]);
       residualArray[rnoff+d] += +residualN;
       residualArray[rpoff+d] += -residualN;
       residualArray[rloff+d] += -area * (dispTArray[dtpoff+d] + dispTIncrArray[dipoff+d] - dispTArray[dtnoff+d] - dispTIncrArray[dinoff+d] - dispRelArray[droff+d]);
-    }
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
   PetscLogFlops(numVertices*spaceDim*10);
-  err = VecRestoreArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
@@ -507,10 +478,9 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Jacobian* jac
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator.
 void
-pylith::faults::FaultCohesiveLagrange::integrateJacobian(
-	                  topology::Field<topology::Mesh>* jacobian,
-			  const PylithScalar t,
-			  topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveLagrange::integrateJacobian(topology::Field<topology::Mesh>* jacobian,
+							 const PylithScalar t,
+							 topology::SolutionFields* const fields)
 { // integrateJacobian
   assert(jacobian);
   assert(fields);
@@ -530,15 +500,15 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
   // matrix, we adjust the solution to account for the Lagrange
   // multipliers as part of the solve.
 
-  const PetscInt spaceDim      = _quadrature->spaceDim();
-  PetscDM           jacobianDM      = jacobian->dmMesh();
-  PetscSection jacobianSection = jacobian->petscSection();
-  PetscVec          jacobianVec     = jacobian->localVector();
-  PetscSection jacobianGlobalSection;
-  PetscScalar *jacobianArray;
-  PetscErrorCode err;
-  assert(jacobianSection);assert(jacobianVec);
-  err = DMGetDefaultGlobalSection(jacobianDM, &jacobianGlobalSection);CHECK_PETSC_ERROR(err);
+  const int spaceDim  = _quadrature->spaceDim();
+
+  PetscDM jacobianDM  = jacobian->dmMesh();assert(jacobianDM);
+  PetscSection jacobianSection = jacobian->petscSection();assert(jacobianSection);
+  PetscSection jacobianGlobalSection = NULL;
+  PetscErrorCode err = DMGetDefaultGlobalSection(jacobianDM, &jacobianGlobalSection);CHECK_PETSC_ERROR(err);
+
+  topology::VecVisitorMesh jacobianVisitor(*jacobian);
+  PetscScalar* jacobianArray = jacobianVisitor.localArray();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -546,33 +516,29 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 #endif
 
   const int numVertices = _cohesiveVertices.size();
-  err = VecGetArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
-    PetscInt goff;
 
     // Compute contribution only if Lagrange constraint is local.
+    PetscInt goff = 0;
     err = PetscSectionGetOffset(jacobianGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
-    if (goff < 0) continue;
+    if (goff < 0) 
+      continue;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(updateEvent);
 #endif
-    PetscInt dof, off;
+    const PetscInt off = jacobianVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == jacobianVisitor.sectionDof(v_lagrange));
 
-    err = PetscSectionGetDof(jacobianSection, v_lagrange, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(jacobianSection, v_lagrange, &off);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dof);
-
-    for(PetscInt d = 0; d < dof; ++d) {
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       jacobianArray[off+d] = 1.0;
-    }
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
   PetscLogFlops(0);
 
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -586,10 +552,9 @@ pylith::faults::FaultCohesiveLagrange::integrateJacobian(
 // Integrate contributions to Jacobian matrix (A) associated with
 // operator.
 void
-pylith::faults::FaultCohesiveLagrange::calcPreconditioner(
-				   PetscMat* const precondMatrix,
-				   topology::Jacobian* const jacobian,
-				   topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveLagrange::calcPreconditioner(PetscMat* const precondMatrix,
+							  topology::Jacobian* const jacobian,
+							  topology::SolutionFields* const fields)
 { // calcPreconditioner
   assert(precondMatrix);
   assert(jacobian);
@@ -941,12 +906,12 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   assert(_quadrature);
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  PetscBool hasLabel;
-  PetscInt vStart, vEnd;
-  PetscErrorCode err;
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+  PetscBool hasLabel;
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label() << " for boundary condition.";
@@ -990,19 +955,15 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   } // if
 
   // Check quadrature against mesh
-  const int       numCorners = _quadrature->numBasis();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
-  assert(cellIS);
-  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = 0; c < numCells; ++c) {
-    PetscInt *closure        = PETSC_NULL;
-    PetscInt  cellNumCorners = 0, closureSize;
+  const int numCorners = _quadrature->numBasis();
+  topology::StratumIS faultIS(dmMesh, "material-id", id());
+  const PetscInt* cells = faultIS.points();
+  const PetscInt ncells = faultIS.size();
+  for(PetscInt i = 0; i < ncells; ++i) {
+    PetscInt *closure = NULL;
+    PetscInt cellNumCorners = 0, closureSize;
 
-    err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetTransitiveClosure(dmMesh, cells[i], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
@@ -1013,13 +974,12 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners
           << ") is not compatible with number of vertices (" << cellNumCorners
-          << ") in cohesive cell " << cells[c] << " for fault '" << label()
+          << ") in cohesive cell " << cells[i] << " for fault '" << label()
           << "'.";
       throw std::runtime_error(msg.str());
     } // if
-    err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, cells[i], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
