@@ -76,9 +76,8 @@ pylith::faults::EqKinSrc::slipfn(SlipTimeFn* slipfn)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::EqKinSrc::initialize(
-			   const topology::SubMesh& faultMesh,
-			   const spatialdata::units::Nondimensional& normalizer)
+pylith::faults::EqKinSrc::initialize(const topology::SubMesh& faultMesh,
+				     const spatialdata::units::Nondimensional& normalizer)
 { // initialize
   // :TODO: Normalize slip time in Python?
   normalizer.nondimensionalize(&_originTime, 1, normalizer.timeScale());
@@ -89,9 +88,8 @@ pylith::faults::EqKinSrc::initialize(
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 void
-pylith::faults::EqKinSrc::slip(
-			   topology::Field<topology::SubMesh>* const slipField,
-			   const PylithScalar t)
+pylith::faults::EqKinSrc::slip(topology::Field<topology::SubMesh>* const slipField,
+			       const PylithScalar t)
 { // slip
   assert(_slipfn);
   _slipfn->slip(slipField, t);

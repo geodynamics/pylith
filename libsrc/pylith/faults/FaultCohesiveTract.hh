@@ -51,11 +51,6 @@ public :
   virtual
   void deallocate(void);
 
-  /** Sets the spatial database for the inital tractions
-   * @param dbs spatial database for initial tractions
-   */
-  void dbInitial(spatialdata::spatialdb::SpatialDB* dbs);
-  
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
    *
@@ -115,32 +110,6 @@ public :
   const topology::Field<topology::SubMesh>&
   cellField(const char* name,
 	    const topology::SolutionFields* fields =0);
-
-  // PRIVATE METHODS ////////////////////////////////////////////////////
-private :
-
-  /** Calculate orientation at quadrature points.
-   *
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction; applies to fault surfaces in 2-D and 3-D).
-   */
-  void _calcOrientation(const PylithScalar upDir[3]);
-
-  /** Get initial tractions using a spatial database.
-   */
-  void _getInitialTractions(void);
-
-  /** Setup fault constitutive model.
-   */
-  void _initConstitutiveModel(void);
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  /// Database for initial tractions.
-  spatialdata::spatialdb::SpatialDB* _dbInitial;
-
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

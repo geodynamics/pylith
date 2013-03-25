@@ -73,14 +73,14 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
 
   if (!_useFaultMesh) {
     // Get group of vertices associated with fault
-    DM             dmMesh = mesh.dmMesh();
-    PetscBool      has;
+    PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+    PetscBool hasLabel;
     PetscErrorCode err;
 
     assert(dmMesh);
     assert(std::string("") != label());
-    err = DMPlexHasLabel(dmMesh, label(), &has);CHECK_PETSC_ERROR(err);
-    if (!has) {
+    err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+    if (!hasLabel) {
       std::ostringstream msg;
       msg << "Mesh missing group of vertices '" << label()
           << "' for fault interface condition.";
@@ -107,13 +107,14 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   assert(mesh);
   assert(std::string("") != label());
   
+  std::cerr << ":TODO: MATT Update FaultCohesive::adjustTopology for PETSc DM." << std::endl;
+
   try {
     topology::SubMesh faultMesh;
     ALE::Obj<SieveFlexMesh> faultBoundary;
   
     // Get group of vertices associated with fault
-    DM dmMesh = mesh->dmMesh();
-    assert(dmMesh);
+    PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
     
     if (!_useFaultMesh) {
       PetscDMLabel groupField;

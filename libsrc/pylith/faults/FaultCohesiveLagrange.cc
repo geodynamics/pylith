@@ -43,14 +43,8 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-#include <petscblaslapack.h> // USES svd and dgemm
-
 //#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -79,7 +73,7 @@ pylith::faults::FaultCohesiveLagrange::deallocate(void)
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
-					     const PylithScalar upDir[3])
+						  const PylithScalar upDir[3])
 { // initialize
   assert(upDir);
   assert(_quadrature);
@@ -946,12 +940,11 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
 { // verifyConfiguration
   assert(_quadrature);
 
-  PetscDM             dmMesh = mesh.dmMesh();
-  PetscBool      hasLabel;
-  PetscInt       vStart, vEnd;
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscBool hasLabel;
+  PetscInt vStart, vEnd;
   PetscErrorCode err;
 
-  assert(dmMesh);
   err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
   if (!hasLabel) {
