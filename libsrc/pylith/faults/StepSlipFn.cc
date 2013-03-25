@@ -23,6 +23,9 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -31,11 +34,6 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
-// ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveMesh;
-typedef pylith::topology::SubMesh::SieveMesh::label_sequence label_sequence;
-typedef pylith::topology::SubMesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -67,31 +65,27 @@ pylith::faults::StepSlipFn::deallocate(void)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::StepSlipFn::initialize(
-			    const topology::SubMesh& faultMesh,
-			    const spatialdata::units::Nondimensional& normalizer,
-			    const PylithScalar originTime)
+pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
+				       const spatialdata::units::Nondimensional& normalizer,
+				       const PylithScalar originTime)
 { // initialize
-  assert(0 != _dbFinalSlip);
-  assert(0 != _dbSlipTime);
+  assert(_dbFinalSlip);
+  assert(_dbSlipTime);
 
-  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
-  assert(0 != cs);
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
   const PylithScalar lengthScale = normalizer.lengthScale();
   const PylithScalar timeScale = normalizer.timeScale();
 
   // Get vertices in fault mesh
-  DM             dmMesh = faultMesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
-
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = faultMesh.dmMesh();assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
-  assert(0 != _parameters);
+  assert(_parameters);
 
   _parameters->add("final slip", "final_slip");
   topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
@@ -99,10 +93,8 @@ pylith::faults::StepSlipFn::initialize(
   finalSlip.allocate();
   finalSlip.scale(lengthScale);
   finalSlip.vectorFieldType(topology::FieldBase::VECTOR);
-  PetscSection finalSlipSection = finalSlip.petscSection();
-  Vec          finalSlipVec     = finalSlip.localVector();
-  PetscScalar *finalSlipArray;
-  assert(finalSlipSection);assert(finalSlipVec);
+  topology::VecVisitorMesh finalSlipVisitor(finalSlip);
+  PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
   _parameters->add("slip time", "slip_time");
   topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
@@ -110,10 +102,8 @@ pylith::faults::StepSlipFn::initialize(
   slipTime.allocate();
   slipTime.scale(timeScale);
   slipTime.vectorFieldType(topology::FieldBase::SCALAR);
-  PetscSection slipTimeSection  = slipTime.petscSection();
-  Vec          slipTimeVec      = slipTime.localVector();
-  PetscScalar *slipTimeArray;
-  assert(slipTimeSection);assert(slipTimeVec);
+  topology::VecVisitorMesh slipTimeVisitor(slipTime);
+  PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
 
   // Open databases and set query values
   _dbFinalSlip->open();
@@ -147,33 +137,22 @@ pylith::faults::StepSlipFn::initialize(
 
   // Get coordinates of vertices
   scalar_array vCoordsGlobal(spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  PetscScalar *coordArray;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar* coordsArray = coordsVisitor.localArray();
 
   _slipVertex.resize(spaceDim);
-  err = VecGetArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(slipTimeVec, &slipTimeArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt fsdof, fsoff, stdof, stoff, cdof, coff;
-
-    err = PetscSectionGetDof(finalSlipSection, v, &fsdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(finalSlipSection, v, &fsoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(slipTimeSection, v, &stdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(slipTimeSection, v, &stoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(coordSection, v, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v, &coff);CHECK_PETSC_ERROR(err);
-    assert(cdof == spaceDim);
-
-    for(PetscInt d = 0; d < cdof; ++d) {
-      vCoordsGlobal[d] = coordArray[coff+d];
-    }
+    // Dimensionalize coordinates
+    const PetscInt coff = coordsVisitor.sectionOffset(v);
+    assert(spaceDim == coordsVisitor.sectionDof(v));
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      vCoordsGlobal[d] = coordsArray[coff+d];
+    } // for
     normalizer.dimensionalize(&vCoordsGlobal[0], vCoordsGlobal.size(), lengthScale);
-        
+    
+    // Final slip
+    const PetscInt fsoff = finalSlipVisitor.sectionOffset(v);
+    assert(spaceDim == finalSlipVisitor.sectionDof(v));
     int err = _dbFinalSlip->query(&_slipVertex[0], _slipVertex.size(), &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -185,6 +164,9 @@ pylith::faults::StepSlipFn::initialize(
     } // if
     normalizer.nondimensionalize(&_slipVertex[0], _slipVertex.size(), lengthScale);
 
+    // Slip time
+    const PetscInt stoff = slipTimeVisitor.sectionOffset(v);
+    assert(1 == slipTimeVisitor.sectionDof(v));
     err = _dbSlipTime->query(&_slipTimeVertex, 1, &vCoordsGlobal[0], vCoordsGlobal.size(), cs);
     if (err) {
       std::ostringstream msg;
@@ -198,14 +180,11 @@ pylith::faults::StepSlipFn::initialize(
     // add origin time to rupture time
     _slipTimeVertex += originTime;
 
-    for(PetscInt d = 0; d < fsdof; ++d) {
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       finalSlipArray[fsoff+d] = _slipVertex[d];
-    }
+    } // for
     slipTimeArray[stoff] = _slipTimeVertex;
   } // for
-  err = VecRestoreArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(slipTimeVec, &slipTimeArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
 
   // Close databases
   _dbFinalSlip->close();
@@ -218,58 +197,44 @@ void
 pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 				 const PylithScalar t)
 { // slip
-  assert(0 != slip);
-  assert(0 != _parameters);
+  assert(slip);
+  assert(_parameters);
 
   // Get vertices in fault mesh
-  DM             dmMesh = slip->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
-
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
+  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = depthStratum.begin();
+  const PetscInt vEnd = depthStratum.end();
 
   // Get sections
   const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
-  const topology::Field<topology::SubMesh>& slipTime  = _parameters->get("slip time");
-  PetscSection finalSlipSection = finalSlip.petscSection();
-  Vec          finalSlipVec     = finalSlip.localVector();
-  PetscScalar *finalSlipArray;
-  assert(finalSlipSection);assert(finalSlipVec);
-  PetscSection slipTimeSection  = slipTime.petscSection();
-  Vec          slipTimeVec      = slipTime.localVector();
-  PetscScalar *slipTimeArray;
-  assert(slipTimeSection);assert(slipTimeVec);
-  PetscSection slipSection      = slip->petscSection();
-  Vec          slipVec          = slip->localVector();
-  PetscScalar *slipArray;
-  assert(slipSection);assert(slipVec);
+  topology::VecVisitorMesh finalSlipVisitor(finalSlip);
+  const PetscScalar* finalSlipArray = finalSlipVisitor.localArray();
 
-  err = VecGetArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(slipTimeVec, &slipTimeArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
+  const topology::Field<topology::SubMesh>& slipTime = _parameters->get("slip time");
+  topology::VecVisitorMesh slipTimeVisitor(slipTime);
+  const PetscScalar* slipTimeArray = slipTimeVisitor.localArray();
+
+  topology::VecVisitorMesh slipVisitor(*slip);
+  PetscScalar* slipArray = slipVisitor.localArray();
+
+  const int spaceDim = _slipVertex.size();
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt fsdof, fsoff, stdof, stoff, sdof, soff;
+    const PetscInt fsoff = finalSlipVisitor.sectionOffset(v);
+    const PetscInt stoff = slipTimeVisitor.sectionOffset(v);
+    const PetscInt soff = slipVisitor.sectionOffset(v);
 
-    err = PetscSectionGetDof(finalSlipSection, v, &fsdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(finalSlipSection, v, &fsoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(slipTimeSection, v, &stdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(slipTimeSection, v, &stoff);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetDof(slipSection, v, &sdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(slipSection, v, &soff);CHECK_PETSC_ERROR(err);
-    assert(stdof == 1);
-    assert(fsdof == sdof);
+    assert(spaceDim == finalSlipVisitor.sectionDof(v));
+    assert(1 == slipTimeVisitor.sectionDof(v));
+    assert(spaceDim == slipVisitor.sectionDof(v));
 
     const PylithScalar relTime = t - slipTimeArray[stoff];
     if (relTime >= 0.0) {
-      for(PetscInt d = 0; d < sdof; ++d) {
+      for(PetscInt d = 0; d < spaceDim; ++d) {
         slipArray[soff+d] += finalSlipArray[fsoff+d];
-      }
-    }
+      } // for
+    } // if
   } // for
-  err = VecRestoreArray(finalSlipVec, &finalSlipArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(slipTimeVec, &slipTimeArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
 
   PetscLogFlops((vEnd-vStart) * 1);
 } // slip

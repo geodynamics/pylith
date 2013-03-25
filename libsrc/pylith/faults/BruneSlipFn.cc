@@ -238,8 +238,6 @@ pylith::faults::BruneSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   const PetscInt vStart = depthStratum.begin();
   const PetscInt vEnd = depthStratum.end();
 
-  PetscErrorCode err;
-
   // Get sections
   const topology::Field<topology::SubMesh>& finalSlip = _parameters->get("final slip");
   topology::VecVisitorMesh finalSlipVisitor(finalSlip);

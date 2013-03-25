@@ -20,19 +20,15 @@
 
 #include "FaultCohesiveTract.hh" // implementation of object methods
 #include "CohesiveTopology.hh" // USES CohesiveTopology
-#include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Stratum.hh" // USES StratumIS
+
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::SubMesh::SieveMesh SieveSubMesh;
-typedef pylith::topology::SubMesh::DomainSieveMesh SieveMesh;
-
-// ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveTract::FaultCohesiveTract(void) : 
-  _dbInitial(0)
+pylith::faults::FaultCohesiveTract::FaultCohesiveTract(void)
 { // constructor
   _useLagrangeConstraints = false;
 } // constructor
@@ -51,15 +47,7 @@ pylith::faults::FaultCohesiveTract::deallocate(void)
 { // deallocate
   FaultCohesive::deallocate();
 
-  _dbInitial = 0; // :TODO: Use shared pointer
 } // deallocate
-
-// ----------------------------------------------------------------------
-// Sets the spatial database for the inital tractions
-void pylith::faults::FaultCohesiveTract::dbInitial(spatialdata::spatialdb::SpatialDB* dbs)
-{ // dbInitial
-  _dbInitial = dbs;
-} // dbInitial
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
@@ -82,23 +70,14 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
 
-  // Compute orientation at quadrature points in fault mesh.
-  _calcOrientation(upDir);
-
-  // Get initial tractions using a spatial database.
-  _getInitialTractions();
-  
-  // Setup fault constitutive model.
-  _initConstitutiveModel();
 } // initialize
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
 void
-pylith::faults::FaultCohesiveTract::integrateResidual(
-			   const topology::Field<topology::Mesh>& residual,
-			   const PylithScalar t,
-			   topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveTract::integrateResidual(const topology::Field<topology::Mesh>& residual,
+						      const PylithScalar t,
+						      topology::SolutionFields* const fields)
 { // integrateResidual
   throw std::logic_error("FaultCohesiveTract::integrateResidual() not implemented.");
 } // integrateResidual
@@ -106,10 +85,9 @@ pylith::faults::FaultCohesiveTract::integrateResidual(
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator.
 void
-pylith::faults::FaultCohesiveTract::integrateJacobian(
-				   topology::Jacobian* jacobian,
-				   const PylithScalar t,
-				   topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveTract::integrateJacobian(topology::Jacobian* jacobian,
+						      const PylithScalar t,
+						      topology::SolutionFields* const fields)
 { // integrateJacobian
   throw std::logic_error("FaultCohesiveTract::integrateJacobian() not implemented.");
 
@@ -119,15 +97,14 @@ pylith::faults::FaultCohesiveTract::integrateJacobian(
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::faults::FaultCohesiveTract::verifyConfiguration(
-					    const topology::Mesh& mesh) const
+pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  assert(0 != _quadrature);
+  assert(_quadrature);
 
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
-  if (!sieveMesh->hasIntSection(label())) {
+  const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscBool hasLabel = PETSC_FALSE;
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << label()
 	<< " for boundary condition.";
@@ -147,20 +124,18 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", id());
-  assert(!cells.isNull());
-  const SieveMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  for (SieveMesh::label_sequence::iterator c_iter=cellsBegin;
-       c_iter != cellsEnd;
-       ++c_iter) {
-    const int cellNumCorners = sieveMesh->getNumCellCorners(*c_iter);
-    if (2*numCorners != cellNumCorners) {
+  topology::StratumIS cohesiveIS(dmMesh, "material-id", id());
+  const PetscInt* cells = cohesiveIS.points();
+  const PetscInt ncells = cohesiveIS.size();
+
+  PetscInt coneSize = 0;
+  for (PetscInt i=0; i < ncells; ++i) {
+    err = DMPlexGetConeSize(dmMesh, cells[i], &coneSize);CHECK_PETSC_ERROR(err);
+    if (2*numCorners != coneSize) {
       std::ostringstream msg;
       msg << "Number of vertices in reference cell (" << numCorners 
-	  << ") is not compatible with number of vertices (" << cellNumCorners
-	  << ") in cohesive cell " << *c_iter << " for fault '"
+	  << ") is not compatible with number of vertices (" << coneSize
+	  << ") in cohesive cell " << cells[i] << " for fault '"
 	  << label() << "'.";
       throw std::runtime_error(msg.str());
     } // if
@@ -170,9 +145,8 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(
 // ----------------------------------------------------------------------
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::FaultCohesiveTract::vertexField(
-				       const char* name,
-				       const topology::SolutionFields* fields)
+pylith::faults::FaultCohesiveTract::vertexField(const char* name,
+						const topology::SolutionFields* fields)
 { // vertexField
   throw std::logic_error("FaultCohesiveTract::vertexField() not implemented.");
 } // vertexField
@@ -180,254 +154,11 @@ pylith::faults::FaultCohesiveTract::vertexField(
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
-pylith::faults::FaultCohesiveTract::cellField(
-				      const char* name,
-				      const topology::SolutionFields* fields)
+pylith::faults::FaultCohesiveTract::cellField(const char* name,
+					      const topology::SolutionFields* fields)
 { // cellField
   throw std::logic_error("FaultCohesiveTract::cellField() not implemented.");
 } // cellField
-
-// ----------------------------------------------------------------------
-// Calculate orientation at fault vertices.
-void
-pylith::faults::FaultCohesiveTract::_calcOrientation(const PylithScalar upDir[3])
-{ // _calcOrientation
-  assert(0 != _fields);
-  assert(0 != _quadrature);
-
-  scalar_array up(3);
-  for (int i=0; i < 3; ++i)
-    up[i] = upDir[i];
-
-  // Get 'fault' cells.
-  DM       faultDMMesh = _faultMesh->dmMesh();
-  PetscInt cStart, cEnd;
-  PetscErrorCode err;
-
-  assert(faultDMMesh);
-  err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-
-  // Quadrature related values.
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
-  const int numBasis = _quadrature->numBasis();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int spaceDim = cellGeometry.spaceDim();
-  scalar_array quadPtRef(cellDim);
-  const scalar_array& quadPtsRef = _quadrature->quadPtsRef();
-  
-  // Containers for orientation information
-  const int orientationSize = spaceDim * spaceDim;
-  const int fiberDim = numQuadPts * orientationSize;
-  const int jacobianSize = spaceDim * cellDim;
-  scalar_array jacobian(jacobianSize);
-  PylithScalar jacobianDet = 0;
-  scalar_array orientationQuadPt(orientationSize);
-  scalar_array orientationCell(fiberDim);
-
-  // Get sections.
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
-
-  // :TODO: Use spaces to create subsections like in FaultCohesiveKin.
-  _fields->add("orientation", "orientation", 
-	       topology::FieldBase::CELLS_FIELD, fiberDim);
-  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
-  orientation.allocate();
-  PetscSection orientationSection = orientation.petscSection();
-  Vec          orientationVec     = orientation.localVector();
-  PetscScalar *orientationArray;
-  assert(orientationSection);assert(orientationVec);
-
-  // Loop over cells in fault mesh and compute orientations.
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscScalar *coords = PETSC_NULL;
-    PetscInt     coordsSize;
-
-    err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    _quadrature->computeGeometry(coordinatesCell, c);
-
-    // Reset orientation to zero.
-    orientationCell = 0.0;
-
-    // Compute orientation at each quadrature point of current cell.
-    for (int iQuad=0, iRef=0, iSpace=0; 
-	 iQuad < numQuadPts;
-	 ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
-      // Reset orientation at quad pt to zero.
-      orientationQuadPt = 0.0;
-
-      // Compute Jacobian and determinant at quadrature point, then get
-      // orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(PylithScalar));
-      cellGeometry.jacobian(&jacobian, &jacobianDet,
-			    coordinatesCell, quadPtRef);
-      cellGeometry.orientation(&orientationQuadPt, jacobian, jacobianDet, up);
-      assert(jacobianDet > 0.0);
-      orientationQuadPt /= jacobianDet;
-
-      memcpy(&orientationCell[iQuad*orientationSize], 
-	     &orientationQuadPt[0], orientationSize*sizeof(PylithScalar));
-    } // for
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(orientationSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      orientationArray[off+d] = orientationCell[d];
-    }
-  } // for
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-
-  // debugging
-  orientation.view("FAULT ORIENTATION");
-} // _calcOrientation
-
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesiveTract::_getInitialTractions(void)
-{ // _getInitialTractions
-  assert(0 != _normalizer);
-  assert(0 != _quadrature);
-
-  const PylithScalar pressureScale = _normalizer->pressureScale();
-  const PylithScalar lengthScale = _normalizer->lengthScale();
-
-  const int spaceDim = _quadrature->spaceDim();
-  const int numQuadPts = _quadrature->numQuadPts();
-
-  if (0 != _dbInitial) { // Setup initial values, if provided.
-    // Create section to hold initial tractions.
-    _fields->add("initial traction", "initial_traction");
-    topology::Field<topology::SubMesh>& traction = _fields->get("initial traction");
-    traction.newSection(topology::FieldBase::CELLS_FIELD, numQuadPts*spaceDim);
-    traction.allocate();
-    traction.scale(pressureScale);
-    traction.vectorFieldType(topology::FieldBase::MULTI_VECTOR);
-    PetscSection tractionSection = traction.petscSection();
-    Vec          tractionVec     = traction.localVector();
-    PetscScalar *tractionArray;
-    assert(tractionSection);assert(tractionVec);
-
-    _dbInitial->open();
-    switch (spaceDim)
-      { // switch
-      case 1 : {
-	const char* valueNames[] = {"traction-normal"};
-	_dbInitial->queryVals(valueNames, 1);
-	break;
-      } // case 1
-      case 2 : {
-	const char* valueNames[] = {"traction-shear", "traction-normal"};
-	_dbInitial->queryVals(valueNames, 2);
-	break;
-      } // case 2
-      case 3 : {
-	const char* valueNames[] = {"traction-shear-leftlateral",
-				    "traction-shear-updip",
-				    "traction-normal"};
-	_dbInitial->queryVals(valueNames, 3);
-	break;
-      } // case 3
-      default :
-	std::cerr << "Bad spatial dimension '" << spaceDim << "'." << std::endl;
-	assert(0);
-	throw std::logic_error("Bad spatial dimension in Neumann.");
-      } // switch
-
-    // Get 'fault' cells.
-    DM       faultDMMesh = _faultMesh->dmMesh();
-    PetscInt cStart, cEnd;
-    PetscErrorCode err;
-
-    assert(faultDMMesh);
-    err = DMPlexGetHeightStratum(faultDMMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-
-    const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
-    const int numBasis = _quadrature->numBasis();
-    const int numQuadPts = _quadrature->numQuadPts();
-    const int spaceDim = _quadrature->spaceDim();
-  
-    // Containers for database query results and quadrature coordinates in
-    // reference geometry.
-    scalar_array tractionCell(numQuadPts*spaceDim);
-    scalar_array quadPtsGlobal(numQuadPts*spaceDim);
-    
-    // Get sections.
-    scalar_array coordinatesCell(numBasis*spaceDim);
-    PetscSection coordSection;
-    Vec          coordVec;
-    err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
-    err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
-
-    const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-    
-    // Compute quadrature information
-    
-    // Loop over cells in boundary mesh and perform queries.
-    err = VecGetArray(tractionVec, &tractionArray);CHECK_PETSC_ERROR(err);
-    for (PetscInt c = cStart; c < cEnd; ++c) {
-      PetscScalar *coords = PETSC_NULL;
-      PetscInt     coordsSize;
-
-      err = DMPlexVecGetClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-      for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-      err = DMPlexVecRestoreClosure(faultDMMesh, coordSection, coordVec, c, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-      _quadrature->computeGeometry(coordinatesCell, c);
-      
-      const scalar_array& quadPtsNondim = _quadrature->quadPts();
-      quadPtsGlobal = quadPtsNondim;
-      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-				  lengthScale);
-      
-      tractionCell = 0.0;
-      for (int iQuad=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iSpace+=spaceDim) {
-        const int err = _dbInitial->query(&tractionCell[iQuad*spaceDim], spaceDim,
-                                          &quadPtsGlobal[iSpace], spaceDim, cs);
-        if (err) {
-          std::ostringstream msg;
-          msg << "Could not find initial tractions at (";
-          for (int i=0; i < spaceDim; ++i)
-            msg << " " << quadPtsGlobal[i+iSpace];
-          msg << ") for dynamic fault interface " << label() << "\n"
-              << "using spatial database " << _dbInitial->label() << ".";
-          throw std::runtime_error(msg.str());
-        } // if
-      } // for
-      _normalizer->nondimensionalize(&tractionCell[0], tractionCell.size(),
-                                     pressureScale);
-      
-      // Update section
-      PetscInt dof, off;
-
-      err = PetscSectionGetDof(tractionSection, c, &dof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(tractionSection, c, &off);CHECK_PETSC_ERROR(err);
-      assert(tractionCell.size() == dof);
-      for(PetscInt d = 0; d < dof; ++d) {
-        tractionArray[off+d] = tractionCell[d];
-      }
-    } // for
-    err = VecRestoreArray(tractionVec, &tractionArray);CHECK_PETSC_ERROR(err);
-    
-    _dbInitial->close();
-
-    // debugging
-    traction.view("INITIAL TRACTIONS");
-  } // if
-} // _getInitialTractions
-
-// ----------------------------------------------------------------------
-void
-pylith::faults::FaultCohesiveTract::_initConstitutiveModel(void)
-{ // _initConstitutiveModel
-  // :TODO: ADD STUFF HERE
-} // _initConstitutiveModel
 
 
 // End of file 

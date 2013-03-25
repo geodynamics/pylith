@@ -50,8 +50,6 @@ namespace pylith {
 
     class Nucleator;
     class TractPerturbation;
-    class StaticPerturbation;
-    class SpaceTimePerturbation;
 
     class TopologyOps;
     template<typename Sieve, typename Renumbering> class ReplaceVisitor;
