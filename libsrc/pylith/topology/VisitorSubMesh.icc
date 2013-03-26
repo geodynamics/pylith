@@ -284,8 +284,10 @@ void
 pylith::topology::SubMeshIS::deallocate(void)
 { // deallocate
   PetscErrorCode err;
-  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);_points=NULL;
-  err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
+  if (_indexSet) {
+    err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);_points=NULL;
+    err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
+  } // if
 } // deallocate
 
 // ----------------------------------------------------------------------
