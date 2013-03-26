@@ -61,9 +61,9 @@ pylith::problems::Implicit::calcRateFields(void)
 
   // Get mesh vertices.
   PetscDM dmMesh = dispIncr.mesh().dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   for(PetscInt v = vStart; v < vEnd; ++v) {
     const PetscInt dioff = dispIncrVisitor.sectionOffset(v);

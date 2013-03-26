@@ -267,11 +267,25 @@ public :
    */
   PetscIS indexSet(void) const;
 
+  /** Get array of points in index set.
+   *
+   * @return Array of points.
+   */
+  const PetscInt* points(void) const;
+
+  /** Get number of points in index set.
+   *
+   * @return Number of points.
+   */
+  PetscInt size(void) const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   const SubMesh& _submesh;
   PetscIS _indexSet; ///< PETSc index set.
+  PetscInt _size; ///< Size of index set.
+  const PetscInt* _points; ///< Array of points in index set.
 
 }; // SubMeshIS
 
