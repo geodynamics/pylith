@@ -31,6 +31,7 @@
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
+#include "pylith/topology/VisitorSubMesh.hh" // USES SubMeshIS
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
@@ -861,9 +862,9 @@ pylith::faults::FaultCohesiveLagrange::verifyConfiguration(const topology::Mesh&
   assert(_quadrature);
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   PetscBool hasLabel;
   PetscErrorCode err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
@@ -983,54 +984,54 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
 { // _initializeCohesiveInfo
   assert(_quadrature);
 
-  // Get cohesive cells
-  PetscDM              dmMesh = mesh.dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells, vStart, vEnd;
-  PetscErrorCode  err;
-
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", id(), &cellIS);CHECK_PETSC_ERROR(err);
-  assert(cellIS);
-  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
   const int numConstraintVert = _quadrature->numBasis();
   const int numCorners = 3 * numConstraintVert; // cohesive cell
 
-  PetscDM              faultDMMesh = _faultMesh->dmMesh();
-  IS              subpointIS;
-  const PetscInt *points;
-  PetscInt        numPoints, fcStart, fcEnd, fvStart, fvEnd;
+  // Get cohesive cells
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::StratumIS faultIS(dmMesh, "material-id", id());
+  const PetscInt* cells = faultIS.points();
+  const int ncells = faultIS.size();
 
-  assert(faultDMMesh);
-  err = DMPlexGetHeightStratum(faultDMMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
-  assert(numCells == fcEnd-fcStart);
+  // Get domain vertices
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  // Get vertices and cells in fault mesh.
+  PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
+  topology::Stratum faultVerticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt fvStart = faultVerticesStratum.begin();
+  const PetscInt fvEnd = faultVerticesStratum.end();
+  topology::Stratum faultCellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt fcStart = faultCellsStratum.begin();
+  const PetscInt fcEnd = faultCellsStratum.end();
+  assert(ncells == fcEnd-fcStart);
+
+  topology::SubMeshIS faultMeshIS(*_faultMesh);
+  const PetscInt numPoints = faultMeshIS.size();
+  const PetscInt* points = faultMeshIS.points();
 
   _cohesiveToFault.clear();
   typedef std::map<int, int> indexmap_type;
   indexmap_type indexMap;
   _cohesiveVertices.resize(fvEnd-fvStart);
-  PetscInt index = 0;
 
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = 0; c < numCells; ++c) {
+  PetscInt index = 0;
+  PetscErrorCode err = 0;
+  for(PetscInt c = 0; c < ncells; ++c) {
     _cohesiveToFault[cells[c]] = c;
 
     // Get oriented closure
-    PetscInt *closure = PETSC_NULL;
+    PetscInt *closure = NULL;
     PetscInt  closureSize, q = 0;
-
     err = DMPlexGetTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
     for(PetscInt p = 0; p < closureSize*2; p += 2) {
       const PetscInt point = closure[p];
       if ((point >= vStart) && (point < vEnd)) {
         closure[q++] = point;
-      }
-    }
+      } // if
+    } // for
     closureSize = q;
     assert(closureSize == numCorners);
 
@@ -1040,11 +1041,11 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
       const int indexJ = iConstraint + numConstraintVert;
       const int indexK = iConstraint + 2 * numConstraintVert;
 
-      const int v_lagrange = closure[indexK];
-      const int v_negative = closure[indexI];
-      const int v_positive = closure[indexJ];
-      PetscInt  v_fault;
+      const PetscInt v_lagrange = closure[indexK];
+      const PetscInt v_negative = closure[indexI];
+      const PetscInt v_positive = closure[indexJ];
 
+      PetscInt v_fault;
       err = PetscFindInt(v_lagrange, numPoints, points, &v_fault);CHECK_PETSC_ERROR(err);
       assert(v_fault >= 0);
       if (indexMap.end() == indexMap.find(v_lagrange)) {
@@ -1066,9 +1067,6 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
     } // for
     err = DMPlexRestoreTransitiveClosure(dmMesh, cells[c], PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
 } // _initializeCohesiveInfo
 
 // ----------------------------------------------------------------------
@@ -1117,53 +1115,41 @@ pylith::faults::FaultCohesiveLagrange::faultToGlobal(topology::Field<topology::S
   assert(field);
 
   // Fiber dimension of vector field matches spatial dimension.
-  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
   scalar_array fieldVertexGlobal(spaceDim);
 
-  // Get sections.
-  PetscSection fieldSection = field->petscSection();
-  PetscVec          fieldVec     = field->localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
+  // Get fields
+  topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
-  PetscSection orientationSection = faultOrientation.petscSection();
-  PetscVec          orientationVec     = faultOrientation.localVector();
-  PetscScalar *orientationArray;
-  assert(orientationSection);assert(orientationVec);
+  topology::VecVisitorMesh orientationVisitor(faultOrientation);
+  const PetscScalar* orientationArray = orientationVisitor.localArray();
 
-  PetscDM             dmMesh = field->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off, odof, ooff;
+    const PetscInt foff = fieldVisitor.sectionOffset(v);
+    assert(spaceDim == fieldVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dof);
-    err = PetscSectionGetDof(orientationSection, v, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v, &ooff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim*spaceDim == odof);
+    const PetscInt ooff = orientationVisitor.sectionOffset(v);
+    assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v));
 
     // Rotate from fault to global coordinate system (transpose orientation)
     fieldVertexGlobal = 0.0;
-    for(PetscInt d = 0; d < spaceDim; ++d)
-      for(PetscInt e = 0; e < spaceDim; ++e)
-        fieldVertexGlobal[d] += orientationArray[ooff+e*spaceDim+d] * fieldArray[off+e];
-    assert(fieldVertexGlobal.size() == dof);
-    for(PetscInt d = 0; d < spaceDim; ++d)
-      fieldArray[off+d] = fieldVertexGlobal[d];
+    for(int iDim = 0; iDim < spaceDim; ++iDim) {
+      for(int jDim = 0; jDim < spaceDim; ++jDim) {
+        fieldVertexGlobal[iDim] += orientationArray[ooff+jDim*spaceDim+iDim] * fieldArray[foff+jDim];
+      } // for
+    } // for
+    for(int iDim = 0; iDim < spaceDim; ++iDim) {
+      fieldArray[foff+iDim] = fieldVertexGlobal[iDim];
+    } // for
   } // for
   PetscLogFlops((vEnd-vStart) * (2*spaceDim*spaceDim) );
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   
 #if 0 // DEBUGGING
   field->view("FIELD (GLOBAL)");
@@ -1180,53 +1166,41 @@ pylith::faults::FaultCohesiveLagrange::globalToFault(topology::Field<topology::S
   assert(field);
 
   // Fiber dimension of vector field matches spatial dimension.
-  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = field->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
   scalar_array fieldVertexFault(spaceDim);
 
-  // Get sections.
-  PetscSection fieldSection = field->petscSection();
-  PetscVec          fieldVec     = field->localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
+  // Get fields
+  topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
-  PetscSection orientationSection = faultOrientation.petscSection();
-  PetscVec          orientationVec     = faultOrientation.localVector();
-  PetscScalar *orientationArray;
-  assert(orientationSection);assert(orientationVec);
+  topology::VecVisitorMesh orientationVisitor(faultOrientation);
+  const PetscScalar* orientationArray = orientationVisitor.localArray();
 
-  PetscDM             dmMesh = field->mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off, odof, ooff;
+    const PetscInt foff = fieldVisitor.sectionOffset(v);
+    assert(spaceDim == fieldVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dof);
-    err = PetscSectionGetDof(orientationSection, v, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v, &ooff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim*spaceDim == odof);
+    const PetscInt ooff = orientationVisitor.sectionOffset(v);
+    assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v));
 
     // Rotate from global coordinate system to fault (orientation)
     fieldVertexFault = 0.0;
-    for(PetscInt d = 0; d < spaceDim; ++d)
-      for(PetscInt e = 0; e < spaceDim; ++e)
-        fieldVertexFault[d] += orientationArray[ooff+d*spaceDim+e] * fieldArray[off+e];
-    assert(fieldVertexFault.size() == dof);
-    for(PetscInt d = 0; d < spaceDim; ++d)
-      fieldArray[off+d] = fieldVertexFault[d];
+    for(int iDim = 0; iDim < spaceDim; ++iDim) {
+      for(int jDim = 0; jDim < spaceDim; ++jDim) {
+        fieldVertexFault[iDim] += orientationArray[ooff+iDim*spaceDim+jDim] * fieldArray[foff+jDim];
+      } // for
+    } // for
+    for(int iDim = 0; iDim < spaceDim; ++iDim) {
+      fieldArray[foff+iDim] = fieldVertexFault[iDim];
+    } // for
   } // for
   PetscLogFlops((vEnd-vStart) * (2*spaceDim*spaceDim) );
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
 #if 0 // DEBUGGING
   field->view("FIELD (FAULT)");
