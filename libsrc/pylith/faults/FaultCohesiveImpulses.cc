@@ -318,6 +318,14 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
 
+#if 0 // GET GLOBAL ORDER
+  assert(!sieveMesh.isNull());
+  const ALE::Obj<SieveMesh::order_type>& globalOrder =
+      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
+					      residualSection);
+  assert(!globalOrder.isNull());
+#endif
+
   scalar_array coordsVertex(spaceDim);
   const ALE::Obj<RealSection>& coordsSection = faultSieveMesh->getRealSection("coordinates");
   assert(!coordsSection.isNull());
@@ -331,7 +339,14 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   int count = 0;
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
+    const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
+
+#if 0 // USE GLOBAL ORDER
+    // Only create impulses on local vertices
+    if (!globalOrder->isLocal(v_lagrange))
+      continue;
+#endif
 
     coordsSection->restrictPoint(v_fault, &coordsVertex[0], coordsVertex.size());
     _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
