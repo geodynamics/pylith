@@ -89,9 +89,9 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Make sure surface cells are compatible with quadrature.
   PetscInt depth = 0;

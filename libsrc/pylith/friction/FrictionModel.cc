@@ -96,9 +96,9 @@ pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 
   // Get vertices associated with friction interface
   PetscDM faultDMMesh = faultMesh.dmMesh();assert(faultDMMesh);
-  topology::Stratum depthStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
   assert(cs);

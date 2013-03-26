@@ -85,9 +85,9 @@ pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
   
   // Get mesh vertices.
   PetscDM dmMesh = solution->mesh().dmMesh(); assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
   
   // Get sections.
   topology::VecVisitorMesh solutionVisitor(*solution);

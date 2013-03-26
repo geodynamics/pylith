@@ -256,9 +256,9 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
 
   // Get vertices.
   PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
@@ -433,9 +433,9 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
 
   // Get vertices.
   PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   const spatialdata::geocoords::CoordSys* cs = _parameters->mesh().coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();

@@ -98,9 +98,9 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 
   // Get cell information
   PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
   _calculateValue(t);
@@ -381,9 +381,9 @@ pylith::bc::Neumann::_queryDB(const char* name,
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   const int cellDim = _quadrature->cellDim() > 0 ? _quadrature->cellDim() : 1;
   const int numBasis = _quadrature->numBasis();
@@ -473,9 +473,9 @@ void
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Quadrature related values.
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -607,9 +607,9 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   const int spaceDim = _quadrature->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();

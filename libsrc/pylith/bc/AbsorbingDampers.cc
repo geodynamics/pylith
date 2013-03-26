@@ -87,9 +87,9 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Get damping constants at each quadrature point and rotate to
   // global coordinate frame using orientation information
@@ -274,9 +274,9 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
 #endif
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -389,9 +389,9 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
   topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
@@ -524,9 +524,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Get sections
   topology::Field<topology::SubMesh>& dampingConsts = _parameters->get("damping constants");
@@ -659,9 +659,9 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const PetscDM dmSubMesh = _boundaryMesh->dmMesh();assert(dmSubMesh);
-  topology::Stratum heightStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  topology::Stratum cellsStratum(dmSubMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;

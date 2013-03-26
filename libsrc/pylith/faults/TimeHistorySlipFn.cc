@@ -86,9 +86,9 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
 
   // Get vertices in fault mesh
   PetscDM dmMesh = faultMesh.dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   delete _parameters; _parameters = new topology::Fields<topology::Field<topology::SubMesh> >(faultMesh);
   assert(_parameters);
@@ -213,9 +213,9 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
 
   // Get vertices in fault mesh
   PetscDM dmMesh = _parameters->mesh().dmMesh();assert(dmMesh);
-  topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
-  const PetscInt vStart = depthStratum.begin();
-  const PetscInt vEnd = depthStratum.end();
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   // Get sections
   const topology::Field<topology::SubMesh>& slipAmplitude = _parameters->get("slip amplitude");

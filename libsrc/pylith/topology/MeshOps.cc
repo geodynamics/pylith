@@ -51,9 +51,9 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
   matCellCounts = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
-  Stratum heightStratum(dmMesh, Stratum::HEIGHT, 0);
-  const PetscInt cStart = heightStratum.begin();
-  const PetscInt cEnd = heightStratum.end();
+  Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
   PetscDMLabel materialsLabel = NULL;
   err = DMPlexGetLabel(dmMesh, "material-id", &materialsLabel);CHECK_PETSC_ERROR(err);assert(materialsLabel);

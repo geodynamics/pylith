@@ -207,8 +207,8 @@ pylith::topology::MatVisitorSubMesh::clear(void)
 inline
 void
 pylith::topology::MatVisitorSubMesh::getClosure(PetscScalar** valuesCell,
-					     PetscInt* valuesSize,
-					     const PetscInt cell) const
+						PetscInt* valuesSize,
+						const PetscInt cell) const
 { // getClosure
   assert(_dm);
   assert(_subsection);
@@ -263,7 +263,10 @@ pylith::topology::SubMeshIS::SubMeshIS(const SubMesh& submesh) :
   _indexSet(NULL)
 { // constructor
   PetscDM dmMesh = submesh.dmMesh();assert(dmMesh);
-  PetscErrorCode err = DMPlexCreateSubpointIS(dmMesh, &_indexSet);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err;
+  err = DMPlexCreateSubpointIS(dmMesh, &_indexSet);CHECK_PETSC_ERROR(err);
+  err = ISGetSize(_indexSet, &_size);CHECK_PETSC_ERROR(err);assert(_size >= 0);
+  err = ISGetIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);assert(_points);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -280,7 +283,9 @@ inline
 void
 pylith::topology::SubMeshIS::deallocate(void)
 { // deallocate
-  PetscErrorCode err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
+  PetscErrorCode err;
+  err = ISRestoreIndices(_indexSet, &_points);CHECK_PETSC_ERROR(err);_points=NULL;
+  err = ISDestroy(&_indexSet);CHECK_PETSC_ERROR(err);assert(!_indexSet);
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -300,6 +305,24 @@ pylith::topology::SubMeshIS::indexSet(void) const
 { // indexSet
   return _indexSet;
 } // indexSet
+
+// ----------------------------------------------------------------------
+// Get array of points in index set.
+inline
+const PetscInt*
+pylith::topology::SubMeshIS::points(void) const
+{ // points
+  return _points;
+} // points
+
+// ----------------------------------------------------------------------
+// Get number of points in index set.
+inline
+PetscInt
+pylith::topology::SubMeshIS::size(void) const
+{ // size
+  return _size;
+} // size
 
 
 #endif
