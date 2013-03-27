@@ -116,17 +116,19 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
     
     if (!_useFaultMesh) {
+      const char* charlabel = label();
+
       PetscDMLabel groupField;
       PetscBool hasLabel;
       PetscErrorCode err;
-      err = DMPlexHasLabel(dmMesh, label(), &hasLabel);CHECK_PETSC_ERROR(err);
+      err = DMPlexHasLabel(dmMesh, charlabel, &hasLabel);CHECK_PETSC_ERROR(err);
       if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of vertices '" << label()
             << "' for fault interface condition.";
         throw std::runtime_error(msg.str());
-      } // if  
-      err = DMPlexGetLabel(dmMesh, label(), &groupField);CHECK_PETSC_ERROR(err);
+      } // if
+      err = DMPlexGetLabel(dmMesh, charlabel, &groupField);CHECK_PETSC_ERROR(err);
       CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
                                     flipFault);
       
