@@ -41,6 +41,8 @@ pylith::problems::Explicit::~Explicit(void)
 void
 pylith::problems::Explicit::calcRateFields(void)
 { // calcRateFields
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
 
   // vel(t) = (disp(t+dt) - disp(t-dt)) / (2*dt)
@@ -108,6 +110,8 @@ pylith::problems::Explicit::calcRateFields(void)
   } // for
 
   PetscLogFlops((vEnd - vStart) * 6*spaceDim);
+
+  PYLITH_METHOD_END;
 } // calcRateFields
 
 

@@ -57,6 +57,8 @@ pylith::problems::Formulation::~Formulation(void)
 void
 pylith::problems::Formulation::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   _jacobian = 0; // :TODO: Use shared pointer.
   _jacobianLumped = 0; // :TODO: Use shared pointer.
   _fields = 0; // :TODO: Use shared pointer.
@@ -70,6 +72,8 @@ pylith::problems::Formulation::deallocate(void)
 #else
   _customConstraintPCMat = 0;
 #endif
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -219,6 +223,8 @@ void
 pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 					      const PetscVec* tmpSolutionVec)
 { // reformResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
 
   // Update section view of field.
@@ -259,6 +265,8 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
   // TODO: Move this to SolverLinear 
   if (tmpResidualVec)
     VecScale(*tmpResidualVec, -1.0);
+
+  PYLITH_METHOD_END;
 } // reformResidual
 
 // ----------------------------------------------------------------------
@@ -266,6 +274,8 @@ pylith::problems::Formulation::reformResidual(const PetscVec* tmpResidualVec,
 void
 pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 { // reformJacobian
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != _jacobian);
   assert(0 != _fields);
 
@@ -308,6 +318,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
     MatView(_customConstraintPCMat, PETSC_VIEWER_STDOUT_WORLD);
 #endif
   } // if
+
+  PYLITH_METHOD_END;
 } // reformJacobian
 
 // ----------------------------------------------------------------------
@@ -315,6 +327,8 @@ pylith::problems::Formulation::reformJacobian(const PetscVec* tmpSolutionVec)
 void
 pylith::problems::Formulation::reformJacobianLumped(void)
 { // reformJacobianLumped
+  PYLITH_METHOD_BEGIN;
+
   assert(_jacobianLumped);
   assert(_fields);
 
@@ -332,6 +346,7 @@ pylith::problems::Formulation::reformJacobianLumped(void)
   // Assemble jacbian.
   _jacobianLumped->complete();
 
+  PYLITH_METHOD_END;
 } // reformJacobianLumped
 
 // ----------------------------------------------------------------------
@@ -339,6 +354,8 @@ pylith::problems::Formulation::reformJacobianLumped(void)
 void
 pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec)
 { // constrainSolnSpace
+  PYLITH_METHOD_BEGIN;
+
   assert(tmpSolutionVec);
   assert(_fields);
 
@@ -376,6 +393,8 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
   if (tmpSolutionVec) {
     solution.scatterSectionToVector(*tmpSolutionVec);
   } // if
+
+  PYLITH_METHOD_END;
 } // constrainSolnSpace
 
 // ----------------------------------------------------------------------
@@ -384,6 +403,8 @@ pylith::problems::Formulation::constrainSolnSpace(const PetscVec* tmpSolutionVec
 void
 pylith::problems::Formulation::adjustSolnLumped(void)
 { // adjustSolnLumped
+  PYLITH_METHOD_BEGIN;
+
   topology::Field<topology::Mesh>& solution = _fields->solution();
 
   if (!_fields->hasField("dispIncr adjust")) {
@@ -404,6 +425,8 @@ pylith::problems::Formulation::adjustSolnLumped(void)
 
   adjust.complete();
   solution += adjust;
+
+  PYLITH_METHOD_END;
 } // adjustSolnLumped
 
 #include "pylith/meshio/DataWriterHDF5.hh"

@@ -87,6 +87,8 @@ pylith::problems::Solver::~Solver(void)
 void
 pylith::problems::Solver::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   _formulation = 0; // Handle only, do not manage memory.
   delete _logger; _logger = 0;
 
@@ -97,6 +99,8 @@ pylith::problems::Solver::deallocate(void)
   _ctx.pc = 0; // KSP PC (managed separately)
   _ctx.A = 0; // Jacobian (managed separately)
   _ctx.faultA  = 0; // Handle to _jacobianPCFault
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -106,6 +110,8 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
 				     const topology::Jacobian& jacobian,
 				     Formulation* const formulation)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(formulation);
   _formulation = formulation;
 
@@ -134,6 +140,8 @@ pylith::problems::Solver::initialize(const topology::SolutionFields& fields,
     _jacobianPC = jacobianMat;
     err = PetscObjectReference((PetscObject) jacobianMat);CHECK_PETSC_ERROR(err);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // initialize
 
 
@@ -145,6 +153,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
 					   const topology::Jacobian& jacobian,
 					   const topology::SolutionFields& fields)
 { // _setupFieldSplit
+  PYLITH_METHOD_BEGIN;
+
   assert(pc);
   assert(formulation);
 
@@ -287,6 +297,8 @@ pylith::problems::Solver::_setupFieldSplit(PetscPC* const pc,
     err = MatNullSpaceDestroy(&nullsp);CHECK_PETSC_ERROR(err);
     err = PetscObjectCompose(field, "pmat", (PetscObject) _jacobianPCFault);CHECK_PETSC_ERROR(err);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // _setupFieldSplit
 
 // ----------------------------------------------------------------------
