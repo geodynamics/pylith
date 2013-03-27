@@ -36,6 +36,8 @@ template<typename mesh_type>
 pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   _mesh(mesh)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   _metadata["default"].label = "unknown";
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].scale = 1.0;
@@ -66,6 +68,8 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
   }
   _globalVec = NULL;
   _localVec  = NULL;
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -77,6 +81,8 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
   _mesh(mesh),
   _dm(dm)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   assert(dm);
   PetscErrorCode err;
 
@@ -85,6 +91,8 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
   err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -97,6 +105,8 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
   _mesh(mesh),
   _dm(dm)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   assert(dm);
   assert(localVec);
 
@@ -108,6 +118,8 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh,
   err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = VecCopy(localVec, _localVec);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -118,6 +130,8 @@ pylith::topology::Field<mesh_type>::Field(const Field& src,
 					  int numFields) :
   _mesh(src._mesh)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   PetscDM dm = mesh.dmMesh(), coordDM=NULL, newCoordDM=NULL;
   PetscSection coordSection=NULL, newCoordSection=NULL;
   PetscVec coordVec=NULL;
@@ -147,6 +161,8 @@ pylith::topology::Field<mesh_type>::Field(const Field& src,
   } // if
   _globalVec = NULL;
   _localVec  = NULL;
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -164,6 +180,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = 0;
   
   const typename scatter_map_type::const_iterator scattersEnd = _scatters.end();
@@ -182,6 +200,8 @@ pylith::topology::Field<mesh_type>::deallocate(void)
   _scatters.clear();
   err = VecDestroy(&_globalVec);CHECK_PETSC_ERROR(err);
   err = VecDestroy(&_localVec);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -190,6 +210,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::label(const char* value)
 { // label
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err;
 
   _metadata["default"].label = value;
@@ -204,6 +226,8 @@ pylith::topology::Field<mesh_type>::label(const char* value)
       err = PetscObjectSetName((PetscObject)s_iter->second.vector, value);CHECK_PETSC_ERROR(err);    
     } // if
   } // for
+
+  PYLITH_METHOD_END;
 } // label
 
 // ----------------------------------------------------------------------
@@ -222,6 +246,8 @@ template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::chartSize(void) const
 { // chartSize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dm);
   PetscSection s = NULL;
   PetscInt pStart, pEnd;
@@ -229,7 +255,8 @@ pylith::topology::Field<mesh_type>::chartSize(void) const
 
   err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
   err = PetscSectionGetChart(s, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-  return pEnd-pStart;
+
+  PYLITH_METHOD_RETURN(pEnd-pStart);
 } // chartSize
 
 // ----------------------------------------------------------------------
@@ -238,6 +265,8 @@ template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::sectionSize(void) const
 { // sectionSize
+  PYLITH_METHOD_BEGIN;
+
   PetscInt size = 0;
 
   if (_dm) {
@@ -246,8 +275,9 @@ pylith::topology::Field<mesh_type>::sectionSize(void) const
 
     err = DMGetDefaultSection(_dm, &s);CHECK_PETSC_ERROR(err);
     err = PetscSectionGetStorageSize(s, &size);CHECK_PETSC_ERROR(err);
-  }
-  return size;
+  } // if
+
+  PYLITH_METHOD_RETURN(size);
 } // sectionSize
 
 // ----------------------------------------------------------------------
@@ -268,6 +298,8 @@ void
 pylith::topology::Field<mesh_type>::newSection(const int_array& points,
                                                const int fiberDim)
 { // newSection
+  PYLITH_METHOD_BEGIN;
+
   typedef PetscInt point_type;
   PetscErrorCode err;
 
@@ -304,6 +336,7 @@ pylith::topology::Field<mesh_type>::newSection(const int_array& points,
     err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
   } // if/else
 
+  PYLITH_METHOD_END;
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -314,6 +347,8 @@ void
 pylith::topology::Field<mesh_type>::newSection(const PetscInt *points, const PetscInt num,
                                                const int fiberDim)
 { // newSection
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err;
 
   // Clear memory
@@ -348,6 +383,7 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt *points, const Pet
     err = PetscSectionSetChart(s, 0, 0);CHECK_PETSC_ERROR(err);
   } // if/else
 
+  PYLITH_METHOD_END;
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -358,6 +394,8 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
                                                const int fiberDim,
                                                const int stratum)
 { // newSection
+  PYLITH_METHOD_BEGIN;
+
   // Changing this because cells/vertices are numbered differently in the new scheme
   assert(_dm);
   PetscSection s = NULL;
@@ -382,6 +420,8 @@ pylith::topology::Field<mesh_type>::newSection(const DomainEnum domain,
     throw std::logic_error("Bad domain enum in Field.");
   }
   newSection(pStart, pEnd, fiberDim);
+
+  PYLITH_METHOD_END;
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -391,6 +431,8 @@ void
 pylith::topology::Field<mesh_type>::newSection(const PetscInt pStart, const PetscInt pEnd,
                                                const int fiberDim)
 { // newSection
+  PYLITH_METHOD_BEGIN;
+
   // Changing this because cells/vertices are numbered differently in the new scheme
   assert(_dm);
   PetscSection s = NULL;
@@ -402,7 +444,9 @@ pylith::topology::Field<mesh_type>::newSection(const PetscInt pStart, const Pets
 
   for(PetscInt p = pStart; p < pEnd; ++p) {
     err = PetscSectionSetDof(s, p, fiberDim);CHECK_PETSC_ERROR(err);
-  }
+  } // for
+
+  PYLITH_METHOD_END;
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -412,6 +456,8 @@ void
 pylith::topology::Field<mesh_type>::newSection(const Field& src,
                                                const int fiberDim)
 { // newSection
+  PYLITH_METHOD_BEGIN;
+
   // Clear memory
   clear();
   assert(_dm);assert(src._dm);
@@ -434,8 +480,9 @@ pylith::topology::Field<mesh_type>::newSection(const Field& src,
   err = PetscSectionSetChart(s, pStart, pEnd);CHECK_PETSC_ERROR(err);
   for(PetscInt p = pStart; p < pEnd; ++p) {
     err = PetscSectionSetDof(s, p, fiberDim);CHECK_PETSC_ERROR(err);
-  }
+  } // for
 
+  PYLITH_METHOD_END;
 } // newSection
 
 // ----------------------------------------------------------------------
@@ -444,6 +491,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
 { // cloneSection
+  PYLITH_METHOD_BEGIN;
+
   std::string origLabel = _metadata["default"].label;
 
   // Clear memory
@@ -515,6 +564,8 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
       _scatters[s_iter->first] = sinfo;
     } // for
   } // if
+
+  PYLITH_METHOD_END;
 } // cloneSection
 
 // ----------------------------------------------------------------------
@@ -523,10 +574,14 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::clear(void)
 { // clear
+  PYLITH_METHOD_BEGIN;
+
   deallocate();
   _metadata["default"].scale = 1.0;
   _metadata["default"].vectorFieldType = OTHER;
   _metadata["default"].dimsOkay = false;
+
+  PYLITH_METHOD_END;
 } // clear
 
 // ----------------------------------------------------------------------
@@ -535,6 +590,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::allocate(void)
 { // allocate
+  PYLITH_METHOD_BEGIN;
+
   PetscSection   s = NULL;
   PetscErrorCode err;
 
@@ -549,6 +606,7 @@ pylith::topology::Field<mesh_type>::allocate(void)
   err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _localVec,  _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
 
+  PYLITH_METHOD_END;
 } // allocate
 
 // ----------------------------------------------------------------------
@@ -557,6 +615,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::zero(void)
 { // zero
+  PYLITH_METHOD_BEGIN;
+
   assert(_localVec);
   PetscSection section = NULL;
   PetscInt pStart, pEnd, maxDof = 0;
@@ -577,6 +637,8 @@ pylith::topology::Field<mesh_type>::zero(void)
       err = DMPlexVecSetClosure(_dm, section, _localVec, p, &values[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
     } // if
   } // for
+
+  PYLITH_METHOD_END;
 } // zero
 
 // ----------------------------------------------------------------------
@@ -585,8 +647,12 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::zeroAll(void)
 { // zeroAll
+  PYLITH_METHOD_BEGIN;
+
   assert(_localVec);
   PetscErrorCode err = VecSet(_localVec, 0.0);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // zeroAll
 
 // ----------------------------------------------------------------------
@@ -595,6 +661,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::complete(void)
 { // complete
+  PYLITH_METHOD_BEGIN;
+
   assert(_dm);
   // Not sure if DMLocalToLocal() would work
   PetscErrorCode err;
@@ -604,6 +672,8 @@ pylith::topology::Field<mesh_type>::complete(void)
   err = DMLocalToGlobalEnd(_dm, _localVec, ADD_VALUES, _globalVec);CHECK_PETSC_ERROR(err);
   err = DMGlobalToLocalBegin(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
   err = DMGlobalToLocalEnd(_dm, _globalVec, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // complete
 
 // ----------------------------------------------------------------------
@@ -612,6 +682,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::copy(const Field& field)
 { // copy
+  PYLITH_METHOD_BEGIN;
+
   // Check compatibility of sections
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
@@ -641,6 +713,8 @@ pylith::topology::Field<mesh_type>::copy(const Field& field)
 
   label(const_cast<Field&>(field)._metadata["default"].label.c_str()); // Update label
   _metadata["default"].scale = const_cast<Field&>(field)._metadata["default"].scale;
+
+  PYLITH_METHOD_END;
 } // copy
 
 template<typename mesh_type>
@@ -650,6 +724,8 @@ pylith::topology::Field<mesh_type>::copy(PetscSection osection,
 					 PetscInt component,
 					 PetscVec ovec)
 { // copy
+  PYLITH_METHOD_BEGIN;
+
   assert(osection);
   assert(ovec);
   assert(_localVec);
@@ -719,6 +795,8 @@ pylith::topology::Field<mesh_type>::copy(PetscSection osection,
   } // for
   err = VecRestoreArray(_localVec, &array);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(ovec, &oarray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // copy
 
 // ----------------------------------------------------------------------
@@ -727,6 +805,8 @@ template<typename mesh_type>
 pylith::topology::Field<mesh_type>&
 pylith::topology::Field<mesh_type>::operator+=(const Field& field)
 { // operator+=
+  PYLITH_METHOD_BEGIN;
+
   // Check compatibility of sections
   const int srcSize = field.chartSize();
   const int dstSize = chartSize();
@@ -753,7 +833,8 @@ pylith::topology::Field<mesh_type>::operator+=(const Field& field)
   } // if
   assert(_localVec && field._localVec);
   PetscErrorCode err = VecAXPY(_localVec, 1.0, field._localVec);CHECK_PETSC_ERROR(err);
-  return *this;
+
+  PYLITH_METHOD_RETURN(*this);
 } // operator+=
 
 // ----------------------------------------------------------------------
@@ -762,6 +843,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::dimensionalize(void) const
 { // dimensionalize
+  PYLITH_METHOD_BEGIN;
+
   if (!const_cast<Field*>(this)->_metadata["default"].dimsOkay) {
     std::ostringstream msg;
     msg << "Cannot dimensionalize field '" << const_cast<Field*>(this)->_metadata["default"].label
@@ -790,6 +873,8 @@ pylith::topology::Field<mesh_type>::dimensionalize(void) const
     }
   }
   err = VecRestoreArray(_localVec, &array);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // dimensionalize
 
 // ----------------------------------------------------------------------
@@ -798,6 +883,8 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::view(const char* label) const
 { // view
+  PYLITH_METHOD_BEGIN;
+
   std::string vecFieldString;
   switch(const_cast<Field*>(this)->_metadata["default"].vectorFieldType)
     { // switch
@@ -845,6 +932,8 @@ pylith::topology::Field<mesh_type>::view(const char* label) const
     err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
     err = VecView(_localVec, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
   }
+
+  PYLITH_METHOD_END;
 } // view
 
 // ----------------------------------------------------------------------
@@ -857,6 +946,8 @@ void
 pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 						  const char* context)
 { // createScatter
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
   PetscErrorCode err = 0;
 
@@ -880,6 +971,7 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   sinfo.vector = _globalVec;
   sinfo.dm     = _dm;
   
+  PYLITH_METHOD_END;
 } // createScatter
 
 // ----------------------------------------------------------------------
@@ -895,6 +987,8 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 						  const typename ALE::Obj<typename SieveMesh::numbering_type> numbering,
 						  const char* context)
 { // createScatter
+  PYLITH_METHOD_BEGIN;
+
   assert(!numbering.isNull());
   assert(context);
   PetscErrorCode err = 0;
@@ -931,6 +1025,7 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
 	    << std::endl;
 #endif
   
+  PYLITH_METHOD_END;
 } // createScatter
 
 // ----------------------------------------------------------------------
@@ -945,6 +1040,8 @@ void
 pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type& mesh,
 							const char* context)
 { // createScatterWithBC
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
   PetscErrorCode err = 0;
 
@@ -975,6 +1072,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   //assert(order->getLocalSize()  == localSize);
   //assert(order->getGlobalSize() == globalSize);
 
+  PYLITH_METHOD_END;
 } // createScatterWithBC
 
 // ----------------------------------------------------------------------
@@ -991,6 +1089,8 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
 							PetscInt labelValue,
 							const char* context)
 { // createScatterWithBC
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
   PetscErrorCode err = 0;
 
@@ -1095,6 +1195,8 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
 	    << ", scatter: " << sinfo.scatter
 	    << std::endl;
 #endif
+
+  PYLITH_METHOD_END;
 } // createScatterWithBC
 
 // ----------------------------------------------------------------------
@@ -1103,10 +1205,11 @@ template<typename mesh_type>
 PetscVec
 pylith::topology::Field<mesh_type>::vector(const char* context)
 { // vector
-  std::ostringstream msg;
+  PYLITH_METHOD_BEGIN;
 
   ScatterInfo& sinfo = _getScatter(context);
-  return sinfo.vector;
+
+  PYLITH_METHOD_RETURN(sinfo.vector);
 } // vector
 
 // ----------------------------------------------------------------------
@@ -1115,10 +1218,11 @@ template<typename mesh_type>
 const PetscVec
 pylith::topology::Field<mesh_type>::vector(const char* context) const
 { // vector
-  std::ostringstream msg;
+  PYLITH_METHOD_BEGIN;
 
   const ScatterInfo& sinfo = _getScatter(context);
-  return sinfo.vector;
+
+  PYLITH_METHOD_RETURN(sinfo.vector);
 } // vector
 
 // ----------------------------------------------------------------------
@@ -1128,10 +1232,13 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterSectionToVector(const char* context) const
 { // scatterSectionToVector
-  assert(context);
+  PYLITH_METHOD_BEGIN;
 
+  assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
   scatterSectionToVector(sinfo.vector, context);
+
+  PYLITH_METHOD_END;
 } // scatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -1142,6 +1249,8 @@ void
 pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector,
 							   const char* context) const
 { // scatterSectionToVector
+  PYLITH_METHOD_BEGIN;
+
   assert(vector);
   assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
@@ -1158,6 +1267,8 @@ pylith::topology::Field<mesh_type>::scatterSectionToVector(const PetscVec vector
     err = DMLocalToGlobalBegin(sinfo.dm, _localVec, INSERT_VALUES, vector);CHECK_PETSC_ERROR(err);
     err = DMLocalToGlobalEnd(sinfo.dm, _localVec, INSERT_VALUES, vector);CHECK_PETSC_ERROR(err);
   } // if
+  
+  PYLITH_METHOD_END;
 } // scatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -1167,10 +1278,14 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::scatterVectorToSection(const char* context) const
 { // scatterVectorToSection
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
 
   const ScatterInfo& sinfo = _getScatter(context);
   scatterVectorToSection(sinfo.vector, context);
+
+  PYLITH_METHOD_END;
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
@@ -1181,6 +1296,8 @@ void
 pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector,
 									 const char* context) const
 { // scatterVectorToSection
+  PYLITH_METHOD_BEGIN;
+
   assert(vector);
   assert(context);
   const ScatterInfo& sinfo = _getScatter(context);
@@ -1198,6 +1315,8 @@ pylith::topology::Field<mesh_type>::scatterVectorToSection(const PetscVec vector
     err = DMGlobalToLocalBegin(sinfo.dm, vector, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
     err = DMGlobalToLocalEnd(sinfo.dm, vector, INSERT_VALUES, _localVec);CHECK_PETSC_ERROR(err);
   } // if
+
+  PYLITH_METHOD_END;
 } // scatterVectorToSection
 
 // ----------------------------------------------------------------------
@@ -1207,6 +1326,8 @@ template<typename mesh_type>
 int
 pylith::topology::Field<mesh_type>::_getFiberDim(void)
 { // _getFiberDim
+  PYLITH_METHOD_BEGIN;
+
   assert(_dm);
 
   PetscSection s = NULL;
@@ -1219,7 +1340,7 @@ pylith::topology::Field<mesh_type>::_getFiberDim(void)
   if (pEnd > pStart) {err = PetscSectionGetDof(s, pStart, &fiberDimLocal);CHECK_PETSC_ERROR(err);}
   MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, _mesh.comm());
 
-  return fiberDim;
+  PYLITH_METHOD_RETURN(fiberDim);
 } // _getFiberDim
 
 // ----------------------------------------------------------------------
@@ -1229,6 +1350,8 @@ typename pylith::topology::Field<mesh_type>::ScatterInfo&
 pylith::topology::Field<mesh_type>::_getScatter(const char* context,
 						const bool createOk)
 { // _getScatter
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
 
   bool isNewScatter = _scatters.find(context) == _scatters.end();
@@ -1272,7 +1395,7 @@ pylith::topology::Field<mesh_type>::_getScatter(const char* context,
   } // if
   assert(_scatters.find(context) != _scatters.end());
 
-  return sinfo;
+  PYLITH_METHOD_RETURN(sinfo);
 } // _getScatter
 
 // ----------------------------------------------------------------------
@@ -1281,6 +1404,8 @@ template<typename mesh_type>
 const typename pylith::topology::Field<mesh_type>::ScatterInfo&
 pylith::topology::Field<mesh_type>::_getScatter(const char* context) const
 { // _getScatter
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
 
   const typename scatter_map_type::const_iterator s_iter = 
@@ -1291,7 +1416,7 @@ pylith::topology::Field<mesh_type>::_getScatter(const char* context) const
     throw std::runtime_error(msg.str());
   } // if
   
-  return s_iter->second;
+  PYLITH_METHOD_RETURN(s_iter->second);
 } // _getScatter
 
 // ----------------------------------------------------------------------
@@ -1300,17 +1425,19 @@ template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::addField(const char *name,
 					     int numComponents)
-{
+{ // addField
   // Keep track of name/components until setup
   _tmpFields[name] = numComponents;
   _metadata[name]  = _metadata["default"];
-}
+} // addField
 
 // ----------------------------------------------------------------------
 template<typename mesh_type>
 void
 pylith::topology::Field<mesh_type>::setupFields()
-{
+{ // setupFields
+  PYLITH_METHOD_BEGIN;
+
   assert(_dm);
   // Keep track of name/components until setup
   PetscSection section;
@@ -1329,7 +1456,9 @@ pylith::topology::Field<mesh_type>::setupFields()
   err = DMPlexGetChart(_dm, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(section, pStart, pEnd);CHECK_PETSC_ERROR(err);
 #endif
-}
+
+  PYLITH_METHOD_END;
+} // setupFields
 
 // ----------------------------------------------------------------------
 template<typename mesh_type>
@@ -1338,6 +1467,8 @@ pylith::topology::Field<mesh_type>::updateDof(const char *name,
 					      const DomainEnum domain,
 					      int fiberDim)
 { // updateDof
+  PYLITH_METHOD_BEGIN;
+
   PetscInt pStart, pEnd, f = 0;
   PetscErrorCode err;
 
@@ -1371,6 +1502,8 @@ pylith::topology::Field<mesh_type>::updateDof(const char *name,
     //err = PetscSectionAddDof(section, p, fiberDim);CHECK_PETSC_ERROR(err);
     err = PetscSectionSetFieldDof(section, p, f, fiberDim);CHECK_PETSC_ERROR(err);
   } // for
+
+  PYLITH_METHOD_END;
 } // updateDof
 
 // End of file 

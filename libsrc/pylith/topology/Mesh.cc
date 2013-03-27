@@ -53,10 +53,14 @@ pylith::topology::Mesh::Mesh(const int dim,
   _comm(comm),
   _debug(false)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   createDMMesh(dim);
   _mesh->setName("domain");
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -71,9 +75,13 @@ pylith::topology::Mesh::~Mesh(void)
 void
 pylith::topology::Mesh::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
   PetscErrorCode err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -81,12 +89,16 @@ pylith::topology::Mesh::deallocate(void)
 void
 pylith::topology::Mesh::createSieveMesh(const int dim)
 { // createSieveMesh
+  PYLITH_METHOD_BEGIN;
+
   _mesh.destroy();
   _mesh = new SieveMesh(_comm, dim);
   _mesh->setDebug(_debug);
   _mesh->setName("domain");
   assert(!_mesh->getFactory().isNull());
   _mesh->getFactory()->clear();
+
+  PYLITH_METHOD_END;
 } // createSieveMesh
   
 // ----------------------------------------------------------------------
@@ -94,12 +106,16 @@ pylith::topology::Mesh::createSieveMesh(const int dim)
 void
 pylith::topology::Mesh::createDMMesh(const int dim)
 { // createDMMesh
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err;
   err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
   err = DMCreate(_comm, &_newMesh);CHECK_PETSC_ERROR(err);
   err = DMSetType(_newMesh, DMPLEX);CHECK_PETSC_ERROR(err);
   err = DMPlexSetDimension(_newMesh, dim);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // createDMMesh
 
 // ----------------------------------------------------------------------
@@ -107,9 +123,13 @@ pylith::topology::Mesh::createDMMesh(const int dim)
 void
 pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 { // coordsys
+  PYLITH_METHOD_BEGIN;
+
   delete _coordsys; _coordsys = (0 != cs) ? cs->clone() : 0;
   if (0 != _coordsys)
     _coordsys->initialize();
+
+  PYLITH_METHOD_END;
 } // coordsys
 
 // ----------------------------------------------------------------------
@@ -118,6 +138,8 @@ void
 pylith::topology::Mesh::groups(int* numNames, 
 			       const char*** names) const
 { // groups
+  PYLITH_METHOD_BEGIN;
+
   assert(numNames);
   assert(names);
   *numNames = 0;
@@ -135,6 +157,8 @@ pylith::topology::Mesh::groups(int* numNames,
       err = DMPlexGetLabelName(_newMesh, iLabel, &(*names)[iLabel]);CHECK_PETSC_ERROR(err);
     } // for
   } // if
+
+  PYLITH_METHOD_END;
 } // groups
 
 // ----------------------------------------------------------------------
@@ -142,6 +166,8 @@ pylith::topology::Mesh::groups(int* numNames,
 int
 pylith::topology::Mesh::groupSize(const char *name)
 { // groupSize
+  PYLITH_METHOD_BEGIN;
+
   assert(_newMesh);
 
   PetscErrorCode err = 0;
@@ -158,7 +184,7 @@ pylith::topology::Mesh::groupSize(const char *name)
   PetscInt size = 0;
   err = DMPlexGetLabelSize(_newMesh, name, &size);CHECK_PETSC_ERROR(err);
 
-  return size;
+  PYLITH_METHOD_RETURN(size);
 } // groupSize
 
 
@@ -167,6 +193,8 @@ pylith::topology::Mesh::groupSize(const char *name)
 void 
 pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   PetscVec coordVec, coordDimVec;
   const PylithScalar lengthScale = normalizer.lengthScale();
   PetscErrorCode err;
@@ -221,6 +249,8 @@ pylith::topology::Mesh::nondimensionalize(const spatialdata::units::Nondimension
   // There does not seem to be an advantage to calling nondimensionalize()
   err = VecScale(coordVec, 1.0/lengthScale);CHECK_PETSC_ERROR(err);
   err = DMPlexSetScale(_newMesh, PETSC_UNIT_LENGTH, lengthScale);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // nondimensionalize
 
 
