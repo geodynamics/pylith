@@ -318,13 +318,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
   assert(!faultSieveMesh.isNull());
 
-#if 0 // GET GLOBAL ORDER
-  assert(!sieveMesh.isNull());
-  const ALE::Obj<SieveMesh::order_type>& globalOrder =
-      sieveMesh->getFactory()->getGlobalOrder(sieveMesh, "default",
-					      residualSection);
-  assert(!globalOrder.isNull());
-#endif
+  assert(!faultSieveMesh.isNull());
+  const ALE::Obj<SieveMesh::numbering_type>& globalNumbering = faultSieveMesh->getFactory()->getNumbering(faultSieveMesh, 0);
+  assert(!globalNumbering.isNull());
 
   scalar_array coordsVertex(spaceDim);
   const ALE::Obj<RealSection>& coordsSection = faultSieveMesh->getRealSection("coordinates");
@@ -342,11 +338,10 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-#if 0 // USE GLOBAL ORDER
     // Only create impulses on local vertices
-    if (!globalOrder->isLocal(v_lagrange))
+    if (!globalNumbering->isLocal(v_fault)) {
       continue;
-#endif
+    } // if
 
     coordsSection->restrictPoint(v_fault, &coordsVertex[0], coordsVertex.size());
     _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
@@ -381,6 +376,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   _dbImpulseAmp->close();
 
   //amplitude.view("IMPULSE AMPLITUDE"); // DEBUGGING
+
+  // Deallocate factory.
+  faultSieveMesh->getFactory()->clear();
 
   _setupImpulseOrder(pointOrder);
 } // _setupImpulses
