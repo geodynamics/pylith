@@ -62,12 +62,12 @@ inline
 void
 pylith::topology::CoordsVisitor::clear(void)
 { // clear
-  if (_localArray) {
-    assert(_localVec);
+  if (_localVec) {
     PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
   } // if
 
   _localVec = NULL;
+  _localArray = NULL;
   _section = NULL;
 } // clear
 

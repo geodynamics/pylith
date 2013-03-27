@@ -50,6 +50,8 @@ inline
 void
 pylith::topology::VecVisitorSubMesh::initialize(const SubMeshIS& submeshIS)
 { // initialize
+  clear();
+
   _dm = submeshIS.submesh().dmMesh();assert(_dm);
 
   _localVec = _field.localVector();assert(_localVec);
@@ -67,10 +69,15 @@ inline
 void
 pylith::topology::VecVisitorSubMesh::clear(void)
 { // clear
-  assert(_localVec);
-  PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
+  PetscErrorCode err = 0;
 
-  err = PetscSectionDestroy(&_section);assert(!_section);
+  if (_localVec) {
+    err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
+  } // if
+  
+  if (_section) {
+    err = PetscSectionDestroy(&_section);assert(!_section);
+  } // if
 
   _dm = NULL;
   _localVec = NULL;

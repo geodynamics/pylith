@@ -29,16 +29,26 @@
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
 inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<Mesh>& field)
+pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<Mesh>& field) :
+  _dm(NULL),
+  _localVec(NULL),
+  _section(NULL),
+  _localArray(NULL)
 { // constructor
+  _dm = field.mesh().dmMesh();assert(_dm);
   initialize<Field<Mesh> >(field);
 } // constructor
 
 // ----------------------------------------------------------------------
 // Constructor with field over a submesh.
 inline
-pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<SubMesh>& field)
+pylith::topology::VecVisitorMesh::VecVisitorMesh(const Field<SubMesh>& field) :
+  _dm(NULL),
+  _localVec(NULL),
+  _section(NULL),
+  _localArray(NULL)
 { // constructor
+  _dm = field.mesh().dmMesh();assert(_dm);
   initialize<Field<SubMesh> >(field);
 } // constructor
 
@@ -48,6 +58,7 @@ inline
 pylith::topology::VecVisitorMesh::~VecVisitorMesh(void)
 { // destructor
   clear();
+  _dm = NULL;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -57,7 +68,8 @@ inline
 void
 pylith::topology::VecVisitorMesh::initialize(const field_type& field)
 { // initialize
-  _dm = field.mesh().dmMesh();assert(_dm);
+  clear();
+
   _section = field.petscSection();assert(_section);
   _localVec = field.localVector();assert(_localVec);
 
@@ -70,11 +82,10 @@ inline
 void
 pylith::topology::VecVisitorMesh::clear(void)
 { // clear
-  assert(_localVec);
-  PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);
-  assert(!_localArray);
+  if (_localVec) {
+    PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);CHECK_PETSC_ERROR(err);assert(!_localArray);
+  } // if
 
-  _dm = NULL;
   _section = NULL;
   _localVec = NULL;
 } // clear
@@ -107,7 +118,7 @@ pylith::topology::VecVisitorMesh::localArray(void) const
 } // localArray
 
 // ----------------------------------------------------------------------
-// Get fiber dimension of coordinates for point.
+// Get fiber dimension of values at point.
 inline
 PetscInt
 pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const
@@ -119,7 +130,19 @@ pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const
 } // sectionDof
 
 // ----------------------------------------------------------------------
-// Get offset into coordinates array for point.
+// Get fiber dimension for constraints at point.
+inline
+PetscInt
+pylith::topology::VecVisitorMesh::sectionConstraintDof(const PetscInt point) const
+{ // sectionConstraintDof
+  assert(_section);
+  PetscInt dof;
+  PetscErrorCode err = PetscSectionGetConstraintDof(_section, point, &dof);CHECK_PETSC_ERROR(err);
+  return dof;
+} // sectionConstraintDof
+
+// ----------------------------------------------------------------------
+// Get offset into values array for point.
 inline
 PetscInt
 pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const
@@ -205,6 +228,7 @@ inline
 void
 pylith::topology::MatVisitorMesh::initialize(void)
 { // initialize
+  clear();
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -214,47 +238,6 @@ void
 pylith::topology::MatVisitorMesh::clear(void)
 { // clear
 } // clear
-
-// ----------------------------------------------------------------------
-// Get coordinates array associated with closure.
-inline
-void
-pylith::topology::MatVisitorMesh::getClosure(PetscScalar** valuesCell,
-					     PetscInt* valuesSize,
-					     const PetscInt cell) const
-{ // getClosure
-#if 0 // NOT IMPLEMENTED
-  assert(_dm);
-  assert(_mat);
-  assert(_section);
-  PetscErrorCode err = DMPlexMatGetClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
-#else
-  assert(false);
-#endif
-} // getClosure
-
-// ----------------------------------------------------------------------
-/** Restore coordinates array associated with closure.
- *
- * @param coordsCell Array of coordinates for cell.
- * @param coordsSize Size of coordinates array.
- * @param cell Finite-element cell.
- */
-inline
-void
-pylith::topology::MatVisitorMesh::restoreClosure(PetscScalar** valuesCell,
-						 PetscInt* valuesSize,
-						 const PetscInt cell) const
-{ // restoreClosure
-  assert(_dm);
-  assert(_mat);
-  assert(_section);
-#if 0 // NOT IMPLEMENTED
-  PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, valuesSize, valuesCell);CHECK_PETSC_ERROR(err);
-#else
-  assert(false);
-#endif
-} // restoreClosure
 
 // ----------------------------------------------------------------------
 // Set values associated with closure.
