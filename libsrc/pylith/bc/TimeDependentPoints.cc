@@ -55,8 +55,12 @@ pylith::bc::TimeDependentPoints::~TimeDependentPoints(void)
 void
 pylith::bc::TimeDependentPoints::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   BoundaryConditionPoints::deallocate();
   TimeDependent::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -80,6 +84,8 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
 						 const PylithScalar valueScale,
 						 const char* fieldName)
 { // _queryDatabases
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar timeScale = _getNormalizer().timeScale();
   const PylithScalar rateScale = valueScale / timeScale;
 
@@ -213,6 +219,8 @@ pylith::bc::TimeDependentPoints::_queryDatabases(const topology::Mesh& mesh,
   } // for
   delete[] valueNames; valueNames = 0;
   delete[] rateNames; rateNames = 0;
+
+  PYLITH_METHOD_END;
 } // _queryDatabases
 
 // ----------------------------------------------------------------------
@@ -223,6 +231,8 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 					  const int querySize,
 					  const PylithScalar scale)
 { // _queryDB
+  PYLITH_METHOD_BEGIN;
+
   assert(name);
   assert(db);
   assert(_parameters);
@@ -272,6 +282,8 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
       parametersArray[off+i] = valueVertex[i];
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // _queryDB
 
 // ----------------------------------------------------------------------
@@ -279,6 +291,8 @@ pylith::bc::TimeDependentPoints::_queryDB(const char* name,
 void
 pylith::bc::TimeDependentPoints::_calculateValue(const PylithScalar t)
 { // _calculateValue
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
 
   const PylithScalar timeScale = _getNormalizer().timeScale();
@@ -379,6 +393,8 @@ pylith::bc::TimeDependentPoints::_calculateValue(const PylithScalar t)
   delete rateTimeVisitor; rateTimeVisitor = 0;
   delete changeVisitor; changeVisitor = 0;
   delete changeTimeVisitor; changeTimeVisitor = 0;
+
+  PYLITH_METHOD_END;
 }  // _calculateValue
 
 // ----------------------------------------------------------------------
@@ -388,6 +404,8 @@ void
 pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
 						     const PylithScalar t1)
 { // _calculateValueIncr
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
 
   const PylithScalar timeScale = _getNormalizer().timeScale();
@@ -513,6 +531,8 @@ pylith::bc::TimeDependentPoints::_calculateValueIncr(const PylithScalar t0,
   delete rateTimeVisitor; rateTimeVisitor = 0;
   delete changeVisitor; changeVisitor = 0;
   delete changeTimeVisitor; changeTimeVisitor = 0;
+
+  PYLITH_METHOD_END;
 }  // _calculateValueIncr
 
 

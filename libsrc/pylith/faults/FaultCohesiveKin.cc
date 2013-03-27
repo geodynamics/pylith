@@ -77,6 +77,8 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
 					 EqKinSrc** sources,
 					 const int numSources)
 { // eqsrcs
+  PYLITH_METHOD_BEGIN;
+
   assert(numNames == numSources);
 
   // :TODO: Use shared pointers for earthquake sources
@@ -86,6 +88,8 @@ pylith::faults::FaultCohesiveKin::eqsrcs(const char* const * names,
       throw std::runtime_error("Null earthquake source.");
     _eqSrcs[std::string(names[i])] = sources[i];
   } // for
+
+  PYLITH_METHOD_END;
 } // eqsrcs
 
 // ----------------------------------------------------------------------
@@ -94,6 +98,8 @@ void
 pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
 					     const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(upDir);
   assert(_quadrature);
   assert(_normalizer);
@@ -106,6 +112,8 @@ pylith::faults::FaultCohesiveKin::initialize(const topology::Mesh& mesh,
     assert(src);
     src->initialize(*_faultMesh, *_normalizer);
   } // for
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -117,6 +125,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(fields);
   assert(_fields);
   assert(_logger);
@@ -144,6 +154,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 
   FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
+
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -152,6 +164,8 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveKin::vertexField(const char* name,
                                               const topology::SolutionFields* fields)
 { // vertexField
+  PYLITH_METHOD_BEGIN;
+
   assert(_faultMesh);
   assert(_quadrature);
   assert(_normalizer);
@@ -174,7 +188,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
@@ -183,7 +198,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
@@ -193,7 +209,8 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (0 == strcasecmp("normal_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
@@ -203,7 +220,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
   } else if (0 == strncasecmp("final_slip_X", name, slipStrLen)) {
     const std::string value = std::string(name).substr(slipStrLen + 1);
 
@@ -220,7 +237,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
       std::string("final_slip_") + std::string(value) : "final_slip";
     buffer.label(label.c_str());
 
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strncasecmp("slip_time_X", name, timeStrLen)) {
     const std::string value = std::string(name).substr(timeStrLen + 1);
@@ -236,15 +253,16 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
     const std::string& label = (_eqSrcs.size() > 1) ? 
       std::string("slip_time_") + std::string(value) : "slip_time";
     buffer.label(label.c_str());
+    PYLITH_METHOD_RETURN(buffer);
 
-    return buffer;
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else {
     std::ostringstream msg;
     msg << "Request for unknown vertex field '" << name << "' for fault '"
@@ -259,7 +277,7 @@ pylith::faults::FaultCohesiveKin::vertexField(const char* name,
   // Satisfy return values
   assert(_fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // vertexField
 
 // End of file 

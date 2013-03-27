@@ -49,8 +49,12 @@ pylith::bc::DirichletBC::~DirichletBC(void)
 void
 pylith::bc::DirichletBC::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   TimeDependentPoints::deallocate();
   feassemble::Constraint::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -59,14 +63,18 @@ void
 pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
 				    const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   if (0 == _bcDOF.size())
-    return;
+    PYLITH_METHOD_END;
 
   _getPoints(mesh);
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   _queryDatabases(mesh, lengthScale, "displacement");
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -74,9 +82,11 @@ pylith::bc::DirichletBC::initialize(const topology::Mesh& mesh,
 void
 pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh>& field)
 { // setConstraintSizes
+  PYLITH_METHOD_BEGIN;
+
   const int numFixedDOF = _bcDOF.size();
   if (0 == numFixedDOF)
-    return;
+    PYLITH_METHOD_END;
 
   PetscSection section = field.petscSection();assert(section);
   PetscInt numFields;
@@ -107,6 +117,8 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
     // We should be specifying what field the BC is for
     if (numFields) {err = PetscSectionAddFieldConstraintDof(section, point, 0, numFixedDOF);CHECK_PETSC_ERROR(err);}
   } // for
+
+  PYLITH_METHOD_END;
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -114,9 +126,11 @@ pylith::bc::DirichletBC::setConstraintSizes(const topology::Field<topology::Mesh
 void
 pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& field)
 { // setConstraints
+  PYLITH_METHOD_BEGIN;
+
   const int numFixedDOF = _bcDOF.size();
   if (0 == numFixedDOF)
-    return;
+    PYLITH_METHOD_END;
 
   PetscSection section = field.petscSection();assert(section);
   PetscInt numFields;
@@ -170,6 +184,8 @@ pylith::bc::DirichletBC::setConstraints(const topology::Field<topology::Mesh>& f
     err = PetscSectionSetConstraintIndices(section, point, &allCInd[0]);CHECK_PETSC_ERROR(err);
     if (numFields) {err = PetscSectionSetFieldConstraintIndices(section, point, 0, &allCInd[0]);CHECK_PETSC_ERROR(err);}
   } // for
+
+  PYLITH_METHOD_END;
 } // setConstraints
 
 // ----------------------------------------------------------------------
@@ -178,9 +194,11 @@ void
 pylith::bc::DirichletBC::setField(const PylithScalar t,
 				  const topology::Field<topology::Mesh>& field)
 { // setField
+  PYLITH_METHOD_BEGIN;
+
   const int numFixedDOF = _bcDOF.size();
   if (0 == numFixedDOF)
-    return;
+    PYLITH_METHOD_END;
 
   // Calculate spatial and temporal variation of value for BC.
   _calculateValue(t);
@@ -207,6 +225,8 @@ pylith::bc::DirichletBC::setField(const PylithScalar t,
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // setField
 
 // ----------------------------------------------------------------------
@@ -216,9 +236,11 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 				      const PylithScalar t1,
 				      const topology::Field<topology::Mesh>& field)
 { // setFieldIncr
+  PYLITH_METHOD_BEGIN;
+
   const int numFixedDOF = _bcDOF.size();
   if (0 == numFixedDOF)
-    return;
+    PYLITH_METHOD_END;
 
   // Calculate spatial and temporal variation of value for BC.
   _calculateValueIncr(t0, t1);
@@ -244,6 +266,8 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
       fieldArray[_bcDOF[iDOF]+off] = valueArray[voff+iDOF];
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // setFieldIncr
 
 // ----------------------------------------------------------------------
@@ -251,8 +275,12 @@ pylith::bc::DirichletBC::setFieldIncr(const PylithScalar t0,
 void
 pylith::bc::DirichletBC::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   BoundaryCondition::verifyConfiguration(mesh);
   TimeDependent::verifyConfiguration(mesh);
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 

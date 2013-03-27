@@ -34,6 +34,8 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   PetscDM dmMesh = field.dmMesh();assert(dmMesh);
 
   // Set blockFlag to -1 if okay to set block size equal to fiber
@@ -44,6 +46,8 @@ pylith::topology::Jacobian::Jacobian(const Field<Mesh>& field,
   PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
 
   _type = matrixType;
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -54,6 +58,8 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   _matrix(0),
   _valuesChanged(true)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   PetscDM dmMesh = field.dmMesh();assert(dmMesh);
 
   // Set blockFlag to -1 if okay to set block size equal to fiber
@@ -64,6 +70,8 @@ pylith::topology::Jacobian::Jacobian(const Field<SubMesh>& field,
   PetscErrorCode err = DMCreateMatrix(dmMesh, matrixType, &_matrix);CHECK_PETSC_ERROR_MSG(err, msg);
 
   _type = matrixType;
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -78,7 +86,11 @@ pylith::topology::Jacobian::~Jacobian(void)
 void
 pylith::topology::Jacobian::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = MatDestroy(&_matrix);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -110,6 +122,8 @@ pylith::topology::Jacobian::matrixType(void) const
 void
 pylith::topology::Jacobian::assemble(const char* mode)
 { // assemble
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = 0;
   if (0 == strcmp(mode, "final_assembly")) {
     err = MatAssemblyBegin(_matrix, MAT_FINAL_ASSEMBLY);CHECK_PETSC_ERROR(err);
@@ -150,6 +164,8 @@ pylith::topology::Jacobian::assemble(const char* mode)
 			     "associated with system Jacobian.");
 
   _valuesChanged = true;
+
+  PYLITH_METHOD_END;
 } // assemble
 
 // ----------------------------------------------------------------------
@@ -157,8 +173,12 @@ pylith::topology::Jacobian::assemble(const char* mode)
 void
 pylith::topology::Jacobian::zero(void)
 { // zero
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = MatZeroEntries(_matrix);CHECK_PETSC_ERROR(err);
   _valuesChanged = true;
+
+  PYLITH_METHOD_END;
 } // zero
 
 // ----------------------------------------------------------------------
@@ -166,7 +186,11 @@ pylith::topology::Jacobian::zero(void)
 void
 pylith::topology::Jacobian::view(void) const
 { // view
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = MatView(_matrix, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // view
 
 // ----------------------------------------------------------------------
@@ -175,11 +199,15 @@ void
 pylith::topology::Jacobian::write(const char* filename,
                                   const MPI_Comm comm)
 { // write
+  PYLITH_METHOD_BEGIN;
+
   PetscViewer viewer;
   PetscErrorCode err = PetscViewerBinaryOpen(comm, filename, FILE_MODE_WRITE, &viewer);CHECK_PETSC_ERROR(err);
 
   err = MatView(_matrix, viewer); CHECK_PETSC_ERROR(err);
   err = PetscViewerDestroy(&viewer); CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -187,6 +215,8 @@ pylith::topology::Jacobian::write(const char* filename,
 void
 pylith::topology::Jacobian::verifySymmetry(void) const
 { // verifySymmetry
+  PYLITH_METHOD_BEGIN;
+
   const PetscMat matSparse = _matrix;
   PetscErrorCode err;
 
@@ -236,6 +266,8 @@ pylith::topology::Jacobian::verifySymmetry(void) const
   err = MatDestroy(&matSparseAIJ);CHECK_PETSC_ERROR(err);
   if (!isSymmetric)
     throw std::runtime_error("Jacobian matrix is not symmetric.");
+
+  PYLITH_METHOD_END;
 } // verifySymmetry
 
 // ----------------------------------------------------------------------

@@ -65,10 +65,14 @@ pylith::faults::FaultCohesiveImpulses::~FaultCohesiveImpulses(void)
 void
 pylith::faults::FaultCohesiveImpulses::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveLagrange::deallocate();
 
   // :TODO: Use shared pointers for amplitudes of impulses
   _dbImpulseAmp = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -130,6 +134,8 @@ void
 pylith::faults::FaultCohesiveImpulses::initialize(const topology::Mesh& mesh,
 						  const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(upDir);
   assert(_quadrature);
   assert(_normalizer);
@@ -138,6 +144,8 @@ pylith::faults::FaultCohesiveImpulses::initialize(const topology::Mesh& mesh,
 
   // Setup impulses
   _setupImpulses();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -149,6 +157,8 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(
 			     const PylithScalar t,
 			     topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(fields);
   assert(_fields);
   assert(_logger);
@@ -170,6 +180,7 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(
 
   FaultCohesiveLagrange::integrateResidual(residual, t, fields);
 
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -178,6 +189,8 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
                                               const topology::SolutionFields* fields)
 { // vertexField
+  PYLITH_METHOD_BEGIN;
+
   assert(_faultMesh);
   assert(_quadrature);
   assert(_normalizer);
@@ -197,7 +210,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
@@ -207,7 +220,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
@@ -218,7 +231,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("normal_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
@@ -229,15 +242,15 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (0 == strcasecmp("impulse_amplitude", name)) {
     topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
-    return amplitude;
+    PYLITH_METHOD_RETURN(amplitude);
 
   } else if (0 == strcasecmp("area", name)) {
     topology::Field<topology::SubMesh>& area = _fields->get("area");
-    return area;
+    PYLITH_METHOD_RETURN(area);
 
   } else if (0 == strcasecmp("traction_change", name)) {
     assert(fields);
@@ -245,7 +258,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     _calcTractionsChange(&buffer, dispT);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else {
     std::ostringstream msg;
@@ -261,7 +274,7 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
   // Satisfy return values
   assert(_fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // vertexField
 
  
@@ -270,9 +283,11 @@ pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
 void
 pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
 { // _setupImpulses
+  PYLITH_METHOD_BEGIN;
+
   // If no impulse amplitude specified, leave method
   if (!_dbImpulseAmp)
-    return;
+    PYLITH_METHOD_END;
 
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
@@ -365,6 +380,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   //amplitude.view("IMPULSE AMPLITUDE"); // DEBUGGING
 
   _setupImpulseOrder(pointOrder);
+
+  PYLITH_METHOD_END;
 } // _setupImpulses
 
 
@@ -373,6 +390,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
 void
 pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int>& pointOrder)
 { // _setupImpulseOrder
+  PYLITH_METHOD_BEGIN;
+
   // Order of impulses is set by processor rank and order of points in
   // mesh, using only those points with nonzero amplitudes.
 
@@ -424,6 +443,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     } // if
   } // for
 #endif
+
+  PYLITH_METHOD_END;
 } // _setupImpulseOrder
 
 
@@ -433,14 +454,15 @@ void
 pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<topology::SubMesh>& dispRel,
 							const int impulse)
 { // _setRelativeDisp
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
 
   // If no impulse amplitude specified, leave method
   if (!_dbImpulseAmp)
-    return;
+    PYLITH_METHOD_END;
 
-  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-  assert(cs);
+  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
   PetscErrorCode err;
@@ -488,6 +510,8 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
   std::cout << "impulse: " << impulse << std::endl;
   dispRel.view("DISP RELATIVE"); // DEBUGGING
 #endif
+
+  PYLITH_METHOD_END;
 } // _setRelativeDisp
 
 

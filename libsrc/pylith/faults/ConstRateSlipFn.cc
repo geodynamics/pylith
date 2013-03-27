@@ -56,10 +56,14 @@ pylith::faults::ConstRateSlipFn::~ConstRateSlipFn(void)
 void 
 pylith::faults::ConstRateSlipFn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   SlipTimeFn::deallocate();
 
   _dbSlipRate = 0; // :TODO: Use shared pointer.
   _dbSlipTime = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -70,6 +74,8 @@ pylith::faults::ConstRateSlipFn::initialize(
 			    const spatialdata::units::Nondimensional& normalizer,
 			    const PylithScalar originTime)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbSlipRate);
   assert(_dbSlipTime);
 
@@ -190,6 +196,8 @@ pylith::faults::ConstRateSlipFn::initialize(
   // Close databases
   _dbSlipRate->close();
   _dbSlipTime->close();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -198,6 +206,8 @@ void
 pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 				      const PylithScalar t)
 { // slip
+  PYLITH_METHOD_BEGIN;
+
   assert(slip);
   assert(_parameters);
 
@@ -238,6 +248,8 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   } // for
 
   PetscLogFlops((vEnd-vStart) * (1 + _slipRateVertex.size()));
+
+  PYLITH_METHOD_END;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -245,8 +257,10 @@ pylith::faults::ConstRateSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::ConstRateSlipFn::finalSlip(void)
 { // finalSlip
+  PYLITH_METHOD_BEGIN;
+
   // Slip rate is parameter instead of final slip.
-  return _parameters->get("slip rate");
+  PYLITH_METHOD_RETURN(_parameters->get("slip rate"));
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -254,7 +268,9 @@ pylith::faults::ConstRateSlipFn::finalSlip(void)
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::ConstRateSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->get("slip time");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("slip time"));
 } // slipTime
 
 

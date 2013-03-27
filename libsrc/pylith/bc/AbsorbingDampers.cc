@@ -61,8 +61,12 @@ pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 void 
 pylith::bc::AbsorbingDampers::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   BCIntegratorSubMesh::deallocate();
   _db = 0; // :TODO: Use shared pointer
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -72,6 +76,8 @@ void
 pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
 					 const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_boundaryMesh);
   assert(_quadrature);
   assert(_db);
@@ -216,6 +222,8 @@ pylith::bc::AbsorbingDampers::initialize(const topology::Mesh& mesh,
   } // for
 
   _db->close();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -225,6 +233,8 @@ pylith::bc::AbsorbingDampers::integrateResidual(const topology::Field<topology::
 						const PylithScalar t,
 						topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   assert(_parameters);
@@ -354,6 +364,8 @@ topology::CoordsVisitor coordsVisitor(dmSubMesh);
   PetscLogFlops((cEnd-cStart)*numQuadPts*(1+numBasis*(1+numBasis*(3*spaceDim))));
   _logger->eventEnd(computeEvent);
 #endif
+
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -363,6 +375,8 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
 						      const PylithScalar t,
 						      topology::SolutionFields* const fields)
 { // integrateResidualLumped
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   assert(_parameters);
@@ -492,6 +506,8 @@ pylith::bc::AbsorbingDampers::integrateResidualLumped(const topology::Field<topo
   PetscLogFlops((cEnd-cStart)*numQuadPts*(1+numBasis+numBasis*(1+spaceDim*3)));
   _logger->eventEnd(computeEvent);
 #endif
+
+  PYLITH_METHOD_END;
 } // integrateResidualLumped
 
 // ----------------------------------------------------------------------
@@ -501,6 +517,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 						const PylithScalar t,
 						topology::SolutionFields* const fields)
 { // integrateJacobian
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   assert(_logger);
@@ -627,6 +645,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Jacobian* jacobian,
 #endif
 
   _needNewJacobian = false;
+
+  PYLITH_METHOD_END;
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -636,6 +656,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 						const PylithScalar t,
 						topology::SolutionFields* const fields)
 { // integrateJacobian
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   assert(_logger);
@@ -759,6 +781,8 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 #endif
 
   _needNewJacobian = false;
+
+  PYLITH_METHOD_END;
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -766,7 +790,11 @@ pylith::bc::AbsorbingDampers::integrateJacobian(topology::Field<topology::Mesh>*
 void
 pylith::bc::AbsorbingDampers::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   BCIntegratorSubMesh::verifyConfiguration(mesh);
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
@@ -774,8 +802,9 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const topology::Mesh& mesh) co
 void
 pylith::bc::AbsorbingDampers::_initializeLogger(void)
 { // initializeLogger
-  delete _logger; _logger = new utils::EventLogger;
-  assert(_logger);
+   PYLITH_METHOD_BEGIN;
+
+ delete _logger; _logger = new utils::EventLogger;assert(_logger);
   _logger->className("AbsorbingDampers");
   _logger->initialize();
 
@@ -790,6 +819,8 @@ pylith::bc::AbsorbingDampers::_initializeLogger(void)
   _logger->registerEvent("AdIJ compute");
   _logger->registerEvent("AdIJ restrict");
   _logger->registerEvent("AdIJ update");
+
+  PYLITH_METHOD_END;
 } // initializeLogger
 
 

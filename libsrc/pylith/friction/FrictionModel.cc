@@ -66,6 +66,8 @@ pylith::friction::FrictionModel::~FrictionModel(void)
 void
 pylith::friction::FrictionModel::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _normalizer; _normalizer = 0;
   delete _fieldsPropsStateVars; _fieldsPropsStateVars = 0;
   _propsFiberDim = 0;
@@ -73,6 +75,8 @@ pylith::friction::FrictionModel::deallocate(void)
 
   _dbProperties = 0; // :TODO: Use shared pointer.
   _dbInitialState = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -80,10 +84,14 @@ pylith::friction::FrictionModel::deallocate(void)
 void
 pylith::friction::FrictionModel::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
+  PYLITH_METHOD_BEGIN;
+
   if (!_normalizer)
     _normalizer = new spatialdata::units::Nondimensional(dim);
   else
     *_normalizer = dim;
+
+  PYLITH_METHOD_END;
 } // normalizer
 
 // ----------------------------------------------------------------------
@@ -92,6 +100,8 @@ void
 pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 					    feassemble::Quadrature<topology::SubMesh>* quadrature)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbProperties);
 
   // Get vertices associated with friction interface
@@ -231,6 +241,8 @@ pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 
   // Setup buffers for restrict/update of properties and state variables.
   _propsStateVarsVertex.resize(_propsFiberDim+_varsFiberDim);
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -238,8 +250,10 @@ pylith::friction::FrictionModel::initialize(const topology::SubMesh& faultMesh,
 const pylith::topology::Fields<pylith::topology::Field<pylith::topology::SubMesh> >&
 pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
 { // fieldsPropsStateVars
+  PYLITH_METHOD_BEGIN;
+
   assert(_fieldsPropsStateVars);
-  return *_fieldsPropsStateVars;
+  PYLITH_METHOD_RETURN(*_fieldsPropsStateVars);
 } // fieldsPropsStateVars
 
 // ----------------------------------------------------------------------
@@ -247,6 +261,8 @@ pylith::friction::FrictionModel::fieldsPropsStateVars(void) const
 bool
 pylith::friction::FrictionModel::hasPropStateVar(const char* name)
 { // hasPropStateVar
+  PYLITH_METHOD_BEGIN;
+
   if (_fieldsPropsStateVars) {
     return _fieldsPropsStateVars->hasField(name);
   } else {
@@ -254,14 +270,14 @@ pylith::friction::FrictionModel::hasPropStateVar(const char* name)
     const int numProperties = _metadata.numProperties();
     for (int i=0; i < numProperties; ++i)
       if (_metadata.getProperty(i).name == nameString)
-	return true;
+	PYLITH_METHOD_RETURN(true);
     const int numStateVars = _metadata.numStateVars();
     for (int i=0; i < numStateVars; ++i)
       if (_metadata.getStateVar(i).name == nameString)
-	return true;
+	PYLITH_METHOD_RETURN(true);
   } // if/else
 
-  return false;
+  PYLITH_METHOD_RETURN(false);
 } // hasPropStateVar
 
 // ----------------------------------------------------------------------
@@ -277,10 +293,12 @@ pylith::friction::FrictionModel::getMetadata()
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::friction::FrictionModel::getField(const char* name)
 { // getField
+  PYLITH_METHOD_BEGIN;
+
   assert(name);
   assert(_fieldsPropsStateVars);
 
-  return _fieldsPropsStateVars->get(name);
+  PYLITH_METHOD_RETURN(_fieldsPropsStateVars->get(name));
 } // getField
   
 // ----------------------------------------------------------------------
@@ -288,6 +306,8 @@ pylith::friction::FrictionModel::getField(const char* name)
 void
 pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
 { // retrievePropsStateVars
+  PYLITH_METHOD_BEGIN;
+
   assert(_fieldsPropsStateVars);
   PetscInt iOff = 0;
 
@@ -316,6 +336,8 @@ pylith::friction::FrictionModel::retrievePropsStateVars(const int point)
     } // for
   } // for
   assert(_propsStateVarsVertex.size() == iOff);
+
+  PYLITH_METHOD_END;
 } // retrievePropsStateVars
 
 // ----------------------------------------------------------------------
@@ -326,6 +348,8 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
                                               const PylithScalar slipRate,
                                               const PylithScalar normalTraction)
 { // calcFriction
+  PYLITH_METHOD_BEGIN;
+
   assert(_fieldsPropsStateVars);
 
   assert(_propsFiberDim+_varsFiberDim == _propsStateVarsVertex.size());
@@ -337,7 +361,7 @@ pylith::friction::FrictionModel::calcFriction(const PylithScalar t,
 					      propertiesVertex, _propsFiberDim,
 					      stateVarsVertex, _varsFiberDim);
   
-  return friction;
+  PYLITH_METHOD_RETURN(friction);
 } // calcFriction
 
 // ----------------------------------------------------------------------
@@ -349,9 +373,11 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
 						 const PylithScalar normalTraction,
 						 const int vertex)
 { // updateStateVars
+  PYLITH_METHOD_BEGIN;
+
   assert(_fieldsPropsStateVars);
   if (0 == _varsFiberDim)
-    return;
+    PYLITH_METHOD_END;
 
   const PylithScalar* propertiesVertex = &_propsStateVarsVertex[0];
   PylithScalar* stateVarsVertex = &_propsStateVarsVertex[_propsFiberDim];
@@ -387,6 +413,8 @@ pylith::friction::FrictionModel::updateStateVars(const PylithScalar t,
     } // for
   } // for
   assert(_propsStateVarsVertex.size() == iOff);
+
+  PYLITH_METHOD_END;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -409,6 +437,8 @@ pylith::friction::FrictionModel::_updateStateVars(
 void
 pylith::friction::FrictionModel::_setupPropsStateVars(void)
 { // _setupPropsStateVars
+  PYLITH_METHOD_BEGIN;
+
   // Determine number of values needed to store physical properties.
   const int numProperties = _metadata.numProperties();
   _propsFiberDim = 0;
@@ -464,6 +494,8 @@ pylith::friction::FrictionModel::_setupPropsStateVars(void)
     iScale += stateVar.fiberDim;
   } // for
   assert(_varsFiberDim >= 0);
+
+  PYLITH_METHOD_END;
 } // _setupPropsStateVars
 
 

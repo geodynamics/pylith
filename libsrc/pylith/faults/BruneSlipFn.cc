@@ -58,11 +58,15 @@ pylith::faults::BruneSlipFn::~BruneSlipFn(void)
 void 
 pylith::faults::BruneSlipFn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   SlipTimeFn::deallocate();
 
   _dbFinalSlip = 0; // :TODO: Use shared pointer.
   _dbSlipTime = 0; // :TODO: Use shared pointer.
   _dbRiseTime = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -72,6 +76,8 @@ pylith::faults::BruneSlipFn::initialize(const topology::SubMesh& faultMesh,
 					const spatialdata::units::Nondimensional& normalizer,
 					const PylithScalar originTime)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbFinalSlip);
   assert(_dbSlipTime);
   assert(_dbRiseTime);
@@ -221,6 +227,8 @@ pylith::faults::BruneSlipFn::initialize(const topology::SubMesh& faultMesh,
   _dbFinalSlip->close();
   _dbSlipTime->close();
   _dbRiseTime->close();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -229,6 +237,8 @@ void
 pylith::faults::BruneSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 				  const PylithScalar t)
 { // slip
+  PYLITH_METHOD_BEGIN;
+
   assert(slip);
   assert(_parameters);
 
@@ -281,6 +291,8 @@ pylith::faults::BruneSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   } // for
 
   PetscLogFlops((vEnd-vStart) * (2+8 + 3*spaceDim));
+
+  PYLITH_METHOD_END;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -288,7 +300,9 @@ pylith::faults::BruneSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::BruneSlipFn::finalSlip(void)
 { // finalSlip
-  return _parameters->get("final slip");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("final slip"));
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -296,7 +310,9 @@ pylith::faults::BruneSlipFn::finalSlip(void)
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::BruneSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->get("slip time");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("slip time"));
 } // slipTime
 
 

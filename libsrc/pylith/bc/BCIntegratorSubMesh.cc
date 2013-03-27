@@ -46,11 +46,15 @@ pylith::bc::BCIntegratorSubMesh::~BCIntegratorSubMesh(void)
 void
 pylith::bc::BCIntegratorSubMesh::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   BoundaryCondition::deallocate();
   feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
 
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -58,11 +62,15 @@ pylith::bc::BCIntegratorSubMesh::deallocate(void)
 void
 pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
 { // createSubMesh
+  PYLITH_METHOD_BEGIN;
+
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _parameters; _parameters = 0;
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(_boundaryMesh);
+
+  PYLITH_METHOD_END;
 } // createSubMesh
 
 // ----------------------------------------------------------------------
@@ -70,6 +78,8 @@ pylith::bc::BCIntegratorSubMesh::createSubMesh(const topology::Mesh& mesh)
 void
 pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh) const 
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
 
@@ -109,6 +119,8 @@ pylith::bc::BCIntegratorSubMesh::verifyConfiguration(const topology::Mesh& mesh)
       throw std::runtime_error(msg.str());
     } // if
   } // for
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 

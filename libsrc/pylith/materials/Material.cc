@@ -83,12 +83,16 @@ pylith::materials::Material::~Material(void)
 void
 pylith::materials::Material::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _normalizer; _normalizer = 0;
   delete _properties; _properties = 0;
   delete _stateVars; _stateVars = 0;
 
   _dbProperties = 0; // :TODO: Use shared pointer.
   _dbInitialState = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -96,10 +100,14 @@ pylith::materials::Material::deallocate(void)
 void
 pylith::materials::Material::normalizer(const spatialdata::units::Nondimensional& dim)
 { // normalizer
+  PYLITH_METHOD_BEGIN;
+
   if (!_normalizer)
     _normalizer = new spatialdata::units::Nondimensional(dim);
   else
     *_normalizer = dim;
+
+  PYLITH_METHOD_END;
 } // normalizer
 
 // ----------------------------------------------------------------------
@@ -108,6 +116,8 @@ void
 pylith::materials::Material::initialize(const topology::Mesh& mesh,
 					feassemble::Quadrature<topology::Mesh>* quadrature)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbProperties);
   assert(quadrature);
 
@@ -261,6 +271,8 @@ pylith::materials::Material::initialize(const topology::Mesh& mesh,
   _dbProperties->close();
   if (_dbInitialState)
     _dbInitialState->close();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -284,10 +296,13 @@ pylith::materials::Material::stateVarsField() const
 bool
 pylith::materials::Material::hasProperty(const char* name)
 { // hasProperty
+  PYLITH_METHOD_BEGIN;
+
   int propertyIndex = -1;
   int stateVarIndex = -1;
   _findField(&propertyIndex, &stateVarIndex, name);
-  return (propertyIndex >= 0);
+
+  PYLITH_METHOD_RETURN(propertyIndex >= 0);
 } // hasProperty
 
 // ----------------------------------------------------------------------
@@ -295,10 +310,13 @@ pylith::materials::Material::hasProperty(const char* name)
 bool
 pylith::materials::Material::hasStateVar(const char* name)
 { // hasStateVar
+  PYLITH_METHOD_BEGIN;
+
   int propertyIndex = -1;
   int stateVarIndex = -1;
   _findField(&propertyIndex, &stateVarIndex, name);
-  return (stateVarIndex >= 0);
+
+  PYLITH_METHOD_RETURN(stateVarIndex >= 0);
 } // hasStateVar
 
 // ----------------------------------------------------------------------
@@ -307,6 +325,8 @@ void
 pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
 				      const char* name) const
 { // getField
+  PYLITH_METHOD_BEGIN;
+
   assert(field);
   assert(_properties);
   assert(_stateVars);
@@ -497,6 +517,8 @@ pylith::materials::Material::getField(topology::Field<topology::Mesh> *field,
       throw std::logic_error("Bad vector field type for Material.");
     } // switch
   field->vectorFieldType(multiType);
+
+  PYLITH_METHOD_END;
 } // getField
   
 // ----------------------------------------------------------------------
@@ -506,6 +528,8 @@ pylith::materials::Material::_findField(int* propertyIndex,
 					int* stateVarIndex,
 					const char* name) const
 { // _findField
+  PYLITH_METHOD_BEGIN;
+
   assert(propertyIndex);
   assert(stateVarIndex);
 
@@ -517,15 +541,17 @@ pylith::materials::Material::_findField(int* propertyIndex,
   for (int i=0; i < numProperties; ++i)
     if (nameString == _metadata.getProperty(i).name) {
       *propertyIndex = i;
-      return;
+      PYLITH_METHOD_END;
     } // if
 
   const int numStateVars = _metadata.numStateVars();
   for (int i=0; i < numStateVars; ++i)
     if (nameString == _metadata.getStateVar(i).name) {
       *stateVarIndex = i;
-      return;
+      PYLITH_METHOD_END;
     } // if
+
+  PYLITH_METHOD_END;
 } // _findField
   
 

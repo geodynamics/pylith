@@ -55,8 +55,10 @@ void
 pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
 					       const PylithScalar upDir[3])
 { // initialize
-  assert(0 != upDir);
-  assert(0 != _quadrature);
+  PYLITH_METHOD_BEGIN;
+  
+  assert(upDir);
+  assert(_quadrature);
 
   delete _faultMesh; _faultMesh = new topology::SubMesh();
   CohesiveTopology::createFaultParallel(_faultMesh, mesh, id(),
@@ -70,6 +72,7 @@ pylith::faults::FaultCohesiveTract::initialize(const topology::Mesh& mesh,
   // Initialize quadrature geometry.
   _quadrature->initializeGeometry();
 
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -99,6 +102,8 @@ pylith::faults::FaultCohesiveTract::integrateJacobian(topology::Jacobian* jacobi
 void
 pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+  
   assert(_quadrature);
 
   const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -140,6 +145,8 @@ pylith::faults::FaultCohesiveTract::verifyConfiguration(const topology::Mesh& me
       throw std::runtime_error(msg.str());
     } // if
   } // for
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------

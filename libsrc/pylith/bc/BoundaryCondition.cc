@@ -50,6 +50,8 @@ pylith::bc::BoundaryCondition::deallocate(void)
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   const PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscBool hasLabel = PETSC_FALSE;
   PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
@@ -59,6 +61,8 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const topology::Mesh& mesh) c
 	<< "' for boundary condition.";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 

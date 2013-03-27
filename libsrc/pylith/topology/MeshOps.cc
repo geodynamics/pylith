@@ -38,6 +38,8 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
 					    int* const materialIds,
 					    const int numMaterials)
 { // checkMaterialIds
+  PYLITH_METHOD_BEGIN;
+
   assert((!numMaterials && !materialIds) || (numMaterials && materialIds));
   PetscErrorCode err;
 
@@ -95,6 +97,7 @@ pylith::topology::MeshOps::checkMaterialIds(const Mesh& mesh,
     } // if
   } // for
   
+  PYLITH_METHOD_END;
 } // checkMaterialIds
 
 
@@ -103,11 +106,14 @@ int
 pylith::topology::MeshOps::numMaterialCells(const Mesh& mesh,
 					    int materialId)
 { // numMaterialCells
+  PYLITH_METHOD_BEGIN;
+
   PetscInt ncells = 0;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
   PetscErrorCode err = DMPlexGetStratumSize(dmMesh, "material-id", materialId, &ncells);CHECK_PETSC_ERROR(err);
-  return ncells;
+
+  PYLITH_METHOD_RETURN(ncells);
 } // numMaterialCells
 
 

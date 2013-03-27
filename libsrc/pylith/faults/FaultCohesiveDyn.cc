@@ -74,6 +74,8 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 // Deallocate PETSc and local data structures.
 void pylith::faults::FaultCohesiveDyn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   FaultCohesiveLagrange::deallocate();
 
   _tractPerturbation = 0; // :TODO: Use shared pointer
@@ -81,6 +83,8 @@ void pylith::faults::FaultCohesiveDyn::deallocate(void)
 
   delete _jacobian; _jacobian = 0;
   PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -129,6 +133,8 @@ void
 pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
 					     const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(upDir);
   assert(_quadrature);
   assert(_normalizer);
@@ -159,6 +165,8 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   velRel.vectorFieldType(topology::FieldBase::VECTOR);
   velRel.scale(_normalizer->lengthScale() / _normalizer->timeScale());
 
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -168,6 +176,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
 						    const PylithScalar t,
 						    topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(fields);
   assert(_fields);
   assert(_logger);
@@ -376,6 +386,8 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);
 #endif
+
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -384,6 +396,8 @@ void
 pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
 						  topology::SolutionFields* const fields)
 { // updateStateVars
+  PYLITH_METHOD_BEGIN;
+
   assert(fields);
   assert(_fields);
 
@@ -513,6 +527,8 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
   err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -522,6 +538,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
 						     const PylithScalar t,
 						     const topology::Jacobian& jacobian)
 { // constrainSolnSpace
+  PYLITH_METHOD_BEGIN;
+
   /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
     (scalar_array*,
@@ -1158,6 +1176,8 @@ pylith::faults::FaultCohesiveDyn::constrainSolnSpace(topology::SolutionFields* c
   dispIncrAdjSection->view("AFTER DISP INCR adjust");
   dispIncrSection->view("AFTER DISP INCR");
 #endif
+
+  PYLITH_METHOD_END;
 } // constrainSolnSpace
 
 // ----------------------------------------------------------------------
@@ -1169,6 +1189,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
 			 const PylithScalar t,
 			 const topology::Field<topology::Mesh>& jacobian)
 { // adjustSolnLumped
+  PYLITH_METHOD_BEGIN;
+
   /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
     (scalar_array*,
@@ -1531,6 +1553,8 @@ pylith::faults::FaultCohesiveDyn::adjustSolnLumped(
   //dLagrangeTpdtSection->view("AFTER dLagrange");
   //dispIncrSection->view("AFTER DISP INCR (t->t+dt)");
 #endif
+
+  PYLITH_METHOD_END;
 } // adjustSolnLumped
 
 // ----------------------------------------------------------------------
@@ -1539,6 +1563,8 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
 					      const topology::SolutionFields* fields)
 { // vertexField
+  PYLITH_METHOD_BEGIN;
+
   assert(_faultMesh);
   assert(_quadrature);
   assert(_normalizer);
@@ -1559,7 +1585,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(dispRel);
     buffer.label("slip");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (0 == strcasecmp("slip_rate", name)) {
     const topology::Field<topology::SubMesh>& velRel = _fields->get("relative velocity");
     _allocateBufferVectorField();
@@ -1567,7 +1594,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(velRel);
     buffer.label("slip_rate");
     FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (cohesiveDim > 0 && 0 == strcasecmp("strike_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
@@ -1576,7 +1604,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(orientationSection, 0, PETSC_DETERMINE, orientationVec);
     buffer.label("strike_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
 
   } else if (2 == cohesiveDim && 0 == strcasecmp("dip_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
@@ -1586,7 +1614,8 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(orientationSection, 1, PETSC_DETERMINE, orientationVec);
     buffer.label("dip_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (0 == strcasecmp("normal_dir", name)) {
     PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
     PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
@@ -1595,16 +1624,19 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
     buffer.copy(orientationSection, cohesiveDim, PETSC_DETERMINE, orientationVec);
     buffer.label("normal_dir");
     buffer.scale(1.0);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (0 == strcasecmp("traction", name)) {
     assert(fields);
     const topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
     _allocateBufferVectorField();
     topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
     _calcTractions(&buffer, dispT);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
+
   } else if (_friction->hasPropStateVar(name)) {
-    return _friction->getField(name);
+    PYLITH_METHOD_RETURN(_friction->getField(name));
+
   } else if (_tractPerturbation && _tractPerturbation->hasParameter(name)) {
     const topology::Field<topology::SubMesh>& param = _tractPerturbation->vertexField(name, fields);
     if (param.vectorFieldType() == topology::FieldBase::VECTOR) {
@@ -1612,9 +1644,9 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
       topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
       buffer.copy(param);
       FaultCohesiveLagrange::globalToFault(&buffer, orientation);
-      return buffer;
+      PYLITH_METHOD_RETURN(buffer);
     } else {
-      return param;
+      PYLITH_METHOD_RETURN(param);
     } // if/else
 
   } else {
@@ -1631,7 +1663,7 @@ pylith::faults::FaultCohesiveDyn::vertexField(const char* name,
   assert(_fields);
   const topology::Field<topology::SubMesh>& buffer = _fields->get("buffer (vector)");
 
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -1640,6 +1672,8 @@ void
 pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::SubMesh>* tractions,
 						 const topology::Field<topology::Mesh>& dispT)
 { // _calcTractions
+  PYLITH_METHOD_BEGIN;
+
   assert(tractions);
   assert(_faultMesh);
   assert(_fields);
@@ -1712,6 +1746,8 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::SubMe
   tractions->view("TRACTIONS");
 #endif
 
+
+  PYLITH_METHOD_END;
 } // _calcTractions
 
 // ----------------------------------------------------------------------
@@ -1721,6 +1757,8 @@ pylith::faults::FaultCohesiveDyn::_calcTractions(topology::Field<topology::SubMe
 void
 pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionFields& fields)
 { // _updateRelMotion
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
 
   const int spaceDim = _quadrature->spaceDim();
@@ -1820,6 +1858,8 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
   err = VecRestoreArray(velocityVec, &velocityArray);CHECK_PETSC_ERROR(err);
 
   PetscLogFlops(numVertices*spaceDim*spaceDim*4);
+
+  PYLITH_METHOD_END;
 } // _updateRelMotion
 
 // ----------------------------------------------------------------------
@@ -1827,6 +1867,8 @@ pylith::faults::FaultCohesiveDyn::_updateRelMotion(const topology::SolutionField
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& jacobian)
 { // _sensitivitySetup
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
   assert(_quadrature);
 
@@ -1893,6 +1935,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySetup(const topology::Jacobian& ja
     err = KSPAppendOptionsPrefix(_ksp, "friction_");CHECK_PETSC_ERROR(err);
     err = KSPSetFromOptions(_ksp);CHECK_PETSC_ERROR(err);
   } // if
+
+  PYLITH_METHOD_END;
 } // _sensitivitySetup
 
 // ----------------------------------------------------------------------
@@ -1902,6 +1946,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
                                                              const topology::Jacobian& jacobian,
                                                              const topology::SolutionFields& fields)
 { // _sensitivityUpdateJacobian
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_fields);
 
@@ -2028,6 +2074,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
   std::cout << "SENSITIVITY JACOBIAN" << std::endl;
   _jacobian->view();
 #endif
+
+  PYLITH_METHOD_END;
 } // _sensitivityUpdateJacobian
 
 // ----------------------------------------------------------------------
@@ -2035,6 +2083,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateJacobian(const bool negative
 void
 pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negativeSide)
 { // _sensitivityReformResidual
+  PYLITH_METHOD_BEGIN;
+
   /** Compute residual -L^T dLagrange
    *
    * Note: We need all entries for L, even those on other processors,
@@ -2125,6 +2175,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
     // Assemble cell contribution into field
     err = DMPlexVecSetClosure(faultDMMesh, residualSection, residualVec, c, &residualCell[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
   } // for
+
+  PYLITH_METHOD_END;
 } // _sensitivityReformResidual
 
 // ----------------------------------------------------------------------
@@ -2132,6 +2184,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
 void
 pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 { // _sensitivitySolve
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
   assert(_jacobian);
   assert(_ksp);
@@ -2161,6 +2215,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
   residual.view("SENSITIVITY RESIDUAL");
   solution.view("SENSITIVITY SOLUTION");
 #endif
+
+  PYLITH_METHOD_END;
 } // _sensitivitySolve
 
 // ----------------------------------------------------------------------
@@ -2169,6 +2225,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivitySolve(void)
 void
 pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide)
 { // _sensitivityUpdateSoln
+  PYLITH_METHOD_BEGIN;
+
   assert(_fields);
   assert(_quadrature);
 
@@ -2227,6 +2285,8 @@ pylith::faults::FaultCohesiveDyn::_sensitivityUpdateSoln(const bool negativeSide
   err = VecRestoreArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(solutionVec, &solutionArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(dLagrangeTpdtVec, &dLagrangeTpdtArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _sensitivityUpdateSoln
 
 
@@ -2241,6 +2301,8 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
 							  const PylithScalar t,
 							  topology::SolutionFields* const fields)
 { // _constrainSolnSpaceNorm
+  PYLITH_METHOD_BEGIN;
+
   /// Member prototype for _constrainSolnSpaceXD()
   typedef void (pylith::faults::FaultCohesiveDyn::*constrainSolnSpace_fn_type)
     (scalar_array*,
@@ -2491,7 +2553,7 @@ pylith::faults::FaultCohesiveDyn::_constrainSolnSpaceNorm(const PylithScalar alp
   err = MPI_Allreduce(&numVertices, &numVerticesTotal, 1, MPIU_INT, MPI_SUM, fields->mesh().comm());
 
   assert(numVerticesTotal > 0);
-  return sqrt(norm2Total) / numVerticesTotal;
+  PYLITH_METHOD_RETURN(sqrt(norm2Total) / numVerticesTotal);
 } // _constrainSolnSpaceNorm
 
 

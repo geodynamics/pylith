@@ -53,10 +53,14 @@ pylith::bc::DirichletBoundary::~DirichletBoundary(void)
 void
 pylith::bc::DirichletBoundary::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   DirichletBC::deallocate();
 
   delete _boundaryMesh; _boundaryMesh = 0;
   delete _outputFields; _outputFields = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -65,10 +69,14 @@ void
 pylith::bc::DirichletBoundary::initialize(const topology::Mesh& mesh,
 					  const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   DirichletBC::initialize(mesh, upDir);
 
   _boundaryMesh = new topology::SubMesh(mesh, _label.c_str());
   assert(_boundaryMesh);
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -77,6 +85,8 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::DirichletBoundary::vertexField(const char* name,
 					   const topology::SolutionFields& fields)
 { // getVertexField
+  PYLITH_METHOD_BEGIN;
+
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
   const PylithScalar timeScale = _normalizer->timeScale();
@@ -104,15 +114,15 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   bufferScalar.allocate();
 
   if (0 == strcasecmp(name, "initial_value"))
-    return _bufferVector("initial", "initial_displacement", lengthScale);
+    PYLITH_METHOD_RETURN(_bufferVector("initial", "initial_displacement", lengthScale));
   else if (0 == strcasecmp(name, "rate_of_change"))
-    return _bufferVector("rate", "velocity", rateScale);
+    PYLITH_METHOD_RETURN(_bufferVector("rate", "velocity", rateScale));
   else if (0 == strcasecmp(name, "change_in_value"))
-    return _bufferVector("change", "displacement_change", lengthScale);
+    PYLITH_METHOD_RETURN(_bufferVector("change", "displacement_change", lengthScale));
   else if (0 == strcasecmp(name, "rate_start_time"))
-    return _bufferScalar("rate time", "velocity_start_time", timeScale);
+    PYLITH_METHOD_RETURN(_bufferScalar("rate time", "velocity_start_time", timeScale));
   else if (0 == strcasecmp(name, "change_start_time"))
-    return _bufferScalar("change time", "change_start_time", timeScale);
+    PYLITH_METHOD_RETURN(_bufferScalar("change time", "change_start_time", timeScale));
   else {
     std::ostringstream msg;
     msg
@@ -122,7 +132,8 @@ pylith::bc::DirichletBoundary::vertexField(const char* name,
   } // else
 
   // Satisfy return value (should never reach here)
-  return _outputFields->get("null");
+
+  PYLITH_METHOD_RETURN(_outputFields->get("null"));
 } // getVertexField
 
 // ----------------------------------------------------------------------
@@ -132,6 +143,8 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
 { // _bufferVector
+  PYLITH_METHOD_BEGIN;
+
   assert(_boundaryMesh);
   assert(_parameters);
   assert(_outputFields);
@@ -173,7 +186,7 @@ pylith::bc::DirichletBoundary::_bufferVector(const char* name,
   buffer.label(label);
   buffer.scale(scale);
 
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // _bufferVector
 
 // ----------------------------------------------------------------------
@@ -183,6 +196,8 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
 					     const char* label,
 					     const PylithScalar scale)
 { // _bufferScalar
+  PYLITH_METHOD_BEGIN;
+
   assert(_boundaryMesh);
   assert(_parameters);
   assert(_outputFields);
@@ -218,7 +233,7 @@ pylith::bc::DirichletBoundary::_bufferScalar(const char* name,
   buffer.label(label);
   buffer.scale(scale);
 
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // _bufferScalar
 
 

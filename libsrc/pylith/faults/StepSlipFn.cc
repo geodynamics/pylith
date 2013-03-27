@@ -56,10 +56,14 @@ pylith::faults::StepSlipFn::~StepSlipFn(void)
 void 
 pylith::faults::StepSlipFn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   SlipTimeFn::deallocate();
 
   _dbFinalSlip = 0; // :TODO: Use shared pointer
   _dbSlipTime = 0; // :TODO: Use shared pointer
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -69,6 +73,8 @@ pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
 				       const spatialdata::units::Nondimensional& normalizer,
 				       const PylithScalar originTime)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbFinalSlip);
   assert(_dbSlipTime);
 
@@ -189,6 +195,8 @@ pylith::faults::StepSlipFn::initialize(const topology::SubMesh& faultMesh,
   // Close databases
   _dbFinalSlip->close();
   _dbSlipTime->close();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -197,6 +205,8 @@ void
 pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 				 const PylithScalar t)
 { // slip
+  PYLITH_METHOD_BEGIN;
+
   assert(slip);
   assert(_parameters);
 
@@ -237,6 +247,8 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
   } // for
 
   PetscLogFlops((vEnd-vStart) * 1);
+
+  PYLITH_METHOD_END;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -244,7 +256,9 @@ pylith::faults::StepSlipFn::slip(topology::Field<topology::SubMesh>* slip,
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::StepSlipFn::finalSlip(void)
 { // finalSlip
-  return _parameters->get("final slip");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("final slip"));
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -252,7 +266,9 @@ pylith::faults::StepSlipFn::finalSlip(void)
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::StepSlipFn::slipTime(void)
 { // slipTime
-  return _parameters->get("slip time");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("slip time"));
 } // slipTime
 
 

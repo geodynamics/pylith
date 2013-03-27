@@ -50,7 +50,11 @@ pylith::topology::SubMesh::SubMesh(const Mesh& mesh,
   _coordsys(0),
   _debug(false)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   createSubMesh(mesh, label);
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -65,8 +69,12 @@ pylith::topology::SubMesh::~SubMesh(void)
 void
 pylith::topology::SubMesh::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -75,6 +83,8 @@ void
 pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 					 const char* label)
 { // createSieveMesh
+  PYLITH_METHOD_BEGIN;
+
 #if defined(ALLOW_SIEVE_MESH) // :TODO: REMOVE SIEVE STUFF
   _mesh.destroy();
 
@@ -175,6 +185,8 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 	<< "Submeshes must be one dimension lower than the domain mesh.";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // createSubMesh
 
 // ----------------------------------------------------------------------
@@ -182,12 +194,16 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 void
 pylith::topology::SubMesh::coordsys(const Mesh& mesh)
 { // coordsys
+  PYLITH_METHOD_BEGIN;
+
   delete _coordsys; _coordsys = 0;
   const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
   if (cs) {
     _coordsys = cs->clone();assert(_coordsys);
     _coordsys->initialize();
   } // if
+
+  PYLITH_METHOD_END;
 } // coordsys
 
 // ----------------------------------------------------------------------
@@ -195,8 +211,12 @@ pylith::topology::SubMesh::coordsys(const Mesh& mesh)
 void 
 pylith::topology::SubMesh::initialize(void)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   if (_coordsys)
     _coordsys->initialize();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // End of file 
