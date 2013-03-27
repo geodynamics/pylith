@@ -107,7 +107,10 @@ pylith::feassemble::QuadratureEngine::_checkJacobianDet(const PylithScalar det,
     std::ostringstream msg;
     msg << "Determinant of Jacobian (" << det << ") for cell " << cell
 	<< " is smaller than minimum permissible value (" << minJacobian
-	<< ")!\n";
+	<< ")!\n"
+	<< "The two most likely causes of this are highly distorted cells "
+	<< "and nondimensionalization with a length scale that is much larger "
+	<< "than the dimensions of the cells.\n";
     throw std::runtime_error(msg.str());
   } // if
 } // _checkJacobianDet
