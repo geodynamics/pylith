@@ -48,9 +48,13 @@ pylith::problems::SolverLinear::~SolverLinear(void)
 void
 pylith::problems::SolverLinear::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Solver::deallocate();
 
   PetscErrorCode err = KSPDestroy(&_ksp);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -60,6 +64,8 @@ pylith::problems::SolverLinear::initialize(const topology::SolutionFields& field
 					   const topology::Jacobian& jacobian,
 					   Formulation* formulation)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(formulation);
 
   _initializeLogger();
@@ -76,6 +82,8 @@ pylith::problems::SolverLinear::initialize(const topology::SolutionFields& field
     err = KSPGetPC(_ksp, &pc);CHECK_PETSC_ERROR(err);
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -85,6 +93,8 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
 				      topology::Jacobian* jacobian,
 				      const topology::Field<topology::Mesh>& residual)
 { // solve
+  PYLITH_METHOD_BEGIN;
+
   assert(solution);
   assert(jacobian);
   assert(_formulation);
@@ -93,8 +103,6 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
   const int solveEvent = _logger->eventId("SoLi solve");
   const int scatterEvent = _logger->eventId("SoLi scatter");
   _logger->eventBegin(scatterEvent);
-
-  //PetscFunctionBegin; // DEBUGGING
 
   // Update PetscVector view of field.
   residual.scatterSectionToVector();
@@ -130,7 +138,7 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
 
-  //PetscFunctionReturnVoid(); // DEBUGGING
+  PYLITH_METHOD_END;
 } // solve
 
 // ----------------------------------------------------------------------
@@ -138,13 +146,16 @@ pylith::problems::SolverLinear::solve(topology::Field<topology::Mesh>* solution,
 void
 pylith::problems::SolverLinear::_initializeLogger(void)
 { // initializeLogger
-  delete _logger; _logger = new utils::EventLogger;
-  assert(0 != _logger);
+  PYLITH_METHOD_BEGIN;
+
+  delete _logger; _logger = new utils::EventLogger;assert(_logger);
   _logger->className("SolverLinear");
   _logger->initialize();
   _logger->registerEvent("SoLi setup");
   _logger->registerEvent("SoLi solve");
   _logger->registerEvent("SoLi scatter");
+
+  PYLITH_METHOD_END;
 } // initializeLogger
 
 

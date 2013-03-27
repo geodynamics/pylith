@@ -46,7 +46,11 @@ pylith::problems::SolverLumped::~SolverLumped(void)
 void
 pylith::problems::SolverLumped::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Solver::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -56,11 +60,15 @@ pylith::problems::SolverLumped::initialize(const topology::SolutionFields& field
 					   const topology::Field<topology::Mesh>& jacobian,
 					   Formulation* formulation)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(formulation);
 
   _initializeLogger();
 
   _formulation = formulation;
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -70,6 +78,8 @@ pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
 				      const topology::Field<topology::Mesh>& jacobian,
 				      const topology::Field<topology::Mesh>& residual)
 { // solve
+  PYLITH_METHOD_BEGIN;
+
   assert(solution);
   assert(_formulation);
   
@@ -131,6 +141,8 @@ pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
   _formulation->calcRateFields(); // :KLUDGE: Limit to only those changed?
 
   _logger->eventEnd(adjustEvent);
+
+  PYLITH_METHOD_END;
 } // solve
 
 // ----------------------------------------------------------------------
@@ -138,13 +150,17 @@ pylith::problems::SolverLumped::solve(topology::Field<topology::Mesh>* solution,
 void
 pylith::problems::SolverLumped::_initializeLogger(void)
 { // initializeLogger
-  delete _logger; _logger = new utils::EventLogger;
-  assert(_logger);
+  PYLITH_METHOD_BEGIN;
+
+  delete _logger; _logger = new utils::EventLogger;assert(_logger);
   _logger->className("SolverLumped");
   _logger->initialize();
   _logger->registerEvent("SoLu setup");
   _logger->registerEvent("SoLu solve");
   _logger->registerEvent("SoLu adjust");
+
+
+  PYLITH_METHOD_END;
 } // initializeLogger
 
 

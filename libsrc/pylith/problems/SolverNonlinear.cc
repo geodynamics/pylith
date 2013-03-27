@@ -65,9 +65,13 @@ pylith::problems::SolverNonlinear::~SolverNonlinear(void)
 void
 pylith::problems::SolverNonlinear::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Solver::deallocate();
 
   PetscErrorCode err = SNESDestroy(&_snes);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -77,6 +81,8 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
 					      const topology::Jacobian& jacobian,
 					      Formulation* formulation)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(formulation);
 
   _initializeLogger();
@@ -114,6 +120,8 @@ pylith::problems::SolverNonlinear::initialize(const topology::SolutionFields& fi
     err = KSPGetPC(ksp, &pc); CHECK_PETSC_ERROR(err);
     _setupFieldSplit(&pc, formulation, jacobian, fields);
   } // if
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -123,6 +131,8 @@ pylith::problems::SolverNonlinear::solve(topology::Field<topology::Mesh>* soluti
 					 topology::Jacobian* jacobian,
 					 const topology::Field<topology::Mesh>& residual)
 { // solve
+  PYLITH_METHOD_BEGIN;
+
   assert(solution);
 
   const int solveEvent = _logger->eventId("SoNl solve");
@@ -144,6 +154,8 @@ pylith::problems::SolverNonlinear::solve(topology::Field<topology::Mesh>* soluti
 
   // Update rate fields to be consistent with current solution.
   _formulation->calcRateFields();
+
+  PYLITH_METHOD_END;
 } // solve
 
 // ----------------------------------------------------------------------
@@ -155,6 +167,8 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
 						  PetscVec tmpResidualVec,
 						  void* context)
 { // reformResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
   Formulation* formulation = (Formulation*) context;
   assert(formulation);
@@ -165,7 +179,7 @@ pylith::problems::SolverNonlinear::reformResidual(PetscSNES snes,
   // Reform residual
   formulation->reformResidual(&tmpResidualVec, &tmpSolutionVec);
 
-  return 0;
+  PYLITH_METHOD_RETURN(0);
 } // reformResidual
 
 // ----------------------------------------------------------------------
@@ -179,19 +193,19 @@ pylith::problems::SolverNonlinear::reformJacobian(PetscSNES snes,
 						  MatStructure* preconditionerLayout,
 						  void* context)
 { // reformJacobian
+  PYLITH_METHOD_BEGIN;
+
   assert(context);
   Formulation* formulation = (Formulation*) context;
   assert(formulation);
 
   formulation->reformJacobian(&tmpSolutionVec);
 
-  return 0;
+  PYLITH_METHOD_RETURN(0);
 } // reformJacobian
 
 // ----------------------------------------------------------------------
 // Generic C interface for customized PETSc line search.
-#undef __FUNCT__
-#define __FUNCT__ "lineSearch"
 PetscErrorCode
 pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
 					      void* lsctx)
@@ -492,19 +506,22 @@ pylith::problems::SolverNonlinear::lineSearch(PetscSNESLineSearch linesearch,
   ierr = VecNorm(X, NORM_2, &xnorm);CHKERRQ(ierr);
   ierr = SNESLineSearchSetLambda(linesearch, lambda);CHKERRQ(ierr);
   ierr = SNESLineSearchSetNorms(linesearch, xnorm, gnorm, ynorm);CHKERRQ(ierr);
+
   PetscFunctionReturn(0);
 } // lineSearch
 
 // ----------------------------------------------------------------------
 // Generic C interface for customized PETSc initial guess.
-#undef __FUNCT__
-#define __FUNCT__ "initialGuess"
 PetscErrorCode
 pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
 						PetscVec initialGuessVec,
 						void *lsctx)
 { // initialGuess
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err = VecSet(initialGuessVec, 0.0);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_RETURN(0);
 } // initialGuess
 
 // ----------------------------------------------------------------------
@@ -512,13 +529,16 @@ pylith::problems::SolverNonlinear::initialGuess(PetscSNES snes,
 void
 pylith::problems::SolverNonlinear::_initializeLogger(void)
 { // initializeLogger
-  delete _logger; _logger = new utils::EventLogger;
-  assert(_logger);
+  PYLITH_METHOD_BEGIN;
+
+  delete _logger; _logger = new utils::EventLogger;assert(_logger);
   _logger->className("SolverNonlinear");
   _logger->initialize();
   _logger->registerEvent("SoNl setup");
   _logger->registerEvent("SoNl solve");
   _logger->registerEvent("SoNl scatter");
+
+  PYLITH_METHOD_END;
 } // initializeLogger
 
 
