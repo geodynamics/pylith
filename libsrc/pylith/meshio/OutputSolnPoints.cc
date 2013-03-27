@@ -229,12 +229,12 @@ pylith::meshio::OutputSolnPoints::appendVertexField(const PylithScalar t,
   // field if mismatch in size between buffer and field.
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
   logger.stagePush("Output");
-  ostringstream fieldName;
+  std::ostringstream fieldName;
   const char   *context = field.label();
   fieldName << context << " (interpolated)" << std::endl;
 
   if (_fields->hasField(fieldName.str().c_str())) {
-    ostringstream msg;
+    std::ostringstream msg;
     msg << "Field " << fieldName << "already present in manager" << std::endl;
     throw std::logic_error(msg.str());
   } // if
