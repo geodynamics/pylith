@@ -74,7 +74,7 @@ pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
   const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
   assert(!sieveMesh.isNull());
 
-  ostringstream s;
+  std::ostringstream s;
   s << "output_"
     << sieveMesh->getName();
   if (label)
