@@ -84,17 +84,10 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
   
   SubMesh mesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
-  MPI_Comm commA, commB;
-  PetscObjectGetComm((PetscObject)mesh2D.dmMesh(), &commA);
-  PetscObjectGetComm((PetscObject)mesh.dmMesh(), &commB);
-  std::cout << "mesh2D comm: " << mesh2D.comm()
-	    << ", dm comm: " << commA
-	    << ", PETSC_COMM_WORLD: " << PETSC_COMM_WORLD
-	    << ", PETSC_COMM_SELF: " << PETSC_COMM_SELF
-	    << ", submesh comm: " << mesh.comm()
-	    << ", dm comm: " << commB
-	    << std::endl;
-  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
+
+  int result = 0;
+  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
 
   // Check vertices
   const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -131,7 +124,10 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
   SubMesh mesh;
   mesh.createSubMesh(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh.dimension());
-  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
+
+  int result = 0;
+  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
 
   // Check vertices
   const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -207,7 +203,9 @@ pylith::topology::TestSubMesh::testComm(void)
   _buildMesh(&mesh2D);
   mesh.createSubMesh(mesh2D, _TestSubMesh::label);
 
-  CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
+  int result = 0;
+  MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
+  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
 } // testComm
 
 // ----------------------------------------------------------------------
