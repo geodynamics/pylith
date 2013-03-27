@@ -50,8 +50,12 @@ pylith::bc::PointForce::~PointForce(void)
 void
 pylith::bc::PointForce::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   TimeDependentPoints::deallocate();
   feassemble::Integrator<feassemble::Quadrature<topology::Mesh> >::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -60,8 +64,10 @@ void
 pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
 				    const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   if (0 == _bcDOF.size())
-    return;
+    PYLITH_METHOD_END;
 
   _getPoints(mesh);
 
@@ -71,6 +77,8 @@ pylith::bc::PointForce::initialize(const topology::Mesh& mesh,
   const PylithScalar forceScale = pressureScale * lengthScale * lengthScale;
 
   _queryDatabases(mesh, forceScale, "force");
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -80,6 +88,8 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
 					  const PylithScalar t,
 					  topology::SolutionFields* const fields)
 { // integrateResidualAssembled
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
   assert(_normalizer);
 
@@ -123,6 +133,8 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
       residualArray[roff+_bcDOF[iDOF]] += valueArray[voff+iDOF];
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // integrateResidualAssembled
 
 // ----------------------------------------------------------------------
@@ -130,8 +142,12 @@ pylith::bc::PointForce::integrateResidual(const topology::Field<topology::Mesh>&
 void
 pylith::bc::PointForce::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   BoundaryCondition::verifyConfiguration(mesh);
   TimeDependent::verifyConfiguration(mesh);
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 

@@ -43,7 +43,11 @@ pylith::faults::SlipTimeFn::~SlipTimeFn(void)
 void 
 pylith::faults::SlipTimeFn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _parameters; _parameters = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

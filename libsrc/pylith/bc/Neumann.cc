@@ -59,8 +59,12 @@ pylith::bc::Neumann::~Neumann(void)
 void
 pylith::bc::Neumann::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   BCIntegratorSubMesh::deallocate();
   TimeDependent::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -70,8 +74,12 @@ void
 pylith::bc::Neumann::initialize(const topology::Mesh& mesh,
 				const PylithScalar upDir[3])
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   _queryDatabases();
   _paramsLocalToGlobal(upDir);
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -81,6 +89,8 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 				       const PylithScalar t,
 				       topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   assert(_parameters);
@@ -157,6 +167,8 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 
     PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
   } // for
+
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -164,11 +176,15 @@ pylith::bc::Neumann::integrateResidual(const topology::Field<topology::Mesh>& re
 void
 pylith::bc::Neumann::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   if (1 == mesh.dimension())
     throw std::runtime_error("Neumann boundary conditions are not "
 			     "implemented for a 1-D mesh.");
 
   BCIntegratorSubMesh::verifyConfiguration(mesh);
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
@@ -177,23 +193,25 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::bc::Neumann::cellField(const char* name,
 			       topology::SolutionFields* const fields)
 { // cellField
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
   assert(name);
 
   if (0 == strcasecmp(name, "initial_value"))
-    return _parameters->get("initial");
+    PYLITH_METHOD_RETURN(_parameters->get("initial"));
 
   else if (0 == strcasecmp(name, "rate_of_change"))
-    return _parameters->get("rate");
+    PYLITH_METHOD_RETURN(_parameters->get("rate"));
 
   else if (0 == strcasecmp(name, "change_in_value"))
-    return _parameters->get("change");
+    PYLITH_METHOD_RETURN(_parameters->get("change"));
 
   else if (0 == strcasecmp(name, "rate_start_time"))
-    return _parameters->get("rate time");
+    PYLITH_METHOD_RETURN(_parameters->get("rate time"));
 
   else if (0 == strcasecmp(name, "change_start_time"))
-    return _parameters->get("change time");
+    PYLITH_METHOD_RETURN(_parameters->get("change time"));
 
   else {
     std::ostringstream msg;
@@ -202,7 +220,8 @@ pylith::bc::Neumann::cellField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-  return _parameters->get("traction"); // Satisfy method definition
+  // Satisfy method definition
+  PYLITH_METHOD_RETURN(_parameters->get("traction"));
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -210,6 +229,8 @@ pylith::bc::Neumann::cellField(const char* name,
 void
 pylith::bc::Neumann::_queryDatabases(void)
 { // _queryDatabases
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_boundaryMesh);
   
@@ -363,6 +384,7 @@ pylith::bc::Neumann::_queryDatabases(void)
       _dbTimeHistory->open();
   } // if
 
+  PYLITH_METHOD_END;
 } // _queryDatabases
 
 // ----------------------------------------------------------------------
@@ -373,6 +395,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
 			      const int querySize,
 			      const PylithScalar scale)
 { // _queryDB
+  PYLITH_METHOD_BEGIN;
+
   assert(name);
   assert(db);
   assert(_boundaryMesh);
@@ -455,6 +479,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
     for(PetscInt d = 0; d < vdof; ++d)
       valueArray[voff+d] = valuesCell[d];
   } // for
+
+  PYLITH_METHOD_END;
 } // _queryDB
 
 // ----------------------------------------------------------------------
@@ -463,6 +489,8 @@ pylith::bc::Neumann::_queryDB(const char* name,
 void
   pylith::bc::Neumann::_paramsLocalToGlobal(const PylithScalar upDir[3])
 { // _paramsLocalToGlobal
+  PYLITH_METHOD_BEGIN;
+
   assert(_boundaryMesh);
   assert(_parameters);
   assert(_quadrature);
@@ -592,6 +620,8 @@ void
   delete initialVisitor; initialVisitor = 0;
   delete rateVisitor; rateVisitor = 0;
   delete changeVisitor; changeVisitor = 0;
+
+  PYLITH_METHOD_END;
 } // paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -599,6 +629,8 @@ void
 void
 pylith::bc::Neumann::_calculateValue(const PylithScalar t)
 { // _calculateValue
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
   assert(_boundaryMesh);
   assert(_quadrature);
@@ -715,6 +747,8 @@ pylith::bc::Neumann::_calculateValue(const PylithScalar t)
   delete rateTimeVisitor; rateTimeVisitor = 0;
   delete changeVisitor; changeVisitor = 0;
   delete changeTimeVisitor; changeTimeVisitor = 0;
+
+  PYLITH_METHOD_END;
 }  // _calculateValue
 
 

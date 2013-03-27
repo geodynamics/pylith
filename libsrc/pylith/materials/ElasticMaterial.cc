@@ -67,11 +67,15 @@ pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 void
 pylith::materials::ElasticMaterial::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Material::deallocate();
   delete _initialFields; _initialFields = 0;
 
   _dbInitialStress = 0; // :TODO: Use shared pointer.
   _dbInitialStrain = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -81,6 +85,8 @@ void
 pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
 					       feassemble::Quadrature<topology::Mesh>* quadrature)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   Material::initialize(mesh, quadrature);
 
   assert(0 != quadrature);
@@ -93,6 +99,8 @@ pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
   _initializeInitialStress(mesh, quadrature);
   _initializeInitialStrain(mesh, quadrature);
   _allocateCellArrays();
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -100,6 +108,8 @@ pylith::materials::ElasticMaterial::initialize(const topology::Mesh& mesh,
 void
 pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
 { // retrievePropsAndVars
+  PYLITH_METHOD_BEGIN;
+
   assert(_properties);
   assert(_stateVars);
 
@@ -154,6 +164,8 @@ pylith::materials::ElasticMaterial::retrievePropsAndVars(const int cell)
       } // for
     } // if
   } // if
+
+  PYLITH_METHOD_END;
 } // retrievePropsAndVars
 
 // ----------------------------------------------------------------------
@@ -162,6 +174,8 @@ const pylith::scalar_array&
 pylith::materials::ElasticMaterial::calcStress(const scalar_array& totalStrain,
 					       const bool computeStateVars)
 { // calcStress
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
   const int tensorSize = _tensorSize;
@@ -182,7 +196,7 @@ pylith::materials::ElasticMaterial::calcStress(const scalar_array& totalStrain,
 		&_initialStrainCell[iQuad*_tensorSize], _tensorSize,
 		computeStateVars);
 
-  return _stressCell;
+  PYLITH_METHOD_RETURN(_stressCell);
 } // calcStress
 
 // ----------------------------------------------------------------------
@@ -190,6 +204,8 @@ pylith::materials::ElasticMaterial::calcStress(const scalar_array& totalStrain,
 const pylith::scalar_array&
 pylith::materials::ElasticMaterial::calcDerivElastic(const scalar_array& totalStrain)
 { // calcDerivElastic
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
   const int tensorSize = _tensorSize;
@@ -211,7 +227,7 @@ pylith::materials::ElasticMaterial::calcDerivElastic(const scalar_array& totalSt
 		       &_initialStressCell[iQuad*_tensorSize], _tensorSize,
 		       &_initialStrainCell[iQuad*_tensorSize], _tensorSize);
 
-  return _elasticConstsCell;
+  PYLITH_METHOD_RETURN(_elasticConstsCell);
 } // calcDerivElastic
 
 // ----------------------------------------------------------------------
@@ -220,6 +236,8 @@ void
 pylith::materials::ElasticMaterial::updateStateVars(const scalar_array& totalStrain,
 						    const int cell)
 { // updateStateVars
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
   const int tensorSize = _tensorSize;
@@ -246,6 +264,8 @@ pylith::materials::ElasticMaterial::updateStateVars(const scalar_array& totalStr
   for (PetscInt d = 0; d < stateVarsSize; ++d) {
     stateVarsArray[soff+d] = _stateVarsCell[d];
   } // for
+
+  PYLITH_METHOD_END;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
@@ -254,6 +274,8 @@ PylithScalar
 pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh& mesh,
 							   topology::Field<topology::Mesh>* field)
 { // stableTimeStepImplicit
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _numQuadPts;
   const int numPropsQuadPt = _numPropsQuadPt;
   const int tensorSize = _tensorSize;
@@ -329,7 +351,7 @@ pylith::materials::ElasticMaterial::stableTimeStepImplicit(const topology::Mesh&
   } // for
   delete fieldVisitor; fieldVisitor = 0;
 
-  return dtStable;
+  PYLITH_METHOD_RETURN(dtStable);
 } // stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
@@ -339,6 +361,8 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
 							   feassemble::Quadrature<topology::Mesh>* quadrature,
 							   topology::Field<topology::Mesh>* field)
 { // stableTimeStepImplicit
+  PYLITH_METHOD_BEGIN;
+
   assert(quadrature);
 
   const int numQuadPts = _numQuadPts;
@@ -431,7 +455,7 @@ pylith::materials::ElasticMaterial::stableTimeStepExplicit(const topology::Mesh&
   } // for
   delete fieldVisitor; fieldVisitor = 0;
 
-  return dtStable;
+  PYLITH_METHOD_RETURN(dtStable);
 } // stableTimeStepExplicit
 
 // ----------------------------------------------------------------------
@@ -440,6 +464,8 @@ PylithScalar
 pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::Mesh& mesh,
 							       topology::Field<topology::Mesh>* field)
 { // _stableTimeStepImplicitMax
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar dtStable = pylith::PYLITH_MAXSCALAR;
   
   if (field) {
@@ -503,7 +529,7 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
     err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   } // if
   
-  return dtStable;
+  PYLITH_METHOD_RETURN(dtStable);
 } // _stableTimeStepImplicitMax
 
 // ----------------------------------------------------------------------
@@ -511,6 +537,8 @@ pylith::materials::ElasticMaterial::_stableTimeStepImplicitMax(const topology::M
 void
 pylith::materials::ElasticMaterial::_allocateCellArrays(void)
 { // _allocateCellArrays
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _numQuadPts;
   const int tensorSize = _tensorSize;
   const int numPropsQuadPt = _numPropsQuadPt;
@@ -524,6 +552,8 @@ pylith::materials::ElasticMaterial::_allocateCellArrays(void)
   _densityCell.resize(numQuadPts);
   _stressCell.resize(numQuadPts * tensorSize);
   _elasticConstsCell.resize(numQuadPts * numElasticConsts);
+
+  PYLITH_METHOD_END;
 } // _allocateCellArrays
 
 // ----------------------------------------------------------------------
@@ -532,8 +562,10 @@ void
 pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mesh& mesh,
 							     feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStress
+  PYLITH_METHOD_BEGIN;
+
   if (!_dbInitialStress)
-    return;
+    PYLITH_METHOD_END;
 
   assert(_initialFields);
   _initialFields->add("initial stress", "initial_stress");
@@ -658,6 +690,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStress(const topology::Mes
 
   // Close databases
   _dbInitialStress->close();
+
+  PYLITH_METHOD_END;
 } // _initializeInitialStress
 
 // ----------------------------------------------------------------------
@@ -666,8 +700,10 @@ void
 pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mesh& mesh,
 							     feassemble::Quadrature<topology::Mesh>* quadrature)
 { // _initializeInitialStrain
+  PYLITH_METHOD_BEGIN;
+
   if (!_dbInitialStrain)
-    return;
+    PYLITH_METHOD_END;
 
   assert(_initialFields);
   _initialFields->add("initial strain", "initial_strain");
@@ -787,6 +823,8 @@ pylith::materials::ElasticMaterial::_initializeInitialStrain(const topology::Mes
 
   // Close databases
   _dbInitialStrain->close();
+
+  PYLITH_METHOD_END;
 } // _initializeInitialStrain
 
 // ----------------------------------------------------------------------

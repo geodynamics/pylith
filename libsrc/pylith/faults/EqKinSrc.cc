@@ -22,6 +22,8 @@
 
 #include "SlipTimeFn.hh" // USES SlipTimeFn
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN
+
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cassert> // USES assert()
@@ -79,10 +81,14 @@ void
 pylith::faults::EqKinSrc::initialize(const topology::SubMesh& faultMesh,
 				     const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   // :TODO: Normalize slip time in Python?
   normalizer.nondimensionalize(&_originTime, 1, normalizer.timeScale());
   assert(_slipfn);
   _slipfn->initialize(faultMesh, normalizer, _originTime);
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -91,8 +97,12 @@ void
 pylith::faults::EqKinSrc::slip(topology::Field<topology::SubMesh>* const slipField,
 			       const PylithScalar t)
 { // slip
+  PYLITH_METHOD_BEGIN;
+
   assert(_slipfn);
   _slipfn->slip(slipField, t);
+
+  PYLITH_METHOD_END;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -100,8 +110,10 @@ pylith::faults::EqKinSrc::slip(topology::Field<topology::SubMesh>* const slipFie
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::EqKinSrc::finalSlip(void) const
 { // finalSlip
+  PYLITH_METHOD_BEGIN;
+
   assert(_slipfn);
-  return _slipfn->finalSlip();
+  PYLITH_METHOD_RETURN(_slipfn->finalSlip());
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -109,8 +121,10 @@ pylith::faults::EqKinSrc::finalSlip(void) const
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::EqKinSrc::slipTime(void) const
 { // slipTime
+  PYLITH_METHOD_BEGIN;
+
   assert(_slipfn);
-  return _slipfn->slipTime();
+  PYLITH_METHOD_RETURN(_slipfn->slipTime());
 } // slipTime
 
 

@@ -48,10 +48,14 @@ pylith::faults::FaultCohesive::~FaultCohesive(void)
 void 
 pylith::faults::FaultCohesive::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Fault::deallocate();
   feassemble::Integrator<feassemble::Quadrature<topology::SubMesh> >::deallocate();
 
   delete _fields; _fields = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -69,6 +73,8 @@ pylith::faults::FaultCohesive::useFaultMesh(const bool flag)
 int
 pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) const
 { // numVerticesNoMesh
+  PYLITH_METHOD_BEGIN;
+
   PetscInt nvertices = 0;
 
   if (!_useFaultMesh) {
@@ -91,7 +97,7 @@ pylith::faults::FaultCohesive::numVerticesNoMesh(const topology::Mesh& mesh) con
     nvertices = -1;
   } // else
 
-  return nvertices;
+  PYLITH_METHOD_RETURN(nvertices);
 } // numVerticesNoMesh
 
 // ----------------------------------------------------------------------
@@ -103,6 +109,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
                                               int *firstFaultCell,
                                               const bool flipFault)
 { // adjustTopology
+  PYLITH_METHOD_BEGIN;
+
   assert(mesh);
   assert(std::string("") != label());
   
@@ -151,6 +159,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
 	<< err.what();
     throw std::runtime_error(msg.str());
   }
+
+  PYLITH_METHOD_END;
 } // adjustTopology
 
 

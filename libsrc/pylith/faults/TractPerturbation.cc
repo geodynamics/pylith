@@ -59,9 +59,13 @@ pylith::faults::TractPerturbation::~TractPerturbation(void)
 void 
 pylith::faults::TractPerturbation::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   TimeDependent::deallocate();
 
   delete _parameters; _parameters = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -87,6 +91,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 					      const topology::Field<topology::SubMesh>& faultOrientation, 
 					      const spatialdata::units::Nondimensional& normalizer)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar pressureScale = normalizer.pressureScale();
   const PylithScalar timeScale = normalizer.timeScale();
   const PylithScalar rateScale = pressureScale / timeScale;
@@ -243,6 +249,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
     if (_dbTimeHistory)
       _dbTimeHistory->open();
   } // if
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -250,6 +258,8 @@ pylith::faults::TractPerturbation::initialize(const topology::SubMesh& faultMesh
 void
 pylith::faults::TractPerturbation::calculate(const PylithScalar t)
 { // calculate
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
 
   const PylithScalar timeScale = _timeScale;
@@ -354,6 +364,8 @@ pylith::faults::TractPerturbation::calculate(const PylithScalar t)
   delete rateTimeVisitor; rateTimeVisitor = 0;
   delete changeVisitor; changeVisitor = 0;
   delete changeTimeVisitor; changeTimeVisitor = 0;
+
+  PYLITH_METHOD_END;
 }  // calculate
 
 
@@ -382,23 +394,25 @@ const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::TractPerturbation::vertexField(const char* name,
 					       const topology::SolutionFields* const fields)
 { // vertexField
+  PYLITH_METHOD_BEGIN;
+
   assert(_parameters);
   assert(name);
 
   if (0 == strcasecmp(name, "traction_initial_value"))
-    return _parameters->get("initial");
+    PYLITH_METHOD_RETURN(_parameters->get("initial"));
 
   else if (0 == strcasecmp(name, "traction_rate_of_change"))
-    return _parameters->get("rate");
+    PYLITH_METHOD_RETURN(_parameters->get("rate"));
 
   else if (0 == strcasecmp(name, "traction_change_in_value"))
-    return _parameters->get("change");
+    PYLITH_METHOD_RETURN(_parameters->get("change"));
 
   else if (0 == strcasecmp(name, "traction_rate_start_time"))
-    return _parameters->get("rate time");
+    PYLITH_METHOD_RETURN(_parameters->get("rate time"));
 
   else if (0 == strcasecmp(name, "traction_change_start_time"))
-    return _parameters->get("change time");
+    PYLITH_METHOD_RETURN(_parameters->get("change time"));
 
   else {
     std::ostringstream msg;
@@ -407,7 +421,7 @@ pylith::faults::TractPerturbation::vertexField(const char* name,
     throw std::runtime_error(msg.str());
   } // else
 
-  return _parameters->get("traction"); // Satisfy method definition
+  PYLITH_METHOD_RETURN(_parameters->get("traction")); // Satisfy method definition
 } // vertexField
 
 // ----------------------------------------------------------------------
@@ -427,6 +441,8 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
 					    const PylithScalar scale,
 					    const spatialdata::units::Nondimensional& normalizer)
 { // _queryDB
+  PYLITH_METHOD_BEGIN;
+
   assert(name);
   assert(db);
   assert(_parameters);
@@ -481,6 +497,8 @@ pylith::faults::TractPerturbation::_queryDB(const char* name,
       parametersArray[off+i] = valueVertex[i];
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // _queryDB
 
 // End of file

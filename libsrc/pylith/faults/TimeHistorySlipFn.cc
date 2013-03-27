@@ -59,6 +59,8 @@ pylith::faults::TimeHistorySlipFn::~TimeHistorySlipFn(void)
 void 
 pylith::faults::TimeHistorySlipFn::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   SlipTimeFn::deallocate();
 
   _dbAmplitude = 0; // :TODO: Use shared pointer
@@ -66,6 +68,8 @@ pylith::faults::TimeHistorySlipFn::deallocate(void)
   if (_dbTimeHistory)
     _dbTimeHistory->close();
   _dbTimeHistory = 0; // :TODO: Use shared pointer
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -75,6 +79,8 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
 					      const spatialdata::units::Nondimensional& normalizer,
 					      const PylithScalar originTime)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   assert(_dbAmplitude);
   assert(_dbSlipTime);
 
@@ -199,6 +205,8 @@ pylith::faults::TimeHistorySlipFn::initialize(const topology::SubMesh& faultMesh
   // Open time history database.
   _dbTimeHistory->open();
   _timeScale = timeScale;
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -207,6 +215,8 @@ void
 pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip,
 					const PylithScalar t)
 { // slip
+  PYLITH_METHOD_BEGIN;
+
   assert(slip);
   assert(_parameters);
   assert(_dbTimeHistory);
@@ -259,6 +269,8 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
   } // for
 
   PetscLogFlops((vEnd-vStart) * 3);
+
+  PYLITH_METHOD_END;
 } // slip
 
 // ----------------------------------------------------------------------
@@ -266,7 +278,9 @@ pylith::faults::TimeHistorySlipFn::slip(topology::Field<topology::SubMesh>* slip
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::TimeHistorySlipFn::finalSlip(void)
 { // finalSlip
-  return _parameters->get("slip amplitude");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("slip amplitude"));
 } // finalSlip
 
 // ----------------------------------------------------------------------
@@ -274,7 +288,9 @@ pylith::faults::TimeHistorySlipFn::finalSlip(void)
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::TimeHistorySlipFn::slipTime(void)
 { // slipTime
-  return _parameters->get("slip time");
+  PYLITH_METHOD_BEGIN;
+
+  PYLITH_METHOD_RETURN(_parameters->get("slip time"));
 } // slipTime
 
 

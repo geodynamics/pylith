@@ -48,8 +48,12 @@ pylith::bc::BoundaryConditionPoints::~BoundaryConditionPoints(void)
 void 
 pylith::bc::BoundaryConditionPoints::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   BoundaryCondition::deallocate();
   delete _parameters; _parameters = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -65,6 +69,8 @@ pylith::bc::BoundaryConditionPoints::parameterFields(void) const
 void
 pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
 { // _getPoints
+  PYLITH_METHOD_BEGIN;
+
   typedef topology::Mesh::IntSection::chart_type chart_type;
 
   PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
@@ -89,6 +95,8 @@ pylith::bc::BoundaryConditionPoints::_getPoints(const topology::Mesh& mesh)
   for(PetscInt p = 0; p < numPoints; ++p) {_points[p] = points[p];}
   err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _getPoints
 
 
