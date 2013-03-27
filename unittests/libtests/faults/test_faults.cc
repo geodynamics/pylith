@@ -39,7 +39,7 @@ main(int argc,
   try {
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
-    //err = PetscMallocDebug(PETSC_TRUE);CHKERRQ(err);
+    err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
 
     // Initialize Python (to eliminate need to initialize when
     // parsing units in spatial databases).
