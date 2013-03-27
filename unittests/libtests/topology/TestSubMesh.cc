@@ -87,7 +87,7 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
 
   int result = 0;
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   // Check vertices
   const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -127,7 +127,7 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
 
   int result = 0;
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 
   // Check vertices
   const PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
@@ -205,7 +205,7 @@ pylith::topology::TestSubMesh::testComm(void)
 
   int result = 0;
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 } // testComm
 
 // ----------------------------------------------------------------------

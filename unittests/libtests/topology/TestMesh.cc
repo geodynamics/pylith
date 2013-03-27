@@ -43,19 +43,19 @@ pylith::topology::TestMesh::testConstructor(void)
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_IDENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
   
   Mesh mesh2(2);
   CPPUNIT_ASSERT(!mesh2._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(2, mesh2.dimension());
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh2.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_IDENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_IDENT), result);
 
   Mesh mesh3(1, PETSC_COMM_SELF);
   CPPUNIT_ASSERT(!mesh3._mesh.isNull());
   CPPUNIT_ASSERT_EQUAL(1, mesh3.dimension());
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh3.comm(), &result);
-  CPPUNIT_ASSERT_EQUAL(MPI_CONGRUENT, result);
+  CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
 } // testConstructor
 
 // ----------------------------------------------------------------------
