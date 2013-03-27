@@ -47,10 +47,14 @@ pylith::topology::Mesh::dmMesh(void) const {
 inline
 void
 pylith::topology::Mesh::setDMMesh(DM dm) {
+  PYLITH_METHOD_BEGIN;
+
   PetscErrorCode err;
   err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
   _newMesh = dm;
   err = PetscObjectSetName((PetscObject) _newMesh, "domain");CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 }
 
 // Get point type sizes.
@@ -102,51 +106,63 @@ pylith::topology::Mesh::debug(void) const {
 inline
 int
 pylith::topology::Mesh::dimension(void) const {
+  PYLITH_METHOD_BEGIN;
+
   PetscInt dim = 0;
   if (_newMesh) {
     PetscErrorCode err = DMPlexGetDimension(_newMesh, &dim);CHECK_PETSC_ERROR(err);
   } // if
-  return dim;
+
+  PYLITH_METHOD_RETURN(dim);
 }
 
 // Get representative cone size for mesh.
 inline
 int
 pylith::topology::Mesh::coneSize(void) const {
+  PYLITH_METHOD_BEGIN;
+
+  PetscInt coneSize = 0;
   if (_newMesh) {
-    PetscInt       cStart, coneSize;
+    PetscInt cStart;
     PetscErrorCode err;
     err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);CHECK_PETSC_ERROR(err);
     err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);CHECK_PETSC_ERROR(err);
-    return coneSize;
-  }
-  return 0;
+  } // if
+
+  PYLITH_METHOD_RETURN(coneSize);
 }
 
 // Get number of vertices in mesh.
 inline
 int
 pylith::topology::Mesh::numVertices(void) const {
+  PYLITH_METHOD_BEGIN;
+
   PetscInt nvertices = 0;
   if (_newMesh) {
     PetscInt begin=0, end=0;
     PetscErrorCode err = DMPlexGetDepthStratum(_newMesh, 0, &begin, &end);CHECK_PETSC_ERROR(err);
     nvertices = end-begin;
   } // if
-  return nvertices;
+
+  PYLITH_METHOD_RETURN(nvertices);
 }
 
 // Get number of cells in mesh.
 inline
 int
 pylith::topology::Mesh::numCells(void) const {
+  PYLITH_METHOD_BEGIN;
+
   PetscInt ncells = 0;
   if (_newMesh) {
     PetscInt begin=0, end=0;
     PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &begin, &end);CHECK_PETSC_ERROR(err);
     ncells = end-begin;
   } // if
-  return ncells;
+
+  PYLITH_METHOD_RETURN(ncells);
 }
 
 // Set MPI communicator associated with mesh.
@@ -176,8 +192,12 @@ pylith::topology::Mesh::commRank(void) const {
 inline
 void
 pylith::topology::Mesh::view(const char* label) const {
+  PYLITH_METHOD_BEGIN;
+
   assert(_newMesh);
   PetscErrorCode err = DMView(_newMesh, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 }
 
 #endif
