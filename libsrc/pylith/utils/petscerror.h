@@ -28,9 +28,15 @@
 #undef __FUNCT__
 #if defined(__FUNCTION_NAME__)
 #define __FUNCT__ __FUNCTION_NAME__
+#undef PETSC_FUNCTION_NAME
+#define PETSC_FUNCTION_NAME __FUNCT__
 #else
-#define __FUNCT__ "<unknown>"
+#define __FUNCT__ __func__
 #endif
+
+#define PYLITH_METHOD_BEGIN PetscFunctionBegin
+#define PYLITH_METHOD_END PetscFunctionReturnVoid()
+#define PYLITH_METHOD_RETURN(v) PetscFunctionReturn(v)
 
 #define CHECK_PETSC_ERROR(err) CHKERRXX(err)
 
