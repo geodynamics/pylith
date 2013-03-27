@@ -87,14 +87,21 @@ public :
    */
   PetscVec localVec(void) const;
 
-  /** Get fiber dimension of coordinates for point.
+  /** Get fiber dimension for values at point.
    *
    * @param point Point in mesh.
    * @returns Fiber dimension.
    */
   PetscInt sectionDof(const PetscInt point) const;
 
-  /** Get offset into coordinates array for point.
+  /** Get fiber dimension for constraints at point.
+   *
+   * @param point Point in mesh.
+   * @returns Fiber dimension.
+   */
+  PetscInt sectionConstraintDof(const PetscInt point) const;
+
+  /** Get offset into values array for point.
    *
    * @param point Point in mesh.
    * @returns Offset.
@@ -182,30 +189,6 @@ public :
   /// Clear cached data.
   void clear(void);
   
-  /** Get array of values associated with closure.
-   *
-   * @pre Must be followed by call to getClosure().
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void getClosure(PetscScalar** valuesCell,
-		  PetscInt* valuesSize,
-		  const PetscInt cell) const;
-
-  /** Restore array of values associated with closure.
-   *
-   * @pre Must be preceded by call to getClosure().
-   *
-   * @param valuesCell Array of values for cell.
-   * @param valuesSize Size of values array.
-   * @param cell Finite-element cell.
-   */
-  void restoreClosure(PetscScalar** valuesCell,
-		      PetscInt* valuesSize,
-		      const PetscInt cell) const;
-
   /** Set values associated with closure.
    *
    * @param valuesCell Array of values for cell.
