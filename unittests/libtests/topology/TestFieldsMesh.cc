@@ -38,17 +38,25 @@ typedef pylith::topology::Fields<pylith::topology::Field<pylith::topology::Mesh>
 void
 pylith::topology::TestFieldsMesh::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _mesh = new Mesh;
   meshio::MeshIOAscii importer;
   importer.filename("data/tri3.mesh");
   importer.read(_mesh);
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldsMesh::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _mesh; _mesh = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -56,8 +64,12 @@ pylith::topology::TestFieldsMesh::tearDown(void)
 void
 pylith::topology::TestFieldsMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
+
+  PYLITH_METHOD_END;
 } // testConstructor
  
 // ----------------------------------------------------------------------
@@ -65,6 +77,8 @@ pylith::topology::TestFieldsMesh::testConstructor(void)
 void
 pylith::topology::TestFieldsMesh::testAdd(void)
 { // testAdd
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
   
@@ -72,6 +86,8 @@ pylith::topology::TestFieldsMesh::testAdd(void)
   fields.add(label, "displacement");
   const size_t size = 1;
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
+
+  PYLITH_METHOD_END;
 } // testAdd
 
 // ----------------------------------------------------------------------
@@ -79,6 +95,8 @@ pylith::topology::TestFieldsMesh::testAdd(void)
 void
 pylith::topology::TestFieldsMesh::testAddDomain(void)
 { // testAddDomain
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_mesh);
@@ -101,6 +119,8 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
   } // for
+
+  PYLITH_METHOD_END;
 } // testAddDomain
 
 // ----------------------------------------------------------------------
@@ -108,6 +128,8 @@ pylith::topology::TestFieldsMesh::testAddDomain(void)
 void
 pylith::topology::TestFieldsMesh::testDelete(void)
 { // testDelete
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
@@ -124,6 +146,8 @@ pylith::topology::TestFieldsMesh::testDelete(void)
   CPPUNIT_ASSERT_EQUAL(size, fields._fields.size());
   const Field<Mesh>& field = fields.get(labelB);
   CPPUNIT_ASSERT_EQUAL(std::string("velocity"), std::string(field.label()));
+
+  PYLITH_METHOD_END;
 } // testDelete
 
 // ----------------------------------------------------------------------
@@ -131,12 +155,16 @@ pylith::topology::TestFieldsMesh::testDelete(void)
 void
 pylith::topology::TestFieldsMesh::testGet(void)
 { // testGet
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
   const char* label = "field";
   fields.add(label, "velocity");
   const Field<Mesh>& field = fields.get(label);
+
+  PYLITH_METHOD_END;
 } // testGet
 
 // ----------------------------------------------------------------------
@@ -144,6 +172,8 @@ pylith::topology::TestFieldsMesh::testGet(void)
 void
 pylith::topology::TestFieldsMesh::testGetConst(void)
 { // testGetConst
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
@@ -153,6 +183,8 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
   const FieldsMesh* fieldsPtr = &fields;
   CPPUNIT_ASSERT(fieldsPtr);
   const Field<Mesh>& field = fieldsPtr->get(label);
+
+  PYLITH_METHOD_END;
 } // testGetConst
 
 // ----------------------------------------------------------------------
@@ -160,6 +192,8 @@ pylith::topology::TestFieldsMesh::testGetConst(void)
 void
 pylith::topology::TestFieldsMesh::testHasField(void)
 { // testHasField
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   FieldsMesh fields(*_mesh);
 
@@ -175,6 +209,8 @@ pylith::topology::TestFieldsMesh::testHasField(void)
   CPPUNIT_ASSERT_EQUAL(true, fields.hasField("field B"));
   CPPUNIT_ASSERT_EQUAL(false, fields.hasField("field C"));
 
+
+  PYLITH_METHOD_END;
 } // testHasField
 
 // ----------------------------------------------------------------------
@@ -182,6 +218,8 @@ pylith::topology::TestFieldsMesh::testHasField(void)
 void
 pylith::topology::TestFieldsMesh::testCopyLayout(void)
 { // testCopyLayout
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
 
   CPPUNIT_ASSERT(_mesh);
@@ -210,6 +248,8 @@ pylith::topology::TestFieldsMesh::testCopyLayout(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
   } // for
+
+  PYLITH_METHOD_END;
 } // testCopyLayout
 
 
