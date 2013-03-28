@@ -32,9 +32,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestSolutionFields );
 void
 pylith::topology::TestSolutionFields::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
+
+  PYLITH_METHOD_END;
 } // testConstructor
  
 // ----------------------------------------------------------------------
@@ -42,6 +46,8 @@ pylith::topology::TestSolutionFields::testConstructor(void)
 void
 pylith::topology::TestSolutionFields::testSolutionName(void)
 { // testSolutionName
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
@@ -50,6 +56,8 @@ pylith::topology::TestSolutionFields::testSolutionName(void)
   manager.add(name.c_str(), "displacement");
   manager.solutionName(name.c_str());
   CPPUNIT_ASSERT_EQUAL(name, manager._solutionName);
+
+  PYLITH_METHOD_END;
 } // testSolutionName
 
 // ----------------------------------------------------------------------
@@ -57,6 +65,8 @@ pylith::topology::TestSolutionFields::testSolutionName(void)
 void
 pylith::topology::TestSolutionFields::testSolution(void)
 { // testSolution
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
@@ -91,17 +101,23 @@ pylith::topology::TestSolutionFields::testSolution(void)
   PetscInt dof;
   err = PetscSectionGetDof(section, vStart, &dof);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(fiberDimB, dof);
+
+  PYLITH_METHOD_END;
 } // testSolution
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestSolutionFields::_initialize(Mesh* mesh) const
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(0 != mesh);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename("data/tri3.mesh");
   iohandler.read(mesh);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

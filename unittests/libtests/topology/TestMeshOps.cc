@@ -34,6 +34,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMeshOps );
 void
 pylith::topology::TestMeshOps::testCheckMaterialIds(void)
 { // testCheckMaterialIds
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
 
   meshio::MeshIOAscii iohandler;
@@ -51,6 +53,8 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void)
     
   CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds, numMaterials),
 		       std::runtime_error);
+
+  PYLITH_METHOD_END;
 } // testCheckMaterialIds
  
 

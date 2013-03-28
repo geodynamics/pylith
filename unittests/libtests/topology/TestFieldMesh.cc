@@ -56,8 +56,12 @@ namespace pylith {
 void
 pylith::topology::TestFieldMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   Field<Mesh> field(mesh);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -65,11 +69,15 @@ pylith::topology::TestFieldMesh::testConstructor(void)
 void
 pylith::topology::TestFieldMesh::testSection(void)
 { // testSection
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   Field<Mesh> field(mesh);
 
   PetscSection section = field.petscSection();
   CPPUNIT_ASSERT(!section);
+
+  PYLITH_METHOD_END;
 } // testSection
 
 // ----------------------------------------------------------------------
@@ -77,12 +85,16 @@ pylith::topology::TestFieldMesh::testSection(void)
 void
 pylith::topology::TestFieldMesh::testMesh(void)
 { // testMesh
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _buildMesh(&mesh);
   Field<Mesh> field(mesh);
 
   const Mesh& mesh2 = field.mesh();
   CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::cellDim, mesh2.dimension());  
+
+  PYLITH_METHOD_END;
 } // testMesh
 
 // ----------------------------------------------------------------------
@@ -90,6 +102,8 @@ pylith::topology::TestFieldMesh::testMesh(void)
 void
 pylith::topology::TestFieldMesh::testLabel(void)
 { // testLabel
+  PYLITH_METHOD_BEGIN;
+
   const std::string label = "velocity";
 
   Mesh mesh;
@@ -98,6 +112,8 @@ pylith::topology::TestFieldMesh::testLabel(void)
 
   field.label(label.c_str());
   CPPUNIT_ASSERT_EQUAL(label, std::string(field.label()));
+
+  PYLITH_METHOD_END;
 } // testLabel
 
 // ----------------------------------------------------------------------
@@ -105,6 +121,8 @@ pylith::topology::TestFieldMesh::testLabel(void)
 void
 pylith::topology::TestFieldMesh::testVectorFieldType(void)
 { // testVectorFieldType
+  PYLITH_METHOD_BEGIN;
+
   const std::string label = "default";
 
   Mesh mesh;
@@ -113,6 +131,8 @@ pylith::topology::TestFieldMesh::testVectorFieldType(void)
 
   field.vectorFieldType(FieldBase::SCALAR);
   CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR, field._metadata[label].vectorFieldType);
+
+  PYLITH_METHOD_END;
 } // testVectorFieldType
 
 // ----------------------------------------------------------------------
@@ -120,6 +140,8 @@ pylith::topology::TestFieldMesh::testVectorFieldType(void)
 void
 pylith::topology::TestFieldMesh::testScale(void)
 { // testScale
+  PYLITH_METHOD_BEGIN;
+
   const std::string label = "default";
 
   Mesh mesh;
@@ -130,6 +152,8 @@ pylith::topology::TestFieldMesh::testScale(void)
   field.scale(scale);
   const PylithScalar tolerance = 1.0e-6;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(scale, field._metadata[label].scale, tolerance);
+
+  PYLITH_METHOD_END;
 } // testScale
 
 // ----------------------------------------------------------------------
@@ -137,6 +161,8 @@ pylith::topology::TestFieldMesh::testScale(void)
 void
 pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 { // testAddDimensionOkay
+  PYLITH_METHOD_BEGIN;
+
   const std::string label = "default";
 
   Mesh mesh;
@@ -146,6 +172,8 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
   CPPUNIT_ASSERT_EQUAL(false, field._metadata[label].dimsOkay);
   field.addDimensionOkay(true);
   CPPUNIT_ASSERT_EQUAL(true, field._metadata[label].dimsOkay);
+
+  PYLITH_METHOD_END;
 } // testAddDimensionOkay
 
 // ----------------------------------------------------------------------
@@ -153,11 +181,15 @@ pylith::topology::TestFieldMesh::testAddDimensionOkay(void)
 void
 pylith::topology::TestFieldMesh::testSpaceDim(void)
 { // testSpaceDim
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _buildMesh(&mesh);
   Field<Mesh> field(mesh);
 
   CPPUNIT_ASSERT_EQUAL(_TestFieldMesh::cellDim, field.spaceDim());
+
+  PYLITH_METHOD_END;
 } // testSpaceDim
 
 // ----------------------------------------------------------------------
@@ -165,6 +197,8 @@ pylith::topology::TestFieldMesh::testSpaceDim(void)
 void
 pylith::topology::TestFieldMesh::testNewSection(void)
 { // testNewSection
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   _buildMesh(&mesh);
 
@@ -175,6 +209,8 @@ pylith::topology::TestFieldMesh::testNewSection(void)
   field.newSection();
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
   PetscSection section = field.petscSection();CPPUNIT_ASSERT(section);
+
+  PYLITH_METHOD_END;
 } // testNewSection
 
 // ----------------------------------------------------------------------
@@ -182,6 +218,8 @@ pylith::topology::TestFieldMesh::testNewSection(void)
 void
 pylith::topology::TestFieldMesh::testNewSectionPoints(void)
 { // testNewSectionPoints
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 2;
   const std::string& label = "field A";
 
@@ -207,6 +245,8 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
   PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
   PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+  PYLITH_METHOD_END;
 } // testNewSectionPoints
 
 // ----------------------------------------------------------------------
@@ -214,6 +254,8 @@ pylith::topology::TestFieldMesh::testNewSectionPoints(void)
 void
 pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
 { // testNewSectionPointsArray
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 2;
 
   Mesh mesh;
@@ -267,6 +309,8 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
   PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
   err = PetscObjectGetName((PetscObject) vec, &name);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+  PYLITH_METHOD_END;
 } // testNewSectionPointsArray
 
 // ----------------------------------------------------------------------
@@ -274,6 +318,8 @@ pylith::topology::TestFieldMesh::testNewSectionPointsArray(void)
 void
 pylith::topology::TestFieldMesh::testNewSectionDomain(void)
 { // testNewSectionDomain
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 2;
 
   Mesh mesh;
@@ -299,6 +345,8 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
   PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
   PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+  PYLITH_METHOD_END;
 } // testNewSectionDomain
 
 // ----------------------------------------------------------------------
@@ -306,6 +354,8 @@ pylith::topology::TestFieldMesh::testNewSectionDomain(void)
 void
 pylith::topology::TestFieldMesh::testNewSectionField(void)
 { // testNewSectionField
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
     
   Mesh mesh;
@@ -337,6 +387,8 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
   PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
   PetscErrorCode err = PetscObjectGetName((PetscObject) vec, &name);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+  PYLITH_METHOD_END;
 } // testNewSectionField
 
 // ----------------------------------------------------------------------
@@ -344,6 +396,8 @@ pylith::topology::TestFieldMesh::testNewSectionField(void)
 void
 pylith::topology::TestFieldMesh::testCloneSection(void)
 { // testCloneSection
+  PYLITH_METHOD_BEGIN;
+
   const PetscInt fiberDim = 3;
   const PetscInt nconstraints[] = { 0, 2, 1, 3 };
   const PetscInt constraints[] = {
@@ -403,6 +457,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
   const char *name = NULL;
   err = PetscObjectGetName((PetscObject) vec, &name);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(label, std::string(name));
+
+  PYLITH_METHOD_END;
 } // testCloneSection
 
 // ----------------------------------------------------------------------
@@ -410,6 +466,8 @@ pylith::topology::TestFieldMesh::testCloneSection(void)
 void
 pylith::topology::TestFieldMesh::testClear(void)
 { // testClear
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh(_TestFieldMesh::cellDim);
   Field<Mesh> field(mesh);
 
@@ -422,6 +480,8 @@ pylith::topology::TestFieldMesh::testClear(void)
   CPPUNIT_ASSERT_EQUAL(PylithScalar(1.0), field._metadata["default"].scale);
   CPPUNIT_ASSERT_EQUAL(Field<Mesh>::OTHER, field._metadata["default"].vectorFieldType);
   CPPUNIT_ASSERT_EQUAL(false, field._metadata["default"].dimsOkay);
+
+  PYLITH_METHOD_END;
 } // testClear
 
 // ----------------------------------------------------------------------
@@ -429,6 +489,8 @@ pylith::topology::TestFieldMesh::testClear(void)
 void
 pylith::topology::TestFieldMesh::testAllocate(void)
 { // testAllocate
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -468,6 +530,8 @@ pylith::topology::TestFieldMesh::testAllocate(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesNondim[i++], fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testAllocate
 
 // ----------------------------------------------------------------------
@@ -475,6 +539,8 @@ pylith::topology::TestFieldMesh::testAllocate(void)
 void
 pylith::topology::TestFieldMesh::testZero(void)
 { // testZero
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -517,6 +583,8 @@ pylith::topology::TestFieldMesh::testZero(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testZero
 
 // ----------------------------------------------------------------------
@@ -524,6 +592,8 @@ pylith::topology::TestFieldMesh::testZero(void)
 void
 pylith::topology::TestFieldMesh::testZeroAll(void)
 { // testZeroAll
+  PYLITH_METHOD_BEGIN;
+
   const PetscInt fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -585,6 +655,8 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testZeroAll
 
 // ----------------------------------------------------------------------
@@ -592,6 +664,8 @@ pylith::topology::TestFieldMesh::testZeroAll(void)
 void
 pylith::topology::TestFieldMesh::testComplete(void)
 { // testComplete
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -635,6 +709,8 @@ pylith::topology::TestFieldMesh::testComplete(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesNondim[i++], fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testComplete
 
 // ----------------------------------------------------------------------
@@ -642,6 +718,8 @@ pylith::topology::TestFieldMesh::testComplete(void)
 void
 pylith::topology::TestFieldMesh::testCopy(void)
 { // testCopy
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -687,6 +765,8 @@ pylith::topology::TestFieldMesh::testCopy(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesNondim[i++], fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testCopy
 
 // ----------------------------------------------------------------------
@@ -694,6 +774,8 @@ pylith::topology::TestFieldMesh::testCopy(void)
 void
 pylith::topology::TestFieldMesh::testOperatorAdd(void)
 { // testOperateAdd
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesA[] = {
@@ -755,6 +837,8 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesA[i] + valuesB[i], fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testOperateAdd
 
 // ----------------------------------------------------------------------
@@ -762,6 +846,8 @@ pylith::topology::TestFieldMesh::testOperatorAdd(void)
 void
 pylith::topology::TestFieldMesh::testDimensionalize(void)
 { // testDimensionalize
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -806,6 +892,8 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesNondim[i]*scale, fieldArray[off+d], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDimensionalize
 
 // ----------------------------------------------------------------------
@@ -813,6 +901,8 @@ pylith::topology::TestFieldMesh::testDimensionalize(void)
 void
 pylith::topology::TestFieldMesh::testView(void)
 { // testView
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
   const PylithScalar scale = 2.0;
   const PylithScalar valuesNondim[] = {
@@ -842,6 +932,8 @@ pylith::topology::TestFieldMesh::testView(void)
   } // for
 
   field.view("Testing view");
+
+  PYLITH_METHOD_END;
 } // testView
 
 // ----------------------------------------------------------------------
@@ -849,6 +941,8 @@ pylith::topology::TestFieldMesh::testView(void)
 void
 pylith::topology::TestFieldMesh::testCreateScatter(void)
 { // testCreateScatter
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
 
   Mesh mesh;
@@ -907,6 +1001,8 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
   CPPUNIT_ASSERT(sinfo2B.dm);
   CPPUNIT_ASSERT(sinfo2B.vector);
 
+
+  PYLITH_METHOD_END;
 } // testCreateScatter
 
 // ----------------------------------------------------------------------
@@ -914,6 +1010,8 @@ pylith::topology::TestFieldMesh::testCreateScatter(void)
 void
 pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
 { // testCreateScatterWithBC
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
 
   Mesh mesh;
@@ -971,6 +1069,8 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
   CPPUNIT_ASSERT(sinfo2B.dm);
   CPPUNIT_ASSERT(sinfo2B.vector);
 
+
+  PYLITH_METHOD_END;
 } // testCreateScatterWithBC
 
 // ----------------------------------------------------------------------
@@ -978,6 +1078,8 @@ pylith::topology::TestFieldMesh::testCreateScatterWithBC(void)
 void
 pylith::topology::TestFieldMesh::testVector(void)
 { // testVector
+  PYLITH_METHOD_BEGIN;
+
   const int fiberDim = 3;
 
   Mesh mesh;
@@ -1005,6 +1107,8 @@ pylith::topology::TestFieldMesh::testVector(void)
   PetscErrorCode err = VecGetSize(vec, &size);CHECK_PETSC_ERROR(err);
   const int sizeE = (vEnd-vStart) * fiberDim;
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  PYLITH_METHOD_END;
 } // testVector
 
 // ----------------------------------------------------------------------
@@ -1012,6 +1116,8 @@ pylith::topology::TestFieldMesh::testVector(void)
 void
 pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
 { // testScatterSectionToVector
+  PYLITH_METHOD_BEGIN;
+
   const char* context = "abc";
   const int fiberDim = 3;
   const PylithScalar valuesE[] = {
@@ -1057,6 +1163,8 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
   for (int i=0; i < sizeE; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i], valuesVec[i], tolerance);
   err = VecRestoreArray(vec, &valuesVec);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testScatterSectionToVector
 
 // ----------------------------------------------------------------------
@@ -1064,6 +1172,8 @@ pylith::topology::TestFieldMesh::testScatterSectionToVector(void)
 void
 pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 { // testScatterVectorToSection
+  PYLITH_METHOD_BEGIN;
+
   const char* context = "abcd";
   const int fiberDim = 3;
   const PylithScalar valuesE[] = {
@@ -1109,6 +1219,8 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i++], fieldArray[off+iDim], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testScatterVectorToSection
 
 // ----------------------------------------------------------------------
@@ -1116,6 +1228,8 @@ pylith::topology::TestFieldMesh::testScatterVectorToSection(void)
 void
 pylith::topology::TestFieldMesh::testSplitDefault(void)
 { // testSplitDefault
+  PYLITH_METHOD_BEGIN;
+
   const PetscInt spaceDim = _TestFieldMesh::cellDim;
   const PetscInt numFields = spaceDim;
   const PetscInt nconstraints[4] = { 1, 2, 0, 1 };
@@ -1199,6 +1313,8 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
       CPPUNIT_ASSERT_EQUAL(constraintDimE, fcdof);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testSplitDefault
 
 // ----------------------------------------------------------------------
@@ -1206,6 +1322,8 @@ pylith::topology::TestFieldMesh::testSplitDefault(void)
 void
 pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
 { // testCloneSectionSplit
+  PYLITH_METHOD_BEGIN;
+
   const PetscInt spaceDim = _TestFieldMesh::cellDim;
   const PetscInt numFields = spaceDim;
   const PetscInt nconstraints[4] = { 1, 2, 0, 1 };
@@ -1293,12 +1411,16 @@ pylith::topology::TestFieldMesh::testCloneSectionSplit(void)
       CPPUNIT_ASSERT_EQUAL(constraintDimE, fcdof);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testCloneSectionSplit
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
+  PYLITH_METHOD_BEGIN;
+
   assert(mesh);
 
   const int cellDim = _TestFieldMesh::cellDim;
@@ -1360,6 +1482,8 @@ pylith::topology::TestFieldMesh::_buildMesh(Mesh* mesh)
   cs.setSpaceDim(spaceDim);
   cs.initialize();
   mesh->coordsys(&cs);
+
+  PYLITH_METHOD_END;
 } // _buildMesh
 
 

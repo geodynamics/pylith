@@ -36,6 +36,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestMesh );
 void
 pylith::topology::TestMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   int result = 0;
 
   Mesh mesh;
@@ -56,6 +58,8 @@ pylith::topology::TestMesh::testConstructor(void)
   CPPUNIT_ASSERT_EQUAL(1, mesh3.dimension());
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh3.comm(), &result);
   CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -63,6 +67,8 @@ pylith::topology::TestMesh::testConstructor(void)
 void
 pylith::topology::TestMesh::testCreateDMMesh(void)
 { // testCreateDMMesh
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   CPPUNIT_ASSERT(mesh._mesh.isNull());
 
@@ -75,6 +81,8 @@ pylith::topology::TestMesh::testCreateDMMesh(void)
   mesh.createDMMesh(dim);
   CPPUNIT_ASSERT(mesh._newMesh);
   CPPUNIT_ASSERT_EQUAL(dim, mesh.dimension());
+
+  PYLITH_METHOD_END;
 } // testCreateDMMesh
 
 // ----------------------------------------------------------------------
@@ -82,6 +90,8 @@ pylith::topology::TestMesh::testCreateDMMesh(void)
 void
 pylith::topology::TestMesh::testDMMesh(void)
 { // testDMMesh
+  PYLITH_METHOD_BEGIN;
+
   const int dim = 2;
   PetscInt dmDim;
   Mesh mesh(dim);
@@ -90,6 +100,8 @@ pylith::topology::TestMesh::testDMMesh(void)
   CPPUNIT_ASSERT(dmMesh);
   PetscErrorCode err = DMPlexGetDimension(dmMesh, &dmDim);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(dim, dmDim);
+
+  PYLITH_METHOD_END;
 } // testDMMesh
 
 // ----------------------------------------------------------------------
@@ -97,6 +109,8 @@ pylith::topology::TestMesh::testDMMesh(void)
 void
 pylith::topology::TestMesh::testCoordsys(void)
 { // testCoordsys
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
 
   spatialdata::geocoords::CSCart cs;
@@ -105,6 +119,8 @@ pylith::topology::TestMesh::testCoordsys(void)
   mesh.coordsys(&cs);
 
   CPPUNIT_ASSERT_EQUAL(cs.spaceDim(), mesh.coordsys()->spaceDim());
+
+  PYLITH_METHOD_END;
 } // testCoordsys
 
 // ----------------------------------------------------------------------
@@ -112,11 +128,15 @@ pylith::topology::TestMesh::testCoordsys(void)
 void
 pylith::topology::TestMesh::testDebug(void)
 { // testDebug
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 
   mesh.debug(true);
   CPPUNIT_ASSERT_EQUAL(true, mesh.debug());
+
+  PYLITH_METHOD_END;
 } // testDebug
 
 // ----------------------------------------------------------------------
@@ -124,12 +144,16 @@ pylith::topology::TestMesh::testDebug(void)
 void
 pylith::topology::TestMesh::testDimension(void)
 { // testDimension
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
 
   const int dim = 2;
   Mesh mesh2(dim);
   CPPUNIT_ASSERT_EQUAL(dim, mesh2.dimension());
+
+  PYLITH_METHOD_END;
 } // testDimension
 
 // ----------------------------------------------------------------------
@@ -137,11 +161,15 @@ pylith::topology::TestMesh::testDimension(void)
 void
 pylith::topology::TestMesh::testComm(void)
 { // testComm
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh;
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_WORLD, mesh.comm());
 
   mesh.comm(PETSC_COMM_SELF);
   CPPUNIT_ASSERT_EQUAL(PETSC_COMM_SELF, mesh.comm());
+
+  PYLITH_METHOD_END;
 } // testComm
 
 // ----------------------------------------------------------------------
@@ -149,6 +177,8 @@ pylith::topology::TestMesh::testComm(void)
 void
 pylith::topology::TestMesh::testNondimensionalize(void)
 { // testNondimensionalizer
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar lengthScale = 2.0;
   const int spaceDim = 2;
   const int numVertices = 4;
@@ -195,6 +225,7 @@ pylith::topology::TestMesh::testNondimensionalize(void)
     } // for
   } // for
   
+  PYLITH_METHOD_END;
 } // testNondimensionalize
 
 

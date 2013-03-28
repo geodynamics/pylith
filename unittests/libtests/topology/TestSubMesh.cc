@@ -69,9 +69,13 @@ namespace pylith {
 void
 pylith::topology::TestSubMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -79,7 +83,9 @@ pylith::topology::TestSubMesh::testConstructor(void)
 void
 pylith::topology::TestSubMesh::testConstructorMesh(void)
 { // testConstructorMesh
-  Mesh mesh2D;
+  PYLITH_METHOD_BEGIN;
+
+ Mesh mesh2D;
   _buildMesh(&mesh2D);
   
   SubMesh mesh(mesh2D, _TestSubMesh::label);
@@ -111,6 +117,8 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
   for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
     CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshCells[iC], c);
   } // for
+
+  PYLITH_METHOD_END;
 } // testConstructorMesh
 
 // ----------------------------------------------------------------------
@@ -118,6 +126,8 @@ pylith::topology::TestSubMesh::testConstructorMesh(void)
 void
 pylith::topology::TestSubMesh::testCreateSubMesh(void)
 { // testCreateSubMesh
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   
@@ -151,6 +161,8 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
   for (PetscInt c = cStart, iC=0; c < cEnd; ++c, ++iC) {
     CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshCells[iC], c);
   } // for
+
+  PYLITH_METHOD_END;
 } // testCreateSubMesh
 
 // ----------------------------------------------------------------------
@@ -158,12 +170,16 @@ pylith::topology::TestSubMesh::testCreateSubMesh(void)
 void
 pylith::topology::TestSubMesh::testCoordsys(void)
 { // testCoordsys
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh2D;
   _buildMesh(&mesh2D);
 
   SubMesh mesh(mesh2D, _TestSubMesh::label);
 
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim, mesh.coordsys()->spaceDim());
+
+  PYLITH_METHOD_END;
 } // testCoordsys
 
 // ----------------------------------------------------------------------
@@ -171,11 +187,15 @@ pylith::topology::TestSubMesh::testCoordsys(void)
 void
 pylith::topology::TestSubMesh::testDebug(void)
 { // testDebug
+  PYLITH_METHOD_BEGIN;
+
   SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(false, mesh.debug());
 
   mesh.debug(true);
   CPPUNIT_ASSERT_EQUAL(true, mesh.debug());
+
+  PYLITH_METHOD_END;
 } // testDebug
 
 // ----------------------------------------------------------------------
@@ -183,6 +203,8 @@ pylith::topology::TestSubMesh::testDebug(void)
 void
 pylith::topology::TestSubMesh::testDimension(void)
 { // testDimension
+  PYLITH_METHOD_BEGIN;
+
   SubMesh mesh;
   CPPUNIT_ASSERT_EQUAL(0, mesh.dimension());
 
@@ -190,6 +212,8 @@ pylith::topology::TestSubMesh::testDimension(void)
   _buildMesh(&mesh2D);
   SubMesh mesh2(mesh2D, _TestSubMesh::label);
   CPPUNIT_ASSERT_EQUAL(_TestSubMesh::cellDim-1, mesh2.dimension());
+
+  PYLITH_METHOD_END;
 } // testDimension
 
 // ----------------------------------------------------------------------
@@ -197,6 +221,8 @@ pylith::topology::TestSubMesh::testDimension(void)
 void
 pylith::topology::TestSubMesh::testComm(void)
 { // testComm
+  PYLITH_METHOD_BEGIN;
+
   SubMesh mesh;
 
   Mesh mesh2D;
@@ -206,6 +232,8 @@ pylith::topology::TestSubMesh::testComm(void)
   int result = 0;
   MPI_Comm_compare(PETSC_COMM_WORLD, mesh.comm(), &result);
   CPPUNIT_ASSERT_EQUAL(int(MPI_CONGRUENT), result);
+
+  PYLITH_METHOD_END;
 } // testComm
 
 // ----------------------------------------------------------------------
@@ -213,17 +241,23 @@ pylith::topology::TestSubMesh::testComm(void)
 void
 pylith::topology::TestSubMesh::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   Mesh mesh2D;
   _buildMesh(&mesh2D);
   SubMesh mesh(mesh2D, _TestSubMesh::label);
 
   mesh.initialize();
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
 void
 pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
 { // _buildMesh
+  PYLITH_METHOD_BEGIN;
+
   assert(mesh);
 
   const int cellDim = _TestSubMesh::cellDim;
@@ -290,6 +324,8 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   for(PetscInt i = 0; i < numPoints; ++i) {
     err = DMPlexSetLabelValue(dmMesh, _TestSubMesh::label, ncells+_TestSubMesh::groupVertices[i], 1);CHECK_PETSC_ERROR(err);
   } // for
+
+  PYLITH_METHOD_END;
 } // _buildMesh
 
 
