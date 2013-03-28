@@ -36,34 +36,8 @@ class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
   Python object for a fault surface with dynamic (friction) fault
   implemented with cohesive elements.
 
-  Inventory
-
-  @class Inventory
-  Python object for managing FaultCohesiveTract facilities and properties.
-  
-  \b Properties
-  @li None
-  
-  \b Facilities
-  @li \b db_initial_tractions Spatial database for initial tractions.
-  @li \b output Output manager associated with fault data.
-
   Factory: fault
   """
-
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  import pyre.inventory
-
-  db = pyre.inventory.facility("db_initial_tractions", family="spatial_database",
-                               factory=NullComponent)
-  db.meta['tip'] = "Spatial database for initial tractions."
-
-  #from pylith.meshio.OutputFaultTract import OutputFaultTract
-  #output = pyre.inventory.facility("output", family="output_manager",
-  #                                 factory=OutputFaultTract)
-  #output.meta['tip'] = "Output manager associated with fault data."
-  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -103,8 +77,6 @@ class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
       self.availableFields['cell']['info'] += ["strike_dir",
                                                "dip_dir"]
 
-    if not isinstance(self.inventory.db, NullComponent):
-      self.availableFields['cell']['info'] += ["initial_traction"]
     return
   
 
@@ -193,9 +165,6 @@ class FaultCohesiveTract(FaultCohesive, Integrator, ModuleFaultCohesiveTract):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    if not isinstance(self.inventory.db, NullComponent):
-      ModuleFaultCohesiveTract.dbInitial(self, self.inventory.db)
-    #self.output = self.inventory.output
     return
 
 
