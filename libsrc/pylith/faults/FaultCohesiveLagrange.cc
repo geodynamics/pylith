@@ -148,7 +148,7 @@ pylith::faults::FaultCohesiveLagrange::splitField(topology::Field<topology::Mesh
   err = PetscSectionGetNumFields(fieldSection, &numFields);CHECK_PETSC_ERROR(err);
   // TODO: Does this make sense?
   if (!numFields)
-    return;
+    PYLITH_METHOD_END;
   assert(numFields == 2);
   err = PetscSectionGetFieldComponents(fieldSection, 0, &numComp);CHECK_PETSC_ERROR(err);assert(numComp == spaceDim);
   err = PetscSectionGetFieldComponents(fieldSection, 1, &numComp);CHECK_PETSC_ERROR(err);assert(numComp == spaceDim);
@@ -1705,7 +1705,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferVectorField(void)
 
   assert(_fields);
   if (_fields->hasField("buffer (vector)"))
-    return;
+    PYLITH_METHOD_END;
 
   // Create vector field; use same shape/chart as relative
   // displacement field.
@@ -1730,7 +1730,7 @@ pylith::faults::FaultCohesiveLagrange::_allocateBufferScalarField(void)
 
   assert(_fields);
   if (_fields->hasField("buffer (scalar)"))
-    return;
+    PYLITH_METHOD_END;
 
   // Create vector field; use same shape/chart as area field.
   assert(_faultMesh);

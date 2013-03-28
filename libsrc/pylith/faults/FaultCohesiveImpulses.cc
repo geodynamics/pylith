@@ -30,6 +30,8 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -187,7 +189,7 @@ pylith::faults::FaultCohesiveImpulses::integrateResidual(
 // Get vertex field associated with integrator.
 const pylith::topology::Field<pylith::topology::SubMesh>&
 pylith::faults::FaultCohesiveImpulses::vertexField(const char* name,
-                                              const topology::SolutionFields* fields)
+						   const topology::SolutionFields* fields)
 { // vertexField
   PYLITH_METHOD_BEGIN;
 
@@ -292,8 +294,8 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
 
-  const int spaceDim = _quadrature->spaceDim();
-  PetscErrorCode err;
+  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();assert(cs);
+  const int spaceDim = cs->spaceDim();
 
   // Create section to hold amplitudes of impulses.
   _fields->add("impulse amplitude", "impulse_amplitude");
@@ -304,29 +306,26 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   amplitude.allocate();
   amplitude.scale(lengthScale);
 
-  PetscSection amplitudeSection = amplitude.petscSection();assert(amplitudeSection);
-  PetscVec amplitudeVec = amplitude.localVector();assert(amplitudeVec);
-  PetscScalar *amplitudeArray = NULL;
+  topology::VecVisitorMesh amplitudeVisitor(amplitude);
+  PetscScalar *amplitudeArray = amplitudeVisitor.localArray();
 
-  const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();
-  assert(cs);
-
+  PetscErrorCode err;
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
+  PetscIS vertexNumbering = NULL;
+  err = DMPlexGetVertexNumbering(faultDMMesh, &vertexNumbering);CHECK_PETSC_ERROR(err);
+  const PetscInt* points = NULL;
+  PetscInt npoints = 0;
+  err = ISGetIndices(vertexNumbering, &points);CHECK_PETSC_ERROR(err);
+  err = ISGetLocalSize(vertexNumbering, &npoints);CHECK_PETSC_ERROR(err);
 
   scalar_array coordsVertex(spaceDim);
-  PetscSection coordSection = NULL;
-  PetscVec coordVec = NULL;
-  PetscScalar *coordArray = NULL;
-  err = DMPlexGetCoordinateSection(faultDMMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(faultDMMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  topology::CoordsVisitor coordsVisitor(faultDMMesh);
+  PetscScalar *coordsArray = coordsVisitor.localArray();
 
   assert(_dbImpulseAmp);
   _dbImpulseAmp->open();
   const char* valueNames[1] = { "slip" };
   _dbImpulseAmp->queryVals(valueNames, 1);
-
-  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
 
   std::map<int, int> pointOrder;
   int count = 0;
@@ -334,20 +333,23 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    PetscInt cdof, coff;
-    err = PetscSectionGetDof(coordSection, v_fault, &cdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v_fault, &coff);CHECK_PETSC_ERROR(err);
-    assert(cdof == spaceDim);
+    std::cerr << ":TODO: MATT Update FaultCohesiveImpulses::_setupImpulses() for PETSc DM." << std::endl;
+#if 0
+    // Only create impulses on local vertices
+    if (!globalNumbering->isLocal(v_fault)) {
+      continue;
+    } // if
+#endif
 
-    for(PetscInt d = 0; d < cdof; ++d) {
-      coordsVertex[d] = coordArray[coff+d];
+    const PetscInt coff = coordsVisitor.sectionOffset(v_fault);
+    assert(spaceDim == coordsVisitor.sectionDof(v_fault));
+    for(PetscInt d = 0; d < spaceDim; ++d) {
+      coordsVertex[d] = coordsArray[coff+d];
     } // for
     _normalizer->dimensionalize(&coordsVertex[0], coordsVertex.size(), lengthScale);
 
-    PetscInt adof, aoff;
-    err = PetscSectionGetDof(amplitudeSection, v_fault, &adof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(amplitudeSection, v_fault, &aoff);CHECK_PETSC_ERROR(err);
-    assert(adof == fiberDim);
+    const PetscInt aoff = amplitudeVisitor.sectionOffset(v_fault);
+    assert(fiberDim == amplitudeVisitor.sectionDof(v_fault));
 
     amplitudeArray[aoff] = 0.0;
     int err = _dbImpulseAmp->query(&amplitudeArray[aoff], 1, &coordsVertex[0], coordsVertex.size(), cs);
@@ -371,8 +373,6 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
       ++count;
     } // if
   } // for
-  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
 
   // Close properties database
   _dbImpulseAmp->close();
@@ -399,10 +399,9 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
 
   // Gather number of points on each processor.
   const int numImpulsesLocal = pointOrder.size();
-  MPI_Comm    comm;
+  MPI_Comm comm = _faultMesh->comm();
   PetscMPIInt commSize, commRank;
   PetscErrorCode err;
-  err = PetscObjectGetComm((PetscObject) faultDMMesh, &comm);CHECK_PETSC_ERROR(err);
   err = MPI_Comm_size(comm, &commSize);CHECK_PETSC_ERROR(err);
   err = MPI_Comm_rank(comm, &commRank);CHECK_PETSC_ERROR(err);
   int_array numImpulsesAll(commSize);
@@ -428,22 +427,6 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulseOrder(const std::map<int,int
     } // for
   } // for
 
-#if 0 // DEBUGGING :TODO: Update for DM mesh.
-  const ALE::Obj<RealSection>& amplitudeSection = _fields->get("impulse amplitude").section();
-  assert(!amplitudeSection.isNull());
-  int impulse = 0;
-  for (int irank=0; irank < commSize; ++irank) {
-    MPI_Barrier(comm);
-    if (commRank == irank) {
-      for (int i=0; i < _impulsePoints.size(); ++i, ++impulse) {
-	const ImpulseInfoStruct& info = _impulsePoints[impulse];
-	const PylithScalar* amplitudeVertex = amplitudeSection->restrictPoint(_cohesiveVertices[info.indexCohesive].fault);
-	std::cout << "["<<irank<<"]: " << impulse << " -> (" << info.indexCohesive << "," << info.indexDOF << "), v_fault: " << _cohesiveVertices[info.indexCohesive].fault << ", amplitude: " << amplitudeVertex[0] << std::endl;
-      } // for
-    } // if
-  } // for
-#endif
-
   PYLITH_METHOD_END;
 } // _setupImpulseOrder
 
@@ -465,18 +448,12 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
   const spatialdata::geocoords::CoordSys* cs = _faultMesh->coordsys();assert(cs);
   const int spaceDim = cs->spaceDim();
 
-  PetscErrorCode err;
+  topology::Field<topology::SubMesh>& amplitude = _fields->get("impulse amplitude");
+  topology::VecVisitorMesh amplitudeVisitor(amplitude);
+  const PetscScalar* amplitudeArray = amplitudeVisitor.localArray();
 
-  PetscSection amplitudeSection = _fields->get("impulse amplitude").petscSection();assert(amplitudeSection);
-  PetscVec amplitudeVec = _fields->get("impulse amplitude").localVector();assert(amplitudeVec);
-  PetscScalar *amplitudeArray = NULL;
-  
-  PetscSection dispRelSection = dispRel.petscSection();assert(dispRelSection);
-  PetscVec dispRelVec = dispRel.localVector();assert(dispRelVec);
-  PetscScalar *dispRelArray = NULL;
-
-  err = VecGetArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh dispRelVisitor(dispRel);
+  PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
   const srcs_type::const_iterator& impulseInfo = _impulsePoints.find(impulse);
   if (impulseInfo != _impulsePoints.end()) {
@@ -485,17 +462,12 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
     const int v_lagrange = _cohesiveVertices[iVertex].lagrange;
 
     // Get amplitude of slip impulse
-    PetscInt adof, aoff;
-    err = PetscSectionGetDof(amplitudeSection, v_fault, &adof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(amplitudeSection, v_fault, &aoff);CHECK_PETSC_ERROR(err);
-    assert(adof == 1);
+    const PetscInt aoff = amplitudeVisitor.sectionOffset(v_fault);
+    assert(1 == amplitudeVisitor.sectionDof(v_fault));
 
-    PetscInt drdof, droff;
-    err = PetscSectionGetDof(dispRelSection, v_fault, &drdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispRelSection, v_fault, &droff);CHECK_PETSC_ERROR(err);
-    assert(drdof == spaceDim);
-
-    for(PetscInt d = 0; d < drdof; ++d) {
+    const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
+    assert(spaceDim == dispRelVisitor.sectionDof(v_fault));
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       dispRelArray[droff+d] = 0.0;
     } // for
 
@@ -503,8 +475,6 @@ pylith::faults::FaultCohesiveImpulses::_setRelativeDisp(const topology::Field<to
     assert(indexDOF >= 0 && indexDOF < spaceDim);
     dispRelArray[droff+indexDOF] = amplitudeArray[aoff];
   } // if
-  err = VecRestoreArray(amplitudeVec, &amplitudeArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
 
 #if 0 // DEBUGGING
   std::cout << "impulse: " << impulse << std::endl;

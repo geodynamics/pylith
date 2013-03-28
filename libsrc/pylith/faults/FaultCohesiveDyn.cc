@@ -31,6 +31,7 @@
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/friction/FrictionModel.hh" // USES FrictionModel
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 #include "pylith/problems/SolverLinear.hh" // USES SolverLinear
@@ -165,7 +166,6 @@ pylith::faults::FaultCohesiveDyn::initialize(const topology::Mesh& mesh,
   velRel.vectorFieldType(topology::FieldBase::VECTOR);
   velRel.scale(_normalizer->lengthScale() / _normalizer->timeScale());
 
-
   PYLITH_METHOD_END;
 } // initialize
 
@@ -202,50 +202,42 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
   // Get cell geometry information that doesn't depend on cell
   const int spaceDim = _quadrature->spaceDim();
 
-  PetscErrorCode err = 0;
-
   // Get sections associated with cohesive cells
   PetscDM residualDM = residual.dmMesh();assert(residualDM);
-  PetscSection residualSection = residual.petscSection();assert(residualSection);
-  PetscVec residualVec = residual.localVector();assert(residualVec);
   PetscSection residualGlobalSection = NULL;
-  PetscScalar *residualArray = NULL;
-  err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
+  PetscErrorCode err = DMGetDefaultGlobalSection(residualDM, &residualGlobalSection);CHECK_PETSC_ERROR(err);assert(residualGlobalSection);
 
-  PetscSection dispTSection = fields->get("disp(t)").petscSection();assert(dispTSection);
-  PetscVec dispTVec = fields->get("disp(t)").localVector();assert(dispTVec);
-  PetscScalar *dispTArray = NULL;
-  err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh residualVisitor(residual);
+  PetscScalar* residualArray = residualVisitor.localArray();
 
-  PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();assert(dispTIncrSection);
-  PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();assert(dispTIncrVec);
-  PetscScalar *dispTIncrArray = NULL;
-  err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::VecVisitorMesh dispTVisitor(dispT);
+  const PetscScalar* dispTArray = dispTVisitor.localArray();
+
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
+  const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
 
   scalar_array tractPerturbVertex(spaceDim);
-  PetscSection tractionsSection = NULL;
-  PetscVec tractionsVec = NULL;
+  topology::VecVisitorMesh* tractionsVisitor = 0;
   PetscScalar *tractionsArray = NULL;
   if (_tractPerturbation) {
     _tractPerturbation->calculate(t);
     
-    const topology::Fields<topology::Field<topology::SubMesh> >* params = _tractPerturbation->parameterFields();
-    assert(params);
-    tractionsSection = params->get("value").petscSection();assert(tractionsSection);
-    tractionsVec = params->get("value").localVector();assert(tractionsVec);
+    const topology::Fields<topology::Field<topology::SubMesh> >* params = _tractPerturbation->parameterFields();assert(params);
+    const topology::Field<topology::SubMesh>& tractions = params->get("value");
+
+    tractionsVisitor = new topology::VecVisitorMesh(tractions);
+    tractionsArray = tractionsVisitor->localArray();
   } // if
-  err = VecGetArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
 
-  PetscSection areaSection = _fields->get("area").petscSection();assert(areaSection);
-  PetscVec areaVec = _fields->get("area").localVector();assert(areaVec);
-  PetscScalar *areaArray = NULL;
-  err = VecGetArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::SubMesh>& area = _fields->get("area");
+  topology::VecVisitorMesh areaVisitor(area);
+  const PetscScalar* areaArray = areaVisitor.localArray();
 
-  PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-  PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
-  PetscScalar *orientationArray = NULL;
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  topology::VecVisitorMesh orientationVisitor(area);
+  const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -259,11 +251,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
     const int v_fault = _cohesiveVertices[iVertex].fault;
     const int v_negative = _cohesiveVertices[iVertex].negative;
     const int v_positive = _cohesiveVertices[iVertex].positive;
-    PetscInt goff;
 
     // Compute contribution only if Lagrange constraint is local.
+    PetscInt goff = 0;
     err = PetscSectionGetOffset(residualGlobalSection, v_lagrange, &goff);CHECK_PETSC_ERROR(err);
-    if (goff < 0) continue;
+    if (goff < 0)
+      continue;
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(restrictEvent);
@@ -271,61 +264,42 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
 
     // Get prescribed traction perturbation at fault vertex.
     if (_tractPerturbation) {
-      PetscInt vdof, voff;
-      err = PetscSectionGetDof(tractionsSection, v_fault, &vdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(tractionsSection, v_fault, &voff);CHECK_PETSC_ERROR(err);
-      assert(vdof == spaceDim);
-      
+      const PetscInt toff = tractionsVisitor->sectionOffset(v_fault);
+      assert(spaceDim == tractionsVisitor->sectionDof(v_fault));
       for(PetscInt d = 0; d < spaceDim; ++d) {
-        tractPerturbVertex[d] = tractionsArray[voff+d];
+        tractPerturbVertex[d] = tractionsArray[toff+d];
       } // for
     } else {
       tractPerturbVertex = 0.0;
     } // if/else
 
     // Get orientation associated with fault vertex.
-    PetscInt odof, ooff;
-    err = PetscSectionGetDof(orientationSection, v_fault, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v_fault, &ooff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim*spaceDim == odof);
+    const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
+    assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
 
     // Get area associated with fault vertex.
-    PetscInt adof, aoff;
-    err = PetscSectionGetDof(areaSection, v_fault, &adof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(areaSection, v_fault, &aoff);CHECK_PETSC_ERROR(err);
-    assert(1 == adof);
+    const PetscInt aoff = areaVisitor.sectionOffset(v_fault);
+    assert(1 == areaVisitor.sectionDof(v_fault));
 
     // Get disp(t) at conventional vertices and Lagrange vertex.
-    PetscInt dtndof, dtnoff;
-    err = PetscSectionGetDof(dispTSection, v_negative, &dtndof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_negative, &dtnoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtndof);
-    PetscInt dtpdof, dtpoff;
+    const PetscInt dtnoff = dispTVisitor.sectionOffset(v_negative);
+    assert(spaceDim == dispTVisitor.sectionDof(v_negative));
 
-    err = PetscSectionGetDof(dispTSection, v_positive, &dtpdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_positive, &dtpoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtpdof);
+    const PetscInt dtpoff = dispTVisitor.sectionOffset(v_positive);
+    assert(spaceDim == dispTVisitor.sectionDof(v_positive));
 
-    PetscInt dtldof, dtloff;
-    err = PetscSectionGetDof(dispTSection, v_lagrange, &dtldof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_lagrange, &dtloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtldof);
+    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
 
     // Get dispIncr(t->t+dt) at conventional vertices and Lagrange vertex.
-    PetscInt dindof, dinoff;
-    err = PetscSectionGetDof(dispTIncrSection, v_negative, &dindof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_negative, &dinoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dindof);
+    const PetscInt dinoff = dispTIncrVisitor.sectionOffset(v_negative);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_negative));
 
-    PetscInt dipdof, dipoff;
-    err = PetscSectionGetDof(dispTIncrSection, v_positive, &dipdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_positive, &dipoff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dipdof);
+    const PetscInt dipoff = dispTIncrVisitor.sectionOffset(v_positive);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_positive));
 
-    PetscInt dildof, diloff;
-    err = PetscSectionGetDof(dispTIncrSection, v_lagrange, &dildof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_lagrange, &diloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dildof);
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -341,7 +315,6 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
       tractionNormal += orientationArray[ooff+indexN*spaceDim+d] * (dispTArray[dtloff+d] + dispTIncrArray[diloff+d]);
     } // for
     
-
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(computeEvent);
     _logger->eventBegin(updateEvent);
@@ -349,12 +322,12 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
     if (slipNormal < _zeroTolerance || !_openFreeSurf) { 
       // if no opening or flag indicates to still impose initial tractions when fault is open.
       // Assemble contributions into field
-      PetscInt rndof, rnoff, rpdof, rpoff;
-      err = PetscSectionGetDof(residualSection, v_negative, &rndof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(residualSection, v_negative, &rnoff);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetDof(residualSection, v_positive, &rpdof);CHECK_PETSC_ERROR(err);
-      err = PetscSectionGetOffset(residualSection, v_positive, &rpoff);CHECK_PETSC_ERROR(err);
-      assert(spaceDim == rndof);assert(spaceDim == rpdof);
+      const PetscInt rnoff = residualVisitor.sectionOffset(v_negative);
+      assert(spaceDim == residualVisitor.sectionDof(v_negative));
+
+      const PetscInt rpoff = residualVisitor.sectionOffset(v_positive);
+      assert(spaceDim == residualVisitor.sectionDof(v_positive));
+
       // Initial (external) tractions oppose (internal) tractions associated with Lagrange multiplier.
       for(PetscInt d = 0; d < spaceDim; ++d) {
         residualArray[rnoff+d] +=  areaArray[aoff] * (dispTArray[dtloff+d] + dispTIncrArray[diloff+d] - tractPerturbVertex[d]);
@@ -376,12 +349,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(const topology::Field<topolo
 #endif
   } // for
   PetscLogFlops(numVertices*spaceDim*8);
-  err = VecRestoreArray(areaVec, &areaArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(residualVec, &residualArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
+  delete tractionsVisitor; tractionsVisitor = 0;
 
 #if !defined(DETAILED_EVENT_LOGGING)
   _logger->eventEnd(computeEvent);

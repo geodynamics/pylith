@@ -30,6 +30,8 @@
 
 #include <stdlib.h> // USES abort()
 
+//#define MALLOC_DUMP
+
 int
 main(int argc,
      char* argv[])
@@ -39,7 +41,9 @@ main(int argc,
   try {
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
+#if defined(MALLOC_DUMP)
     err = PetscOptionsSetValue("-malloc_dump", "");CHKERRQ(err);
+#endif
 
     // Initialize Python (to eliminate need to initialize when
     // parsing units in spatial databases).
@@ -75,6 +79,10 @@ main(int argc,
   } catch (...) {
     abort();
   } // catch
+
+#if !defined(MALLOC_DUMP)
+  std::cout << "WARNING -malloc dump is OFF\n" << std::endl;
+#endif
 
   return (result.wasSuccessful() ? 0 : 1);
 } // main
