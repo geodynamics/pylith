@@ -375,36 +375,29 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
 
   // Allocate arrays for vertex values
   scalar_array tractionTpdtVertex(spaceDim); // Fault coordinate system
-  PetscErrorCode err;
 
-  // Get sections
+  // Get fields.
+  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
+  topology::VecVisitorMesh dispTVisitor(dispT);
+  const PetscScalar* dispTArray = dispTVisitor.localArray();
+
+  topology::Field<topology::Mesh>& dispTIncr = fields->get("dispIncr(t->t+dt)");
+  topology::VecVisitorMesh dispTIncrVisitor(dispTIncr);
+  const PetscScalar* dispTIncrArray = dispTIncrVisitor.localArray();
+
   scalar_array slipVertex(spaceDim);
-  PetscSection dispRelSection = _fields->get("relative disp").petscSection();assert(dispRelSection);
-  PetscVec dispRelVec = _fields->get("relative disp").localVector();assert(dispRelVec);
-  PetscScalar *dispRelArray = NULL;
+  topology::Field<topology::SubMesh>& dispRel = _fields->get("relative disp");
+  topology::VecVisitorMesh dispRelVisitor(dispRel);
+  const PetscScalar* dispRelArray = dispRelVisitor.localArray();
 
   scalar_array slipRateVertex(spaceDim);
-  PetscSection velRelSection = _fields->get("relative velocity").petscSection();assert(velRelSection);
-  PetscVec velRelVec = _fields->get("relative velocity").localVector();assert(velRelVec);
-  PetscScalar *velRelArray = NULL;
+  topology::Field<topology::SubMesh>& velRel = _fields->get("relative velocity");
+  topology::VecVisitorMesh velRelVisitor(velRel);
+  const PetscScalar* velRelArray = velRelVisitor.localArray();
 
-  PetscSection dispTSection = fields->get("disp(t)").petscSection();assert(dispTSection);
-  PetscVec dispTVec = fields->get("disp(t)").localVector();assert(dispTVec);
-  PetscScalar *dispTArray = NULL;
-
-  PetscSection dispTIncrSection = fields->get("dispIncr(t->t+dt)").petscSection();assert(dispTIncrSection);
-  PetscVec dispTIncrVec = fields->get("dispIncr(t->t+dt)").localVector();assert(dispTIncrVec);
-  PetscScalar *dispTIncrArray = NULL;
-
-  PetscSection orientationSection = _fields->get("orientation").petscSection();assert(orientationSection);
-  PetscVec orientationVec = _fields->get("orientation").localVector();assert(orientationVec);
-  PetscScalar *orientationArray = NULL;
-
-  err = VecGetArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(velRelVec, &velRelArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
+  topology::Field<topology::SubMesh>& orientation = _fields->get("orientation");
+  topology::VecVisitorMesh orientationVisitor(orientation);
+  const PetscScalar* orientationArray = orientationVisitor.localArray();
 
   const int numVertices = _cohesiveVertices.size();
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
@@ -414,33 +407,23 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
     const int v_positive = _cohesiveVertices[iVertex].positive;
 
     // Get relative displacement
-    PetscInt drdof, droff;
-    err = PetscSectionGetDof(dispRelSection, v_fault, &drdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispRelSection, v_fault, &droff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == drdof);
+    const PetscInt droff = dispRelVisitor.sectionOffset(v_fault);
+    assert(spaceDim == dispRelVisitor.sectionDof(v_fault));
 
     // Get relative velocity
-    PetscInt vrdof, vroff;
-    err = PetscSectionGetDof(velRelSection, v_fault, &vrdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(velRelSection, v_fault, &vroff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == vrdof);
+    const PetscInt vroff = velRelVisitor.sectionOffset(v_fault);
+    assert(spaceDim == velRelVisitor.sectionDof(v_fault));
 
     // Get orientation
-    PetscInt odof, ooff;
-    err = PetscSectionGetDof(orientationSection, v_fault, &odof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(orientationSection, v_fault, &ooff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim*spaceDim == odof);
+    const PetscInt ooff = orientationVisitor.sectionOffset(v_fault);
+    assert(spaceDim*spaceDim == orientationVisitor.sectionDof(v_fault));
 
     // Get Lagrange multiplier values from disp(t), and dispIncr(t->t+dt)
-    PetscInt dtldof, dtloff;
-    err = PetscSectionGetDof(dispTSection, v_lagrange, &dtldof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTSection, v_lagrange, &dtloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dtldof);
+    const PetscInt dtloff = dispTVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTVisitor.sectionDof(v_lagrange));
 
-    PetscInt dildof, diloff;
-    err = PetscSectionGetDof(dispTIncrSection, v_lagrange, &dildof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispTIncrSection, v_lagrange, &diloff);CHECK_PETSC_ERROR(err);
-    assert(spaceDim == dildof);
+    const PetscInt diloff = dispTIncrVisitor.sectionOffset(v_lagrange);
+    assert(spaceDim == dispTIncrVisitor.sectionDof(v_lagrange));
 
     // Compute slip, slip rate, and fault traction (Lagrange
     // multiplier) at time t+dt in fault coordinate system.
@@ -490,11 +473,6 @@ pylith::faults::FaultCohesiveDyn::updateStateVars(const PylithScalar t,
       throw std::logic_error("Unknown spatial dimension in FaultCohesiveDyn::updateStateVars().");
     } // switch
   } // for
-  err = VecRestoreArray(dispRelVec, &dispRelArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(velRelVec, &velRelArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTVec, &dispTArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(dispTIncrVec, &dispTIncrArray);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(orientationVec, &orientationArray);CHECK_PETSC_ERROR(err);
 
   PYLITH_METHOD_END;
 } // updateStateVars
