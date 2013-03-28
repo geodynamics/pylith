@@ -154,10 +154,9 @@ pylith::faults::FaultCohesiveImpulses::initialize(const topology::Mesh& mesh,
 // Integrate contribution of cohesive cells to residual term that do
 // not require assembly across cells, vertices, or processors.
 void
-pylith::faults::FaultCohesiveImpulses::integrateResidual(
-			     const topology::Field<topology::Mesh>& residual,
-			     const PylithScalar t,
-			     topology::SolutionFields* const fields)
+pylith::faults::FaultCohesiveImpulses::integrateResidual(const topology::Field<topology::Mesh>& residual,
+							 const PylithScalar t,
+							 topology::SolutionFields* const fields)
 { // integrateResidual
   PYLITH_METHOD_BEGIN;
 
@@ -310,15 +309,15 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   PetscScalar *amplitudeArray = amplitudeVisitor.localArray();
 
   PetscErrorCode err;
-  PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
-  PetscIS vertexNumbering = NULL;
-  err = DMPlexGetVertexNumbering(faultDMMesh, &vertexNumbering);CHECK_PETSC_ERROR(err);
-  const PetscInt* points = NULL;
-  PetscInt npoints = 0;
-  err = ISGetIndices(vertexNumbering, &points);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(vertexNumbering, &npoints);CHECK_PETSC_ERROR(err);
+  PetscDM amplitudeDM = amplitude.mesh().dmMesh();assert(amplitudeDM);
+  PetscSection amplitudeSection = amplitude.petscSection();assert(amplitudeSection);
+  PetscSection amplitudeGlobalSection = NULL;
+  PetscSF sf = NULL;
+  err = DMGetPointSF(amplitudeDM, &sf);CHECK_PETSC_ERROR(err);
+  err = PetscSectionCreateGlobalSection(amplitudeSection, sf, PETSC_TRUE, &amplitudeGlobalSection);CHECK_PETSC_ERROR(err);
 
   scalar_array coordsVertex(spaceDim);
+  PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
   topology::CoordsVisitor coordsVisitor(faultDMMesh);
   PetscScalar *coordsArray = coordsVisitor.localArray();
 
@@ -333,13 +332,11 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
   for (int iVertex=0; iVertex < numVertices; ++iVertex) {
     const int v_fault = _cohesiveVertices[iVertex].fault;
 
-    std::cerr << ":TODO: MATT Update FaultCohesiveImpulses::_setupImpulses() for PETSc DM." << std::endl;
-#if 0
-    // Only create impulses on local vertices
-    if (!globalNumbering->isLocal(v_fault)) {
+    PetscInt goff;
+    err = PetscSectionGetOffset(amplitudeGlobalSection, v_fault, &goff);CHECK_PETSC_ERROR(err);
+    if (goff < 0) {
       continue;
     } // if
-#endif
 
     const PetscInt coff = coordsVisitor.sectionOffset(v_fault);
     assert(spaceDim == coordsVisitor.sectionDof(v_fault));
@@ -373,6 +370,7 @@ pylith::faults::FaultCohesiveImpulses::_setupImpulses(void)
       ++count;
     } // if
   } // for
+  err = PetscSectionDestroy(&amplitudeGlobalSection);CHECK_PETSC_ERROR(err);
 
   // Close properties database
   _dbImpulseAmp->close();
