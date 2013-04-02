@@ -47,7 +47,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-//#define PRECOMPUTE_GEOMETRY
 //#define DETAILED_EVENT_LOGGING
 
 // ----------------------------------------------------------------------
@@ -108,19 +107,6 @@ pylith::faults::FaultCohesiveLagrange::initialize(const topology::Mesh& mesh,
   dispRel.scale(_normalizer->lengthScale());
 
   _quadrature->initializeGeometry();
-
-#if defined(PRECOMPUTE_GEOMETRY)
-#error("Code for PRECOMPUTE_GEOMETRY not implemented.");
-  const ALE::Obj<SieveSubMesh>& faultSieveMesh = _faultMesh->sieveMesh();
-  assert(!faultSieveMesh.isNull());
-  const ALE::Obj<SieveSubMesh::label_sequence>& cells =
-      faultSieveMesh->heightStratum(0);
-  assert(!cells.isNull());
-  const SieveSubMesh::label_sequence::iterator cellsBegin = cells->begin();
-  const SieveSubMesh::label_sequence::iterator cellsEnd = cells->end();
-  _quadrature->initializeGeometry();
-  _quadrature->computeGeometry(*_faultMesh, cells);
-#endif
 
   // Compute orientation at vertices in fault mesh.
   _calcOrientation(upDir);
@@ -1590,13 +1576,9 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
     areaCell = 0.0;
 
     // Compute geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(c);
-#else
     coordsVisitor.getClosure(&coordsCell, &coordsSize, c);
     _quadrature->computeGeometry(coordsCell, coordsSize, c);
     coordsVisitor.restoreClosure(&coordsCell, &coordsSize, c);
-#endif
 
     // Get cell geometry information that depends on cell
     const scalar_array& basis = _quadrature->basis();
