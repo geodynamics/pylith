@@ -27,6 +27,8 @@
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -36,6 +38,11 @@
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestBruneSlipFn );
+
+// ----------------------------------------------------------------------
+typedef pylith::topology::Mesh::SieveMesh SieveMesh;
+typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
+typedef pylith::topology::Mesh::RealSection RealSection;
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -59,11 +66,6 @@ namespace pylith {
 } // pylith
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::SieveSubMesh SieveSubMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Test constructor.
 void
 pylith::faults::TestBruneSlipFn::testConstructor(void)
@@ -82,11 +84,10 @@ pylith::faults::TestBruneSlipFn::testDbFinalSlip(void)
   spatialdata::spatialdb::SimpleDB db(label);
   slipfn.dbFinalSlip(&db);
 
-  CPPUNIT_ASSERT(0 != slipfn._dbFinalSlip);
-  CPPUNIT_ASSERT_EQUAL(std::string(label),
-		       std::string(slipfn._dbFinalSlip->label()));
-  CPPUNIT_ASSERT(0 == slipfn._dbSlipTime);
-  CPPUNIT_ASSERT(0 == slipfn._dbRiseTime);
+  CPPUNIT_ASSERT(slipfn._dbFinalSlip);
+  CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(slipfn._dbFinalSlip->label()));
+  CPPUNIT_ASSERT(!slipfn._dbSlipTime);
+  CPPUNIT_ASSERT(!slipfn._dbRiseTime);
 } // testDbFinalSlip
 
 // ----------------------------------------------------------------------
@@ -100,11 +101,10 @@ pylith::faults::TestBruneSlipFn::testDbSlipTime(void)
   spatialdata::spatialdb::SimpleDB db(label);
   slipfn.dbSlipTime(&db);
 
-  CPPUNIT_ASSERT(0 != slipfn._dbSlipTime);
-  CPPUNIT_ASSERT_EQUAL(std::string(label),
-		       std::string(slipfn._dbSlipTime->label()));
-  CPPUNIT_ASSERT(0 == slipfn._dbFinalSlip);
-  CPPUNIT_ASSERT(0 == slipfn._dbRiseTime);
+  CPPUNIT_ASSERT(slipfn._dbSlipTime);
+  CPPUNIT_ASSERT_EQUAL(std::string(label), std::string(slipfn._dbSlipTime->label()));
+  CPPUNIT_ASSERT(!slipfn._dbFinalSlip);
+  CPPUNIT_ASSERT(!slipfn._dbRiseTime);
 } // testDbSlipTime
 
 // ----------------------------------------------------------------------
@@ -118,11 +118,11 @@ pylith::faults::TestBruneSlipFn::testDbRiseTime(void)
   spatialdata::spatialdb::SimpleDB db(label);
   slipfn.dbRiseTime(&db);
 
-  CPPUNIT_ASSERT(0 != slipfn._dbRiseTime);
+  CPPUNIT_ASSERT(slipfn._dbRiseTime);
   CPPUNIT_ASSERT_EQUAL(std::string(label),
 		       std::string(slipfn._dbRiseTime->label()));
-  CPPUNIT_ASSERT(0 == slipfn._dbFinalSlip);
-  CPPUNIT_ASSERT(0 == slipfn._dbSlipTime);
+  CPPUNIT_ASSERT(!slipfn._dbFinalSlip);
+  CPPUNIT_ASSERT(!slipfn._dbSlipTime);
 } // testDbRiseTime
 
 // ----------------------------------------------------------------------
@@ -237,16 +237,9 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
   BruneSlipFn slipfn;
   _initialize(&mesh, &faultMesh, &slipfn, originTime);
   
-  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();
-  CPPUNIT_ASSERT(0 != cs);
-
+  const spatialdata::geocoords::CoordSys* cs = faultMesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
-  DM dmMesh = faultMesh.dmMesh();
-  PetscErrorCode err;
-  CPPUNIT_ASSERT(dmMesh);
 
-  PetscInt       vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   topology::Field<topology::SubMesh> slip(faultMesh);
   slip.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   slip.allocate();
@@ -254,30 +247,29 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
   const PylithScalar t = 2.134;
   slipfn.slip(&slip, originTime+t);
 
+  PetscDM dmMesh = faultMesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  topology::VecVisitorMesh slipVisitor(slip);
+  const PetscScalar* slipArray = slipVisitor.localArray();CPPUNIT_ASSERT(slipArray);
+
   const PylithScalar tolerance = 1.0e-06;
-  int iPoint = 0;
-  PetscSection slipSection = slip.petscSection();
-  Vec          slipVec     = slip.localVector();
-  PetscScalar *slipArray;
-  CPPUNIT_ASSERT(slipSection);CPPUNIT_ASSERT(slipVec);
-  err = VecGetArray(slipVec, &slipArray);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v, ++iPoint) {
+  for(PetscInt v = vStart, iPoint=0; v < vEnd; ++v, ++iPoint) {
     PylithScalar slipMag = 0.0;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
     const PylithScalar peakRate = slipMag / riseTimeE[iPoint] * 1.745;
-    const PylithScalar tau = 
-      (slipMag > 0.0) ? slipMag / (exp(1.0) * peakRate) : 1.0;
+    const PylithScalar tau = (slipMag > 0.0) ? slipMag / (exp(1.0) * peakRate) : 1.0;
     const PylithScalar t0 = slipTimeE[iPoint];
     const PylithScalar slipNorm = 1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau);
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, dof);
+    const PetscInt off = slipVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, slipVisitor.sectionDof(v));
 
-    for(PetscInt d = 0; d < dof; ++d) {
+    for(PetscInt d = 0; d < spaceDim; ++d) {
       const PylithScalar slipE = finalSlipE[iPoint*spaceDim+d] * slipNorm;
       CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, slipArray[off+d], tolerance);
     } // for
@@ -317,9 +309,9 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
 					     BruneSlipFn* slipfn,
 					     const PylithScalar originTime)
 { // _initialize
-  CPPUNIT_ASSERT(0 != mesh);
-  CPPUNIT_ASSERT(0 != faultMesh);
-  CPPUNIT_ASSERT(0 != slipfn);
+  CPPUNIT_ASSERT(mesh);
+  CPPUNIT_ASSERT(faultMesh);
+  CPPUNIT_ASSERT(slipfn);
   PetscErrorCode err;
 
   const char* meshFilename = "data/tri3.mesh";
@@ -343,41 +335,35 @@ pylith::faults::TestBruneSlipFn::_initialize(topology::Mesh* mesh,
   mesh->coordsys(&cs);
 
   // Create fault mesh
-  DM       dmMesh = mesh->dmMesh();
+  PetscDM dmMesh = mesh->dmMesh();
   PetscInt firstFaultVertex = 0;
   PetscInt firstLagrangeVertex, firstFaultCell;
-  DMLabel  groupField;
+  DMLabel groupField;
   const bool useLagrangeConstraints = true;
 
   err = DMPlexGetStratumSize(dmMesh, faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
   firstFaultCell = firstLagrangeVertex;
   if (useLagrangeConstraints) {
     firstFaultCell += firstLagrangeVertex;
-  }
+  } // if
   err = DMPlexGetLabel(dmMesh, faultLabel, &groupField);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT(groupField);
   ALE::Obj<SieveFlexMesh> faultBoundary = 0;
   const ALE::Obj<SieveMesh>& sieveMesh = mesh->sieveMesh();
   CPPUNIT_ASSERT(!sieveMesh.isNull());
-  CohesiveTopology::createFault(faultMesh, faultBoundary,
-                                *mesh, groupField);
-  CohesiveTopology::create(mesh, *faultMesh, faultBoundary, 
-                           groupField,
-                           faultId,
-                           firstFaultVertex, firstLagrangeVertex, firstFaultCell,
-                           useLagrangeConstraints);
+  CohesiveTopology::createFault(faultMesh, faultBoundary, *mesh, groupField);
+  CohesiveTopology::create(mesh, *faultMesh, faultBoundary, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
   const ALE::Obj<SieveSubMesh>& faultSieveMesh = faultMesh->sieveMesh();
   CPPUNIT_ASSERT(!faultSieveMesh.isNull());
   const ALE::Obj<RealSection>& oldCoordSection = sieveMesh->getRealSection("coordinates");
   faultSieveMesh->setRealSection("coordinates", oldCoordSection);
-  DM              faultDMMesh = faultMesh->dmMesh();
-  IS              subpointIS;
+  PetscDM faultDMMesh = faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+  PetscIS subpointIS;
   const PetscInt *points;
-  PetscSection    coordSection;
-  PetscInt        vStart, vEnd;
-  CPPUNIT_ASSERT(faultDMMesh);
+  PetscSection  coordSection;
+  PetscInt vStart, vEnd;
 
   err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
   err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);
@@ -555,7 +541,7 @@ pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStr
   
   slipfn.initialize(faultMesh, normalizer, originTime);
 
-  CPPUNIT_ASSERT(0 != slipfn._parameters);
+  CPPUNIT_ASSERT(slipfn._parameters);
   PetscSection finalSlipSection = slipfn._parameters->get("final slip").petscSection();
   Vec          finalSlipVec     = slipfn._parameters->get("final slip").localVector();
   PetscScalar *finalSlipArray;
