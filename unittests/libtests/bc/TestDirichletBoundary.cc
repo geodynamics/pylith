@@ -43,7 +43,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBoundary );
 void
 pylith::bc::TestDirichletBoundary::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -51,7 +55,11 @@ pylith::bc::TestDirichletBoundary::setUp(void)
 void
 pylith::bc::TestDirichletBoundary::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -59,7 +67,11 @@ pylith::bc::TestDirichletBoundary::tearDown(void)
 void
 pylith::bc::TestDirichletBoundary::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   DirichletBoundary bc;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -67,6 +79,8 @@ pylith::bc::TestDirichletBoundary::testConstructor(void)
 void
 pylith::bc::TestDirichletBoundary::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   DirichletBoundary bc;
   _initialize(&mesh, &bc);
@@ -84,6 +98,8 @@ pylith::bc::TestDirichletBoundary::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(PetscInt(numBoundary), depthStratum.size());
 
   // :TODO: Check cells in boundary mesh.
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -91,6 +107,8 @@ void
 pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
 					       DirichletBoundary* const bc) const
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(bc);
 
@@ -140,6 +158,8 @@ pylith::bc::TestDirichletBoundary::_initialize(topology::Mesh* mesh,
   bc->dbRate(&dbRate);
   bc->bcDOF(_data->fixedDOF, _data->numFixedDOF);
   bc->initialize(*mesh, upDir);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

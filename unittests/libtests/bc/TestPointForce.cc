@@ -28,6 +28,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -43,7 +45,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestPointForce );
 void
 pylith::bc::TestPointForce::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -51,7 +57,11 @@ pylith::bc::TestPointForce::setUp(void)
 void
 pylith::bc::TestPointForce::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -59,7 +69,11 @@ pylith::bc::TestPointForce::tearDown(void)
 void
 pylith::bc::TestPointForce::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -67,6 +81,8 @@ pylith::bc::TestPointForce::testConstructor(void)
 void
 pylith::bc::TestPointForce::testNormalizer(void)
 { // testNormalizer
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   spatialdata::units::Nondimensional normalizer;
@@ -75,6 +91,8 @@ pylith::bc::TestPointForce::testNormalizer(void)
 
   bc.normalizer(normalizer);
   CPPUNIT_ASSERT_EQUAL(scale, bc._getNormalizer().lengthScale());
+
+  PYLITH_METHOD_END;
 } // testNormalizer
 
 // ----------------------------------------------------------------------
@@ -82,17 +100,18 @@ pylith::bc::TestPointForce::testNormalizer(void)
 void
 pylith::bc::TestPointForce::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   PointForce bc;
   _initialize(&mesh, &bc);
-  CPPUNIT_ASSERT(_data);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt cStart, cEnd;
-  PetscErrorCode err;
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = cellsStratum.size();
 
-  const int numCells = cEnd-cStart;
   const int numForceDOF = _data->numForceDOF;
   const size_t numPoints = _data->numForcePts;
 
@@ -105,48 +124,42 @@ pylith::bc::TestPointForce::testInitialize(void)
     } // for
   } // if
 
-  CPPUNIT_ASSERT(bc._parameters);
-  PetscSection initialSection = bc._parameters->get("initial").petscSection();CPPUNIT_ASSERT(initialSection);
-  PetscVec initialVec = bc._parameters->get("initial").localVector();CPPUNIT_ASSERT(initialVec);
-  PetscScalar *initialArray = NULL;
-  
   // Check values
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar forceScale = _data->pressureScale*pow(_data->lengthScale, 2);
   const PylithScalar timeScale = _data->timeScale;
 
-  err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
+  CPPUNIT_ASSERT(bc._parameters);
+  topology::VecVisitorMesh initialVisitor(bc._parameters->get("initial"));
+  const PetscScalar* initialArray = initialVisitor.localArray();
+
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
-    PetscInt  dof, off;
 
-    err = PetscSectionGetDof(initialSection, p_force, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(initialSection, p_force, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(numForceDOF, dof);
+    const PetscInt off = initialVisitor.sectionOffset(p_force);
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, initialVisitor.sectionDof(p_force));
+
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceInitial[i*numForceDOF+iDOF], initialArray[off+iDOF]*forceScale, tolerance);
     } // for
   } // for
-  err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
 
   // Check rate of change
-  PetscSection rateSection = bc._parameters->get("rate").petscSection();CPPUNIT_ASSERT(rateSection);
-  PetscVec rateVec = bc._parameters->get("rate").localVector();CPPUNIT_ASSERT(rateVec);
-  PetscScalar *rateArray = NULL;
-  err = VecGetArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh rateVisitor(bc._parameters->get("rate"));
+  const PetscScalar* rateArray = rateVisitor.localArray();
 
   for (int i=0; i < numPoints; ++i) {
     const int p_force = _data->forcePoints[i]+offset;
-    PetscInt  dof, off;
 
-    err = PetscSectionGetDof(rateSection, p_force, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(rateSection, p_force, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(numForceDOF, dof);
+    const PetscInt off = rateVisitor.sectionOffset(p_force);
+    CPPUNIT_ASSERT_EQUAL(numForceDOF, rateVisitor.sectionDof(p_force));
+    
     for (int iDOF=0; iDOF < numForceDOF; ++iDOF) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->forceRate, rateArray[off+iDOF]*forceScale/timeScale, tolerance);
     } // for
   } // for
-  err = VecRestoreArray(rateVec, &rateArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -154,13 +167,16 @@ pylith::bc::TestPointForce::testInitialize(void)
 void
 pylith::bc::TestPointForce::testIntegrateResidual(void)
 { // testIntegrateResidual
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   PointForce bc;
   _initialize(&mesh, &bc);
 
   topology::Field<topology::Mesh> residual(mesh);
-  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();
-  CPPUNIT_ASSERT(cs);
+  const spatialdata::geocoords::CoordSys* cs = mesh.coordsys();CPPUNIT_ASSERT(cs);
   const int spaceDim = cs->spaceDim();
   residual.newSection(topology::FieldBase::VERTICES_FIELD, spaceDim);
   residual.allocate();
@@ -171,36 +187,35 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
   const PylithScalar t = _data->tResidual/_data->timeScale;
   bc.integrateResidual(residual, t, &fields);
 
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt vStart, vEnd;
-  PetscErrorCode err;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-
-  const PylithScalar* valsE = _data->residual;
-  const int totalNumVertices = vEnd-vStart;
-  const int sizeE = spaceDim * totalNumVertices;
-
-  PetscSection residualSection = residual.petscSection();CPPUNIT_ASSERT(residualSection);
-  PetscVec residualVec = residual.localVector();CPPUNIT_ASSERT(residualVec);
-  PetscScalar *vals = NULL;
-  PetscInt size;
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
-
   // residual.view("RESIDUAL"); // DEBUGGING
+
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  const PylithScalar* residualE = _data->residual;
+
+  topology::VecVisitorMesh residualVisitor(residual);
+  const PetscScalar* residualArray = residualVisitor.localArray();
 
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar forceScale = _data->pressureScale*pow(_data->lengthScale, 2);
   const PylithScalar residualScale = forceScale;
+  for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+    const PetscInt off = residualVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(v));
 
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0) {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*residualScale, tolerance);
-    } else {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i]*residualScale, tolerance);
-    } // if/else
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++index) {
+      if (fabs(residualE[index]) > 1.0) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+iDim]/residualE[index]*residualScale, tolerance);
+      } else {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(residualE[index], residualArray[off+iDim]*residualScale, tolerance);
+      } // if/else
+    } // for
+  } // for
+
+  PYLITH_METHOD_END;
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -208,11 +223,15 @@ pylith::bc::TestPointForce::testIntegrateResidual(void)
 void
 pylith::bc::TestPointForce::testVerifyConfiguration(void)
 { // testVerifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   PointForce bc;
   _initialize(&mesh, &bc);
 
   bc.verifyConfiguration(mesh);
+
+  PYLITH_METHOD_END;
 } // testVerifyConfiguration
 
 // ----------------------------------------------------------------------
@@ -220,6 +239,8 @@ void
 pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
 					 PointForce* const bc) const
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(bc);
 
@@ -276,6 +297,8 @@ pylith::bc::TestPointForce::_initialize(topology::Mesh* mesh,
   bc->bcDOF(_data->forceDOF, _data->numForceDOF);
   bc->normalizer(normalizer);
   bc->initialize(*mesh, upDir);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

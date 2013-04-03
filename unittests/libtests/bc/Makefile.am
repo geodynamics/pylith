@@ -32,43 +32,19 @@ testbc_SOURCES = \
 	TestTimeDependent.cc \
 	TestTimeDependentPoints.cc \
 	TestBoundaryMesh.cc \
-	TestBoundaryMeshTri3.cc \
-	TestBoundaryMeshQuad4.cc \
-	TestBoundaryMeshTet4.cc \
-	TestBoundaryMeshHex8.cc \
+	TestBoundaryMeshCases.cc \
 	TestAbsorbingDampers.cc \
-	TestAbsorbingDampersLine2.cc \
-	TestAbsorbingDampersTri3.cc \
-	TestAbsorbingDampersQuad4.cc \
-	TestAbsorbingDampersTet4.cc \
-	TestAbsorbingDampersHex8.cc \
+	TestAbsorbingDampersCases.cc \
 	TestDirichletBC.cc \
-	TestDirichletBCLine2.cc \
-	TestDirichletBCLine2b.cc \
-	TestDirichletBCTri3.cc \
-	TestDirichletBCQuad4.cc \
-	TestDirichletBCTet4.cc \
-	TestDirichletBCHex8.cc \
+	TestDirichletBCCases.cc \
 	TestDirichletBCMulti.cc \
-	TestDirichletBCMultiTri3.cc \
-	TestDirichletBCMultiTet4.cc \
+	TestDirichletBCMultiCases.cc \
 	TestDirichletBoundary.cc \
-	TestDirichletBoundaryTri3.cc \
-	TestDirichletBoundaryQuad4.cc \
-	TestDirichletBoundaryTet4.cc \
-	TestDirichletBoundaryHex8.cc \
+	TestDirichletBoundaryCases.cc \
 	TestNeumann.cc \
-	TestNeumannLine2.cc \
-	TestNeumannTri3.cc \
-	TestNeumannQuad4.cc \
-	TestNeumannTet4.cc \
-	TestNeumannHex8.cc \
+	TestNeumannCases.cc \
 	TestPointForce.cc \
-	TestPointForceLine2.cc \
-	TestPointForceTri3.cc \
-	TestPointForceQuad4.cc \
-	TestPointForceTet4.cc \
-	TestPointForceHex8.cc \
+	TestPointForceCases.cc \
 	test_bc.cc
 
 
@@ -78,43 +54,19 @@ noinst_HEADERS = \
 	TestTimeDependent.hh \
 	TestTimeDependentPoints.hh \
 	TestBoundaryMesh.hh \
-	TestBoundaryMeshTri3.hh \
-	TestBoundaryMeshQuad4.hh \
-	TestBoundaryMeshTet4.hh \
-	TestBoundaryMeshHex8.hh \
+	TestBoundaryMeshCases.hh \
 	TestAbsorbingDampers.hh \
-	TestAbsorbingDampersLine2.hh \
-	TestAbsorbingDampersTri3.hh \
-	TestAbsorbingDampersQuad4.hh \
-	TestAbsorbingDampersTet4.hh \
-	TestAbsorbingDampersHex8.hh \
+	TestAbsorbingDampersCases.hh \
 	TestDirichletBC.hh \
-	TestDirichletBCLine2.hh \
-	TestDirichletBCLine2b.hh \
-	TestDirichletBCTri3.hh \
-	TestDirichletBCQuad4.hh \
-	TestDirichletBCTet4.hh \
-	TestDirichletBCHex8.hh \
+	TestDirichletBCCases.hh \
 	TestDirichletBCMulti.hh \
-	TestDirichletBCMultiTri3.hh \
-	TestDirichletBCMultiTet4.hh \
+	TestDirichletBCMultiCases.hh \
 	TestDirichletBoundary.hh \
-	TestDirichletBoundaryTri3.hh \
-	TestDirichletBoundaryQuad4.hh \
-	TestDirichletBoundaryTet4.hh \
-	TestDirichletBoundaryHex8.hh \
+	TestDirichletBoundaryCases.hh \
 	TestNeumann.hh \
-	TestNeumannLine2.hh \
-	TestNeumannTri3.hh \
-	TestNeumannQuad4.hh \
-	TestNeumannTet4.hh \
-	TestNeumannHex8.hh \
+	TestNeumannCases.hh \
 	TestPointForce.hh \
-	TestPointForceLine2.hh \
-	TestPointForceTri3.hh \
-	TestPointForceQuad4.hh \
-	TestPointForceTet4.hh \
-	TestPointForceHex8.hh
+	TestPointForceCases.hh
 
 # Source files associated with testing data
 testbc_SOURCES += \

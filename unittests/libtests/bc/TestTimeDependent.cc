@@ -34,15 +34,19 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestTimeDependent );
 void
 pylith::bc::TestTimeDependent::testDBInitial(void)
 { // testDBInitial
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   spatialdata::spatialdb::UniformDB db;
   bc.dbInitial(&db);
 
-  CPPUNIT_ASSERT(0 != bc._dbInitial);
-  CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
+  CPPUNIT_ASSERT(bc._dbInitial);
+  CPPUNIT_ASSERT(!bc._dbRate);
+  CPPUNIT_ASSERT(!bc._dbChange);
+  CPPUNIT_ASSERT(!bc._dbTimeHistory);
+
+  PYLITH_METHOD_END;
 } // testDBInitial
 
 // ----------------------------------------------------------------------
@@ -50,15 +54,19 @@ pylith::bc::TestTimeDependent::testDBInitial(void)
 void
 pylith::bc::TestTimeDependent::testDBRate(void)
 { // testDBRate
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   spatialdata::spatialdb::UniformDB db;
   bc.dbRate(&db);
 
-  CPPUNIT_ASSERT(0 == bc._dbInitial);
-  CPPUNIT_ASSERT(0 != bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
+  CPPUNIT_ASSERT(!bc._dbInitial);
+  CPPUNIT_ASSERT(bc._dbRate);
+  CPPUNIT_ASSERT(!bc._dbChange);
+  CPPUNIT_ASSERT(!bc._dbTimeHistory);
+
+  PYLITH_METHOD_END;
 } // testDBRate
 
 // ----------------------------------------------------------------------
@@ -66,15 +74,19 @@ pylith::bc::TestTimeDependent::testDBRate(void)
 void
 pylith::bc::TestTimeDependent::testDBChange(void)
 { // testDBChange
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   spatialdata::spatialdb::UniformDB db;
   bc.dbChange(&db);
 
-  CPPUNIT_ASSERT(0 == bc._dbInitial);
-  CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 != bc._dbChange);
-  CPPUNIT_ASSERT(0 == bc._dbTimeHistory);
+  CPPUNIT_ASSERT(!bc._dbInitial);
+  CPPUNIT_ASSERT(!bc._dbRate);
+  CPPUNIT_ASSERT(bc._dbChange);
+  CPPUNIT_ASSERT(!bc._dbTimeHistory);
+
+  PYLITH_METHOD_END;
 } // testDBChange
 
 // ----------------------------------------------------------------------
@@ -82,15 +94,19 @@ pylith::bc::TestTimeDependent::testDBChange(void)
 void
 pylith::bc::TestTimeDependent::testDBTimeHistory(void)
 { // testDBTimeHistory
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   spatialdata::spatialdb::TimeHistory th;
   bc.dbTimeHistory(&th);
 
-  CPPUNIT_ASSERT(0 == bc._dbInitial);
-  CPPUNIT_ASSERT(0 == bc._dbRate);
-  CPPUNIT_ASSERT(0 == bc._dbChange);
-  CPPUNIT_ASSERT(0 != bc._dbTimeHistory);
+  CPPUNIT_ASSERT(!bc._dbInitial);
+  CPPUNIT_ASSERT(!bc._dbRate);
+  CPPUNIT_ASSERT(!bc._dbChange);
+  CPPUNIT_ASSERT(bc._dbTimeHistory);
+
+  PYLITH_METHOD_END;
 } // testDBTimeHistory
 
 // ----------------------------------------------------------------------
@@ -98,6 +114,8 @@ pylith::bc::TestTimeDependent::testDBTimeHistory(void)
 void
 pylith::bc::TestTimeDependent::testVerifyConfiguration(void)
 { // testVerifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   spatialdata::spatialdb::UniformDB db;
   spatialdata::spatialdb::TimeHistory th;
@@ -129,6 +147,7 @@ pylith::bc::TestTimeDependent::testVerifyConfiguration(void)
 			 std::runtime_error);
   } // change (missing change)
 
+  PYLITH_METHOD_END;
 } // testVerifyConfiguration
 
 
