@@ -21,6 +21,8 @@
 #include "TestSolutionFields.hh" // Implementation of class methods
 
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
@@ -70,12 +72,6 @@ pylith::topology::TestSolutionFields::testSolution(void)
   Mesh mesh;
   _initialize(&mesh);
   SolutionFields manager(mesh);
-  DM dmMesh = mesh.dmMesh();
-  PetscErrorCode err;
-  CPPUNIT_ASSERT(dmMesh);
-
-  PetscInt       vStart, vEnd;
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
 
   const char* labels[] = { "field A", "field B", "field C" };
   const int size = 3;
@@ -90,17 +86,21 @@ pylith::topology::TestSolutionFields::testSolution(void)
   Field<Mesh>& fieldB = manager.get(labels[1]);
   Field<Mesh>& fieldC = manager.get(labels[2]);
   fieldA.newSection(FieldBase::VERTICES_FIELD, fiberDimA);
-
+  fieldA.allocate();
+  
   fieldB.newSection(fieldA, fiberDimB);
+  fieldB.allocate();
   fieldC.newSection(fieldB, fiberDimC);
+  fieldC.allocate();
 
   manager.solutionName(labels[1]);
-  const Field<Mesh>& solution = manager.solution();
-  PetscSection section = solution.petscSection();
-  CPPUNIT_ASSERT(section);
-  PetscInt dof;
-  err = PetscSectionGetDof(section, vStart, &dof);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(fiberDimB, dof);
+
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  Stratum verticesStratum(dmMesh, Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+
+  VecVisitorMesh solutionVisitor(manager.solution());
+  CPPUNIT_ASSERT_EQUAL(fiberDimB, solutionVisitor.sectionDof(vStart));
 
   PYLITH_METHOD_END;
 } // testSolution

@@ -22,6 +22,7 @@
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::utils::TestEventLogger );
@@ -31,7 +32,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::utils::TestEventLogger );
 void
 pylith::utils::TestEventLogger::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -39,12 +44,16 @@ pylith::utils::TestEventLogger::testConstructor(void)
 void
 pylith::utils::TestEventLogger::testClassName(void)
 { // testClassName
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(logger.className()));
 
   const std::string& name = "my name";
   logger.className(name.c_str());
   CPPUNIT_ASSERT_EQUAL(name, std::string(logger.className()));
+
+  PYLITH_METHOD_END;
 } // testClassName
 
 // ----------------------------------------------------------------------
@@ -52,11 +61,15 @@ pylith::utils::TestEventLogger::testClassName(void)
 void
 pylith::utils::TestEventLogger::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   CPPUNIT_ASSERT_EQUAL(0, logger._classId);
   logger.initialize();
   CPPUNIT_ASSERT(0 != logger._classId);
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -64,6 +77,8 @@ pylith::utils::TestEventLogger::testInitialize(void)
 void
 pylith::utils::TestEventLogger::testRegisterEvent(void)
 { // testRegisterEvent
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -82,6 +97,8 @@ pylith::utils::TestEventLogger::testRegisterEvent(void)
     CPPUNIT_ASSERT_EQUAL(std::string(events[i]), e_iter->first);
     CPPUNIT_ASSERT_EQUAL(ids[i], e_iter->second);
   } // for
+
+  PYLITH_METHOD_END;
 } // testRegisterEvent
 
 // ----------------------------------------------------------------------
@@ -89,6 +106,8 @@ pylith::utils::TestEventLogger::testRegisterEvent(void)
 void
 pylith::utils::TestEventLogger::testEventId(void)
 { // testEventId
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -109,6 +128,8 @@ pylith::utils::TestEventLogger::testEventId(void)
        e_iter != logger._events.end();
        ++e_iter, ++i)
     CPPUNIT_ASSERT_EQUAL(e_iter->second, ids[i]);
+
+  PYLITH_METHOD_END;
 } // testEventId
 
 // ----------------------------------------------------------------------
@@ -116,6 +137,8 @@ pylith::utils::TestEventLogger::testEventId(void)
 void
 pylith::utils::TestEventLogger::testEventLogging(void)
 { // testEventLogging
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -141,6 +164,8 @@ pylith::utils::TestEventLogger::testEventLogging(void)
   logger.eventBegin(event2);
   logger.eventEnd(event2);
   logger.eventEnd(event);
+
+  PYLITH_METHOD_END;
 } // testEventLogging
 
 // ----------------------------------------------------------------------
@@ -148,6 +173,8 @@ pylith::utils::TestEventLogger::testEventLogging(void)
 void
 pylith::utils::TestEventLogger::testRegisterStage(void)
 { // testRegisterStage
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -166,6 +193,8 @@ pylith::utils::TestEventLogger::testRegisterStage(void)
     CPPUNIT_ASSERT_EQUAL(std::string(stages[i]), s_iter->first);
     CPPUNIT_ASSERT_EQUAL(ids[i], s_iter->second);
   } // for
+
+  PYLITH_METHOD_END;
 } // testRegisterStage
 
 // ----------------------------------------------------------------------
@@ -173,6 +202,8 @@ pylith::utils::TestEventLogger::testRegisterStage(void)
 void
 pylith::utils::TestEventLogger::testStageId(void)
 { // testStageId
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -197,6 +228,8 @@ pylith::utils::TestEventLogger::testStageId(void)
   
   const int idNew = logger.stageId("stage D2");
   CPPUNIT_ASSERT_EQUAL(idNew, logger.stageId("stage D2"));
+
+  PYLITH_METHOD_END;
 } // testStageId
 
 // ----------------------------------------------------------------------
@@ -204,6 +237,8 @@ pylith::utils::TestEventLogger::testStageId(void)
 void
 pylith::utils::TestEventLogger::testStageLogging(void)
 { // testStageLogging
+  PYLITH_METHOD_BEGIN;
+
   EventLogger logger;
   logger.className("my class");
   logger.initialize();
@@ -229,6 +264,8 @@ pylith::utils::TestEventLogger::testStageLogging(void)
   logger.stagePush(stage2);
   logger.stagePop();
   logger.stagePop();
+
+  PYLITH_METHOD_END;
 } // testStageLogging
 
 
