@@ -73,6 +73,7 @@ pylith::topology::SubMesh::deallocate(void)
 
   delete _coordsys; _coordsys = 0;
   _mesh.destroy();
+  PetscErrorCode err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
 
   PYLITH_METHOD_END;
 } // deallocate
@@ -164,6 +165,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
   } // if
 
   /* TODO: Add creation of pointSF for submesh */
+  err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
   err = DMPlexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
 
   // Set data from mesh.

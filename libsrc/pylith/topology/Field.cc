@@ -59,10 +59,12 @@ pylith::topology::Field<mesh_type>::Field(const mesh_type& mesh) :
       err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
       err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
       err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
+      err = PetscSectionDestroy(&newCoordSection);CHECK_PETSC_ERROR(err);
       err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
     }
     err = PetscSectionCreate(mesh.comm(), &s);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultSection(_dm, s);CHECK_PETSC_ERROR(err);
+    err = PetscSectionDestroy(&s);CHECK_PETSC_ERROR(err);
   } else {
     _dm = NULL;
   }
@@ -157,6 +159,7 @@ pylith::topology::Field<mesh_type>::Field(const Field& src,
     err = DMGetDefaultSection(coordDM, &coordSection);CHECK_PETSC_ERROR(err);
     err = PetscSectionClone(coordSection, &newCoordSection);CHECK_PETSC_ERROR(err);
     err = DMSetDefaultSection(newCoordDM, newCoordSection);CHECK_PETSC_ERROR(err);
+    err = PetscSectionDestroy(&newCoordSection);CHECK_PETSC_ERROR(err);
     err = DMSetCoordinatesLocal(_dm, coordVec);CHECK_PETSC_ERROR(err);
   } // if
   _globalVec = NULL;
@@ -508,6 +511,7 @@ pylith::topology::Field<mesh_type>::cloneSection(const Field& src)
   assert(_dm);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(_dm, newSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&newSection);CHECK_PETSC_ERROR(err);
   err = DMCreateGlobalVector(_dm, &_globalVec);CHECK_PETSC_ERROR(err);
   err = DMCreateLocalVector(_dm, &_localVec);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) _globalVec, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
@@ -1060,6 +1064,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   err = DMGetDefaultSection(_dm, &section);CHECK_PETSC_ERROR(err);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&newSection);CHECK_PETSC_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
   err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
@@ -1159,6 +1164,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   err = DMPlexClone(_dm, &sinfo.dm);CHECK_PETSC_ERROR(err);
   err = PetscSectionClone(section, &newSection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultSection(sinfo.dm, newSection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&newSection);CHECK_PETSC_ERROR(err);
   err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
   if (labelName.empty()) {
     err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);CHECK_PETSC_ERROR(err);
