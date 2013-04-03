@@ -28,6 +28,8 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/SubMesh.hh" // USES SubMesh
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 
@@ -158,31 +160,36 @@ pylith::bc::TestNeumann::testInitialize(void)
 { // testInitialize
   PYLITH_METHOD_BEGIN;
 
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   Neumann bc;
   topology::SolutionFields fields(mesh);
   _initialize(&mesh, &bc, &fields);
 
-  CPPUNIT_ASSERT(_data);
-
   const topology::SubMesh& boundaryMesh = *bc._boundaryMesh;
+
   PetscDM subMesh = boundaryMesh.dmMesh();assert(subMesh);
-  PetscInt cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(subMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  topology::Stratum verticesStratum(subMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  const int numVertices = verticesStratum.size();
+
+  topology::Stratum cellsStratum(subMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  const PetscInt numCells = cellsStratum.size();
 
   const int cellDim = boundaryMesh.dimension();
   const int numCorners = _data->numCorners;
   const int spaceDim = _data->spaceDim;
-  const int numVertices = vEnd-vStart;
-  const int numCells = cEnd-cStart;
 
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
   CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
   PetscInt dp = 0;
+  PetscErrorCode err = 0;
   for (PetscInt c = cStart; c < cEnd; ++c) {
     PetscInt *closure = PETSC_NULL;
     PetscInt  closureSize, numCorners = 0;
@@ -204,31 +211,23 @@ pylith::bc::TestNeumann::testInitialize(void)
   // Check traction values
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
-  scalar_array tractionsCell(fiberDim);
-  PetscInt index = 0;
   CPPUNIT_ASSERT(bc._parameters);
-  PetscSection initialSection = bc._parameters->get("initial").petscSection();
-  PetscVec initialVec = bc._parameters->get("initial").localVector();
-  PetscScalar *initialArray;
-  CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
+  topology::VecVisitorMesh initialVisitor(bc._parameters->get("initial"));
+  const PetscScalar* initialArray = initialVisitor.localArray();CPPUNIT_ASSERT(initialArray);
 
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar pressureScale = _data->pressureScale;
-  err = VecGetArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
-  for (PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(initialSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(initialSection, c, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT(dof == numQuadPts*spaceDim);
+  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    const PetscInt off = initialVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(numQuadPts*spaceDim, initialVisitor.sectionDof(c));
+
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-      for (int iDim =0; iDim < spaceDim; ++iDim) {
+      for (int iDim =0; iDim < spaceDim; ++iDim, ++index) {
         const PylithScalar tractionE = _data->tractionsCell[index];
         CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, initialArray[off+iQuad*spaceDim+iDim]*pressureScale, tolerance);
-        ++index;
       } // for
   } // for
-  err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
 
   PYLITH_METHOD_END;
 } // testInitialize
@@ -252,35 +251,33 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
   bc.integrateResidual(residual, t, &fields);
 
   PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt vStart, vEnd;
-  PetscErrorCode err = 0;
-  const PylithScalar* valsE = _data->valsResidual;
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  const int totalNumVertices = verticesStratum.size();
 
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  const int totalNumVertices = vEnd - vStart;
-  const int sizeE = _data->spaceDim * totalNumVertices;
+  const PylithScalar* residualE = _data->valsResidual;
+  const int spaceDim = _data->spaceDim;
 
-  PetscSection residualSection = residual.petscSection();CPPUNIT_ASSERT(residualSection);
-  PetscVec residualVec = residual.localVector();CPPUNIT_ASSERT(residualVec);
-  PetscScalar *vals;
-  PetscInt size;
-
-  err = PetscSectionGetStorageSize(residualSection, &size);CHECK_PETSC_ERROR(err);
-  CPPUNIT_ASSERT_EQUAL(sizeE, size);
-
+  topology::VecVisitorMesh residualVisitor(residual);
+  const PetscScalar* residualArray = residualVisitor.localArray();
   //residual.view("RESIDUAL");
 
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar residualScale = _data->pressureScale * pow(_data->lengthScale, _data->spaceDim-1);
 
-  err = VecGetArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
-  for (int i=0; i < size; ++i)
-    if (fabs(valsE[i]) > 1.0) {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i]*residualScale, tolerance);
-    } else {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i]*residualScale, tolerance);
-    } // if/else
-  err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+  for (PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+    const PetscInt off = residualVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, residualVisitor.sectionDof(v));
+
+    for (int iDim=0; iDim < spaceDim; ++iDim, ++index) {
+      if (fabs(residualE[index]) > 1.0) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, residualArray[off+iDim]/residualE[index]*residualScale, tolerance);
+      } else {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(residualE[index], residualArray[off+iDim]*residualScale, tolerance);
+      } // if/else
+    } // for
+  } // for
 
   PYLITH_METHOD_END;
 } // testIntegrateResidual
@@ -292,7 +289,7 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
 { // test_queryDatabases
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -369,7 +366,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
 { // test_paramsLocalToGlobal
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -450,7 +447,7 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
 { // test_calculateValueInitial
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -490,7 +487,7 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
 { // test_calculateValueRate
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -530,7 +527,7 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
 { // test_calculateValueChange
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -570,7 +567,7 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
 { // test_calculateValueChangeTH
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -614,7 +611,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
 { // test_calculateValueAll
   PYLITH_METHOD_BEGIN;
 
-  _data = new NeumannDataQuad4();
+  delete _data; _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
@@ -776,29 +773,25 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
   CPPUNIT_ASSERT(valuesE);
 
   const topology::SubMesh& boundaryMesh = field.mesh();
+  const PetscInt ncells = _TestNeumann::ncells;
+
   PetscDM subMesh = boundaryMesh.dmMesh();CPPUNIT_ASSERT(subMesh);
-  PetscInt       cStart, cEnd;
-  PetscErrorCode err = 0;
-  err = DMPlexGetHeightStratum(subMesh, 1, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  topology::Stratum cellsStratum(subMesh, topology::Stratum::HEIGHT, 1);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  CPPUNIT_ASSERT_EQUAL(ncells, cellsStratum.size());
 
   const PylithScalar scale = field.scale();
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
-  PetscVec fieldVec = field.localVector();assert(fieldVec);
-  PetscScalar *fieldArray;
-
-  const PetscInt ncells = _TestNeumann::ncells;
-  CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
 
   // Check values associated with BC.
-  int icell = 0;
-  const PylithScalar tolerance = 1.0e-06;
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  for (PetscInt c = cStart; c < cEnd; ++c, ++icell) {
-    PetscInt dof, off;
+  topology::VecVisitorMesh fieldVisitor(field);
+  const PetscScalar* fieldArray = fieldVisitor.localArray();
 
-    err = PetscSectionGetDof(fieldSection, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, c, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+  const PylithScalar tolerance = 1.0e-06;
+  for (PetscInt c = cStart, icell = 0; c < cEnd; ++c, ++icell) {
+    const PetscInt off = fieldVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(c));
+
     for (int iDim=0; iDim < fiberDimE; ++iDim) {
       if (valuesE[icell*fiberDimE+iDim] != 0.0) {
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldArray[off+iDim]/valuesE[icell*fiberDimE+iDim]*scale, tolerance);
@@ -807,7 +800,6 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
       } // if/else
     } // for
   } // for
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _checkValues

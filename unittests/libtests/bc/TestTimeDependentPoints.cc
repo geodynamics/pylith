@@ -25,6 +25,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitormesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -105,8 +106,7 @@ namespace pylith {
       static
       void _checkValues(const PylithScalar* valuesE,
 			const int fiberDimE,
-			PetscSection section,
-			Vec vec,
+			const topology::Field<topology::Mesh>& field,
 			const PylithScalar scale);
     } // _TestTimeDependentPoints
   } // bc
@@ -117,9 +117,11 @@ namespace pylith {
 void
 pylith::bc::TestTimeDependentPoints::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   const char* filename = "data/tri3.mesh";
 
-  _mesh = new topology::Mesh();
+  _mesh = new topology::Mesh();CPPUNIT_ASSERT(_mesh);
   meshio::MeshIOAscii iohandler;
   iohandler.filename(filename);
   iohandler.read(_mesh);
@@ -135,11 +137,13 @@ pylith::bc::TestTimeDependentPoints::setUp(void)
   normalizer.timeScale(_TestTimeDependentPoints::timeScale);
   _mesh->nondimensionalize(normalizer);
 
-  _bc = new PointForce();
+  _bc = new PointForce();CPPUNIT_ASSERT(_bc);
   _bc->label("bc");
   _bc->normalizer(normalizer);
   _bc->bcDOF(_TestTimeDependentPoints::bcDOF, _TestTimeDependentPoints::numBCDOF);
   _bc->_getPoints(*_mesh);
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -147,8 +151,12 @@ pylith::bc::TestTimeDependentPoints::setUp(void)
 void
 pylith::bc::TestTimeDependentPoints::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _mesh; _mesh = 0;
   delete _bc; _bc = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -156,6 +164,8 @@ pylith::bc::TestTimeDependentPoints::tearDown(void)
 void
 pylith::bc::TestTimeDependentPoints::testBCDOF(void)
 { // testBCDOF
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
 
   const size_t numDOF = 4;
@@ -165,6 +175,8 @@ pylith::bc::TestTimeDependentPoints::testBCDOF(void)
   CPPUNIT_ASSERT_EQUAL(numDOF, bc._bcDOF.size());
   for (int i=0; i < numDOF; ++i)
     CPPUNIT_ASSERT_EQUAL(fixedDOF[i], bc._bcDOF[i]);
+
+  PYLITH_METHOD_END;
 } // testBCDOF
 
 // ----------------------------------------------------------------------
@@ -172,11 +184,15 @@ pylith::bc::TestTimeDependentPoints::testBCDOF(void)
 void
 pylith::bc::TestTimeDependentPoints::testGetLabel(void)
 { // testGetLabel
+  PYLITH_METHOD_BEGIN;
+
   PointForce bc;
   
   const std::string& label = "point force";
   bc.label(label.c_str());
   CPPUNIT_ASSERT_EQUAL(label, std::string(bc._getLabel()));
+
+  PYLITH_METHOD_END;
 } // testGetLabel
 
 // ----------------------------------------------------------------------
@@ -184,6 +200,8 @@ pylith::bc::TestTimeDependentPoints::testGetLabel(void)
 void
 pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
 { // testQueryDatabases
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -225,35 +243,22 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check initial values.
-  PetscSection initialSection = _bc->_parameters->get("initial").petscSection();
-  Vec          initialVec     = _bc->_parameters->get("initial").localVector();
-  CPPUNIT_ASSERT(initialSection);CPPUNIT_ASSERT(initialVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::initial, numBCDOF, initialSection, initialVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::initial, numBCDOF, _bc->_parameters->get("initial"), forceScale);
 
   // Check rate values.
-  PetscSection rateSection = _bc->_parameters->get("rate").petscSection();
-  Vec          rateVec     = _bc->_parameters->get("rate").localVector();
-  CPPUNIT_ASSERT(rateSection);CPPUNIT_ASSERT(rateVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::rate, numBCDOF, rateSection, rateVec, forceScale/timeScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::rate, numBCDOF, _bc->_parameters->get("rate"), forceScale/timeScale);
 
   // Check rate start time.
-  PetscSection rateTimeSection = _bc->_parameters->get("rate time").petscSection();
-  Vec          rateTimeVec     = _bc->_parameters->get("rate time").localVector();
-  CPPUNIT_ASSERT(rateTimeSection);CPPUNIT_ASSERT(rateTimeVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::rateTime, 1, rateTimeSection, rateTimeVec, timeScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::rateTime, 1, _bc->_parameters->get("rate time"), timeScale);
 
   // Check change values.
-  PetscSection changeSection = _bc->_parameters->get("change").petscSection();
-  Vec          changeVec     = _bc->_parameters->get("change").localVector();
-  CPPUNIT_ASSERT(changeSection);CPPUNIT_ASSERT(changeVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::change, numBCDOF, changeSection, changeVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::change, numBCDOF, _bc->_parameters->get("change"), forceScale);
 
   // Check change start time.
-  PetscSection changeTimeSection = _bc->_parameters->get("change time").petscSection();
-  Vec          changeTimeVec     = _bc->_parameters->get("change time").localVector();
-  CPPUNIT_ASSERT(changeTimeSection);CPPUNIT_ASSERT(changeTimeVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::changeTime, 1, changeTimeSection, changeTimeVec, timeScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::changeTime, 1, _bc->_parameters->get("change time"), timeScale);
   th.close();
+
+  PYLITH_METHOD_END;
 } // testQueryDatabases
 
 // ----------------------------------------------------------------------
@@ -261,6 +266,8 @@ pylith::bc::TestTimeDependentPoints::testQueryDatabases(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 { // testCalculateValueInitial
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -285,10 +292,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::initial, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::initial, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueInitial
 
 // ----------------------------------------------------------------------
@@ -296,6 +302,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueInitial(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 { // testCalculateValueRate
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -320,10 +328,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesRate, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesRate, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueRate
 
 // ----------------------------------------------------------------------
@@ -331,6 +338,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueRate(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 { // testCalculateValueChange
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -355,10 +364,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesChange, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesChange, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueChange
 
 // ----------------------------------------------------------------------
@@ -366,6 +374,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChange(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
 { // testCalculateValueChangeTH
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
@@ -393,10 +403,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesChangeTH, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesChangeTH, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueChangeTH
 
 // ----------------------------------------------------------------------
@@ -404,6 +413,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueChangeTH(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
 { // testCalculateValueAll
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -454,10 +465,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
       _TestTimeDependentPoints::valuesRate[i] +
       _TestTimeDependentPoints::valuesChangeTH[i];
 
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(&valuesE[0], numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(&valuesE[0], numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueAll
 
 // ----------------------------------------------------------------------
@@ -465,6 +475,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueAll(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 { // testCalculateValueIncrInitial
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -491,10 +503,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrInitial, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrInitial, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueIncrInitial
 
 // ----------------------------------------------------------------------
@@ -502,6 +513,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrInitial(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 { // testCalculateValueIncrRate
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -528,10 +541,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrRate, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrRate, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueIncrRate
 
 // ----------------------------------------------------------------------
@@ -539,6 +551,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrRate(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 { // testCalculateValueIncrChange
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -565,10 +579,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChange, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChange, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueIncrChange
 
 // ----------------------------------------------------------------------
@@ -576,6 +589,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChange(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
 { // testCalculateValueIncrChangeTH
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_bc);
 
   spatialdata::spatialdb::SimpleDB dbChange("TestTimeDependentPoints _queryDatabases");
@@ -605,10 +620,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
   CPPUNIT_ASSERT(_bc->_parameters);
   
   // Check values.
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChangeTH, numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(_TestTimeDependentPoints::valuesIncrChangeTH, numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueIncrChangeTH
 
 // ----------------------------------------------------------------------
@@ -616,6 +630,8 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrChangeTH(void)
 void
 pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 { // testCalculateValueIncrAll
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_bc);
 
@@ -668,10 +684,9 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
       _TestTimeDependentPoints::valuesIncrRate[i] +
       _TestTimeDependentPoints::valuesIncrChangeTH[i];
 
-  PetscSection valueSection = _bc->_parameters->get("value").petscSection();
-  Vec          valueVec     = _bc->_parameters->get("value").localVector();
-  CPPUNIT_ASSERT(valueSection);CPPUNIT_ASSERT(valueVec);
-  _TestTimeDependentPoints::_checkValues(&valuesE[0], numBCDOF, valueSection, valueVec, forceScale);
+  _TestTimeDependentPoints::_checkValues(&valuesE[0], numBCDOF, _bc->_parameters->get("value"), forceScale);
+
+  PYLITH_METHOD_END;
 } // testCalculateValueIncrAll
 
 // ----------------------------------------------------------------------
@@ -679,30 +694,29 @@ pylith::bc::TestTimeDependentPoints::testCalculateValueIncrAll(void)
 void
 pylith::bc::_TestTimeDependentPoints::_checkValues(const PylithScalar* valuesE,
 						   const int fiberDimE,
-						   PetscSection section,
-                           Vec vec,
+						   const topology::Field<topology::Mesh>& field,
 						   const PylithScalar scale)
 { // _checkValues
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-  PetscScalar   *array;
-  PetscErrorCode err;
+  PYLITH_METHOD_BEGIN;
+
+  topology::VecVisitorMesh fieldVisitor(field);
+  const PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
   
   const PylithScalar tolerance = 1.0e-06;
 
   // Check values at points associated with BC.
   const int npointsIn = _TestTimeDependentPoints::npointsIn;
-  err = VecGetArray(vec, &array);CHECK_PETSC_ERROR(err);
   for (int i=0; i < npointsIn; ++i) {
-    PetscInt dof, off;
     const int p_bc = _TestTimeDependentPoints::pointsIn[i];
-
-    err = PetscSectionGetDof(section, p_bc, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, p_bc, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
+    
+    const PetscInt off = fieldVisitor.sectionOffset(p_bc);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldVisitor.sectionDof(p_bc));
+    
     for (int iDim=0; iDim < fiberDimE; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i*fiberDimE+iDim]/scale, array[off+iDim], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i*fiberDimE+iDim]/scale, fieldArray[off+iDim], tolerance);
   } // for
-  err = VecRestoreArray(vec, &array);CHECK_PETSC_ERROR(err);
+  
+  PYLITH_METHOD_END;
 } // _checkValues
 
 

@@ -26,6 +26,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -37,7 +39,11 @@
 void
 pylith::bc::TestDirichletBCMulti::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -45,7 +51,11 @@ pylith::bc::TestDirichletBCMulti::setUp(void)
 void
 pylith::bc::TestDirichletBCMulti::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -53,20 +63,16 @@ pylith::bc::TestDirichletBCMulti::tearDown(void)
 void
 pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
 { // testSetConstraintSizes
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   DirichletBC bcA;
   DirichletBC bcB;
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
-  CPPUNIT_ASSERT(0 != _data);
 
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err = 0;
-
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
@@ -78,20 +84,29 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
   bcC.setConstraintSizes(field);
   field.allocate();
 
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
-  PetscVec fieldVec = field.localVector();CPPUNIT_ASSERT(fieldVec);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  const PetscInt numCells = cEnd - cStart;
+  // Vertices
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  // Cells
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = cellsStratum.size();
   const PetscInt offset = numCells;
+
+  topology::VecVisitorMesh fieldVisitor(field);
+
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, cdof;
-
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);CHECK_PETSC_ERROR(err);
+    const PetscInt dof = fieldVisitor.sectionDof(v);
+    const PetscInt cdof = fieldVisitor.sectionConstraintDof(v);
     CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
     CPPUNIT_ASSERT_EQUAL(_data->constraintSizes[v-offset], cdof);
   } // for
+
+  PYLITH_METHOD_END;
 } // testSetConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -99,20 +114,16 @@ pylith::bc::TestDirichletBCMulti::testSetConstraintSizes(void)
 void
 pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
 { // testSetConstraints
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   DirichletBC bcA;
   DirichletBC bcB;
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
-  CPPUNIT_ASSERT(0 != _data);
 
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err = 0;
-
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
@@ -127,11 +138,21 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
-  PetscVec fieldVec     = field.localVector();CPPUNIT_ASSERT(fieldVec);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
 
-  const PetscInt numCells = cEnd - cStart;
+  // Vertices
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  // Cells
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = cellsStratum.size();
+
+  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
   const PetscInt offset = numCells;
+
+  PetscErrorCode err = 0;
   int index = 0;
   int iConstraint = 0;
   for(PetscInt v = vStart; v < vEnd; ++v) {
@@ -148,6 +169,8 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
         CPPUNIT_ASSERT_EQUAL(_data->constrainedDOF[index++], cInd[iDOF]);
     } // if
   } // for
+
+  PYLITH_METHOD_END;
 } // testSetConstraints
 
 // ----------------------------------------------------------------------
@@ -155,20 +178,16 @@ pylith::bc::TestDirichletBCMulti::testSetConstraints(void)
 void
 pylith::bc::TestDirichletBCMulti::testSetField(void)
 { // testSetField
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   DirichletBC bcA;
   DirichletBC bcB;
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
-  CPPUNIT_ASSERT(0 != _data);
 
-  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
-  PetscInt cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err = 0;
-
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
@@ -183,25 +202,35 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  PetscSection fieldSection = field.petscSection();CPPUNIT_ASSERT(fieldSection);
-  PetscVec fieldVec = field.localVector();CPPUNIT_ASSERT(fieldVec);
-
+  // Scales
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar valueScale = _data->lengthScale;
 
   // All values should be zero.
-  PetscScalar *values;
   field.zero();
-  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    for(int d = 0; d < dof; ++d)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[off+d], tolerance);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+
+  // Vertices
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  // Cells
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = cellsStratum.size();
+  const PetscInt offset = numCells;
+
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+
+    for(int d = 0; d < fiberDim; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fieldArray[off+d], tolerance);
   } // for
-  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  fieldVisitor.clear();
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
@@ -210,17 +239,18 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
   bcB.setField(t, field);
   bcC.setField(t, field);
 
+  fieldVisitor.initialize(field);
+  fieldArray = fieldVisitor.localArray();
   int i = 0;
-  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, cdof, off;
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    for(int iDOF = 0; iDOF < dof; ++iDOF)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], values[off+iDOF]*valueScale, tolerance);
+    for(int iDOF = 0; iDOF < fiberDim; ++iDOF)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->field[i++], fieldArray[off+iDOF]*valueScale, tolerance);
   } // for
-  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testSetField
 
 // ----------------------------------------------------------------------
@@ -228,21 +258,16 @@ pylith::bc::TestDirichletBCMulti::testSetField(void)
 void
 pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
 { // testSetFieldIncr
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+
   topology::Mesh mesh;
   DirichletBC bcA;
   DirichletBC bcB;
   DirichletBC bcC;
   _initialize(&mesh, &bcA, &bcB, &bcC);
-  CPPUNIT_ASSERT(0 != _data);
 
-  PetscDM dmMesh = mesh.dmMesh();
-  CPPUNIT_ASSERT(dmMesh);
-  PetscInt       cStart, cEnd, vStart, vEnd;
-  PetscErrorCode err;
-
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
-  
   const int fiberDim = _data->numDOF;
   topology::Field<topology::Mesh> field(mesh);
   field.addField("bc", fiberDim);
@@ -257,26 +282,35 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcB.setConstraints(field);
   bcC.setConstraints(field);
 
-  PetscSection fieldSection = field.petscSection();
-  PetscVec          fieldVec     = field.localVector();
-  CPPUNIT_ASSERT(fieldSection);CPPUNIT_ASSERT(fieldVec);
-
+  // Scales
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar valueScale = _data->lengthScale;
 
   // All values should be zero.
-  PetscScalar *values;
   field.zero();
-  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    for(int d = 0; d < dof; ++d)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[off+d], tolerance);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+
+  // Vertices
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+
+  // Cells
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt numCells = cellsStratum.size();
+  const PetscInt offset = numCells;
+
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+  for(PetscInt v = vStart; v < vEnd; ++v) {
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+
+    for(int d = 0; d < fiberDim; ++d)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, fieldArray[off+d], tolerance);
   } // for
-  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+  fieldVisitor.clear();
 
   // Only unconstrained values should be zero.
   // Expected values set in _data->field
@@ -286,18 +320,18 @@ pylith::bc::TestDirichletBCMulti::testSetFieldIncr(void)
   bcB.setFieldIncr(t0, t1, field);
   bcC.setFieldIncr(t0, t1, field);
 
+  fieldVisitor.initialize(field);
+  fieldArray = fieldVisitor.localArray();
   int i = 0;
-  err = VecGetArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, cdof, off;
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(fieldSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, v, &off);CHECK_PETSC_ERROR(err);
-    for(int iDOF = 0; iDOF < dof; ++iDOF) {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], values[off+iDOF]*valueScale, tolerance);
-    } // for
+    for(int iDOF = 0; iDOF < fiberDim; ++iDOF)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->fieldIncr[i++], fieldArray[off+iDOF]*valueScale, tolerance);
   } // for
-  err = VecRestoreArray(fieldVec, &values);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testSetFieldIncr
 
 // ----------------------------------------------------------------------
@@ -307,10 +341,12 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
 					      DirichletBC* const bcB,
 					      DirichletBC* const bcC) const
 { // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != bcA);
-  CPPUNIT_ASSERT(0 != bcB);
-  CPPUNIT_ASSERT(0 != bcC);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(bcA);
+  CPPUNIT_ASSERT(bcB);
+  CPPUNIT_ASSERT(bcC);
 
   meshio::MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
@@ -377,6 +413,8 @@ pylith::bc::TestDirichletBCMulti::_initialize(topology::Mesh* mesh,
     bcC->normalizer(normalizer);
     bcC->initialize(*mesh, upDir);
   } // if
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

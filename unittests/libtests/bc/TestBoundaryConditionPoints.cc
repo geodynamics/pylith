@@ -38,6 +38,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestBoundaryConditionPoints );
 void
 pylith::bc::TestBoundaryConditionPoints::testGetPoints(void)
 { // testGetPoints
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   PointForce bc;
   PointForceDataTri3 data;
@@ -66,6 +68,8 @@ pylith::bc::TestBoundaryConditionPoints::testGetPoints(void)
   CPPUNIT_ASSERT_EQUAL(numPoints, bc._points.size());
   for (int i=0; i < numPoints; ++i)
     CPPUNIT_ASSERT_EQUAL(data.forcePoints[i]+offset, bc._points[i]);
+
+  PYLITH_METHOD_END;
 } // testGetPoints
 
 

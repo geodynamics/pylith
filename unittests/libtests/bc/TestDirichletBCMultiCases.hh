@@ -17,26 +17,49 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletBCMultiTet4.hh
+ * @file unittests/libtests/bc/TestDirichletBCMultiCases.hh
  *
  * @brief C++ TestDirichletBC object.
  *
- * C++ unit testing for DirichletBC for mesh with 1-D line cells.
+ * Test cases for C++ unit testing for DirichletBC for mesh.
  */
 
-#if !defined(pylith_bc_testdirichletbcmultitet4_hh)
-#define pylith_bc_testdirichletbcmultitet4_hh
+#if !defined(pylith_bc_testdirichletbcmulticases_hh)
+#define pylith_bc_testdirichletbcmulticases_hh
 
 #include "TestDirichletBCMulti.hh" // ISA TestDirichletBC
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
+    class TestDirichletBCMultiTri3;
     class TestDirichletBCMultiTet4;
   } // bc
 } // pylith
 
+// ----------------------------------------------------------------------
 /// C++ unit testing for DirichletBC for mesh with 2-D tri cells.
+class pylith::bc::TestDirichletBCMultiTri3 : public TestDirichletBCMulti
+{ // class TestDirichletBC
+
+  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+  CPPUNIT_TEST_SUITE( TestDirichletBCMultiTri3 );
+  CPPUNIT_TEST( testSetConstraintSizes );
+  CPPUNIT_TEST( testSetConstraints );
+  CPPUNIT_TEST( testSetField );
+  CPPUNIT_TEST_SUITE_END();
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+}; // class TestDirichletBCMultiTri3
+
+
+// ----------------------------------------------------------------------
+/// C++ unit testing for DirichletBC for mesh with 3-D tet cells.
 class pylith::bc::TestDirichletBCMultiTet4 : public TestDirichletBCMulti
 { // class TestDirichletBC
 
@@ -58,7 +81,8 @@ public :
 
 }; // class TestDirichletBCMultiTet4
 
-#endif // pylith_bc_dirichletbcmultitet4_hh
+
+#endif // pylith_bc_dirichletbcmulticases_hh
 
 
 // End of file 

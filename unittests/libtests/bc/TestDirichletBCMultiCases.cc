@@ -18,19 +18,31 @@
 
 #include <portinfo>
 
-#include "TestDirichletBCTet4.hh" // Implementation of class methods
-
-#include "data/DirichletDataTet4.hh" // USES DirichletDataTet4
+#include "TestDirichletBCMultiCases.hh" // Implementation of cases
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCTet4 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCMultiTri3 );
 
-// ----------------------------------------------------------------------
+#include "data/DirichletDataMultiTri3.hh" // USES DirichletDataMultiTri3
+
 // Setup testing data.
 void
-pylith::bc::TestDirichletBCTet4::setUp(void)
+pylith::bc::TestDirichletBCMultiTri3::setUp(void)
 { // setUp
-  _data = new DirichletDataTet4();
+  _data = new DirichletDataMultiTri3();
+} // setUp
+
+
+// ----------------------------------------------------------------------
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichletBCMultiTet4 );
+
+#include "data/DirichletDataMultiTet4.hh" // USES DirichletDataMultiTet4
+
+// Setup testing data.
+void
+pylith::bc::TestDirichletBCMultiTet4::setUp(void)
+{ // setUp
+  _data = new DirichletDataMultiTet4();
 } // setUp
 
 
