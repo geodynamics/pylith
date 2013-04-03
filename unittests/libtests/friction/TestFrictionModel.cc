@@ -54,11 +54,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::friction::TestFrictionModel );
 void
 pylith::friction::TestFrictionModel::testLabel(void)
 { // testLabel
+  PYLITH_METHOD_BEGIN;
+
   const std::string& label = "the database";
   StaticFriction friction;
   friction.label(label.c_str());
   
   CPPUNIT_ASSERT_EQUAL(label, std::string(friction.label()));
+
+  PYLITH_METHOD_END;
 } // testLabel
     
 // ----------------------------------------------------------------------
@@ -66,11 +70,15 @@ pylith::friction::TestFrictionModel::testLabel(void)
 void
 pylith::friction::TestFrictionModel::testTimeStep(void) 
 { // testTimeStep
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar dt = 2.0;
   StaticFriction friction;
   friction.timeStep(dt);
   
   CPPUNIT_ASSERT_EQUAL(dt, friction.timeStep());
+
+  PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -78,6 +86,8 @@ pylith::friction::TestFrictionModel::testTimeStep(void)
 void
 pylith::friction::TestFrictionModel::testDBProperties(void)
 { // testDBProperties
+  PYLITH_METHOD_BEGIN;
+
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -87,6 +97,8 @@ pylith::friction::TestFrictionModel::testDBProperties(void)
   
   CPPUNIT_ASSERT(friction._dbProperties);
   CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbProperties->label()));
+
+  PYLITH_METHOD_END;
 } // testDBProperties
 
 // ----------------------------------------------------------------------
@@ -94,6 +106,8 @@ pylith::friction::TestFrictionModel::testDBProperties(void)
 void
 pylith::friction::TestFrictionModel::testDBStateVars(void)
 { // testDBStateVars
+  PYLITH_METHOD_BEGIN;
+
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -103,6 +117,8 @@ pylith::friction::TestFrictionModel::testDBStateVars(void)
   
   CPPUNIT_ASSERT(friction._dbInitialState);
   CPPUNIT_ASSERT_EQUAL(label, std::string(friction._dbInitialState->label()));
+
+  PYLITH_METHOD_END;
 } // testDBStateVars
 
 // ----------------------------------------------------------------------
@@ -110,6 +126,8 @@ pylith::friction::TestFrictionModel::testDBStateVars(void)
 void
 pylith::friction::TestFrictionModel::testNormalizer(void)
 { // testNormalizer
+  PYLITH_METHOD_BEGIN;
+
   spatialdata::units::Nondimensional normalizer;
   const double lengthScale = 2.0;
   normalizer.lengthScale(lengthScale);
@@ -119,6 +137,8 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
   
   CPPUNIT_ASSERT(friction._normalizer);
   CPPUNIT_ASSERT_EQUAL(lengthScale, friction._normalizer->lengthScale());
+
+  PYLITH_METHOD_END;
 } // testNormalizer
 
 // ----------------------------------------------------------------------
@@ -126,6 +146,8 @@ pylith::friction::TestFrictionModel::testNormalizer(void)
 void
 pylith::friction::TestFrictionModel::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
@@ -169,6 +191,8 @@ pylith::friction::TestFrictionModel::testInitialize(void)
   // Test vertex array sizes.
   size_t size = data.numPropsVertex + data.numVarsVertex;
   CPPUNIT_ASSERT_EQUAL(size, friction._propsStateVarsVertex.size());
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -176,6 +200,8 @@ pylith::friction::TestFrictionModel::testInitialize(void)
 void
 pylith::friction::TestFrictionModel::testGetField(void)
 { // testGetField
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar fieldE[] = { 0.6, 0.4 };
   const int fiberDim = 1;
 
@@ -206,6 +232,8 @@ pylith::friction::TestFrictionModel::testGetField(void)
       else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(fieldE[index], frictionArray[off+i], tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // testGetField
 
 // ----------------------------------------------------------------------
@@ -213,6 +241,8 @@ pylith::friction::TestFrictionModel::testGetField(void)
 void
 pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 { // testRetrievePropsStateVars
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
@@ -255,6 +285,8 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], fieldsVertex[index++],
 				   tolerance);
+
+  PYLITH_METHOD_END;
 } // testRetrievePropsStateVars
 
 // ----------------------------------------------------------------------
@@ -262,6 +294,8 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 void
 pylith::friction::TestFrictionModel::testCalcFriction(void)
 { // testCalcFriction
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   faults::FaultCohesiveDyn fault;
   StaticFriction friction;
@@ -287,6 +321,8 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
   } else {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, frictionV, tolerance);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // testCalcFriction
     
 // ----------------------------------------------------------------------
@@ -294,6 +330,8 @@ pylith::friction::TestFrictionModel::testCalcFriction(void)
 void
 pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 { // testUpdateStateVars
+  PYLITH_METHOD_BEGIN;
+
   { // Test with friction model without state variables
     topology::Mesh mesh;
     faults::FaultCohesiveDyn fault;
@@ -374,6 +412,7 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
     }
   } // Test with friction model with state variables (slip weakening)
 
+  PYLITH_METHOD_END;
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
@@ -381,8 +420,12 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
 void
 pylith::friction::TestFrictionModel::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _friction = 0;
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -390,8 +433,12 @@ pylith::friction::TestFrictionModel::setUp(void)
 void
 pylith::friction::TestFrictionModel::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _friction; _friction = 0;
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -399,6 +446,8 @@ pylith::friction::TestFrictionModel::tearDown(void)
 void
 pylith::friction::TestFrictionModel::testDBToProperties(void)
 { // testDBToProperties
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -437,6 +486,8 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDBToProperties
 
 // ----------------------------------------------------------------------
@@ -444,6 +495,8 @@ pylith::friction::TestFrictionModel::testDBToProperties(void)
 void
 pylith::friction::TestFrictionModel::testNonDimProperties(void)
 { // testNonDimProperties
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -472,6 +525,8 @@ pylith::friction::TestFrictionModel::testNonDimProperties(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testNonDimProperties
 
 // ----------------------------------------------------------------------
@@ -479,6 +534,8 @@ pylith::friction::TestFrictionModel::testNonDimProperties(void)
 void
 pylith::friction::TestFrictionModel::testDimProperties(void)
 { // testDimProperties
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -505,6 +562,8 @@ pylith::friction::TestFrictionModel::testDimProperties(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDimProperties
 
 // ----------------------------------------------------------------------
@@ -512,6 +571,8 @@ pylith::friction::TestFrictionModel::testDimProperties(void)
 void
 pylith::friction::TestFrictionModel::testDBToStateVars(void)
 { // testDBToStateVars
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -553,6 +614,8 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDBToStateVars
 
 // ----------------------------------------------------------------------
@@ -560,6 +623,8 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
 void
 pylith::friction::TestFrictionModel::testNonDimStateVars(void)
 { // testNonDimStateVars
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -588,6 +653,8 @@ pylith::friction::TestFrictionModel::testNonDimStateVars(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testNonDimStateVars
 
 // ----------------------------------------------------------------------
@@ -595,6 +662,8 @@ pylith::friction::TestFrictionModel::testNonDimStateVars(void)
 void
 pylith::friction::TestFrictionModel::testDimStateVars(void)
 { // testDimStateVars
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
   
@@ -623,6 +692,8 @@ pylith::friction::TestFrictionModel::testDimStateVars(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDimStateVars
 
 // ----------------------------------------------------------------------
@@ -630,6 +701,8 @@ pylith::friction::TestFrictionModel::testDimStateVars(void)
 void
 pylith::friction::TestFrictionModel::test_calcFriction(void)
 { // _testCalcFriction
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
 
@@ -665,6 +738,8 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(frictionE, friction, tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // _testCalcFriction
 
 // ----------------------------------------------------------------------
@@ -672,6 +747,8 @@ pylith::friction::TestFrictionModel::test_calcFriction(void)
 void
 pylith::friction::TestFrictionModel::test_updateStateVars(void)
 { // test_updateStateVars
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_friction);
   CPPUNIT_ASSERT(_data);
 
@@ -719,6 +796,8 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // test_updateStateVars
 
 // ----------------------------------------------------------------------
@@ -726,12 +805,16 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 void
 pylith::friction::TestFrictionModel::setupNormalizer(void)
 { // setupNormalizer
+  PYLITH_METHOD_BEGIN;
+
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(_data->lengthScale);
   normalizer.pressureScale(_data->pressureScale);
   normalizer.timeScale(_data->timeScale);
   normalizer.densityScale(_data->densityScale);
   _friction->normalizer(normalizer);
+
+  PYLITH_METHOD_END;
 } // setupNormalizer
 
 // ----------------------------------------------------------------------
@@ -742,6 +825,8 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
 						 StaticFriction* friction,
 						 const StaticFrictionData* data)
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(fault);
   CPPUNIT_ASSERT(friction);
@@ -812,6 +897,8 @@ pylith::friction::TestFrictionModel::_initialize(topology::Mesh* mesh,
   const PylithScalar upDir[3] = { 0.0, 0.0, 1.0 };
   fault->initialize(*mesh, upDir);
   fault->verifyConfiguration(*mesh);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

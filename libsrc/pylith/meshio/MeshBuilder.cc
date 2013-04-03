@@ -49,6 +49,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 				       const bool interpolate,
 				       const bool isParallel)
 { // buildMesh
+  PYLITH_METHOD_BEGIN;
+
   assert(mesh);
   assert(coordinates);
   MPI_Comm       comm     = mesh->comm();
@@ -182,6 +184,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
   err = DMPlexCreateFromCellList(comm, dim, numCells, numVertices, numCorners, pInterpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);CHECK_PETSC_ERROR(err);
   mesh->setDMMesh(dmMesh);
+
+  PYLITH_METHOD_END;
 } // buildMesh
 
 // End of file 
