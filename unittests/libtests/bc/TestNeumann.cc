@@ -101,9 +101,13 @@ namespace pylith {
 void
 pylith::bc::TestNeumann::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
   _quadrature = new feassemble::Quadrature<topology::SubMesh>();
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -111,8 +115,12 @@ pylith::bc::TestNeumann::setUp(void)
 void
 pylith::bc::TestNeumann::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -120,7 +128,11 @@ pylith::bc::TestNeumann::tearDown(void)
 void
 pylith::bc::TestNeumann::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   Neumann bc;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -128,11 +140,15 @@ pylith::bc::TestNeumann::testConstructor(void)
 void
 pylith::bc::TestNeumann::test_getLabel(void)
 { // test_getLabel
+  PYLITH_METHOD_BEGIN;
+
   Neumann bc;
   
   const std::string& label = "traction bc";
   bc.label(label.c_str());
   CPPUNIT_ASSERT_EQUAL(label, std::string(bc._getLabel()));
+
+  PYLITH_METHOD_END;
 } // test_getLabel
 
 // ----------------------------------------------------------------------
@@ -140,6 +156,8 @@ pylith::bc::TestNeumann::test_getLabel(void)
 void
 pylith::bc::TestNeumann::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   Neumann bc;
   topology::SolutionFields fields(mesh);
@@ -188,7 +206,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   const int fiberDim = numQuadPts * spaceDim;
   scalar_array tractionsCell(fiberDim);
   PetscInt index = 0;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   PetscSection initialSection = bc._parameters->get("initial").petscSection();
   PetscVec initialVec = bc._parameters->get("initial").localVector();
   PetscScalar *initialArray;
@@ -211,6 +229,8 @@ pylith::bc::TestNeumann::testInitialize(void)
       } // for
   } // for
   err = VecRestoreArray(initialVec, &initialArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -218,7 +238,9 @@ pylith::bc::TestNeumann::testInitialize(void)
 void
 pylith::bc::TestNeumann::testIntegrateResidual(void)
 { // testIntegrateResidual
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
 
   topology::Mesh mesh;
   Neumann bc;
@@ -259,6 +281,8 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i]*residualScale, tolerance);
     } // if/else
   err = VecRestoreArray(residualVec, &vals);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
@@ -266,9 +290,11 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
 void
 pylith::bc::TestNeumann::test_queryDatabases(void)
 { // test_queryDatabases
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -308,7 +334,7 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
 
   // bc._parameters->view("PARAMETERS"); // DEBUGGING
 
@@ -332,6 +358,8 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
   const topology::Field<topology::SubMesh>& changeTime = bc._parameters->get("change time");
   _TestNeumann::_checkValues(_TestNeumann::changeTime, numQuadPts, changeTime);
   th.close();
+
+  PYLITH_METHOD_END;
 } // test_queryDatabases
 
 // ----------------------------------------------------------------------
@@ -339,6 +367,8 @@ pylith::bc::TestNeumann::test_queryDatabases(void)
 void
 pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
 { // test_paramsLocalToGlobal
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
   CPPUNIT_ASSERT(_quadrature);
@@ -379,7 +409,7 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
 
   // Orientation for quad4 is +x, -y for shear and normal tractions.
   CPPUNIT_ASSERT_EQUAL(2, spaceDim); 
@@ -409,6 +439,8 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
   } // for
   const topology::Field<topology::SubMesh>& change = bc._parameters->get("change");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, change);
+
+  PYLITH_METHOD_END;
 } // test_paramsLocalToGlobal
 
 // ----------------------------------------------------------------------
@@ -416,9 +448,11 @@ pylith::bc::TestNeumann::test_paramsLocalToGlobal(void)
 void
 pylith::bc::TestNeumann::test_calculateValueInitial(void)
 { // test_calculateValueInitial
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -445,6 +479,8 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
   // Check values.
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::initial, numQuadPts*spaceDim, value);
+
+  PYLITH_METHOD_END;
 } // test_calculateValueInitial
 
 // ----------------------------------------------------------------------
@@ -452,9 +488,11 @@ pylith::bc::TestNeumann::test_calculateValueInitial(void)
 void
 pylith::bc::TestNeumann::test_calculateValueRate(void)
 { // test_calculateValueRate
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -476,11 +514,13 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesRate, numQuadPts*spaceDim, value);
+
+  PYLITH_METHOD_END;
 } // test_calculateValueRate
 
 // ----------------------------------------------------------------------
@@ -488,9 +528,11 @@ pylith::bc::TestNeumann::test_calculateValueRate(void)
 void
 pylith::bc::TestNeumann::test_calculateValueChange(void)
 { // test_calculateValueChange
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -512,11 +554,13 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChange, numQuadPts*spaceDim, value);
+
+  PYLITH_METHOD_END;
 } // test_calculateValueChange
 
 // ----------------------------------------------------------------------
@@ -524,9 +568,11 @@ pylith::bc::TestNeumann::test_calculateValueChange(void)
 void
 pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
 { // test_calculateValueChangeTH
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -552,11 +598,13 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(_TestNeumann::valuesChangeTH, numQuadPts*spaceDim, value);
+
+  PYLITH_METHOD_END;
 } // test_calculateValueChangeTH
 
 // ----------------------------------------------------------------------
@@ -564,9 +612,11 @@ pylith::bc::TestNeumann::test_calculateValueChangeTH(void)
 void
 pylith::bc::TestNeumann::test_calculateValueAll(void)
 { // test_calculateValueAll
+  PYLITH_METHOD_BEGIN;
+
   _data = new NeumannDataQuad4();
   feassemble::GeometryLine2D geometry;
-  CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(_quadrature);
   _quadrature->refGeometry(&geometry);
 
   topology::Mesh mesh;
@@ -606,7 +656,7 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
   const PylithScalar tolerance = 1.0e-06;
   const int spaceDim = _TestNeumann::spaceDim;
   const int numQuadPts = _TestNeumann::numQuadPts;
-  CPPUNIT_ASSERT(0 != bc._parameters);
+  CPPUNIT_ASSERT(bc._parameters);
   
   // Check values.
   const int ncells = _TestNeumann::ncells;
@@ -619,6 +669,8 @@ pylith::bc::TestNeumann::test_calculateValueAll(void)
   
   const topology::Field<topology::SubMesh>& value = bc._parameters->get("value");
   _TestNeumann::_checkValues(&valuesE[0], numQuadPts*spaceDim, value);
+
+  PYLITH_METHOD_END;
 } // test_calculateValueAll
 
 // ----------------------------------------------------------------------
@@ -626,6 +678,8 @@ void
 pylith::bc::TestNeumann::_preinitialize(topology::Mesh* mesh,
 					Neumann* const bc) const
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(_quadrature);
   CPPUNIT_ASSERT(mesh);
@@ -661,6 +715,8 @@ pylith::bc::TestNeumann::_preinitialize(topology::Mesh* mesh,
   bc->label(_data->label);
   bc->normalizer(normalizer);
   bc->createSubMesh(*mesh);
+
+  PYLITH_METHOD_END;
 } // _preinitialize
 
 // ----------------------------------------------------------------------
@@ -669,6 +725,8 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
 				     Neumann* const bc,
 				     topology::SolutionFields* fields) const
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(bc);
@@ -690,7 +748,7 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
   bc->initialize(*mesh, upDir);
 
   // Set up fields
-  CPPUNIT_ASSERT(0 != fields);
+  CPPUNIT_ASSERT(fields);
   fields->add("residual", "residual");
   fields->add("disp(t), bc(t+dt)", "displacement");
   fields->solutionName("disp(t), bc(t+dt)");
@@ -702,6 +760,8 @@ pylith::bc::TestNeumann::_initialize(topology::Mesh* mesh,
   residual.zero();
 
   fields->copyLayout("residual");
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 // ----------------------------------------------------------------------
@@ -711,6 +771,8 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
 				       const int fiberDimE,
 				       const topology::Field<topology::SubMesh>& field)
 { // _checkValues
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(valuesE);
 
   const topology::SubMesh& boundaryMesh = field.mesh();
@@ -746,6 +808,8 @@ pylith::bc::_TestNeumann::_checkValues(const PylithScalar* valuesE,
     } // for
   } // for
   err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _checkValues
 
 

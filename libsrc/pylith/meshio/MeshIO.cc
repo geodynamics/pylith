@@ -72,19 +72,17 @@ pylith::meshio::MeshIO::getMeshDim(void) const
 void 
 pylith::meshio::MeshIO::read(topology::Mesh* mesh)
 { // read
-  assert(0 == _mesh);
+  PYLITH_METHOD_BEGIN;
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(1);
-  logger.stagePush("Mesh");
+  assert(!_mesh);
 
   _mesh = mesh;
   _mesh->debug(_debug);
   _read();
 
-  logger.stagePop();
-
   _mesh = 0;
+
+  PYLITH_METHOD_END;
 } // read
 
 // ----------------------------------------------------------------------

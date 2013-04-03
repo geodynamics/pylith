@@ -50,6 +50,8 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
                                               DMLabel groupField,
                                               const bool flipFault)
 { // createFault
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != faultMesh);
   assert(groupField);
 
@@ -196,6 +198,8 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
   err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
 
   logger.stagePop();
+
+  PYLITH_METHOD_END;
 } // createFault
 
 // ----------------------------------------------------------------------
@@ -210,6 +214,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
                                          int& firstFaultCell,
                                          const bool constraintCell)
 { // create
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != mesh);
   assert(!faultBoundary.isNull());
   assert(groupField);
@@ -967,6 +973,8 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
   logger.stagePop();
 
   mesh->setDMMesh(newMesh);
+
+  PYLITH_METHOD_END;
 } // create
 
 void
@@ -1049,7 +1057,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 			    const int materialId,
 			    const bool constraintCell)
 { // createFaultParallel
-  assert(0 != faultMesh);
+  PYLITH_METHOD_BEGIN;
+
+  assert(faultMesh);
 
   // Memory logging
   ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
@@ -1337,6 +1347,7 @@ pylith::faults::CohesiveTopology::createFaultParallel(
   }
   err = PetscFree(renum);CHECK_PETSC_ERROR(err);
   err = DMPlexSetSubpointMap(dmFaultMesh, subpointMap);CHECK_PETSC_ERROR(err);
+  err = DMLabelDestroy(&subpointMap);CHECK_PETSC_ERROR(err);
 #endif
 
   // Update dimensioned coordinates if they exist.
@@ -1430,6 +1441,8 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 #endif
 
   logger.stagePop();
+
+  PYLITH_METHOD_END;
 } // createFaultParallel
 
 
