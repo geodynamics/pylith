@@ -43,8 +43,6 @@
 #include <cassert> // USES assert()
 #include <cmath> // USES sqrt()
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
 
@@ -53,11 +51,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
 void
 pylith::materials::TestMaterial::testID(void)
 { // testID
+  PYLITH_METHOD_BEGIN;
+ 
   const int id = 346;
   ElasticIsotropic3D material;
   material.id(id);
   
-  CPPUNIT_ASSERT(id == material.id());
+  CPPUNIT_ASSERT_EQUAL(id,  material.id());
+
+  PYLITH_METHOD_END;
 } // testID
 
 // ----------------------------------------------------------------------
@@ -65,11 +67,15 @@ pylith::materials::TestMaterial::testID(void)
 void
 pylith::materials::TestMaterial::testLabel(void)
 { // testLabel
+  PYLITH_METHOD_BEGIN;
+ 
   const std::string& label = "the database";
   ElasticIsotropic3D material;
   material.label(label.c_str());
   
   CPPUNIT_ASSERT_EQUAL(label, std::string(material.label()));
+
+  PYLITH_METHOD_END;
 } // testLabel
     
 // ----------------------------------------------------------------------
@@ -77,11 +83,15 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testTimeStep(void) 
 { // testTimeStep
+  PYLITH_METHOD_BEGIN;
+ 
   const PylithScalar dt = 2.0;
   ElasticIsotropic3D material;
   material.timeStep(dt);
   
   CPPUNIT_ASSERT_EQUAL(dt, material.timeStep());
+
+  PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -89,6 +99,8 @@ pylith::materials::TestMaterial::testTimeStep(void)
 void
 pylith::materials::TestMaterial::testDBProperties(void)
 { // testDBProperties
+  PYLITH_METHOD_BEGIN;
+ 
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -98,6 +110,8 @@ pylith::materials::TestMaterial::testDBProperties(void)
   
   CPPUNIT_ASSERT(material._dbProperties);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbProperties->label()));
+
+  PYLITH_METHOD_END;
 } // testDBProperties
 
 // ----------------------------------------------------------------------
@@ -105,6 +119,8 @@ pylith::materials::TestMaterial::testDBProperties(void)
 void
 pylith::materials::TestMaterial::testDBStateVars(void)
 { // testDBStateVars
+  PYLITH_METHOD_BEGIN;
+ 
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -114,6 +130,8 @@ pylith::materials::TestMaterial::testDBStateVars(void)
   
   CPPUNIT_ASSERT(material._dbInitialState);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialState->label()));
+
+  PYLITH_METHOD_END;
 } // testDBStateVars
 
 // ----------------------------------------------------------------------
@@ -121,6 +139,8 @@ pylith::materials::TestMaterial::testDBStateVars(void)
 void
 pylith::materials::TestMaterial::testNormalizer(void)
 { // testNormalizer
+  PYLITH_METHOD_BEGIN;
+ 
   spatialdata::units::Nondimensional normalizer;
   const double lengthScale = 2.0;
   normalizer.lengthScale(lengthScale);
@@ -130,6 +150,8 @@ pylith::materials::TestMaterial::testNormalizer(void)
   
   CPPUNIT_ASSERT(material._normalizer);
   CPPUNIT_ASSERT_EQUAL(lengthScale, material._normalizer->lengthScale());
+
+  PYLITH_METHOD_END;
 } // testNormalizer
 
 // ----------------------------------------------------------------------
@@ -137,6 +159,8 @@ pylith::materials::TestMaterial::testNormalizer(void)
 void
 pylith::materials::TestMaterial::testNeedNewJacobian(void)
 { // testNeedNewJacobian
+  PYLITH_METHOD_BEGIN;
+ 
   ElasticIsotropic3D material;
 
   bool flag = false;
@@ -146,6 +170,8 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
   flag = true;
   material._needNewJacobian = flag;
   CPPUNIT_ASSERT_EQUAL(flag, material.needNewJacobian());
+
+  PYLITH_METHOD_END;
 } // testNeedNewJacobian
 
 // ----------------------------------------------------------------------
@@ -153,6 +179,8 @@ pylith::materials::TestMaterial::testNeedNewJacobian(void)
 void
 pylith::materials::TestMaterial::testIsJacobianSymmetric(void)
 { // testIsJacobianSymmetric
+  PYLITH_METHOD_BEGIN;
+ 
   ElasticIsotropic3D material;
 
   CPPUNIT_ASSERT_EQUAL(true, material.isJacobianSymmetric());
@@ -160,6 +188,8 @@ pylith::materials::TestMaterial::testIsJacobianSymmetric(void)
   bool flag = false;
   material._isJacobianSymmetric = flag;
   CPPUNIT_ASSERT_EQUAL(flag, material.isJacobianSymmetric());
+
+  PYLITH_METHOD_END;
 } // testIsJacobianSymmetric
 
 // ----------------------------------------------------------------------
@@ -167,6 +197,8 @@ pylith::materials::TestMaterial::testIsJacobianSymmetric(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+ 
   // Setup mesh
   topology::Mesh mesh;
   meshio::MeshIOAscii iohandler;
@@ -226,10 +258,6 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  int_array cellsTmp(cells, numCells);
-  quadrature.computeGeometry(mesh, cellsTmp);
-#endif
 
   spatialdata::spatialdb::SimpleDB db;
   spatialdata::spatialdb::SimpleIOAscii dbIO;
@@ -273,8 +301,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   // density
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_density;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/densityE[i]*densityScale,
-				 tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/densityE[i]*densityScale, tolerance);
   } // for
   
   // mu
@@ -286,9 +313,10 @@ pylith::materials::TestMaterial::testInitialize(void)
   // lambda
   for (int i=0; i < numQuadPts; ++i) {
     const int index = i*material._numPropsQuadPt + p_lambda;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/lambdaE[i]*pressureScale, 
-				 tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propertiesArray[off+index]/lambdaE[i]*pressureScale, tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -296,8 +324,12 @@ pylith::materials::TestMaterial::testInitialize(void)
 void
 pylith::materials::TestMaterial::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+ 
   _material = 0;
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -305,8 +337,12 @@ pylith::materials::TestMaterial::setUp(void)
 void
 pylith::materials::TestMaterial::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+ 
   delete _material; _material = 0;
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -314,7 +350,11 @@ pylith::materials::TestMaterial::tearDown(void)
 void
 pylith::materials::TestMaterial::testDimension(void)
 { // testDimension
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT_EQUAL(_data->dimension, _material->dimension());
+
+  PYLITH_METHOD_END;
 } // testDimension
 
 // ----------------------------------------------------------------------
@@ -322,6 +362,8 @@ pylith::materials::TestMaterial::testDimension(void)
 void
 pylith::materials::TestMaterial::testTensorSize(void)
 { // testTensorSize
+  PYLITH_METHOD_BEGIN;
+ 
   int tensorSize = 0;
   const int dimension = _data->dimension;
   switch(dimension)
@@ -341,6 +383,8 @@ pylith::materials::TestMaterial::testTensorSize(void)
   CPPUNIT_ASSERT(tensorSize > 0);
 
   CPPUNIT_ASSERT_EQUAL(tensorSize, _material->tensorSize());
+
+  PYLITH_METHOD_END;
 } // testTensorSize
 
 // ----------------------------------------------------------------------
@@ -348,6 +392,8 @@ pylith::materials::TestMaterial::testTensorSize(void)
 void
 pylith::materials::TestMaterial::testDBToProperties(void)
 { // testDBToProperties
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -378,14 +424,13 @@ pylith::materials::TestMaterial::testDBToProperties(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDBToProperties
 
 // ----------------------------------------------------------------------
@@ -393,6 +438,8 @@ pylith::materials::TestMaterial::testDBToProperties(void)
 void
 pylith::materials::TestMaterial::testNonDimProperties(void)
 { // testNonDimProperties
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -414,14 +461,13 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesNondimE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesNondimE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesNondimE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testNonDimProperties
 
 // ----------------------------------------------------------------------
@@ -429,6 +475,8 @@ pylith::materials::TestMaterial::testNonDimProperties(void)
 void
 pylith::materials::TestMaterial::testDimProperties(void)
 { // testDimProperties
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -449,14 +497,13 @@ pylith::materials::TestMaterial::testDimProperties(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDimProperties
 
 // ----------------------------------------------------------------------
@@ -464,6 +511,8 @@ pylith::materials::TestMaterial::testDimProperties(void)
 void
 pylith::materials::TestMaterial::testDBToStateVars(void)
 { // testDBToStateVars
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -497,14 +546,13 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDBToStateVars
 
 // ----------------------------------------------------------------------
@@ -512,6 +560,8 @@ pylith::materials::TestMaterial::testDBToStateVars(void)
 void
 pylith::materials::TestMaterial::testNonDimStateVars(void)
 { // testNonDimStateVars
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -533,14 +583,14 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsNondimE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsNondimE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsNondimE[i], tolerance);
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVars[i],
 				     tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testNonDimStateVars
 
 // ----------------------------------------------------------------------
@@ -548,6 +598,8 @@ pylith::materials::TestMaterial::testNonDimStateVars(void)
 void
 pylith::materials::TestMaterial::testDimStateVars(void)
 { // testDimStateVars
+  PYLITH_METHOD_BEGIN;
+ 
   CPPUNIT_ASSERT(_material);
   CPPUNIT_ASSERT(_data);
   
@@ -569,14 +621,13 @@ pylith::materials::TestMaterial::testDimStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
     } // for
   } // for
+
+  PYLITH_METHOD_END;
 } // testDimStateVars
 
 

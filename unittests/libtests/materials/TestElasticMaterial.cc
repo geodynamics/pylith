@@ -42,8 +42,6 @@
 
 #include <cstring> // USES memcpy()
 
-//#define PRECOMPUTE_GEOMETRY
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
 
@@ -52,6 +50,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
 void
 pylith::materials::TestElasticMaterial::testDBInitialStress(void)
 { // testDBInitialStress
+  PYLITH_METHOD_BEGIN;
+
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -61,6 +61,8 @@ pylith::materials::TestElasticMaterial::testDBInitialStress(void)
   
   CPPUNIT_ASSERT(material._dbInitialStress);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStress->label()));
+
+  PYLITH_METHOD_END;
 } // testDBInitialStress
 
 // ----------------------------------------------------------------------
@@ -68,6 +70,8 @@ pylith::materials::TestElasticMaterial::testDBInitialStress(void)
 void
 pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
 { // testDBInitialStrain
+  PYLITH_METHOD_BEGIN;
+
   const std::string& label = "my_database";
   spatialdata::spatialdb::SimpleDB db;
   db.label(label.c_str());
@@ -77,6 +81,8 @@ pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
   
   CPPUNIT_ASSERT(material._dbInitialStrain);
   CPPUNIT_ASSERT_EQUAL(label, std::string(material._dbInitialStrain->label()));
+
+  PYLITH_METHOD_END;
 } // testDBInitialStrain
 
 // ----------------------------------------------------------------------
@@ -84,6 +90,8 @@ pylith::materials::TestElasticMaterial::testDBInitialStrain(void)
 void
 pylith::materials::TestElasticMaterial::testInitialize(void)
 { // testInitialize
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -167,6 +175,8 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
     } // switch
   size = data.numLocs*numElasticConsts;
   CPPUNIT_ASSERT_EQUAL(size, material._elasticConstsCell.size());
+
+  PYLITH_METHOD_END;
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -174,6 +184,8 @@ pylith::materials::TestElasticMaterial::testInitialize(void)
 void
 pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 { // testRetrievePropsAndVars
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -231,6 +243,8 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, initialStrain[i]/initialStrainE[i],
 				 tolerance);
+
+  PYLITH_METHOD_END;
 } // testRetrievePropsAndVars
 
 // ----------------------------------------------------------------------
@@ -238,6 +252,8 @@ pylith::materials::TestElasticMaterial::testRetrievePropsAndVars(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)
 { // testCalcDensity
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -264,6 +280,8 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   const PylithScalar tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i]*data.densityScale, tolerance);
+
+  PYLITH_METHOD_END;
 } // testCalcDensity
     
 // ----------------------------------------------------------------------
@@ -271,6 +289,8 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 void
 pylith::materials::TestElasticMaterial::testCalcStress(void)
 { // testCalcStress
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -300,6 +320,8 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   const PylithScalar tolerance = 1.0e-06;
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i]*data.pressureScale, tolerance);
+
+  PYLITH_METHOD_END;
 } // testCalcStress
     
 // ----------------------------------------------------------------------
@@ -307,6 +329,8 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 { // testCalcDerivElastic
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -353,6 +377,8 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   for (size_t i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i]*data.pressureScale,
 				 tolerance);
+
+  PYLITH_METHOD_END;
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
@@ -360,8 +386,12 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 void
 pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
 { // testUpdateStateVars
+  PYLITH_METHOD_BEGIN;
+
   std::cout << "\n\nWARNING!! WARNING!! WARNING!!\n"
     "Need to implement using material with state variables.\n\n";
+
+  PYLITH_METHOD_END;
 } // testUpdateStateVars
 
 // ----------------------------------------------------------------------
@@ -369,6 +399,8 @@ pylith::materials::TestElasticMaterial::testUpdateStateVars(void)
 void
 pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 { // testStableTimeStepImplicit
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -388,6 +420,8 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar dtE = data.dtStableImplicit;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+
+  PYLITH_METHOD_END;
 } // testStableTimeStepImplicit
 
 // ----------------------------------------------------------------------
@@ -395,6 +429,8 @@ pylith::materials::TestElasticMaterial::testStableTimeStepImplicit(void)
 void
 pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
 { // testStableTimeStepExplicit
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh mesh;
   ElasticStrain1D material;
   ElasticStrain1DData data;
@@ -439,6 +475,8 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
   const PylithScalar tolerance = 1.0e-06;
   const PylithScalar dtE = 2.0 / 5196.15242;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+
+  PYLITH_METHOD_END;
 } // testStableTimeStepExplicit
 
 // ----------------------------------------------------------------------
@@ -446,9 +484,13 @@ pylith::materials::TestElasticMaterial::testStableTimeStepExplicit(void)
 void
 pylith::materials::TestElasticMaterial::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestMaterial::setUp();
   _matElastic = 0;
   _dataElastic = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -456,9 +498,13 @@ pylith::materials::TestElasticMaterial::setUp(void)
 void
 pylith::materials::TestElasticMaterial::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   TestMaterial::tearDown();
   delete _matElastic; _matElastic = 0;
   delete _dataElastic; _dataElastic = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -466,6 +512,8 @@ pylith::materials::TestElasticMaterial::tearDown(void)
 void
 pylith::materials::TestElasticMaterial::test_calcDensity(void)
 { // _testCalcDensity
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -493,6 +541,8 @@ pylith::materials::TestElasticMaterial::test_calcDensity(void)
     const PylithScalar tolerance = 1.0e-06;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density/densityE, tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // _testCalcDensity
 
 // ----------------------------------------------------------------------
@@ -500,6 +550,8 @@ pylith::materials::TestElasticMaterial::test_calcDensity(void)
 void
 pylith::materials::TestElasticMaterial::test_calcStress(void)
 { // _testCalcStress
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -550,6 +602,8 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i],
 				     tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // _testCalcStress
 
 // ----------------------------------------------------------------------
@@ -557,6 +611,8 @@ pylith::materials::TestElasticMaterial::test_calcStress(void)
 void
 pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 { // _testCalcElasticConsts
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -622,6 +678,8 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 				     tolerance*stressScale);
       } // if/else
   } // for
+
+  PYLITH_METHOD_END;
 } // _testCalcElasticConsts
 
 // ----------------------------------------------------------------------
@@ -629,6 +687,8 @@ pylith::materials::TestElasticMaterial::test_calcElasticConsts(void)
 void
 pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 { // test_updateStateVars
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -678,6 +738,8 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
 				     tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // test_updateStateVars
 
 // ----------------------------------------------------------------------
@@ -685,6 +747,8 @@ pylith::materials::TestElasticMaterial::test_updateStateVars(void)
 void
 pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 { // test_stableTimeStepImplicit
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -697,6 +761,8 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 
   const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+
+  PYLITH_METHOD_END;
 } // test_stableTimeStepImplicit
 
 // ----------------------------------------------------------------------
@@ -704,6 +770,8 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepImplicit(void)
 void
 pylith::materials::TestElasticMaterial::test_stableTimeStepExplicit(void)
 { // test_stableTimeStepExplicit
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_matElastic);
   CPPUNIT_ASSERT(_dataElastic);
   const ElasticMaterialData* data = _dataElastic;
@@ -720,6 +788,8 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepExplicit(void)
   const PylithScalar tolerance = 1.0e-06;
   CPPUNIT_ASSERT_DOUBLES_EQUAL(dtE, dt, tolerance); // TEMPORARY
   CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, dt/dtE, tolerance);
+
+  PYLITH_METHOD_END;
 } // test_stableTimeStepExplicit
 
 // ----------------------------------------------------------------------
@@ -727,6 +797,8 @@ pylith::materials::TestElasticMaterial::test_stableTimeStepExplicit(void)
 void
 pylith::materials::TestElasticMaterial::setupNormalizer(void)
 { // setupNormalizer
+  PYLITH_METHOD_BEGIN;
+
   spatialdata::units::Nondimensional normalizer;
   normalizer.lengthScale(_data->lengthScale);
   normalizer.pressureScale(_data->pressureScale);
@@ -734,6 +806,8 @@ pylith::materials::TestElasticMaterial::setupNormalizer(void)
   normalizer.densityScale(_data->densityScale);
   _material->normalizer(normalizer);
   _matElastic->normalizer(normalizer);
+
+  PYLITH_METHOD_END;
 } // setupNormalizer
 
 // ----------------------------------------------------------------------
@@ -743,6 +817,8 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
 						    ElasticStrain1D* material,
 						    const ElasticStrain1DData* data)
 { // _initialize
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(mesh);
   CPPUNIT_ASSERT(material);
   CPPUNIT_ASSERT(data);
@@ -804,10 +880,6 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
 
   // Compute geometry for cells
   quadrature.initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  int_array cellsTmp(cells, numCells);
-  quadrature.computeGeometry(*mesh, cellsTmp);
-#endif
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
@@ -837,6 +909,8 @@ pylith::materials::TestElasticMaterial::_initialize(topology::Mesh* mesh,
   material->dbInitialStrain(&dbStrain);
   
   material->initialize(*mesh, &quadrature);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 

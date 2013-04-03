@@ -176,10 +176,10 @@ pylith::friction::TestFrictionModel::testInitialize(void)
       const materials::Metadata::ParamDescription& property = metadata.getProperty(i);
       topology::Field<topology::SubMesh>& prop = friction._fieldsPropsStateVars->get(property.name.c_str());
       topology::VecVisitorMesh propVisitor(prop);
-      const PetscScalar* propArray = propVisitor.localArray();
+      const PetscScalar* propArray = propVisitor.localArray();CPPUNIT_ASSERT(propArray);
 
       const PetscInt off = propVisitor.sectionOffset(v);
-      CPPUNIT_ASSERT(1 == propVisitor.sectionDof(v));
+      CPPUNIT_ASSERT_EQUAL(1, propVisitor.sectionDof(v));
       if (0.0 != propertiesE[index]) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, propArray[off]/propertiesE[index], tolerance);
       } else {
@@ -213,7 +213,7 @@ pylith::friction::TestFrictionModel::testGetField(void)
 
   const topology::Field<topology::SubMesh>& frictionField = friction.getField("friction_coefficient");
   topology::VecVisitorMesh frictionVisitor(frictionField);
-  PetscScalar *frictionArray = frictionVisitor.localArray();
+  PetscScalar *frictionArray = frictionVisitor.localArray();CPPUNIT_ASSERT(frictionArray);
 
   PetscDM dmMesh = frictionField.mesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
   topology::Stratum depthStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -280,11 +280,9 @@ pylith::friction::TestFrictionModel::testRetrievePropsStateVars(void)
 		  (0 == numStateVars && 0 == stateVarsE) );
   for (size_t i=0; i < numStateVars; ++i)
     if (0.0 != stateVarsE[i])
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[index++]/stateVarsE[i],
-				   tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldsVertex[index++]/stateVarsE[i], tolerance);
     else
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], fieldsVertex[index++],
-				   tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], fieldsVertex[index++], tolerance);
 
   PYLITH_METHOD_END;
 } // testRetrievePropsStateVars
@@ -404,12 +402,12 @@ pylith::friction::TestFrictionModel::testUpdateStateVars(void)
       const materials::Metadata::ParamDescription& stateVar = metadata.getStateVar(i);
       topology::Field<topology::SubMesh>& stateVarField = friction._fieldsPropsStateVars->get(stateVar.name.c_str());
       topology::VecVisitorMesh stateVarVisitor(stateVarField);
-      PetscScalar *fieldsArray = stateVarVisitor.localArray();
+      PetscScalar *fieldsArray = stateVarVisitor.localArray();CPPUNIT_ASSERT(fieldsArray);
 
       const PetscInt off = stateVarVisitor.sectionOffset(vertex);
-      CPPUNIT_ASSERT(1 == stateVarVisitor.sectionDof(vertex));
+      CPPUNIT_ASSERT_EQUAL(1, stateVarVisitor.sectionDof(vertex));
       CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsUpdatedE[i], fieldsArray[off], tolerance);
-    }
+    } // for
   } // Test with friction model with state variables (slip weakening)
 
   PYLITH_METHOD_END;
@@ -517,12 +515,9 @@ pylith::friction::TestFrictionModel::testNonDimProperties(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesNondimE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesNondimE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesNondimE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesNondimE[i], properties[i], tolerance);
     } // for
   } // for
 
@@ -554,12 +549,9 @@ pylith::friction::TestFrictionModel::testDimProperties(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < propertiesSize; ++i) {
       if (fabs(propertiesE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     properties[i]/propertiesE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, properties[i]/propertiesE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(propertiesE[i], properties[i], tolerance);
     } // for
   } // for
 
@@ -606,12 +598,9 @@ pylith::friction::TestFrictionModel::testDBToStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
     } // for
   } // for
 
@@ -645,12 +634,9 @@ pylith::friction::TestFrictionModel::testNonDimStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsNondimE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsNondimE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsNondimE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsNondimE[i], stateVars[i], tolerance);
     } // for
   } // for
 
@@ -684,12 +670,9 @@ pylith::friction::TestFrictionModel::testDimStateVars(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < stateVarsSize; ++i) {
       if (fabs(stateVarsE[i]) > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				     stateVars[i]/stateVarsE[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
     } // for
   } // for
 
@@ -789,11 +772,9 @@ pylith::friction::TestFrictionModel::test_updateStateVars(void)
 		<< std::endl;
 #endif
       if (0.0 != stateVarsE[i])
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], 
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stateVars[i]/stateVarsE[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(stateVarsE[i], stateVars[i], tolerance);
     } // for
   } // for
 
