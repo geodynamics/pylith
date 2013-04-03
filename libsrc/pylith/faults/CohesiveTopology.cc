@@ -188,6 +188,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     }
     err = PetscFree(renum);CHECK_PETSC_ERROR(err);
     err = DMPlexSetSubpointMap(dm, subpointMap);CHECK_PETSC_ERROR(err);
+    err = DMLabelDestroy(&subpointMap);CHECK_PETSC_ERROR(err);
     renumbering.clear();
     faultMesh->setDMMesh(dm);
   }

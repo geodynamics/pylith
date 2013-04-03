@@ -191,6 +191,11 @@ inline
 pylith::topology::MatVisitorSubMesh::~MatVisitorSubMesh(void)
 { // destructor
   clear();
+  
+  PetscErrorCode err;
+  err = PetscSectionDestroy(&_subsection);assert(!_subsection);
+  err = PetscSectionDestroy(&_globalSubsection);assert(!_globalSubsection);
+  err = PetscSectionDestroy(&_globalSection);assert(!_globalSection);
 } // destructor
 
 // ----------------------------------------------------------------------
