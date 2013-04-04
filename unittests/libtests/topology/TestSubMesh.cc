@@ -37,11 +37,11 @@ namespace pylith {
       const int nvertices = 4;
       const int ncells = 2;
       const int ncorners = 3;
-      const int cells[] = {
+      const int cells[ncells*ncorners] = {
 	0, 1, 3,
 	0, 3, 2,
       };
-      const PylithScalar coordinates[] = {
+      const PylithScalar coordinates[nvertices*cellDim] = {
 	0.0, 0.0,
 	1.0, 0.0,
 	0.0, 1.0,
@@ -52,6 +52,7 @@ namespace pylith {
       const int groupVertices[groupSize] = {
 	1, 2, 3,
       };
+      const int submeshNumCorners = 2;
       const int submeshNumVertices = groupSize;
       const int submeshVertices[submeshNumVertices] = {
 	2, 3, 4,
@@ -215,6 +216,52 @@ pylith::topology::TestSubMesh::testDimension(void)
 
   PYLITH_METHOD_END;
 } // testDimension
+
+// ----------------------------------------------------------------------
+// Test coneSize().
+void
+pylith::topology::TestSubMesh::testConeSize(void)
+{ // testConeSize
+  PYLITH_METHOD_BEGIN;
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+
+  SubMesh submesh(mesh, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCorners, submesh.coneSize());
+
+  PYLITH_METHOD_END;
+} // testConeSize
+
+// ----------------------------------------------------------------------
+// Test numVertices().
+void
+pylith::topology::TestSubMesh::testNumVertices(void)
+{ // testNumVertices
+  PYLITH_METHOD_BEGIN;
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  SubMesh submesh(mesh, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumVertices, submesh.numVertices());
+
+  PYLITH_METHOD_END;
+} // testNumVertices
+
+// ----------------------------------------------------------------------
+// Test numCells().
+void
+pylith::topology::TestSubMesh::testNumCells(void)
+{ // testNumCells
+  PYLITH_METHOD_BEGIN;
+
+  Mesh mesh;
+  _buildMesh(&mesh);
+  SubMesh submesh(mesh, _TestSubMesh::label);
+  CPPUNIT_ASSERT_EQUAL(_TestSubMesh::submeshNumCells, submesh.numCells());
+
+  PYLITH_METHOD_END;
+} // testNumCells
 
 // ----------------------------------------------------------------------
 // Test comm().
