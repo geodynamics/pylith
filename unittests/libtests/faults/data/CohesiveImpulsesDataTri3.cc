@@ -144,6 +144,9 @@ const int pylith::faults::CohesiveImpulsesDataTri3::_numConstraintVert = 2;
 const int pylith::faults::CohesiveImpulsesDataTri3::_constraintVertices[] = {
   9, 10
 };
+const int pylith::faults::CohesiveImpulsesDataTri3::_negativeVertices[] = {
+  4, 5
+};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataTri3::_residualIncr[] = {
   0.0,  0.0,
@@ -183,6 +186,7 @@ pylith::faults::CohesiveImpulsesDataTri3::CohesiveImpulsesDataTri3(void)
   numImpulses = _numImpulses;
   residualIncr = const_cast<PylithScalar*>(_residualIncr);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

@@ -291,6 +291,9 @@ const int pylith::faults::CohesiveDynDataQuad4::_numConstraintVert = 2;
 const int pylith::faults::CohesiveDynDataQuad4::_constraintVertices[] = {
   11, 12
 };
+const int pylith::faults::CohesiveDynDataQuad4::_negativeVertices[] = {
+   5,  6
+};
 
 // ----------------------------------------------------------------------
 // Stick case
@@ -411,6 +414,7 @@ pylith::faults::CohesiveDynDataQuad4::CohesiveDynDataQuad4(void)
   initialTractions = const_cast<PylithScalar*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
+  negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  
 
   // Stick

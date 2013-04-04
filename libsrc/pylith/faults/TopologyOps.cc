@@ -130,6 +130,122 @@ pylith::faults::TopologyOps::classifyCells(const ALE::Obj<SieveMesh::sieve_type>
 
 // ----------------------------------------------------------------------
 void
+pylith::faults::TopologyOps::classifyCellsDM(DM dmMesh,
+                                             PetscInt vertex,
+                                             const int depth,
+                                             const int faceSize,
+                                             PetscInt firstCohesiveCell,
+                                             PointSet& replaceCells,
+                                             PointSet& noReplaceCells,
+                                             const int debug)
+{
+  // Replace all cells on a given side of the fault with a vertex on the fault
+  PointSet        vReplaceCells;
+  PointSet        vNoReplaceCells;
+  const PetscInt *support;
+  PetscInt        supportSize, s, classifyTotal = 0;
+  PetscBool       modified = PETSC_FALSE;
+  PetscErrorCode  err;
+
+  if (debug) {std::cout << "Checking fault vertex " << vertex << std::endl;}
+  err = DMPlexGetSupportSize(dmMesh, vertex, &supportSize);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetSupport(dmMesh, vertex, &support);CHECK_PETSC_ERROR(err);
+  for (s = 0; s < supportSize; ++s) {
+    const PetscInt point = support[s];
+
+    if (point >= firstCohesiveCell) return;
+    if (replaceCells.find(point)   != replaceCells.end())   vReplaceCells.insert(point);
+    if (noReplaceCells.find(point) != noReplaceCells.end()) vNoReplaceCells.insert(point);
+    modified = PETSC_TRUE;
+    ++classifyTotal;
+  }
+  PetscInt classifySize = vReplaceCells.size() + vNoReplaceCells.size();
+
+  while (modified && (classifySize < classifyTotal)) {
+    modified = PETSC_FALSE;
+    for (s = 0; s < supportSize; ++s) {
+      const PetscInt point      = support[s];
+      PetscBool      classified = PETSC_FALSE;
+    
+      if (debug) {
+        const PetscInt *cone;
+        PetscInt        coneSize;
+
+        std::cout << "Checking neighbor " << vertex << std::endl;
+        err = DMPlexGetConeSize(dmMesh, vertex, &coneSize);CHECK_PETSC_ERROR(err);
+        err = DMPlexGetCone(dmMesh, vertex, &cone);CHECK_PETSC_ERROR(err);
+        for (PetscInt c = 0; c < coneSize; ++c) {
+          std::cout << "  cone point " << cone[c] << std::endl;
+        }
+      }
+      if (vReplaceCells.find(point) != vReplaceCells.end()) {
+        if (debug) std::cout << "  already in replaceCells" << std::endl;
+        continue;
+      } // if
+      if (vNoReplaceCells.find(point) != vNoReplaceCells.end()) {
+        if (debug) std::cout << "  already in noReplaceCells" << std::endl;
+        continue;
+      } // if
+      if (point >= firstCohesiveCell) {
+        if (debug) std::cout << "  already a cohesive cell" << std::endl;
+        continue;
+      } // if
+      // If neighbor shares a face with anyone in replaceCells, then add
+      for (PointSet::const_iterator c_iter = vReplaceCells.begin(); c_iter != vReplaceCells.end(); ++c_iter) {
+        const PetscInt *coveringPoints;
+        PetscInt        numCoveringPoints, points[2];
+
+        points[0] = point; points[1] = *c_iter;
+        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        if (numCoveringPoints == faceSize) {
+          if (debug) std::cout << "    Scheduling " << point << " for replacement" << std::endl;
+          vReplaceCells.insert(point);
+          modified   = PETSC_TRUE;
+          classified = PETSC_TRUE;
+          break;
+        } // if
+      } // for
+      if (classified) continue;
+      // It is unclear whether taking out the noReplace cells will speed this up
+      for (PointSet::const_iterator c_iter = vNoReplaceCells.begin(); c_iter != vNoReplaceCells.end(); ++c_iter) {
+        const PetscInt *coveringPoints;
+        PetscInt        numCoveringPoints, points[2];
+
+        points[0] = point; points[1] = *c_iter;
+        err = DMPlexGetMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        err = DMPlexRestoreMeet(dmMesh, 2, points, &numCoveringPoints, &coveringPoints);CHECK_PETSC_ERROR(err);
+        if (numCoveringPoints == faceSize) {
+          if (debug) std::cout << "    Scheduling " << point << " for no replacement" << std::endl;
+          vNoReplaceCells.insert(point);
+          modified   = PETSC_TRUE;
+          classified = PETSC_TRUE;
+          break;
+        } // for
+      } // for
+    }
+    if (debug) {
+      std::cout << "classifySize: " << classifySize << std::endl;
+      std::cout << "classifyTotal: " << classifyTotal << std::endl;
+      std::cout << "vReplaceCells.size: " << vReplaceCells.size() << std::endl;
+      std::cout << "vNoReplaceCells.size: " << vNoReplaceCells.size() << std::endl;
+    }
+    assert(classifySize < vReplaceCells.size() + vNoReplaceCells.size());
+    classifySize = vReplaceCells.size() + vNoReplaceCells.size();
+    if (classifySize > classifyTotal) {
+      std::ostringstream msg;
+      msg << "Error classifying cells during creation of cohesive cells.\n"
+          << "  classifySize: " << classifySize << ", classifyTotal: " << classifyTotal;
+      throw std::logic_error(msg.str());
+    } // if
+  }
+  replaceCells.insert(vReplaceCells.begin(), vReplaceCells.end());
+  // More checking
+  noReplaceCells.insert(vNoReplaceCells.begin(), vNoReplaceCells.end());
+}
+
+// ----------------------------------------------------------------------
+void
 pylith::faults::TopologyOps::createFaultSieveFromVertices(const int dim,
                                                                const int firstCell,
                                                                const PointSet& faultVertices,

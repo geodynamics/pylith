@@ -108,7 +108,7 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataLine2::_area[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataLine2::_numFaultVertices = 1;
 const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesFault[] = {
-  1
+  2
 };
 const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesLagrange[] = {
   7

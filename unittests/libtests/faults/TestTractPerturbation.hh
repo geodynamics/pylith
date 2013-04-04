@@ -94,6 +94,14 @@ private :
 		   topology::SubMesh* faultMesh,
 		   TractPerturbation* tract);
 
+  /** Setup fault coordinates
+   *
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   */
+  static
+  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
+
 }; // class TestTractPerturbation
 
 #endif // pylith_faults_testtractperturbation_hh

@@ -114,11 +114,10 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
   assert(mesh);
   assert(std::string("") != label());
   
-  std::cerr << ":TODO: MATT Update FaultCohesive::adjustTopology for PETSc DM." << std::endl;
-
   try {
     topology::SubMesh faultMesh;
     ALE::Obj<SieveFlexMesh> faultBoundary;
+    DM faultBoundaryDM = NULL;
   
     // Get group of vertices associated with fault
     PetscDM dmMesh = mesh->dmMesh();assert(dmMesh);
@@ -137,10 +136,10 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
         throw std::runtime_error(msg.str());
       } // if
       err = DMPlexGetLabel(dmMesh, charlabel, &groupField);CHECK_PETSC_ERROR(err);
-      CohesiveTopology::createFault(&faultMesh, faultBoundary, *mesh, groupField, 
+      CohesiveTopology::createFault(&faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField, 
                                     flipFault);
       
-      CohesiveTopology::create(mesh, faultMesh, faultBoundary, groupField, id(), 
+      CohesiveTopology::create(mesh, faultMesh, faultBoundary, faultBoundaryDM, groupField, id(), 
                                *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
       
     } else {

@@ -115,6 +115,14 @@ private :
   static
   void _testInitialize(const _TestBruneSlipFn::DataStruct& data);
 
+  /** Setup fault coordinates
+   *
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   */
+  static
+  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
+
 }; // class TestBruneSlipFn
 
 #endif // pylith_faults_testbruneslipfn_hh

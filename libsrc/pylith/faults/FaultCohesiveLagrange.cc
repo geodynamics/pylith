@@ -1072,7 +1072,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
       const PetscInt v_positive = closure[indexJ];
 
       PetscInt v_fault;
-      err = PetscFindInt(v_lagrange, numPoints, points, &v_fault);CHECK_PETSC_ERROR(err);
+      err = PetscFindInt(v_negative, numPoints, points, &v_fault);CHECK_PETSC_ERROR(err);
       assert(v_fault >= 0);
       if (indexMap.end() == indexMap.find(v_lagrange)) {
         _cohesiveVertices[index].lagrange = v_lagrange;

@@ -107,6 +107,14 @@ private :
   static
   void _testInitialize(const _TestConstRateSlipFn::DataStruct& data);
 
+  /** Setup fault coordinates
+   *
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   */
+  static
+  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
+
 }; // class TestConstRateSlipFn
 
 #endif // pylith_faults_testconstrateslipfn_hh

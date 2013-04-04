@@ -435,6 +435,9 @@ const int pylith::faults::CohesiveDynDataTri3d::_numConstraintVert = 3;
 const int pylith::faults::CohesiveDynDataTri3d::_constraintVertices[] = {
   15, 16, 17
 };
+const int pylith::faults::CohesiveDynDataTri3d::_negativeVertices[] = {
+   7,  8, 10
+};
 
 const PylithScalar pylith::faults::CohesiveDynDataTri3d::_initialTractions[] = {
   // Fault coordinate frame
@@ -576,6 +579,7 @@ pylith::faults::CohesiveDynDataTri3d::CohesiveDynDataTri3d(void)
   initialTractions = const_cast<PylithScalar*>(_initialTractions);
 
   constraintVertices = const_cast<int*>(_constraintVertices);
+  negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  
 
   // Stick

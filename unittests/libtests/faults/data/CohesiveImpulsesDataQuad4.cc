@@ -145,6 +145,9 @@ const int pylith::faults::CohesiveImpulsesDataQuad4::_numConstraintVert = 2;
 const int pylith::faults::CohesiveImpulsesDataQuad4::_constraintVertices[] = {
   11, 12
 };
+const int pylith::faults::CohesiveImpulsesDataQuad4::_negativeVertices[] = {
+   5,  6
+};
 
 const PylithScalar pylith::faults::CohesiveImpulsesDataQuad4::_residualIncr[] = {
   0.0,  0.0,
@@ -186,6 +189,7 @@ pylith::faults::CohesiveImpulsesDataQuad4::CohesiveImpulsesDataQuad4(void)
   numImpulses = _numImpulses;
   residualIncr = const_cast<PylithScalar*>(_residualIncr);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  negativeVertices = const_cast<int*>(_negativeVertices);
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

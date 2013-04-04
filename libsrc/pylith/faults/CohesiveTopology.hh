@@ -54,6 +54,7 @@ public :
   static
   void createFault(topology::SubMesh* faultMesh,
 		   ALE::Obj<SieveFlexMesh>& faultBoundary,
+		   DM& faultBoundaryDM,
 		   const topology::Mesh& mesh,
 		   DMLabel groupField,
 		   const bool flipFault =false);
@@ -76,6 +77,7 @@ public :
   void create(topology::Mesh* mesh,
 	      const topology::SubMesh& faultMesh,
               const ALE::Obj<SieveFlexMesh>& faultBoundary,
+              DM faultBoundaryDM,
               DMLabel groupField,
               const int materialId,
               int& firstFaultVertex,
