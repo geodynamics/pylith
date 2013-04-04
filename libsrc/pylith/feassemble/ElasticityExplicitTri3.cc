@@ -26,10 +26,12 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
 #include "pylith/topology/Jacobian.hh" // USES Jacobian
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
-#include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -54,7 +56,6 @@ pylith::feassemble::ElasticityExplicitTri3::ElasticityExplicitTri3(void) :
   _dtm1(-1.0),
   _normViscosity(0.1)
 { // constructor
-  _basisDerivArray.resize(_numQuadPts*_numBasis*_spaceDim);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -77,6 +78,8 @@ pylith::feassemble::ElasticityExplicitTri3::deallocate(void)
 void
 pylith::feassemble::ElasticityExplicitTri3::timeStep(const PylithScalar dt)
 { // timeStep
+  PYLITH_METHOD_BEGIN;
+
   if (_dt != -1.0)
     _dtm1 = _dt;
   else
@@ -85,6 +88,8 @@ pylith::feassemble::ElasticityExplicitTri3::timeStep(const PylithScalar dt)
   assert(_dt == _dtm1); // For now, don't allow variable time step
   if (0 != _material)
     _material->timeStep(_dt);
+
+  PYLITH_METHOD_END;
 } // timeStep
 
 // ----------------------------------------------------------------------
@@ -92,8 +97,10 @@ pylith::feassemble::ElasticityExplicitTri3::timeStep(const PylithScalar dt)
 PylithScalar
 pylith::feassemble::ElasticityExplicitTri3::stableTimeStep(const topology::Mesh& mesh) const
 { // stableTimeStep
+  PYLITH_METHOD_BEGIN;
+
   assert(_material);
-  return _material->stableTimeStepExplicit(mesh, _quadrature);
+  PYLITH_METHOD_RETURN(_material->stableTimeStepExplicit(mesh, _quadrature));
 } // stableTimeStep
 
 // ----------------------------------------------------------------------
@@ -101,6 +108,8 @@ pylith::feassemble::ElasticityExplicitTri3::stableTimeStep(const topology::Mesh&
 void
 pylith::feassemble::ElasticityExplicitTri3::normViscosity(const PylithScalar viscosity)
 { // normViscosity
+  PYLITH_METHOD_BEGIN;
+
   if (viscosity < 0.0) {
     std::ostringstream msg;
     msg << "Normalized viscosity (" << viscosity << ") must be nonnegative.";
@@ -108,6 +117,8 @@ pylith::feassemble::ElasticityExplicitTri3::normViscosity(const PylithScalar vis
   } // if
 
   _normViscosity = viscosity;
+
+  PYLITH_METHOD_END;
 } // normViscosity
 
 // ----------------------------------------------------------------------
@@ -117,14 +128,16 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 							      const PylithScalar t,
 							      topology::SolutionFields* const fields)
 { // integrateResidual
+  PYLITH_METHOD_BEGIN;
+
   /// Member prototype for _elasticityResidualXD()
   typedef void (pylith::feassemble::ElasticityExplicitTri3::*elasticityResidual_fn_type)
     (const scalar_array&);
 
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != _logger);
-  assert(0 != fields);
+  assert(_quadrature);
+  assert(_material);
+  assert(_logger);
+  assert(fields);
 
   const int setupEvent = _logger->eventId("ElIR setup");
   const int geometryEvent = _logger->eventId("ElIR geometry");
@@ -147,6 +160,7 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
   const int tensorSize = _tensorSize;
   const int numBasis = _numBasis;
   const int numQuadPts = _numQuadPts;
+  const int cellVectorSize = numBasis*spaceDim;
   /** :TODO:
    *
    * If cellDim and spaceDim are different, we need to transform
@@ -166,54 +180,37 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
   scalar_array quadPtsGlobal(numQuadPts*spaceDim);
 
   // Get cell information
-  DM              dmMesh = fields->mesh().dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  // Setup field visitors.
+  topology::VecVisitorMesh accVisitor(fields->get("acceleration(t)"));
+  PetscScalar* accCell = NULL;
+  PetscInt accSize = 0;
 
-  // Get sections
-  topology::Field<topology::Mesh>& acc = fields->get("acceleration(t)");
-  PetscSection accSection = acc.petscSection();
-  Vec          accVec     = acc.localVector();
-  assert(accSection);assert(accVec);
+  topology::VecVisitorMesh velVisitor(fields->get("velocity(t)"));
+  PetscScalar* velCell = NULL;
+  PetscInt velSize = 0;
 
-  topology::Field<topology::Mesh>& vel = fields->get("velocity(t)");
-  PetscSection velSection = vel.petscSection();
-  Vec          velVec     = vel.localVector();
-  assert(velSection);assert(velVec);
-  
   scalar_array dispAdjCell(numBasis*spaceDim);
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  PetscSection dispTSection = dispT.petscSection();
-  Vec          dispTVec     = dispT.localVector();
-  assert(dispTSection);assert(dispTVec);
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  PetscScalar* dispCell = NULL;
+  PetscInt dispSize = 0;
   
-  PetscSection residualSection = residual.petscSection();
-  Vec          residualVec     = residual.localVector();
+  topology::VecVisitorMesh residualVisitor(residual);
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordsCell = NULL;
+  PetscInt coordsSize = 0;
 
-  assert(0 != _normalizer);
+  assert(_normalizer);
   const PylithScalar lengthScale = _normalizer->lengthScale();
-  const PylithScalar gravityScale =
-    _normalizer->pressureScale() / (_normalizer->lengthScale() *
-            _normalizer->densityScale());
+  const PylithScalar gravityScale = _normalizer->pressureScale() / (_normalizer->lengthScale() * _normalizer->densityScale());
 
-  const PylithScalar dt = _dt;
-  assert(_normViscosity > 0.0);
-  assert(dt > 0);
-  const PylithScalar viscosity = dt*_normViscosity;
+  const PylithScalar dt = _dt;assert(dt > 0);
+  const PylithScalar viscosity = dt*_normViscosity;assert(_normViscosity >= 0.0);
 
   // Get parameters used in integration.
   scalar_array valuesIJ(numBasis);
@@ -231,13 +228,11 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Restrict input fields to cell
-    PetscScalar *accArray, *velArray, *dispTArray;
-    PetscInt     accSize,   velSize,   dispTSize;
-    err = DMPlexVecGetClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecGetClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
-    assert(velSize   == accSize);
-    assert(dispTSize == accSize);
+    accVisitor.getClosure(&accCell, &accSize, cell);
+    velVisitor.getClosure(&velCell, &velSize, cell);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);
+    assert(velSize == accSize);
+    assert(dispSize == accSize);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(restrictEvent);
@@ -245,13 +240,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 #endif
 
     // Compute geometry information for current cell
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    const PylithScalar area = _area(coordinatesCell);
-    assert(area > 0.0);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    const PylithScalar area = _area(coordsCell, coordsSize);assert(area > 0.0);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -273,36 +263,39 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
     _resetCellVector();
 
     // Compute body force vector if gravity is being used.
-    if (0 != _gravityField) {
-      const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();
-      assert(0 != cs);
+    if (_gravityField) {
+      const spatialdata::geocoords::CoordSys* cs = fields->mesh().coordsys();assert(cs);
 
       quadPtsGlobal = 0.0;
-      for (int iBasis=0; iBasis < numBasis; ++iBasis)
-        for (int iDim=0; iDim < spaceDim; ++iDim)
-          quadPtsGlobal[iDim] += 
-	    coordinatesCell[iBasis*spaceDim+iDim] / numBasis;
-      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(),
-          lengthScale);
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        for (int iDim=0; iDim < spaceDim; ++iDim) {
+          quadPtsGlobal[iDim] += coordsCell[iBasis*spaceDim+iDim] / numBasis;
+	} // for
+      } // for
+      _normalizer->dimensionalize(&quadPtsGlobal[0], quadPtsGlobal.size(), lengthScale);
 
       // Compute action for element body forces
       spatialdata::spatialdb::SpatialDB* db = _gravityField;
-      const int err = db->query(&gravVec[0], gravVec.size(),
-        &quadPtsGlobal[0], spaceDim, cs);
-      if (err)
+      const int err = db->query(&gravVec[0], gravVec.size(), &quadPtsGlobal[0], spaceDim, cs);
+      if (err) {
         throw std::runtime_error("Unable to get gravity vector for point.");
-      _normalizer->nondimensionalize(&gravVec[0], gravVec.size(),
-          gravityScale);
+      } // if
+      _normalizer->nondimensionalize(&gravVec[0], gravVec.size(), gravityScale);
       const PylithScalar wtVertex = density[0] * area / 3.0;
-      for (int iBasis=0; iBasis < numBasis; ++iBasis)
-        for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        for (int iDim=0; iDim < spaceDim; ++iDim) {
             _cellVector[iBasis * spaceDim + iDim] += wtVertex * gravVec[iDim];
+	} // for
+      } // for
       PetscLogFlops(numBasis*spaceDim*2 + numBasis*spaceDim*2);
     } // if
 
     // Compute action for inertial terms
     const PylithScalar wtVertex = density[0] * area / 3.0;
-    for(PetscInt i = 0; i < dispTSize; ++i) {_cellVector[i] -= wtVertex * accArray[i];}
+    assert(cellVectorSize == dispSize);
+    for(PetscInt i = 0; i < cellVectorSize; ++i) {
+      _cellVector[i] -= wtVertex * accCell[i];
+    } // for
 
 #if defined(DETAILED_EVENT_LOGGING)
     PetscLogFlops(2 + numBasis*spaceDim*2);
@@ -312,20 +305,22 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
 
     // Numerical damping. Compute displacements adjusted by velocity
     // times normalized viscosity.
-    for(PetscInt i = 0; i < dispTSize; ++i) {dispAdjCell[i] = dispTArray[i] + viscosity * velArray[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, accSection,   accVec,   cell, &accSize,   &accArray);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecRestoreClosure(dmMesh, velSection,   velVec,   cell, &velSize,   &velArray);CHECK_PETSC_ERROR(err);
-    err = DMPlexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    for(PetscInt i = 0; i < cellVectorSize; ++i) {
+      dispAdjCell[i] = dispCell[i] + viscosity * velCell[i];
+    } // for
+    accVisitor.restoreClosure(&accCell, &accSize, cell);
+    velVisitor.restoreClosure(&velCell, &velSize, cell);
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Compute B(transpose) * sigma, first computing strains
-    const PylithScalar x0 = coordinatesCell[0];
-    const PylithScalar y0 = coordinatesCell[1];
+    const PylithScalar x0 = coordsCell[0];
+    const PylithScalar y0 = coordsCell[1];
 
-    const PylithScalar x1 = coordinatesCell[2];
-    const PylithScalar y1 = coordinatesCell[3];
+    const PylithScalar x1 = coordsCell[2];
+    const PylithScalar y1 = coordsCell[3];
 
-    const PylithScalar x2 = coordinatesCell[4];
-    const PylithScalar y2 = coordinatesCell[5];
+    const PylithScalar x2 = coordsCell[4];
+    const PylithScalar y2 = coordsCell[5];
 
     const PylithScalar scaleB = 2.0 * area;
     const PylithScalar b0 = (y1 - y2) / scaleB;
@@ -368,20 +363,22 @@ pylith::feassemble::ElasticityExplicitTri3::integrateResidual(const topology::Fi
     _logger->eventBegin(updateEvent);
 #endif
 
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
+
     // Assemble cell contribution into field
-    err = DMPlexVecSetClosure(dmMesh, residualSection, residualVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    residualVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*(2 + numBasis*spaceDim*2 + 34+30));
   _logger->eventEnd(computeEvent);
 #endif
+
+  PYLITH_METHOD_END;
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -391,7 +388,11 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(topology::Jacobian
 							      const PylithScalar t,
 							      topology::SolutionFields* fields)
 { // integrateJacobian
+  PYLITH_METHOD_BEGIN;
+
   throw std::logic_error("ElasticityExplicit::integrateJacobian() not implemented. Use integrateJacobian(lumped) instead.");
+
+  PYLITH_METHOD_END;
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -402,10 +403,12 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 			    const PylithScalar t,
 			    topology::SolutionFields* fields)
 { // integrateJacobian
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != jacobian);
-  assert(0 != fields);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_quadrature);
+  assert(_material);
+  assert(jacobian);
+  assert(fields);
 
   const int setupEvent = _logger->eventId("ElIJ setup");
   const int geometryEvent = _logger->eventId("ElIJ geometry");
@@ -430,32 +433,24 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 			   "different dimensions than the spatial dimension.");
 
   // Get cell information
-  DM              dmMesh = fields->mesh().dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
   // Get parameters used in integration.
   const PylithScalar dt = _dt;
   const PylithScalar dt2 = dt*dt;
   assert(dt > 0);
 
-  // Get sections
-  PetscSection jacSection = jacobian->petscSection();
-  Vec          jacVec     = jacobian->localVector();
+  // Setup visitors.
+  topology::VecVisitorMesh jacobianVisitor(*jacobian);
+  PetscScalar* jacobianCell = NULL;
+  PetscInt jacobianSize = 0;
 
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
 
   _logger->eventEnd(setupEvent);
 #if !defined(DETAILED_EVENT_LOGGING)
@@ -468,13 +463,9 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventBegin(geometryEvent);
 #endif
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    const PylithScalar area = _area(coordinatesCell);
-    assert(area > 0.0);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    const PylithScalar area = _area(coordsCell, coordsSize);assert(area > 0.0);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(geometryEvent);
@@ -500,14 +491,12 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 #endif
     
     // Assemble cell contribution into lumped matrix.
-    err = DMPlexVecSetClosure(dmMesh, jacSection, jacVec, cell, &_cellVector[0], ADD_VALUES);CHECK_PETSC_ERROR(err);
+    jacobianVisitor.setClosure(&_cellVector[0], _cellVector.size(), cell, ADD_VALUES);
 
 #if defined(DETAILED_EVENT_LOGGING)
     _logger->eventEnd(updateEvent);
 #endif
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
 #if !defined(DETAILED_EVENT_LOGGING)
   PetscLogFlops(numCells*3);
@@ -516,6 +505,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 
   _needNewJacobian = false;
   _material->resetNeedNewJacobian();
+
+  PYLITH_METHOD_END;
 } // integrateJacobian
 
 // ----------------------------------------------------------------------
@@ -523,6 +514,8 @@ pylith::feassemble::ElasticityExplicitTri3::integrateJacobian(
 void
 pylith::feassemble::ElasticityExplicitTri3::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   IntegratorElasticity::verifyConfiguration(mesh);
 
   assert(_quadrature);
@@ -541,10 +534,10 @@ pylith::feassemble::ElasticityExplicitTri3::verifyConfiguration(const topology::
 // ----------------------------------------------------------------------
 // Compute area of triangular cell.
 PylithScalar
-pylith::feassemble::ElasticityExplicitTri3::_area(
-			     const scalar_array& coordinatesCell) const
+pylith::feassemble::ElasticityExplicitTri3::_area(const PylithScalar coordinatesCell[],
+						  const int coordinatesSize) const
 { // __area
-  assert(6 == coordinatesCell.size());
+  assert(6 == coordinatesSize);
 
   const PylithScalar x0 = coordinatesCell[0];
   const PylithScalar y0 = coordinatesCell[1];
