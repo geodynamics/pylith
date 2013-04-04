@@ -27,11 +27,11 @@
 #if !defined(pylith_faults_testtimehistoryslipfn_hh)
 #define pylith_faults_testtimehistoryslipfn_hh
 
+#include "TestSlipFn.hh" // ISA TestSlipFn
+
 #include "pylith/faults/faultsfwd.hh" // USES TimeHistorySlipFn
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES TimeHistory
-
-#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -45,7 +45,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for TimeHistorySlipFn
-class pylith::faults::TestTimeHistorySlipFn : public CppUnit::TestFixture
+class pylith::faults::TestTimeHistorySlipFn : public TestSlipFn
 { // class TestTimeHistorySlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////

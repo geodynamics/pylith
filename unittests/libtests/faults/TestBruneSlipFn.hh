@@ -27,10 +27,10 @@
 #if !defined(pylith_faults_testbruneslipfn_hh)
 #define pylith_faults_testbruneslipfn_hh
 
+#include "TestSlipFn.hh" // ISA TestSlipFn
+
 #include "pylith/faults/faultsfwd.hh" // USES BruneSlipFn
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, SubMesh
-
-#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -44,7 +44,7 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for BruneSlipFn
-class pylith::faults::TestBruneSlipFn : public CppUnit::TestFixture
+class pylith::faults::TestBruneSlipFn : public TestSlipFn
 { // class TestBruneSlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
