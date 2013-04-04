@@ -74,6 +74,7 @@ private:
   static const PylithScalar _fieldIncrOpenE[]; ///< Expected values for solution increment for opening case.
   static const PylithScalar _slipOpenE[]; ///< Expected values for slip for opening case.
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
+  static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };

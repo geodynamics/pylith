@@ -74,6 +74,15 @@ public :
 		     PointSet& replaceCells,
 		     PointSet& noReplaceCells,
 		     const int debug);
+  static
+  void classifyCellsDM(DM dmMesh,
+		     PetscInt vertex,
+		     const int depth,
+		     const int faceSize,
+		     PetscInt firstCohesiveCell,
+		     PointSet& replaceCells,
+		     PointSet& noReplaceCells,
+		     const int debug);
   
   static
   void createFaultSieveFromVertices(const int dim,

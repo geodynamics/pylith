@@ -126,6 +126,14 @@ private :
 		 const PylithScalar finalSlip,
 		 const PylithScalar riseTime);
 
+  /** Setup fault coordinates
+   *
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   */
+  static
+  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
+
 }; // class TestLiuCosSlipFn
 
 #endif // pylith_faults_testliucosslipfn_hh

@@ -143,7 +143,7 @@ pylith::faults::TestFaultCohesiveDyn::testInitialize(void)
   err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
-    err = PetscFindInt(_data->constraintVertices[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
+    err = PetscFindInt(_data->negativeVertices[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, v);
   } // for

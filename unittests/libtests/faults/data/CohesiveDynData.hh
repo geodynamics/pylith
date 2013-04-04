@@ -93,6 +93,7 @@ public:
   PylithScalar* slipOpenE; ///< Expected values for slip for opening case.
 
   int* constraintVertices; ///< Expected points for constraint vertices
+  int* negativeVertices; ///< Expected points for negative side fault vertices
   int numConstraintVert; ///< Number of constraint vertices
   //@}
 

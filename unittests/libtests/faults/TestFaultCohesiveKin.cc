@@ -141,7 +141,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 
   // Check fault mesh sizes
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, fault.dimension());
-  CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.coneSize());
+  CPPUNIT_ASSERT_EQUAL(_data->numBasis, fault.dimension() == 0 ? fault.coneSize()+1 : fault.coneSize());
   CPPUNIT_ASSERT_EQUAL(_data->numFaultVertices, fault.numVertices());
   CPPUNIT_ASSERT_EQUAL(_data->numCohesiveCells, fault.numCells());
 
@@ -159,7 +159,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   for(PetscInt v = vStart; v < vEnd; ++v) {
     PetscInt faultPoint;
 
-    err = PetscFindInt(_data->verticesLagrange[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
+    err = PetscFindInt(_data->verticesNegative[v-vStart], numPoints, points, &faultPoint);CHECK_PETSC_ERROR(err);
     CPPUNIT_ASSERT(faultPoint >= 0);
     CPPUNIT_ASSERT_EQUAL(faultPoint, _data->verticesFault[v-vStart]);
   } // for

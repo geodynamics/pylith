@@ -88,6 +88,14 @@ private :
 		   BruneSlipFn* slipfn,
 		   const PylithScalar originTime);
 
+  /** Setup fault coordinates
+   *
+   * @param mesh Finite-element mesh of domain.
+   * @param faultMesh Finite-element mesh of fault.
+   */
+  static
+  void _setupFaultCoordinates(topology::Mesh *mesh, topology::SubMesh *faultMesh);
+
 }; // class TestEqKinSrc
 
 #endif // pylith_faults_testeqkinsrc_hh

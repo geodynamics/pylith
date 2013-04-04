@@ -100,7 +100,7 @@ const PylithScalar pylith::faults::CohesiveKinDataLine2::_jacobianLumped[] = {
 
 const int pylith::faults::CohesiveKinDataLine2::_numFaultVertices = 1;
 const int pylith::faults::CohesiveKinDataLine2::_verticesFault[] = {
-  1
+  2
 };
 const int pylith::faults::CohesiveKinDataLine2::_verticesLagrange[] = {
   7

@@ -72,6 +72,7 @@ private:
   static const PylithScalar _residualIncr[]; ///< Expected values from residual calculation with solution increment.
 
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
+  static const int _negativeVertices[]; ///< Expected points for negative-side fault vertices
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };
