@@ -1811,7 +1811,7 @@ pylith::faults::FaultCohesiveDyn::_sensitivityReformResidual(const bool negative
 
   // Get fault cell information
   PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
-  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
   const PetscInt numCells = cellsStratum.size();

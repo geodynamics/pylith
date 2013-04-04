@@ -1029,7 +1029,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   topology::Stratum faultVerticesStratum(faultDMMesh, topology::Stratum::DEPTH, 0);
   const PetscInt fvStart = faultVerticesStratum.begin();
   const PetscInt fvEnd = faultVerticesStratum.end();
-  topology::Stratum faultCellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+  topology::Stratum faultCellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt fcStart = faultCellsStratum.begin();
   const PetscInt fcEnd = faultCellsStratum.end();
   assert(ncells == fcEnd-fcStart);
@@ -1284,7 +1284,7 @@ pylith::faults::FaultCohesiveLagrange::_calcOrientation(const PylithScalar upDir
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
 
@@ -1549,7 +1549,7 @@ pylith::faults::FaultCohesiveLagrange::_calcArea(void)
   const PetscInt vStart = verticesStratum.begin();
   const PetscInt vEnd = verticesStratum.end();
 
-  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+  topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
 
@@ -1837,7 +1837,7 @@ pylith::faults::FaultCohesiveLagrange::cellField(const char* name,
   if (0 == strcasecmp("partition", name)) {
 
     PetscDM faultDMMesh = _faultMesh->dmMesh();assert(faultDMMesh);
-    topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 0);
+    topology::Stratum cellsStratum(faultDMMesh, topology::Stratum::HEIGHT, 1);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
