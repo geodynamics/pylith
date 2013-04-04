@@ -110,7 +110,7 @@ pylith::topology::SubMesh::coneSize(void) const {
   if (_newMesh) {
     PetscErrorCode err;
     PetscInt cStart = 0;
-    err = DMPlexGetHeightStratum(_newMesh, 0, &cStart, NULL);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetHeightStratum(_newMesh, 1, &cStart, NULL);CHECK_PETSC_ERROR(err);
     err = DMPlexGetConeSize(_newMesh, cStart, &coneSize);CHECK_PETSC_ERROR(err);
   } // if
   return coneSize;
@@ -136,7 +136,7 @@ pylith::topology::SubMesh::numCells(void) const {
   PetscInt ncells = 0;
   if (_newMesh) {
     PetscInt begin=0, end=0;
-    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 0, &begin, &end);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetHeightStratum(_newMesh, 1, &begin, &end);CHECK_PETSC_ERROR(err);
     ncells = end-begin;
   } // if
   return ncells;

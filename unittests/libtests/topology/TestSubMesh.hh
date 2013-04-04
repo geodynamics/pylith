@@ -52,6 +52,9 @@ class pylith::topology::TestSubMesh : public CppUnit::TestFixture
   CPPUNIT_TEST( testCoordsys );
   CPPUNIT_TEST( testDebug );
   CPPUNIT_TEST( testDimension );
+  CPPUNIT_TEST( testConeSize );
+  CPPUNIT_TEST( testNumVertices );
+  CPPUNIT_TEST( testNumCells );
   CPPUNIT_TEST( testComm );
   CPPUNIT_TEST( testInitialize );
 
@@ -77,6 +80,15 @@ public :
 
   /// Test dimension().
   void testDimension(void);
+
+  /// Test coneSize().
+  void testConeSize(void);
+
+  /// Test numVertices().
+  void testNumVertices(void);
+
+  /// Test numCells().
+  void testNumCells(void);
 
   /// Test comm().
   void testComm(void);
