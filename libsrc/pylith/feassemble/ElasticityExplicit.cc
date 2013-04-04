@@ -33,7 +33,6 @@
 
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
-#include "pylith/utils/lapack.h" // USES LAPACKdgesvd
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

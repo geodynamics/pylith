@@ -138,21 +138,14 @@ private :
   /** Compute area of triangular cell.
    *
    * @param coordinatesCell Coordinates of vertices of cell.
-   * @returns Area of cell.
+   * @param coordinatesSize Size of array.
+   * @returns Volume of cell.
    */
-  PylithScalar _area(const scalar_array& coordinatesCell) const;
-
-  /** Compute derivatives of basis functions of triangular cell.
-   *
-   * @param coordinatesCell Coordinates of vertices of cell.
-   * @returns Derivatives of basis functions.
-   */
-  const scalar_array& _basisDeriv(const scalar_array& coordinatesCell) const;
+  PylithScalar _area(const PylithScalar coordinatesCell[],
+		     const int coordinatesSize) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
-
-  scalar_array _basisDerivArray; ///< Array of basis derivatives
 
   PylithScalar _dtm1; ///< Time step for t-dt1 -> t
   PylithScalar _normViscosity; ///< Normalized viscosity for numerical damping.
