@@ -176,7 +176,7 @@ pylith::feassemble::CellGeometry::_orient0D(scalar_array* orientation,
 					    const PylithScalar jacobianDet,
 					    const scalar_array& upDir)
 { // _orient0D
-  assert(0 != orientation);
+  assert(orientation);
   assert(1 == orientation->size());
   (*orientation) = 1.0;
 } // _orient0D
@@ -190,7 +190,7 @@ pylith::feassemble::CellGeometry::_orient1D(scalar_array* orientation,
 					    const scalar_array& upDir)
 { // _orient1D
   const int orientSize = 4;
-  assert(0 != orientation);
+  assert(orientation);
   assert(orientSize == orientation->size());
   const int jacobianSize = 2;
   assert(jacobianSize == jacobian.size());
@@ -216,9 +216,9 @@ pylith::feassemble::CellGeometry::_orient2D(scalar_array* orientation,
 					    const scalar_array& upDir)
 { // _orient2D
   const int orientSize = 9;
-  assert(0 != orientation);
-  assert(orientSize == orientation->size());
   const int jacobianSize = 6;
+  assert(orientation);
+  assert(orientSize == orientation->size());
   assert(jacobianSize == jacobian.size());
   assert(3 == upDir.size());
 
