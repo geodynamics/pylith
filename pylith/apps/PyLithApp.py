@@ -72,7 +72,8 @@ class PyLithApp(PetscApplication):
     typos.meta['tip'] = "Specifies the handling of unknown properties and " \
         "facilities"
     
-
+    pdbOn = pyre.inventory.bool("start_python_debugger", default=False)
+    pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -89,6 +90,10 @@ class PyLithApp(PetscApplication):
     """
     Run the application.
     """
+    if self.pdbOn:
+          import pdb
+          pdb.set_trace()
+        
     from pylith.utils.profiling import resourceUsageString
     
     self._debug.log(resourceUsageString())
@@ -153,6 +158,7 @@ class PyLithApp(PetscApplication):
     self.problem = self.inventory.problem
     self.perfLogger = self.inventory.perfLogger
     self.typos = self.inventory.typos
+    self.pdbOn = self.inventory.pdbOn
 
     import journal
     self._debug = journal.debug(self.name)
