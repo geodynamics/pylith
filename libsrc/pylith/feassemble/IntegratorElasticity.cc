@@ -27,18 +27,19 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-
-//#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -72,7 +73,7 @@ void
 pylith::feassemble::IntegratorElasticity::material(materials::ElasticMaterial* m)
 { // material
   _material = m;
-  if (0 != _material)
+  if (_material)
     _material->timeStep(_dt);  
 } // material
 
@@ -81,10 +82,12 @@ pylith::feassemble::IntegratorElasticity::material(materials::ElasticMaterial* m
 bool
 pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 { // needNewJacobian
-  assert(0 != _material);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_material);
   if (!_needNewJacobian)
     _needNewJacobian = _material->needNewJacobian();
-  return _needNewJacobian;
+  PYLITH_METHOD_RETURN(_needNewJacobian);
 } // needNewJacobian
 
 // ----------------------------------------------------------------------
@@ -92,22 +95,15 @@ pylith::feassemble::IntegratorElasticity::needNewJacobian(void)
 void
 pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
 { // initialize
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_quadrature);
+  assert(_material);
 
   _initializeLogger();
 
   // Compute geometry for quadrature operations.
   _quadrature->initializeGeometry();
-#if defined(PRECOMPUTE_GEOMETRY)
-  // Get cell information
-  const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-  const int materialId = _material->id();
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sieveMesh->getLabelStratum("material-id", materialId);
-  _quadrature->computeGeometry(mesh, cells);
-#endif
 
   // Initialize material.
   _material->initialize(mesh, _quadrature);
@@ -118,7 +114,7 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
   _initCellMatrix();
 
   // Set up gravity field database for querying
-  if (0 != _gravityField) {
+  if (_gravityField) {
     const int spaceDim = _quadrature->spaceDim();
     _gravityField->open();
     if (1 == spaceDim){
@@ -136,6 +132,8 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
       throw std::logic_error("Bad spatial dimension in IntegratorElasticity.");
     } // else
   } // if
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -145,13 +143,15 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
 				      const PylithScalar t,
 				      topology::SolutionFields* const fields)
 { // updateState
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != fields);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_quadrature);
+  assert(_material);
+  assert(fields);
 
   // No need to update state vars if material doesn't have any.
   if (!_material->hasStateVars())
-    return;
+    PYLITH_METHOD_END;
 
   // Get cell information that doesn't depend on particular cell
   const int cellDim = _quadrature->cellDim();
@@ -161,19 +161,15 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else {
       std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
       assert(0);
-      throw std::logic_error("Bad cell dimension in "
-			     "IntegratorElasticity::updateStateVars().");
+      throw std::logic_error("Bad cell dimension in IntegratorElasticity::updateStateVars().");
   } // else
 
   // Allocate arrays for cell data.
@@ -181,57 +177,37 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   strainCell = 0.0;
 
   // Get cell information
-  DM              dmMesh = fields->mesh().dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
   // Get fields
   scalar_array dispTCell(numBasis*spaceDim);
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  PetscSection dispTSection = dispT.petscSection();
-  Vec          dispTVec     = dispT.localVector();
-  assert(dispTSection);assert(dispTVec);
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  PetscScalar* dispCell = NULL;
+  PetscInt dispSize = 0;
 
-#if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
-#endif
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    _quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-#endif
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     // Get physical properties and state variables for cell.
     _material->retrievePropsAndVars(cell);
 
     // Restrict input fields to cell
-    PetscScalar *dispTArray;
-    PetscInt     dispTSize;
-    err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);
+    assert(numBasis*spaceDim == dispSize);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispTCell[i] = dispCell[i];} // :TODO: Remove copy
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
@@ -242,16 +218,17 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
     // Update material state
     _material->updateStateVars(strainCell, cell);
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::feassemble::IntegratorElasticity::verifyConfiguration(
-					   const topology::Mesh& mesh) const
+pylith::feassemble::IntegratorElasticity::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
+  PYLITH_METHOD_BEGIN;
+
   assert(_quadrature);
   assert(_material);
 
@@ -280,22 +257,16 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
   } // if
 
   const int numCorners = _quadrature->refGeometry().numCorners();
-  DM dmMesh = mesh.dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
-    PetscInt       cellNumCorners;
+    PetscInt cellNumCorners;
 
-    err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);CHECK_PETSC_ERROR(err);
+    PetscErrorCode err = DMPlexGetConeSize(dmMesh, cell, &cellNumCorners);CHECK_PETSC_ERROR(err);
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell in material '"
@@ -306,20 +277,21 @@ pylith::feassemble::IntegratorElasticity::verifyConfiguration(
       throw std::runtime_error(msg.str());
     } // if
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
 // Get cell field associated with integrator.
 const pylith::topology::Field<pylith::topology::Mesh>&
-pylith::feassemble::IntegratorElasticity::cellField(
-					   const char* name,
-					   const topology::Mesh& mesh,
-					   topology::SolutionFields* fields)
+pylith::feassemble::IntegratorElasticity::cellField(const char* name,
+						    const topology::Mesh& mesh,
+						    topology::SolutionFields* fields)
 { // cellField
-  assert(0 != _material);
-  assert(0 != _normalizer);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_material);
+  assert(_normalizer);
 
   if (0 == _outputFields)
     _outputFields =
@@ -329,39 +301,39 @@ pylith::feassemble::IntegratorElasticity::cellField(
 
     if (_material->hasStateVar("total_strain")) {
       // total strain is available as a state variable
-      assert(0 != fields);
+      assert(fields);
       _allocateTensorField(mesh);
       topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "total_strain");
       buffer.addDimensionOkay(true);
-      return buffer;
+      PYLITH_METHOD_RETURN(buffer);
 
     } else { // must calculate total strain
-      assert(0 != fields);
+      assert(fields);
       _allocateTensorField(mesh);
       topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");
       buffer.label("total_strain");
       buffer.scale(1.0);
       buffer.addDimensionOkay(true);
       _calcStrainStressField(&buffer, name, fields);
-      return buffer;
+      PYLITH_METHOD_RETURN(buffer);
 
     } // if/else
   } else if (0 == strcasecmp(name, "stress")) {
 
     if (_material->hasStateVar("stress")) {
       // stress is available as a state variable
-      assert(0 != fields);
+      assert(fields);
       _allocateTensorField(mesh);
       topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");    
       _material->getField(&buffer, "stress");
       buffer.addDimensionOkay(true);
-      return buffer;
+      PYLITH_METHOD_RETURN(buffer);
 
     } else { // must calculate stress from strain
       if (_material->hasStateVar("strain")) {
 	// total strain is available as a state variable
-	assert(0 != fields);
+	assert(fields);
 	_allocateTensorField(mesh);
 	topology::Field<topology::Mesh>& buffer = 
 	  _outputFields->get("buffer (tensor)");    
@@ -370,10 +342,10 @@ pylith::feassemble::IntegratorElasticity::cellField(
 	buffer.scale(_normalizer->pressureScale());
 	buffer.addDimensionOkay(true);
 	_calcStressFromStrain(&buffer);
-	return buffer;
+	PYLITH_METHOD_RETURN(buffer);
 
       } else { // must calculate strain 
-	assert(0 != fields);
+	assert(fields);
 	_allocateTensorField(mesh);
 	topology::Field<topology::Mesh>& buffer = 
 	  _outputFields->get("buffer (tensor)");
@@ -381,7 +353,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
 	buffer.scale(_normalizer->pressureScale());
 	buffer.addDimensionOkay(true);
 	_calcStrainStressField(&buffer, name, fields);
-	return buffer;
+	PYLITH_METHOD_RETURN(buffer);
 	
       } // else
 
@@ -393,7 +365,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
     topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepImplicit(mesh, &buffer);
     buffer.addDimensionOkay(true);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
     
   } else if (0 == strcasecmp(name, "stable_dt_explicit")) {
     if (!_outputFields->hasField("buffer (other)"))
@@ -401,7 +373,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
     topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (other)");
     _material->stableTimeStepExplicit(mesh, _quadrature, &buffer);
     buffer.addDimensionOkay(true);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
     
   } else {
     if (!_outputFields->hasField("buffer (other)"))
@@ -410,7 +382,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
       _outputFields->get("buffer (other)");
     _material->getField(&buffer, name);
     buffer.addDimensionOkay(true);
-    return buffer;
+    PYLITH_METHOD_RETURN(buffer);
     
   } // if/else
 
@@ -421,7 +393,7 @@ pylith::feassemble::IntegratorElasticity::cellField(
   topology::Field<topology::Mesh>& buffer = 
     _outputFields->get("buffer (tensor)");    
 
-  return buffer;
+  PYLITH_METHOD_RETURN(buffer);
 } // cellField
 
 // ----------------------------------------------------------------------
@@ -437,8 +409,10 @@ pylith::feassemble::IntegratorElasticity::outputFields(void) const
 void
 pylith::feassemble::IntegratorElasticity::_initializeLogger(void)
 { // initializeLogger
+  PYLITH_METHOD_BEGIN;
+
   delete _logger; _logger = new utils::EventLogger;
-  assert(0 != _logger);
+  assert(_logger);
   _logger->className("ElasticityIntegrator");
   _logger->initialize();
   _logger->registerEvent("ElIR setup");
@@ -455,28 +429,27 @@ pylith::feassemble::IntegratorElasticity::_initializeLogger(void)
   _logger->registerEvent("ElIJ restrict");
   _logger->registerEvent("ElIJ stateVars");
   _logger->registerEvent("ElIJ update");
+
+  PYLITH_METHOD_END;
 } // initializeLogger
 
 // ----------------------------------------------------------------------
 // Allocate buffer for tensor field at quadrature points.
 void
-pylith::feassemble::IntegratorElasticity::_allocateTensorField(
-						 const topology::Mesh& mesh)
+pylith::feassemble::IntegratorElasticity::_allocateTensorField(const topology::Mesh& mesh)
 { // _allocateTensorField
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != _outputFields);
+  PYLITH_METHOD_BEGIN;
 
-  DM              dmMesh = mesh.dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  assert(_quadrature);
+  assert(_material);
+  assert(_outputFields);
 
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  // Get cell information
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
+
   int_array cellsTmp(cells, numCells);
 
   const int numQuadPts = _quadrature->numQuadPts();
@@ -485,31 +458,28 @@ pylith::feassemble::IntegratorElasticity::_allocateTensorField(
   const int tensorSize = _material->tensorSize();
   
   if (!_outputFields->hasField("buffer (tensor)")) {
-    ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-    logger.stagePush("OutputFields");
     _outputFields->add("buffer (tensor)", "buffer");
-    topology::Field<topology::Mesh>& buffer =
-      _outputFields->get("buffer (tensor)");
+    topology::Field<topology::Mesh>& buffer = _outputFields->get("buffer (tensor)");
     buffer.newSection(cellsTmp, numQuadPts*tensorSize);
     buffer.allocate();
     buffer.vectorFieldType(topology::FieldBase::MULTI_TENSOR);
     buffer.addDimensionOkay(true);
-    logger.stagePop();
   } // if
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _allocateTensorField
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
-				 topology::Field<topology::Mesh>* field,
-				 const char* name,
-				 topology::SolutionFields* const fields)
+pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field<topology::Mesh>* field,
+								 const char* name,
+								 topology::SolutionFields* const fields)
 { // _calcStrainStressField
-  assert(0 != field);
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  PYLITH_METHOD_BEGIN;
+  
+  assert(field);
+  assert(_quadrature);
+  assert(_material);
 
   const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
     
@@ -521,107 +491,84 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else {
-      std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad cell dimension in IntegratorElasticity.");
+    std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
+    assert(0);
+    throw std::logic_error("Bad cell dimension in IntegratorElasticity.");
   } // else
   
   // Allocate arrays for cell data.
-  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispCellTmp(numBasis*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
   strainCell = 0.0;
   scalar_array stressCell(numQuadPts*tensorSize);
   stressCell = 0.0;
 
   // Get cell information
-  DM              dmMesh = fields->mesh().dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
   // Get field
-  scalar_array dispTCell(numBasis*spaceDim);
-  topology::Field<topology::Mesh>& dispT = fields->get("disp(t)");
-  PetscSection dispTSection = dispT.petscSection();
-  Vec          dispTVec     = dispT.localVector();
-  assert(dispTSection);assert(dispTVec);
-    
-#if !defined(PRECOMPUTE_GEOMETRY)
-  scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-  assert(coordSection);assert(coordVec);
-#endif
+  // Setup field visitors.
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  PetscScalar* dispCell = NULL;
+  PetscInt dispSize = 0;
 
-  PetscSection fieldSection = field->petscSection();
-  Vec          fieldVec     = field->localVector();
-  assert(fieldSection);assert(fieldVec);
+  topology::VecVisitorMesh fieldVisitor(*field);
+
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordsCell = NULL;
+  PetscInt coordsSize = 0;
+
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    PetscScalar *coords;
-    PetscInt     coordsSize;
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    _quadrature->computeGeometry(coordinatesCell, cell);
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-#endif
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     // Restrict input fields to cell
-    PetscScalar *dispTArray;
-    PetscInt     dispTSize;
-    err = DMPlexVecGetClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < dispTSize; ++i) {dispTCell[i] = dispTArray[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, dispTSection, dispTVec, cell, &dispTSize, &dispTArray);CHECK_PETSC_ERROR(err);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);
+    assert(numBasis*spaceDim == dispSize);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispCellTmp[i] = dispCell[i];} // :TODO: Remove copy
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute strains
-    calcTotalStrainFn(&strainCell, basisDeriv, dispTCell, numBasis, numQuadPts);
+    calcTotalStrainFn(&strainCell, basisDeriv, dispCellTmp, numBasis, numQuadPts);
     
     if (!calcStress) {
-      err = DMPlexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &strainCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+      fieldVisitor.setClosure(&strainCell[0], strainCell.size(), cell, INSERT_VALUES);
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      err = DMPlexVecSetClosure(dmMesh, fieldSection, fieldVec, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+      fieldVisitor.setClosure(&stressCell[0], stressCell.size(), cell, INSERT_VALUES);
     } // else
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _calcStrainStressField
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
-				   topology::Field<topology::Mesh>* field)
+pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field<topology::Mesh>* field)
 { // _calcStressFromStrain
-  assert(0 != field);
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  PYLITH_METHOD_BEGIN;
+
+  assert(field);
+  assert(_quadrature);
+  assert(_material);
 
   const int cellDim = _quadrature->cellDim();
   const int numQuadPts = _quadrature->numQuadPts();
@@ -668,13 +615,14 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(
   } // for
   err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
   err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _calcStressFromStrain
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 1-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
-				     const scalar_array& stress)
+pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(const scalar_array& stress)
 { // _elasticityResidual1D
   const int spaceDim = 1;
   const int cellDim = 1;
@@ -703,8 +651,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual1D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
-				     const scalar_array& stress)
+pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(const scalar_array& stress)
 { // _elasticityResidual2D
   const int cellDim = 2;
   const int spaceDim = 2;
@@ -743,8 +690,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual2D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 3-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
-				     const scalar_array& stress)
+pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(const scalar_array& stress)
 { // _elasticityResidual3D
   const int spaceDim = 3;
   const int cellDim = 3;
@@ -789,8 +735,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityResidual3D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 1-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
-			       const scalar_array& elasticConsts)
+pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(const scalar_array& elasticConsts)
 { // _elasticityJacobian1D
   const int cellDim = 1;
   const int spaceDim = 1;
@@ -824,8 +769,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian1D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
-			       const scalar_array& elasticConsts)
+pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(const scalar_array& elasticConsts)
 { // _elasticityJacobian2D
   const int spaceDim = 2;
   const int cellDim = 2;
@@ -893,8 +837,7 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian2D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 3-D cells.
 void
-pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
-			       const scalar_array& elasticConsts)
+pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(const scalar_array& elasticConsts)
 { // _elasticityJacobian3D
   const int spaceDim = 3;
   const int cellDim = 3;
@@ -1022,14 +965,13 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
-					    scalar_array* strain,
-					    const scalar_array& basisDeriv,
-					    const scalar_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(scalar_array* strain,
+							     const scalar_array& basisDeriv,
+							     const scalar_array& disp,
+							     const int numBasis,
+							     const int numQuadPts)
 { // calcTotalStrain1D
-  assert(0 != strain);
+  assert(strain);
 
   const int dim = 1;
   
@@ -1045,14 +987,13 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
-					    scalar_array* strain,
-					    const scalar_array& basisDeriv,
-					    const scalar_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(scalar_array* strain,
+							     const scalar_array& basisDeriv,
+							     const scalar_array& disp,
+							     const int numBasis,
+							     const int numQuadPts)
 { // calcTotalStrain2D
-  assert(0 != strain);
+  assert(strain);
   
   const int dim = 2;
   const int strainSize = 3;
@@ -1075,14 +1016,13 @@ pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(
-					    scalar_array* strain,
-					    const scalar_array& basisDeriv,
-					    const scalar_array& disp,
-					    const int numBasis,
-					    const int numQuadPts)
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(scalar_array* strain,
+							     const scalar_array& basisDeriv,
+							     const scalar_array& disp,
+							     const int numBasis,
+							     const int numQuadPts)
 { // calcTotalStrain3D
-  assert(0 != strain);
+  assert(strain);
 
   const int dim = 3;
   const int strainSize = 6;
