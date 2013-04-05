@@ -142,22 +142,18 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(const topology::Field<
   totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
   if (1 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
+    elasticityResidualFn = &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
+    elasticityResidualFn = &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    elasticityResidualFn = 
-      &pylith::feassemble::ElasticityImplicit::_elasticityResidual3D;
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
+    elasticityResidualFn = &pylith::feassemble::ElasticityImplicit::_elasticityResidual3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
+  } else {
+    assert(false);
+    throw std::logic_error("Unsupported cell dimension in ElasticityImplicit::integrateResidual().");
+  } // if/else		   
 
   // Allocate vectors for cell values.
   scalar_array dispTpdtCell(numBasis*spaceDim);
@@ -340,8 +336,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(topology::Jacobian* ja
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian3D;
     calcTotalStrainFn = 
       &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
-  } else
-    assert(0);
+  } else {
+    assert(false);
+    throw std::logic_error("Unsupported cell dimension in ElasticityImplicit::integrateJacobian().");
+  } // if/else
 
   // Allocate vector for total strain
   scalar_array dispTpdtCell(numBasis*spaceDim);
