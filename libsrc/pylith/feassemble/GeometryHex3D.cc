@@ -34,7 +34,9 @@
 pylith::feassemble::GeometryHex3D::GeometryHex3D(void) :
   CellGeometry(HEXAHEDRON, 3)
 { // constructor
-  const PylithScalar vertices[] = {
+  const int nvertices = 8;
+  const int spaceDim = 3;
+  const PylithScalar vertices[nvertices*spaceDim] = {
     -1.0,  -1.0,  -1.0,
     +1.0,  -1.0,  -1.0,
     +1.0,  +1.0,  -1.0,
@@ -44,7 +46,7 @@ pylith::feassemble::GeometryHex3D::GeometryHex3D(void) :
     +1.0,  +1.0,  +1.0,
     -1.0,  +1.0,  +1.0,
   };
-  _setVertices(vertices, 8, 3);
+  _setVertices(vertices, nvertices, spaceDim);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -78,9 +80,9 @@ pylith::feassemble::GeometryHex3D::ptsRefToGlobal(PylithScalar* ptsGlobal,
 						  const int dim,
 						  const int npts) const
 { // ptsRefToGlobal
-  assert(0 != ptsGlobal);
-  assert(0 != ptsRef);
-  assert(0 != vertices);
+  assert(ptsGlobal);
+  assert(ptsRef);
+  assert(vertices);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
@@ -170,8 +172,8 @@ pylith::feassemble::GeometryHex3D::jacobian(scalar_array* jacobian,
 					    const scalar_array& vertices,
 					    const scalar_array& location) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
+  assert(jacobian);
+  assert(det);
 
   assert( (numCorners()*spaceDim() == vertices.size()) || // linear hex
 	  ((numCorners()+19)*spaceDim() == vertices.size()) ); // quadratic hex
@@ -266,10 +268,10 @@ pylith::feassemble::GeometryHex3D::jacobian(PylithScalar* jacobian,
 					    const int dim,
 					    const int npts) const
 { // jacobian
-  assert(0 != jacobian);
-  assert(0 != det);
-  assert(0 != vertices);
-  assert(0 != ptsRef);
+  assert(jacobian);
+  assert(det);
+  assert(vertices);
+  assert(ptsRef);
   assert(3 == dim);
   assert(spaceDim() == dim);
 
