@@ -85,14 +85,6 @@ protected :
 			      const char* name,
 			      topology::SolutionFields* const fields);
 
-  /** Calculate stress field from total strain field. Stress field
-   * replaces strain field in section.
-   *
-   * @param field Field in which to store stress.
-   */
-  void _calcStressFromStrain(topology::Field<topology::Mesh>* field);
-			      
-
   /** Integrate elasticity term in residual for 1-D cells.
    *
    * @param stress Stress tensor for cell at quadrature points.
