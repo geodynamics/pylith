@@ -77,7 +77,7 @@ void
 pylith::feassemble::Integrator<quadrature_type>::quadrature(const quadrature_type* q)
 { // quadrature
   delete _quadrature;
-  _quadrature = (0 != q) ? new quadrature_type(*q) : 0;
+  _quadrature = (q) ? new quadrature_type(*q) : 0;
 
   // Deallocate cell vector and matrix since size may change
   _cellVector.resize(0);
@@ -121,7 +121,7 @@ template<typename quadrature_type>
 void
 pylith::feassemble::Integrator<quadrature_type>::_initCellVector(void)
 { // _initCellVector
-  assert(0 != _quadrature);
+  assert(_quadrature);
   const int size = _quadrature->spaceDim() * _quadrature->numBasis();
   _cellVector.resize(size);
   _cellVector = 0.0;
@@ -142,7 +142,7 @@ template<typename quadrature_type>
 void
 pylith::feassemble::Integrator<quadrature_type>::_initCellMatrix(void)
 { // _initCellMatrix
-  assert(0 != _quadrature);
+  assert(_quadrature);
   const int size =
     _quadrature->spaceDim() * _quadrature->numBasis() *
     _quadrature->spaceDim() * _quadrature->numBasis();
@@ -166,7 +166,7 @@ template<typename quadrature_type>
 void
 pylith::feassemble::Integrator<quadrature_type>::_lumpCellMatrix(void)
 { // _lumpCellMatrix
-  assert(0 != _quadrature);
+  assert(_quadrature);
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
