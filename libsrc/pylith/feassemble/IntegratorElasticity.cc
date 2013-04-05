@@ -139,9 +139,8 @@ pylith::feassemble::IntegratorElasticity::initialize(const topology::Mesh& mesh)
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorElasticity::updateStateVars(
-				      const PylithScalar t,
-				      topology::SolutionFields* const fields)
+pylith::feassemble::IntegratorElasticity::updateStateVars(const PylithScalar t,
+							  topology::SolutionFields* const fields)
 { // updateState
   PYLITH_METHOD_BEGIN;
 
@@ -182,7 +181,7 @@ pylith::feassemble::IntegratorElasticity::updateStateVars(
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
-  // Get fields
+  // Setup visitors.
   scalar_array dispTCell(numBasis*spaceDim);
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
   PetscScalar* dispCell = NULL;
@@ -504,9 +503,10 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   
   // Allocate arrays for cell data.
   scalar_array dispCellTmp(numBasis*spaceDim);
-  scalar_array strainCell(numQuadPts*tensorSize);
+  const int tensorCellSize = numQuadPts*tensorSize;
+  scalar_array strainCell(tensorCellSize);
   strainCell = 0.0;
-  scalar_array stressCell(numQuadPts*tensorSize);
+  scalar_array stressCell(tensorCellSize);
   stressCell = 0.0;
 
   // Get cell information
@@ -515,18 +515,17 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
   const PetscInt* cells = materialIS.points();
   const PetscInt numCells = materialIS.size();
 
-  // Get field
   // Setup field visitors.
   topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
   PetscScalar* dispCell = NULL;
   PetscInt dispSize = 0;
 
   topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
   topology::CoordsVisitor coordsVisitor(dmMesh);
   PetscScalar *coordsCell = NULL;
   PetscInt coordsSize = 0;
-
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
@@ -548,12 +547,19 @@ pylith::feassemble::IntegratorElasticity::_calcStrainStressField(topology::Field
     // Compute strains
     calcTotalStrainFn(&strainCell, basisDeriv, dispCellTmp, numBasis, numQuadPts);
     
+    const PetscInt off = fieldVisitor.sectionOffset(cell);
+    assert(tensorCellSize == fieldVisitor.sectionDof(cell));
     if (!calcStress) {
-      fieldVisitor.setClosure(&strainCell[0], strainCell.size(), cell, INSERT_VALUES);
+      for (int i=0; i < tensorCellSize; ++i) {
+	fieldArray[off+i] = strainCell[i];
+      } // for
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      fieldVisitor.setClosure(&stressCell[0], stressCell.size(), cell, INSERT_VALUES);
+
+      for (int i=0; i < tensorCellSize; ++i) {
+	fieldArray[off+i] = stressCell[i];
+      } // for
     } // else
   } // for
 
@@ -577,44 +583,40 @@ pylith::feassemble::IntegratorElasticity::_calcStressFromStrain(topology::Field<
   const int tensorSize = _material->tensorSize();
   
   // Allocate arrays for cell data.
-  scalar_array strainCell(numQuadPts*tensorSize);
+  const int tensorCellSize = numQuadPts*tensorSize;
+  scalar_array strainCell(tensorCellSize);
   strainCell = 0.0;
-  scalar_array stressCell(numQuadPts*tensorSize);
+  scalar_array stressCell(tensorCellSize);
   stressCell = 0.0;
 
   // Get cell information
-  DM              dmMesh = field->mesh().dmMesh();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscDM dmMesh = field->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
-  assert(dmMesh);
-  err = DMPlexGetStratumIS(dmMesh, "material-id", _material->id(), &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-
-  // Get field
-  PetscSection fieldSection = field->petscSection();
-  Vec          fieldVec     = field->localVector();
-  assert(fieldSection);
+  // Setup visitors.
+  topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
 
   // Loop over cells
   for(PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
-    PetscInt       fieldSize;
-    PetscScalar   *fieldArray;
 
-    err = DMPlexVecGetClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < fieldSize; ++i) {strainCell[i] = fieldArray[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, fieldSection, fieldVec, cell, &fieldSize, &fieldArray);CHECK_PETSC_ERROR(err);
+    const PetscInt off = fieldVisitor.sectionOffset(cell);
+    assert(tensorCellSize == fieldVisitor.sectionDof(cell));
+    for (int i=0; i < tensorCellSize; ++i) {
+      strainCell[i] = fieldArray[off+i];
+    } // for
 
     _material->retrievePropsAndVars(cell);
     stressCell = _material->calcStress(strainCell);
-    err = DMPlexVecSetClosure(dmMesh, fieldSection, PETSC_NULL, cell, &stressCell[0], INSERT_VALUES);CHECK_PETSC_ERROR(err);
+
+    for (int i=0; i < tensorCellSize; ++i) {
+      fieldArray[off+i] = stressCell[i];
+    } // for
+
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
 
   PYLITH_METHOD_END;
 } // _calcStressFromStrain

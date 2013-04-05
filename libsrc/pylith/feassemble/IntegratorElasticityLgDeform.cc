@@ -27,18 +27,19 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
 #include "pylith/topology/SolutionFields.hh" // USES SolutionFields
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cstring> // USES memcpy()
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
-
-//#define PRECOMPUTE_GEOMETRY
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -64,13 +65,14 @@ pylith::feassemble::IntegratorElasticityLgDeform::needNewJacobian(void)
 // ----------------------------------------------------------------------
 // Update state variables as needed.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
-				      const PylithScalar t,
-				      topology::SolutionFields* const fields)
+pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(const PylithScalar t,
+								  topology::SolutionFields* const fields)
 { // updateStateVars
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(0 != fields);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_quadrature);
+  assert(_material);
+  assert(fields);
 
   // No need to update state vars if material doesn't have any.
   if (!_material->hasStateVars())
@@ -84,82 +86,60 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else {
-      std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform.");
+    std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
+    assert(false);
+    throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform::updateStateVars().");
   } // else
 
   // Allocate arrays for cell data.
-  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispCellTmp(numBasis*spaceDim);
   scalar_array strainCell(numQuadPts*tensorSize);
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
   deformCell = 0.0;
   strainCell = 0.0;
 
   // Get cell information
-  DM dmMesh = fields->mesh().dmMesh();
-  assert(!dmMesh);
-  const int materialId = _material->id();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-
-  // Get fields
-  const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
-  PetscSection dispSection = disp.petscSection();
-  Vec          dispVec     = disp.localVector();
-  assert(dispSection);assert(dispVec);
+  scalar_array dispTCell(numBasis*spaceDim);
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  PetscScalar* dispCell = NULL;
+  PetscInt dispSize = 0;
 
   scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar* coordsCell = NULL;
+  PetscInt coordsSize = 0;
 
   // Loop over cells
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(cell);
-#else
-    PetscScalar *coords = PETSC_NULL;
-    PetscInt     coordsSize;
-
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    _quadrature->computeGeometry(coordinatesCell, cell);
-#endif
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coordsCell[i];} // :TODO: Remove copy
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     // Restrict input fields to cell
-    PetscScalar *disp = PETSC_NULL;
-    PetscInt     dispSize;
-
-    err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);
+    assert(numBasis*spaceDim == dispSize);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispCellTmp[i] = dispCell[i];} // :TODO: Remove copy
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute deformation tensor.
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-                     numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCellTmp, numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
@@ -167,20 +147,21 @@ pylith::feassemble::IntegratorElasticityLgDeform::updateStateVars(
     // Update material state
     _material->updateStateVars(strainCell, cell);
   } // for
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // updateStateVars
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
-				 topology::Field<topology::Mesh>* field,
-				 const char* name,
-				 topology::SolutionFields* const fields)
+pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(topology::Field<topology::Mesh>* field,
+									 const char* name,
+									 topology::SolutionFields* const fields)
 { // _calcStrainStressField
-  assert(0 != field);
-  assert(0 != _quadrature);
-  assert(0 != _material);
+  PYLITH_METHOD_BEGIN;
+
+  assert(field);
+  assert(_quadrature);
+  assert(_material);
 
   const bool calcStress = (0 == strcasecmp(name, "stress")) ? true : false;
     
@@ -192,176 +173,94 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcStrainStressField(
   const int tensorSize = _material->tensorSize();
   totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D;
   } else if (2 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D;
   } else if (3 == cellDim) {
-    calcTotalStrainFn = 
-      &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
+    calcTotalStrainFn = &pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D;
   } else {
       std::cerr << "Bad cell dimension '" << cellDim << "'." << std::endl;
-      assert(0);
-      throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform.");
+      assert(false);
+      throw std::logic_error("Bad cell dimension in IntegratorElasticityLgDeform::_calcStrainStressField().");
   } // else
   
   // Allocate arrays for cell data.
-  scalar_array dispCell(numBasis*spaceDim);
+  scalar_array dispCellTmp(numBasis*spaceDim);
   scalar_array deformCell(numQuadPts*spaceDim*spaceDim);
-  scalar_array strainCell(numQuadPts*tensorSize);
-  scalar_array stressCell(numQuadPts*tensorSize);
+  const int tensorCellSize = numQuadPts*tensorSize;
+  scalar_array strainCell(tensorCellSize);
+  scalar_array stressCell(tensorCellSize);
+  deformCell = 0.0;
+  strainCell = 0.0;
+  stressCell = 0.0;
 
   // Get cell information
-  DM dmMesh = fields->mesh().dmMesh();
-  assert(!dmMesh);
-  const int materialId = _material->id();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
+  PetscDM dmMesh = fields->mesh().dmMesh();assert(dmMesh);
+  topology::StratumIS materialIS(dmMesh, "material-id", _material->id());
+  const PetscInt* cells = materialIS.points();
+  const PetscInt numCells = materialIS.size();
 
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+  // Setup field visitors.
+  topology::VecVisitorMesh dispVisitor(fields->get("disp(t)"));
+  PetscScalar* dispCell = NULL;
+  PetscInt dispSize = 0;
 
-  // Get field
-  const topology::Field<topology::Mesh>& disp = fields->get("disp(t)");
-  PetscSection dispSection = disp.petscSection();
-  Vec          dispVec     = disp.localVector();
-  assert(dispSection);assert(dispVec);
-    
+  topology::VecVisitorMesh fieldVisitor(*field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();
+
   scalar_array coordinatesCell(numBasis*spaceDim);
-  PetscSection coordSection;
-  Vec          coordVec;
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
-
-  PetscSection fieldSection = field->petscSection();
-  Vec          fieldVec     = field->localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
+  topology::CoordsVisitor coordsVisitor(dmMesh);
+  PetscScalar *coordsCell = NULL;
+  PetscInt coordsSize = 0;
 
   // Loop over cells
   for (PetscInt c = 0; c < numCells; ++c) {
     const PetscInt cell = cells[c];
     // Retrieve geometry information for current cell
-#if defined(PRECOMPUTE_GEOMETRY)
-    _quadrature->retrieveGeometry(*c_iter);
-#else
-    PetscScalar *coords = PETSC_NULL;
-    PetscInt     coordsSize;
-
-    err = DMPlexVecGetClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coords[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, coordSection, coordVec, cell, &coordsSize, &coords);CHECK_PETSC_ERROR(err);
-    _quadrature->computeGeometry(coordinatesCell, cell);
-#endif
+    coordsVisitor.getClosure(&coordsCell, &coordsSize, cell);
+    _quadrature->computeGeometry(coordsCell, coordsSize, cell);
+    for(PetscInt i = 0; i < coordsSize; ++i) {coordinatesCell[i] = coordsCell[i];} // :TODO: Remove copy
+    coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
 
     // Restrict input fields to cell
-    PetscScalar *disp = PETSC_NULL;
-    PetscInt     dispSize;
-
-    err = DMPlexVecGetClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
-    for(PetscInt i = 0; i < dispSize; ++i) {dispCell[i] = disp[i];}
-    err = DMPlexVecRestoreClosure(dmMesh, dispSection, dispVec, cell, &dispSize, &disp);CHECK_PETSC_ERROR(err);
+    dispVisitor.getClosure(&dispCell, &dispSize, cell);
+    assert(numBasis*spaceDim == dispSize);
+    for(PetscInt i = 0; i < dispSize; ++i) {dispCellTmp[i] = dispCell[i];} // :TODO: Remove copy
+    dispVisitor.restoreClosure(&dispCell, &dispSize, cell);
 
     // Get cell geometry information that depends on cell
     const scalar_array& basisDeriv = _quadrature->basisDeriv();
     
     // Compute deformation tensor.
-    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCell,
-                     numBasis, numQuadPts, spaceDim);
+    _calcDeformation(&deformCell, basisDeriv, coordinatesCell, dispCellTmp, numBasis, numQuadPts, spaceDim);
 
     // Compute strains
     calcTotalStrainFn(&strainCell, deformCell, numQuadPts);
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
+    const PetscInt off = fieldVisitor.sectionOffset(cell);
+    assert(tensorCellSize == fieldVisitor.sectionDof(cell));
     if (!calcStress) {
-      for (PetscInt d = 0; d < dof; ++d) {
-        fieldArray[off+d] = strainCell[d];
-      }
+      for (int i=0; i < tensorCellSize; ++i) {
+	fieldArray[off+i] = strainCell[i];
+      } // for
     } else {
       _material->retrievePropsAndVars(cell);
       stressCell = _material->calcStress(strainCell);
-      for (PetscInt d = 0; d < dof; ++d) {
-        fieldArray[off+d] = stressCell[d];
-      }
+
+      for (int i=0; i < tensorCellSize; ++i) {
+	fieldArray[off+i] = stressCell[i];
+      } // for
     } // else
   } // for
+
+  PYLITH_METHOD_END;
 } // _calcStrainStressField
-
-// ----------------------------------------------------------------------
-void
-pylith::feassemble::IntegratorElasticityLgDeform::_calcStressFromStrain(
-				   topology::Field<topology::Mesh>* field)
-{ // _calcStressFromStrain
-  assert(0 != field);
-  assert(0 != _quadrature);
-  assert(0 != _material);
-
-  const int cellDim = _quadrature->cellDim();
-  const int numQuadPts = _quadrature->numQuadPts();
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int tensorSize = _material->tensorSize();
-  
-  // Allocate arrays for cell data.
-  scalar_array strainCell(numQuadPts*tensorSize);
-  strainCell = 0.0;
-  scalar_array stressCell(numQuadPts*tensorSize);
-  stressCell = 0.0;
-
-  // Get cell information
-  DM dmMesh = field->mesh().dmMesh();
-  assert(!dmMesh);
-  const int materialId = _material->id();
-  IS              cellIS;
-  const PetscInt *cells;
-  PetscInt        numCells;
-  PetscErrorCode  err;
-
-  err = DMPlexGetStratumIS(dmMesh, "material-id", materialId, &cellIS);CHECK_PETSC_ERROR(err);
-  err = ISGetLocalSize(cellIS, &numCells);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-
-  // Get field
-  PetscSection fieldSection = field->petscSection();
-  Vec          fieldVec     = field->localVector();
-  PetscScalar *fieldArray;
-  assert(fieldSection);assert(fieldVec);
-
-  // Loop over cells
-  err = VecGetArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  for (PetscInt c = 0; c < numCells; ++c) {
-    const PetscInt cell = cells[c];
-    PetscInt dof, off;
-
-    _material->retrievePropsAndVars(cell);
-    err = PetscSectionGetDof(fieldSection, cell, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(fieldSection, cell, &off);CHECK_PETSC_ERROR(err);
-    assert(strainCell.size() == dof);
-    for (PetscInt d = 0; d < dof; ++d) {
-      strainCell[d] = fieldArray[off+d];
-    }
-    stressCell = _material->calcStress(strainCell);
-    for (PetscInt d = 0; d < dof; ++d) {
-      fieldArray[off+d] = stressCell[d];
-    }
-  } // for
-  err = VecRestoreArray(fieldVec, &fieldArray);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
-} // _calcStressFromStrain
 
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 1-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
-				     const scalar_array& stress,
-				     const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityResidual1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -391,9 +290,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual1D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 2-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
-				     const scalar_array& stress,
-				     const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityResidual2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -451,9 +349,8 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual2D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in residual for 3-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
-				     const scalar_array& stress,
-				     const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityResidual3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -539,10 +436,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityResidual3D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 1-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
-				       const scalar_array& elasticConsts,
-				       const scalar_array& stress,
-				       const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(const scalar_array& elasticConsts,
+									const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityJacobian1D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -587,10 +483,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian1D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 2-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
-				       const scalar_array& elasticConsts,
-				       const scalar_array& stress,
-				       const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(const scalar_array& elasticConsts,
+									const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityJacobian2D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -715,10 +610,9 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian2D(
 // ----------------------------------------------------------------------
 // Integrate elasticity term in Jacobian for 3-D cells.
 void
-pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
-				       const scalar_array& elasticConsts,
-				       const scalar_array& stress,
-				       const scalar_array& disp)
+pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(const scalar_array& elasticConsts,
+									const scalar_array& stress,
+									const scalar_array& disp)
 { // _elasticityJacobian3D
   const int numQuadPts = _quadrature->numQuadPts();
   const int numBasis = _quadrature->numBasis();
@@ -1195,16 +1089,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_elasticityJacobian3D(
 // ----------------------------------------------------------------------
 // Calculate Green-Lagrange strain tensor at quadrature points of a 1-D cell.
 void 
-pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(
-					      scalar_array* strain,
-					      const scalar_array& deform,
-					      const int numQuadPts)
+pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(scalar_array* strain,
+								     const scalar_array& deform,
+								     const int numQuadPts)
 { // _calcTotalStrain1D
   // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
   // X: deformation tensor
   // I: identity matrix
 
-  assert(0 != strain);
+  assert(strain);
 
   const int dim = 1;
   const int strainSize = 1;
@@ -1219,16 +1112,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain1D(
 // ----------------------------------------------------------------------
 // Calculate Green-Lagrange strain tensor at quadrature points of a 2-D cell.
 void 
-pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
-					      scalar_array* strain,
-					      const scalar_array& deform,
-					      const int numQuadPts)
+pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(scalar_array* strain,
+								     const scalar_array& deform,
+								     const int numQuadPts)
 { // _calcTotalStrain2D
   // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
   // X: deformation tensor
   // I: identity matrix
 
-  assert(0 != strain);
+  assert(strain);
 
   const int dim = 2;
   const int deformSize = dim*dim;
@@ -1254,16 +1146,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain2D(
 // ----------------------------------------------------------------------
 // Calculate Green-Lagrange strain tensor at quadrature points of a 3-D cell.
 void 
-pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(
-					      scalar_array* strain,
-					      const scalar_array& deform,
-					      const int numQuadPts)
+pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(scalar_array* strain,
+								     const scalar_array& deform,
+								     const int numQuadPts)
 { // _calcTotalStrain3D
   // Green-Lagrange strain tensor = 1/2 ( X^T X - I )
   // X: deformation tensor
   // I: identity matrix
 
-  assert(0 != strain);
+  assert(strain);
 
   const int dim = 3;
   const int deformSize = dim*dim;
@@ -1304,16 +1195,15 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcTotalStrain3D(
 // ----------------------------------------------------------------------
 // Calculate deformation tensor.
 void 
-pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(
-					      scalar_array* deform,
-					      const scalar_array& basisDeriv,
-					      const scalar_array& vertices,
-					      const scalar_array& disp,
-					      const int numBasis,
-					      const int numQuadPts,
-					      const int dim)
+pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(scalar_array* deform,
+								   const scalar_array& basisDeriv,
+								   const scalar_array& vertices,
+								   const scalar_array& disp,
+								   const int numBasis,
+								   const int numQuadPts,
+								   const int dim)
 { // _calcDeformation
-  assert(0 != deform);
+  assert(deform);
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dim);
   assert(disp.size() == numBasis*dim);
@@ -1325,9 +1215,7 @@ pylith::feassemble::IntegratorElasticityLgDeform::_calcDeformation(
     for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis)
       for (int iDim=0, indexD=0; iDim < dim; ++iDim)
 	for (int jDim=0; jDim < dim; ++jDim, ++indexD)
-	  (*deform)[iQuad*deformSize+indexD] += 
-	    basisDeriv[iQ+iBasis*dim+jDim] *
-	    (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
+	  (*deform)[iQuad*deformSize+indexD] += basisDeriv[iQ+iBasis*dim+jDim] * (vertices[iBasis*dim+iDim] + disp[iBasis*dim+iDim]);
 
 } // _calcDeformation
   
