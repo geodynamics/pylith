@@ -492,17 +492,16 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
     // Get expected values
     const PylithScalar* valsE = _data->slipOpenE;
-    int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    for(PetscInt v = vStart; v < vEnd; ++v) {
       PetscInt dof, off;
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
 
       for(PetscInt d = 0; d < dof; ++d) {
-        const PylithScalar valE = valsE[iVertex*spaceDim+d];
+        const PylithScalar valE = valsE[(v-vStart)*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, slipArray[off+d]/valE, tolerance);
         else
@@ -552,6 +551,14 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   _initialize(&mesh, &fault, &fields);
   topology::Jacobian jacobian(fields.solution());
   _setFieldsJacobian(&mesh, &fault, &fields, &jacobian, _data->fieldIncrStick);
+
+  DM             dmMesh = mesh.dmMesh();
+  PetscInt       vStart, vEnd, cStart, cEnd;
+  PetscErrorCode err;
+
+  CPPUNIT_ASSERT(dmMesh);
+  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
   
   CPPUNIT_ASSERT(fault._faultMesh);
   const int spaceDim = _data->spaceDim;
@@ -568,12 +575,13 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   fault.updateStateVars(t, &fields);
   fault._calcTractions(&tractions, fields.get("disp(t)"));
 
-  PetscDM faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
-  PetscIS subpointIS = NULL;
+  PetscDM         faultDMMesh = fault._faultMesh->dmMesh();CPPUNIT_ASSERT(faultDMMesh);
+  PetscIS         subpointIS = NULL;
   const PetscInt *points = NULL;
-  PetscInt vStart, vEnd, numPoints;
-  PetscErrorCode err;
-  err = DMPlexGetDepthStratum(faultDMMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscInt        numPoints, fvStart;
+
+  err = DMPlexGetDepthStratum(faultDMMesh, 0, &fvStart, NULL);CHECK_PETSC_ERROR(err);
+  err = DMPlexGetHybridBounds(dmMesh, &cStart, NULL, NULL, NULL);CHECK_PETSC_ERROR(err);
   err = DMPlexCreateSubpointIS(faultDMMesh, &subpointIS);CHECK_PETSC_ERROR(err);CPPUNIT_ASSERT(subpointIS);
   err = ISGetSize(subpointIS, &numPoints);CHECK_PETSC_ERROR(err);
 
@@ -585,29 +593,43 @@ pylith::faults::TestFaultCohesiveDyn::testCalcTractions(void)
   err = VecGetArray(dispVec, &dispArray);CHECK_PETSC_ERROR(err);
   err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
 
-  int iVertex = 0;
   const PylithScalar tolerance = 1.0e-06;
-  for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
-    PetscInt tdof, toff, ddof, doff;
-    err = PetscSectionGetDof(tractionsSection, v, &tdof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(tractionsSection, v, &toff);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, tdof);
-    err = PetscSectionGetDof(dispSection, points[v], &ddof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(dispSection, points[v], &doff);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, ddof);
+  for(PetscInt c = cStart; c < cEnd; ++c) {
+    const PetscInt *cone;
+    PetscInt        coneSize, p;
 
-    const PylithScalar *orientationVertex = &_data->orientation[iVertex*spaceDim*spaceDim];
-    CPPUNIT_ASSERT(orientationVertex);
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    // Check Lagrange multiplier dofs
+    //   For depth = 1, we have a prism and use the last third
+    coneSize /= 3;
+    //   For depth > 1, we take the edges
+    for (p = 2*coneSize; p < 3*coneSize; ++p) {
+      const PetscInt lv = cone[p];
+      const PetscInt nv = cone[p-2*coneSize];
+      PetscInt       fv, tdof, toff, ddof, doff;
 
-    for(PetscInt d = 0; d < spaceDim; ++d) {
-      PylithScalar tractionE = 0.0;
-      for(PetscInt e = 0; e < spaceDim; ++e) {
-        tractionE += orientationVertex[d*spaceDim+e]*dispArray[doff+e];
+      err = PetscFindInt(nv, numPoints, points, &fv);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT(fv >= 0);
+      err = PetscSectionGetDof(tractionsSection, fv, &tdof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(tractionsSection, fv, &toff);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, tdof);
+      err = PetscSectionGetDof(dispSection, lv, &ddof);CHECK_PETSC_ERROR(err);
+      err = PetscSectionGetOffset(dispSection, lv, &doff);CHECK_PETSC_ERROR(err);
+      CPPUNIT_ASSERT_EQUAL(spaceDim, ddof);
+      const PylithScalar *orientationVertex = &_data->orientation[(fv-fvStart)*spaceDim*spaceDim];
+      CPPUNIT_ASSERT(orientationVertex);
+
+      for(PetscInt d = 0; d < spaceDim; ++d) {
+        PylithScalar tractionE = 0.0;
+        for(PetscInt e = 0; e < spaceDim; ++e) {
+          tractionE += orientationVertex[d*spaceDim+e]*dispArray[doff+e];
+        } // for
+        if (tractionE != 0.0)
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsArray[toff+d]/tractionE, tolerance);
+        else
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsArray[toff+d], tolerance);
       } // for
-      if (tractionE != 0.0)
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, tractionsArray[toff+d]/tractionE, tolerance);
-      else
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(tractionE, tractionsArray[toff+d], tolerance);
     } // for
   } // for
   err = VecRestoreArray(tractionsVec, &tractionsArray);CHECK_PETSC_ERROR(err);
