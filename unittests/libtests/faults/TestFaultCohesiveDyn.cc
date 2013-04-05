@@ -387,10 +387,9 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceSlip(void)
 
     // Get expected values
     const PylithScalar* valsE = _data->slipSlipE;
-    int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-5;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
@@ -436,7 +435,7 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
   fault.updateStateVars(t, &fields);
 
-  //residual.view("RESIDUAL"); // DEBUGGING
+  //solution.view("SOLUTION"); // DEBUGGING
 
   { // Check solution values
     // Lagrange multipliers should be set to zero as reflected in the
@@ -454,10 +453,9 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
 
     // Get expected values
     const PylithScalar* valsE = _data->fieldIncrOpenE; // Expected values for dispIncr
-    int iVertex = 0; // variable to use as index into valsE array
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for(PetscInt v = vStart; v < vEnd; ++v, ++iVertex) {
+    for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
       err = PetscSectionGetDof(dispIncrSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(dispIncrSection, v, &off);CHECK_PETSC_ERROR(err);
@@ -494,14 +492,14 @@ pylith::faults::TestFaultCohesiveDyn::testConstrainSolnSpaceOpen(void)
     const PylithScalar* valsE = _data->slipOpenE;
     const int fiberDimE = spaceDim; // number of values per point
     const PylithScalar tolerance = (sizeof(double) == sizeof(PylithScalar)) ? 1.0e-06 : 1.0e-05;
-    for(PetscInt v = vStart; v < vEnd; ++v) {
+    for(PetscInt v = vStart, iVertex = 0; v < vEnd; ++v, ++iVertex) {
       PetscInt dof, off;
       err = PetscSectionGetDof(slipSection, v, &dof);CHECK_PETSC_ERROR(err);
       err = PetscSectionGetOffset(slipSection, v, &off);CHECK_PETSC_ERROR(err);
       CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
 
       for(PetscInt d = 0; d < dof; ++d) {
-        const PylithScalar valE = valsE[(v-vStart)*spaceDim+d];
+        const PylithScalar valE = valsE[iVertex*spaceDim+d];
         if (fabs(valE) > tolerance)
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, slipArray[off+d]/valE, tolerance);
         else
