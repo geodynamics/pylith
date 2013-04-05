@@ -136,7 +136,7 @@ pylith::topology::Mesh::coordsys(const spatialdata::geocoords::CoordSys* cs)
 // Return the names of all vertex groups.
 void
 pylith::topology::Mesh::groups(int* numNames, 
-			       const char*** names) const
+			       char*** names) const
 { // groups
   PYLITH_METHOD_BEGIN;
 
@@ -152,9 +152,21 @@ pylith::topology::Mesh::groups(int* numNames,
     err = DMPlexGetNumLabels(_newMesh, &numLabels);CHECK_PETSC_ERROR(err);
 
     *numNames = numLabels;
-    *names = new const char*[numLabels];
+    *names = new char*[numLabels];
     for (int iLabel=0; iLabel < numLabels; ++iLabel) {
-      err = DMPlexGetLabelName(_newMesh, iLabel, &(*names)[iLabel]);CHECK_PETSC_ERROR(err);
+      const char* namestr = NULL;
+      err = DMPlexGetLabelName(_newMesh, iLabel, &namestr);CHECK_PETSC_ERROR(err);
+      // Must return char* that SWIG can deallocate.
+      const char len = strlen(namestr);
+      char* newName = 0;
+      if (len > 0) {
+	newName = new char[len+1];
+	strncpy(newName, namestr, len+1);
+      } else {
+	newName = new char[1];
+	newName[0] ='\0';
+      } // if/else
+      (*names)[iLabel] = newName;
     } // for
   } // if
 
