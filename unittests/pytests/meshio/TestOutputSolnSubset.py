@@ -81,7 +81,7 @@ class TestOutputSolnSubset(unittest.TestCase):
     output._configure()
     output.preinitialize()
     
-    self.assertEqual(output, output.dataProvider)
+    self.failIf(output.dataProvider is None)
     return
 
 

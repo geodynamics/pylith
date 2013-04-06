@@ -44,10 +44,13 @@ class TestApp(Script):
     Run the application.
     """
     from pylith.utils.PetscManager import PetscManager
-    manager = PetscManager()
-    manager.initialize()
+    petsc = PetscManager()
+    petsc.options = [("malloc_dump", "true")]
+    petsc.initialize()
+
     unittest.TextTestRunner(verbosity=2).run(self._suite())
-    manager.finalize()
+
+    petsc.finalize()
     return
 
 

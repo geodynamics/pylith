@@ -149,7 +149,7 @@ class TestOutputManagerMesh(unittest.TestCase):
     output = OutputManagerMesh()
     output.preinitialize(dataProvider)
     
-    self.assertEqual(dataProvider, output.dataProvider)
+    self.failIf(output.dataProvider is None)
     return
 
 
