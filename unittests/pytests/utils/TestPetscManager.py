@@ -35,8 +35,8 @@ class TestPetscManager(unittest.TestCase):
     from pylith.utils.PetscManager import PetscManager
     from pylith.utils.petsc import optionsSetValue
     manager = PetscManager()
+    manager.options = [("vec_type", "seq")]
     manager.initialize()
-    optionsSetValue("-vec_type", "seq")
     manager.finalize()
     return
 

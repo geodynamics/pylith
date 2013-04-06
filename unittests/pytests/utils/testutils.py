@@ -45,6 +45,7 @@ class TestApp(Script):
     """
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
+    petsc.options = [("malloc_dump", "true")]
     petsc.initialize()
 
     unittest.TextTestRunner(verbosity=2).run(self._suite())
