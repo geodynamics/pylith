@@ -118,6 +118,7 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(
     err = ISGetIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
     cStart = cells[0];
     err = ISRestoreIndices(cellIS, &cells);CHECK_PETSC_ERROR(err);
+    err = ISDestroy(&cellIS);CHECK_PETSC_ERROR(err);
   }
 
   // Only processors with cells for output get the correct fiber dimension.

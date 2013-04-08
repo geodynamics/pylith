@@ -1178,6 +1178,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
     err = PetscSectionView(gsection, PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
   } // if
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&gsection);CHECK_PETSC_ERROR(err);
   err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   PetscInt localSize, globalSize;
@@ -1186,7 +1187,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   err = VecGetSize(sinfo.vector, &globalSize);CHECK_PETSC_ERROR(err);
   /* assert(order->getLocalSize()  == localSize); This does not work because the local vector includes the lagrange cell variables */
   /* assert(order->getGlobalSize() == globalSize); */
-  if (subSection) {err = PetscSectionDestroy(&subSection);CHECK_PETSC_ERROR(err);}
+  err = PetscSectionDestroy(&subSection);CHECK_PETSC_ERROR(err);
 #if 0
   std::cout << "["<<mesh.commRank()<<"] CONTEXT: " << context 
 	    << ", orderLabel: " << orderLabel
