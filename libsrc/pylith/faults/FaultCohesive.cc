@@ -141,7 +141,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh,
       
       CohesiveTopology::create(mesh, faultMesh, faultBoundary, faultBoundaryDM, groupField, id(), 
                                *firstFaultVertex, *firstLagrangeVertex, *firstFaultCell, useLagrangeConstraints());
-      
+      err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
     } else {
       const int faultDim = 2;
       assert(3 == mesh->dimension());
