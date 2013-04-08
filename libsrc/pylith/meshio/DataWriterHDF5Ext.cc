@@ -628,6 +628,7 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::writeCellField(
         }
         err = ISRestoreIndices(pointIS, &indices);CHECK_PETSC_ERROR(err);
       }
+      err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);
     } else {
       err = DMPlexGetCellNumbering(dmMesh, &globalCellNumbers);CHECK_PETSC_ERROR(err);
       err = ISGetLocalSize(globalCellNumbers, &n);CHECK_PETSC_ERROR(err);
