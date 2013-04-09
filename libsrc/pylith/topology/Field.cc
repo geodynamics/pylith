@@ -1020,6 +1020,9 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   err = VecGetSize(_globalVec, &globalSize);CHECK_PETSC_ERROR(err);
   //assert(order->getLocalSize()  == localSize);
   //assert(order->getGlobalSize() == globalSize);
+
+  err = DMDestroy(&sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&sinfo.vector);CHECK_PETSC_ERROR(err);
   sinfo.vector = _globalVec;
   sinfo.dm     = _dm;
 
