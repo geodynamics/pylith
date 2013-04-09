@@ -373,6 +373,8 @@ pylith::faults::TestTractPerturbation::_initialize(topology::Mesh* mesh,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
+  err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
+
   // Need to copy coordinates from mesh to fault mesh since we are
   // using create() instead of createParallel().
   _setupFaultCoordinates(mesh, faultMesh);
@@ -479,6 +481,7 @@ pylith::faults::TestTractPerturbation::_setupFaultCoordinates(topology::Mesh *me
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&fcoordVec);CHECK_PETSC_ERROR(err);
 } // _setupFaultCoordinates
 
 

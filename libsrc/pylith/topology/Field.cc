@@ -960,10 +960,11 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   if (sinfo.scatter) {
     assert(sinfo.scatterVec);
     assert(sinfo.vector);
-    return;
+    PYLITH_METHOD_END;
   } // if
 
   PetscInt localSize, globalSize;
+
 
   err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
   err = PetscObjectReference((PetscObject) _globalVec);CHECK_PETSC_ERROR(err);
@@ -972,6 +973,9 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   err = VecGetSize(_globalVec, &globalSize);CHECK_PETSC_ERROR(err);
   //assert(order->getLocalSize()  == localSize);
   //assert(order->getGlobalSize() == globalSize);
+
+  err = DMDestroy(&sinfo.dm);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&sinfo.vector);CHECK_PETSC_ERROR(err);
   sinfo.vector = _globalVec;
   sinfo.dm     = _dm;
   
@@ -1004,7 +1008,7 @@ pylith::topology::Field<mesh_type>::createScatter(const scatter_mesh_type& mesh,
   if (sinfo.scatter) {
     assert(sinfo.scatterVec);
     assert(sinfo.vector);
-    return;
+    PYLITH_METHOD_END;
   } // if
 
   PetscInt localSize, globalSize;
@@ -1054,7 +1058,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   if (sinfo.scatter) {
     assert(sinfo.scatterVec);
     assert(sinfo.vector);
-    return;
+    PYLITH_METHOD_END;
   } // if
 
   PetscSection section, newSection, gsection;
@@ -1068,6 +1072,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   err = DMGetPointSF(sinfo.dm, &sf);CHECK_PETSC_ERROR(err);
   err = PetscSectionCreateGlobalSection(section, sf, PETSC_TRUE, &gsection);CHECK_PETSC_ERROR(err);
   err = DMSetDefaultGlobalSection(sinfo.dm, gsection);CHECK_PETSC_ERROR(err);
+  err = PetscSectionDestroy(&gsection);CHECK_PETSC_ERROR(err);
   err = DMCreateGlobalVector(sinfo.dm, &sinfo.vector);CHECK_PETSC_ERROR(err);
   err = PetscObjectSetName((PetscObject) sinfo.vector, _metadata["default"].label.c_str());CHECK_PETSC_ERROR(err);
   PetscInt localSize, globalSize;
@@ -1106,7 +1111,7 @@ pylith::topology::Field<mesh_type>::createScatterWithBC(const scatter_mesh_type&
   if (sinfo.scatter) {
     assert(sinfo.scatterVec);
     assert(sinfo.vector);
-    return;
+    PYLITH_METHOD_END;
   } // if
 
   PetscDM dm = mesh.dmMesh();assert(dm);

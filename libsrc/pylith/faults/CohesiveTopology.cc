@@ -719,8 +719,10 @@ pylith::faults::CohesiveTopology::create(topology::Mesh* mesh,
     }
     err = DMPlexRestoreTransitiveClosure(faultDMMesh, faceDM, PETSC_TRUE, &closureSize, &faceConeDM);CHECK_PETSC_ERROR(err);
   } // for over fault faces
+  delete f_iter; f_iter = NULL;
   if (sV2) {
-    delete sV2; delete cV2;
+    delete sV2; sV2 = NULL;
+    delete cV2; cV2 = NULL;
   }
   // This completes the set of cells scheduled to be replaced
   // TODO: Convert to DMPlex

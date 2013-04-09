@@ -62,6 +62,7 @@ pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
     CPPUNIT_ASSERT(!sieveMesh.isNull());
     CohesiveTopology::createFault(faultMesh, faultBoundary, faultBoundaryDM, *mesh, groupField);
     CohesiveTopology::create(mesh, *faultMesh, faultBoundary, faultBoundaryDM, groupField, faultId, firstFaultVertex, firstLagrangeVertex, firstFaultCell, useLagrangeConstraints);
+    err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
   } // Create mesh
 
   { // Need to copy coordinates from mesh to fault mesh since we are not
@@ -111,6 +112,7 @@ pylith::faults::TestSlipFn::_createFaultMesh(topology::SubMesh* faultMesh,
     err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
     err = VecRestoreArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
     err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);CHECK_PETSC_ERROR(err);
+    err = VecDestroy(&fcoordVec);CHECK_PETSC_ERROR(err);
   } // Copy coordiantes
 
 

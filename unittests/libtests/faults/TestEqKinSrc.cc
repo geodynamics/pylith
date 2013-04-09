@@ -203,6 +203,8 @@ pylith::faults::TestEqKinSrc::_initialize(topology::Mesh* mesh,
                            faultId,
                            firstFaultVertex, firstLagrangeVertex, firstFaultCell,
                            useLagrangeConstraints);
+  err = DMDestroy(&faultBoundaryDM);CHECK_PETSC_ERROR(err);
+
   // Need to copy coordinates from mesh to fault mesh since we are not
   // using create() instead of createParallel().
   _setupFaultCoordinates(mesh, faultMesh);
@@ -294,6 +296,7 @@ pylith::faults::TestEqKinSrc::_setupFaultCoordinates(topology::Mesh *mesh, topol
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(fcoordVec, &fcoords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(faultDMMesh, fcoordVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&fcoordVec);CHECK_PETSC_ERROR(err);
 } // _setupFaultCoordinates
 
 
