@@ -335,10 +335,10 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   delete[] cone; cone = 0;
   err = DMPlexSymmetrize(dmMesh);CHECK_PETSC_ERROR(err);
   err = DMPlexStratify(dmMesh);CHECK_PETSC_ERROR(err);
-  PetscSection coordSection;
-  PetscVec coordVec;
+  PetscSection coordSection = NULL;
+  PetscVec coordVec = NULL;
   PetscScalar *coords = NULL;
-  PetscInt coordSize;
+  PetscInt coordSize = 0;
 
   err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
   err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);CHECK_PETSC_ERROR(err);
@@ -361,6 +361,7 @@ pylith::topology::TestSubMesh::_buildMesh(Mesh* mesh)
   } // for
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim(spaceDim);
