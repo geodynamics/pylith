@@ -42,7 +42,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
 void
 pylith::meshio::TestMeshIOAscii::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   MeshIOAscii iohandler;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -50,8 +54,12 @@ pylith::meshio::TestMeshIOAscii::testConstructor(void)
 void
 pylith::meshio::TestMeshIOAscii::testDebug(void)
 { // testDebug
+  PYLITH_METHOD_BEGIN;
+
   MeshIOAscii iohandler;
   _testDebug(iohandler);
+
+  PYLITH_METHOD_END;
 } // testDebug
 
 // ----------------------------------------------------------------------
@@ -59,8 +67,12 @@ pylith::meshio::TestMeshIOAscii::testDebug(void)
 void
 pylith::meshio::TestMeshIOAscii::testInterpolate(void)
 { // testInterpolate
+  PYLITH_METHOD_BEGIN;
+
   MeshIOAscii iohandler;
   _testInterpolate(iohandler);
+
+  PYLITH_METHOD_END;
 } // testInterpolate
 
 // ----------------------------------------------------------------------
@@ -68,11 +80,15 @@ pylith::meshio::TestMeshIOAscii::testInterpolate(void)
 void
 pylith::meshio::TestMeshIOAscii::testFilename(void)
 { // testFilename
+  PYLITH_METHOD_BEGIN;
+
   MeshIOAscii iohandler;
 
   const char* filename = "hi.txt";
   iohandler.filename(filename);
   CPPUNIT_ASSERT(0 == strcasecmp(filename, iohandler.filename()));
+
+  PYLITH_METHOD_END;
 } // testFilename
 
 // ----------------------------------------------------------------------
@@ -80,9 +96,13 @@ pylith::meshio::TestMeshIOAscii::testFilename(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1D(void)
 { // testWriteRead1D
+  PYLITH_METHOD_BEGIN;
+
   MeshData1D data;
   const char* filename = "mesh1D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead1D
 
 // ----------------------------------------------------------------------
@@ -90,9 +110,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead1D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1Din2D(void)
 { // testWriteRead1Din2D
+  PYLITH_METHOD_BEGIN;
+
   MeshData1Din2D data;
   const char* filename = "mesh1Din2D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead1Din2D
 
 // ----------------------------------------------------------------------
@@ -100,9 +124,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead1Din2D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1Din3D(void)
 { // testWriteRead1Din3D
+  PYLITH_METHOD_BEGIN;
+
   MeshData1Din3D data;
   const char* filename = "mesh1Din3D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead1Din3D
 
 // ----------------------------------------------------------------------
@@ -110,9 +138,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead1Din3D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead2D(void)
 { // testWriteRead2D
+  PYLITH_METHOD_BEGIN;
+
   MeshData2D data;
   const char* filename = "mesh2D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead2D
 
 // ----------------------------------------------------------------------
@@ -120,9 +152,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead2D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead2Din3D(void)
 { // testWriteRead2Din3D
+  PYLITH_METHOD_BEGIN;
+
   MeshData2Din3D data;
   const char* filename = "mesh2Din3D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead2Din3D
 
 // ----------------------------------------------------------------------
@@ -130,9 +166,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead2Din3D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
 { // testWriteRead3D
+  PYLITH_METHOD_BEGIN;
+
   MeshData3D data;
   const char* filename = "mesh3D.txt";
   _testWriteRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteRead3D
 
 // ----------------------------------------------------------------------
@@ -140,9 +180,13 @@ pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
 void
 pylith::meshio::TestMeshIOAscii::testRead3DIndexOne(void)
 { // testRead3IndexDOne
+  PYLITH_METHOD_BEGIN;
+
   MeshData3DIndexOne data;
   const char* filename = "data/mesh3DIndexOne.txt";
   _testRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testRead3DIndexOne
 
 // ----------------------------------------------------------------------
@@ -150,9 +194,13 @@ pylith::meshio::TestMeshIOAscii::testRead3DIndexOne(void)
 void
 pylith::meshio::TestMeshIOAscii::testReadComments(void)
 { // testWriteReadComments
+  PYLITH_METHOD_BEGIN;
+
   MeshData2D data;
   const char* filename = "data/mesh2D_comments.txt";
   _testRead(data, filename);
+
+  PYLITH_METHOD_END;
 } // testWriteReadComments
 
 // ----------------------------------------------------------------------
@@ -161,6 +209,8 @@ void
 pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 						const char* filename)
 { // _testWriteRead
+  PYLITH_METHOD_BEGIN;
+
   topology::Mesh* meshOut = _createMesh(data);
 
   // Write mesh
@@ -175,6 +225,8 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 
   // Make sure meshIn matches data
   _checkVals(meshIn, data);
+
+  PYLITH_METHOD_END;
 } // _testWriteRead
 
 // ----------------------------------------------------------------------
@@ -183,6 +235,8 @@ void
 pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
 					   const char* filename)
 { // _testWriteRead
+  PYLITH_METHOD_BEGIN;
+
   // Read mesh
   topology::Mesh mesh;
   MeshIOAscii iohandler;
@@ -191,6 +245,8 @@ pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
 
   // Make sure mesh matches data
   _checkVals(mesh, data);
+
+  PYLITH_METHOD_END;
 } // _testRead
 
 
