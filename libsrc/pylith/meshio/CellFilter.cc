@@ -20,6 +20,8 @@
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 // ----------------------------------------------------------------------
 // Constructor
 template<typename mesh_type, typename field_type>
@@ -42,8 +44,12 @@ template<typename mesh_type, typename field_type>
 pylith::meshio::CellFilter<mesh_type, field_type>::CellFilter(const CellFilter& f) :
   _quadrature(0)
 { // copy constructor
+  PYLITH_METHOD_BEGIN;
+
   if (f._quadrature)
     _quadrature = new feassemble::Quadrature<mesh_type>(*f._quadrature);
+
+  PYLITH_METHOD_END;
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -61,8 +67,12 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::CellFilter<mesh_type, field_type>::quadrature(const feassemble::Quadrature<mesh_type>* q)
 { // quadrature
+  PYLITH_METHOD_BEGIN;
+
   delete _quadrature; 
   _quadrature = (q) ? new feassemble::Quadrature<mesh_type>(*q) : 0;
+
+  PYLITH_METHOD_END;
 } // quadrature
 
 

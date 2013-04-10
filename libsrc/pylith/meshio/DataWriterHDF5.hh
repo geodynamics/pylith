@@ -150,7 +150,7 @@ private :
 
   std::string _filename; ///< Name of HDF5 file.
   PetscViewer _viewer; ///< Output file.
-  PetscVec _tstamp; ///< Single value vector holding time stemp.
+  PetscVec _tstamp; ///< Single value vector holding time stamp.
 
   std::map<std::string, int> _timesteps; ///< # of time steps written per field.
   int _tstampIndex; ///< Index of last time stamp written.
