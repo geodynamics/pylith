@@ -61,10 +61,14 @@ pylith::feassemble::IntegratorElasticity::~IntegratorElasticity(void)
 void
 pylith::feassemble::IntegratorElasticity::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   Integrator<Quadrature<topology::Mesh> >::deallocate();
 
   delete _outputFields; _outputFields = 0;
   _material = 0; // :TODO: Use shared pointer.
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

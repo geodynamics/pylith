@@ -23,6 +23,8 @@
 #include "CellGeometry.hh" // USES CellGeometry
 #include "QuadratureRefCell.hh" // QuadratureRefCell
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
@@ -52,6 +54,8 @@ pylith::feassemble::QuadratureEngine::deallocate(void)
 void
 pylith::feassemble::QuadratureEngine::initialize(void)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = _quadRefCell.numQuadPts();
   const int numBasis = _quadRefCell.numBasis();
   const int cellDim = _quadRefCell.cellDim();
@@ -70,6 +74,8 @@ pylith::feassemble::QuadratureEngine::initialize(void)
     _jacobianDet.resize(1);
     _basisDeriv.resize(numQuadPts*numBasis*spaceDim);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------

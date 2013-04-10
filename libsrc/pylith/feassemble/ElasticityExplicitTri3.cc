@@ -70,7 +70,11 @@ pylith::feassemble::ElasticityExplicitTri3::~ElasticityExplicitTri3(void)
 void
 pylith::feassemble::ElasticityExplicitTri3::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   IntegratorElasticity::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

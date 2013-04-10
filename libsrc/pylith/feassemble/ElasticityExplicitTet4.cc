@@ -70,7 +70,11 @@ pylith::feassemble::ElasticityExplicitTet4::~ElasticityExplicitTet4(void)
 void
 pylith::feassemble::ElasticityExplicitTet4::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   IntegratorElasticity::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

@@ -22,6 +22,8 @@
 
 #include "CellGeometry.hh" // USES CellGeometry
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <cstring> // USES memcpy()
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -68,7 +70,7 @@ pylith::feassemble::QuadratureRefCell::QuadratureRefCell(const QuadratureRefCell
   _spaceDim(q._spaceDim),
   _geometry(0)
 { // copy constructor
-  if (0 != q._geometry)
+  if (q._geometry)
     _geometry = q._geometry->clone();
 } // copy constructor
 
@@ -90,6 +92,8 @@ pylith::feassemble::QuadratureRefCell::initialize(const PylithScalar* basis,
 						  const int numQuadPts4,
 						  const int spaceDim)
 { // initialize
+  PYLITH_METHOD_BEGIN;
+
   const int numQuadPts = numQuadPts1;
   const int numBasis = numBasis1;
   const int cellDim = (numBasis != 1) ? cellDim2 : 0;
@@ -191,6 +195,8 @@ pylith::feassemble::QuadratureRefCell::initialize(const PylithScalar* basis,
     _spaceDim = spaceDim;
 
   } // else
+
+  PYLITH_METHOD_END;
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -198,7 +204,11 @@ pylith::feassemble::QuadratureRefCell::initialize(const PylithScalar* basis,
 void
 pylith::feassemble::QuadratureRefCell::refGeometry(CellGeometry* const geometry)
 { // refGeometry
-  delete _geometry; _geometry = (0 != geometry) ? geometry->clone() : 0;
+  PYLITH_METHOD_BEGIN;
+
+  delete _geometry; _geometry = (geometry) ? geometry->clone() : 0;
+
+  PYLITH_METHOD_END;
 } // refGeometry
 
 // ----------------------------------------------------------------------
@@ -206,7 +216,7 @@ pylith::feassemble::QuadratureRefCell::refGeometry(CellGeometry* const geometry)
 const pylith::feassemble::CellGeometry&
 pylith::feassemble::QuadratureRefCell::refGeometry(void) const
 { // refGeometry
-  assert(0 != _geometry);
+  assert(_geometry);
   return *_geometry;
 } // refGeometry
 
