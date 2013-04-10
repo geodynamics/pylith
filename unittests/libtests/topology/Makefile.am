@@ -37,8 +37,9 @@ testtopology_SOURCES = \
 	TestFieldsSubMesh.cc \
 	TestSolutionFields.cc \
 	TestJacobian.cc \
-	TestRefineUniform.cc \
 	test_topology.cc
+
+#	TestRefineUniform.cc 
 
 
 noinst_HEADERS = \
@@ -51,8 +52,9 @@ noinst_HEADERS = \
 	TestFieldsMesh.hh \
 	TestFieldsSubMesh.hh \
 	TestSolutionFields.hh \
-	TestJacobian.hh \
-	TestRefineUniform.hh
+	TestJacobian.hh
+
+#	TestRefineUniform.hh
 
 
 # Source files associated with testing data

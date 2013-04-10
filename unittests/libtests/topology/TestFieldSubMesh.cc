@@ -1049,6 +1049,7 @@ pylith::topology::TestFieldSubMesh::_buildMesh(Mesh* mesh,
   } // for
   err = VecRestoreArray(coordVec, &coords);CHECK_PETSC_ERROR(err);
   err = DMSetCoordinatesLocal(dmMesh, coordVec);CHECK_PETSC_ERROR(err);
+  err = VecDestroy(&coordVec);CHECK_PETSC_ERROR(err);
 
   const int numPoints = _TestFieldSubMesh::groupSize;
   for(PetscInt i = 0; i < numPoints; ++i) {
