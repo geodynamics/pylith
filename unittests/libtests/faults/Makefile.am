@@ -253,4 +253,8 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testfaults
+	valgrind --log-file=valgrind_faults.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfaults
+
+
 # End of file 

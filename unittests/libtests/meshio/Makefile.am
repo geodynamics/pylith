@@ -714,4 +714,8 @@ noinst_tmp = \
 CLEANFILES = $(noinst_tmp)
 
 
+leakcheck: testmeshio
+	valgrind --log-file=valgrind_meshio.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testmeshio
+
+
 # End of file 

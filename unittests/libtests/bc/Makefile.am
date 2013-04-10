@@ -158,4 +158,7 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testbc
+	valgrind --log-file=valgrind_bc.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testbc
+
 # End of file 

@@ -374,4 +374,8 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testfeassemble
+	valgrind --log-file=valgrind_feassemble.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfeassemble
+
+
 # End of file 
