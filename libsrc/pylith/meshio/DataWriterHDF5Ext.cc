@@ -76,12 +76,13 @@ pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::DataWriterHDF5Ext(const
 // Prepare for writing files.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(
-						const mesh_type& mesh,
-						const int numTimeSteps,
-						const char* label,
-						const int labelId)
+pylith::meshio::DataWriterHDF5Ext<mesh_type,field_type>::open(const mesh_type& mesh,
+							      const int numTimeSteps,
+							      const char* label,
+							      const int labelId)
 { // open
+  PYLITH_METHOD_BEGIN;
+
   typedef typename mesh_type::SieveMesh SieveMesh;
   typedef typename mesh_type::SieveMesh::label_sequence label_sequence;
   typedef typename mesh_type::SieveMesh::numbering_type numbering_type;

@@ -51,6 +51,8 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar value)
 { // timeScale
+  PYLITH_METHOD_BEGIN;
+
   if (value <= 0.0) {
     std::ostringstream msg;
     msg << "Time scale for simulation time (" << value << " must be positive.";
@@ -58,6 +60,8 @@ pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar 
   } // if
   
   _timeScale = value;
+
+  PYLITH_METHOD_END;
 } // timeScale
   
 // ----------------------------------------------------------------------
@@ -65,21 +69,26 @@ pylith::meshio::DataWriter<mesh_type, field_type>::timeScale(const PylithScalar 
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriter<mesh_type, field_type>::open(const mesh_type& mesh,
-					    const int numTimeSteps,
-					    const char* label,
-					    const int labelId)
+							const int numTimeSteps,
+							const char* label,
+							const int labelId)
 { // open
+  PYLITH_METHOD_BEGIN;
+
   _numTimeSteps = numTimeSteps;
 
-  const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
-
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  const char* meshName = NULL;
+  PetscObjectGetName((PetscObject) dmMesh, &meshName);
+  
   std::ostringstream s;
   s << "output_"
-    << sieveMesh->getName();
+    << meshName;
   if (label)
     s << "_" << label << labelId;
   _context = s.str();
+
+  PYLITH_METHOD_END;
 } // open
 
 // ----------------------------------------------------------------------
@@ -96,9 +105,9 @@ pylith::meshio::DataWriter<mesh_type, field_type>::close(void)
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriter<mesh_type, field_type>::openTimeStep(const PylithScalar t,
-						    const mesh_type& mesh,
-						    const char* label,
-						    const int labelId)
+								const mesh_type& mesh,
+								const char* label,
+								const int labelId)
 { // openTimeStep
 } // openTimeStep
 
