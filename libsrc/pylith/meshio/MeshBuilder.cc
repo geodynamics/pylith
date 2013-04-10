@@ -88,11 +88,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     new SieveMesh::sieve_type(mesh->comm());
   sieveMesh->setSieve(sieve);
 
-  // Memory debugging
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(1);
-
-  logger.stagePush("MeshCreation");
   if (0 == commRank || isParallel) {
     assert(coordinates->size() == numVertices*spaceDim);
     assert(cells.size() == numCells*numCorners);
@@ -140,8 +135,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
       std::map<SieveFlexMesh::point_type,SieveFlexMesh::point_type> renumbering;
       ALE::ISieveConverter::convertSieve(*s, *sieve, renumbering);
     } // if/else
-    logger.stagePop();
-    logger.stagePush("MeshStratification");
     if (!interpolate) {
       // Optimized stratification
       const ALE::Obj<SieveMesh::label_type>& height = 
@@ -162,19 +155,13 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     } else {
       sieveMesh->stratify();
     } // if/else
-    logger.stagePop();
   } else {
-    logger.stagePop();
-    logger.stagePush("MeshStratification");
     sieveMesh->getSieve()->setChart(SieveMesh::sieve_type::chart_type());
     sieveMesh->getSieve()->allocate();
     sieveMesh->stratify();
-    logger.stagePop();
   } // if/else
 
-  logger.stagePush("MeshCoordinates");
   ALE::SieveBuilder<SieveMesh>::buildCoordinates(sieveMesh, spaceDim, &(*coordinates)[0]);
-  logger.stagePop(); // Coordinates
   sieveMesh->getFactory()->clear();
   }
 

@@ -64,7 +64,11 @@ pylith::feassemble::ElasticityExplicitLgDeform::~ElasticityExplicitLgDeform(void
 void
 pylith::feassemble::ElasticityExplicitLgDeform::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   IntegratorElasticityLgDeform::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

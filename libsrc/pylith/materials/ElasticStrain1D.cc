@@ -51,7 +51,7 @@ namespace pylith {
       const int numProperties = 3;
 
       // Physical properties.
-      const Metadata::ParamDescription properties[] = {
+      const Metadata::ParamDescription properties[numProperties] = {
 	{ "density", 1, pylith::topology::FieldBase::SCALAR },
 	{ "mu", 1, pylith::topology::FieldBase::SCALAR },
 	{ "lambda", 1, pylith::topology::FieldBase::SCALAR },
@@ -59,7 +59,7 @@ namespace pylith {
 
       // Values expected in spatial database
       const int numDBProperties = 3;
-      const char* dbProperties[] = { "density", "vs", "vp" };      
+      const char* dbProperties[numDBProperties] = { "density", "vs", "vp" };      
       
     } // _ElasticStrain1D
   } // materials
@@ -107,9 +107,8 @@ pylith::materials::ElasticStrain1D::~ElasticStrain1D(void)
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
 void
-pylith::materials::ElasticStrain1D::_dbToProperties(
-					    PylithScalar* const propValues,
-					    const scalar_array& dbValues)
+pylith::materials::ElasticStrain1D::_dbToProperties(PylithScalar* const propValues,
+						    const scalar_array& dbValues)
 { // _dbToProperties
   assert(0 != propValues);
   const int numDBValues = dbValues.size();
@@ -152,7 +151,7 @@ pylith::materials::ElasticStrain1D::_dbToProperties(
 // Nondimensionalize properties.
 void
 pylith::materials::ElasticStrain1D::_nondimProperties(PylithScalar* const values,
-							 const int nvalues) const
+						      const int nvalues) const
 { // _nondimProperties
   assert(0 != _normalizer);
   assert(0 != values);

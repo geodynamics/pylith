@@ -61,10 +61,14 @@ template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   QuadratureRefCell::deallocate();
 
   delete _engine; _engine = 0;
   delete _geometryFields; _geometryFields = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -76,8 +80,12 @@ pylith::feassemble::Quadrature<mesh_type>::Quadrature(const Quadrature& q) :
   _geometryFields(0),
   _checkConditioning(q._checkConditioning)
 { // copy constructor
+  PYLITH_METHOD_BEGIN;
+
   if (0 != q._engine)
     _engine = q._engine->clone();
+
+  PYLITH_METHOD_END;
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -86,6 +94,8 @@ template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
 { // initializeGeometry
+  PYLITH_METHOD_BEGIN;
+
   clear();
   assert(0 == _engine);
 
@@ -140,6 +150,8 @@ pylith::feassemble::Quadrature<mesh_type>::initializeGeometry(void)
 
   assert(0 != _engine);
   _engine->initialize();
+
+  PYLITH_METHOD_END;
 } // initializeGeometry
 
 // ----------------------------------------------------------------------
@@ -150,6 +162,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
        const mesh_type& mesh,
        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells)
 { // computeGeometry
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != _engine);
 
   typedef typename mesh_type::RealSection RealSection;
@@ -260,6 +274,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
     jacobianDetSection->updatePoint(*c_iter, &jacobianDet[0]);
     basisDerivSection->updatePoint(*c_iter, &basisDeriv[0]);
   } // for
+
+  PYLITH_METHOD_END;
 } // computeGeometry
 
 // ----------------------------------------------------------------------
@@ -270,6 +286,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
        const mesh_type& mesh,
        PetscInt cStart, PetscInt cEnd)
 { // computeGeometry
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != _engine);
 
   const char* loggingStage = "Quadrature";
@@ -403,6 +421,8 @@ pylith::feassemble::Quadrature<mesh_type>::computeGeometry(
   err = VecRestoreArray(jacobianVec, &jacobianArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(jacobianDetVec, &jacobianDetArray);CHECK_PETSC_ERROR(err);
   err = VecRestoreArray(basisDerivVec, &basisDerivArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // computeGeometry
 
 // ----------------------------------------------------------------------
@@ -410,6 +430,8 @@ template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_type::SieveMesh::point_type& cell)
 { // retrieveGeometry
+  PYLITH_METHOD_BEGIN;
+
   assert(0 != _geometryFields);
   assert(0 != _engine);
 
@@ -439,6 +461,9 @@ pylith::feassemble::Quadrature<mesh_type>::retrieveGeometry(const typename mesh_
     _geometryFields->get("determinant basisfunctions").section();
   basisDerivSection->restrictPoint(cell, const_cast<PylithScalar*>(&basisDeriv[0]),
 				   basisDeriv.size());
+
+
+  PYLITH_METHOD_END;
 } // retrieveGeometry
 
 // ----------------------------------------------------------------------
@@ -447,10 +472,15 @@ template<typename mesh_type>
 void
 pylith::feassemble::Quadrature<mesh_type>::clear(void)
 { // clear
+  PYLITH_METHOD_BEGIN;
+
   delete _engine; _engine = 0;
 
   // Clear storage of precomputed geometry.
   delete _geometryFields; _geometryFields = 0;
+
+
+  PYLITH_METHOD_END;
 } // clear
 
 

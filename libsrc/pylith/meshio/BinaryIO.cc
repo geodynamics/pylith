@@ -54,7 +54,7 @@ pylith::meshio::BinaryIO::swapByteOrder(char* vals,
 					const int numVals,
 					const int typesize)
 { // swapByteOrder
-  assert(0 != vals);
+  assert(vals);
   const int numSwaps = sizeof(typesize) / 2;
   for (int iVal=0; iVal < numVals; ++iVal) {
     char* buf = (char*) (vals + iVal*typesize);

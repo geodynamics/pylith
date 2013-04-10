@@ -66,7 +66,11 @@ pylith::feassemble::ElasticityImplicit::~ElasticityImplicit(void)
 void
 pylith::feassemble::ElasticityImplicit::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   IntegratorElasticity::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------

@@ -56,9 +56,13 @@ template<typename quadrature_type>
 void
 pylith::feassemble::Integrator<quadrature_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   delete _quadrature; _quadrature = 0;
   delete _normalizer; _normalizer = 0;
   delete _logger; _logger = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
