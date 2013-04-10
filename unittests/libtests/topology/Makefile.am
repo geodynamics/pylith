@@ -101,4 +101,8 @@ noinst_tmp = \
 CLEANFILES = $(noinst_tmp)
 
 
+leakcheck: testtopology
+	valgrind --log-file=valgrind_topology.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testtopology
+
+
 # End of file 

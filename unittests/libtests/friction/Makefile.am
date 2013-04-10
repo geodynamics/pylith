@@ -80,4 +80,8 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testfriction
+	valgrind --log-file=valgrind_friction.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testfriction
+
+
 # End of file 

@@ -143,4 +143,8 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testmaterials
+	valgrind --log-file=valgrind_materials.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testmaterials
+
+
 # End of file 

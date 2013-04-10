@@ -44,4 +44,8 @@ if ENABLE_CUBIT
 endif
 
 
+leakcheck: testutils
+	valgrind --log-file=valgrind_utils.log --leak-check=full --suppressions=$(top_srcdir)/share/valgrind-python.supp .libs/testutils
+
+
 # End of file 
