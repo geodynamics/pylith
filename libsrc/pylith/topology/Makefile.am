@@ -33,7 +33,6 @@ subpkginclude_HEADERS = \
 	Mesh.hh \
 	Mesh.icc \
 	MeshOps.hh \
-	RefineUniform.hh \
 	ReverseCuthillMcKee.hh \
 	SolutionFields.hh \
 	Stratum.hh \
@@ -47,20 +46,22 @@ subpkginclude_HEADERS = \
 	VisitorSubMesh.icc \
 	topologyfwd.hh
 
+
 noinst_HEADERS =
 
 # TEMPORARY
-noinst_HEADERS += \
-	MeshRefiner.hh \
-	MeshRefiner.cc \
-	RefineEdges2.hh \
-	CellRefinerTri3.hh \
-	CellRefinerTet4.hh \
-	RefineFace4Edges2.hh \
-	CellRefinerQuad4.hh \
-	RefineVol8Face4Edges2.hh \
-	CellRefinerHex8.hh \
-	MeshOrder.hh
+#noinst_HEADERS += \
+#	RefineUniform.hh
+#	MeshRefiner.hh \
+#	MeshRefiner.cc \
+#	RefineEdges2.hh \
+#	CellRefinerTri3.hh \
+#	CellRefinerTet4.hh \
+#	RefineFace4Edges2.hh \
+#	CellRefinerQuad4.hh \
+#	RefineVol8Face4Edges2.hh \
+#	CellRefinerHex8.hh \
+#	MeshOrder.hh
 
 
 # End of file 
