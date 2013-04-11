@@ -20,6 +20,8 @@
 
 #include "TestDataWriterVTKPointsCases.hh" // Implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "data/DataWriterVTKDataPointsTri3.hh" // USES DataWriterVTKDataPointsTri3
 #include "data/DataWriterVTKDataPointsQuad4.hh" // USES DataWriterVTKDataPointsQuad4
 #include "data/DataWriterVTKDataPointsTet4.hh" // USES DataWriterVTKDataPointsTet4
@@ -38,10 +40,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKPointsHex8 );
 void
 pylith::meshio::TestDataWriterVTKPointsTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -50,10 +56,14 @@ pylith::meshio::TestDataWriterVTKPointsTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKPointsQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -62,10 +72,14 @@ pylith::meshio::TestDataWriterVTKPointsQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKPointsTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsTet4;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -74,10 +88,14 @@ pylith::meshio::TestDataWriterVTKPointsTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKPointsHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKPoints::setUp();
   _data = new DataWriterVTKDataPointsHex8;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 

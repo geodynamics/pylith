@@ -24,6 +24,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -39,15 +40,15 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputSolnPoints );
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Test constructor
 void
 pylith::meshio::TestOutputSolnPoints::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   OutputSolnPoints output;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 
@@ -56,10 +57,14 @@ pylith::meshio::TestOutputSolnPoints::testConstructor(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTri3(void)
 { // testSetupInterpolatorTri3
+  PYLITH_METHOD_BEGIN;
+
   OutputSolnPoints output;
   OutputSolnPointsDataTri3 data;
 
   _testSetupInterpolator(data);
+
+  PYLITH_METHOD_END;
 } // testSetupInterpolatorTri3
 
 
@@ -68,10 +73,14 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTri3(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorQuad4(void)
 { // testSetupInterpolatorQuad4
+  PYLITH_METHOD_BEGIN;
+
   OutputSolnPoints output;
   OutputSolnPointsDataQuad4 data;
 
   _testSetupInterpolator(data);
+
+  PYLITH_METHOD_END;
 } // testSetupInterpolatorQuad4
 
 
@@ -80,10 +89,14 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorQuad4(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTet4(void)
 { // testSetupInterpolatorTet4
+  PYLITH_METHOD_BEGIN;
+
   OutputSolnPoints output;
   OutputSolnPointsDataTet4 data;
 
   _testSetupInterpolator(data);
+
+  PYLITH_METHOD_END;
 } // testSetupInterpolatorTet4
 
 
@@ -92,10 +105,14 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorTet4(void)
 void
 pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorHex8(void)
 { // testSetupInterpolatorHex8
+  PYLITH_METHOD_BEGIN;
+
   OutputSolnPoints output;
   OutputSolnPointsDataHex8 data;
 
   _testSetupInterpolator(data);
+
+  PYLITH_METHOD_END;
 } // testSetupInterpolatorHex8
 
 
@@ -104,6 +121,8 @@ pylith::meshio::TestOutputSolnPoints::testSetupInterpolatorHex8(void)
 void
 pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPointsData& data)
 { // _testSetupInterpolator
+  PYLITH_METHOD_BEGIN;
+
   const int numPoints = data.numPoints;
   const int spaceDim = data.spaceDim;
 
@@ -126,46 +145,43 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
   CPPUNIT_ASSERT(data.points);
   output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, normalizer);
 
-  const topology::Mesh& pointsMesh = output.pointsMesh();
-  const ALE::Obj<SieveMesh>& sievePointsMesh = pointsMesh.sieveMesh();
-  CPPUNIT_ASSERT(!sievePointsMesh.isNull());
-
-  //pointsMesh.view("POINTS MESH"); // DEBUGGING
+  PetscDM dmMesh = output.pointsMesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
 
   // Check vertices
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sievePointsMesh->depthStratum(0);
-  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
-  CPPUNIT_ASSERT_EQUAL(numVerticesE, int(vertices->size()));
-  int ipt = 0;
-  for (SieveMesh::label_sequence::iterator v_iter=vertices->begin();
-       v_iter != verticesEnd;
-       ++v_iter, ++ipt) {
-    const int vertexE = numCellsE + ipt;
-    CPPUNIT_ASSERT_EQUAL(vertexE, *v_iter);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  CPPUNIT_ASSERT_EQUAL(numVerticesE, verticesStratum.size());
+  for (PetscInt v=vStart, index = 0; v < vEnd; ++v, ++index) {
+    const int vertexE = numCellsE + index;
+    CPPUNIT_ASSERT_EQUAL(vertexE, v);
   } // for
 
   // Check cells
-  const ALE::Obj<SieveMesh::label_sequence>& cells = 
-    sievePointsMesh->heightStratum(0);
-  const SieveMesh::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<SieveMesh::sieve_type>& sieve = sievePointsMesh->getSieve();
-  assert(!sieve.isNull());
-
-  CPPUNIT_ASSERT_EQUAL(numCellsE, int(cells->size()));
-
-  ALE::ISieveVisitor::PointRetriever<SieveMesh::sieve_type> pV(sieve->getMaxConeSize());
-  int i = 0;
-  for (SieveMesh::label_sequence::iterator c_iter=cells->begin(); c_iter != cellsEnd; ++c_iter) {
-    sieve->cone(*c_iter, pV);
-    const SieveMesh::point_type* cone = pV.getPoints();
-    CPPUNIT_ASSERT_EQUAL(numCornersE, (int) pV.getSize());
-    for(int p = 0; p < pV.getSize(); ++p, ++i) {
-      const int coneE = numCellsE+i;
-      CPPUNIT_ASSERT_EQUAL(coneE, cone[p]);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  PetscErrorCode err = 0;
+  CPPUNIT_ASSERT_EQUAL(numCellsE, cellsStratum.size());
+  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    PetscInt *closure = NULL;
+    PetscInt closureSize = 0;
+    err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
+    int count = 0;
+    for (int i=0; i < closureSize; ++i) {
+      const PetscInt p = closure[2*i];
+      if (p >= vStart && p < vEnd) {
+	const int coneE = numCellsE+index;
+	CPPUNIT_ASSERT_EQUAL(coneE, p);
+	++count;
+	++index;
+      } // if
     } // for
-    pV.clear();
+    CPPUNIT_ASSERT_EQUAL(numCornersE, count);
+    err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CHECK_PETSC_ERROR(err);
   } // for
+  
+  PYLITH_METHOD_END;
 } // _testSetupInterpolator
 
 
