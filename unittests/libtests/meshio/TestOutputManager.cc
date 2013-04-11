@@ -40,9 +40,7 @@
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestOutputManager );
 
-// ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
+ // ----------------------------------------------------------------------
 typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 
 // ----------------------------------------------------------------------
@@ -50,7 +48,11 @@ typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 void
 pylith::meshio::TestOutputManager::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -58,13 +60,17 @@ pylith::meshio::TestOutputManager::testConstructor(void)
 void
 pylith::meshio::TestOutputManager::testCoordsys(void)
 { // testCoordsys
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
-  CPPUNIT_ASSERT(0 == manager._coordsys);
+  CPPUNIT_ASSERT(!manager._coordsys);
 
   spatialdata::geocoords::CSCart cs;
   manager.coordsys(&cs);
   CPPUNIT_ASSERT(0 != manager._coordsys);
+
+  PYLITH_METHOD_END;
 } // testCoordsys
 
 // ----------------------------------------------------------------------
@@ -72,13 +78,17 @@ pylith::meshio::TestOutputManager::testCoordsys(void)
 void
 pylith::meshio::TestOutputManager::testWriter(void)
 { // testWriter
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
-  CPPUNIT_ASSERT(0 == manager._writer);
+  CPPUNIT_ASSERT(!manager._writer);
 
   DataWriterVTK<topology::Mesh, MeshField> writer;
   manager.writer(&writer);
-  CPPUNIT_ASSERT(0 != manager._writer);
+  CPPUNIT_ASSERT(manager._writer);
+
+  PYLITH_METHOD_END;
 } // testWriter
 
 // ----------------------------------------------------------------------
@@ -86,15 +96,19 @@ pylith::meshio::TestOutputManager::testWriter(void)
 void
 pylith::meshio::TestOutputManager::testVertexFilter(void)
 { // testVertexFilter
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
-  CPPUNIT_ASSERT(0 == manager._vertexFilter);
-  CPPUNIT_ASSERT(0 == manager._cellFilter);
+  CPPUNIT_ASSERT(!manager._vertexFilter);
+  CPPUNIT_ASSERT(!manager._cellFilter);
 
   VertexFilterVecNorm<MeshField> filter;
   manager.vertexFilter(&filter);
-  CPPUNIT_ASSERT(0 != manager._vertexFilter);
-  CPPUNIT_ASSERT(0 == manager._cellFilter);
+  CPPUNIT_ASSERT(manager._vertexFilter);
+  CPPUNIT_ASSERT(!manager._cellFilter);
+
+  PYLITH_METHOD_END;
 } // testVertexFilter
 
 // ----------------------------------------------------------------------
@@ -102,15 +116,19 @@ pylith::meshio::TestOutputManager::testVertexFilter(void)
 void
 pylith::meshio::TestOutputManager::testCellFilter(void)
 { // testCellFilter
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
-  CPPUNIT_ASSERT(0 == manager._vertexFilter);
-  CPPUNIT_ASSERT(0 == manager._cellFilter);
+  CPPUNIT_ASSERT(!manager._vertexFilter);
+  CPPUNIT_ASSERT(!manager._cellFilter);
 
   CellFilterAvg<topology::Mesh, MeshField> filter;
   manager.cellFilter(&filter);
-  CPPUNIT_ASSERT(0 != manager._cellFilter);
-  CPPUNIT_ASSERT(0 == manager._vertexFilter);
+  CPPUNIT_ASSERT(manager._cellFilter);
+  CPPUNIT_ASSERT(!manager._vertexFilter);
+
+  PYLITH_METHOD_END;
 } // testCellFilter
 
 // ----------------------------------------------------------------------
@@ -118,6 +136,8 @@ pylith::meshio::TestOutputManager::testCellFilter(void)
 void
 pylith::meshio::TestOutputManager::testOpenClose(void)
 { // testOpenClose
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
   topology::Mesh mesh;
@@ -135,6 +155,8 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 
   manager.open(mesh, numTimeSteps);
   manager.close();
+
+  PYLITH_METHOD_END;
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -142,6 +164,8 @@ pylith::meshio::TestOutputManager::testOpenClose(void)
 void
 pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 { // testOpenCloseTimeStep
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::Mesh, MeshField> manager;
 
   topology::Mesh mesh;
@@ -165,8 +189,9 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
   manager.closeTimeStep();
   manager.close();
 
-  // We do not create empty VTK files anymore
-  //TestDataWriterVTK::checkFile(filenameRoot, t, timeFormat);
+  // Nothing to check. We do not create VTK files without fields anymore.
+
+  PYLITH_METHOD_END;
 } // testOpenCloseTimeStep
 
 // ----------------------------------------------------------------------
@@ -174,6 +199,8 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void)
 void
 pylith::meshio::TestOutputManager::testAppendVertexField(void)
 { // testAppendVertexField
+  PYLITH_METHOD_BEGIN;
+
   const char* meshFilename = "data/tri3.mesh";
   const int fiberDim = 2;
   const int nvertices = 4;
@@ -194,12 +221,10 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   iohandler.read(&mesh);
 
   // Set vertex field
-  DM dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
-
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);  
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
   MeshField field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
@@ -207,21 +232,17 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   field.label(label);
   field.vectorFieldType(fieldType);
   field.scale(scale);
-  PetscSection section = field.petscSection();
-  Vec          vec     = field.localVector();
-  PetscScalar *a;
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off;
 
-    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      a[off+d] = fieldValues[(v-vStart)*dof+d]/scale;
-    }
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    
+  for(PetscInt v = vStart, index=0; v < vEnd; ++v) {
+    const PetscInt off = fieldVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+      fieldArray[off+d] = fieldValues[index]/scale;
+    } // for
   } // for
-  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
 
   spatialdata::geocoords::CSCart cs;
@@ -257,6 +278,8 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
   manager.close();
 
   TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+
+  PYLITH_METHOD_END;
 } // testAppendVertexField
 
 // ----------------------------------------------------------------------
@@ -264,6 +287,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void)
 void
 pylith::meshio::TestOutputManager::testAppendCellField(void)
 { // testAppendCellField
+  PYLITH_METHOD_BEGIN;
 
   const char* meshFilename = "data/tri3.mesh";
   const int fiberDim = 2;
@@ -283,13 +307,11 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   iohandler.read(&mesh);
 
   // Set cell field
-  DM              dmMesh = mesh.dmMesh();
-  PetscInt        cStart, cEnd, numCells;
-  PetscErrorCode  err;
-
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  numCells = cEnd - cStart;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);  
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  PetscInt numCells = cellsStratum.size();
 
   MeshField field(mesh);
   field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
@@ -297,22 +319,19 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   field.label(label);
   field.vectorFieldType(fieldType);
   field.scale(scale);
-  PetscSection section = field.petscSection();
-  Vec          vec     = field.localVector();
-  PetscScalar *a;
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = 0; c < numCells; ++c) {
-    const PetscInt cell = c+cStart;
-    PetscInt       dof, off;
 
-    err = PetscSectionGetDof(section, cell, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, cell, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      a[off+d] = fieldValues[c*dof+d]/scale;
-    }
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    
+  for(PetscInt c = 0, index = 0; c < numCells; ++c) {
+    const PetscInt cell = c+cStart;
+      
+    const PetscInt off = fieldVisitor.sectionOffset(cell);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
+    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+      fieldArray[off+d] = fieldValues[index]/scale;
+    } // for
   } // for
-  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
   CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
 
   spatialdata::geocoords::CSCart cs;
@@ -378,6 +397,8 @@ pylith::meshio::TestOutputManager::testAppendCellField(void)
   manager.close();
 
   TestDataWriterVTK::checkFile(filenameRootF, t, timeFormat);
+
+  PYLITH_METHOD_END;
 } // testAppendCellField
 
 

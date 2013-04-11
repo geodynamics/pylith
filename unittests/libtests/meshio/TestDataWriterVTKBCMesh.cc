@@ -40,7 +40,11 @@ typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 void
 pylith::meshio::TestDataWriterVTKBCMesh::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterBCMesh::setUp();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -48,7 +52,11 @@ pylith::meshio::TestDataWriterVTKBCMesh::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterBCMesh::tearDown();
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -56,11 +64,15 @@ pylith::meshio::TestDataWriterVTKBCMesh::tearDown(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   DataWriterVTK<topology::SubMesh, SubMeshField> writer;
 
-  CPPUNIT_ASSERT(0 == writer._viewer);
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT(!writer._viewer);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -68,20 +80,22 @@ pylith::meshio::TestDataWriterVTKBCMesh::testConstructor(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::testTimeStep(void)
 { // testTimeStep
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterVTK<topology::SubMesh, SubMeshField> writer;
 
   writer.filename(_data->timestepFilename);
   writer.timeFormat(_data->timeFormat);
 
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
   } else {
@@ -91,17 +105,18 @@ pylith::meshio::TestDataWriterVTKBCMesh::testTimeStep(void)
     writer.openTimeStep(t, *_submesh, label, id);
   } // else
 
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
   writer.closeTimeStep();
   writer.close();
 
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
-  // We do not create empty VTK files anymore
-  //checkFile(_data->timestepFilename, t, _data->timeFormat);
+  // Nothing to check. We do not create VTK files without fields anymore.
+
+  PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -109,8 +124,10 @@ pylith::meshio::TestDataWriterVTKBCMesh::testTimeStep(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
 { // testWriteVertexField
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterVTK<topology::SubMesh, SubMeshField> writer;
 
@@ -124,7 +141,7 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
   } else {
@@ -137,14 +154,16 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
     SubMeshField& field = vertexFields.get(_data->vertexFieldsInfo[i].name);
     writer.writeVertexField(t, field, *_submesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
-    CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   } // for
   writer.closeTimeStep();
   writer.close();
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   
   checkFile(_data->vertexFilename, t, _data->timeFormat);
+
+  PYLITH_METHOD_END;
 } // testWriteVertexField
 
 // ----------------------------------------------------------------------
@@ -152,8 +171,10 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteVertexField(void)
 void
 pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
 { // testWriteCellField
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterVTK<topology::SubMesh, SubMeshField> writer;
 
@@ -167,13 +188,13 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
     for (int i=0; i < nfields; ++i) {
       SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field);
-      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
+      CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
   } else {
@@ -184,16 +205,18 @@ pylith::meshio::TestDataWriterVTKBCMesh::testWriteCellField(void)
     for (int i=0; i < nfields; ++i) {
       SubMeshField& field = cellFields.get(_data->cellFieldsInfo[i].name);
       writer.writeCellField(t, field, label, id);
-      CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
+      CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
       CPPUNIT_ASSERT(writer._wroteCellHeader);
     } // for
   } // else
   writer.closeTimeStep();
   writer.close();
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   
   checkFile(_data->cellFilename, t, _data->timeFormat);
+
+  PYLITH_METHOD_END;
 } // testWriteCellField
 
 

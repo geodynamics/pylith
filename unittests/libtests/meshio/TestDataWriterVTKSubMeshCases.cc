@@ -20,6 +20,8 @@
 
 #include "TestDataWriterVTKSubMeshCases.hh" // Implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "data/DataWriterVTKDataSubMeshLine2.hh"
 #include "data/DataWriterVTKDataSubMeshTri3.hh"
 #include "data/DataWriterVTKDataSubMeshQuad4.hh"
@@ -40,10 +42,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKSubMeshHex8 );
 void
 pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshLine2;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -52,10 +58,14 @@ pylith::meshio::TestDataWriterVTKSubMeshLine2::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -64,10 +74,14 @@ pylith::meshio::TestDataWriterVTKSubMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -76,10 +90,14 @@ pylith::meshio::TestDataWriterVTKSubMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshTet4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -88,10 +106,14 @@ pylith::meshio::TestDataWriterVTKSubMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKSubMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKSubMesh::setUp();
   _data = new DataWriterVTKDataSubMeshHex8;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
