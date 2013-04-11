@@ -84,6 +84,22 @@ public :
    */
   void precision(const int value);
 
+  /** Prepare for writing files.
+   *
+   * @param mesh Finite-element mesh. 
+   * @param numTimeSteps Expected number of time steps for fields.
+   * @param label Name of label defining cells to include in output
+   *   (=0 means use all cells in mesh).
+   * @param labelId Value of label defining which cells to include.
+   */
+  void open(const mesh_type& mesh,
+	    const int numTimeSteps,
+	    const char* label =0,
+	    const int labelId =0);
+
+  /// Close output files.
+  void close(void);
+
   /** Prepare file for data at a new time step.
    *
    * @param t Time stamp for new data
@@ -153,6 +169,7 @@ private :
   std::string _timeFormat; ///< C style time format for time stamp.
 
   PetscViewer _viewer; ///< Output file
+  PetscDM _dm; ///< Handle to PETSc DM for mesh
 
   int _precision; ///< Precision of floating point values in output.
 
