@@ -20,6 +20,8 @@
 
 #include "TestDataWriterVTK.hh" // Implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <string.h> // USES strcmp()
@@ -34,6 +36,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 					     const PylithScalar t,
 					     const char* timeFormat)
 { // checkFile
+  PYLITH_METHOD_BEGIN;
 
   const std::string& fileroot = filenameRoot;
 
@@ -46,8 +49,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
   const int pos = timestamp.find(".");
   if (pos != timestamp.length())
     timestamp.erase(pos, 1);
-  buffer
-    << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";
+  buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";
   
   const std::string& filename = buffer.str();
   const std::string filenameE = "data/" + filename;
@@ -82,6 +84,8 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 
   fileInE.close();
   fileIn.close();
+
+  PYLITH_METHOD_END;
 } // checkFile
 
 
