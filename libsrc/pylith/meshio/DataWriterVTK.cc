@@ -18,6 +18,8 @@
 
 #include <portinfo>
 
+#include "pylith/topology/Stratum.hh" // USES StratumIS
+
 #include <petscdmmesh_viewers.hh> // USES VTKViewer
 #include <petscdmplex.h>
 
@@ -34,7 +36,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
   _timeConstant(1.0),
   _filename("output.vtk"),
   _timeFormat("%f"),
-  _viewer(0),
+  _viewer(NULL),
+  _dm(NULL),
   _wroteVertexHeader(false),
   _wroteCellHeader(false),
   _precision(6)
@@ -46,23 +49,10 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(void) :
 template<typename mesh_type, typename field_type>
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::~DataWriterVTK(void)
 { // destructor
+  closeTimeStep(); // Just in case
+  close(); // Just in case
   deallocate();
 } // destructor  
-
-// ----------------------------------------------------------------------
-// Set precision of floating point values in output.
-template<typename mesh_type, typename field_type>
-void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::precision(const int value)
-{ // precision
-  if (value <= 0) {
-    std::ostringstream msg;
-    msg << "Floating point precision (" << value << ") must be positive.";
-    throw std::runtime_error(msg.str());
-  } // if
-
-  _precision = value;
-} // precision
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
@@ -70,10 +60,11 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type, field_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   DataWriter<mesh_type, field_type>::deallocate();
 
-  PetscErrorCode err = 0;
-  err = PetscViewerDestroy(&_viewer);CHECK_PETSC_ERROR(err);
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -84,7 +75,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::DataWriterVTK(const DataWri
   _timeConstant(w._timeConstant),
   _filename(w._filename),
   _timeFormat(w._timeFormat),
-  _viewer(0),
+  _viewer(NULL),
+  _dm(NULL),
   _wroteVertexHeader(w._wroteVertexHeader),
   _wroteCellHeader(w._wroteCellHeader)
 { // copy constructor
@@ -96,6 +88,8 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const PylithScalar value)
 { // timeConstant
+  PYLITH_METHOD_BEGIN;
+
   if (value <= 0.0) {
     std::ostringstream msg;
     msg << "Time used to normalize time stamp in VTK data files must be "
@@ -103,87 +97,108 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::timeConstant(const PylithSc
     throw std::runtime_error(msg.str());
   } // if
   _timeConstant = value;
+
+  PYLITH_METHOD_END;
 } // timeConstant
+
+// ----------------------------------------------------------------------
+// Set precision of floating point values in output.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::precision(const int value)
+{ // precision
+  PYLITH_METHOD_BEGIN;
+
+  if (value <= 0) {
+    std::ostringstream msg;
+    msg << "Floating point precision (" << value << ") must be positive.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  _precision = value;
+
+  PYLITH_METHOD_END;
+} // precision
+
+// ----------------------------------------------------------------------
+// Prepare for writing files.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
+							  const int numTimeSteps,
+							  const char* label,
+							  const int labelId)
+{ // open
+  PYLITH_METHOD_BEGIN;
+
+  // Save handle for actions required in closeTimeStep() and close();
+  PetscErrorCode err = 0;
+  err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  _dm = dmMesh;assert(_dm);
+  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+
+  // Create VTK label in DM: Cleared in close().
+  if (label) {
+    topology::StratumIS cellsIS(dmMesh, label, labelId);
+    const PetscInt ncells = cellsIS.size();
+    const PetscInt* cells = cellsIS.points();
+
+    for (PetscInt c=0; c < ncells; ++c) {
+      err = DMPlexSetLabelValue(dmMesh, "vtk", cells[c], 1);CHECK_PETSC_ERROR(err);
+    } // for
+
+  } // if
+
+  PYLITH_METHOD_END;
+} // open
+
+// ----------------------------------------------------------------------
+// Close output files.
+template<typename mesh_type, typename field_type>
+void
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::close(void)
+{ // close
+  PYLITH_METHOD_BEGIN;
+
+  if (_dm) {
+    PetscBool hasLabel = PETSC_FALSE;
+    PetscErrorCode err = DMPlexHasLabel(_dm, "vtk", &hasLabel);CHECK_PETSC_ERROR(err);
+    if (hasLabel) {
+      err = DMPlexClearLabelStratum(_dm, "vtk", 1);CHECK_PETSC_ERROR(err);
+      err = DMPlexClearLabelStratum(_dm, "vtk", 2);CHECK_PETSC_ERROR(err);
+    } // if
+    err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
+  } // if
+
+  PYLITH_METHOD_END;
+} // close
 
 // ----------------------------------------------------------------------
 // Prepare file for data at a new time step.
 template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithScalar t,
-						       const mesh_type& mesh,
-						       const char* label,
-						       const int labelId)
+								  const mesh_type& mesh,
+								  const char* label,
+								  const int labelId)
 { // openTimeStep
+  PYLITH_METHOD_BEGIN;
 
-  try {
-    PetscErrorCode err = 0;
+  PetscErrorCode err = 0;
     
-    const std::string& filename = _vtkFilename(t);
-    DM complexMesh = mesh.dmMesh();
+  const std::string& filename = _vtkFilename(t);
 
-    if (complexMesh) {
-      /* DMPlex */
-      err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
-      err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
-      err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
-      err = PetscViewerFileSetName(_viewer, filename.c_str());CHECK_PETSC_ERROR(err);
-      err = PetscObjectReference((PetscObject) complexMesh);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the DM */
-
-      /* Create VTK label in DM: Cleared in closeTimestep() */
-      if (label) {
-        const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-        const ALE::Obj<typename mesh_type::SieveMesh::label_sequence>& cells = sieveMesh->getLabelStratum(label, labelId);
-        const typename mesh_type::SieveMesh::label_sequence::const_iterator  cBegin = cells->begin();
-        const typename mesh_type::SieveMesh::label_sequence::const_iterator  cEnd   = cells->end();
-
-        for(typename mesh_type::SieveMesh::label_sequence::const_iterator c_iter = cBegin; c_iter != cEnd; ++c_iter) {
-          err = DMPlexSetLabelValue(complexMesh, "vtk", *c_iter, 1);CHECK_PETSC_ERROR(err);
-        }
-      }
-    } else {
-    err = PetscViewerCreate(mesh.comm(), &_viewer);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetType(_viewer, PETSCVIEWERASCII);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
-    CHECK_PETSC_ERROR(err);
-    err = PetscViewerFileSetName(_viewer, filename.c_str());
-    CHECK_PETSC_ERROR(err);
-
-    const ALE::Obj<typename mesh_type::SieveMesh>& sieveMesh = mesh.sieveMesh();
-
-    err = VTKViewer::writeHeader(sieveMesh, _viewer);
-    CHECK_PETSC_ERROR(err);
-    //std::cout << "Wrote header for " << filename << std::endl;
-    err = VTKViewer::writeVertices(sieveMesh, _viewer);
-    CHECK_PETSC_ERROR(err);
-    //std::cout << "Wrote vertices for " << filename << std::endl;
-
-    const int cellDepth = (sieveMesh->depth() == -1) ? -1 : 1;
-    const int depth = (!label) ? cellDepth : labelId;
-    const std::string cLabelName = (!label) ?
-      ((sieveMesh->hasLabel("censored depth")) ?
-       "censored depth" : "depth") : label;
-    const std::string vLabelName = 
-      (sieveMesh->hasLabel("censored depth")) ? "censored depth" : "depth";
-    err = VTKViewer::writeElements(sieveMesh, cLabelName, depth, vLabelName, 0,
-				   _viewer); CHECK_PETSC_ERROR(err);
-    //std::cout << "Wrote elements for " << filename << std::endl;
-
-    _wroteVertexHeader = false;
-    _wroteCellHeader = false;
-    }
-  } catch (const std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error while preparing for writing data to VTK file "
-	<< _vtkFilename(t) << " at time " << t << ".\n" << err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) { 
-    std::ostringstream msg;
-    msg << "Unknown error while preparing for writing data to VTK file "
-	<< _vtkFilename(t) << " at time " << t << ".\n";
-    throw std::runtime_error(msg.str());
-  } // try/catch
+  err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
+  err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
+  err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);CHECK_PETSC_ERROR(err);
+  err = PetscViewerFileSetName(_viewer, filename.c_str());CHECK_PETSC_ERROR(err);
+  
+  // Increment reference count on mesh DM, because the viewer destroys the DM.
+  assert(_dm && _dm == mesh.dmMesh());
+  err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  
+  PYLITH_METHOD_END;
 } // openTimeStep
 
 // ----------------------------------------------------------------------
@@ -192,98 +207,76 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::closeTimeStep(void)
 { // closeTimeStep
-#if 0
-  DM complexMesh = mesh.dmMesh();
-  PetscErrorCode err;
+  PYLITH_METHOD_BEGIN;
 
-  if (complexMesh) {
-    err = DMPlexClearLabelStratum(complexMesh, "vtk", 1);CHECK_PETSC_ERROR(err);
-    err = DMPlexClearLabelStratum(complexMesh, "vtk", 2);CHECK_PETSC_ERROR(err);
-  }
-#endif
-  PetscViewerDestroy(&_viewer); _viewer = 0;
+  // Account for possibility that no fields were written, so viewer doesn't have handle to DM.
+  if (_dm && !_wroteVertexHeader && !_wroteCellHeader) {
+    // No fields written, so must manually dereference the mesh DM.
+    PetscErrorCode err = PetscObjectDereference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
+  } // if
+  
+  PetscErrorCode err = PetscViewerDestroy(&_viewer);CHECK_PETSC_ERROR(err);
   _wroteVertexHeader = false;
   _wroteCellHeader = false;
+  
+  PYLITH_METHOD_END;
 } // closeTimeStep
 
 // ----------------------------------------------------------------------
 // Write field over vertices to file.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(
-				            const PylithScalar t,
-					    field_type& field,
-					    const mesh_type& mesh)
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeVertexField(const PylithScalar t,
+								      field_type& field,
+								      const mesh_type& mesh)
 { // writeVertexField
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename field_type::Mesh::RealSection RealSection;
+  PYLITH_METHOD_BEGIN;
 
-  try {
-    DM dmMesh = mesh.dmMesh();
-    assert(dmMesh);
+  assert(_dm);
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
 
-    /* DMPlex */
-    Vec v = field.localVector(); /* Could check the field.petscSection() matches the default section from VecGetDM() */
-    assert(v);
+  // Could check the field.petscSection() matches the default section from VecGetDM().
+  Vec v = field.localVector();assert(v);
 
-    /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view method) */
-    PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
-    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+  // :KLUDGE: MATT You have a note that this is not fully implemented!
+  //
+  // Will change to just VecView() once I setup the vectors correctly
+  // (use VecSetOperation() to change the view method).
+  PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_POINT_FIELD : PETSC_VTK_POINT_VECTOR_FIELD;
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v);CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+  
+  _wroteVertexHeader = true;
 
-    _wroteVertexHeader = true;
-  } catch (const std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n" << err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) { 
-    std::ostringstream msg;
-    msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n";
-    throw std::runtime_error(msg.str());
-  } // try/catch
+  PYLITH_METHOD_END;
 } // writeVertexField
 
 // ----------------------------------------------------------------------
 // Write field over cells to file.
 template<typename mesh_type, typename field_type>
 void
-pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(
-				       const PylithScalar t,
-				       field_type& field,
-				       const char* label,
-				       const int labelId)
+pylith::meshio::DataWriterVTK<mesh_type,field_type>::writeCellField(const PylithScalar t,
+								    field_type& field,
+								    const char* label,
+								    const int labelId)
 { // writeCellField
-  typedef typename field_type::Mesh::SieveMesh SieveMesh;
-  typedef typename field_type::Mesh::RealSection RealSection;
+  PYLITH_METHOD_BEGIN;
 
-  try {
-    DM dmMesh = field.mesh().dmMesh();
-    assert(dmMesh);
+  assert(_dm);
+  PetscDM dmMesh = field.mesh().dmMesh();assert(dmMesh);
+  PetscVec v = field.localVector();assert(v);
 
-    /* DMPlex */
-    PetscSection   s = field.petscSection();
-    Vec            v = field.localVector();
-    assert(s);assert(v);
+  // :KLUDGE: MATT You have a note that this is not fully implemented!
+  //
+  // Will change to just VecView() once I setup the vectors correctly
+  // (use VecSetOperation() to change the view).
+  PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
+  PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
+  err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
+  
+  _wroteCellHeader = true;
 
-    /* Will change to just VecView() once I setup the vectors correctly (use VecSetOperation() to change the view) */
-    PetscViewerVTKFieldType ft = field.vectorFieldType() != topology::FieldBase::VECTOR ? PETSC_VTK_CELL_FIELD : PETSC_VTK_CELL_VECTOR_FIELD;
-    PetscErrorCode err = PetscViewerVTKAddField(_viewer, (PetscObject) dmMesh, DMPlexVTKWriteAll, ft, (PetscObject) v); CHECK_PETSC_ERROR(err);
-    err = PetscObjectReference((PetscObject) v);CHECK_PETSC_ERROR(err); /* Needed because viewer destroys the Vec */
-
-    _wroteCellHeader = true;
-  } catch (const std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n" << err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) { 
-    std::ostringstream msg;
-    msg << "Error while writing field '" << field.label() << "' at time " 
-	<< t << " to VTK file '" << _vtkFilename(t) << "'.\n";
-    throw std::runtime_error(msg.str());
-  } // try/catch
+  PYLITH_METHOD_END;
 } // writeCellField
 
 // ----------------------------------------------------------------------
@@ -292,6 +285,8 @@ template<typename mesh_type, typename field_type>
 std::string
 pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const PylithScalar t) const
 { // _vtkFilename
+  PYLITH_METHOD_BEGIN;
+
   std::ostringstream filename;
   const int indexExt = _filename.find(".vtk");
   const int numTimeSteps = DataWriter<mesh_type, field_type>::_numTimeSteps;
@@ -309,7 +304,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::_vtkFilename(const PylithSc
     filename
       << std::string(_filename, 0, indexExt) << "_info.vtk";
 
-  return std::string(filename.str());
+  PYLITH_METHOD_RETURN(std::string(filename.str()));
 } // _vtkFilename
 
 
