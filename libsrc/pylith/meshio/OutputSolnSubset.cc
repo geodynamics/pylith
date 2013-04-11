@@ -42,9 +42,13 @@ pylith::meshio::OutputSolnSubset::~OutputSolnSubset(void)
 void
 pylith::meshio::OutputSolnSubset::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   OutputManager<topology::SubMesh, topology::Field<topology::Mesh> >::deallocate();
 
   delete _submesh; _submesh = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -52,7 +56,11 @@ pylith::meshio::OutputSolnSubset::deallocate(void)
 void
 pylith::meshio::OutputSolnSubset::label(const char* value)
 { // label
+  PYLITH_METHOD_BEGIN;
+
   _label = value;
+
+  PYLITH_METHOD_END;
 } // label
 
 // ----------------------------------------------------------------------
@@ -60,15 +68,19 @@ pylith::meshio::OutputSolnSubset::label(const char* value)
 void
 pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh) const
 { // verifyConfiguration
-  const ALE::Obj<topology::Mesh::SieveMesh>& sieveMesh = mesh.sieveMesh();
-  assert(!sieveMesh.isNull());
+  PYLITH_METHOD_BEGIN;
 
-  if (!sieveMesh->hasIntSection(_label)) {
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  PetscBool hasLabel = PETSC_FALSE;
+  PetscErrorCode err = DMPlexHasLabel(dmMesh, _label.c_str(), &hasLabel);CHECK_PETSC_ERROR(err);
+  if (!hasLabel) {
     std::ostringstream msg;
     msg << "Mesh missing group of vertices '" << _label
 	<< " for subdomain output.";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // verifyConfiguration
 
 // ----------------------------------------------------------------------
@@ -76,9 +88,12 @@ pylith::meshio::OutputSolnSubset::verifyConfiguration(const topology::Mesh& mesh
 const pylith::topology::SubMesh&
 pylith::meshio::OutputSolnSubset::subdomainMesh(const topology::Mesh& mesh)
 { // subdomainMesh
+  PYLITH_METHOD_BEGIN;
+
   delete _submesh; _submesh = new topology::SubMesh(mesh, _label.c_str());
   assert(_submesh);
-  return *_submesh;
+
+  PYLITH_METHOD_RETURN(*_submesh);
 } // subdomainMesh
 
 
