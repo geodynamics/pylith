@@ -41,7 +41,11 @@ typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 void
 pylith::meshio::TestDataWriterVTKPoints::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterPoints::setUp();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -49,7 +53,11 @@ pylith::meshio::TestDataWriterVTKPoints::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKPoints::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterPoints::tearDown();
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -57,11 +65,15 @@ pylith::meshio::TestDataWriterVTKPoints::tearDown(void)
 void
 pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   DataWriterVTK<topology::Mesh, MeshField> writer;
 
   CPPUNIT_ASSERT(!writer._viewer);
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -69,6 +81,8 @@ pylith::meshio::TestDataWriterVTKPoints::testConstructor(void)
 void
 pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
 { // testTimeStep
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
@@ -79,8 +93,7 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   writer.filename(_data->timestepFilename);
   writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
-  output.setupInterpolator(_mesh, _data->points, 
-			   _data->numPoints, _data->spaceDim, normalizer);
+  output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
@@ -97,8 +110,9 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
   output.closeTimeStep();
   output.close();
 
-  // We do not create empty VTK files anymore
-  //checkFile(_data->timestepFilename, t, _data->timeFormat);
+  // Nothing to check. We do not create VTK files without fields anymore.
+
+  PYLITH_METHOD_END;
 } // testTimeStep
 
 // ----------------------------------------------------------------------
@@ -106,6 +120,8 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void)
 void
 pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
 { // testWriteVertexField
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(_mesh);
   CPPUNIT_ASSERT(_data);
 
@@ -119,8 +135,7 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
   writer.filename(_data->vertexFilename);
   writer.timeFormat(_data->timeFormat);
   output.writer(&writer);
-  output.setupInterpolator(_mesh, _data->points, 
-			   _data->numPoints, _data->spaceDim, normalizer);
+  output.setupInterpolator(_mesh, _data->points, _data->numPoints, _data->spaceDim, normalizer);
 
   const int nfields = _data->numVertexFields;
 
@@ -140,14 +155,16 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void)
     // field.view("FIELD"); // DEBUGGING
     output.appendVertexField(t, field, *_mesh);
     CPPUNIT_ASSERT(writer._wroteVertexHeader);
-    CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
   } // for
   output.closeTimeStep();
   output.close();
-  CPPUNIT_ASSERT(false == writer._wroteVertexHeader);
-  CPPUNIT_ASSERT(false == writer._wroteCellHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
+  CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
 
   checkFile(_data->vertexFilename, t, _data->timeFormat);
+
+  PYLITH_METHOD_END;
 } // testWriteVertexField
 
 
