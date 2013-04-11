@@ -20,6 +20,8 @@
 
 #include "TestDataWriterVTKMatMeshCases.hh" // Implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "data/DataWriterVTKDataMatMeshLine2.hh"
 #include "data/DataWriterVTKDataMatMeshTri3.hh"
 #include "data/DataWriterVTKDataMatMeshQuad4.hh"
@@ -40,10 +42,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKMatMeshHex8 );
 void
 pylith::meshio::TestDataWriterVTKMatMeshLine2::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMatMeshLine2;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -52,10 +58,14 @@ pylith::meshio::TestDataWriterVTKMatMeshLine2::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKMatMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMatMeshTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -64,10 +74,14 @@ pylith::meshio::TestDataWriterVTKMatMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKMatMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMatMeshQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -76,10 +90,14 @@ pylith::meshio::TestDataWriterVTKMatMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKMatMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMatMeshTet4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -88,10 +106,14 @@ pylith::meshio::TestDataWriterVTKMatMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKMatMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKMesh::setUp();
   _data = new DataWriterVTKDataMatMeshHex8;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
