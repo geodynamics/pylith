@@ -36,8 +36,6 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
-	MeshIOSieve.hh \
-	MeshIOSieve.icc \
 	OutputManager.hh \
 	OutputManager.cc \
 	OutputSolnSubset.hh \
