@@ -131,6 +131,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
 { // open
   PYLITH_METHOD_BEGIN;
 
+  DataWriter<mesh_type, field_type>::open(mesh, numTimeSteps, label, labelId);
+
   // Save handle for actions required in closeTimeStep() and close();
   PetscErrorCode err = 0;
   err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
@@ -171,6 +173,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::close(void)
     err = DMDestroy(&_dm);CHECK_PETSC_ERROR(err);
   } // if
 
+  DataWriter<mesh_type, field_type>::close();
+
   PYLITH_METHOD_END;
 } // close
 
@@ -188,6 +192,7 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
   PetscErrorCode err = 0;
     
   const std::string& filename = _vtkFilename(t);
+  std::cout << "FILENAME: " << filename << std::endl;
 
   err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
   err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
