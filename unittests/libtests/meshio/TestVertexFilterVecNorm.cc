@@ -37,7 +37,11 @@ typedef pylith::topology::Field<pylith::topology::Mesh> MeshField;
 void
 pylith::meshio::TestVertexFilterVecNorm::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   VertexFilterVecNorm<MeshField> filter;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -45,8 +49,7 @@ pylith::meshio::TestVertexFilterVecNorm::testConstructor(void)
 void
 pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
 { // testFilter
-  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-  typedef pylith::topology::Mesh::RealSection RealSection;
+  PYLITH_METHOD_BEGIN;
 
   const char* filename = "data/tri3.mesh";
   const int fiberDim = 2;
@@ -54,7 +57,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   const std::string label = "field data";
   const topology::FieldBase::VectorFieldEnum fieldType = 
     topology::FieldBase::VECTOR;
-  const PylithScalar fieldValues[] = {
+  const PylithScalar fieldValues[nvertices*fiberDim] = {
     1.1, 1.2,
     2.1, 2.2,
     3.1, 3.2,
@@ -75,59 +78,50 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void)
   iohandler.filename(filename);
   iohandler.read(&mesh);
 
-  // Set vertex field
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  
   MeshField field(mesh);
   field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
   field.allocate();
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
 
-  DM dmMesh = mesh.dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  { // Setup vertex field
+    topology::VecVisitorMesh fieldVisitor(field);
+    PetscScalar* fieldArray = fieldVisitor.localArray();
 
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+    CPPUNIT_ASSERT_EQUAL(nvertices, verticesStratum.size());
 
-  PetscSection section = field.petscSection();
-  Vec          vec     = field.localVector();
-  PetscScalar *a;
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-  CPPUNIT_ASSERT_EQUAL(nvertices, vEnd-vStart);
-  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off;
+    for(PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      a[off+d] = fieldValues[(v-vStart)*dof+d];
-    }
-  } // for
-  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
+      for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+	fieldArray[off+d] = fieldValues[index];
+      } // for
+    } // for
+  } // Setup vertex field
 
   VertexFilterVecNorm<MeshField> filter;
-  const MeshField& fieldF = filter.filter(field);
-  PetscSection sectionF = fieldF.petscSection();
-  Vec          vecF     = fieldF.localVector();
-  CPPUNIT_ASSERT(sectionF);CPPUNIT_ASSERT(vecF);
+  const MeshField& fieldNorm = filter.filter(field);
 
-  CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
-  CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
+  CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldNorm.vectorFieldType());
+  CPPUNIT_ASSERT_EQUAL(label, std::string(fieldNorm.label()));
+
+  topology::VecVisitorMesh fieldNormVisitor(fieldNorm);
+  const PetscScalar* fieldNormArray = fieldNormVisitor.localArray();
 
   const PylithScalar tolerance = 1.0e-06;
-  err = VecGetArray(vecF, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(sectionF, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(sectionF, v, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
-    for(PetscInt d = 0; d < dof; ++d) {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, a[off+d]/fieldValuesE[(v-vStart)*dof+d], tolerance);
-    }
+  for(PetscInt v = vStart, index = 0; v < vEnd; ++v) {
+    const PetscInt off = fieldNormVisitor.sectionOffset(v);
+    CPPUNIT_ASSERT_EQUAL(1, fieldNormVisitor.sectionDof(v));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldNormArray[off]/fieldValuesE[index++], tolerance);
   } // for
-  err = VecRestoreArray(vecF, &a);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testFilter
 
 

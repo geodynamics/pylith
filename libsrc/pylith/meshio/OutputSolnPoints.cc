@@ -28,10 +28,6 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 // ----------------------------------------------------------------------
-typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-typedef pylith::topology::Mesh::RealSection RealSection;
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnPoints::OutputSolnPoints(void) :
   _mesh(0),

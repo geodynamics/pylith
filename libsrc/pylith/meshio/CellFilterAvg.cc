@@ -94,10 +94,6 @@ pylith::meshio::CellFilterAvg<mesh_type,field_type>::filter(const field_type& fi
 { // filter
   PYLITH_METHOD_BEGIN;
 
-  typedef typename mesh_type::SieveMesh SieveMesh;
-  typedef typename SieveMesh::label_sequence label_sequence;
-  typedef typename field_type::Mesh::RealSection RealSection;
-
   const feassemble::Quadrature<mesh_type>* quadrature = CellFilter<mesh_type, field_type>::_quadrature;assert(quadrature);
 
   const int numQuadPts = quadrature->numQuadPts();
