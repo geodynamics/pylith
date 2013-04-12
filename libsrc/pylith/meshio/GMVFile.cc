@@ -22,6 +22,8 @@
 
 #include "GMVFileAscii.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <fstream> // uses std::fstream
 #include <sstream> // uses std::ostringstream
 #include <cstring> // uses strcmp()
@@ -42,6 +44,8 @@ pylith::meshio::GMVFile::~GMVFile(void)
 bool
 pylith::meshio::GMVFile::isAscii(const char* filename)
 { // isAscii
+  PYLITH_METHOD_BEGIN;
+
   std::ifstream fin(filename);
   if (!(fin.is_open() && fin.good())) {
     std::ostringstream msg;
@@ -52,7 +56,9 @@ pylith::meshio::GMVFile::isAscii(const char* filename)
   char buffer[headerLen];
   fin.get(buffer, headerLen, '\n');
   fin.close();
-  return (0 == strcmp(GMVFileAscii::header(), buffer)) ? true : false;
+
+  const bool result = (0 == strcmp(GMVFileAscii::header(), buffer)) ? true : false;
+  PYLITH_METHOD_RETURN(result);
 } // isAscii
 
 
