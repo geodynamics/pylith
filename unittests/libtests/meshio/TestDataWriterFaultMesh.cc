@@ -27,6 +27,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Fields.hh" // USES Fields
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
@@ -44,10 +46,14 @@ typedef pylith::topology::Field<pylith::topology::SubMesh> MeshField;
 void
 pylith::meshio::TestDataWriterFaultMesh::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _data = 0;
   _mesh = new topology::Mesh();
   _faultMesh = new topology::SubMesh();
   _flipFault = false;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -55,9 +61,13 @@ pylith::meshio::TestDataWriterFaultMesh::setUp(void)
 void
 pylith::meshio::TestDataWriterFaultMesh::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _data; _data = 0;
   delete _mesh; _mesh = 0;
   delete _faultMesh; _faultMesh = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -65,9 +75,11 @@ pylith::meshio::TestDataWriterFaultMesh::tearDown(void)
 void
 pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
 { // _initialize
-  CPPUNIT_ASSERT(0 != _data);
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _faultMesh);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_data);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_faultMesh);
 
   MeshIOAscii iohandler;
   iohandler.filename(_data->meshFilename);
@@ -78,122 +90,111 @@ pylith::meshio::TestDataWriterFaultMesh::_initialize(void)
   _mesh->coordsys(&cs);
 
   faults::FaultCohesiveKin fault;
-  int firstFaultVertex    = 0;
-  int firstLagrangeVertex = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-  int firstFaultCell      = _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-  const bool constraintCell = true;
-  if (constraintCell) {
-    firstFaultCell += _mesh->sieveMesh()->getIntSection(_data->faultLabel)->size();
-  }
+  const bool useLagrangeConstraints = true;
+  PetscInt firstFaultVertex = 0;
+  PetscInt firstLagrangeVertex = 0, firstFaultCell = 0;
+  PetscErrorCode err = DMPlexGetStratumSize(_mesh->dmMesh(), _data->faultLabel, 1, &firstLagrangeVertex);CHECK_PETSC_ERROR(err);
+  firstFaultCell = firstLagrangeVertex;
+  if (useLagrangeConstraints) {
+    firstFaultCell += firstLagrangeVertex;
+  } // if
   fault.label(_data->faultLabel);
   fault.id(_data->faultId);
   fault.adjustTopology(_mesh, &firstFaultVertex, &firstLagrangeVertex, &firstFaultCell, _flipFault);
-  faults::CohesiveTopology::createFaultParallel(_faultMesh, *_mesh, _data->faultId, constraintCell);
+  faults::CohesiveTopology::createFaultParallel(_faultMesh, *_mesh, _data->faultId, useLagrangeConstraints);
+
+  PYLITH_METHOD_END;
 } // _initialize
 
 // ----------------------------------------------------------------------
 // Create vertex fields.
 void
-pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(
-	    topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterFaultMesh::_createVertexFields(topology::Fields<MeshField>* fields) const
 { // _createVertexFields
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _faultMesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
 
-  try {
-    const int nfields = _data->numVertexFields;
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(_faultMesh);
+  CPPUNIT_ASSERT(_data);
 
-    DM dmMesh = _faultMesh->dmMesh();
-    PetscInt       vStart, vEnd;
-    PetscErrorCode err;
+  const int nfields = _data->numVertexFields;
 
-    CPPUNIT_ASSERT(dmMesh);
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = _faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-    // Set vertex fields
-    for (int i=0; i < nfields; ++i) {
-      const char* name = _data->vertexFieldsInfo[i].name;
-      const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
-      fields->add(name, name);
-      MeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
-      field.allocate();
-      field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
+  // Set vertex fields
+  for (int i=0; i < nfields; ++i) {
+    const char* name = _data->vertexFieldsInfo[i].name;
+    const int fiberDim = _data->vertexFieldsInfo[i].fiber_dim;
+    fields->add(name, name);
+    MeshField& field = fields->get(name);
+    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.allocate();
+    field.vectorFieldType(_data->vertexFieldsInfo[i].field_type);
 
-      PetscSection section = field.petscSection();
-      Vec          vec     = field.localVector();
-      PetscScalar *a;
-      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-      for(PetscInt v = vStart; v < vEnd; ++v) {
-        PetscInt dof, off;
-
-        err = PetscSectionGetDof(section, v, &dof);CHECK_PETSC_ERROR(err);
-        err = PetscSectionGetOffset(section, v, &off);CHECK_PETSC_ERROR(err);
-        for(PetscInt d = 0; d < dof; ++d) {
-          a[off+d] = _data->vertexFields[i][(v-vStart)*dof+d];
-        }
+    topology::VecVisitorMesh fieldVisitor(field);
+    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    
+    for(PetscInt v = vStart, index=0; v < vEnd; ++v) {
+      const PetscInt off = fieldVisitor.sectionOffset(v);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(v));
+      for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+	fieldArray[off+d] = _data->vertexFields[i][index];
       } // for
-      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
-      CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
     } // for
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
+    CPPUNIT_ASSERT_EQUAL(_data->numVertices, vEnd-vStart);
+  } // for
+
+  PYLITH_METHOD_END;
 } // _createVertexFields
 
 // ----------------------------------------------------------------------
 // Create cell fields.
 void
-pylith::meshio::TestDataWriterFaultMesh::_createCellFields(
-	     topology::Fields<MeshField>* fields) const
+pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields<MeshField>* fields) const
 { // _createCellFields
-  CPPUNIT_ASSERT(0 != fields);
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
 
-  try {
-    const int nfields = _data->numCellFields;
+  CPPUNIT_ASSERT(fields);
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
-    DM dmMesh = _faultMesh->dmMesh();
-    PetscInt       cStart, cEnd;
-    const PetscInt height = 0;
-    PetscErrorCode err;
+  const int nfields = _data->numCellFields;
 
-    CPPUNIT_ASSERT(dmMesh);
-    err = DMPlexGetHeightStratum(dmMesh, height, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = _faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0); // MATT This seems wrong.
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  PetscInt numCells = cellsStratum.size();
 
-    // Set cell fields
-    for (int i=0; i < nfields; ++i) {
-      const char* name = _data->cellFieldsInfo[i].name;
-      const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
-      fields->add(name, name);
-      MeshField& field = fields->get(name);
-      field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
-      field.allocate();
-      field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
+  // Set cell fields
+  for (int i=0; i < nfields; ++i) {
+    const char* name = _data->cellFieldsInfo[i].name;
+    const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
+    fields->add(name, name);
+    MeshField& field = fields->get(name);
+    field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    field.allocate();
+    field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 
-      PetscSection section = field.petscSection();
-      Vec          vec     = field.localVector();
-      PetscScalar *a;
-      CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-      err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-      for(PetscInt c = cStart; c < cEnd; ++c) {
-        PetscInt dof, off;
-
-        err = PetscSectionGetDof(section, c, &dof);CHECK_PETSC_ERROR(err);
-        err = PetscSectionGetOffset(section, c, &off);CHECK_PETSC_ERROR(err);
-        for(PetscInt d = 0; d < dof; ++d) {
-          a[off+d] = _data->cellFields[i][(c-cStart)*dof+d];
-        }
+    topology::VecVisitorMesh fieldVisitor(field);
+    PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    
+    for(PetscInt c = 0, index = 0; c < numCells; ++c) {
+      const PetscInt cell = c+cStart;
+      
+      const PetscInt off = fieldVisitor.sectionOffset(cell);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(cell));
+      for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+	fieldArray[off+d] = _data->cellFields[i][index];
       } // for
-      err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
-      CPPUNIT_ASSERT_EQUAL(_data->numCells, cEnd-cStart);
     } // for
-  } catch (const ALE::Exception& err) {
-    throw std::runtime_error(err.msg());
-  } // catch
+    CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
+  } // for
+
+  PYLITH_METHOD_END;
 } // _createCellFields
 
 

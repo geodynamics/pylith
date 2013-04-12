@@ -20,6 +20,8 @@
 
 #include "TestDataWriterVTKFaultMeshCases.hh" // Implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "data/DataWriterVTKDataFaultMeshTri3.hh"
 #include "data/DataWriterVTKDataFaultMeshQuad4.hh"
 #include "data/DataWriterVTKDataFaultMeshTet4.hh"
@@ -38,11 +40,15 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterVTKFaultMeshHex8 
 void
 pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTri3;
   _flipFault = true;
 
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -51,11 +57,15 @@ pylith::meshio::TestDataWriterVTKFaultMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshQuad4;
   _flipFault = true;
 
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -64,11 +74,15 @@ pylith::meshio::TestDataWriterVTKFaultMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshTet4;
   _flipFault = false;
 
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -77,11 +91,15 @@ pylith::meshio::TestDataWriterVTKFaultMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterVTKFaultMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterVTKFaultMesh::setUp();
   _data = new DataWriterVTKDataFaultMeshHex8;
   _flipFault = true;
 
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
