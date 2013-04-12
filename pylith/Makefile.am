@@ -22,7 +22,6 @@ nobase_pkgpyexec_PYTHON = \
 	apps/PyLithApp.py \
 	apps/PetscApplication.py \
 	apps/EqInfoApp.py \
-	apps/PrepMeshApp.py \
 	bc/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/BoundaryCondition.py \
@@ -104,7 +103,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOLagrit.py \
-	meshio/MeshIOSieve.py \
 	meshio/OutputDirichlet.py \
 	meshio/OutputManager.py \
 	meshio/OutputManagerMesh.py \

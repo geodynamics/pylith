@@ -22,18 +22,13 @@ INTERPRETER = $(PYTHON)
 noinstINTERPRETER = $(PYTHON)
 
 bin_SCRIPTS = \
-	pylith \
-	pylith_prepmesh
+	pylith
 
 do_build = sed -e s%[@]INTERPRETER[@]%$(noinstINTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(noinstPYTHONPATH)%g
 do_install = sed -e s%[@]INTERPRETER[@]%$(INTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(PYTHONPATH)%g
 
 pylith:  $(srcdir)/pylith.in Makefile
 	$(do_build) <  $(srcdir)/pylith.in > $@ || (rm -f $@ && exit 1)
-	chmod +x $@
-
-pylith_prepmesh:  $(srcdir)/pylith_prepmesh.in Makefile
-	$(do_build) <  $(srcdir)/pylith_prepmesh.in > $@ || (rm -f $@ && exit 1)
 	chmod +x $@
 
 install-binSCRIPTS: $(bin_SCRIPTS)
@@ -51,8 +46,7 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 	done
 
 EXTRA_DIST = \
-	pylith.in \
-	pylith_prepmesh.in
+	pylith.in
 
 CLEANFILES = $(bin_SCRIPTS)
 
