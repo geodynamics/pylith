@@ -20,6 +20,8 @@
 
 #include "ExodusII.hh" // implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include "petsc.h" // USES MPI_Comm
 
 // :KLUDGE: Prevent NetCDF from definining MPI types
@@ -59,7 +61,11 @@ pylith::meshio::ExodusII::~ExodusII(void)
 void
 pylith::meshio::ExodusII::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   close();
+
+  PYLITH_METHOD_END;
 } // deallocate
 
 // ----------------------------------------------------------------------
@@ -83,6 +89,8 @@ pylith::meshio::ExodusII::filename(void) const
 void
 pylith::meshio::ExodusII::open(void)
 { // open
+  PYLITH_METHOD_BEGIN;
+
   close();
 
   _file = new NcFile(_filename.c_str());
@@ -92,6 +100,8 @@ pylith::meshio::ExodusII::open(void)
 	<< "' for reading.\n";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // open
 
 // ----------------------------------------------------------------------
@@ -99,9 +109,13 @@ pylith::meshio::ExodusII::open(void)
 void
 pylith::meshio::ExodusII::close(void)
 { // close
+  PYLITH_METHOD_BEGIN;
+
   if (_file)
     _file->close();
   delete _file; _file = 0;
+
+  PYLITH_METHOD_END;
 } // close
 
 // ----------------------------------------------------------------------
@@ -109,6 +123,8 @@ pylith::meshio::ExodusII::close(void)
 bool
 pylith::meshio::ExodusII::hasDim(const char* name) const
 { // hasDim
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
 
   bool found = false;
@@ -123,7 +139,7 @@ pylith::meshio::ExodusII::hasDim(const char* name) const
     } // if
   } // for
   
-  return found;
+  PYLITH_METHOD_RETURN(found);
 } // hasDim
 
 // ----------------------------------------------------------------------
@@ -131,6 +147,8 @@ pylith::meshio::ExodusII::hasDim(const char* name) const
 bool
 pylith::meshio::ExodusII::hasAtt(const char* name) const
 { // hasAtt
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
 
   bool found = false;
@@ -147,7 +165,7 @@ pylith::meshio::ExodusII::hasAtt(const char* name) const
     delete att; att = 0;
   } // for
   
-  return found;
+  PYLITH_METHOD_RETURN(found);
 } // hasAtt
 
 // ----------------------------------------------------------------------
@@ -155,6 +173,8 @@ pylith::meshio::ExodusII::hasAtt(const char* name) const
 bool
 pylith::meshio::ExodusII::hasVar(const char* name) const
 { // hasVar
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
 
   bool found = false;
@@ -169,7 +189,7 @@ pylith::meshio::ExodusII::hasVar(const char* name) const
     } // if
   } // for
 
-  return found;
+  PYLITH_METHOD_RETURN(found);
 } // hasVar
 
 // ----------------------------------------------------------------------
@@ -177,6 +197,8 @@ pylith::meshio::ExodusII::hasVar(const char* name) const
 int
 pylith::meshio::ExodusII::getDim(const char* name) const
 { // getDim
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
 
   if (!hasDim(name)) {
@@ -187,7 +209,7 @@ pylith::meshio::ExodusII::getDim(const char* name) const
   
   NcDim* dim = _file->get_dim(name);
   assert(dim);
-  return dim->size();
+  PYLITH_METHOD_RETURN(dim->size());
 } // getDim
 
 // ----------------------------------------------------------------------
@@ -198,6 +220,8 @@ pylith::meshio::ExodusII::getVar(PylithScalar* values,
 				 int ndims,
 				 const char* name) const
 { // getVar
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
   assert(values);
 
@@ -236,6 +260,8 @@ pylith::meshio::ExodusII::getVar(PylithScalar* values,
     msg << "Coult not get values for variable '" << name << ".";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // getVar
 
 // ----------------------------------------------------------------------
@@ -246,6 +272,8 @@ pylith::meshio::ExodusII::getVar(int* values,
 				 int ndims,
 				 const char* name) const
 { // getVar
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
   assert(values);
 
@@ -284,6 +312,8 @@ pylith::meshio::ExodusII::getVar(int* values,
     msg << "Coult not get values for variable '" << name << ".";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // getVar
 
 // ----------------------------------------------------------------------
@@ -293,6 +323,8 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
 				 int dim,
 				 const char* name) const
 { // getVar
+  PYLITH_METHOD_BEGIN;
+
   assert(_file);
   assert(values);
   
@@ -328,6 +360,8 @@ pylith::meshio::ExodusII::getVar(string_vector* values,
   } // for
   delete[] buffer; buffer = 0;
   delete[] counts; counts = 0;
+
+  PYLITH_METHOD_END;
 } // getVar
 
 
