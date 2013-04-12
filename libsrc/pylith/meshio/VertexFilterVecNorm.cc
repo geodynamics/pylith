@@ -19,6 +19,8 @@
 #include <portinfo>
 
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -42,9 +44,13 @@ template<typename field_type>
 void
 pylith::meshio::VertexFilterVecNorm<field_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   VertexFilter<field_type>::deallocate();  
 
   delete _fieldVecNorm; _fieldVecNorm = 0;
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -69,29 +75,23 @@ pylith::meshio::VertexFilterVecNorm<field_type>::clone(void) const
 // Filter field.
 template<typename field_type>
 field_type&
-pylith::meshio::VertexFilterVecNorm<field_type>::filter(
-				   const field_type& fieldIn)
+pylith::meshio::VertexFilterVecNorm<field_type>::filter(const field_type& fieldIn)
 { // filter
-  typedef typename field_type::Mesh::RealSection RealSection;
-  typedef typename field_type::Mesh::SieveMesh SieveMesh;
-  typedef typename SieveMesh::label_sequence label_sequence;
+  PYLITH_METHOD_BEGIN;
 
-  DM dmMesh = fieldIn.mesh().dmMesh();
-  PetscInt       vStart, vEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = fieldIn.mesh().dmMesh();assert(dmMesh);
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
 
-  assert(dmMesh);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh fieldInVisitor(fieldIn);
 
-  PetscSection sectionIn = fieldIn.petscSection();
-  Vec          vecIn     = fieldIn.localVector();
-  PetscScalar *a, *an;
-  PetscInt     fiberDimIn, fiberDimNorm = 1;
-  assert(sectionIn);assert(vecIn);
-  err = PetscSectionGetDof(sectionIn, vStart, &fiberDimIn);CHECK_PETSC_ERROR(err);
+  // Only processors with cells for output get the correct fiber dimension.
+  PetscInt fiberDimIn = (verticesStratum.size() > 0) ? fieldInVisitor.sectionDof(vStart) : 0;
+  const int fiberDimNorm = 1;
 
-  // Allocation field if necessary
-  if (0 == _fieldVecNorm) {
+  // Allocate field if necessary
+  if (!_fieldVecNorm) {
     _fieldVecNorm = new field_type(fieldIn.mesh());
     _fieldVecNorm->label("vector norm");
     _fieldVecNorm->newSection(fieldIn, fiberDimNorm);
@@ -119,30 +119,27 @@ pylith::meshio::VertexFilterVecNorm<field_type>::filter(
       } // switch
   } // if
 
-  PetscSection sectionNorm = _fieldVecNorm->petscSection();
-  Vec          vecNorm     = _fieldVecNorm->localVector();
-  assert(sectionNorm);assert(vecNorm);
+  const PetscScalar* fieldInArray = fieldInVisitor.localArray();
+
+  topology::VecVisitorMesh fieldNormVisitor(*_fieldVecNorm);
+  PetscScalar* fieldNormArray = fieldNormVisitor.localArray();
 
   // Loop over vertices
-  err = VecGetArray(vecIn, &a);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(vecNorm, &an);CHECK_PETSC_ERROR(err);
   for(PetscInt v = vStart; v < vEnd; ++v) {
-    PetscInt dof, off, offn;
-    PylithScalar norm = 0.0;
+    const PetscInt ioff = fieldInVisitor.sectionOffset(v);
+    assert(fiberDimIn == fieldInVisitor.sectionDof(v));
 
-    err = PetscSectionGetDof(sectionIn, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(sectionIn, v, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(sectionNorm, v, &offn);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d)
-      norm += a[off+d]*a[off+d];
-    norm = sqrt(norm);
-    an[offn] = norm;
+    const PetscInt noff = fieldNormVisitor.sectionOffset(v);
+
+    PylithScalar norm = 0.0;
+    for(PetscInt d = 0; d < fiberDimIn; ++d) {
+      norm += fieldInArray[ioff+d]*fieldInArray[ioff+d];
+    } // for
+    fieldNormArray[noff] = sqrt(norm);
   } // for
-  err = VecRestoreArray(vecIn, &a);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(vecNorm, &an);CHECK_PETSC_ERROR(err);
   PetscLogFlops((vEnd-vStart) * (1 + 2*fiberDimIn));
 
-  return *_fieldVecNorm;
+  PYLITH_METHOD_RETURN(*_fieldVecNorm);
 } // filter
 
 
