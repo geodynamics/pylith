@@ -52,7 +52,11 @@ pylith::meshio::MeshIOCubit::~MeshIOCubit(void)
 void
 pylith::meshio::MeshIOCubit::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   MeshIO::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -60,6 +64,8 @@ pylith::meshio::MeshIOCubit::deallocate(void)
 void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
+  PYLITH_METHOD_BEGIN;
+
   assert(_mesh);
 
   const int commRank = _mesh->commRank();
@@ -105,6 +111,8 @@ pylith::meshio::MeshIOCubit::_read(void)
     _setMaterials(materialIds);
   }
   _distributeGroups();
+
+  PYLITH_METHOD_END;
 } // read
 
 // ----------------------------------------------------------------------
@@ -112,11 +120,15 @@ pylith::meshio::MeshIOCubit::_read(void)
 void
 pylith::meshio::MeshIOCubit::_write(void) const
 { // write
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile(_filename.c_str());
 
   _writeDimensions(exofile);
   _writeVariables(exofile);
   _writeAttributes(exofile);
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -127,9 +139,11 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
 					   int* numVertices, 
 					   int* numDims) const
 { // _readVertices
-  assert(0 != coordinates);
-  assert(0 != numVertices);
-  assert(0 != numDims);
+  PYLITH_METHOD_BEGIN;
+
+  assert(coordinates);
+  assert(numVertices);
+  assert(numDims);
 
   journal::info_t info("meshiocubit");
     
@@ -173,6 +187,8 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
 	(*coordinates)[iVertex*(*numDims)+i] = buffer[iVertex];
     } // for
   } // else
+
+  PYLITH_METHOD_END;
 } // _readVertices
 
 // ----------------------------------------------------------------------
@@ -184,10 +200,12 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
 					int* numCells, 
 					int* numCorners) const
 { // _readCells
-  assert(0 != cells);
-  assert(0 != materialIds);
-  assert(0 != numCells);
-  assert(0 != numCorners);
+  PYLITH_METHOD_BEGIN;
+
+  assert(cells);
+  assert(materialIds);
+  assert(numCells);
+  assert(numCorners);
 
   journal::info_t info("meshiocubit");
 
@@ -243,6 +261,8 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
   } // for
 
   *cells -= 1; // use zero index
+
+  PYLITH_METHOD_END;
 } // _readCells
 
 // ----------------------------------------------------------------------
@@ -250,6 +270,8 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
 void
 pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
 { // _readGroups
+  PYLITH_METHOD_BEGIN;
+
   journal::info_t info("meshiocubit");
 
   const int numGroups = exofile.getDim("num_node_sets");
@@ -300,6 +322,8 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile)
       _setGroup(name.str().c_str(), type, points);
     } // if/else
   } // for  
+
+  PYLITH_METHOD_END;
 } // _readGroups
 
 // ----------------------------------------------------------------------
@@ -334,7 +358,9 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
 					  const int numCorners,
 					  const int meshDim)
 { // _orientCells
-  assert(0 != cells);
+  PYLITH_METHOD_BEGIN;
+
+  assert(cells);
   assert(cells->size() == numCells*numCorners);
 
   if (2 == meshDim && 4 == numCorners) { // QUAD4
@@ -429,6 +455,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
     } // for
   } // if/else
 
+  PYLITH_METHOD_END;
 } // _orientCells
   
 

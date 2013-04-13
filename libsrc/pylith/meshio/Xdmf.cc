@@ -23,7 +23,8 @@
 #include "HDF5.hh" // USES HDF5
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase enums
-#include "pylith/utils/array.hh" // USES PylithScalar_arra
+#include "pylith/utils/array.hh" // USES PylithScalar_array
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include <string> // USES std::string
 #include <stdexcept> // USES std::runtime_error
@@ -49,6 +50,8 @@ void
 pylith::meshio::Xdmf::write(const char* filenameXdmf,
 			    const char* filenameHDF5)
 { // write
+  PYLITH_METHOD_BEGIN;
+
   assert(filenameXdmf);
   assert(filenameHDF5);
 
@@ -212,6 +215,8 @@ pylith::meshio::Xdmf::write(const char* filenameXdmf,
     << "  </Domain>\n"
     << "</Xdmf>\n";
   _file.close();
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -220,6 +225,8 @@ void
 pylith::meshio::Xdmf::_getTimeStamps(scalar_array* timeStamps,
 				     HDF5& h5)
 { // _getTimeStamps
+  PYLITH_METHOD_BEGIN;
+
   assert(timeStamps);
 
   hsize_t* dims = 0;
@@ -250,6 +257,8 @@ pylith::meshio::Xdmf::_getTimeStamps(scalar_array* timeStamps,
 
   delete[] dims; dims = 0;
   delete[] t; t = 0;
+
+  PYLITH_METHOD_END;
 } // _getTimeStamps
 
 // ----------------------------------------------------------------------
@@ -258,6 +267,8 @@ void
 pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 					HDF5& h5)
 { // _getFieldMetadata
+  PYLITH_METHOD_BEGIN;
+
   assert(metadata);
 
   string_vector fieldNames;
@@ -364,6 +375,8 @@ pylith::meshio::Xdmf::_getFieldMetadata(std::vector<FieldMetadata>* metadata,
 	      << std::endl;
   } // for
 #endif
+
+  PYLITH_METHOD_END;
 } // _getFieldMetadata
 
 // ----------------------------------------------------------------------
@@ -372,6 +385,8 @@ void
 pylith::meshio::Xdmf::_writeDomainCells(const int numCells,
 					const int numCorners)
 { // _writeDomainCells
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
   _file
     << "    <DataItem Name=\"cells\"\n"
@@ -382,6 +397,7 @@ pylith::meshio::Xdmf::_writeDomainCells(const int numCells,
     << "      &HeavyData;:/topology/cells\n"
     << "    </DataItem>\n";
 
+  PYLITH_METHOD_END;
 } // _writeDomainCells
 
 // ----------------------------------------------------------------------
@@ -390,6 +406,8 @@ void
 pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 					   const int spaceDim)
 { // _writeDomainVertices
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
 
   _file
@@ -398,6 +416,8 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
     << "	      Dimensions=\"" << numVertices << " " << spaceDim << "\">\n"
     << "      &HeavyData;:/geometry/vertices\n"
     << "    </DataItem>\n";
+
+  PYLITH_METHOD_END;
 } // _writeDomainVertices
 
 // ----------------------------------------------------------------------
@@ -405,6 +425,8 @@ pylith::meshio::Xdmf::_writeDomainVertices(const int numVertices,
 void
 pylith::meshio::Xdmf::_writeTimeStamps(const scalar_array& timeStamps)
 { // _writeTimeStamps
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
 
   const int numTimeStamps = timeStamps.size();
@@ -419,6 +441,8 @@ pylith::meshio::Xdmf::_writeTimeStamps(const scalar_array& timeStamps)
     << "\n"
     << "        </DataItem>\n"
     << "      </Time>\n";
+
+  PYLITH_METHOD_END;
 } // _writeTimeStamps
 
 // ----------------------------------------------------------------------
@@ -427,6 +451,8 @@ void
 pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
 					 const int numCells)
 { // _writeGridTopology
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
 
   _file
@@ -437,6 +463,8 @@ pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
     << "	    /Xdmf/Domain/DataItem[@Name=\"cells\"]\n"
     << "	  </DataItem>\n"
     << "	</Topology>\n";
+
+  PYLITH_METHOD_END;
 } // _writeGridTopology
 
 // ----------------------------------------------------------------------
@@ -444,6 +472,8 @@ pylith::meshio::Xdmf::_writeGridTopology(const char* cellType,
 void
 pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
 { // _writeGridGeometry
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
   assert(2 == spaceDim || 3 == spaceDim);
 
@@ -455,6 +485,8 @@ pylith::meshio::Xdmf::_writeGridGeometry(const int spaceDim)
     << "	    /Xdmf/Domain/DataItem[@Name=\"vertices\"]\n"
     << "	  </DataItem>\n"
     << "	</Geometry>\n";
+
+  PYLITH_METHOD_END;
 } // _writeGridGeometry
 
 // ----------------------------------------------------------------------
@@ -463,6 +495,8 @@ void
 pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
 					  const int iTime)
 { // _writeGridAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
@@ -507,6 +541,8 @@ pylith::meshio::Xdmf::_writeGridAttribute(const FieldMetadata& metadata,
     << "	    </DataItem>\n"
     << "	  </DataItem>\n"
     << "	</Attribute>\n";
+
+  PYLITH_METHOD_END;
 } // _writeGridAttribute
 
 // ----------------------------------------------------------------------
@@ -517,6 +553,8 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
 						   const int component,
 						   const int spaceDim)
 { // _writeGridAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(_file.is_open() && _file.good());
 
   std::string h5FullName = "";
@@ -659,6 +697,8 @@ pylith::meshio::Xdmf::_writeGridAttributeComponent(const FieldMetadata& metadata
     << "	    </DataItem>\n"
     << "	  </DataItem>\n"
     << "	</Attribute>\n";
+
+  PYLITH_METHOD_END;
 } // _writeGridAttribute
 
 

@@ -55,7 +55,11 @@ pylith::meshio::MeshIOLagrit::~MeshIOLagrit(void)
 void
 pylith::meshio::MeshIOLagrit::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   MeshIO::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -63,6 +67,8 @@ pylith::meshio::MeshIOLagrit::deallocate(void)
 void
 pylith::meshio::MeshIOLagrit::_read(void)
 { // _read
+  PYLITH_METHOD_BEGIN;
+
   const int commRank = _mesh->commRank();
   int meshDim = 0;
   int spaceDim = 0;
@@ -109,6 +115,8 @@ pylith::meshio::MeshIOLagrit::_read(void)
       _setGroup(groups[iGroup].name, type, groups[iGroup].points);
   }
   _distributeGroups();
+
+  PYLITH_METHOD_END;
 } // _read
 
 // ----------------------------------------------------------------------
@@ -128,7 +136,9 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
 						const int numCorners,
 						const int meshDim)
 { // _orientCellsAscii
-  assert(0 != cells);
+  PYLITH_METHOD_BEGIN;
+
+  assert(cells);
   assert(cells->size() == numCells*numCorners);
 
   if (3 == meshDim && 4 == numCorners) // TET
@@ -139,6 +149,8 @@ pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
       (*cells)[i1] = (*cells)[i2];
       (*cells)[i2] = tmp;
     } // for
+
+  PYLITH_METHOD_END;
 } // _orientCellsAscii
   
 // ----------------------------------------------------------------------
@@ -150,11 +162,15 @@ pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
 						 const int numCorners,
 						 const int meshDim)
 { // _orientCellsBinary
-  assert(0 != cells);
+  PYLITH_METHOD_BEGIN;
+
+  assert(cells);
   assert(cells->size() == numCells*numCorners);
 
   if (3 == meshDim && 4 == numCorners)  // TET
     ; // do nothing
+
+  PYLITH_METHOD_END;
 } // _orientCellsBinary
   
 

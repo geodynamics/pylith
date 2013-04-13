@@ -21,15 +21,18 @@
 #include "MeshIO.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "Selection.hh" // USES boundary()
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
-#include <utils/petscerror.h> // USES CHECK_PETSC_ERROR
 
 // ----------------------------------------------------------------------
 typedef pylith::topology::Mesh::SieveMesh SieveMesh;
@@ -64,7 +67,7 @@ pylith::meshio::MeshIO::deallocate(void)
 int
 pylith::meshio::MeshIO::getMeshDim(void) const
 { // getMeshDim
-  return (0 != _mesh) ? _mesh->dimension() : 0;
+  return (_mesh) ? _mesh->dimension() : 0;
 } // getMeshDim
 
 // ----------------------------------------------------------------------
@@ -74,6 +77,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
 { // read
   PYLITH_METHOD_BEGIN;
 
+  assert(mesh);
   assert(!_mesh);
 
   _mesh = mesh;
@@ -90,11 +94,16 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh)
 void 
 pylith::meshio::MeshIO::write(topology::Mesh* const mesh)
 { // write
-  assert(0 == _mesh);
+  PYLITH_METHOD_BEGIN;
+
+  assert(mesh);
+  assert(!_mesh);
 
   _mesh = mesh;
   _write();
   _mesh = 0;
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -104,21 +113,21 @@ pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
 				     int* numVertices,
 				     int* spaceDim) const
 { // _getVertices
-  assert(0 != coordinates);
-  assert(0 != numVertices);
-  assert(0 != spaceDim);
-  assert(0 != _mesh);
+  PYLITH_METHOD_BEGIN;
 
+  assert(coordinates);
+  assert(numVertices);
+  assert(spaceDim);
+  assert(_mesh);
+
+#if 0 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
-  const ALE::Obj<SieveMesh::label_sequence>& vertices = 
-    sieveMesh->depthStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
-  const SieveMesh::label_sequence::iterator verticesBegin = 
-    vertices->begin();
-  const SieveMesh::label_sequence::iterator verticesEnd = 
-    vertices->end();
+  const SieveMesh::label_sequence::iterator verticesBegin = vertices->begin();
+  const SieveMesh::label_sequence::iterator verticesEnd = vertices->end();
   const ALE::Obj<RealSection>& coordsField =
     sieveMesh->hasRealSection("coordinates_dimensioned") ?
     sieveMesh->getRealSection("coordinates_dimensioned") :
@@ -143,6 +152,35 @@ pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
     for (int iDim=0; iDim < *spaceDim; ++iDim)
       (*coordinates)[i++] = vertexCoords[iDim];
   } // for
+#endif
+
+  const spatialdata::geocoords::CoordSys* cs = _mesh->coordsys();assert(cs);
+  *spaceDim = cs->spaceDim();
+
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  PetscVec coordVec = NULL;
+  PetscScalar* coordArray = NULL;
+  PetscInt coordSize = 0;    
+  PylithScalar lengthScale = 1.0;
+  PetscErrorCode err = 0;
+
+  // Get length scale for dimensioning
+  err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);
+
+  // Get coordinates and dimensionalize values
+  err = DMGetCoordinatesLocal(dmMesh, &coordVec);CHECK_PETSC_ERROR(err);
+  err = VecGetArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
+  err = VecGetLocalSize(coordVec, &coordSize);CHECK_PETSC_ERROR(err);
+  assert(coordSize % *spaceDim == 0);
+  *numVertices = coordSize / *spaceDim;
+
+  coordinates->resize(coordSize);
+  for (PetscInt i=0; i < coordSize; ++i) {
+    (*coordinates)[i] = coordArray[i]*lengthScale;
+  } // for
+  err = VecRestoreArray(coordVec, &coordArray);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _getVertices
 
 // ----------------------------------------------------------------------
@@ -153,24 +191,23 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 				  int* numCorners,
 				  int* meshDim) const
 { // _getCells
+  PYLITH_METHOD_BEGIN;
 
-  assert(0 != cells);
-  assert(0 != numCells);
-  assert(0 != meshDim);
-  assert(0 != _mesh);
+  assert(cells);
+  assert(numCells);
+  assert(meshDim);
+  assert(_mesh);
 
+#if 0 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
   const ALE::Obj<SieveMesh::sieve_type>& sieve = sieveMesh->getSieve();
   assert(!sieve.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& meshCells = 
-    sieveMesh->heightStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& meshCells = sieveMesh->heightStratum(0);
   assert(!meshCells.isNull());
-  const SieveMesh::label_sequence::iterator meshCellsBegin = 
-    meshCells->begin();
-  const SieveMesh::label_sequence::iterator meshCellsEnd = 
-    meshCells->end();
+  const SieveMesh::label_sequence::iterator meshCellsBegin = meshCells->begin();
+  const SieveMesh::label_sequence::iterator meshCellsEnd = meshCells->end();
 
   *meshDim = _mesh->dimension();
   *numCells = meshCells->size();
@@ -197,6 +234,44 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
     }
     pV.clear();
   } // for
+#endif // Sieve
+
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  
+  topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+  const PetscInt vStart = verticesStratum.begin();
+  const PetscInt vEnd = verticesStratum.end();
+  
+  *numCells = _mesh->numCells();
+  *numCorners = _mesh->coneSize();
+  *meshDim = _mesh->dimension();
+  assert(cellsStratum.size() == *numCells);
+
+  cells->resize((*numCells)*(*numCorners));
+
+  PetscIS globalVertexNumbers = NULL;
+  const PetscInt* gvertex = NULL;
+  const PetscInt* cone = NULL;
+  PetscInt coneSize = 0, v = 0, count = 0;
+  PetscErrorCode err = 0;
+
+  err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
+  for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    err = DMPlexGetConeSize(dmMesh, c, &coneSize);CHECK_PETSC_ERROR(err);
+    assert(coneSize == *numCorners);
+
+    err = DMPlexGetCone(dmMesh, c, &cone);CHECK_PETSC_ERROR(err);
+    for(PetscInt p = 0; p < coneSize; ++p) {
+      const PetscInt gv = gvertex[cone[p]-vStart];
+      (*cells)[index++] = gv < 0 ? -(gv+1) : gv;
+    } // for
+  } // for  
+
+  PYLITH_METHOD_END;
 } // _getCells
 
 // ----------------------------------------------------------------------
@@ -204,13 +279,13 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 void
 pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 { // _setMaterials
-  assert(0 != _mesh);
+  PYLITH_METHOD_BEGIN;
+
+  assert(_mesh);
   PetscErrorCode err;
 
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  ///logger.setDebug(2);
-  logger.stagePush("MeshLabels");
   if (!_mesh->commRank()) {
+#if 1 // Sieve
     const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
     if (!sieveMesh.isNull()) {
       const ALE::Obj<SieveMesh::label_type>& labelMaterials = sieveMesh->createLabel("material-id");
@@ -231,24 +306,26 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
         sieveMesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
       }
     }
+#endif // Sieve
 
-    DM       dmMesh = _mesh->dmMesh();
-    PetscInt cStart, cEnd;
+    PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    const PetscInt cStart = cellsStratum.begin();
+    const PetscInt cEnd = cellsStratum.end();
 
-    assert(dmMesh);
-    err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-    if ((cEnd - cStart) != materialIds.size()) {
+    if (cellsStratum.size() != materialIds.size()) {
       std::ostringstream msg;
       msg << "Mismatch in size of materials identifier array ("
           << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").";
       throw std::runtime_error(msg.str());
     } // if
+    PetscErrorCode err = 0;
     for(PetscInt c = cStart; c < cEnd; ++c) {
       err = DMPlexSetLabelValue(dmMesh, "material-id", c, materialIds[c-cStart]);CHECK_PETSC_ERROR(err);
-    }
+    } // for
   } // if
-  logger.stagePop();
-  ///logger.setDebug(0);
+
+  PYLITH_METHOD_END;
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -256,9 +333,12 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 void
 pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
 { // _getMaterials
-  assert(0 != materialIds);
-  assert(0 != _mesh);
+  PYLITH_METHOD_BEGIN;
 
+  assert(materialIds);
+  assert(_mesh);
+
+#if 0 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -282,6 +362,22 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
       ++e_iter)
     (*materialIds)[i++] = 
       sieveMesh->getValue(labelMaterials, *e_iter, idDefault);
+#endif // Sieve
+
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+
+  materialIds->resize(cellsStratum.size());
+  PetscErrorCode err = 0;
+  PetscInt matId = 0;
+  for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    err = DMPlexGetLabelValue(dmMesh, "material-id", c, &matId);CHECK_PETSC_ERROR(err);
+    (*materialIds)[index++] = matId;
+  } // for
+
+  PYLITH_METHOD_END;
 } // _getMaterials
 
 // ----------------------------------------------------------------------
@@ -291,11 +387,11 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 				  const GroupPtType type,
 				  const int_array& points)
 { // _setGroup
-  assert(0 != _mesh);
-  PetscErrorCode err;
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  logger.stagePush("MeshIntSections");
+  PYLITH_METHOD_BEGIN;
 
+  assert(_mesh);
+
+#if 1 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   if (!sieveMesh.isNull()) {
     if (sieveMesh->hasIntSection(name)) {
@@ -322,15 +418,16 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
     } // if/else
     sieveMesh->allocate(groupField);
   }
+#endif // Sieve
 
-  DM             dmMesh    = _mesh->dmMesh();
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
   const PetscInt numPoints = points.size();
+  PetscErrorCode err;
 
-  assert(dmMesh);
   if (CELL == type) {
     for(PetscInt p = 0; p < numPoints; ++p) {
       err = DMPlexSetLabelValue(dmMesh, name.c_str(), points[p], 1);CHECK_PETSC_ERROR(err);
-    }
+    } // for
   } else if (VERTEX == type) {
     PetscInt cStart, cEnd, numCells;
 
@@ -338,9 +435,10 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
     numCells = cEnd - cStart;
     for(PetscInt p = 0; p < numPoints; ++p) {
       err = DMPlexSetLabelValue(dmMesh, name.c_str(), numCells+points[p], 1);CHECK_PETSC_ERROR(err);
-    }
-  }
-  logger.stagePop();
+    } // for
+  } // if/else
+
+  PYLITH_METHOD_END;
 } // _setGroup
 
 // ----------------------------------------------------------------------
@@ -348,9 +446,13 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
 void
 pylith::meshio::MeshIO::_distributeGroups()
 { // _distributeGroups
-  assert(0 != _mesh);
-  /* dmMesh does not need to broadcast the label names. They come from proc 0 */
+  PYLITH_METHOD_BEGIN;
 
+  assert(_mesh);
+
+  // dmMesh does not need to broadcast the label names. They come from proc 0.
+
+#if 1 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   if (!sieveMesh.isNull()) {
     if (!sieveMesh->commRank()) {
@@ -388,6 +490,9 @@ pylith::meshio::MeshIO::_distributeGroups()
       } // for
     } // if/else
   }
+#endif // Sieve
+
+  PYLITH_METHOD_END;
 } // _distributeGroups
 
 // ----------------------------------------------------------------------
@@ -395,9 +500,12 @@ pylith::meshio::MeshIO::_distributeGroups()
 void
 pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const
 { // _getGroups
-  assert(0 != names);
-  assert(0 != _mesh);
+  PYLITH_METHOD_BEGIN;
 
+  assert(names);
+  assert(_mesh);
+
+#if 0 // Sieve
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -412,19 +520,39 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const
        name != namesEnd;
        ++name)
     (*names)[i++] = *name;
+#endif // Sieve
+
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  PetscInt numGroups = 0;
+  PetscErrorCode err = 0;
+  err = DMPlexGetNumLabels(dmMesh, &numGroups);CHECK_PETSC_ERROR(err);
+  numGroups -= 2; // Remove depth and material labels.
+  names->resize(numGroups);
+
+  for (int iGroup=0, iLabel=numGroups-1; iGroup < numGroups; ++iGroup, --iLabel) {
+    const char* namestr = NULL;
+    err = DMPlexGetLabelName(dmMesh, iLabel, &namestr);CHECK_PETSC_ERROR(err);
+    (*names)[iGroup] = namestr;
+    std::cout << "GROUP " << iGroup << ": " << (*names)[iGroup] << std::endl;
+  } // for
+
+  PYLITH_METHOD_END;
 } // _getGroups
 
 // ----------------------------------------------------------------------
 // Get group entities
 void
 pylith::meshio::MeshIO::_getGroup(int_array* points,
-				  GroupPtType* type,
+				  GroupPtType* groupType,
 				  const char *name) const
 { // _getGroup
-  assert(0 != points);
-  assert(0 != type);
-  assert(0 != _mesh);
+  PYLITH_METHOD_BEGIN;
 
+  assert(points);
+  assert(groupType);
+  assert(_mesh);
+
+#if 0
   const ALE::Obj<SieveMesh>& sieveMesh = _mesh->sieveMesh();
   assert(!sieveMesh.isNull());
 
@@ -451,11 +579,11 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
   ALE::Obj<SieveMesh::numbering_type> numbering;
 
   if (sieveMesh->height(firstPoint) == 0) {
-    *type = CELL;
+    *groupType = CELL;
     numbering = sieveMesh->getFactory()->getNumbering(sieveMesh, 
 						      sieveMesh->depth());
   } else {
-    *type = VERTEX;
+    *groupType = VERTEX;
     numbering = sieveMesh->getFactory()->getNumbering(sieveMesh, 0);
   } // if/else
   const int numPoints = groupField->size();
@@ -469,6 +597,43 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
     if (groupField->getFiberDimension(*c_iter)) (*points)[i++] = 
       numbering->getIndex(*c_iter);
   } // for
+#endif
+
+  PetscDM dmMesh = _mesh->dmMesh();assert(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+  const PetscInt numCells = cellsStratum.size();
+
+  PetscInt pStart, pEnd, firstPoint = 0;
+  PetscErrorCode err = 0;
+  err = DMPlexGetChart(dmMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
+  for(PetscInt p = pStart; p < pEnd; ++p) {
+    PetscInt val;
+    err = DMPlexGetLabelValue(dmMesh, name, p, &val);CHECK_PETSC_ERROR(err);
+    if (val >= 0) {
+      firstPoint = p;
+      break;
+    } // if
+  } // for
+  *groupType = (firstPoint >= cStart && firstPoint < cEnd) ? CELL : VERTEX;
+
+  PetscInt groupSize;
+  err = DMPlexGetStratumSize(dmMesh, name, 1, &groupSize);CHECK_PETSC_ERROR(err);
+  points->resize(groupSize);
+
+  const PetscInt offset = (VERTEX == *groupType) ? numCells : 0;
+  PetscIS groupIS = NULL;
+  const PetscInt* groupIndices = NULL;
+  err = DMPlexGetStratumIS(dmMesh, name, 1, &groupIS);CHECK_PETSC_ERROR(err);
+  err = ISGetIndices(groupIS, &groupIndices);CHECK_PETSC_ERROR(err);
+  for(PetscInt p = 0; p < groupSize; ++p) {
+    (*points)[p] = groupIndices[p]-offset;
+  } // for
+  err = ISRestoreIndices(groupIS, &groupIndices);CHECK_PETSC_ERROR(err);
+  err = ISDestroy(&groupIS);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // _getGroup
 
 

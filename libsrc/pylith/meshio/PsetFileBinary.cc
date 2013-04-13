@@ -23,6 +23,7 @@
 #include "BinaryIO.hh" // USES readString()
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include "journal/info.h" // USES journal::info_t
 
@@ -60,7 +61,9 @@ pylith::meshio::PsetFileBinary::~PsetFileBinary(void)
 void
 pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
 { // read
-  assert(0 != groups);
+  PYLITH_METHOD_BEGIN;
+
+  assert(groups);
 
   journal::info_t info("psetfile");
 
@@ -109,6 +112,8 @@ pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
     for (int iGroup=0; iGroup < numGroups; ++iGroup)
       _readPset64(fin, &(*groups)[iGroup]);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // read
 
 // ----------------------------------------------------------------------
@@ -116,6 +121,8 @@ pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
 void
 pylith::meshio::PsetFileBinary::write(const std::vector<Pset>& groups)
 { // write
+  PYLITH_METHOD_BEGIN;
+
   journal::info_t info("psetfile");
 
   std::ofstream fout(_filename.c_str(), std::ios::out);
@@ -157,12 +164,16 @@ pylith::meshio::PsetFileBinary::write(const std::vector<Pset>& groups)
     for (int iGroup=0; iGroup < numGroups; ++iGroup)
       _writePset64(fout, groups[iGroup]);
   } // if/else
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
 void
 pylith::meshio::PsetFileBinary::_readHeader(std::ifstream& fin)
 { // _readHeader
+  PYLITH_METHOD_BEGIN;
+
   std::string extra = BinaryIO::readString(fin, _recordHeaderSize);
 
   std::string header = BinaryIO::readString(fin, strlen(_HEADER));
@@ -175,13 +186,19 @@ pylith::meshio::PsetFileBinary::_readHeader(std::ifstream& fin)
       << "' does not match anticipated header '" << headerE << "'.";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // _readHeader
 
 // ----------------------------------------------------------------------
 void
 pylith::meshio::PsetFileBinary::_writeHeader(std::ofstream& fout)
 { // _writeHeader
+  PYLITH_METHOD_BEGIN;
+
   fout.write((char*) _HEADER, strlen(_HEADER));
+
+  PYLITH_METHOD_END;
 } // _writeHeader
 
 // ----------------------------------------------------------------------
@@ -189,7 +206,9 @@ void
 pylith::meshio::PsetFileBinary::_readPset32(std::ifstream& fin,
 					    Pset* group)
 { // _readPset32
-  assert(0 != group);
+  PYLITH_METHOD_BEGIN;
+
+  assert(group);
 
   journal::info_t info("psetfile");
 
@@ -220,6 +239,8 @@ pylith::meshio::PsetFileBinary::_readPset32(std::ifstream& fin,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
+
+  PYLITH_METHOD_END;
 } // _readPset32
 
 // ----------------------------------------------------------------------
@@ -227,6 +248,8 @@ void
 pylith::meshio::PsetFileBinary::_writePset32(std::ofstream& fout,
 					   const Pset& group)
 { // _writePset32
+  PYLITH_METHOD_BEGIN;
+
   journal::info_t info("psetfile");
   const int size = group.points.size();
   info << journal::at(__HERE__)
@@ -255,6 +278,8 @@ pylith::meshio::PsetFileBinary::_writePset32(std::ofstream& fout,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
+
+  PYLITH_METHOD_END;
 } // _writePset32
 
 // ----------------------------------------------------------------------
@@ -262,7 +287,9 @@ void
 pylith::meshio::PsetFileBinary::_readPset64(std::ifstream& fin,
 					    Pset* group)
 { // _readPset64
-  assert(0 != group);
+  PYLITH_METHOD_BEGIN;
+
+  assert(group);
 
   journal::info_t info("psetfile");
 
@@ -297,6 +324,8 @@ pylith::meshio::PsetFileBinary::_readPset64(std::ifstream& fin,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
+
+  PYLITH_METHOD_END;
 } // _readPset64
 
 // ----------------------------------------------------------------------
@@ -304,6 +333,8 @@ void
 pylith::meshio::PsetFileBinary::_writePset64(std::ofstream& fout,
 					     const Pset& group)
 { // _writePset64
+  PYLITH_METHOD_BEGIN;
+
   journal::info_t info("psetfile");
   const int size = group.points.size();
   info << journal::at(__HERE__)
@@ -330,6 +361,8 @@ pylith::meshio::PsetFileBinary::_writePset64(std::ofstream& fout,
 
   info << journal::at(__HERE__)
        << "Done." << journal::endl;
+
+  PYLITH_METHOD_END;
 } // _writePset64
 
 

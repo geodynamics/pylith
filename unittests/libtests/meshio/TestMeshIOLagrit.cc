@@ -155,11 +155,11 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 #endif
 
   // Read mesh
-  topology::Mesh mesh;
-  iohandler.read(&mesh);
+  delete _mesh; _mesh = new topology::Mesh;
+  iohandler.read(_mesh);
 
-  // Make sure meshIn matches data
-  _checkVals(mesh, data);
+  // Make sure mesh matches data
+  _checkVals(data);
 } // _testRead
 
 // ----------------------------------------------------------------------
