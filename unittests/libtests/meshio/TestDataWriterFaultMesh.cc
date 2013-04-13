@@ -164,7 +164,7 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields<Mesh
   const int nfields = _data->numCellFields;
 
   PetscDM dmMesh = _faultMesh->dmMesh();CPPUNIT_ASSERT(dmMesh);
-  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0); // MATT This seems wrong.
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
   const PetscInt cStart = cellsStratum.begin();
   const PetscInt cEnd = cellsStratum.end();
   PetscInt numCells = cellsStratum.size();
@@ -175,7 +175,7 @@ pylith::meshio::TestDataWriterFaultMesh::_createCellFields(topology::Fields<Mesh
     const int fiberDim = _data->cellFieldsInfo[i].fiber_dim;
     fields->add(name, name);
     MeshField& field = fields->get(name);
-    field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    field.newSection(topology::FieldBase::FACES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(_data->cellFieldsInfo[i].field_type);
 

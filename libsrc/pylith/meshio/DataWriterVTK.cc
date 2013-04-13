@@ -140,6 +140,8 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::open(const mesh_type& mesh,
   _dm = dmMesh;assert(_dm);
   err = PetscObjectReference((PetscObject) _dm);CHECK_PETSC_ERROR(err);
 
+  DataWriter<mesh_type, field_type>::_numTimeSteps = numTimeSteps;
+
   // Create VTK label in DM: Cleared in close().
   if (label) {
     topology::StratumIS cellsIS(dmMesh, label, labelId);
