@@ -211,20 +211,19 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 { // _testWriteRead
   PYLITH_METHOD_BEGIN;
 
-  topology::Mesh* meshOut = _createMesh(data);
+  _createMesh(data);
 
   // Write mesh
   MeshIOAscii iohandler;
   iohandler.filename(filename);
-  iohandler.write(meshOut);
-  delete meshOut; meshOut = 0;
+  iohandler.write(_mesh);
 
   // Read mesh
-  topology::Mesh meshIn;
-  iohandler.read(&meshIn);
+  delete _mesh; _mesh = new topology::Mesh;
+  iohandler.read(_mesh);
 
   // Make sure meshIn matches data
-  _checkVals(meshIn, data);
+  _checkVals(data);
 
   PYLITH_METHOD_END;
 } // _testWriteRead
@@ -238,13 +237,13 @@ pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
   PYLITH_METHOD_BEGIN;
 
   // Read mesh
-  topology::Mesh mesh;
   MeshIOAscii iohandler;
   iohandler.filename(filename);
-  iohandler.read(&mesh);
+  delete _mesh; _mesh = new topology::Mesh;
+  iohandler.read(_mesh);
 
   // Make sure mesh matches data
-  _checkVals(mesh, data);
+  _checkVals(data);
 
   PYLITH_METHOD_END;
 } // _testRead

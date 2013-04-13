@@ -36,7 +36,7 @@
 #include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
-const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = {
+const char* pylith::meshio::MeshIOAscii::groupTypeNames[2] = {
   "vertices",
   "cells",
 };
@@ -61,7 +61,11 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 void
 pylith::meshio::MeshIOAscii::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   MeshIO::deallocate();
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -69,6 +73,8 @@ pylith::meshio::MeshIOAscii::deallocate(void)
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
+  PYLITH_METHOD_BEGIN;
+
   const int commRank = _mesh->commRank();
   int meshDim = 0;
   int spaceDim = 0;
@@ -97,7 +103,7 @@ pylith::meshio::MeshIOAscii::_read(void)
     
     buffer.str(parser.next());
     buffer >> token;
-    if (0 != strcasecmp(token.c_str(), "mesh")) {
+    if (strcasecmp(token.c_str(), "mesh")) {
       std::ostringstream msg;
       msg << "Expected 'mesh' token but encountered '" << token << "'\n";
       throw std::runtime_error(msg.str());
@@ -162,8 +168,7 @@ pylith::meshio::MeshIOAscii::_read(void)
 	buffer >> token;
       } // while
       if (token != "}")
-	throw std::runtime_error("I/O error occurred while parsing mesh " \
-				 "tokens.");
+	throw std::runtime_error("I/O error occurred while parsing mesh tokens.");
     } catch (const std::exception& err) {
       std::ostringstream msg;
       msg << "Error occurred while reading PyLith mesh ASCII file '"
@@ -178,12 +183,12 @@ pylith::meshio::MeshIOAscii::_read(void)
     } // catch
     filein.close();
   } else {
-    MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim,
-			   cells, numCells, numCorners, meshDim,
-			   _interpolate);
+    MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim, _interpolate);
     _setMaterials(materialIds);
   } // if/else
   _distributeGroups();
+
+  PYLITH_METHOD_END;
 } // read
 
 // ----------------------------------------------------------------------
@@ -191,6 +196,8 @@ pylith::meshio::MeshIOAscii::_read(void)
 void
 pylith::meshio::MeshIOAscii::_write(void) const
 { // write
+  PYLITH_METHOD_BEGIN;
+
   std::ofstream fileout(_filename.c_str());
   if (!fileout.is_open() || !fileout.good()) {
     std::ostringstream msg;
@@ -215,6 +222,8 @@ pylith::meshio::MeshIOAscii::_write(void) const
 
   fileout << "}\n";
   fileout.close();
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -225,9 +234,11 @@ pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parse
 					   int* numVertices, 
 					   int* numDims) const
 { // _readVertices
-  assert(0 != coordinates);
-  assert(0 != numVertices);
-  assert(0 != numDims);
+  PYLITH_METHOD_BEGIN;
+
+  assert(coordinates);
+  assert(numVertices);
+  assert(numDims);
 
   std::string token;
   std::istringstream buffer;
@@ -270,6 +281,8 @@ pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parse
   } // while
   if (token != "}")
     throw std::runtime_error("I/O error while parsing vertices.");
+
+  PYLITH_METHOD_END;
 } // _readVertices
 
 // ----------------------------------------------------------------------
@@ -277,6 +290,8 @@ pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parse
 void
 pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 { // _writeVertices
+  PYLITH_METHOD_BEGIN;
+
   int spaceDim = 0;
   int numVertices = 0;
   scalar_array coordinates;
@@ -300,6 +315,8 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
   fileout
     << "    }\n"
     << "  }\n";
+
+  PYLITH_METHOD_END;
 } // _writeVertices
   
 // ----------------------------------------------------------------------
@@ -311,10 +328,12 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
 					int* numCells, 
 					int* numCorners) const
 { // _readCells
-  assert(0 != cells);
-  assert(0 != materialIds);
-  assert(0 != numCells);
-  assert(0 != numCorners);
+  PYLITH_METHOD_BEGIN;
+
+  assert(cells);
+  assert(materialIds);
+  assert(numCells);
+  assert(numCorners);
 
   int dimension = 0;
 
@@ -388,6 +407,8 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
     materialIds->resize(size);
     (*materialIds) = 0;
   } // if
+
+  PYLITH_METHOD_END;
 } // _readCells
 
 // ----------------------------------------------------------------------
@@ -395,6 +416,8 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
 void
 pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
 { // _writeCells
+  PYLITH_METHOD_BEGIN;
+
   int meshDim = 0;
   int numCells = 0;
   int numCorners = 0;
@@ -427,6 +450,8 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
   fileout << "    }\n";  
 
   fileout << "  }\n";
+
+  PYLITH_METHOD_END;
 } // _writeCells
 
 // ----------------------------------------------------------------------
@@ -437,9 +462,11 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
 					GroupPtType* type,
 					std::string* name) const
 { // _readGroup
-  assert(0 != points);
-  assert(0 != type);
-  assert(0 != name);
+  PYLITH_METHOD_BEGIN;
+
+  assert(points);
+  assert(type);
+  assert(name);
 
   std::string token;
   std::istringstream buffer;
@@ -507,6 +534,8 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
 
   if (!_useIndexZero)
     *points -= 1;
+
+  PYLITH_METHOD_END;
 } // _readGroup
 
 // ----------------------------------------------------------------------
@@ -515,6 +544,8 @@ void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 					 const char* name) const
 { // _writeGroup
+  PYLITH_METHOD_BEGIN;
+
   int_array points;
   GroupPtType type;
   _getGroup(&points, &type, name);
@@ -534,6 +565,8 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
   fileout
     << "    }\n"
     << "  }\n";
+
+  PYLITH_METHOD_END;
 } // _writeGroup
   
 // End of file 

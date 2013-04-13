@@ -20,6 +20,8 @@
 
 #include "HDF5.hh" // implementation of class methods
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -41,6 +43,8 @@ pylith::meshio::HDF5::HDF5(void) :
 pylith::meshio::HDF5::HDF5(const char* filename,
 			   hid_t mode)
 { // constructor
+  PYLITH_METHOD_BEGIN;
+
   if (H5F_ACC_TRUNC == mode) {
     _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
     if (_file < 0) {
@@ -57,6 +61,8 @@ pylith::meshio::HDF5::HDF5(const char* filename,
       throw std::runtime_error(msg.str());
     } // if
   } // if/else
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -72,6 +78,8 @@ void
 pylith::meshio::HDF5::open(const char* filename,
 			   hid_t mode)
 { // open
+  PYLITH_METHOD_BEGIN;
+
   assert(filename);
 
   if (_file >= 0) {
@@ -94,6 +102,8 @@ pylith::meshio::HDF5::open(const char* filename,
       throw std::runtime_error(msg.str());
     } // if
   } // if/else
+
+  PYLITH_METHOD_END;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -101,12 +111,16 @@ pylith::meshio::HDF5::open(const char* filename,
 void
 pylith::meshio::HDF5::close(void)
 { // close
+  PYLITH_METHOD_BEGIN;
+
   if (_file >= 0) {
     herr_t err = H5Fclose(_file);
     if (err < 0) 
       throw std::runtime_error("Could not close HDF5 file.");
   } // if
   _file = -1;
+
+  PYLITH_METHOD_END;
 } // close
 
 // ----------------------------------------------------------------------
@@ -122,6 +136,8 @@ pylith::meshio::HDF5::isOpen(void) const
 bool
 pylith::meshio::HDF5::hasGroup(const char* name)
 { // hasGroup
+  PYLITH_METHOD_BEGIN;
+
   assert(isOpen());
   assert(name);
 
@@ -138,7 +154,7 @@ pylith::meshio::HDF5::hasGroup(const char* name)
     assert(err >= 0);
   } // if
   
-  return exists;
+  PYLITH_METHOD_RETURN(exists);
 } // hasGroup
 
 // ----------------------------------------------------------------------
@@ -146,6 +162,8 @@ pylith::meshio::HDF5::hasGroup(const char* name)
 bool
 pylith::meshio::HDF5::hasDataset(const char* name)
 { // hasDataset
+  PYLITH_METHOD_BEGIN;
+
   assert(isOpen());
   assert(name);
 
@@ -162,7 +180,7 @@ pylith::meshio::HDF5::hasDataset(const char* name)
     assert(err >= 0);
   } // if
   
-  return exists;
+  PYLITH_METHOD_RETURN(exists);
 } // hasDataset
 
 // ----------------------------------------------------------------------
@@ -173,6 +191,8 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 				     const char* parent,
 				     const char* name)
 { // getDatasetDims
+  PYLITH_METHOD_BEGIN;
+
   assert(dims);
   assert(ndims);
   assert(isOpen());
@@ -228,6 +248,8 @@ pylith::meshio::HDF5::getDatasetDims(hsize_t** dims,
 	<< parent << "/" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch  
+
+  PYLITH_METHOD_END;
 } // getDatasetDims
 
 // ----------------------------------------------------------------------
@@ -236,6 +258,8 @@ void
 pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
 				       const char* parent)
 { // getGroupDatasets
+  PYLITH_METHOD_BEGIN;
+
   assert(names);
   assert(isOpen());
 
@@ -280,6 +304,8 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
 	<< parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch  
+
+  PYLITH_METHOD_END;
 } // getGroupDatasets
 
 // ----------------------------------------------------------------------
@@ -287,6 +313,8 @@ pylith::meshio::HDF5::getGroupDatasets(string_vector* names,
 void
 pylith::meshio::HDF5::createGroup(const char* name)
 { // createGroup
+  PYLITH_METHOD_BEGIN;
+
   assert(name);
 
 #if defined(PYLITH_HDF5_USE_API_18)
@@ -306,6 +334,8 @@ pylith::meshio::HDF5::createGroup(const char* name)
     msg << "Could not close group '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
+
+  PYLITH_METHOD_END;
 } // createGroup
 
 // ----------------------------------------------------------------------
@@ -316,6 +346,8 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
 				     const void* value,
 				     hid_t datatype)
 { // writeAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(value);
@@ -364,6 +396,8 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // writeAttribute
 
 // ----------------------------------------------------------------------
@@ -375,6 +409,8 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
 				     const void* value,
 				     hid_t datatype)
 { // writeAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(value);
@@ -423,6 +459,8 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
     msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // writeAttribute
 
 // ----------------------------------------------------------------------
@@ -433,6 +471,8 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
 				    void* value,
 				    hid_t datatype)
 { // readAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(value);
@@ -475,6 +515,8 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
     msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // readAttribute
 
 // ----------------------------------------------------------------------
@@ -484,6 +526,8 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
 				     const char* name,
 				     const char* value)
 { // writeAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(value);
@@ -544,6 +588,8 @@ pylith::meshio::HDF5::writeAttribute(const char* parent,
     msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // writeAttribute
 
 // ----------------------------------------------------------------------
@@ -554,6 +600,8 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
 				     const char* name,
 				     const char* value)
 { // writeAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(value);
@@ -614,6 +662,8 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
     msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // writeAttribute
 
 // ----------------------------------------------------------------------
@@ -622,6 +672,8 @@ std::string
 pylith::meshio::HDF5::readAttribute(const char* parent,
 				    const char* name)
 { // readAttribute
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
 
@@ -677,7 +729,7 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
     throw std::runtime_error(msg.str());
   } // try/catch
 
-  return std::string(value);
+  PYLITH_METHOD_RETURN(std::string(value));
 } // readAttribute
 
 // ----------------------------------------------------------------------
@@ -690,6 +742,8 @@ pylith::meshio::HDF5::createDataset(const char* parent,
 				    const int ndims,
 				    hid_t datatype)
 { // createDataset
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(maxDims);
@@ -766,6 +820,8 @@ pylith::meshio::HDF5::createDataset(const char* parent,
     msg << "Unknown  occurred while creating dataset '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // createDataset
 
 // ----------------------------------------------------------------------
@@ -780,6 +836,8 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
 					const int chunk,
 					hid_t datatype)
 { // writeDatasetSlice
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(data);
@@ -874,6 +932,8 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
 	<< parent << "/" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // writeDatasetSlice
 
 // ----------------------------------------------------------------------
@@ -887,6 +947,8 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 				       const int chunk,
 				       hid_t datatype)
 { // readDatasetSlice
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(data);
@@ -987,6 +1049,8 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
 	<< parent << "/" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // readDatasetSlice
 
 // ----------------------------------------------------------------------
@@ -1000,6 +1064,8 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
 					       const int ndims,
 					       hid_t datatype)
 { // createDatasetRawExternal
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(filename);
@@ -1075,6 +1141,8 @@ pylith::meshio::HDF5::createDatasetRawExternal(const char* parent,
     msg << "Unknown  occurred while creating dataset '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // createDatasetRawExternal
 
 // ----------------------------------------------------------------------
@@ -1086,6 +1154,8 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
 					       const hsize_t* dims,
 					       const int ndims)
 { // extendDatasetRawExternal
+  PYLITH_METHOD_BEGIN;
+
   assert(parent);
   assert(name);
   assert(dims);
@@ -1136,6 +1206,8 @@ pylith::meshio::HDF5::extendDatasetRawExternal(const char* parent,
     msg << "Unknown  occurred while updating dataset '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // try/catch
+
+  PYLITH_METHOD_END;
 } // extendDatasetRawExternal
 
 

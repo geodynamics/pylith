@@ -47,6 +47,15 @@ namespace pylith {
 class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
 { // class TestMeshIO
 
+// PUBLIC METHODS ///////////////////////////////////////////////////////
+public :
+  
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Tear down testing data.
+  void tearDown(void);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -56,15 +65,13 @@ protected :
    *
    * @returns PyLith mesh
    */
-  topology::Mesh* _createMesh(const MeshData& data);
+  void _createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
-   * @param mesh PyLith mesh
    * @param data Mesh data
    */
-  void _checkVals(const topology::Mesh& mesh,
-		  const MeshData& data);
+  void _checkVals(const MeshData& data);
 
   /** Test debug().
    *
@@ -77,6 +84,11 @@ protected :
    * @param iohandler MeshIO object.
    */
   void _testInterpolate(MeshIO& iohandler);
+
+// PROTECTED MEMEBERS ////////////////////////////////////////////////////
+protected :
+
+  topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestMeshIO
 
