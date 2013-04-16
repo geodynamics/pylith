@@ -21,6 +21,7 @@
 #include "TestDataWriterHDF5.hh" // Implementation of class methods
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
+#include "pylith/utils/petscerror.h" // HASA PYLITH_METHOD_BEGIN/END
 
 #include <hdf5.h> // USES HDF5 API
 
@@ -35,9 +36,10 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
 					     const H5O_info_t* info,
 					     void* data)
 { // checkObject
+  PYLITH_METHOD_BEGIN;
+
   CPPUNIT_ASSERT(info);  
   CPPUNIT_ASSERT(data);
-
 
   hid_t* file = (hid_t*) data;
   CPPUNIT_ASSERT(H5Iis_valid(*file));
@@ -94,8 +96,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     CPPUNIT_ASSERT(size > 0);
     //const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? 
     //  H5T_NATIVE_DOUBLE : H5T_NATIVE_DOUBLE;
-    err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, 
-		  H5P_DEFAULT, (void*) data);
+    err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);
     CPPUNIT_ASSERT(err >= 0);
 
     err = H5Sclose(dataspace);
@@ -128,7 +129,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
     CPPUNIT_ASSERT(false);
   } // switch
 
-  return 0;
+  PYLITH_METHOD_RETURN(0);
 } // checkObject
 
 // ----------------------------------------------------------------------
@@ -136,6 +137,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
 void
 pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
 { // checkFile
+  PYLITH_METHOD_BEGIN;
 
   const std::string filenameE = "data/" + std::string(filename);
 
@@ -161,6 +163,7 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename)
   err = H5Fclose(file);
   CPPUNIT_ASSERT(err >= 0);
 
+  PYLITH_METHOD_END;
 } // checkFile
 
 

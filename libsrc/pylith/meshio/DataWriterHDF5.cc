@@ -51,11 +51,15 @@ template<typename mesh_type, typename field_type>
 void
 pylith::meshio::DataWriterHDF5<mesh_type, field_type>::deallocate(void)
 { // deallocate
+  PYLITH_METHOD_BEGIN;
+
   DataWriter<mesh_type, field_type>::deallocate();
 
   PetscErrorCode err = 0;
   err = PetscViewerDestroy(&_viewer); CHECK_PETSC_ERROR(err);
   err = VecDestroy(&_tstamp); CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // deallocate
   
 // ----------------------------------------------------------------------
@@ -204,6 +208,7 @@ pylith::meshio::DataWriterHDF5<mesh_type,field_type>::open(const mesh_type& mesh
     err = VecView(cellVec, _viewer);CHECK_PETSC_ERROR(err);
     err = PetscViewerHDF5PopGroup(_viewer);CHECK_PETSC_ERROR(err);
     err = VecDestroy(&cellVec);CHECK_PETSC_ERROR(err);
+    err = ISRestoreIndices(globalVertexNumbers, &gvertex);CHECK_PETSC_ERROR(err);
 
     hid_t h5 = -1;
     err = PetscViewerHDF5GetFileId(_viewer, &h5); CHECK_PETSC_ERROR(err);
