@@ -194,7 +194,6 @@ pylith::meshio::DataWriterVTK<mesh_type,field_type>::openTimeStep(const PylithSc
   PetscErrorCode err = 0;
     
   const std::string& filename = _vtkFilename(t);
-  std::cout << "FILENAME: " << filename << std::endl;
 
   err = PetscViewerCreate(mesh.comm(), &_viewer);CHECK_PETSC_ERROR(err);
   err = PetscViewerSetType(_viewer, PETSCVIEWERVTK);CHECK_PETSC_ERROR(err);
