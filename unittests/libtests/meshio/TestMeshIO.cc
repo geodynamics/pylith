@@ -40,7 +40,11 @@
 void
 pylith::meshio::TestMeshIO::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _mesh = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -48,7 +52,11 @@ pylith::meshio::TestMeshIO::setUp(void)
 void
 pylith::meshio::TestMeshIO::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _mesh; _mesh = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------

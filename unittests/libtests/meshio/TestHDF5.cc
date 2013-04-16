@@ -22,6 +22,8 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
 #define PYLITH_HDF5_USE_API_18
 #endif
@@ -34,6 +36,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestHDF5 );
 void
 pylith::meshio::TestHDF5::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   HDF5 one;
   CPPUNIT_ASSERT(-1 == one._file);
 
@@ -43,6 +47,8 @@ pylith::meshio::TestHDF5::testConstructor(void)
 
   HDF5 three("test.h5", H5F_ACC_RDONLY);
   CPPUNIT_ASSERT(three._file >= 0);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -50,6 +56,8 @@ pylith::meshio::TestHDF5::testConstructor(void)
 void
 pylith::meshio::TestHDF5::testOpenClose(void)
 { // testOpenClose
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5;
   CPPUNIT_ASSERT(-1 == h5._file);
 
@@ -67,6 +75,8 @@ pylith::meshio::TestHDF5::testOpenClose(void)
   h5.close();
   CPPUNIT_ASSERT(-1 == h5._file);
   CPPUNIT_ASSERT(!h5.isOpen());
+
+  PYLITH_METHOD_END;
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -74,6 +84,8 @@ pylith::meshio::TestHDF5::testOpenClose(void)
 void
 pylith::meshio::TestHDF5::testHasGroup(void)
 { // testHasGroup
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   h5.createGroup("/mygroup");
@@ -83,6 +95,8 @@ pylith::meshio::TestHDF5::testHasGroup(void)
   CPPUNIT_ASSERT(h5.hasGroup("/mygroup"));
   CPPUNIT_ASSERT(!h5.hasGroup("/notmygroup"));
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testHasGroup
 
 // ----------------------------------------------------------------------
@@ -90,6 +104,8 @@ pylith::meshio::TestHDF5::testHasGroup(void)
 void
 pylith::meshio::TestHDF5::testHasDataset(void)
 { // testHasDataset
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 1;
@@ -101,6 +117,8 @@ pylith::meshio::TestHDF5::testHasDataset(void)
   CPPUNIT_ASSERT(h5.hasDataset("/data"));
   CPPUNIT_ASSERT(!h5.hasDataset("/nodata"));
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testHasDataset
 
 // ----------------------------------------------------------------------
@@ -108,6 +126,8 @@ pylith::meshio::TestHDF5::testHasDataset(void)
 void
 pylith::meshio::TestHDF5::testGetDatasetDims(void)
 { // testGetDatasetDims
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const int ndimsE = 2;
@@ -127,6 +147,8 @@ pylith::meshio::TestHDF5::testGetDatasetDims(void)
     CPPUNIT_ASSERT_EQUAL(dimsE[i], dims[i]);
 
   delete[] dims; dims = 0;
+
+  PYLITH_METHOD_END;
 } // testGetDatasetDims
 
 // ----------------------------------------------------------------------
@@ -134,6 +156,8 @@ pylith::meshio::TestHDF5::testGetDatasetDims(void)
 void
 pylith::meshio::TestHDF5::testGetGroupDatasets(void)
 { // testGetGroupDatasets
+  PYLITH_METHOD_BEGIN;
+
   const int ngroupsE = 3;
   const char* namesE[3] = { "dataA",
 			    "dataB",
@@ -158,6 +182,8 @@ pylith::meshio::TestHDF5::testGetGroupDatasets(void)
   CPPUNIT_ASSERT_EQUAL(ngroupsE, ngroups);
   for (int i=0; i < ngroups; ++i)
     CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), names[i]);
+
+  PYLITH_METHOD_END;
 } // testGetGroupDatasets
 
 // ----------------------------------------------------------------------
@@ -165,6 +191,8 @@ pylith::meshio::TestHDF5::testGetGroupDatasets(void)
 void
 pylith::meshio::TestHDF5::testCreateGroup(void)
 { // testCreateGroup
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   h5.createGroup("/mygroup");
@@ -180,6 +208,8 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
   herr_t err = H5Gclose(group);
   CPPUNIT_ASSERT(err >= 0);
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testCreateGroup
 
 // ----------------------------------------------------------------------
@@ -187,6 +217,8 @@ pylith::meshio::TestHDF5::testCreateGroup(void)
 void
 pylith::meshio::TestHDF5::testAttributeScalar(void)
 { // testAttributeScalar
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 1;
@@ -203,6 +235,8 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
   h5.readAttribute("/data", "myscalar", (void*)&scalar, H5T_NATIVE_DOUBLE);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(scalarE, scalar, tolerance);
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testAttributeScalar
 
 // ----------------------------------------------------------------------
@@ -210,6 +244,8 @@ pylith::meshio::TestHDF5::testAttributeScalar(void)
 void
 pylith::meshio::TestHDF5::testAttributeString(void)
 { // testAttributeString
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 1;
@@ -224,6 +260,8 @@ pylith::meshio::TestHDF5::testAttributeString(void)
   std::string value = h5.readAttribute("/data", "mystring");
   CPPUNIT_ASSERT_EQUAL(valueE, value);
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testAttributeString
 
 // ----------------------------------------------------------------------
@@ -231,6 +269,8 @@ pylith::meshio::TestHDF5::testAttributeString(void)
 void
 pylith::meshio::TestHDF5::testCreateDataset(void)
 { // testCreateDataset
+  PYLITH_METHOD_BEGIN;
+
   HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
   const hsize_t ndims = 2;
@@ -257,6 +297,8 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
   err = H5Gclose(group);
   CPPUNIT_ASSERT(err >= 0);
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testCreateDataset
 
 // ----------------------------------------------------------------------
@@ -264,6 +306,8 @@ pylith::meshio::TestHDF5::testCreateDataset(void)
 void
 pylith::meshio::TestHDF5::testDatasetChunk(void)
 { // testDatasetChunk
+  PYLITH_METHOD_BEGIN;
+
   const int ndimsE = 3;
   const hsize_t dimsE[ndimsE] = { 4, 2, 3 };
   const hsize_t dimsChunkE[ndimsE] = { 1, 2, 3 };
@@ -308,6 +352,8 @@ pylith::meshio::TestHDF5::testDatasetChunk(void)
   delete[] valuesE; valuesE = 0;
 
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testDatasetChunk
 
 // ----------------------------------------------------------------------
@@ -315,6 +361,8 @@ pylith::meshio::TestHDF5::testDatasetChunk(void)
 void
 pylith::meshio::TestHDF5::testDatasetRawExternal(void)
 { // testDatasetRawExternal
+  PYLITH_METHOD_BEGIN;
+
   const int ndimsE = 2;
   const hsize_t dimsE[ndimsE] = { 6, 3 };
   hsize_t dims[ndimsE];
@@ -379,6 +427,8 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void)
   err = H5Gclose(group);
   CPPUNIT_ASSERT(err >= 0);
   h5.close();
+
+  PYLITH_METHOD_END;
 } // testDatasetRawExternal
 
 
