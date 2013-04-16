@@ -43,7 +43,11 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 void
 pylith::meshio::TestMeshIOCubit::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   MeshIOCubit iohandler;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -51,8 +55,12 @@ pylith::meshio::TestMeshIOCubit::testConstructor(void)
 void
 pylith::meshio::TestMeshIOCubit::testDebug(void)
 { // testDebug
+  PYLITH_METHOD_BEGIN;
+
   MeshIOCubit iohandler;
   _testDebug(iohandler);
+
+  PYLITH_METHOD_END;
 } // testDebug
 
 // ----------------------------------------------------------------------
@@ -60,8 +68,12 @@ pylith::meshio::TestMeshIOCubit::testDebug(void)
 void
 pylith::meshio::TestMeshIOCubit::testInterpolate(void)
 { // testInterpolate
+  PYLITH_METHOD_BEGIN;
+
   MeshIOCubit iohandler;
   _testInterpolate(iohandler);
+
+  PYLITH_METHOD_END;
 } // testInterpolate
 
 // ----------------------------------------------------------------------
@@ -69,11 +81,15 @@ pylith::meshio::TestMeshIOCubit::testInterpolate(void)
 void
 pylith::meshio::TestMeshIOCubit::testFilename(void)
 { // testFilename
+  PYLITH_METHOD_BEGIN;
+
   MeshIOCubit iohandler;
 
   const char* filename = "hi.txt";
   iohandler.filename(filename);
   CPPUNIT_ASSERT(0 == strcasecmp(filename, iohandler.filename()));
+
+  PYLITH_METHOD_END;
 } // testFilename
 
 // ----------------------------------------------------------------------
@@ -81,9 +97,13 @@ pylith::meshio::TestMeshIOCubit::testFilename(void)
 void
 pylith::meshio::TestMeshIOCubit::testReadTri(void)
 { // testReadTri
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCubitTri data;
   _testRead(data, "data/twotri3_12.2.exo");
   _testRead(data, "data/twotri3_13.0.exo");
+
+  PYLITH_METHOD_END;
 } // testReadTri
 
 // ----------------------------------------------------------------------
@@ -91,9 +111,13 @@ pylith::meshio::TestMeshIOCubit::testReadTri(void)
 void
 pylith::meshio::TestMeshIOCubit::testReadQuad(void)
 { // testReadQuad
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCubitQuad data;
   _testRead(data, "data/twoquad4_12.2.exo");
   _testRead(data, "data/twoquad4_13.0.exo");
+
+  PYLITH_METHOD_END;
 } // testReadQuad
 
 // ----------------------------------------------------------------------
@@ -101,9 +125,13 @@ pylith::meshio::TestMeshIOCubit::testReadQuad(void)
 void
 pylith::meshio::TestMeshIOCubit::testReadTet(void)
 { // testReadTet
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCubitTet data;
   _testRead(data, "data/twotet4_12.2.exo");
   _testRead(data, "data/twotet4_13.0.exo");
+
+  PYLITH_METHOD_END;
 } // testReadTet
 
 // ----------------------------------------------------------------------
@@ -111,9 +139,13 @@ pylith::meshio::TestMeshIOCubit::testReadTet(void)
 void
 pylith::meshio::TestMeshIOCubit::testReadHex(void)
 { // testReadHex
+  PYLITH_METHOD_BEGIN;
+
   MeshDataCubitHex data;
   _testRead(data, "data/twohex8_12.2.exo");
   _testRead(data, "data/twohex8_13.0.exo");
+
+  PYLITH_METHOD_END;
 } // testReadHex
 
 // ----------------------------------------------------------------------
@@ -122,6 +154,8 @@ void
 pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
 					   const char* filename)
 { // _testRead
+  PYLITH_METHOD_BEGIN;
+
   MeshIOCubit iohandler;
   iohandler.filename(filename);
   iohandler.useNodesetNames(true);
@@ -132,6 +166,8 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
 
   // Make sure mesh matches data
   _checkVals(data);
+
+  PYLITH_METHOD_END;
 } // _testRead
 
 // ----------------------------------------------------------------------
@@ -139,16 +175,18 @@ pylith::meshio::TestMeshIOCubit::_testRead(const MeshData& data,
 void
 pylith::meshio::TestMeshIOCubit::testOrientLine(void)
 { // testOrientLine
+  PYLITH_METHOD_BEGIN;
+
   // No change in cells exepected
 
   const int meshDim = 1;
   const int numCells = 2;
   const int numCorners = 2;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1,
     2, 3
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 1,
     2, 3
   };
@@ -160,6 +198,8 @@ pylith::meshio::TestMeshIOCubit::testOrientLine(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientLine
 
 // ----------------------------------------------------------------------
@@ -167,16 +207,18 @@ pylith::meshio::TestMeshIOCubit::testOrientLine(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientTri(void)
 { // testOrientTri
+  PYLITH_METHOD_BEGIN;
+
   // No changes
 
   const int meshDim = 2;
   const int numCells = 2;
   const int numCorners = 3;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1, 2,
     3, 4, 5
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 1, 2,
     3, 4, 5
   };
@@ -188,6 +230,8 @@ pylith::meshio::TestMeshIOCubit::testOrientTri(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientTri
 
 // ----------------------------------------------------------------------
@@ -195,16 +239,18 @@ pylith::meshio::TestMeshIOCubit::testOrientTri(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientQuad(void)
 { // testOrientQuad
+  PYLITH_METHOD_BEGIN;
+
   // Expect no change.
 
   const int meshDim = 2;
   const int numCells = 2;
   const int numCorners = 4;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1, 2, 3,
     6, 7, 8, 9
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 1, 2, 3,
     6, 7, 8, 9
   };
@@ -216,6 +262,8 @@ pylith::meshio::TestMeshIOCubit::testOrientQuad(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientQuad
 
 // ----------------------------------------------------------------------
@@ -223,16 +271,18 @@ pylith::meshio::TestMeshIOCubit::testOrientQuad(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientTet(void)
 { // testOrientTet
+  PYLITH_METHOD_BEGIN;
+
   // No change in cells exepected
 
   const int meshDim = 3;
   const int numCells = 2;
   const int numCorners = 4;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1, 2, 3,
     3, 4, 5, 6
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 1, 2, 3,
     3, 4, 5, 6
   };
@@ -244,6 +294,8 @@ pylith::meshio::TestMeshIOCubit::testOrientTet(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientTet
 
 // ----------------------------------------------------------------------
@@ -251,6 +303,8 @@ pylith::meshio::TestMeshIOCubit::testOrientTet(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientHex(void)
 { // testOrientHex
+  PYLITH_METHOD_BEGIN;
+
   // Expect no change.
 
   const int meshDim = 3;
@@ -272,6 +326,8 @@ pylith::meshio::TestMeshIOCubit::testOrientHex(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientHex
 
 

@@ -21,6 +21,8 @@
 #include "TestCellFilterAvg.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VisitorMesh
 #include "pylith/meshio/CellFilterAvg.hh"
 
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -45,8 +47,7 @@ pylith::meshio::TestCellFilterAvg::testConstructor(void)
 void
 pylith::meshio::TestCellFilterAvg::testFilter(void)
 { // testFilter
-  typedef pylith::topology::Mesh::SieveMesh SieveMesh;
-  typedef pylith::topology::Mesh::RealSection RealSection;
+  PYLITH_METHOD_BEGIN;
 
   const char* filename = "data/quad4.mesh";
   const int fiberDim = 2;
@@ -100,29 +101,21 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   field.vectorFieldType(fieldType);
   field.label(label.c_str());
 
-  DM dmMesh = mesh.dmMesh();
-  PetscInt       cStart, cEnd;
-  PetscErrorCode err;
+  PetscDM dmMesh = mesh.dmMesh();CPPUNIT_ASSERT(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
 
-  CPPUNIT_ASSERT(dmMesh);
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
+  topology::VecVisitorMesh fieldVisitor(field);
+  PetscScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+  for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    const PetscInt off = fieldVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldVisitor.sectionDof(c));
 
-  PetscSection section = field.petscSection();
-  Vec          vec     = field.localVector();
-  PetscScalar *a;
-  CPPUNIT_ASSERT(section);CPPUNIT_ASSERT(vec);
-  CPPUNIT_ASSERT_EQUAL(ncells, cEnd-cStart);
-  err = VecGetArray(vec, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt dof, off;
-
-    err = PetscSectionGetDof(section, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(section, c, &off);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      a[off+d] = fieldValues[(c-cStart)*dof+d];
-    }
+    for(PetscInt d = 0; d < fiberDim; ++d, ++index) {
+      fieldArray[off+d] = fieldValues[index];
+    } // for
   } // for
-  err = VecRestoreArray(vec, &a);CHECK_PETSC_ERROR(err);
 
   feassemble::Quadrature<topology::Mesh> quadrature;
   quadrature.initialize(basis, numQuadPts, numBasis,
@@ -135,26 +128,23 @@ pylith::meshio::TestCellFilterAvg::testFilter(void)
   filter.quadrature(&quadrature);
 
   const topology::Field<topology::Mesh>& fieldF = filter.filter(field);
-  PetscSection sectionF = fieldF.petscSection();
-  Vec          vecF     = fieldF.localVector();
-  CPPUNIT_ASSERT(sectionF);CPPUNIT_ASSERT(vecF);
 
   CPPUNIT_ASSERT_EQUAL(fieldTypeE, fieldF.vectorFieldType());
   CPPUNIT_ASSERT_EQUAL(label, std::string(fieldF.label()));
 
-  const PylithScalar tolerance = 1.0e-06;
-  err = VecGetArray(vecF, &a);CHECK_PETSC_ERROR(err);
-  for(PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt dof, off;
+  topology::VecVisitorMesh fieldFVisitor(fieldF);
+  const PetscScalar* fieldFArray = fieldFVisitor.localArray();CPPUNIT_ASSERT(fieldFArray);
 
-    err = PetscSectionGetDof(sectionF, c, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(sectionF, c, &off);CHECK_PETSC_ERROR(err);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, dof);
-    for(PetscInt d = 0; d < dof; ++d) {
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, a[off+d]/fieldValuesE[(c-cStart)*dof+d], tolerance);
+  const PylithScalar tolerance = 1.0e-06;
+  for(PetscInt c = cStart, index = 0; c < cEnd; ++c) {
+    const PetscInt off = fieldFVisitor.sectionOffset(c);
+    CPPUNIT_ASSERT_EQUAL(fiberDimE, fieldFVisitor.sectionDof(c));
+    for(PetscInt d = 0; d < fiberDimE; ++d, ++index) {
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, fieldFArray[off+d]/fieldValuesE[index], tolerance);
     }
   } // for
-  err = VecRestoreArray(vecF, &a);CHECK_PETSC_ERROR(err);
+
+  PYLITH_METHOD_END;
 } // testFilter
 
 

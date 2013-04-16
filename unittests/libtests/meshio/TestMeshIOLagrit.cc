@@ -46,7 +46,11 @@ typedef pylith::topology::Mesh::SieveMesh SieveMesh;
 void
 pylith::meshio::TestMeshIOLagrit::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   MeshIOLagrit iohandler;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -54,8 +58,12 @@ pylith::meshio::TestMeshIOLagrit::testConstructor(void)
 void
 pylith::meshio::TestMeshIOLagrit::testDebug(void)
 { // testDebug
+  PYLITH_METHOD_BEGIN;
+
   MeshIOLagrit iohandler;
   _testDebug(iohandler);
+
+  PYLITH_METHOD_END;
 } // testDebug
 
 // ----------------------------------------------------------------------
@@ -63,8 +71,12 @@ pylith::meshio::TestMeshIOLagrit::testDebug(void)
 void
 pylith::meshio::TestMeshIOLagrit::testInterpolate(void)
 { // testInterpolate
+  PYLITH_METHOD_BEGIN;
+
   MeshIOLagrit iohandler;
   _testInterpolate(iohandler);
+
+  PYLITH_METHOD_END;
 } // testInterpolate
 
 // ----------------------------------------------------------------------
@@ -72,6 +84,8 @@ pylith::meshio::TestMeshIOLagrit::testInterpolate(void)
 void
 pylith::meshio::TestMeshIOLagrit::testFilename(void)
 { // testFilename
+  PYLITH_METHOD_BEGIN;
+
   MeshIOLagrit iohandler;
 
   const char* filenameGmv = "hi.txt";
@@ -81,6 +95,8 @@ pylith::meshio::TestMeshIOLagrit::testFilename(void)
 
   CPPUNIT_ASSERT(0 == strcasecmp(filenameGmv, iohandler.filenameGmv()));
   CPPUNIT_ASSERT(0 == strcasecmp(filenamePset, iohandler.filenamePset()));
+
+  PYLITH_METHOD_END;
 } // testFilename
 
 // ----------------------------------------------------------------------
@@ -88,10 +104,14 @@ pylith::meshio::TestMeshIOLagrit::testFilename(void)
 void
 pylith::meshio::TestMeshIOLagrit::testReadTetAscii(void)
 { // testReadTetAscii
+  PYLITH_METHOD_BEGIN;
+
   MeshDataLagritTet data;
   const char* filenameGmv = "data/cube2_ascii.gmv";
   const char* filenamePset = "data/cube2_ascii.pset";
   _testRead(data, filenameGmv, filenamePset);
+
+  PYLITH_METHOD_END;
 } // testReadTetAscii
 
 // ----------------------------------------------------------------------
@@ -99,10 +119,14 @@ pylith::meshio::TestMeshIOLagrit::testReadTetAscii(void)
 void
 pylith::meshio::TestMeshIOLagrit::testReadTetBinary(void)
 { // testReadTetBinary
+  PYLITH_METHOD_BEGIN;
+
   MeshDataLagritTet data;
   const char* filenameGmv = "data/cube2_binary.gmv";
   const char* filenamePset = "data/cube2_binary.pset";
   _testRead(data, filenameGmv, filenamePset);
+
+  PYLITH_METHOD_END;
 } // testReadTetBinary
 
 // ----------------------------------------------------------------------
@@ -110,12 +134,16 @@ pylith::meshio::TestMeshIOLagrit::testReadTetBinary(void)
 void
 pylith::meshio::TestMeshIOLagrit::testReadTetBinary32on64(void)
 { // testReadTetBinary32on64
+  PYLITH_METHOD_BEGIN;
+
   MeshDataLagritTet data;
   const char* filenameGmv = "data/cube2_binary_32on64.gmv";
   const char* filenamePset = "data/cube2_binary_32on64.pset";
   const bool ioInt32 = true;
   const bool isRecordHeader32Bit = false;
   _testRead(data, filenameGmv, filenamePset, ioInt32, isRecordHeader32Bit);
+
+  PYLITH_METHOD_END;
 } // testReadTetBinary32on64
 
 // ----------------------------------------------------------------------
@@ -123,12 +151,16 @@ pylith::meshio::TestMeshIOLagrit::testReadTetBinary32on64(void)
 void
 pylith::meshio::TestMeshIOLagrit::testReadTetBinary64(void)
 { // testReadTetBinary64
+  PYLITH_METHOD_BEGIN;
+
   MeshDataLagritTet data;
   const char* filenameGmv = "data/cube2_binary_64.gmv";
   const char* filenamePset = "data/cube2_binary_64.pset";
   const bool ioInt32 = false;
   const bool isRecordHeader32Bit = false;
   _testRead(data, filenameGmv, filenamePset, ioInt32, isRecordHeader32Bit);
+
+  PYLITH_METHOD_END;
 } // testReadTetBinary64
 
 // ----------------------------------------------------------------------
@@ -140,6 +172,8 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 					    const bool ioInt32,
 					    const bool isRecordHeader32Bit)
 { // _testRead
+  PYLITH_METHOD_BEGIN;
+
   MeshIOLagrit iohandler;
   iohandler.filenameGmv(filenameGmv);
   iohandler.filenamePset(filenamePset);
@@ -160,6 +194,8 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 
   // Make sure mesh matches data
   _checkVals(data);
+
+  PYLITH_METHOD_END;
 } // _testRead
 
 // ----------------------------------------------------------------------
@@ -167,16 +203,18 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
 void
 pylith::meshio::TestMeshIOLagrit::testOrientAsciiTet(void)
 { // testOrientAsciiTet
+  PYLITH_METHOD_BEGIN;
+
   // Expect vertices 1 and 2 to be swapped (not change to vertices 0 and 3)
 
   const int meshDim = 3;
   const int numCells = 2;
   const int numCorners = 4;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1, 2, 3,
     3, 4, 5, 6
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 2, 1, 3,
     3, 5, 4, 6
   };
@@ -188,6 +226,8 @@ pylith::meshio::TestMeshIOLagrit::testOrientAsciiTet(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientAsciiTet
 
 // ----------------------------------------------------------------------
@@ -195,16 +235,18 @@ pylith::meshio::TestMeshIOLagrit::testOrientAsciiTet(void)
 void
 pylith::meshio::TestMeshIOLagrit::testOrientBinaryTet(void)
 { // testOrientBinaryTet
+  PYLITH_METHOD_BEGIN;
+
   // No change in cells exepected
 
   const int meshDim = 3;
   const int numCells = 2;
   const int numCorners = 4;
-  const int cellsOrig[] = {
+  const int cellsOrig[numCells*numCorners] = {
     0, 1, 2, 3,
     3, 4, 5, 6
   };
-  const int cellsE[] = {
+  const int cellsE[numCells*numCorners] = {
     0, 1, 2, 3,
     3, 4, 5, 6
   };
@@ -216,6 +258,8 @@ pylith::meshio::TestMeshIOLagrit::testOrientBinaryTet(void)
   CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+
+  PYLITH_METHOD_END;
 } // testOrientBinaryTet
 
 

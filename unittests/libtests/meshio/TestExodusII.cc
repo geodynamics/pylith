@@ -23,6 +23,7 @@
 #include "pylith/meshio/ExodusII.hh"
 
 #include "pylith/utils/array.hh" // USES int_array, scalar_array, string_vector
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestExodusII );
@@ -32,7 +33,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestExodusII );
 void
 pylith::meshio::TestExodusII::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -40,11 +45,15 @@ pylith::meshio::TestExodusII::testConstructor(void)
 void
 pylith::meshio::TestExodusII::testFilename(void)
 { // testFilename
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile;
 
   const char* filename = "hi.txt";
   exofile.filename(filename);
   CPPUNIT_ASSERT(0 == strcmp(filename, exofile.filename()));
+
+  PYLITH_METHOD_END;
 } // testFilename
 
 // ----------------------------------------------------------------------
@@ -52,11 +61,15 @@ pylith::meshio::TestExodusII::testFilename(void)
 void
 pylith::meshio::TestExodusII::testOpenClose(void)
 { // testOpenClose
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile("data/twotri3_13.0.exo");
   CPPUNIT_ASSERT(exofile._file);
 
   exofile.close();
   CPPUNIT_ASSERT(!exofile._file);
+
+  PYLITH_METHOD_END;
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -64,10 +77,14 @@ pylith::meshio::TestExodusII::testOpenClose(void)
 void
 pylith::meshio::TestExodusII::testHasDim(void)
 { // testHasDim
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasDim("num_dim"));
   CPPUNIT_ASSERT(!exofile.hasDim("abcdefghijklm"));
+
+  PYLITH_METHOD_END;
 } // testHasDim
 
 // ----------------------------------------------------------------------
@@ -75,10 +92,14 @@ pylith::meshio::TestExodusII::testHasDim(void)
 void
 pylith::meshio::TestExodusII::testHasAtt(void)
 { // testHasAtt
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasAtt("version"));
   CPPUNIT_ASSERT(!exofile.hasAtt("abcdefghijklm"));
+
+  PYLITH_METHOD_END;
 } // testHasAtt
 
 // ----------------------------------------------------------------------
@@ -86,10 +107,14 @@ pylith::meshio::TestExodusII::testHasAtt(void)
 void
 pylith::meshio::TestExodusII::testHasVar(void)
 { // testHasVar
+  PYLITH_METHOD_BEGIN;
+
   ExodusII exofile("data/twotri3_13.0.exo");
 
   CPPUNIT_ASSERT(exofile.hasVar("connect1"));
   CPPUNIT_ASSERT(!exofile.hasVar("abcdefghijklm"));
+
+  PYLITH_METHOD_END;
 } // testHasVar
 
 // ----------------------------------------------------------------------
@@ -97,6 +122,8 @@ pylith::meshio::TestExodusII::testHasVar(void)
 void
 pylith::meshio::TestExodusII::testGetVarDouble(void)
 { // testGetVarDouble
+  PYLITH_METHOD_BEGIN;
+
   const PylithScalar coordsE[8] = { -1.0, 0.0, 0.0, 1.0,
 			      0.0, -1.0, 1.0, 0.0 };
 
@@ -113,6 +140,8 @@ pylith::meshio::TestExodusII::testGetVarDouble(void)
   const PylithScalar tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(coordsE[i], coords[i], tolerance);
+
+  PYLITH_METHOD_END;
 } // testGetVarDouble
 
 // ----------------------------------------------------------------------
@@ -120,6 +149,8 @@ pylith::meshio::TestExodusII::testGetVarDouble(void)
 void
 pylith::meshio::TestExodusII::testGetVarInt(void)
 { // testGetVarDouble
+  PYLITH_METHOD_BEGIN;
+
   const int connectE[3] = { 3, 2, 4 };
 
   const int ndims = 2;
@@ -134,6 +165,8 @@ pylith::meshio::TestExodusII::testGetVarInt(void)
 
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(connectE[i], connect[i]);
+
+  PYLITH_METHOD_END;
 } // testGetVarDouble
 
 // ----------------------------------------------------------------------
@@ -141,6 +174,8 @@ pylith::meshio::TestExodusII::testGetVarInt(void)
 void
 pylith::meshio::TestExodusII::testGetVarString(void)
 { // testGetVarString
+  PYLITH_METHOD_BEGIN;
+
   const char* namesE[2] = { "x", "y" };
 
   const int dim = 2;
@@ -151,6 +186,8 @@ pylith::meshio::TestExodusII::testGetVarString(void)
 
   for (int i=0; i < dim; ++i)
     CPPUNIT_ASSERT_EQUAL(std::string(namesE[i]), names[i]);
+
+  PYLITH_METHOD_END;
 } // testGetVarString
 
 

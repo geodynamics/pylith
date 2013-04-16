@@ -22,6 +22,8 @@
 
 #include "pylith/meshio/Xdmf.hh" // USES Xdmf
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
+
 #include <cstring> // USES strcmp()
 
 // ----------------------------------------------------------------------
@@ -32,7 +34,11 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestXdmf );
 void
 pylith::meshio::TestXdmf::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   Xdmf one;
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -40,6 +46,7 @@ pylith::meshio::TestXdmf::testConstructor(void)
 void
 pylith::meshio::TestXdmf::testWriteTri3Vertex(void)
 { // testWriteTri3Vertex
+  PYLITH_METHOD_BEGIN;
 
   const char* filenameHDF5 = "data/tri3_vertex.h5";
   const char* filenameXdmf = "tri3_vertex.xmf";
@@ -48,6 +55,8 @@ pylith::meshio::TestXdmf::testWriteTri3Vertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteTri3Vertex
 
 // ----------------------------------------------------------------------
@@ -55,6 +64,8 @@ pylith::meshio::TestXdmf::testWriteTri3Vertex(void)
 void
 pylith::meshio::TestXdmf::testWriteTri3Cell(void)
 { // testWriteTri3Cell
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/tri3_cell.h5";
   const char* filenameXdmf = "tri3_cell.xmf";
 
@@ -62,6 +73,8 @@ pylith::meshio::TestXdmf::testWriteTri3Cell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteTri3Cell
 
 // ----------------------------------------------------------------------
@@ -69,6 +82,7 @@ pylith::meshio::TestXdmf::testWriteTri3Cell(void)
 void
 pylith::meshio::TestXdmf::testWriteQuad4Vertex(void)
 { // testWriteQuad4Vertex
+  PYLITH_METHOD_BEGIN;
 
   const char* filenameHDF5 = "data/quad4_vertex.h5";
   const char* filenameXdmf = "quad4_vertex.xmf";
@@ -77,6 +91,8 @@ pylith::meshio::TestXdmf::testWriteQuad4Vertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteQuad4Vertex
 
 // ----------------------------------------------------------------------
@@ -84,6 +100,8 @@ pylith::meshio::TestXdmf::testWriteQuad4Vertex(void)
 void
 pylith::meshio::TestXdmf::testWriteQuad4Cell(void)
 { // testWriteQuad4Cell
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/quad4_cell.h5";
   const char* filenameXdmf = "quad4_cell.xmf";
 
@@ -91,6 +109,8 @@ pylith::meshio::TestXdmf::testWriteQuad4Cell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteQuad4Cell
 
 // ----------------------------------------------------------------------
@@ -98,6 +118,8 @@ pylith::meshio::TestXdmf::testWriteQuad4Cell(void)
 void
 pylith::meshio::TestXdmf::testWriteTet4Vertex(void)
 { // testWriteTet4Vertex
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/tet4_vertex.h5";
   const char* filenameXdmf = "tet4_vertex.xmf";
 
@@ -105,6 +127,8 @@ pylith::meshio::TestXdmf::testWriteTet4Vertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteTet4Vertex
 
 // ----------------------------------------------------------------------
@@ -112,6 +136,8 @@ pylith::meshio::TestXdmf::testWriteTet4Vertex(void)
 void
 pylith::meshio::TestXdmf::testWriteTet4Cell(void)
 { // testWriteTet4Cell
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/tet4_cell.h5";
   const char* filenameXdmf = "tet4_cell.xmf";
 
@@ -119,6 +145,8 @@ pylith::meshio::TestXdmf::testWriteTet4Cell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteTet4Cell
 
 // ----------------------------------------------------------------------
@@ -126,6 +154,8 @@ pylith::meshio::TestXdmf::testWriteTet4Cell(void)
 void
 pylith::meshio::TestXdmf::testWriteHex8Vertex(void)
 { // testWriteHex8Vertex
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/hex8_vertex.h5";
   const char* filenameXdmf = "hex8_vertex.xmf";
 
@@ -133,6 +163,8 @@ pylith::meshio::TestXdmf::testWriteHex8Vertex(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteHex8Vertex
 
 // ----------------------------------------------------------------------
@@ -140,6 +172,8 @@ pylith::meshio::TestXdmf::testWriteHex8Vertex(void)
 void
 pylith::meshio::TestXdmf::testWriteHex8Cell(void)
 { // testWriteHex8Cell
+  PYLITH_METHOD_BEGIN;
+
   const char* filenameHDF5 = "data/hex8_cell.h5";
   const char* filenameXdmf = "hex8_cell.xmf";
 
@@ -147,6 +181,8 @@ pylith::meshio::TestXdmf::testWriteHex8Cell(void)
   metafile.write(filenameXdmf, filenameHDF5);
 
   _checkFile(filenameXdmf);
+
+  PYLITH_METHOD_END;
 } // testWriteHex8Cell
 
 // ----------------------------------------------------------------------
@@ -154,6 +190,8 @@ pylith::meshio::TestXdmf::testWriteHex8Cell(void)
 void
 pylith::meshio::TestXdmf::_checkFile(const char* filename)
 { // _checkFile
+  PYLITH_METHOD_BEGIN;
+
   const std::string filenameE = std::string("data/") + std::string(filename);
 
   std::ifstream fileInE(filenameE.c_str());
@@ -180,6 +218,8 @@ pylith::meshio::TestXdmf::_checkFile(const char* filename)
 
   fileInE.close();
   fileIn.close();
+
+  PYLITH_METHOD_END;
 } // _checkFile
 
 
