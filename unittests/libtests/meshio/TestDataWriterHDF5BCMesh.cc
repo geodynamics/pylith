@@ -40,7 +40,11 @@ typedef pylith::topology::Field<pylith::topology::SubMesh> SubMeshField;
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterBCMesh::setUp();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -48,7 +52,11 @@ pylith::meshio::TestDataWriterHDF5BCMesh::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterBCMesh::tearDown();
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -56,9 +64,13 @@ pylith::meshio::TestDataWriterHDF5BCMesh::tearDown(void)
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::testConstructor(void)
 { // testConstructor
+  PYLITH_METHOD_BEGIN;
+
   DataWriterHDF5<topology::SubMesh, SubMeshField> writer;
 
-  CPPUNIT_ASSERT(0 == writer._viewer);
+  CPPUNIT_ASSERT(!writer._viewer);
+
+  PYLITH_METHOD_END;
 } // testConstructor
 
 // ----------------------------------------------------------------------
@@ -66,8 +78,10 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testConstructor(void)
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::testOpenClose(void)
 { // testOpenClose
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterHDF5<topology::SubMesh, SubMeshField> writer;
 
@@ -75,7 +89,7 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testOpenClose(void)
 
   const PylithScalar t = _data->time;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
   } else {
@@ -89,6 +103,8 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testOpenClose(void)
   writer.close();
 
   checkFile(_data->timestepFilename);
+
+  PYLITH_METHOD_END;
 } // testOpenClose
 
 // ----------------------------------------------------------------------
@@ -96,8 +112,10 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testOpenClose(void)
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::testWriteVertexField(void)
 { // testWriteVertexField
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterHDF5<topology::SubMesh, SubMeshField> writer;
 
@@ -112,7 +130,7 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteVertexField(void)
 
   const int nfields = _data->numVertexFields;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
   } else {
@@ -129,6 +147,8 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteVertexField(void)
   writer.close();
   
   checkFile(_data->vertexFilename);
+
+  PYLITH_METHOD_END;
 } // testWriteVertexField
 
 // ----------------------------------------------------------------------
@@ -136,8 +156,10 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteVertexField(void)
 void
 pylith::meshio::TestDataWriterHDF5BCMesh::testWriteCellField(void)
 { // testWriteCellField
-  CPPUNIT_ASSERT(0 != _mesh);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_mesh);
+  CPPUNIT_ASSERT(_data);
 
   DataWriterHDF5<topology::SubMesh, SubMeshField> writer;
 
@@ -152,7 +174,7 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteCellField(void)
 
   const int nfields = _data->numCellFields;
   const int numTimeSteps = 1;
-  if (0 == _data->cellsLabel) {
+  if (!_data->cellsLabel) {
     writer.open(*_submesh, numTimeSteps);
     writer.openTimeStep(t, *_submesh);
     for (int i=0; i < nfields; ++i) {
@@ -173,6 +195,8 @@ pylith::meshio::TestDataWriterHDF5BCMesh::testWriteCellField(void)
   writer.close();
   
   checkFile(_data->cellFilename);
+
+  PYLITH_METHOD_END;
 } // testWriteCellField
 
 

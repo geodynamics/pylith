@@ -35,24 +35,25 @@ testmeshio_SOURCES = \
 	TestDataWriterMesh.cc \
 	TestDataWriterSubMesh.cc \
 	TestDataWriterBCMesh.cc \
-	TestDataWriterFaultMesh.cc \
 	TestDataWriterVTK.cc \
 	TestDataWriterVTKMesh.cc \
 	TestDataWriterVTKMeshCases.cc \
 	TestDataWriterVTKMatMeshCases.cc \
-	TestDataWriterVTKBCMesh.cc \
-	TestDataWriterVTKBCMeshCases.cc \
 	TestDataWriterVTKSubMesh.cc \
 	TestDataWriterVTKSubMeshCases.cc \
-	TestOutputManager.cc \
-	TestOutputSolnSubset.cc \
-	TestOutputSolnPoints.cc \
-	TestDataWriterVTKFaultMesh.cc \
-	TestDataWriterVTKFaultMeshCases.cc \
+	TestDataWriterVTKBCMesh.cc \
+	TestDataWriterVTKBCMeshCases.cc \
 	TestDataWriterPoints.cc \
 	TestDataWriterVTKPoints.cc \
 	TestDataWriterVTKPointsCases.cc \
+	TestDataWriterFaultMesh.cc \
+	TestDataWriterVTKFaultMesh.cc \
+	TestDataWriterVTKFaultMeshCases.cc \
+	TestOutputManager.cc \
+	TestOutputSolnSubset.cc \
+	TestOutputSolnPoints.cc \
 	test_meshio.cc
+
 
 
 noinst_HEADERS = \
@@ -276,7 +277,6 @@ if ENABLE_HDF5
 	TestDataWriterHDF5ExtFaultMesh.cc \
 	TestDataWriterHDF5ExtFaultMeshCases.cc \
 	TestXdmf.cc
-
 
   noinst_HEADERS += \
 	TestHDF5.hh \
