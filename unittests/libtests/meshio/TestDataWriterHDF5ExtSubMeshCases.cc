@@ -26,6 +26,7 @@
 #include "data/DataWriterHDF5DataSubMeshTet4.hh"
 #include "data/DataWriterHDF5DataSubMeshHex8.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2 );
@@ -40,10 +41,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtSubMeshHex
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtSubMesh::setUp();
   _data = new DataWriterHDF5DataSubMeshLine2;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -52,10 +57,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshLine2::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtSubMesh::setUp();
   _data = new DataWriterHDF5DataSubMeshTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -64,10 +73,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtSubMesh::setUp();
   _data = new DataWriterHDF5DataSubMeshQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -76,10 +89,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtSubMesh::setUp();
   _data = new DataWriterHDF5DataSubMeshTet4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -88,10 +105,14 @@ pylith::meshio::TestDataWriterHDF5ExtSubMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtSubMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtSubMesh::setUp();
   _data = new DataWriterHDF5DataSubMeshHex8;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 

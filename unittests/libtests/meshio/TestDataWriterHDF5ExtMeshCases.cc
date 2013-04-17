@@ -26,6 +26,7 @@
 #include "data/DataWriterHDF5DataMeshTet4.hh"
 #include "data/DataWriterHDF5DataMeshHex8.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMeshLine2 );
@@ -40,10 +41,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtMeshHex8 )
 void
 pylith::meshio::TestDataWriterHDF5ExtMeshLine2::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshLine2;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -52,10 +57,14 @@ pylith::meshio::TestDataWriterHDF5ExtMeshLine2::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -64,10 +73,14 @@ pylith::meshio::TestDataWriterHDF5ExtMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -76,10 +89,14 @@ pylith::meshio::TestDataWriterHDF5ExtMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshTet4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -88,11 +105,14 @@ pylith::meshio::TestDataWriterHDF5ExtMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtMesh::setUp();
   _data = new DataWriterHDF5DataMeshHex8;
   _flipFault = true;
-
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 

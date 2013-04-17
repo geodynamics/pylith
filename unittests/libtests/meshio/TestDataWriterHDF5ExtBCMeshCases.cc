@@ -25,6 +25,7 @@
 #include "data/DataWriterHDF5DataBCMeshTet4.hh"
 #include "data/DataWriterHDF5DataBCMeshHex8.hh"
 
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtBCMeshTri3 );
@@ -38,10 +39,14 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestDataWriterHDF5ExtBCMeshHex8
 void
 pylith::meshio::TestDataWriterHDF5ExtBCMeshTri3::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtBCMesh::setUp();
   _data = new DataWriterHDF5DataBCMeshTri3;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -50,10 +55,14 @@ pylith::meshio::TestDataWriterHDF5ExtBCMeshTri3::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtBCMeshQuad4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtBCMesh::setUp();
   _data = new DataWriterHDF5DataBCMeshQuad4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -62,10 +71,14 @@ pylith::meshio::TestDataWriterHDF5ExtBCMeshQuad4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtBCMeshTet4::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtBCMesh::setUp();
   _data = new DataWriterHDF5DataBCMeshTet4;
   _flipFault = false;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
@@ -74,10 +87,14 @@ pylith::meshio::TestDataWriterHDF5ExtBCMeshTet4::setUp(void)
 void
 pylith::meshio::TestDataWriterHDF5ExtBCMeshHex8::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   TestDataWriterHDF5ExtBCMesh::setUp();
   _data = new DataWriterHDF5DataBCMeshHex8;
   _flipFault = true;
   _initialize();
+
+  PYLITH_METHOD_END;
 } // setUp
 
 
