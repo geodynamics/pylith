@@ -204,7 +204,7 @@ const int pylith::faults::CohesiveKinSrcsDataHex8::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataHex8::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingFault[] = {
-  0
+  5
 };
 const int pylith::faults::CohesiveKinSrcsDataHex8::_cellMappingCohesive[] = {
   2

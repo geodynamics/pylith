@@ -164,7 +164,7 @@ const int pylith::faults::CohesiveKinDataTet4f::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinDataTet4f::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinDataTet4f::_cellMappingFault[] = {
-  0
+  4
 };
 const int pylith::faults::CohesiveKinDataTet4f::_cellMappingCohesive[] = {
   2

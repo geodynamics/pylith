@@ -1046,7 +1046,7 @@ void pylith::faults::FaultCohesiveLagrange::_initializeCohesiveInfo(const topolo
   PetscInt index = 0;
   PetscErrorCode err = 0;
   for(PetscInt c = 0; c < ncells; ++c) {
-    _cohesiveToFault[cells[c]] = c;
+    _cohesiveToFault[cells[c]] = c+fcStart;
 
     // Get oriented closure
     PetscInt *closure = NULL;

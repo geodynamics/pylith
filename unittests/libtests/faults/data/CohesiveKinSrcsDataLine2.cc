@@ -122,7 +122,7 @@ const int pylith::faults::CohesiveKinSrcsDataLine2::_verticesNegative[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataLine2::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingFault[] = {
-  0
+  2
 };
 const int pylith::faults::CohesiveKinSrcsDataLine2::_cellMappingCohesive[] = {
   2

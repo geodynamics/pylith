@@ -163,7 +163,7 @@ const int pylith::faults::CohesiveKinSrcsDataTet4::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataTet4::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinSrcsDataTet4::_cellMappingFault[] = {
-  0
+  4
 };
 const int pylith::faults::CohesiveKinSrcsDataTet4::_cellMappingCohesive[] = {
   2

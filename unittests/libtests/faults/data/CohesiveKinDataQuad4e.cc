@@ -201,7 +201,7 @@ const int pylith::faults::CohesiveKinDataQuad4e::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinDataQuad4e::_numCohesiveCells = 2;
 const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingFault[] = {
-  0, 1
+  5, 6
 };
 const int pylith::faults::CohesiveKinDataQuad4e::_cellMappingCohesive[] = {
   4, 5

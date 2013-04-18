@@ -159,7 +159,7 @@ const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingFault[] = {
-  0
+  3
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingCohesive[] = {
   2
