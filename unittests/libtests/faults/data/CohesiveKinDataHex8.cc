@@ -192,7 +192,7 @@ const int pylith::faults::CohesiveKinDataHex8::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinDataHex8::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinDataHex8::_cellMappingFault[] = {
-  0
+  5
 };
 const int pylith::faults::CohesiveKinDataHex8::_cellMappingCohesive[] = {
   2

@@ -147,7 +147,7 @@ const int pylith::faults::CohesiveKinDataTri3::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinDataTri3::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinDataTri3::_cellMappingFault[] = {
-  0
+  3
 };
 const int pylith::faults::CohesiveKinDataTri3::_cellMappingCohesive[] = {
   2
