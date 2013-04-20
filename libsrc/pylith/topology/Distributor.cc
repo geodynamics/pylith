@@ -22,6 +22,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field<Mesh>
+#include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include "journal/info.h" // USES journal::info_t
@@ -56,17 +58,14 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 					  const topology::Mesh& origMesh,
 					  const char* partitioner)
 { // distribute
-  assert(0 != newMesh);
-
-  const int commRank = origMesh.commRank();
-
-  journal::info_t info("distributor");
-    
+  PYLITH_METHOD_BEGIN;
+  
+  assert(newMesh);
   newMesh->coordsys(origMesh.coordsys());
 
-  DM newDM;
-  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);CHECK_PETSC_ERROR(err);
-  newMesh->setDMMesh(newDM);
+  const int commRank = origMesh.commRank();
+  journal::info_t info("distributor");
+    
   if (0 == strcasecmp(partitioner, "")) {
     if (0 == commRank) {
       info << journal::at(__HERE__)
@@ -98,6 +97,11 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     _distribute<ALE::DistributionNew<SieveMesh> >(newMesh, origMesh);
   } // else
 
+  PetscDM newDM = NULL;
+  PetscErrorCode err = DMPlexDistribute(origMesh.dmMesh(), partitioner, 0, &newDM);CHECK_PETSC_ERROR(err);
+  newMesh->setDMMesh(newDM);
+
+  PYLITH_METHOD_END;
 } // distribute
 
 // ----------------------------------------------------------------------
@@ -106,7 +110,8 @@ void
 pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology::Field<topology::Mesh> >* const writer,
 				     const topology::Mesh& mesh)
 { // write
-  
+  PYLITH_METHOD_BEGIN;
+
   journal::info_t info("distributor");
     
   const int commRank = mesh.commRank();
@@ -123,25 +128,22 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   partition.scale(1.0);
   partition.label("partition");
   partition.vectorFieldType(topology::FieldBase::SCALAR);
-  PetscSection partitionSection = partition.petscSection();
-  Vec          partitionVec     = partition.localVector();
-  PetscScalar *partitionArray;
-  assert(partitionSection);assert(partitionVec);
 
-  PylithScalar   rankReal = PylithScalar(commRank);
-  DM             dmMesh   = mesh.dmMesh();
-  PetscInt       cStart, cEnd;
-  PetscErrorCode err;
+  PylithScalar rankReal = PylithScalar(commRank);
 
-  assert(dmMesh);
-  err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
+  PetscDM dmMesh = mesh.dmMesh();assert(dmMesh);
+  topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+  const PetscInt cStart = cellsStratum.begin();
+  const PetscInt cEnd = cellsStratum.end();
+
+  topology::VecVisitorMesh partitionVisitor(partition);
+  PetscScalar* partitionArray = partitionVisitor.localArray();
+
   for (PetscInt c = cStart; c < cEnd; ++c) {
-    PetscInt off;
-    err = PetscSectionGetOffset(partitionSection, c, &off);CHECK_PETSC_ERROR(err);
+    const PetscInt off = partitionVisitor.sectionOffset(c);
+    assert(fiberDim == partitionVisitor.sectionDof(c));
     partitionArray[off] = rankReal;
   } // for
-  err = VecRestoreArray(partitionVec, &partitionArray);CHECK_PETSC_ERROR(err);
 
   //partition->view("PARTITION");
   const PylithScalar t = 0.0;
@@ -151,6 +153,8 @@ pylith::topology::Distributor::write(meshio::DataWriter<topology::Mesh, topology
   writer->writeCellField(t, partition);
   writer->closeTimeStep();
   writer->close();
+
+  PYLITH_METHOD_END;
 } // write
 
 // ----------------------------------------------------------------------
@@ -159,14 +163,11 @@ void
 pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 					   const topology::Mesh& origMesh)
 { // distribute
+  PYLITH_METHOD_BEGIN;
+
   typedef typename SieveMesh::point_type point_type;
   typedef typename DistributionType::partitioner_type partitioner_type;
   typedef typename DistributionType::partition_type   partition_type;
-
-  ALE::MemoryLogger& logger = ALE::MemoryLogger::singleton();
-  //logger.setDebug(1);
-  logger.stagePush("DistributedMesh");
-  logger.stagePush("DistributedMeshCreation");
 
   journal::info_t info("distributor");
     
@@ -244,9 +245,6 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     throw ALE::Exception("Invalid Overlap");
   } // if
 
-  logger.stagePop();
-  logger.stagePush("DistributedMeshCoordinates");
-
   // Distribute the coordinates
   if (0 == commRank) {
     info << journal::at(__HERE__)
@@ -264,9 +262,6 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   DistributionType::distributeSection(coordinates, partition, renumbering, 
 				      sendMeshOverlap, recvMeshOverlap, 
 				      parallelCoordinates);
-
-  logger.stagePop();
-  logger.stagePush("DistributedMeshRealSections");
 
   // Distribute other sections
   if (0 == commRank) {
@@ -293,9 +288,6 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
     if (n)
       throw std::logic_error("Need to distribute more real sections");
   }
-
-  logger.stagePop();
-  logger.stagePush("DistributedMeshIntSections");
 
   if (origSieveMesh->getIntSections()->size() > 0) {
     ALE::Obj<std::set<std::string> > names = origSieveMesh->getIntSections();
@@ -345,9 +337,6 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
   if (origSieveMesh->getArrowSections()->size() > 1)
     throw std::logic_error("Need to distribute more arrow sections");
   
-  logger.stagePop();
-  logger.stagePush("DistributedMeshLabels");
-
   // Distribute labels
   if (0 == commRank) {
     info << journal::at(__HERE__)
@@ -393,9 +382,6 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 #endif
   } // for
 
-  logger.stagePop();
-  logger.stagePush("DistributedMeshOverlap");
-
   // Create the parallel overlap
   if (0 == commRank) {
     info << journal::at(__HERE__)
@@ -416,14 +402,12 @@ pylith::topology::Distributor::_distribute(topology::Mesh* const newMesh,
 					  recvParallelMeshOverlap);
   newSieveMesh->setCalculatedOverlap(true);
 
-  logger.stagePop();
-  logger.stagePop(); // Mesh
-  //logger.setDebug(0);
-
 #if 0 // DEBUGGING
   sendParallelMeshOverlap->view("SEND OVERLAP");
   recvParallelMeshOverlap->view("RECV OVERLAP");
 #endif
+
+  PYLITH_METHOD_END;
 } // distribute
 
 
