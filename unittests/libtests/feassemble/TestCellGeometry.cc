@@ -22,6 +22,7 @@
 
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/utils/array.hh" // USES scalar_array
+#include "pylith/utils/petscerror.h" // USES PYLITH_METHOD_BEGIN/END
 
 #include "data/CellGeomData.hh" // USES CellGeomData
 
@@ -33,8 +34,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestCellGeometry );
 void 
 pylith::feassemble::TestCellGeometry::setUp(void)
 { // setUp
+  PYLITH_METHOD_BEGIN;
+
   _object = 0;
   _data = 0;
+
+  PYLITH_METHOD_END;
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -42,8 +47,12 @@ pylith::feassemble::TestCellGeometry::setUp(void)
 void
 pylith::feassemble::TestCellGeometry::tearDown(void)
 { // tearDown
+  PYLITH_METHOD_BEGIN;
+
   delete _object; _object = 0;
   delete _data; _data = 0;
+
+  PYLITH_METHOD_END;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -51,6 +60,8 @@ pylith::feassemble::TestCellGeometry::tearDown(void)
 void
 pylith::feassemble::TestCellGeometry::testOrient0D(void)
 { // testOrient0D
+  PYLITH_METHOD_BEGIN;
+
   scalar_array jacobian;
   PylithScalar jacobianDet;
   scalar_array upDir;
@@ -63,6 +74,8 @@ pylith::feassemble::TestCellGeometry::testOrient0D(void)
   const PylithScalar tolerance = 1.0e-6;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, orientation[i], tolerance);
+
+  PYLITH_METHOD_END;
 } // testOrient0D
 
 // ----------------------------------------------------------------------
@@ -70,15 +83,17 @@ pylith::feassemble::TestCellGeometry::testOrient0D(void)
 void
 pylith::feassemble::TestCellGeometry::testOrient1D(void)
 { // testOrient1D
+  PYLITH_METHOD_BEGIN;
+
   const int numLocs = 2;
   const int spaceDim = 2;
   const int orientSize = 4;
 
-  const PylithScalar jacobianVals[] = {
+  const PylithScalar jacobianVals[numLocs*spaceDim*(spaceDim-1)] = {
     -1.0, 2.0,
     -0.5, 1.0
   };
-  const PylithScalar orientationE[] = {
+  const PylithScalar orientationE[numLocs*orientSize] = {
     -1.0,  2.0,  2.0, 1.0,
     -0.5,  1.0,  1.0, 0.5
   };
@@ -96,9 +111,10 @@ pylith::feassemble::TestCellGeometry::testOrient1D(void)
     CPPUNIT_ASSERT_EQUAL(orientSize, size);
     const PylithScalar tolerance = 1.0e-6;
     for (int i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
-				   orientation[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i], orientation[i], tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // testOrient1D
 
 // ----------------------------------------------------------------------
@@ -106,11 +122,13 @@ pylith::feassemble::TestCellGeometry::testOrient1D(void)
 void
 pylith::feassemble::TestCellGeometry::testOrient2D(void)
 { // testOrient2D
+  PYLITH_METHOD_BEGIN;
+
   const int numLocs = 2;
   const int spaceDim = 3;
   const int orientSize = 9;
 
-  const PylithScalar jacobianVals[] = {
+  const PylithScalar jacobianVals[numlocs*spaceDim*(spaceDim-1)] = {
     2.0,  -0.5,
     1.0,  -0.2,
     0.5,   2.0,
@@ -119,11 +137,11 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
     -3.0, -0.2,
     -0.3,  0.3,
   };
-  const PylithScalar jacobianDetVals[] = {
+  const PylithScalar jacobianDetVals[numLocs] = {
     1.3, 0.7
   };
-  const PylithScalar upDirVals[] = { 0.0, 0.0, 1.0 };
-  const PylithScalar orientationE[] = {
+  const PylithScalar upDirVals[spaceDim] = { 0.0, 0.0, 1.0 };
+  const PylithScalar orientationE[numLocs*orientSize] = {
     1.1654847299258313, 0.57588657243394026, 0.0, 
     -0.012145479112634533, 0.024580136299379406, 1.2997108540889502, 
     0.57575848378190342, -1.1652255028919474, 0.027417070656281111,
@@ -146,9 +164,10 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
     CPPUNIT_ASSERT_EQUAL(orientSize, size);
     const PylithScalar tolerance = 1.0e-6;
     for (int i=0; i < size; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
-				   orientation[i], tolerance);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i], orientation[i], tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // testOrient2D
 
 // ----------------------------------------------------------------------
@@ -156,11 +175,15 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
 void
 pylith::feassemble::TestCellGeometry::testClone(void)
 { // testClone
+  PYLITH_METHOD_BEGIN;
+
   CellGeometry* copy = _object->clone();
   CPPUNIT_ASSERT_EQUAL(_object->cellDim(), copy->cellDim());
   CPPUNIT_ASSERT_EQUAL(_object->spaceDim(), copy->spaceDim());
   CPPUNIT_ASSERT_EQUAL(_object->numCorners(), copy->numCorners());
   delete copy; copy = 0;
+
+  PYLITH_METHOD_END;
 } // testClone
 
 // ----------------------------------------------------------------------
@@ -168,9 +191,13 @@ pylith::feassemble::TestCellGeometry::testClone(void)
 void
 pylith::feassemble::TestCellGeometry::testCellDim(void)
 { // testCellDim
-  CPPUNIT_ASSERT(0 != _object);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_object);
+  CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT_EQUAL(_data->cellDim, _object->cellDim());
+
+  PYLITH_METHOD_END;
 } // testCellDim
 
 // ----------------------------------------------------------------------
@@ -178,9 +205,13 @@ pylith::feassemble::TestCellGeometry::testCellDim(void)
 void
 pylith::feassemble::TestCellGeometry::testSpaceDim(void)
 { // _testSpaceDim
-  CPPUNIT_ASSERT(0 != _object);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_object);
+  CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT_EQUAL(_data->spaceDim, _object->spaceDim());
+
+  PYLITH_METHOD_END;
 } // _testSpaceDim
 
 // ----------------------------------------------------------------------
@@ -188,9 +219,13 @@ pylith::feassemble::TestCellGeometry::testSpaceDim(void)
 void
 pylith::feassemble::TestCellGeometry::testNumCorners(void)
 { // testNumCorners
-  CPPUNIT_ASSERT(0 != _object);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_object);
+  CPPUNIT_ASSERT(_data);
   CPPUNIT_ASSERT_EQUAL(_data->numCorners, _object->numCorners());
+
+  PYLITH_METHOD_END;
 } // testNumConers
 
 // ----------------------------------------------------------------------
@@ -198,8 +233,10 @@ pylith::feassemble::TestCellGeometry::testNumCorners(void)
 void
 pylith::feassemble::TestCellGeometry::testOrientFn(void)
 { // testOrientFn
-  CPPUNIT_ASSERT(0 != _object);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_object);
+  CPPUNIT_ASSERT(_data);
 
   // We can't compare function pointers, because they depend on how
   // the dynamic library is loaded (seems okay on Linux and Darwin but
@@ -211,7 +248,7 @@ pylith::feassemble::TestCellGeometry::testOrientFn(void)
     case 0 :
     case 1 :
     case 2 :
-      CPPUNIT_ASSERT(0 != _object->_orientFn);
+      CPPUNIT_ASSERT(_object->_orientFn);
       break;
     case 3 :
       CPPUNIT_ASSERT(0 == _object->_orientFn);
@@ -219,6 +256,8 @@ pylith::feassemble::TestCellGeometry::testOrientFn(void)
     default :
       CPPUNIT_ASSERT(0);
     } // switch
+
+  PYLITH_METHOD_END;
 } // testOrientFn
 
 // ----------------------------------------------------------------------
@@ -226,8 +265,10 @@ pylith::feassemble::TestCellGeometry::testOrientFn(void)
 void
 pylith::feassemble::TestCellGeometry::testJacobian(void)
 { // testJacobian
-  CPPUNIT_ASSERT(0 != _object);
-  CPPUNIT_ASSERT(0 != _data);
+  PYLITH_METHOD_BEGIN;
+
+  CPPUNIT_ASSERT(_object);
+  CPPUNIT_ASSERT(_data);
 
   const int cellDim = _data->cellDim;
   const int spaceDim = _data->spaceDim;
@@ -252,13 +293,13 @@ pylith::feassemble::TestCellGeometry::testJacobian(void)
     const PylithScalar tolerance = 1.0e-06;
     for (int i=0; i < size; ++i)
       if (_data->jacobian[index+i] < 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobian[index+i], jacobian[i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobian[index+i], jacobian[i], tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobian[i]/_data->jacobian[index+i],
-				     tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobian[i]/_data->jacobian[index+i], tolerance);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobianDet[iLoc], det, tolerance);
   } // for
+
+  PYLITH_METHOD_END;
 } // testJacobian
 
 
