@@ -137,7 +137,7 @@ const PylithScalar pylith::faults::CohesiveKinDataQuad4::_jacobianLumped[] = {
 
 const int pylith::faults::CohesiveKinDataQuad4::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinDataQuad4::_verticesFault[] = {
-   1,  2
+   2,  3
 };
 const int pylith::faults::CohesiveKinDataQuad4::_verticesLagrange[] = {
   11, 12
@@ -151,7 +151,7 @@ const int pylith::faults::CohesiveKinDataQuad4::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinDataQuad4::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinDataQuad4::_cellMappingFault[] = {
-  3
+  4
 };
 const int pylith::faults::CohesiveKinDataQuad4::_cellMappingCohesive[] = {
   2

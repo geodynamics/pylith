@@ -145,7 +145,7 @@ const PylithScalar pylith::faults::CohesiveKinSrcsDataQuad4::_area[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_numFaultVertices = 2;
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesFault[] = {
-  1, 2
+  2, 3
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesLagrange[] = {
   11, 12
@@ -159,7 +159,7 @@ const int pylith::faults::CohesiveKinSrcsDataQuad4::_verticesPositive[] = {
 
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_numCohesiveCells = 1;
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingFault[] = {
-  3
+  4
 };
 const int pylith::faults::CohesiveKinSrcsDataQuad4::_cellMappingCohesive[] = {
   2
