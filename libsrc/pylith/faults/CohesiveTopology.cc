@@ -1144,10 +1144,9 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 
   DM dmMesh = mesh.dmMesh();
   assert(dmMesh);
-  //#define OLD_PLEX
-#ifndef OLD_PLEX
   DM              dmFaultMesh;
   {
+#if 0
     DMLabel         faultLabel;
     IS              cohesiveIS;
     const PetscInt *cohesiveCells;
@@ -1185,9 +1184,11 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     err = DMPlexCreateSubmesh(dmMesh, labelName, &dmFaultMesh);CHECK_PETSC_ERROR(err);
     err = DMPlexRemoveLabel(dmMesh, labelName, &faultLabel);CHECK_PETSC_ERROR(err);
     err = DMLabelDestroy(&faultLabel);CHECK_PETSC_ERROR(err);
+#else
+    err = DMPlexCreateCohesiveSubmesh(dmMesh, constraintCell ? PETSC_TRUE : PETSC_FALSE, &dmFaultMesh);CHECK_PETSC_ERROR(err);
+#endif
     faultMesh->setDMMesh(dmFaultMesh);
   }
-#endif
 
   const int debug = mesh.debug();
   const ALE::Obj<SieveMesh>& sieveMesh = mesh.sieveMesh();
@@ -1275,36 +1276,24 @@ pylith::faults::CohesiveTopology::createFaultParallel(
 					     fRenumbering,
 					     fault->getArrowSection("orientation").ptr());
   }
-#ifdef OLD_PLEX
-  SieveMesh::renumbering_type convertRenumbering;
-  DM dmFaultMesh;
-
-  ALE::ISieveConverter::convertMesh(*fault, &dmFaultMesh, convertRenumbering, true);
-  faultMesh->setDMMesh(dmFaultMesh);
-#endif
   fault      = NULL;
   faultSieve = NULL;
 
-  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells =
-    faultSieveMesh->heightStratum(0);
+  const ALE::Obj<SieveSubMesh::label_sequence>& faultCells = faultSieveMesh->heightStratum(0);
   assert(!faultCells.isNull());
   SieveSubMesh::label_sequence::iterator f_iter = faultCells->begin();
 
   // Update coordinates
-  const ALE::Obj<topology::Mesh::RealSection>& coordinates =
-    sieveMesh->getRealSection("coordinates");
+  const ALE::Obj<topology::Mesh::RealSection>& coordinates  = sieveMesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<topology::Mesh::RealSection>& fCoordinates =
-    faultSieveMesh->getRealSection("coordinates");
+  const ALE::Obj<topology::Mesh::RealSection>& fCoordinates = faultSieveMesh->getRealSection("coordinates");
   assert(!fCoordinates.isNull());
-  const ALE::Obj<SieveMesh::label_sequence>& vertices =
-    sieveMesh->depthStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& vertices = sieveMesh->depthStratum(0);
   assert(!vertices.isNull());
   const SieveMesh::label_sequence::iterator vBegin = vertices->begin();
   const SieveMesh::label_sequence::iterator vEnd = vertices->end();
 
-  const ALE::Obj<SieveMesh::label_sequence>& fvertices =
-    faultSieveMesh->depthStratum(0);
+  const ALE::Obj<SieveMesh::label_sequence>& fvertices = faultSieveMesh->depthStratum(0);
   assert(!fvertices.isNull());
   const point_type fvMin = *std::min_element(fvertices->begin(), 
 					     fvertices->end());
@@ -1330,138 +1319,6 @@ pylith::faults::CohesiveTopology::createFaultParallel(
     fCoordinates->updatePoint(fRenumbering[*v_iter], 
 			      coordinates->restrictPoint(*v_iter));
   }
-#ifdef OLD_PLEX
-  //faultSieveMesh->view("Parallel fault mesh");
-  PetscInt numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices;
-  mesh.getPointTypeSizes(&numNormalCells, &numCohesiveCells, &numNormalVertices, &numShadowVertices, &numLagrangeVertices);
-
-  const SieveMesh::renumbering_type::const_iterator convertRenumberingEnd = convertRenumbering.end();
-  PetscSection   coordSection, faultCoordSection;
-  Vec            coordinateVec, faultCoordinateVec;
-  PetscScalar   *a, *fa;
-  PetscInt       pvStart, pvEnd, fvStart, fvEnd, n;
-
-  err = DMPlexGetDepthStratum(dmMesh, 0, &pvStart, &pvEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmFaultMesh, &faultCoordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionSetChart(faultCoordSection, fvStart, fvEnd);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = pvStart; v < pvEnd; ++v) {
-    PetscInt sievePoint = convertDMToSievePointNumbering(v, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
-    PetscInt dof;
-
-    if (convertRenumbering.find(sievePoint) == convertRenumberingEnd) continue;
-    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionSetDof(faultCoordSection, convertRenumbering[sievePoint], dof);CHECK_PETSC_ERROR(err);
-  }
-  err = PetscSectionSetUp(faultCoordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(faultCoordSection, &n);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmFaultMesh, &faultCoordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(faultCoordinateVec, n, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(faultCoordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = pvStart; v < pvEnd; ++v) {
-    PetscInt sievePoint = convertDMToSievePointNumbering(v, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
-    PetscInt dof, off, foff;
-
-    if (convertRenumbering.find(sievePoint) == convertRenumberingEnd) continue;
-    err = PetscSectionGetDof(coordSection, v, &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, v, &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(faultCoordSection, convertRenumbering[sievePoint], &foff);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      fa[foff+d] = a[off+d];
-    }
-  }
-  err = VecRestoreArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
-#else
-  IS              subpointIS;
-  PetscSection    coordSection, faultCoordSection;
-  Vec             coordinateVec, faultCoordinateVec;
-  PetscScalar    *a, *fa;
-  const PetscInt *points;
-  PetscInt        pvStart, pvEnd, fvStart, fvEnd, n;
-
-  err = DMPlexCreateSubpointIS(dmFaultMesh, &subpointIS);CHECK_PETSC_ERROR(err);
-  err = ISGetIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmMesh, 0, &pvStart, &pvEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmMesh, &coordSection);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetCoordinateSection(dmFaultMesh, &faultCoordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionSetChart(faultCoordSection, fvStart, fvEnd);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = fvStart; v < fvEnd; ++v) {
-    PetscInt dof;
-
-    err = PetscSectionGetDof(coordSection, points[v], &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionSetDof(faultCoordSection, v, dof);CHECK_PETSC_ERROR(err);
-  }
-  err = PetscSectionSetUp(faultCoordSection);CHECK_PETSC_ERROR(err);
-  err = PetscSectionGetStorageSize(faultCoordSection, &n);CHECK_PETSC_ERROR(err);
-  err = DMGetCoordinatesLocal(dmMesh, &coordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecCreate(mesh.comm(), &faultCoordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecSetSizes(faultCoordinateVec, n, PETSC_DETERMINE);CHECK_PETSC_ERROR(err);
-  err = VecSetFromOptions(faultCoordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
-  err = VecGetArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
-  for(PetscInt v = fvStart; v < fvEnd; ++v) {
-    PetscInt dof, off, foff;
-
-    err = PetscSectionGetDof(coordSection, points[v], &dof);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(coordSection, points[v], &off);CHECK_PETSC_ERROR(err);
-    err = PetscSectionGetOffset(faultCoordSection, v, &foff);CHECK_PETSC_ERROR(err);
-    for(PetscInt d = 0; d < dof; ++d) {
-      fa[foff+d] = a[off+d];
-    }
-  }
-  err = VecRestoreArray(coordinateVec, &a);CHECK_PETSC_ERROR(err);
-  err = VecRestoreArray(faultCoordinateVec, &fa);CHECK_PETSC_ERROR(err);
-  err = ISRestoreIndices(subpointIS, &points);CHECK_PETSC_ERROR(err);
-  err = ISDestroy(&subpointIS);CHECK_PETSC_ERROR(err);
-  err = DMSetCoordinatesLocal(dmFaultMesh, faultCoordinateVec);CHECK_PETSC_ERROR(err);
-  err = VecDestroy(&faultCoordinateVec);CHECK_PETSC_ERROR(err);
-#endif
-
-#ifdef OLD_PLEX
-  // Have to make subpointMap here: renumbering[original] = fault
-  DMLabel   subpointMap;
-  PetscInt *renum;
-  PetscInt  pStart, pEnd, fcStart, fcEnd;
-
-  err = DMLabelCreate("subpoint_map", &subpointMap);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetChart(dmFaultMesh, &pStart, &pEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetDepthStratum(dmFaultMesh, 0, &fvStart, &fvEnd);CHECK_PETSC_ERROR(err);
-  err = DMPlexGetHeightStratum(dmFaultMesh, 0, &fcStart, &fcEnd);CHECK_PETSC_ERROR(err);
-  assert(convertRenumbering.size() == pEnd-pStart);
-  err = PetscMalloc((pEnd-pStart) * sizeof(PetscInt), &renum);CHECK_PETSC_ERROR(err);
-#if 0
-  mesh.sieveMesh()->view("Sieve Mesh");
-  err = PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);CHECK_PETSC_ERROR(err);
-  err = DMView(mesh.dmMesh(), PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
-  err = PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);CHECK_PETSC_ERROR(err);
-#endif
-  for(SieveMesh::renumbering_type::const_iterator p_iter = convertRenumbering.begin(); p_iter != convertRenumbering.end(); ++p_iter) {
-    const PetscInt sievePoint = p_iter->first;
-    const PetscInt faultPoint = p_iter->second;
-    PetscInt       dmPoint    = convertSieveToDMPointNumbering(sievePoint, numNormalCells, numCohesiveCells, numNormalVertices, numShadowVertices, numLagrangeVertices);
-    renum[faultPoint] = dmPoint;
-    //std::cout << "renum["<<faultPoint<<"]: "<<dmPoint<<std::endl;
-  }
-  for(PetscInt p = 1; p < pEnd-pStart; ++p) {
-    if (renum[p-1] == -1) continue;
-    assert(renum[p] > renum[p-1]);
-  }
-  for(PetscInt p = fcStart; p < fcEnd; ++p) {
-    err = DMLabelSetValue(subpointMap, renum[p], mesh.dimension());CHECK_PETSC_ERROR(err);
-  }
-  for(PetscInt p = fvStart; p < fvEnd; ++p) {
-    err = DMLabelSetValue(subpointMap, renum[p], 0);CHECK_PETSC_ERROR(err);
-  }
-  err = PetscFree(renum);CHECK_PETSC_ERROR(err);
-  err = DMPlexSetSubpointMap(dmFaultMesh, subpointMap);CHECK_PETSC_ERROR(err);
-  err = DMLabelDestroy(&subpointMap);CHECK_PETSC_ERROR(err);
-#endif
 
   // Update dimensioned coordinates if they exist.
   if (sieveMesh->hasRealSection("coordinates_dimensioned")) {
