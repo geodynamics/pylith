@@ -128,7 +128,7 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
   const int spaceDim = 3;
   const int orientSize = 9;
 
-  const PylithScalar jacobianVals[numlocs*spaceDim*(spaceDim-1)] = {
+  const PylithScalar jacobianVals[numLocs*spaceDim*(spaceDim-1)] = {
     2.0,  -0.5,
     1.0,  -0.2,
     0.5,   2.0,
