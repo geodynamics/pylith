@@ -77,11 +77,11 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     std::ostringstream tmp;
 
     err = DMLabelGetName(groupField, &groupName);CHECK_PETSC_ERROR(err);
-    err = DMPlexCreateSubmesh(dmMesh, groupName, &subdm);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(dmMesh, groupName, 1, &subdm);CHECK_PETSC_ERROR(err);
     err = DMPlexCreateLabel(subdm, labelName);CHECK_PETSC_ERROR(err);
     err = DMPlexGetLabel(subdm, labelName, &label);CHECK_PETSC_ERROR(err);
     err = DMPlexMarkBoundaryFaces(subdm, label);CHECK_PETSC_ERROR(err);
-    err = DMPlexCreateSubmesh(subdm, labelName, &faultBoundaryDM);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(subdm, labelName, 1, &faultBoundaryDM);CHECK_PETSC_ERROR(err);
     faultMesh->setDMMesh(subdm);
   } else {
     // TODO: This leg will be unnecessary
@@ -191,7 +191,7 @@ pylith::faults::CohesiveTopology::createFault(topology::SubMesh* faultMesh,
     err = DMPlexCreateLabel(faultDMMesh, labelName);CHECK_PETSC_ERROR(err);
     err = DMPlexGetLabel(faultDMMesh, labelName, &label);CHECK_PETSC_ERROR(err);
     err = DMPlexMarkBoundaryFaces(faultDMMesh, label);CHECK_PETSC_ERROR(err);
-    err = DMPlexCreateSubmesh(faultDMMesh, labelName, &faultBoundaryDM);CHECK_PETSC_ERROR(err);
+    err = DMPlexCreateSubmesh(faultDMMesh, labelName, 1, &faultBoundaryDM);CHECK_PETSC_ERROR(err);
 
     err = ISRestoreIndices(pointIS, &points);CHECK_PETSC_ERROR(err);
     err = ISDestroy(&pointIS);CHECK_PETSC_ERROR(err);

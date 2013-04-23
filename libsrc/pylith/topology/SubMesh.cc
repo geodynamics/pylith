@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 //
 // ======================================================================
@@ -166,7 +167,7 @@ pylith::topology::SubMesh::createSubMesh(const Mesh& mesh,
 
   /* TODO: Add creation of pointSF for submesh */
   err = DMDestroy(&_newMesh);CHECK_PETSC_ERROR(err);
-  err = DMPlexCreateSubmesh(dmMesh, label, &_newMesh);CHECK_PETSC_ERROR(err);
+  err = DMPlexCreateSubmesh(dmMesh, label, 1, &_newMesh);CHECK_PETSC_ERROR(err);
 
   // Set data from mesh.
   coordsys(mesh);
